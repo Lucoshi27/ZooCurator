@@ -1376,3 +1376,154 @@ body {
     font-size: 10px;
     opacity: .68;
 }
+/* ============================================================
+   V32 — PHONE ACTION HUD
+   Keep the zoo world unchanged; only reorganise the fixed header.
+   ============================================================ */
+@media (max-width: 700px) {
+    #actionMenu {
+        height: 300px;
+        overflow: visible;
+    }
+
+    #playerZooName {
+        left: 54px;
+        right: 8px;
+        top: 6px;
+        width: auto;
+        min-height: 32px;
+        transform: none;
+        font-size: 18px;
+        line-height: 26px;
+        text-align: left;
+    }
+    .zoo-name-editor { justify-content: flex-start; }
+    .zoo-name-text { max-width: calc(100vw - 105px); }
+    .zoo-name-input { width: min(230px, calc(100vw - 120px)); font-size: 16px; }
+    .zoo-name-edit-button { width: 30px; height: 30px; }
+
+    #headerLeft { left: 6px; top: 6px; }
+    .header-small { padding: 5px 7px; font-size: 11px; }
+
+    #progressTracker { display: none !important; }
+
+    #headerActions {
+        left: 50%;
+        top: 48px;
+        width: auto;
+        transform: translateX(-50%) !important;
+    }
+    .exchange-controls { gap: 7px; }
+
+    /* The two trade boxes are moved to their own row by JS already; hide the
+       original placeholders from the action flex if they momentarily exist. */
+    #headerActions #outgoingOffer,
+    #headerActions #ingoingOffer { display: none !important; }
+
+    .action-card,
+    .action-slot,
+    .exchange-result {
+        width: 64px;
+        height: 92.16px;
+        border-radius: 6px;
+    }
+    .exchange-card,
+    .result-card {
+        width: 64px !important;
+        height: 92.16px !important;
+    }
+    #drawCard,
+    #exchange1,
+    #exchange2,
+    #result { transform: translateY(12px); }
+    #exchange1::before,
+    #exchange2::before,
+    #result::before { top: -14px; font-size: 8px; }
+
+    /* Dedicated second action row: outgoing/incoming trading. */
+    .opponent-trade-area {
+        position: fixed !important;
+        left: 50% !important;
+        right: auto !important;
+        top: 165px !important;
+        transform: translateX(-50%);
+        width: auto;
+        height: 92px;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        gap: 8px !important;
+        z-index: 6500;
+    }
+    .opponent-trade-area .trade-offer {
+        width: 64px !important;
+        height: 92.16px !important;
+        flex: 0 0 64px !important;
+        font-size: 8px;
+        border-radius: 6px;
+    }
+    .opponent-trade-area .trade-card {
+        width: 100% !important;
+        height: 100% !important;
+    }
+    .opponent-trade-area .decline-opponent-offer {
+        left: 72px !important;
+        top: 96px !important;
+        width: 64px !important;
+        min-height: 22px;
+        padding: 2px 3px;
+        font-size: 8px;
+    }
+
+    /* Opponents become a compact horizontal strip at the bottom of the HUD. */
+    #opponentZoos {
+        display: flex !important;
+        position: absolute;
+        left: 6px;
+        right: 6px;
+        top: 264px;
+        width: auto;
+        gap: 4px;
+        align-items: stretch;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+    .opponent-title { display: none; }
+    #opponentZoos .opponent-name {
+        flex: 0 0 auto;
+        min-width: 92px;
+        min-height: 27px;
+        margin: 0;
+        padding: 5px 7px 8px !important;
+        font-size: 10px;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    #zooBoard { top: 300px; }
+
+    /* Hand remains usable without covering most of a phone screen. */
+    #hand { bottom: 8px; }
+    #hand .animal-card { width: 150px; height: 216px; }
+
+    /* Desktop hover panel is too large for phones; keep its information card
+       inside the available screen if touch interaction opens it. */
+    #hoverPreview {
+        left: 8px;
+        bottom: 8px;
+        width: min(270px, calc(100vw - 16px));
+        height: min(388.8px, calc(100% - 16px));
+    }
+    #hoverPreview.super-zoom {
+        width: calc(100vw - 16px);
+        height: min(560px, calc(100% - 16px));
+    }
+}
+
+@media (max-width: 700px) and (orientation: landscape) {
+    #actionMenu { height: 190px; }
+    #headerActions { top: 43px; left: 35%; }
+    .opponent-trade-area { top: 55px !important; left: 72% !important; }
+    #opponentZoos { top: 157px; }
+    #zooBoard { top: 190px; }
+}

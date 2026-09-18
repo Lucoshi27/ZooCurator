@@ -4982,6 +4982,23 @@ function ensureOpponentZooElements() {
 
 function positionOpponentTradeArea() {
     const area = document.getElementById('opponentTradeArea');
+
+    // Mobile layout is controlled entirely by CSS. Clear the desktop inline
+    // positioning/sizing so it cannot bunch the phone HUD together.
+    if (window.matchMedia('(max-width: 700px)').matches) {
+        if (!area) return;
+        area.style.position = '';
+        area.style.left = '';
+        area.style.right = '';
+        area.style.top = '';
+        area.style.display = '';
+        area.style.visibility = '';
+        area.style.opacity = '';
+        area.style.removeProperty('--trade-card-height');
+        area.style.removeProperty('--trade-card-width');
+        area.style.removeProperty('--trade-card-gap');
+        return;
+    }
     const opponents = document.getElementById('opponentZoos');
     const rowReference = exchange1 || drawCard || resultBox;
     if (!area || !opponents || !rowReference) return;

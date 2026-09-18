@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Zoo Curator</title>
+
+    <link
+        rel="stylesheet"
+        href="./style.css?v=11"
+    >
+</head>
+
+<body>
+
+    <!-- =====================================================
+         LOADING SCREEN
+         ===================================================== -->
+
+    <div id="bootScreen">
+
+        <div id="bootTitle">
+            Zoo Curator
+        </div>
+
+        <div id="bootStatus">
+            Loading Zoo Curator...
+        </div>
+
+        <div id="bootDetail">
+            Starting...
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ERROR SCREEN
+         ===================================================== -->
+
+    <div id="fatalError"></div>
+
+
+    <!-- =====================================================
+         GAME
+         ===================================================== -->
+
+    <div id="gameApp">
+
+        <!-- =================================================
+             HEADER
+             ================================================= -->
+
+        <header id="actionMenu">
+
+            <div id="playerZooName">
+                Loading Zoo...
+            </div>
+
+
+            <!-- LEFT SIDE -->
+
+            <div
+                id="headerLeft"
+                class="header-side"
+            >
+
+                <div
+                    id="turnOrder"
+                    class="header-small"
+                >
+                    Turn 1
+                </div>
+
+            </div>
+
+
+            <!-- CENTER ACTIONS -->
+
+            <div id="headerActions">
+
+                <div
+                    id="exchangeControls"
+                    class="exchange-controls"
+                >
+
+                    <!-- DRAW LEVEL 1 -->
+
+                    <button
+                        id="drawCard"
+                        class="action-card draw-card"
+                        type="button"
+                        aria-label="Draw Level 1 Animal"
+                    >
+                        <img
+                            src="assets/animals/carnivora/1/Back.png"
+                            alt="Draw Level 1 Animal"
+                            draggable="false"
+                        >
+                    </button>
+
+
+                    <!-- EXCHANGE 1 -->
+
+                    <div
+                        id="exchange1"
+                        class="action-slot"
+                    ></div>
+
+
+                    <!-- EXCHANGE 2 -->
+
+                    <div
+                        id="exchange2"
+                        class="action-slot"
+                    ></div>
+
+
+                    <!-- RESULT -->
+
+                    <div
+                        id="result"
+                        class="exchange-result"
+                    ></div>
+
+
+                    <!-- OUTGOING OFFER -->
+
+                    <div
+                        id="outgoingOffer"
+                        class="trade-offer"
+                    >
+                        OUTGOING<br>
+                        OFFER
+                    </div>
+
+
+                    <!-- INCOMING OFFER -->
+
+                    <div
+                        id="ingoingOffer"
+                        class="trade-offer"
+                    >
+                        INGOING<br>
+                        OFFER
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- OPPONENT ZOOS -->
+
+            <div
+                id="opponentZoos"
+                class="opponent-zoos"
+            >
+
+                <div class="opponent-title">
+                    Opponents
+                </div>
+
+                <div
+                    id="opponentName1"
+                    class="opponent-name"
+                >
+                    Loading...
+                </div>
+
+                <div
+                    id="opponentName2"
+                    class="opponent-name"
+                >
+                    Loading...
+                </div>
+
+                <div
+                    id="opponentName3"
+                    class="opponent-name"
+                >
+                    Loading...
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             ZOO WORK AREA
+             ================================================= -->
+
+        <main
+            id="zooBoard"
+            class="zoo-board"
+        >
+
+            <div
+                id="zooCanvas"
+                class="zoo-canvas"
+            ></div>
+
+        </main>
+
+
+        <!-- =================================================
+             HAND
+             ================================================= -->
+
+        <div
+            id="hand"
+            class="hand"
+        ></div>
+
+
+        <!-- =================================================
+             HOVER PREVIEW
+             ================================================= -->
+
+        <div
+            id="hoverPreview"
+            class="hover-preview"
+        >
+
+            <img
+                id="hoverPreviewImage"
+                src=""
+                alt=""
+                draggable="false"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         EARLY ERROR HANDLER
+         ===================================================== -->
+
+    <script>
+
+        window.__zooScriptStarted = false;
+
+        window.addEventListener(
+            "error",
+            function(event) {
+
+                if (window.__zooScriptStarted) {
+                    return;
+                }
+
+                const fatal =
+                    document.getElementById(
+                        "fatalError"
+                    );
+
+                const boot =
+                    document.getElementById(
+                        "bootScreen"
+                    );
+
+                if (fatal) {
+
+                    fatal.style.display =
+                        "block";
+
+                    fatal.textContent =
+                        "Zoo Curator could not start.\n\n" +
+                        event.message +
+                        "\n\n" +
+                        (event.filename || "") +
+                        ":" +
+                        (event.lineno || "");
+
+                }
+
+                if (boot) {
+                    boot.style.display =
+                        "none";
+                }
+
+            }
+        );
+
+    </script>
+
+
+    <!-- =====================================================
+         GAME SCRIPT
+         ===================================================== -->
+
+    <script
+        src="./game.js?v=11"
+    ></script>
+
+</body>
+</html>

@@ -1,0 +1,1378 @@
+:root {
+    --zoo-zoom: 1;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #e7e4dc;
+}
+
+body {
+    user-select: none;
+}
+
+
+/* ============================================================
+   LOADING
+   ============================================================ */
+
+#bootScreen {
+    position: fixed;
+    inset: 0;
+
+    z-index: 10000;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background: #e7e4dc;
+}
+
+#bootScreen.hidden {
+    display: none;
+}
+
+#bootTitle {
+    margin-bottom: 22px;
+
+    font-size: 38px;
+    font-weight: 700;
+}
+
+#bootStatus {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+#bootDetail {
+    margin-top: 10px;
+
+    font-size: 15px;
+    opacity: 0.65;
+}
+
+
+/* ============================================================
+   ERROR
+   ============================================================ */
+
+#fatalError {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+
+    z-index: 11000;
+
+    padding: 40px;
+
+    background: #f4eeee;
+    color: #8b1e1e;
+
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+#fatalError.visible {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* ============================================================
+   GAME
+   ============================================================ */
+
+#gameApp {
+    position: fixed;
+    inset: 0;
+
+    visibility: hidden;
+}
+
+#gameApp.visible {
+    visibility: visible;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+#actionMenu {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    top: 0;
+
+    height: 220px;
+
+    z-index: 5000;
+
+    background: #f4f1e9;
+
+    border-bottom:
+        2px solid #bcb7aa;
+
+    box-shadow:
+        0 3px 10px
+        rgba(0, 0, 0, 0.12);
+}
+
+
+/* ============================================================
+   ZOO NAME
+   ============================================================ */
+
+#playerZooName {
+    position: absolute;
+
+    left: 50%;
+    top: 4px;
+
+    transform:
+        translateX(-50%);
+
+    width: 640px;
+
+    min-height: 40px;
+
+    font-size: 28px;
+    font-weight: 700;
+
+    line-height: 34px;
+
+    text-align: center;
+}
+
+
+/* ============================================================
+   ZOO NAME EDITOR
+   ============================================================ */
+
+.zoo-name-editor {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    width: 100%;
+}
+
+.zoo-name-text {
+    display: block;
+
+    max-width: 480px;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.zoo-name-edit-button {
+    width: 28px;
+    height: 28px;
+
+    flex: 0 0 auto;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border:
+        1px solid
+        rgba(73, 69, 59, 0.45);
+
+    border-radius: 6px;
+
+    background: #ebe8df;
+
+    color: #403d36;
+
+    font-size: 19px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 4px
+        rgba(0, 0, 0, 0.12);
+}
+
+.zoo-name-edit-button:hover {
+    background: #fff;
+}
+
+.zoo-name-edit-button.editing {
+    background: #ffe887;
+
+    box-shadow:
+        0 0 8px
+        rgba(255, 210, 30, 0.65);
+}
+
+.zoo-name-input {
+    width: 390px;
+    height: 31px;
+
+    padding: 2px 8px;
+
+    border:
+        2px solid #9b8b48;
+
+    border-radius: 6px;
+
+    background: #fff;
+
+    font: inherit;
+    font-size: 21px;
+    font-weight: 700;
+
+    text-align: center;
+
+    outline: none;
+}
+
+
+/* ============================================================
+   HEADER LEFT
+   ============================================================ */
+
+#headerLeft {
+    position: absolute;
+
+    left: 18px;
+    top: 18px;
+}
+
+.header-small {
+    padding: 6px 10px;
+
+    border:
+        1px solid #bbb6aa;
+
+    border-radius: 6px;
+
+    background: #ebe8df;
+
+    font-size: 14px;
+}
+
+
+/* ============================================================
+   HEADER ACTIONS
+   ============================================================ */
+
+#headerActions {
+    position: absolute;
+
+    left: 50%;
+    top: 45px;
+
+    transform:
+        translateX(-50%);
+}
+
+.exchange-controls {
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+}
+
+
+/* ============================================================
+   ACTION CARDS
+   ============================================================ */
+
+.action-card,
+.action-slot,
+.exchange-result,
+.trade-offer {
+    width: 100px;
+    height: 144px;
+
+    flex: 0 0 auto;
+
+    border-radius: 8px;
+}
+
+.action-card {
+    padding: 0;
+
+    overflow: hidden;
+
+    border:
+        2px solid
+        rgba(73, 69, 59, 0.65);
+
+    background: #fff;
+
+    box-shadow:
+        0 3px 8px
+        rgba(0, 0, 0, 0.20);
+}
+
+.draw-card {
+    cursor: pointer;
+}
+
+.draw-card img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: fill;
+}
+
+
+/* ============================================================
+   EXCHANGE
+   ============================================================ */
+
+.action-slot,
+.exchange-result {
+    position: relative;
+
+    overflow: visible;
+
+    border:
+        2px solid
+        rgba(73, 69, 59, 0.55);
+
+    background: #99968f;
+
+    opacity: 0.45;
+
+    box-shadow:
+        inset 0 0 10px
+        rgba(0, 0, 0, 0.14);
+}
+
+.action-slot.exchange-ready {
+    background: #fff;
+
+    opacity: 1;
+
+    box-shadow:
+        0 3px 8px
+        rgba(0, 0, 0, 0.20);
+}
+
+
+/* ============================================================
+   UPGRADE RESULT GLOW
+   ============================================================ */
+
+.exchange-result.result-ready {
+    background: #fff;
+
+    opacity: 1;
+
+    cursor: pointer;
+
+    border:
+        2px solid
+        rgba(73, 69, 59, 0.65);
+
+    box-shadow:
+        0 0 0 4px
+        rgba(255, 211, 35, 0.95),
+
+        0 0 18px 8px
+        rgba(255, 211, 35, 0.78),
+
+        0 4px 10px
+        rgba(0, 0, 0, 0.25);
+
+    animation:
+        upgradeGlowPulse
+        1.35s
+        ease-in-out
+        infinite
+        alternate;
+}
+
+@keyframes upgradeGlowPulse {
+
+    from {
+        box-shadow:
+            0 0 0 3px
+            rgba(255, 211, 35, 0.85),
+
+            0 0 12px 5px
+            rgba(255, 211, 35, 0.60),
+
+            0 4px 10px
+            rgba(0, 0, 0, 0.25);
+    }
+
+    to {
+        box-shadow:
+            0 0 0 5px
+            rgba(255, 220, 60, 1),
+
+            0 0 23px 10px
+            rgba(255, 211, 35, 0.90),
+
+            0 4px 10px
+            rgba(0, 0, 0, 0.25);
+    }
+
+}
+
+.exchange-card,
+.result-card {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: fill;
+
+    border:
+        2px solid
+        rgba(73, 69, 59, 0.65);
+
+    border-radius: 7px;
+
+    background: #fff;
+}
+
+.exchange-card {
+    cursor: grab;
+
+    /* Override the normal 135 x 194.4 animal-card dimensions. */
+    width: 100px !important;
+    height: 144px !important;
+    transform: none !important;
+}
+
+.exchange-card:active,
+.result-card:active {
+    cursor: grabbing;
+}
+
+.result-card {
+    cursor: grab;
+}
+
+
+/* ============================================================
+   TRADE OFFERS
+   ============================================================ */
+
+.trade-offer {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border:
+        2px solid
+        rgba(73, 69, 59, 0.55);
+
+    background: #ddd9d0;
+
+    color: #6e6a62;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-align: center;
+
+    box-shadow:
+        0 3px 8px
+        rgba(0, 0, 0, 0.12);
+}
+
+
+/* ============================================================
+   OPPONENTS
+   ============================================================ */
+
+#opponentZoos {
+    position: absolute;
+    right: 18px;
+    top: 8px;
+    width: 255px;
+}
+
+.opponent-title {
+    margin-bottom: 5px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-align: right;
+
+    opacity: 0.6;
+}
+
+.opponent-name {
+    margin-bottom: 5px;
+
+    padding: 6px 11px;
+
+    border:
+        1px solid #bbb6aa;
+
+    border-radius: 5px;
+
+    background: #ebe8df;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    text-align: right;
+}
+
+
+/* ============================================================
+   ZOO BOARD
+   ============================================================ */
+
+#zooBoard {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+
+    top: 220px;
+    bottom: 0;
+
+    overflow: auto;
+
+    z-index: 100;
+
+    background: #e7e4dc;
+
+    cursor: grab;
+
+    touch-action: none;
+}
+
+#zooBoard.panning {
+    cursor: grabbing;
+}
+
+#zooCanvas {
+    position: relative;
+
+    width: 6000px;
+    height: 5000px;
+
+    /* Zoom the complete zoo coordinate system as one world. */
+    zoom: var(--zoo-zoom);
+}
+
+
+/* ============================================================
+   ENCLOSURES
+   ============================================================ */
+
+.enclosure {
+    position: absolute;
+
+    width: 350px;
+    height: 466.6667px;
+
+    cursor: grab;
+
+    touch-action: none;
+}
+
+.enclosure.dragging-enclosure {
+    cursor: grabbing;
+
+    z-index: 500;
+}
+
+.enclosure-image {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: fill;
+
+    pointer-events: none;
+
+    border:
+        2px solid
+        rgba(73, 69, 59, 0.55);
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 4px 11px
+        rgba(0, 0, 0, 0.16);
+}
+
+
+/* ============================================================
+   NEW ENCLOSURE GLOW
+   ============================================================ */
+
+.enclosure.new-enclosure
+.enclosure-image {
+    box-shadow:
+        0 0 0 5px
+        rgba(255, 211, 35, 0.95),
+
+        0 0 24px 12px
+        rgba(255, 211, 35, 0.78),
+
+        0 4px 11px
+        rgba(0, 0, 0, 0.20);
+
+    animation:
+        newEnclosurePulse
+        1.4s
+        ease-in-out
+        infinite
+        alternate;
+}
+
+@keyframes newEnclosurePulse {
+
+    from {
+        box-shadow:
+            0 0 0 4px
+            rgba(255, 211, 35, 0.82),
+
+            0 0 15px 7px
+            rgba(255, 211, 35, 0.60),
+
+            0 4px 11px
+            rgba(0, 0, 0, 0.20);
+    }
+
+    to {
+        box-shadow:
+            0 0 0 6px
+            rgba(255, 220, 60, 1),
+
+            0 0 28px 14px
+            rgba(255, 211, 35, 0.88),
+
+            0 4px 11px
+            rgba(0, 0, 0, 0.20);
+    }
+
+}
+
+
+/* ============================================================
+   ENCLOSURE SPOTS
+   ============================================================ */
+
+/*
+    Keep this geometry unchanged.
+
+    This is the enclosure layout that was correctly aligned.
+*/
+
+.slot {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    z-index: 20;
+    pointer-events: auto;
+}
+
+.slot[data-slot-index="0"] { left: 0; top: 0; }
+.slot[data-slot-index="1"] { left: 50%; top: 0; }
+.slot[data-slot-index="2"] { left: 0; top: 50%; }
+.slot[data-slot-index="3"] { left: 50%; top: 50%; }
+.slot.empty-slot { cursor: default; }
+
+
+/* ============================================================
+   ANIMAL CARDS
+   ============================================================ */
+
+.animal-card {
+    display: block;
+
+    width: 135px;
+    height: 194.4px;
+
+    object-fit: fill;
+
+    border:
+        2px solid
+        rgba(73, 69, 59, 0.68);
+
+    border-radius: 8px;
+
+    background: #fff;
+
+    box-shadow:
+        0 3px 8px
+        rgba(0, 0, 0, 0.22);
+
+    cursor: grab;
+
+    touch-action: none;
+}
+
+.animal-card:active {
+    cursor: grabbing;
+}
+
+
+/*
+    Enclosure receives the zoo zoom.
+
+    Animal must NOT get another scale transform.
+*/
+
+.enclosure-animal {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 135px;
+    height: 194.4px;
+    transform: translate(-50%, -50%);
+}
+
+
+/* ============================================================
+   EXCHANGE ELIGIBILITY
+   ============================================================ */
+
+.animal-card.exchange-eligible {
+    box-shadow:
+        0 0 0 4px
+        rgba(255, 211, 35, 0.95),
+
+        0 0 15px 7px
+        rgba(255, 211, 35, 0.72),
+
+        0 3px 8px
+        rgba(0, 0, 0, 0.22);
+}
+
+/* During an animal drag: hold the pre-drag eligibility glow for 1 second,
+   then fade it away over 1 second. */
+.animal-card.exchange-drag-glow {
+    animation: exchangeDragGlowAway 2s linear forwards !important;
+}
+
+@keyframes exchangeDragGlowAway {
+    0%, 50% {
+        box-shadow:
+            0 0 0 4px rgba(255, 211, 35, 0.95),
+            0 0 15px 7px rgba(255, 211, 35, 0.72),
+            0 3px 8px rgba(0, 0, 0, 0.22);
+    }
+    100% {
+        box-shadow:
+            0 0 0 0 rgba(255, 211, 35, 0),
+            0 0 0 0 rgba(255, 211, 35, 0),
+            0 3px 8px rgba(0, 0, 0, 0.22);
+    }
+}
+
+/* When the animal is placed/restored, eligible glows return over 1 second. */
+.animal-card.exchange-eligible.exchange-glow-return {
+    animation: exchangeGlowReturn 1s ease forwards !important;
+}
+
+@keyframes exchangeGlowReturn {
+    from {
+        box-shadow:
+            0 0 0 0 rgba(255, 211, 35, 0),
+            0 0 0 0 rgba(255, 211, 35, 0),
+            0 3px 8px rgba(0, 0, 0, 0.22);
+    }
+    to {
+        box-shadow:
+            0 0 0 4px rgba(255, 211, 35, 0.95),
+            0 0 15px 7px rgba(255, 211, 35, 0.72),
+            0 3px 8px rgba(0, 0, 0, 0.22);
+    }
+}
+
+
+/* ============================================================
+   HAND
+   ============================================================ */
+
+#hand {
+    position: fixed;
+
+    left: 50%;
+    bottom: 15px;
+
+    transform:
+        translateX(-50%);
+
+    z-index: 6000;
+
+    display: flex;
+
+    align-items: flex-end;
+    justify-content: center;
+
+    gap: 12px;
+
+    pointer-events: none;
+}
+
+#hand .animal-card {
+    position: relative;
+
+    left: auto;
+    top: auto;
+
+    width: 270px;
+    height: 388.8px;
+
+    transform: none;
+
+    flex: 0 0 auto;
+
+    pointer-events: auto;
+
+    border-radius: 11px;
+
+    box-shadow:
+        0 5px 14px
+        rgba(0, 0, 0, 0.26);
+}
+
+
+/* ============================================================
+   HOVER PREVIEW
+   ============================================================ */
+
+#hoverPreview {
+    position: fixed;
+    left: 18px;
+    bottom: 18px;
+    width: 405px;
+    height: 583.2px;
+    z-index: 7000;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform-origin: left bottom;
+    transition: width 0.16s ease, height 0.16s ease, opacity 1s ease, visibility 0s linear 1s;
+}
+
+#hoverPreview.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: width 0.16s ease, height 0.16s ease, opacity 0.10s ease, visibility 0s;
+}
+
+#hoverPreviewImage {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    border: 2px solid rgba(73, 69, 59, 0.72);
+    border-radius: 11px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.32);
+}
+
+#hoverPreviewImage {
+    transition: transform 0.42s ease, opacity 0.22s ease;
+    backface-visibility: hidden;
+}
+
+#hoverPreviewWiki {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 18px;
+    border: 2px solid rgba(73,69,59,.72);
+    border-radius: 11px;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,.45);
+    box-shadow: 0 8px 22px rgba(0,0,0,.32);
+    opacity: 0;
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
+    transition: transform 0.42s ease, opacity 0.22s ease;
+    pointer-events: none;
+}
+
+#hoverPreview.wiki-open #hoverPreviewImage {
+    opacity: 0;
+    transform: rotateY(180deg);
+}
+
+#hoverPreview.wiki-open #hoverPreviewWiki {
+    opacity: 1;
+    transform: rotateY(0deg);
+    pointer-events: auto;
+}
+
+.wiki-preview-toolbar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,.45);
+}
+
+#wikiPreviewTitle {
+    font-size: 20px;
+    line-height: 1.15;
+}
+
+#wikiPreviewLink {
+    flex: 0 0 auto;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    text-shadow: 0 1px 2px rgba(0,0,0,.55);
+}
+
+#wikiPreviewStatus {
+    margin: 9px 0 7px;
+    font-size: 10px;
+    font-weight: 800;
+    opacity: .9;
+}
+
+#wikiPreviewText {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 10px 12px;
+    border-radius: 7px;
+    background: rgba(255,255,255,.90);
+    color: #242424;
+    text-shadow: none;
+    white-space: pre-wrap;
+    user-select: text;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+#hoverPreview.super-zoom #wikiPreviewTitle { font-size: 28px; }
+#hoverPreview.super-zoom #wikiPreviewStatus { font-size: 12px; }
+#hoverPreview.super-zoom #wikiPreviewText { font-size: 15px; line-height: 1.5; }
+
+#hoverPreview.super-zoom {
+    width: min(810px, calc(100vw - 36px));
+    height: min(1166.4px, calc(100vh - 36px));
+}
+
+#hoverPreview.super-zoom #hoverPreviewImage { object-fit: contain; }
+
+
+/* ============================================================
+   DRAGGED ANIMAL
+   ============================================================ */
+
+.dragging-animal {
+    position: fixed;
+
+    z-index: 20000;
+
+    object-fit: fill;
+
+    pointer-events: none;
+
+    border:
+        2px solid
+        rgba(73, 69, 59, 0.72);
+
+    border-radius: 8px;
+
+    background: #fff;
+
+    box-shadow:
+        0 6px 16px
+        rgba(0, 0, 0, 0.30);
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1150px) {
+
+    #opponentZoos {
+        display: none;
+    }
+
+    #headerActions {
+        transform:
+            translateX(-50%)
+            scale(0.85);
+
+        transform-origin:
+            top center;
+    }
+
+}
+
+/* PROGRESSION TRACKER */
+#progressTracker { position: absolute; left: 245px; top: 4px; z-index: 5100; width: 405px; font-size: 9px; }
+.progress-table { display:grid; grid-template-columns: 115px repeat(5,54px); gap:2px; }
+.progress-heading { display:flex; align-items:center; justify-content:center; height:18px; border-radius:3px; background:#deddd5; font-size:9px; font-weight:800; }
+.progress-category-heading { justify-content:flex-start; padding-left:6px; }
+.progress-category { display:flex; align-items:center; height:17px; padding:1px 6px; border-radius:3px; color:#fff; font-size:9px; font-weight:800; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.55); }
+.progress-check-cell { display:flex; align-items:center; justify-content:center; height:17px; border-radius:3px; background:rgba(255,255,255,.5); }
+.progress-checkbox { display:flex; width:13px; height:13px; align-items:center; justify-content:center; border:1px solid #716f68; border-radius:2px; background:rgba(255,255,255,.9); color:#285c2d; font-size:11px; font-weight:900; }
+.progress-checkbox.checked { color:transparent; box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+.level2-milestone { margin-top:3px; padding:3px 6px; border:1px solid rgba(65,71,60,.25); border-radius:4px; background:rgba(255,255,255,.72); font-size:9px; }
+
+
+/* ============================================================
+   ANIMAL INFORMATION TABS / ZOOTIERLISTE
+   ============================================================ */
+.animal-info-tabs {
+    display:flex;
+    gap:6px;
+    margin-bottom:10px;
+}
+.animal-info-tab {
+    flex:1 1 0;
+    padding:7px 8px;
+    border:1px solid rgba(255,255,255,.55);
+    border-radius:6px;
+    background:rgba(255,255,255,.16);
+    color:#fff;
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+    text-shadow:0 1px 2px rgba(0,0,0,.45);
+}
+.animal-info-tab.active { background:rgba(255,255,255,.38); }
+#ztlPreviewPane { display:flex; flex:1 1 auto; min-height:0; flex-direction:column; }
+#ztlPreviewPane[hidden] { display:none; }
+#ztlPreviewStatus { margin:9px 0 7px; font-size:10px; font-weight:800; opacity:.9; }
+#ztlPreviewText {
+    flex:1 1 auto;
+    min-height:0;
+    overflow:auto;
+    padding:10px 12px;
+    border-radius:7px;
+    background:rgba(255,255,255,.90);
+    color:#242424;
+    text-shadow:none;
+    user-select:text;
+    font-size:12px;
+    line-height:1.4;
+}
+#ztlPreviewLink { flex:0 0 auto; color:#fff; font-size:11px; font-weight:800; text-shadow:0 1px 2px rgba(0,0,0,.55); }
+.ztl-total { margin-bottom:10px; padding:9px; border-radius:6px; background:rgba(0,0,0,.07); }
+.ztl-total span { display:block; margin-top:3px; font-size:10px; opacity:.72; }
+.ztl-record { display:grid; gap:2px; padding:8px 4px; border-top:1px solid rgba(0,0,0,.13); color:#242424; text-decoration:none; }
+.ztl-record:hover { background:rgba(0,0,0,.05); }
+.ztl-record em { font-size:11px; }
+.ztl-record span { font-size:10px; opacity:.76; }
+#hoverPreview.super-zoom #ztlPreviewText { font-size:15px; line-height:1.5; }
+#hoverPreview.super-zoom #ztlPreviewStatus { font-size:12px; }
+#hoverPreview.super-zoom .animal-info-tab { font-size:13px; }
+
+/* ============================================================
+   GAME OPTIONS
+   ============================================================ */
+.game-options-button {
+    display:block;
+    margin-top:8px;
+    padding:6px 10px;
+    border:1px solid #aaa69b;
+    border-radius:6px;
+    background:#fff;
+    font-weight:700;
+    cursor:pointer;
+}
+.game-options-button:hover { background:#f7f3e8; }
+.game-options-overlay {
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:30000;
+    align-items:center;
+    justify-content:center;
+    background:rgba(30,28,24,.48);
+}
+.game-options-overlay.visible { display:flex; }
+.game-options-modal {
+    width:min(520px,calc(100vw - 40px));
+    max-height:calc(100vh - 50px);
+    overflow:auto;
+    padding:22px;
+    border:2px solid #aaa69b;
+    border-radius:12px;
+    background:#f4f1e9;
+    box-shadow:0 14px 45px rgba(0,0,0,.3);
+}
+.game-options-modal h2 { margin:0 0 8px; }
+.category-option-list { display:grid; grid-template-columns:1fr 1fr; gap:7px 12px; margin:18px 0; }
+.category-option { display:flex; align-items:center; gap:8px; padding:7px; border-radius:6px; background:rgba(255,255,255,.65); cursor:pointer; }
+.category-option-colour { width:16px; height:16px; border-radius:3px; border:1px solid rgba(0,0,0,.25); }
+.options-warning { padding:10px; border-radius:6px; background:#fff0bd; font-size:13px; font-weight:700; }
+.options-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+.options-actions button { padding:8px 12px; cursor:pointer; }
+
+/* ============================================================
+   OPPONENT TRADING
+   ============================================================ */
+.trade-offer { cursor:default; }
+.trade-offer.trade-filled { opacity:1; background:#fff; padding:0; overflow:visible; }
+.trade-offer > span { pointer-events:none; }
+.trade-card {
+    width:100px !important;
+    height:144px !important;
+    transform:none !important;
+    border-radius:7px !important;
+}
+.incoming-trade-card { cursor:grab; }
+.opponent-name.wants-trade {
+    cursor:pointer;
+    box-shadow:0 0 0 2px rgba(255,211,35,.75),0 0 10px 4px rgba(255,211,35,.48);
+}
+.opponent-name.selected-trade {
+    background:#ffe477;
+    border-color:#b99a1f;
+    box-shadow:0 0 0 3px rgba(255,211,35,.9),0 0 15px 6px rgba(255,211,35,.6);
+}
+
+
+/* ============================================================
+   V18 — OPPONENT TRADE AREA / EXPANDING OPPONENT LIST
+   ============================================================ */
+.opponent-trade-area {
+    /* Same vertical action row as Draw/Exchange. JavaScript positions this
+       pair in the free horizontal space between the right-most Exchange card
+       and the opponent-zoo names. The element itself lives directly under
+       <body>, outside transformed #headerActions. */
+    position:fixed;
+    /* Exact left/top are calculated from the live Exchange and opponent
+       rectangles in JavaScript. */
+    left:auto;
+    right:auto;
+    top:45px;
+    z-index:6500;
+    display:flex;
+    visibility:visible;
+    opacity:1;
+    pointer-events:auto;
+    gap:10px;
+    align-items:flex-start;
+}
+.opponent-trade-area .trade-offer {
+    width:100px;
+    height:144px;
+    flex:0 0 100px;
+    display:flex;
+    visibility:visible;
+    pointer-events:auto;
+}
+#opponentZoos .opponent-name {
+    min-height:27px;
+    margin-bottom:4px;
+}
+
+
+/* ============================================================
+   V21 — AUTONOMOUS OPPONENT OFFERS
+   ============================================================ */
+.decline-opponent-offer {
+    position:absolute;
+    top:150px;
+    left:110px;
+    width:100px;
+    min-height:27px;
+    padding:4px 6px;
+    border:1px solid #9d2d2d;
+    border-radius:5px;
+    background:#fff4f4;
+    font-size:10px;
+    font-weight:700;
+    cursor:pointer;
+}
+.decline-opponent-offer:hover { background:#ffe2e2; }
+
+
+/* ============================================================
+   V26 — LARGE HEADER-FITTING TRADE CARDS
+   ============================================================ */
+.opponent-trade-area {
+    gap: var(--trade-card-gap, 12px) !important;
+}
+.opponent-trade-area .trade-offer {
+    width: var(--trade-card-width, 100px) !important;
+    height: var(--trade-card-height, 144px) !important;
+    flex: 0 0 var(--trade-card-width, 100px) !important;
+}
+.opponent-trade-area .trade-card {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: fill !important;
+}
+.opponent-trade-area .decline-opponent-offer {
+    left: calc(var(--trade-card-width, 100px) + var(--trade-card-gap, 12px));
+    top: calc(var(--trade-card-height, 144px) + 6px);
+    width: var(--trade-card-width, 100px);
+}
+
+
+/* ============================================================
+   V27 — OPPONENT TRADE VALIDATION + PREFERENCE BARS
+   ============================================================ */
+.trade-offer.trade-locked .incoming-trade-card {
+    cursor: not-allowed !important;
+    filter: grayscale(0.55) brightness(0.82);
+    opacity: 0.72;
+}
+.opponent-name {
+    position: relative;
+    padding-bottom: 8px !important;
+}
+.opponent-preference-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4px;
+    display: flex;
+    overflow: hidden;
+    border-radius: 0 0 4px 4px;
+    pointer-events: none;
+}
+.opponent-preference-segment {
+    flex: 1 1 33.333%;
+    height: 100%;
+}
+
+
+/* ===== v28: progression highlighting / independent reward milestones ===== */
+.progression-highlight {
+    animation: progressionTrackerGlow 2s ease-out forwards !important;
+}
+@keyframes progressionTrackerGlow {
+    0%, 50% {
+        filter: drop-shadow(0 0 5px #ffe36a) drop-shadow(0 0 12px #ffd21f);
+    }
+    100% {
+        filter: drop-shadow(0 0 0 rgba(255,210,31,0));
+    }
+}
+.progress-checkbox.checked { cursor: pointer; }
+.progress-checkbox.checked.pinned {
+    outline: 2px solid #ffd21f;
+    outline-offset: 2px;
+    box-shadow: 0 0 8px #ffd21f, inset 0 0 0 1px rgba(255,255,255,.35);
+}
+.progression-milestones {
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px 12px;
+    align-items:center;
+}
+.progress-level-rewards { display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
+.reward-tick {
+    min-width:18px; height:18px; padding:0 3px;
+    display:inline-flex; align-items:center; justify-content:center;
+    border:1px solid #777; border-radius:3px; background:#f4f2ec;
+    font-size:10px; font-weight:800;
+}
+.reward-tick.earned { background:#ffe36a; border-color:#b18a00; }
+
+#exchange1, #exchange2, #result { position:relative; }
+#exchange1::before, #exchange2::before, #result::before {
+    content: attr(data-box-label);
+    position:absolute;
+    left:50%;
+    top:-17px;
+    transform:translateX(-50%);
+    font-size:10px;
+    line-height:1;
+    font-weight:900;
+    letter-spacing:.7px;
+    color:#4f4c45;
+    white-space:nowrap;
+    pointer-events:none;
+}
+
+
+/* ===== v29: action-box spacing and configurable game options ===== */
+/* Room for the EXCHANGE / UPGRADE captions introduced in v28. */
+#drawCard,
+#exchange1,
+#exchange2,
+#result {
+    transform: translateY(15px);
+}
+
+/* Do not show the milestone counters below the progression tracker. */
+.progression-milestones {
+    display: none !important;
+}
+
+.advanced-game-rules {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0,0,0,.16);
+    display: grid;
+    gap: 9px;
+}
+.advanced-options-title {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .8px;
+}
+.advanced-game-rules label {
+    display: grid;
+    grid-template-columns: 1fr 105px;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 700;
+}
+.advanced-game-rules input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+}
+.advanced-options-note {
+    font-size: 10px;
+    opacity: .68;
+}

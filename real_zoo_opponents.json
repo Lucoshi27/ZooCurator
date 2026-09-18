@@ -1,0 +1,375 @@
+{
+  "unlock_rules": {
+    "tier_1": "available from the start",
+    "tier_2": "permanently unlocked the first time the player's zoo has at least 3 Level 2 animals",
+    "tier_3": "permanently unlocked the first time the player's zoo has at least 3 Level 3 animals",
+    "tier_4": "permanently unlocked the first time the player's zoo has at least 3 Level 4 animals",
+    "tier_5": "permanently unlocked the first time the player's zoo has at least 3 Level 5 animals"
+  },
+  "rotation_rules": {
+    "previous_tiers_remain_available": true,
+    "newest_unlocked_tier_has_higher_offer_weight": true,
+    "real_opponents_visible_only_during_active_trade": true
+  },
+  "zoos": [
+    {
+      "name": "Zoo Veldhoven",
+      "tier": 1,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "BestZoo",
+      "tier": 1,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Kasteelpark Born",
+      "tier": 1,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Kabouterland Exloo",
+      "tier": 1,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Dierenpark De Oliemeulen",
+      "tier": 1,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Texel Zoo",
+      "tier": 1,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Uilen- en Dierenpark De Paay",
+      "tier": 1,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Faunapark Flakkee",
+      "tier": 1,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Artisklas Haarlem",
+      "tier": 1,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Hof van Eckberge",
+      "tier": 1,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Reptielenhuis De Aarde",
+      "tier": 1,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Aquazoo Leeuwarden",
+      "tier": 2,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Dierenpark Zie-ZOO",
+      "tier": 2,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Landgoed Hoenderdaell",
+      "tier": 2,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Eindhoven Zoo",
+      "tier": 2,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Taman Indonesia",
+      "tier": 2,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Almere Jungle",
+      "tier": 2,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Ecomare",
+      "tier": 2,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Vogelpark Avifauna",
+      "tier": 2,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Wildlands Adventure Zoo Emmen",
+      "tier": 3,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Dierenpark Amersfoort",
+      "tier": 3,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Zoo Planckendael",
+      "tier": 3,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Apenheul",
+      "tier": 3,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Brook Valley Zoo",
+      "tier": 3,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Dolfinarium Harderwijk",
+      "tier": 3,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Pakawi Park",
+      "tier": 3,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Koninklijke Burgers' Zoo",
+      "tier": 4,
+      "preferred_categories": [
+        "Carnivora",
+        "Other Mammals",
+        "Marine Mania"
+      ],
+      "animals": [
+        "Burrowing Owl",
+        "Turkey Vulture",
+        "Meerkat",
+        "Asian Small-clawed Otter",
+        "South American Coati",
+        "Binturong",
+        "Cheetah",
+        "Sun Bear",
+        "African Lion",
+        "Sumatran Tiger",
+        "Ringtail",
+        "Great White Pelican",
+        "Ocellate River Stingray",
+        "Blacktip Reef Shark",
+        "African Penguin",
+        "Zebra Shark",
+        "Bluespotted Ribbontail Ray",
+        "Epaulette Shark",
+        "Ocellated Eagle Ray",
+        "Grey Reef Shark",
+        "Scarlet Ibis",
+        "Sunbittern",
+        "Capybara",
+        "Swamp Wallaby",
+        "North American Porcupine",
+        "Rodriguez Flying Fox",
+        "Aardvark",
+        "Asian Elephant",
+        "West Indian Manatee",
+        "Black Lemur",
+        "Siamang",
+        "Red Titi",
+        "Ring-Tailed Lemur",
+        "Chimpanzee",
+        "Western Lowland Gorilla",
+        "Common Green Iguana",
+        "Red-Footed Tortoise",
+        "Green Tree Python",
+        "Reticulated Python",
+        "Gila Monster",
+        "Indian Star Tortoise",
+        "Asian Water Monitor",
+        "Western Diamondback Rattlesnake",
+        "Yellow-Spotted Amazon River Turtle",
+        "Red-Crested Turaco",
+        "Black Hornbill",
+        "Common Hog Deer",
+        "Plains Zebra",
+        "Collared Peccary",
+        "Reeve's Muntjac",
+        "Common Waterbuck",
+        "Javan Banteng",
+        "White Rhinoceros",
+        "Rothschild's Giraffe"
+      ]
+    },
+    {
+      "name": "Diergaarde Blijdorp",
+      "tier": 4,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Artis",
+      "tier": 4,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Ouwehands Dierenpark",
+      "tier": 4,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Safaripark Beekse Bergen",
+      "tier": 4,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "GaiaZOO",
+      "tier": 4,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Zoo Antwerpen",
+      "tier": 4,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Pairi Daiza",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "ZooParc de Beauval",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Parc Zoologique de Paris",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "London Zoo",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Chester Zoo",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Zoo Duisburg",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Zoo Leipzig",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Zoo Krefeld",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Berlin Zoological Garden",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Tierpark Berlin",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Prague Zoo",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Plzeň Zoo",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Vienna Zoo",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "L'Oceanogràfic Valencia",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Copenhagen Zoo",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Schönbrunn Zoo",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    },
+    {
+      "name": "Zoo Aquarium de Madrid",
+      "tier": 5,
+      "preferred_categories": null,
+      "animals": null
+    }
+  ]
+}

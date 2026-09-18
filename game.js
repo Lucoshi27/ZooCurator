@@ -151,7 +151,8 @@ const GROUPS = {
 const DEFAULT_GAME_OPTIONS = {
     startingSpecies: 7,
     startingMaxEnclosureSpaces: 16,
-    enclosureRewardMilestones: [1, 3, 5, 9]
+    enclosureRewardMilestones: [1, 3, 5, 9],
+    opponentMode: 'fictional'
 };
 
 function normalizeRewardMilestones(value) {
@@ -193,7 +194,8 @@ function loadGameOptions() {
             enclosureRewardMilestones: normalizeRewardMilestones(
                 saved.enclosureRewardMilestones ||
                 DEFAULT_GAME_OPTIONS.enclosureRewardMilestones
-            )
+            ),
+            opponentMode: saved.opponentMode === 'real' ? 'real' : 'fictional'
         };
     } catch (error) {
         console.warn('Could not load saved game options:', error);
@@ -224,6 +226,8 @@ const state = {
     animalDatabase: { animals: [] },
     animalDatabaseByName: new Map(),
     zooNamesData: null,
+    realZooData: { zoos: [] },
+    realZooUnlockedTier: 1,
 
     zooName: '',
     opponentNames: [],
@@ -1090,6 +1094,7 @@ function placeAnimal(
 
 
     checkEnclosure10Unlock();
+    updateRealZooTierUnlocks();
 
 
     return true;
@@ -1457,6 +1462,7 @@ function createStartingZoo() {
     state.nextAutonomousOfferTurn = null;
     state.unlockedOpponentCount = 2;
     state.playerLevelsSeen = new Set([1]);
+    state.realZooUnlockedTier = 1;
 
     state.turn = 1;
 
@@ -1922,6 +1928,10 @@ function setupAnimalCard(
             event.preventDefault();
             event.stopPropagation();
 
+            // During a two-finger phone pinch, neither finger may start a
+            // card drag. The zooBoard capture listener has already registered
+            // this pointer by the time this handler runs.
+            if (event.pointerType === 'touch' && zooTouchPointers.size >= 2) return;
 
             startAnimalDrag(
                 event,
@@ -3020,6 +3030,7 @@ function renderProgressTracker() {
 // ============================================================
 
 function renderAll() {
+    updateRealZooTierUnlocks();
     rotateOpponentTradeStocksIfNeeded();
     updateDiscoveredCategoryLevels();
     refreshExchangeGlowSuppression();
@@ -4750,74 +4761,75 @@ function zooPinchDistance(a, b) {
 }
 
 function zooPinchMidpoint(a, b) {
-    return {
-        x: (a.clientX + b.clientX) / 2,
-        y: (a.clientY + b.clientY) / 2
-    };
+    return { x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 };
+}
+
+function cancelAnimalDragForPinch() {
+    if (state.drag?.type !== 'animal') return;
+    restoreDraggedAnimal();
+    state.drag.image?.remove();
+    state.drag = null;
+    renderAll();
 }
 
 function beginZooPinchIfReady() {
     if (zooTouchPointers.size !== 2) return;
-
     const [a, b] = [...zooTouchPointers.values()];
     const distance = zooPinchDistance(a, b);
+    const midpoint = zooPinchMidpoint(a, b);
     if (!distance) return;
 
-    // A second finger means the gesture is zooming, not panning.
+    // The second finger always wins over a one-finger card drag or pan.
+    cancelAnimalDragForPinch();
     finishPan();
 
+    const boardRect = zooBoard.getBoundingClientRect();
     zooPinch = {
         startDistance: distance,
-        startZoom: state.zoom
+        startZoom: state.zoom,
+        anchorWorldX: (zooBoard.scrollLeft + midpoint.x - boardRect.left) / state.zoom,
+        anchorWorldY: (zooBoard.scrollTop + midpoint.y - boardRect.top) / state.zoom
     };
 }
 
 zooBoard.addEventListener('pointerdown', event => {
     if (event.pointerType !== 'touch') return;
-
-    zooTouchPointers.set(event.pointerId, {
-        clientX: event.clientX,
-        clientY: event.clientY
-    });
-
-    if (zooTouchPointers.size === 2) {
-        beginZooPinchIfReady();
-    }
+    zooTouchPointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY });
+    if (zooTouchPointers.size === 2) beginZooPinchIfReady();
 }, { capture: true });
 
 zooBoard.addEventListener('pointermove', event => {
     if (event.pointerType !== 'touch' || !zooTouchPointers.has(event.pointerId)) return;
-
-    zooTouchPointers.set(event.pointerId, {
-        clientX: event.clientX,
-        clientY: event.clientY
-    });
-
+    zooTouchPointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY });
     if (!zooPinch || zooTouchPointers.size < 2) return;
 
     event.preventDefault();
+    event.stopPropagation();
 
     const [a, b] = [...zooTouchPointers.values()];
     const distance = zooPinchDistance(a, b);
     const midpoint = zooPinchMidpoint(a, b);
-
     if (!distance || !zooPinch.startDistance) return;
 
-    setZoom(
+    const nextZoom = clamp(
         zooPinch.startZoom * (distance / zooPinch.startDistance),
-        midpoint.x,
-        midpoint.y
+        ZOOM_MIN,
+        ZOOM_MAX
     );
+    state.zoom = Math.round(nextZoom * 1000) / 1000;
+    document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
+
+    // Keep the exact world point that was between the fingers at pinch start
+    // underneath the moving midpoint. This prevents the zoo jumping away.
+    const boardRect = zooBoard.getBoundingClientRect();
+    zooBoard.scrollLeft = zooPinch.anchorWorldX * state.zoom - (midpoint.x - boardRect.left);
+    zooBoard.scrollTop = zooPinch.anchorWorldY * state.zoom - (midpoint.y - boardRect.top);
 }, { capture: true, passive: false });
 
 function endZooTouchPointer(event) {
     if (event.pointerType !== 'touch') return;
-
     zooTouchPointers.delete(event.pointerId);
-
-    if (zooTouchPointers.size < 2) {
-        zooPinch = null;
-    }
+    if (zooTouchPointers.size < 2) zooPinch = null;
 }
 
 zooBoard.addEventListener('pointerup', endZooTouchPointer, { capture: true });
@@ -4957,6 +4969,13 @@ function ensureGameOptionsUI() {
                     <span>New enclosure reward milestones</span>
                     <input id="optRewardMilestones" type="text" placeholder="1, 3, 5, 9">
                 </label>
+                <label>
+                    <span>Opponent zoos</span>
+                    <select id="optOpponentMode">
+                        <option value="fictional">Fictional opponents</option>
+                        <option value="real">Real zoo opponents</option>
+                    </select>
+                </label>
                 <div class="advanced-options-note">
                     Milestones are the distinct category counts at each level that award a new enclosure.
                     These settings are saved in this browser and apply when the zoo is regenerated.
@@ -4978,6 +4997,7 @@ function ensureGameOptionsUI() {
     const speciesInput = overlay.querySelector('#optStartingSpecies');
     const spacesInput = overlay.querySelector('#optStartingMaxSpaces');
     const milestonesInput = overlay.querySelector('#optRewardMilestones');
+    const opponentModeInput = overlay.querySelector('#optOpponentMode');
 
     for (const category of Object.keys(FOLDERS).sort((a, b) => a.localeCompare(b))) {
         const label = document.createElement('label');
@@ -4992,6 +5012,7 @@ function ensureGameOptionsUI() {
         speciesInput.value = state.gameOptions.startingSpecies;
         spacesInput.value = state.gameOptions.startingMaxEnclosureSpaces;
         milestonesInput.value = state.gameOptions.enclosureRewardMilestones.join(', ');
+        opponentModeInput.value = state.gameOptions.opponentMode;
         for (const cb of list.querySelectorAll('input[type="checkbox"]')) {
             cb.checked = state.activeCategories.has(cb.value);
         }
@@ -5030,6 +5051,7 @@ function ensureGameOptionsUI() {
             Math.min(40, Math.round(Number(spacesInput.value) || DEFAULT_GAME_OPTIONS.startingMaxEnclosureSpaces))
         );
         const milestones = normalizeRewardMilestones(milestonesInput.value);
+        const opponentMode = opponentModeInput.value === 'real' ? 'real' : 'fictional';
 
         const categoriesSame =
             selected.length === state.activeCategories.size &&
@@ -5037,7 +5059,8 @@ function ensureGameOptionsUI() {
         const rulesSame =
             startingSpecies === state.gameOptions.startingSpecies &&
             startingMaxSpaces === state.gameOptions.startingMaxEnclosureSpaces &&
-            milestones.join(',') === state.gameOptions.enclosureRewardMilestones.join(',');
+            milestones.join(',') === state.gameOptions.enclosureRewardMilestones.join(',') &&
+            opponentMode === state.gameOptions.opponentMode;
 
         if (categoriesSame && rulesSame) {
             close();
@@ -5054,6 +5077,7 @@ function ensureGameOptionsUI() {
         state.gameOptions.startingSpecies = startingSpecies;
         state.gameOptions.startingMaxEnclosureSpaces = startingMaxSpaces;
         state.gameOptions.enclosureRewardMilestones = milestones;
+        state.gameOptions.opponentMode = opponentMode;
         saveGameOptions();
 
         assignZooNames();
@@ -5063,6 +5087,163 @@ function ensureGameOptionsUI() {
         centerInitialView();
         close();
     });
+}
+
+// ============================================================
+// REAL ZOO OPPONENTS
+// ============================================================
+function isRealOpponentMode() {
+    return state.gameOptions.opponentMode === 'real';
+}
+
+function updateRealZooTierUnlocks() {
+    if (!isRealOpponentMode()) return;
+    let unlocked = Math.max(1, state.realZooUnlockedTier || 1);
+    for (let level = 2; level <= 5; level++) {
+        const housed = state.animals.filter(animal =>
+            animal.level === level && animal.enclosureId !== null
+        ).length;
+        if (housed >= 3) unlocked = Math.max(unlocked, level);
+    }
+    state.realZooUnlockedTier = unlocked;
+}
+
+function realZooRecordsAvailable() {
+    updateRealZooTierUnlocks();
+    return (state.realZooData?.zoos || []).filter(zoo =>
+        Number(zoo.tier) <= state.realZooUnlockedTier &&
+        Array.isArray(zoo.animals) && zoo.animals.length
+    );
+}
+
+function weightedRealZooPool() {
+    const records = realZooRecordsAvailable();
+    const newest = state.realZooUnlockedTier;
+    const weighted = [];
+    for (const zoo of records) {
+        const distance = Math.max(0, newest - Number(zoo.tier || 1));
+        const weight = distance === 0 ? 6 : Math.max(1, 4 - distance);
+        for (let i = 0; i < weight; i++) weighted.push(zoo);
+    }
+    return weighted;
+}
+
+function animalFromRealZooName(name) {
+    const wanted = String(name || '').trim().toLowerCase();
+    if (!wanted) return null;
+    for (const category of Object.keys(FOLDERS)) {
+        for (let level = 1; level <= 5; level++) {
+            const filename = levelFiles(category, level).find(file =>
+                file.replace(/\.png$/i, '').trim().toLowerCase() === wanted
+            );
+            if (filename) return {
+                id: state.nextId++, category, level, filename,
+                enclosureId: null, slotIndex: null, hand: false
+            };
+        }
+    }
+    return null;
+}
+
+function realZooTradeAnimals(record) {
+    const result = [];
+    const seen = new Set();
+    for (const name of record?.animals || []) {
+        const animal = animalFromRealZooName(name);
+        if (!animal) continue;
+        const key = animalCardKey(animal);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        result.push(animal);
+    }
+    return result;
+}
+
+function realZooProfile(record, index) {
+    return {
+        index,
+        name: record.name,
+        tier: Number(record.tier || 1),
+        favourites: Array.isArray(record.preferred_categories)
+            ? record.preferred_categories.filter(Boolean).slice(0, 3)
+            : [],
+        realZooRecord: record
+    };
+}
+
+function clearRealOpponentDisplay() {
+    if (!isRealOpponentMode()) return;
+    state.opponentProfiles = [];
+    state.opponentTradeStocks = [];
+    state.tradeOffers = [];
+    state.selectedTradeOpponent = null;
+}
+
+function seededRoll(text) {
+    let seed = 2166136261;
+    for (const ch of String(text)) {
+        seed ^= ch.charCodeAt(0);
+        seed = Math.imul(seed, 16777619);
+    }
+    return { seed: seed >>> 0, roll: (seed >>> 0) / 4294967295 };
+}
+
+function generateRealZooTradeOffers(outgoing) {
+    const records = [...new Set(weightedRealZooPool())];
+    const accepted = [];
+    for (const record of shuffle(records)) {
+        const allAnimals = realZooTradeAnimals(record);
+        const matching = allAnimals.filter(animal => animal.level === outgoing.level);
+        if (!matching.length) continue;
+        const favourites = Array.isArray(record.preferred_categories) ? record.preferred_categories : [];
+        const likesOutgoing = favourites.includes(outgoing.category);
+        // Real zoos are deliberately reluctant. Higher-level cards are harder
+        // to obtain, while an offered animal in a favourite category helps.
+        const base = likesOutgoing ? 0.58 : 0.28;
+        const levelPenalty = (outgoing.level - 1) * 0.07;
+        const chance = Math.max(0.10, base - levelPenalty);
+        const { seed, roll } = seededRoll(`${outgoing.id}|${record.name}|${state.turn}`);
+        if (roll > chance) continue;
+        const animal = matching[(seed >>> 8) % matching.length];
+        accepted.push({ record, animal });
+        if (accepted.length >= 6) break;
+    }
+
+    state.opponentProfiles = accepted.map((item, index) => realZooProfile(item.record, index));
+    state.opponentTradeStocks = accepted.map(item => realZooTradeAnimals(item.record));
+    state.tradeOffers = accepted.map((item, index) => ({ opponentIndex: index, animal: item.animal }));
+    state.selectedTradeOpponent = state.tradeOffers.length ? 0 : null;
+    renderTrade();
+    renderOpponentTradeState();
+}
+
+function createRealAutonomousOpponentOffer() {
+    if (state.outgoingOffer || state.autonomousTradeOffer) return false;
+    const pool = weightedRealZooPool();
+    if (!pool.length) return false;
+
+    for (let tries = 0; tries < 20; tries++) {
+        const record = randomItem(pool);
+        const possible = realZooTradeAnimals(record).filter(animal =>
+            animal.level <= Math.max(1, ...state.playerLevelsSeen)
+        );
+        if (!possible.length) continue;
+        const animal = randomItem(possible);
+        state.opponentProfiles = [realZooProfile(record, 0)];
+        state.opponentTradeStocks = [possible];
+        state.autonomousTradeOffer = {
+            opponentIndex: 0,
+            animal,
+            offeredTurn: state.turn,
+            expiresTurn: state.turn + 3
+        };
+        state.selectedTradeOpponent = 0;
+        state.tradeOffers = [];
+        renderTrade();
+        renderOpponentTradeState();
+        return true;
+    }
+    return false;
 }
 
 // ============================================================
@@ -5233,6 +5414,18 @@ function rotateOpponentTradeStocksIfNeeded() {
 
 function assignOpponentProfiles() {
     ensureOpponentZooElements();
+    if (isRealOpponentMode()) {
+        ensureTradeAreaLayout();
+        state.opponentProfiles = [];
+        state.opponentTradeStocks = [];
+        state.tradeOffers = [];
+        state.selectedTradeOpponent = null;
+        state.autonomousTradeOffer = null;
+        state.realZooUnlockedTier = 1;
+        scheduleNextAutonomousOpponentOffer();
+        renderOpponentTradeState();
+        return;
+    }
     ensureTradeAreaLayout();
     const enabled = [...state.activeCategories];
     state.opponentProfiles = state.opponentNames.slice(0, 6).map((name, index) => ({
@@ -5264,6 +5457,7 @@ function clearAutonomousOpponentOffer(resetTimer = true) {
 }
 
 function createAutonomousOpponentOffer() {
+    if (isRealOpponentMode()) return createRealAutonomousOpponentOffer();
     if (state.outgoingOffer || state.autonomousTradeOffer) return false;
     const unlocked = [];
     for (let i = 0; i < Math.min(state.unlockedOpponentCount, state.opponentProfiles.length); i++) {
@@ -5305,20 +5499,27 @@ function updateAutonomousOpponentOffer() {
 function declineAutonomousOpponentOffer() {
     if (!state.autonomousTradeOffer) return;
     clearAutonomousOpponentOffer(true);
+    if (isRealOpponentMode()) { clearRealOpponentDisplay(); renderOpponentTradeState(); }
 }
 
 function renderOpponentTradeState() {
     ensureOpponentZooElements();
     ensureTradeAreaLayout();
     positionOpponentTradeArea();
+    const realMode = isRealOpponentMode();
     for (let i = 0; i < 6; i++) {
         const el = $(`opponentName${i + 1}`);
         if (!el) continue;
-        const unlocked = i < state.unlockedOpponentCount;
-        el.style.display = unlocked ? '' : 'none';
+        const unlocked = realMode ? i < state.opponentProfiles.length : i < state.unlockedOpponentCount;
+        const realHasTrade = state.tradeOffers.some(o => o.opponentIndex === i) || state.autonomousTradeOffer?.opponentIndex === i;
+        el.style.display = unlocked && (!realMode || realHasTrade) ? '' : 'none';
         const hasPlayerOffer = unlocked && state.tradeOffers.some(o => o.opponentIndex === i);
         const hasAutonomousOffer = unlocked && state.autonomousTradeOffer?.opponentIndex === i;
         const has = hasPlayerOffer || hasAutonomousOffer;
+        if (realMode && state.opponentProfiles[i]?.name && el.dataset.realZooName !== state.opponentProfiles[i].name) {
+            el.textContent = state.opponentProfiles[i].name;
+            el.dataset.realZooName = state.opponentProfiles[i].name;
+        }
         el.classList.toggle('wants-trade', has);
         el.classList.toggle('selected-trade', state.selectedTradeOpponent === i && has);
         const favourites = state.opponentProfiles[i]?.favourites || [];
@@ -5343,6 +5544,10 @@ function renderOpponentTradeState() {
 }
 
 function generateOpponentTradeOffers(outgoing) {
+    if (isRealOpponentMode()) {
+        generateRealZooTradeOffers(outgoing);
+        return;
+    }
     rotateOpponentTradeStocksIfNeeded();
     state.tradeOffers = [];
     state.selectedTradeOpponent = null;
@@ -5457,6 +5662,7 @@ function acceptSelectedTrade(destination=null) {
     state.tradeOffers=[];
     state.selectedTradeOpponent=null;
     state.autonomousTradeOffer=null;
+    if (isRealOpponentMode()) clearRealOpponentDisplay();
     scheduleNextAutonomousOpponentOffer();
     state.glowingEnclosureIds.clear();
     state.turn++;
@@ -6052,6 +6258,16 @@ async function startGame() {
                 'zoo-names.json',
                 'Loading zoo names...'
             );
+
+        try {
+            state.realZooData = await loadJson(
+                'real_zoo_opponents.json',
+                'Loading real zoo opponents...'
+            );
+        } catch (realZooError) {
+            console.warn('Real zoo opponent database unavailable:', realZooError);
+            state.realZooData = { zoos: [] };
+        }
 
 
         setLoading(

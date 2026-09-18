@@ -1527,3 +1527,156 @@ body {
     #opponentZoos { top: 157px; }
     #zooBoard { top: 190px; }
 }
+
+/* ============================================================
+   V33 — OPTIONS/TURN ORDER + MOBILE TAP PREVIEW
+   ============================================================ */
+
+/* Game Options sits above the turn counter on desktop and mobile. */
+#headerLeft {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+#headerLeft .game-options-button {
+    margin-top: 0;
+    order: 1;
+}
+
+#headerLeft #turnOrder {
+    order: 2;
+}
+
+@media (max-width: 700px) {
+    /* Keep the two left-header controls narrow so they do not run into the
+       zoo name or other phone-HUD text. */
+    #headerLeft {
+        left: 5px;
+        top: 5px;
+        width: 58px;
+        gap: 4px;
+        align-items: stretch;
+    }
+
+    #headerLeft .game-options-button {
+        width: 58px;
+        min-width: 0;
+        margin: 0;
+        padding: 4px 3px;
+        font-size: 9px;
+        line-height: 1.05;
+        white-space: normal;
+    }
+
+    #headerLeft #turnOrder {
+        width: 58px;
+        min-width: 0;
+        padding: 4px 3px;
+        font-size: 9px;
+        line-height: 1.05;
+        text-align: center;
+        white-space: normal;
+    }
+
+    /* Leave a little more room for the narrow two-button column. */
+    #playerZooName {
+        left: 70px;
+    }
+
+    /* On phones a tap on a zoo animal opens this existing desktop preview.
+       Keep the same 1000:1440 card ratio while sizing it for a phone. */
+    #hoverPreview {
+        left: 8px;
+        bottom: 8px;
+        width: min(210px, 52vw);
+        height: auto;
+        aspect-ratio: 1000 / 1440;
+        max-height: calc(100% - 16px);
+        transform-origin: left bottom;
+    }
+
+    #hoverPreview.super-zoom {
+        width: min(300px, calc(100vw - 16px));
+        height: auto;
+        aspect-ratio: 1000 / 1440;
+        max-height: calc(100% - 16px);
+    }
+}
+
+
+/* ============================================================
+   V35 — MOBILE TOP BAR + SMOOTH TOUCH ZOOM SUPPORT
+   ============================================================ */
+.advanced-game-rules select {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 6px 7px;
+}
+
+@media (max-width: 700px) {
+    /* One compact top line: Turn left, zoo name centred, Options right. */
+    #headerLeft {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 5px;
+        width: 100%;
+        height: 30px;
+        display: block;
+        pointer-events: none;
+        z-index: 7200;
+    }
+
+    #headerLeft #turnOrder {
+        position: absolute;
+        left: 5px;
+        top: 0;
+        width: 48px;
+        min-width: 48px;
+        box-sizing: border-box;
+        padding: 4px 2px;
+        font-size: 8px;
+        line-height: 1.05;
+        text-align: center;
+        white-space: nowrap;
+        pointer-events: auto;
+    }
+
+    #headerLeft .game-options-button {
+        position: absolute;
+        right: 5px;
+        top: 0;
+        width: 48px;
+        min-width: 48px;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 4px 2px;
+        font-size: 8px;
+        line-height: 1.05;
+        white-space: normal;
+        pointer-events: auto;
+    }
+
+    #playerZooName {
+        left: 50%;
+        right: auto;
+        top: 5px;
+        width: calc(100vw - 116px);
+        min-height: 28px;
+        transform: translateX(-50%);
+        font-size: 16px;
+        line-height: 24px;
+        text-align: center;
+        z-index: 7100;
+    }
+    #playerZooName .zoo-name-editor { justify-content: center; }
+    #playerZooName .zoo-name-text { max-width: calc(100vw - 150px); }
+    #playerZooName .zoo-name-input { width: min(190px, calc(100vw - 155px)); }
+
+    /* We implement the gesture ourselves; stop browser page gestures from
+       competing with zoo panning/pinch zoom. */
+    #zooBoard { touch-action: none; }
+}

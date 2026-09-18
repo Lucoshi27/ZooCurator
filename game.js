@@ -4116,10 +4116,21 @@ function finishAnimalDrag(event) {
 
     if (clickDistance < 6 && drag.originalEnclosureId !== null) {
         restoreDraggedAnimal();
-        if (isExchangeEligible(animal)) {
+
+        const mobileLayout = window.matchMedia('(max-width: 700px)').matches;
+
+        if (mobileLayout) {
+            // Phones have no mouse hover, so a tap reuses the existing desktop
+            // hover-preview panel and shows the selected animal at bottom-left.
+            // A tap on mobile deliberately does NOT suppress the yellow
+            // exchange-eligibility glow.
+            showHoverPreview(animal);
+        } else if (isExchangeEligible(animal)) {
+            // Desktop keeps the existing click-to-hide/show yellow glow.
             if (state.suppressedExchangeGlowIds.has(animal.id)) state.suppressedExchangeGlowIds.delete(animal.id);
             else state.suppressedExchangeGlowIds.add(animal.id);
         }
+
         prepareExchangeGlowAfterAnimalDrag(drag); drag.image?.remove(); state.drag=null; renderAll(); return;
     }
 
@@ -4728,6 +4739,92 @@ function setZoom(
 
 
 // ============================================================
+// MOBILE PINCH ZOOM
+// ============================================================
+
+const zooTouchPointers = new Map();
+let zooPinch = null;
+
+function zooPinchDistance(a, b) {
+    return Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+}
+
+function zooPinchMidpoint(a, b) {
+    return {
+        x: (a.clientX + b.clientX) / 2,
+        y: (a.clientY + b.clientY) / 2
+    };
+}
+
+function beginZooPinchIfReady() {
+    if (zooTouchPointers.size !== 2) return;
+
+    const [a, b] = [...zooTouchPointers.values()];
+    const distance = zooPinchDistance(a, b);
+    if (!distance) return;
+
+    // A second finger means the gesture is zooming, not panning.
+    finishPan();
+
+    zooPinch = {
+        startDistance: distance,
+        startZoom: state.zoom
+    };
+}
+
+zooBoard.addEventListener('pointerdown', event => {
+    if (event.pointerType !== 'touch') return;
+
+    zooTouchPointers.set(event.pointerId, {
+        clientX: event.clientX,
+        clientY: event.clientY
+    });
+
+    if (zooTouchPointers.size === 2) {
+        beginZooPinchIfReady();
+    }
+}, { capture: true });
+
+zooBoard.addEventListener('pointermove', event => {
+    if (event.pointerType !== 'touch' || !zooTouchPointers.has(event.pointerId)) return;
+
+    zooTouchPointers.set(event.pointerId, {
+        clientX: event.clientX,
+        clientY: event.clientY
+    });
+
+    if (!zooPinch || zooTouchPointers.size < 2) return;
+
+    event.preventDefault();
+
+    const [a, b] = [...zooTouchPointers.values()];
+    const distance = zooPinchDistance(a, b);
+    const midpoint = zooPinchMidpoint(a, b);
+
+    if (!distance || !zooPinch.startDistance) return;
+
+    setZoom(
+        zooPinch.startZoom * (distance / zooPinch.startDistance),
+        midpoint.x,
+        midpoint.y
+    );
+}, { capture: true, passive: false });
+
+function endZooTouchPointer(event) {
+    if (event.pointerType !== 'touch') return;
+
+    zooTouchPointers.delete(event.pointerId);
+
+    if (zooTouchPointers.size < 2) {
+        zooPinch = null;
+    }
+}
+
+zooBoard.addEventListener('pointerup', endZooTouchPointer, { capture: true });
+zooBoard.addEventListener('pointercancel', endZooTouchPointer, { capture: true });
+
+
+// ============================================================
 // WHEEL ZOOM
 // ============================================================
 
@@ -4831,7 +4928,12 @@ function ensureGameOptionsUI() {
     button.type = 'button';
     button.textContent = 'Game Options';
     button.className = 'game-options-button';
-    document.getElementById('headerLeft')?.appendChild(button);
+    const headerLeft = document.getElementById('headerLeft');
+    const turnDisplay = document.getElementById('turnOrder');
+    if (headerLeft) {
+        // Keep Game Options above the turn counter on both desktop and mobile.
+        headerLeft.insertBefore(button, turnDisplay || headerLeft.firstChild);
+    }
 
     const overlay = document.createElement('div');
     overlay.id = 'gameOptionsOverlay';

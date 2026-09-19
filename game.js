@@ -1181,6 +1181,71 @@ async function loadJson(
 
 
 // ============================================================
+// OPTIONAL REAL-ZOO DATABASE
+// ============================================================
+//
+// The real-zoo database must NEVER block game startup. Some mobile browsers
+// have been observed leaving this request pending even when AbortController is
+// used. Therefore it is loaded independently after startup has already moved
+// on. Failure or timeout simply leaves real-zoo data empty for this session.
+
+function loadRealZooDataInBackground() {
+    const path = 'real_zoo_opponents.json';
+    const timeoutMs = 8000;
+
+    const request = fetch(path, { cache: 'no-store' })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(
+                    `Could not load ${path}. HTTP ${response.status}.`
+                );
+            }
+            return response.json();
+        });
+
+    const timeout = new Promise((_, reject) => {
+        setTimeout(
+            () => reject(
+                new Error(
+                    `${path} did not finish loading within ${Math.round(timeoutMs / 1000)} seconds.`
+                )
+            ),
+            timeoutMs
+        );
+    });
+
+    Promise.race([request, timeout])
+        .then(data => {
+            if (!data || !Array.isArray(data.zoos)) {
+                throw new Error(`${path} does not contain a valid zoos array.`);
+            }
+
+            state.realZooData = data;
+            resetRealZooSessionHoldings();
+
+            // If the player chose real opponents, refresh the passive opponent
+            // display now that the database is available. This does not restart
+            // or otherwise alter the game.
+            if (state.loaded && isRealOpponentMode()) {
+                renderOpponentTradeState();
+            }
+
+            console.log(
+                `Real zoo opponent database loaded in background (${data.zoos.length} zoos).`
+            );
+        })
+        .catch(error => {
+            console.warn(
+                'Real zoo opponent database unavailable; game continues without it:',
+                error
+            );
+            state.realZooData = { zoos: [] };
+            state.realZooSessionHoldings = new Map();
+        });
+}
+
+
+// ============================================================
 // INVENTORY
 // ============================================================
 
@@ -7985,16 +8050,12 @@ async function startGame() {
                 'Loading zoo names...'
             );
 
-        try {
-            state.realZooData = await loadJson(
-                'real_zoo_opponents.json',
-                'Loading real zoo opponents...',
-                6000
-            );
-        } catch (realZooError) {
-            console.warn('Real zoo opponent database unavailable:', realZooError);
-            state.realZooData = { zoos: [] };
-        }
+        // Real-zoo data is optional during boot. Start loading it now, but do
+        // NOT await it: mobile can no longer get stuck on "Loading real zoo
+        // opponents..." because startup never waits for this network request.
+        state.realZooData = { zoos: [] };
+        state.realZooSessionHoldings = new Map();
+        loadRealZooDataInBackground();
 
 
         setLoading(

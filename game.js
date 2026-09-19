@@ -149,9 +149,9 @@ const GROUPS = {
 // ============================================================
 
 const DEFAULT_GAME_OPTIONS = {
-    startingSpecies: 7,
-    startingMaxEnclosureSpaces: 16,
-    enclosureRewardMilestones: [1, 3, 5, 9],
+    startingSpecies: 5,
+    startingMaxEnclosureSpaces: 10,
+    enclosureRewardMilestones: [1, 5],
     opponentMode: 'fictional'
 };
 
@@ -227,6 +227,9 @@ const state = {
     animalDatabaseByName: new Map(),
     zooNamesData: null,
     realZooData: { zoos: [] },
+    // Mutable copy of real-zoo holdings for THIS game only.
+    // real_zoo_opponents.json remains untouched.
+    realZooSessionHoldings: new Map(),
     realZooUnlockedTier: 1,
 
     zooName: '',
@@ -1208,10 +1211,11 @@ function getCombinations(
 // ============================================================
 // STARTUP ENCLOSURE SELECTION
 //
-// NEW RULE:
+// RULE:
 //
-// - 3 or 4 enclosure cards
-// - minimum 9 total animal spots
+// - enough separate physical enclosures for all starting animals
+// - total slot capacity may be BELOW the configured maximum
+// - configured startingMaxEnclosureSpaces is a ceiling, not a target
 // - Enclosure 10 prohibited
 // ============================================================
 
@@ -1262,13 +1266,39 @@ function chooseStartupEnclosures() {
         );
     }
 
-    // Prefer the smallest practical zoo, while retaining a little layout variety.
-    const minimumCards = Math.min(...candidates.map(item => item.cardCount));
-    const compactCandidates = candidates.filter(
-        item => item.cardCount <= Math.min(available.length, minimumCards + 1)
+    /*
+        IMPORTANT:
+        startingMaxEnclosureSpaces is a CEILING, not a target.
+
+        First choose randomly between the different valid total-space counts.
+        Then choose a random layout with that count. This prevents a setting
+        such as “maximum 10” from effectively behaving like “make exactly 10”.
+
+        Example with 5 starting animals and maximum 10:
+        a valid 7-, 8-, 9- or 10-space zoo may be selected, provided it also
+        contains at least 5 separate physical enclosures for the 5 animals.
+    */
+    const possibleSpotCounts = [
+        ...new Set(candidates.map(item => item.totalSpots))
+    ].sort((a, b) => a - b);
+
+    const chosenSpotCount = randomItem(possibleSpotCounts);
+
+    const matchingSpotCount = candidates.filter(
+        item => item.totalSpots === chosenSpotCount
     );
 
-    return [...randomItem(compactCandidates).combination];
+    // Within the chosen capacity, favour fewer enclosure cards without
+    // forcing the zoo toward the configured maximum number of spaces.
+    const minimumCardsForCount = Math.min(
+        ...matchingSpotCount.map(item => item.cardCount)
+    );
+
+    const practicalLayouts = matchingSpotCount.filter(
+        item => item.cardCount <= minimumCardsForCount + 1
+    );
+
+    return [...randomItem(practicalLayouts).combination];
 }
 
 // ============================================================
@@ -1432,10 +1462,11 @@ function randomAvailableLevelOneCategory() {
 // ============================================================
 // CREATE STARTING ZOO
 //
-// EXACTLY 7 STARTING ANIMALS.
+// Uses the configured number of starting animals.
 //
-// The selected enclosure cards contain at least 9 eventual
-// animal spots.
+// The selected enclosure cards contain enough physical enclosures
+// for those animals, while total slot capacity never exceeds the
+// configured starting maximum.
 //
 // During startup, a physical enclosure receives at most one
 // animal. Large enclosures therefore do not start with two.
@@ -1463,6 +1494,7 @@ function createStartingZoo() {
     state.unlockedOpponentCount = 2;
     state.playerLevelsSeen = new Set([1]);
     state.realZooUnlockedTier = 1;
+    resetRealZooSessionHoldings();
 
     state.turn = 1;
 
@@ -1535,7 +1567,7 @@ function createStartingZoo() {
 
 
     /*
-        We need seven different physical enclosures.
+        We need one different physical enclosure per starting animal.
 
         The chosen cards should provide enough, but verify it
         explicitly so a bad map never silently breaks setup.
@@ -5145,18 +5177,115 @@ function animalFromRealZooName(name) {
     return null;
 }
 
-function realZooTradeAnimals(record) {
+function realZooHoldingKey(recordOrName) {
+    return String(
+        typeof recordOrName === 'string'
+            ? recordOrName
+            : recordOrName?.name || ''
+    ).trim();
+}
+
+function resetRealZooSessionHoldings() {
+    state.realZooSessionHoldings = new Map();
+
+    for (const record of state.realZooData?.zoos || []) {
+        if (!record?.name) continue;
+        state.realZooSessionHoldings.set(
+            realZooHoldingKey(record),
+            Array.isArray(record.animals)
+                ? [...record.animals]
+                : []
+        );
+    }
+}
+
+function realZooSessionAnimalNames(record) {
+    const key = realZooHoldingKey(record);
+
+    if (!state.realZooSessionHoldings.has(key)) {
+        state.realZooSessionHoldings.set(
+            key,
+            Array.isArray(record?.animals)
+                ? [...record.animals]
+                : []
+        );
+    }
+
+    return state.realZooSessionHoldings.get(key);
+}
+
+function playerOwnedTradeKeys() {
+    const keys = new Set();
+
+    for (const animal of state.animals || []) {
+        if (animal) keys.add(animalCardKey(animal));
+    }
+
+    // Explicitly include the outgoing box as well. In the current object
+    // model it normally still exists in state.animals until a trade finishes,
+    // but keeping this separate makes the rule robust if that changes later.
+    if (state.outgoingOffer) {
+        keys.add(animalCardKey(state.outgoingOffer));
+    }
+
+    return keys;
+}
+
+function realZooTradeAnimals(record, excludePlayerOwned = false) {
     const result = [];
     const seen = new Set();
-    for (const name of record?.animals || []) {
+    const playerKeys = excludePlayerOwned
+        ? playerOwnedTradeKeys()
+        : null;
+
+    for (const name of realZooSessionAnimalNames(record)) {
         const animal = animalFromRealZooName(name);
         if (!animal) continue;
+
         const key = animalCardKey(animal);
         if (seen.has(key)) continue;
+        if (playerKeys?.has(key)) continue;
+
         seen.add(key);
         result.push(animal);
     }
+
     return result;
+}
+
+function updateRealZooSessionAfterTrade(record, incoming, outgoing) {
+    if (!record || !incoming || !outgoing) return;
+
+    const names = realZooSessionAnimalNames(record);
+    const incomingKey = animalCardKey(incoming);
+    const outgoingKey = animalCardKey(outgoing);
+
+    // The animal received by the player leaves this zoo for the remainder
+    // of the current game session.
+    const kept = names.filter(name => {
+        const animal = animalFromRealZooName(name);
+        return !animal || animalCardKey(animal) !== incomingKey;
+    });
+
+    // The player's traded-away animal now belongs to that real zoo and may
+    // appear in its future offers. Do not create duplicate holdings.
+    const alreadyHasOutgoing = kept.some(name => {
+        const animal = animalFromRealZooName(name);
+        return animal && animalCardKey(animal) === outgoingKey;
+    });
+
+    if (!alreadyHasOutgoing) {
+        kept.push(
+            String(outgoing.filename || '')
+                .replace(/\.png$/i, '')
+                .trim()
+        );
+    }
+
+    state.realZooSessionHoldings.set(
+        realZooHoldingKey(record),
+        kept
+    );
 }
 
 function realZooProfile(record, index) {
@@ -5192,7 +5321,7 @@ function generateRealZooTradeOffers(outgoing) {
     const records = [...new Set(weightedRealZooPool())];
     const accepted = [];
     for (const record of shuffle(records)) {
-        const allAnimals = realZooTradeAnimals(record);
+        const allAnimals = realZooTradeAnimals(record, true);
         const matching = allAnimals.filter(animal => animal.level === outgoing.level);
         if (!matching.length) continue;
         const favourites = Array.isArray(record.preferred_categories) ? record.preferred_categories : [];
@@ -5210,7 +5339,7 @@ function generateRealZooTradeOffers(outgoing) {
     }
 
     state.opponentProfiles = accepted.map((item, index) => realZooProfile(item.record, index));
-    state.opponentTradeStocks = accepted.map(item => realZooTradeAnimals(item.record));
+    state.opponentTradeStocks = accepted.map(item => realZooTradeAnimals(item.record, true));
     state.tradeOffers = accepted.map((item, index) => ({ opponentIndex: index, animal: item.animal }));
     state.selectedTradeOpponent = state.tradeOffers.length ? 0 : null;
     renderTrade();
@@ -5224,7 +5353,7 @@ function createRealAutonomousOpponentOffer() {
 
     for (let tries = 0; tries < 20; tries++) {
         const record = randomItem(pool);
-        const possible = realZooTradeAnimals(record).filter(animal =>
+        const possible = realZooTradeAnimals(record, true).filter(animal =>
             animal.level <= Math.max(1, ...state.playerLevelsSeen)
         );
         if (!possible.length) continue;
@@ -5644,7 +5773,18 @@ function acceptSelectedTrade(destination=null) {
     if(destination){ if(!placeAnimal(incoming,destination.enclosure,destination.slotIndex))return false; }
     else {incoming.hand=true;state.hand.push(incoming);}
 
-    // The offered animal leaves that opponent's persistent five-card stock.
+    // In Real Zoo mode, update only this game's in-memory holdings:
+    // incoming leaves the real zoo; outgoing joins it and can be offered later.
+    if (isRealOpponentMode()) {
+        const realProfile = state.opponentProfiles[offer.opponentIndex];
+        updateRealZooSessionAfterTrade(
+            realProfile?.realZooRecord,
+            incoming,
+            state.outgoingOffer
+        );
+    }
+
+    // The offered animal leaves that opponent's current displayed stock.
     const stock=state.opponentTradeStocks[offer.opponentIndex]||[];
     state.opponentTradeStocks[offer.opponentIndex]=stock.filter(a=>a.id!==incoming.id);
     fillOpponentTradeStock(offer.opponentIndex);
@@ -6133,6 +6273,33 @@ hoverPreview.addEventListener('click', event => {
     event.stopPropagation();
     flipPreviewToWikipedia();
 });
+
+function dismissMobileCardPreview() {
+    if (!window.matchMedia('(max-width: 700px)').matches) return;
+    if (!hoverPreview.classList.contains('visible')) return;
+
+    cancelHoverPreviewIntent();
+    cancelHoverPreviewHide();
+    state.previewHoveredAnimalId = null;
+    state.previewWikiAnimalId = null;
+    hoverPreview.classList.remove('super-zoom');
+    hoverPreview.classList.remove('wiki-open');
+    hoverPreview.classList.remove('visible');
+}
+
+document.addEventListener('pointerdown', event => {
+    if (!window.matchMedia('(max-width: 700px)').matches) return;
+    if (!hoverPreview.classList.contains('visible')) return;
+
+    // Tapping the preview itself keeps it open so its info/back controls work.
+    if (event.target.closest('#hoverPreview')) return;
+
+    // Tapping another animal is allowed to replace the current preview after
+    // that card's normal tap handling completes.
+    if (event.target.closest('.animal-card')) return;
+
+    dismissMobileCardPreview();
+}, true);
 
 // ============================================================
 // SAMPLE CATEGORY COLOURS FROM THE ACTUAL CARD ART

@@ -1,9 +1,8 @@
-
 /*
  * ZOO CURATOR V89 — RESUME + COMPATIBILITY GROUP RULES
  * Known-good GitHub baseline. Future builds must descend from this version.
  */
-const ZOO_CURATOR_VERSION = "V90-MOBILE-BOOT";
+const ZOO_CURATOR_VERSION = "V89";
 
 
 // ============================================================
@@ -1666,53 +1665,27 @@ function levelFiles(
 // SMART ANIMAL ASSET PRELOADING
 // ============================================================
 
-function preloadImageUrl(url, timeoutMs = 8000) {
+function preloadImageUrl(url) {
     if (!url) return Promise.resolve(false);
 
     if (state.assetPreloadPromises.has(url)) {
         return state.assetPreloadPromises.get(url);
     }
 
-    // Mobile browsers can occasionally leave an image request or image.decode()
-    // pending forever after a tab switch, weak connection, or cache hiccup.
-    // Startup must never wait forever for a card image: the card can fall back
-    // to Back.png and the front can still load normally when it is rendered.
     const promise = new Promise(resolve => {
         const image = new Image();
-        let settled = false;
-        let timer = null;
-
-        const resolveOnce = ok => {
-            if (settled) return;
-            settled = true;
-            if (timer !== null) clearTimeout(timer);
-            image.onload = null;
-            image.onerror = null;
-            resolve(ok);
-        };
 
         const finish = ok => {
-            if (!ok) {
-                resolveOnce(false);
-                return;
-            }
-
-            if (typeof image.decode === 'function') {
-                // Do not await decode without a ceiling. Some mobile WebKit
-                // versions have been observed to leave this promise pending.
-                Promise.race([
-                    image.decode().catch(() => null),
-                    new Promise(done => setTimeout(done, 1200))
-                ]).then(() => resolveOnce(true));
+            // decode() makes the already-downloaded image ready for painting
+            // where supported, avoiding a visible decode hitch.
+            if (ok && typeof image.decode === 'function') {
+                image.decode()
+                    .catch(() => {})
+                    .finally(() => resolve(true));
             } else {
-                resolveOnce(true);
+                resolve(ok);
             }
         };
-
-        timer = setTimeout(() => {
-            console.warn('Timed out preloading animal asset:', url);
-            resolveOnce(false);
-        }, timeoutMs);
 
         image.onload = () => finish(true);
         image.onerror = () => {
@@ -3764,25 +3737,20 @@ function setupAnimalCard(
         const frontLoader =
             new Image();
 
-        frontLoader.onload = async () => {
+        frontLoader.onload = () => {
 
-            if (typeof frontLoader.decode === 'function') {
-                try {
-                    await frontLoader.decode();
-                }
-                catch (_) {
-                    // The load event already confirms the asset is usable.
-                }
-            }
-
-            // renderZoo/renderHand can recreate cards while an image is
-            // loading. Only update this element if it still represents the
-            // same animal and is still connected to the document.
+            // The load event means the front asset is available. Swap this
+            // card immediately instead of awaiting decode(): renderZoo can
+            // recreate the <img> during that await, which left the newly
+            // rendered enclosure card permanently showing Back.png even
+            // though the front image had successfully loaded.
             if (
                 image.isConnected &&
                 image.dataset.animalId === animal.id
             ) {
                 image.src = frontSrc;
+                image.classList.remove('asset-error');
+                image.removeAttribute('title');
             }
 
         };
@@ -10673,8 +10641,7 @@ async function startGame() {
         state.inventory =
             await loadJson(
                 'asset-inventory.json',
-                'Loading animal asset inventory...',
-                15000
+                'Loading animal asset inventory...'
             );
 
 
@@ -10686,8 +10653,7 @@ async function startGame() {
         state.compatibilityData =
             await loadJson(
                 'eligible-combinations.json',
-                'Loading enclosure compatibility rules...',
-                15000
+                'Loading enclosure compatibility rules...'
             );
 
         rebuildCompatibilityGraphs();
@@ -10703,8 +10669,7 @@ async function startGame() {
         try {
             state.animalDatabase = await loadJson(
                 'assets/data/animals.json',
-                'Loading local animal information database...',
-                10000
+                'Loading local animal information database...'
             );
             indexAnimalDatabase();
         } catch (databaseError) {
@@ -10723,8 +10688,7 @@ async function startGame() {
         state.zooNamesData =
             await loadJson(
                 'zoo-names.json',
-                'Loading zoo names...',
-                15000
+                'Loading zoo names...'
             );
 
         // Real-zoo data is optional during boot. Start loading it now, but do
@@ -10855,8 +10819,6 @@ async function startGame() {
             writeAutoResumeSnapshot(true);
         }
 
-
-        window.__zooGameReady = true;
 
         gameApp.classList.add(
             'visible'

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "compatibility_is_symmetric": true,
+  "enclosure_validation": {
+    "supported_space_counts": [
+      1,
+      2,
+      3
+    ],
+    "multi_animal_rule": "connected_compatibility_chain",
+    "rule_description": "An enclosure with two or more different animals is eligible when every animal is connected, directly or through another animal in that enclosure, to the same compatibility chain. Not every possible pair needs its own direct compatibility rule."
+  },
+  "groups": {
+    "meerkat_compatible_animals": [
+      "Aardvark",
+      "African Brush-Tailed Porcupine",
+      "African Elephant",
+      "African Lion",
+      "African Spurred Tortoise",
+      "Angolan Giraffe",
+      "Aardwolf",
+      "Banded Mongoose",
+      "Bat-Eared Fox",
+      "Black Wildebeest",
+      "Blue Crane",
+      "Cape Porcupine",
+      "Common Warthog",
+      "Dalmatian Pelican",
+      "Dwarf Mongoose",
+      "Fennec Fox",
+      "Great White Pelican",
+      "Grévy's Zebra",
+      "Hamadryas Baboon",
+      "Indian Crested Porcupine",
+      "Kirk's Dik-Dik",
+      "Klipspringer",
+      "Kordofan Giraffe",
+      "Lechwe",
+      "Leopard Tortoise",
+      "Masai Giraffe",
+      "Pink-Backed Pelican",
+      "Plains Zebra",
+      "Red Ruffed Lemur",
+      "Red River Hog",
+      "Red-Crested Turaco",
+      "Red-Faced Spider Monkey",
+      "Reticulated Giraffe",
+      "Ring-Tailed Lemur",
+      "Rock Hyrax",
+      "Rothschild's Giraffe",
+      "Von Der Decken's Hornbill",
+      "Western Lowland Gorilla",
+      "Yellow Mongoose"
+    ]
+  },
+  "rules": [
+    {
+      "id": "meerkat_mixed_enclosure",
+      "animal": "Meerkat",
+      "compatible_with_groups": [
+        "meerkat_compatible_animals"
+      ]
+    }
+  ]
+}

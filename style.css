@@ -1680,3 +1680,161 @@ body {
        competing with zoo panning/pinch zoom. */
     #zooBoard { touch-action: none; }
 }
+
+/* ============================================================
+   V39 — MOBILE PREVIEW / PINCH / BOTTOM TRADE HUD
+   ============================================================ */
+
+@media (max-width: 700px) {
+    /*
+       Phone preview state machine:
+       1. card tap = normal bottom-left preview
+       2. preview tap = larger card
+       3. another tap = Wikipedia/info back
+       Desktop hover behaviour is unchanged.
+    */
+    #hoverPreview {
+        left: 8px !important;
+        right: auto !important;
+        bottom: 8px !important;
+        top: auto !important;
+        width: min(190px, 46vw) !important;
+        height: auto !important;
+        aspect-ratio: 1000 / 1440;
+        transform-origin: left bottom !important;
+    }
+
+    #hoverPreview.super-zoom {
+        width: min(300px, calc(100vw - 16px)) !important;
+        height: auto !important;
+        aspect-ratio: 1000 / 1440;
+    }
+
+    /*
+       The browser must never convert a one-finger drag into page zoom.
+       JavaScript only changes state.zoom while exactly TWO touch pointers
+       are registered. A single finger is reserved for dragging/panning.
+    */
+    #zooBoard,
+    #zooCanvas,
+    .enclosure,
+    .animal-card {
+        touch-action: none !important;
+    }
+
+    /*
+       Trade controls live at the bottom on phones, entirely outside the top
+       action header. Cards stay at the source 1000:1440 ratio and use only
+       the space they need.
+    */
+    #opponentTradeArea {
+        position: fixed !important;
+        left: 50% !important;
+        right: auto !important;
+        top: auto !important;
+        bottom: 62px !important;
+        transform: translateX(-50%) !important;
+        width: auto !important;
+        max-width: calc(100vw - 16px) !important;
+        min-height: 78px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: flex-end !important;
+        gap: 10px !important;
+        z-index: 7600 !important;
+        opacity: 1 !important;
+        transition: opacity .35s ease !important;
+        --trade-card-width: 54px !important;
+        --trade-card-height: 77.76px !important;
+        --trade-card-gap: 10px !important;
+    }
+
+    #opponentTradeArea.trade-hud-idle {
+        opacity: .30 !important;
+    }
+
+    #opponentTradeArea .trade-offer {
+        width: 54px !important;
+        height: 77.76px !important;
+        flex: 0 0 54px !important;
+    }
+
+    #opponentTradeArea .trade-card {
+        width: 54px !important;
+        height: 77.76px !important;
+    }
+
+    /*
+       In Real Zoo mode only offering zoos are displayed. With the hard
+       three-zoo offer cap, these form one clean row beneath the cards.
+    */
+    #opponentZoos {
+        position: fixed !important;
+        left: 8px !important;
+        right: 8px !important;
+        top: auto !important;
+        bottom: 5px !important;
+        width: auto !important;
+        height: 50px !important;
+        max-height: 50px !important;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: center !important;
+        align-items: flex-start !important;
+        gap: 5px !important;
+        overflow: hidden !important;
+        z-index: 7550 !important;
+        opacity: 1 !important;
+        transition: opacity .35s ease !important;
+        pointer-events: auto !important;
+    }
+
+    #opponentZoos.trade-hud-idle {
+        opacity: .30 !important;
+    }
+
+    #opponentZoos .opponent-name {
+        box-sizing: border-box !important;
+        flex: 1 1 0 !important;
+        width: auto !important;
+        max-width: calc((100vw - 26px) / 3) !important;
+        min-width: 0 !important;
+        min-height: 42px !important;
+        max-height: 46px !important;
+        margin: 0 !important;
+        padding: 4px 3px 8px !important;
+        overflow: hidden !important;
+        font-size: 8px !important;
+        line-height: 1.05 !important;
+        text-align: center !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    /* Do not reserve the old mobile top-header space for trading. */
+    #headerActions #outgoingOffer,
+    #headerActions #ingoingOffer {
+        display: none !important;
+    }
+}
+
+
+/* ============================================================
+   V40 — TRADE-ELIGIBLE BLUE CARD GLOW
+   ============================================================ */
+.animal-card.trade-eligible-glow {
+    filter:
+        drop-shadow(0 0 4px rgba(65, 170, 255, .98))
+        drop-shadow(0 0 9px rgba(65, 170, 255, .88))
+        drop-shadow(0 0 15px rgba(65, 170, 255, .65)) !important;
+}
+
+@media (max-width: 700px) {
+    .animal-card.trade-eligible-glow {
+        filter:
+            drop-shadow(0 0 4px rgba(65, 170, 255, 1))
+            drop-shadow(0 0 10px rgba(65, 170, 255, .95))
+            drop-shadow(0 0 16px rgba(65, 170, 255, .72)) !important;
+    }
+}
+

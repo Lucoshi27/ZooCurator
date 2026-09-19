@@ -1,7 +1,3 @@
-'use strict';
-
-window.__zooScriptStarted = true;
-
 
 // ============================================================
 // CONSTANTS
@@ -152,7 +148,8 @@ const DEFAULT_GAME_OPTIONS = {
     startingSpecies: 5,
     startingMaxEnclosureSpaces: 10,
     enclosureRewardMilestones: [1, 5],
-    opponentMode: 'fictional'
+    opponentMode: 'fictional',
+    tradeOfferFrequency: 50
 };
 
 function normalizeRewardMilestones(value) {
@@ -195,7 +192,16 @@ function loadGameOptions() {
                 saved.enclosureRewardMilestones ||
                 DEFAULT_GAME_OPTIONS.enclosureRewardMilestones
             ),
-            opponentMode: saved.opponentMode === 'real' ? 'real' : 'fictional'
+            opponentMode: saved.opponentMode === 'real' ? 'real' : 'fictional',
+            tradeOfferFrequency: Math.max(
+                0,
+                Math.min(
+                    100,
+                    Number.isFinite(Number(saved.tradeOfferFrequency))
+                        ? Number(saved.tradeOfferFrequency)
+                        : DEFAULT_GAME_OPTIONS.tradeOfferFrequency
+                )
+            )
         };
     } catch (error) {
         console.warn('Could not load saved game options:', error);
@@ -243,6 +249,12 @@ const state = {
     opponentStockCycle: 0,
     autonomousTradeOffer: null,
     nextAutonomousOfferTurn: null,
+
+    // Player-initiated trade results are cached per physical animal card for
+    // a three-turn window. Removing and re-adding the same card therefore
+    // cannot reroll which zoos are interested during that window.
+    tradeOfferCache: new Map(),
+
     unlockedOpponentCount: 2,
     playerLevelsSeen: new Set([1]),
 
@@ -374,6 +386,277 @@ requireElement(drawCard, 'drawCard');
 requireElement(zooBoard, 'zooBoard');
 requireElement(zooCanvas, 'zooCanvas');
 requireElement(handElement, 'hand');
+
+// ============================================================
+// V40 — TRADE-ELIGIBLE CARD HIGHLIGHT
+// ============================================================
+
+let tradeEligibleGlowHideTimer = null;
+let tradeEligibleGlowActive = false;
+
+function predictedPlayerTradeOffers(animal) {
+    if (!animal) return [];
+
+    // Mirror the already locked result for this physical card and current
+    // three-turn offer window, if one exists.
+    const cached = cachedPlayerTradeOffers(animal);
+    if (cached) return cached;
+
+    const frequency = tradeFrequencyFactor();
+    if (frequency <= 0) return [];
+
+    if (isRealOpponentMode()) {
+        const overallRoll = seededRoll(
+            `real-overall|${animal.id}|${tradeOfferWindow()}`
+        ).roll;
+        if (overallRoll > frequency) return [];
+
+        const records = [...new Set(weightedRealZooPool())];
+        const candidates = [];
+
+        for (const record of records) {
+            const matching = realZooTradeAnimals(record, true)
+                .filter(candidate => candidate.level === animal.level);
+            if (!matching.length) continue;
+
+            const favourites = Array.isArray(record.preferred_categories)
+                ? record.preferred_categories
+                : [];
+            const likesOutgoing = favourites.includes(animal.category);
+            const baseInterest = likesOutgoing ? 0.24 : 0.09;
+            const levelPenalty = (animal.level - 1) * 0.025;
+            const zooChance = Math.max(0.025, baseInterest - levelPenalty);
+
+            const { seed, roll } = seededRoll(
+                `real-zoo|${animal.id}|${record.name}|${tradeOfferWindow()}`
+            );
+            if (roll > zooChance) continue;
+
+            const offeredAnimal = matching[(seed >>> 8) % matching.length];
+            candidates.push({ record, animal: offeredAnimal });
+        }
+
+        return seededShuffle(
+            candidates,
+            `real-select|${animal.id}|${tradeOfferWindow()}`
+        ).slice(0, 3);
+    }
+
+    const overallRoll = seededRoll(
+        `fictional-overall|${animal.id}|${tradeOfferWindow()}`
+    ).roll;
+    if (overallRoll > frequency) return [];
+
+    const candidates = [];
+
+    state.opponentProfiles.forEach((profile, index) => {
+        if (index >= state.unlockedOpponentCount) return;
+
+        const matching = (state.opponentTradeStocks[index] || [])
+            .filter(candidate => candidate.level === animal.level);
+        if (!matching.length) return;
+
+        const fav = profile.favourites.includes(animal.category);
+        const zooChance = fav ? 0.30 : 0.12;
+
+        const { seed, roll } = seededRoll(
+            `fictional-zoo|${animal.id}|${index}|${tradeOfferWindow()}`
+        );
+        if (roll > zooChance) return;
+
+        const offeredAnimal = matching[(seed >>> 8) % matching.length];
+        if (offeredAnimal) {
+            candidates.push({ opponentIndex: index, animal: offeredAnimal });
+        }
+    });
+
+    return seededShuffle(
+        candidates,
+        `fictional-select|${animal.id}|${tradeOfferWindow()}`
+    ).slice(0, 3);
+}
+
+function animalCouldReceiveTradeInterest(animal) {
+    if (!animal || animal.level < 1 || animal.level > 5) return false;
+    if (animal === state.outgoingOffer) return false;
+
+    if (state.autonomousTradeOffer) {
+        return outgoingFitsAutonomousOffer(animal);
+    }
+
+    // This uses exactly the same seeded rolls, frequency gate, zoo-specific
+    // willingness and three-offer cap as actually placing the card.
+    return predictedPlayerTradeOffers(animal).length > 0;
+}
+
+function clearTradeEligibleGlow(immediate = true) {
+    clearTimeout(tradeEligibleGlowHideTimer);
+    tradeEligibleGlowHideTimer = null;
+    tradeEligibleGlowActive = false;
+
+    const cards = [
+        ...document.querySelectorAll('.animal-card.trade-eligible-glow')
+    ];
+
+    cards.forEach(card => {
+        // Mobile outside-tap dismissal and other forced clears stay immediate.
+        if (immediate) {
+            card.getAnimations().forEach(animation => {
+                if (animation.id === 'trade-eligible-fade') animation.cancel();
+            });
+            card.classList.remove('trade-eligible-glow');
+            return;
+        }
+
+        // Desktop mouse-leave: after the requested one-second hold, smoothly
+        // fade the blue drop-shadow away over another full second.
+        const fromFilter = getComputedStyle(card).filter;
+
+        const animation = card.animate(
+            [
+                { filter: fromFilter, opacity: 1 },
+                { filter: 'none', opacity: 1 }
+            ],
+            {
+                duration: 1000,
+                easing: 'ease-out',
+                fill: 'forwards'
+            }
+        );
+        animation.id = 'trade-eligible-fade';
+
+        animation.addEventListener('finish', () => {
+            card.classList.remove('trade-eligible-glow');
+            animation.cancel();
+        }, { once: true });
+    });
+}
+
+function applyTradeEligibleGlow() {
+    // Normally this hint is shown while the trade slots are empty. A
+    // spontaneous/autonomous incoming offer is the exception: in that case
+    // the glow shows which of the player's cards the offering zoo will accept.
+    if (
+        state.outgoingOffer ||
+        (selectedTradeOffer() && !state.autonomousTradeOffer)
+    ) {
+        clearTradeEligibleGlow();
+        return;
+    }
+
+    clearTimeout(tradeEligibleGlowHideTimer);
+    tradeEligibleGlowHideTimer = null;
+
+    // Re-entering the trade area during the fade restores the glow instantly.
+    document.querySelectorAll('.animal-card.trade-eligible-glow')
+        .forEach(card => {
+            card.getAnimations().forEach(animation => {
+                if (animation.id === 'trade-eligible-fade') animation.cancel();
+            });
+        });
+
+    tradeEligibleGlowActive = true;
+
+    document.querySelectorAll('.animal-card[data-animal-id]')
+        .forEach(card => {
+            const id = Number(card.dataset.animalId);
+            const animal = state.animals.find(item => item.id === id)
+                || state.hand.find(item => item.id === id);
+
+            card.classList.toggle(
+                'trade-eligible-glow',
+                Boolean(animal && animalCouldReceiveTradeInterest(animal))
+            );
+        });
+}
+
+function scheduleTradeEligibleGlowFade() {
+    clearTimeout(tradeEligibleGlowHideTimer);
+
+    // Keep the full blue glow for one second after the pointer leaves.
+    // Then animate it away smoothly during the following one second.
+    tradeEligibleGlowHideTimer = setTimeout(() => {
+        tradeEligibleGlowHideTimer = null;
+        clearTradeEligibleGlow(false);
+    }, 1000);
+}
+
+function tradeGlowTarget(target) {
+    if (!target) return null;
+
+    // The outgoing slot is a hint target whenever it is empty. During a
+    // spontaneous offer it highlights cards this particular zoo will accept.
+    if (
+        !state.outgoingOffer &&
+        (target === outgoingOfferBox || outgoingOfferBox.contains(target))
+    ) {
+        return outgoingOfferBox;
+    }
+
+    // With no offer, hovering/tapping the empty incoming slot keeps the
+    // existing general "cards that could attract offers" behaviour.
+    if (
+        !selectedTradeOffer() &&
+        (target === incomingOfferBox || incomingOfferBox.contains(target))
+    ) {
+        return incomingOfferBox;
+    }
+
+    // If a zoo spontaneously offered a card, the incoming card itself becomes
+    // a hint target too.
+    if (
+        state.autonomousTradeOffer &&
+        (target === incomingOfferBox || incomingOfferBox.contains(target))
+    ) {
+        return incomingOfferBox;
+    }
+
+    return null;
+}
+
+// Desktop: hover either EMPTY trade space to reveal potentially tradeable
+// cards. The glow lingers for two seconds after leaving, matching the other
+// temporary card hints.
+[outgoingOfferBox, incomingOfferBox].forEach(box => {
+    if (!box) return;
+
+    box.addEventListener('mouseenter', () => {
+        if (window.matchMedia('(max-width: 700px)').matches) return;
+        if (!tradeGlowTarget(box)) return;
+        applyTradeEligibleGlow();
+    });
+
+    box.addEventListener('mouseleave', () => {
+        if (window.matchMedia('(max-width: 700px)').matches) return;
+        if (!tradeEligibleGlowActive) return;
+        scheduleTradeEligibleGlowFade();
+    });
+});
+
+// Mobile: tapping either EMPTY trade box toggles the same hint on. Tapping
+// elsewhere dismisses it immediately, as requested.
+document.addEventListener('pointerdown', event => {
+    if (!window.matchMedia('(max-width: 700px)').matches) return;
+
+    const tradeTarget = tradeGlowTarget(event.target);
+
+    if (tradeTarget) {
+        applyTradeEligibleGlow();
+        return;
+    }
+
+    if (tradeEligibleGlowActive) {
+        clearTradeEligibleGlow();
+    }
+}, true);
+
+
+'use strict';
+
+window.__zooScriptStarted = true;
+
+
+
 
 requireElement(exchange1, 'exchange1');
 requireElement(exchange2, 'exchange2');
@@ -1495,6 +1778,7 @@ function createStartingZoo() {
     state.playerLevelsSeen = new Set([1]);
     state.realZooUnlockedTier = 1;
     resetRealZooSessionHoldings();
+    state.tradeOfferCache = new Map();
 
     state.turn = 1;
 
@@ -2131,8 +2415,8 @@ function ensureWikipediaBack() {
     back.id = 'hoverPreviewWiki';
     back.innerHTML = `
         <div class="animal-info-tabs">
-            <button type="button" class="animal-info-tab active" data-info-tab="zootierliste">Zootierliste</button>
-            <button type="button" class="animal-info-tab" data-info-tab="wikipedia">Wikipedia</button>
+            <button type="button" class="animal-info-tab active" data-info-tab="wikipedia">Wikipedia</button>
+            <button type="button" class="animal-info-tab" data-info-tab="zootierliste">Zootierliste</button>
         </div>
         <div class="wiki-preview-toolbar">
             <strong id="wikiPreviewTitle">Wikipedia</strong>
@@ -2351,17 +2635,12 @@ async function flipPreviewToWikipedia() {
 
     hoverPreview.classList.add('wiki-open');
 
-    // Zootierliste is the primary information view for Zoo Curator.
-    // Wikipedia still resolves the scientific name in the background,
-    // because the Zootierliste lookup uses that taxon name.
-    selectAnimalInfoTab('zootierliste');
+    // Wikipedia is the default information view. Zootierliste is available
+    // as the second tab and is only loaded when that tab is selected.
+    selectAnimalInfoTab('wikipedia');
     if (state.previewWikiAnimalId !== animal.id) {
         state.previewWikiAnimalId = animal.id;
         await loadWikipediaForAnimal(animal);
-    }
-
-    if (state.previewScientificName) {
-        await loadZootierlisteForAnimal(animal, state.previewScientificName);
     }
 }
 
@@ -4833,7 +5112,7 @@ zooBoard.addEventListener('pointerdown', event => {
 zooBoard.addEventListener('pointermove', event => {
     if (event.pointerType !== 'touch' || !zooTouchPointers.has(event.pointerId)) return;
     zooTouchPointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY });
-    if (!zooPinch || zooTouchPointers.size < 2) return;
+    if (!zooPinch || zooTouchPointers.size !== 2) return;
 
     event.preventDefault();
     event.stopPropagation();
@@ -4860,12 +5139,45 @@ zooBoard.addEventListener('pointermove', event => {
 
 function endZooTouchPointer(event) {
     if (event.pointerType !== 'touch') return;
+
+    const wasPinching = Boolean(zooPinch);
     zooTouchPointers.delete(event.pointerId);
-    if (zooTouchPointers.size < 2) zooPinch = null;
+
+    // Zooming exists ONLY while exactly two live touch pointers exist.
+    if (zooTouchPointers.size !== 2) {
+        zooPinch = null;
+    }
+
+    // If one finger remains after a pinch, do not keep interpreting its
+    // vertical movement as part of the old zoom gesture. Start a completely
+    // fresh one-finger pan from its current position instead.
+    if (wasPinching && zooTouchPointers.size === 1) {
+        finishPan();
+        const remaining = [...zooTouchPointers.values()][0];
+        state.pan = {
+            startClientX: remaining.clientX,
+            startClientY: remaining.clientY,
+            startScrollLeft: zooBoard.scrollLeft,
+            startScrollTop: zooBoard.scrollTop,
+            touchContinuation: true
+        };
+        zooBoard.classList.add('panning');
+    }
+
+    if (zooTouchPointers.size === 0 && state.pan?.touchContinuation) {
+        finishPan();
+    }
 }
 
 zooBoard.addEventListener('pointerup', endZooTouchPointer, { capture: true });
 zooBoard.addEventListener('pointercancel', endZooTouchPointer, { capture: true });
+
+// Defensive cleanup for interrupted browser gestures / app switching.
+window.addEventListener('blur', () => {
+    zooTouchPointers.clear();
+    zooPinch = null;
+    if (state.pan?.touchContinuation) finishPan();
+});
 
 
 // ============================================================
@@ -5008,6 +5320,14 @@ function ensureGameOptionsUI() {
                         <option value="real">Real zoo opponents</option>
                     </select>
                 </label>
+                <label class="trade-frequency-option">
+                    <span>Trade offer frequency: <strong id="optTradeFrequencyValue">50%</strong></span>
+                    <input id="optTradeFrequency" type="range" min="0" max="100" step="1" value="50">
+                </label>
+                <div class="advanced-options-note">
+                    Trade offer frequency affects both offers made in response to your outgoing card
+                    and spontaneous offers made by opponents. 50% is the standard setting.
+                </div>
                 <div class="advanced-options-note">
                     Milestones are the distinct category counts at each level that award a new enclosure.
                     These settings are saved in this browser and apply when the zoo is regenerated.
@@ -5030,6 +5350,12 @@ function ensureGameOptionsUI() {
     const spacesInput = overlay.querySelector('#optStartingMaxSpaces');
     const milestonesInput = overlay.querySelector('#optRewardMilestones');
     const opponentModeInput = overlay.querySelector('#optOpponentMode');
+    const tradeFrequencyInput = overlay.querySelector('#optTradeFrequency');
+    const tradeFrequencyValue = overlay.querySelector('#optTradeFrequencyValue');
+
+    tradeFrequencyInput.addEventListener('input', () => {
+        tradeFrequencyValue.textContent = `${Math.round(Number(tradeFrequencyInput.value))}%`;
+    });
 
     for (const category of Object.keys(FOLDERS).sort((a, b) => a.localeCompare(b))) {
         const label = document.createElement('label');
@@ -5045,6 +5371,8 @@ function ensureGameOptionsUI() {
         spacesInput.value = state.gameOptions.startingMaxEnclosureSpaces;
         milestonesInput.value = state.gameOptions.enclosureRewardMilestones.join(', ');
         opponentModeInput.value = state.gameOptions.opponentMode;
+        tradeFrequencyInput.value = state.gameOptions.tradeOfferFrequency;
+        tradeFrequencyValue.textContent = `${Math.round(state.gameOptions.tradeOfferFrequency)}%`;
         for (const cb of list.querySelectorAll('input[type="checkbox"]')) {
             cb.checked = state.activeCategories.has(cb.value);
         }
@@ -5084,6 +5412,10 @@ function ensureGameOptionsUI() {
         );
         const milestones = normalizeRewardMilestones(milestonesInput.value);
         const opponentMode = opponentModeInput.value === 'real' ? 'real' : 'fictional';
+        const tradeOfferFrequency = Math.max(
+            0,
+            Math.min(100, Math.round(Number(tradeFrequencyInput.value)))
+        );
 
         const categoriesSame =
             selected.length === state.activeCategories.size &&
@@ -5092,7 +5424,8 @@ function ensureGameOptionsUI() {
             startingSpecies === state.gameOptions.startingSpecies &&
             startingMaxSpaces === state.gameOptions.startingMaxEnclosureSpaces &&
             milestones.join(',') === state.gameOptions.enclosureRewardMilestones.join(',') &&
-            opponentMode === state.gameOptions.opponentMode;
+            opponentMode === state.gameOptions.opponentMode &&
+            tradeOfferFrequency === state.gameOptions.tradeOfferFrequency;
 
         if (categoriesSame && rulesSame) {
             close();
@@ -5110,6 +5443,7 @@ function ensureGameOptionsUI() {
         state.gameOptions.startingMaxEnclosureSpaces = startingMaxSpaces;
         state.gameOptions.enclosureRewardMilestones = milestones;
         state.gameOptions.opponentMode = opponentMode;
+        state.gameOptions.tradeOfferFrequency = tradeOfferFrequency;
         saveGameOptions();
 
         assignZooNames();
@@ -5317,30 +5651,141 @@ function seededRoll(text) {
     return { seed: seed >>> 0, roll: (seed >>> 0) / 4294967295 };
 }
 
+function tradeFrequencyFactor() {
+    return Math.max(0, Math.min(1, Number(state.gameOptions.tradeOfferFrequency) / 100));
+}
+
+function tradeOfferWindow() {
+    return Math.floor(Math.max(0, state.turn - 1) / 3);
+}
+
+function tradeOfferCacheKey(outgoing) {
+    return `${isRealOpponentMode() ? 'real' : 'fictional'}|${outgoing.id}|${tradeOfferWindow()}`;
+}
+
+function cloneCachedOffers(offers) {
+    return (offers || []).map(item => ({ ...item }));
+}
+
+function cachedPlayerTradeOffers(outgoing) {
+    const key = tradeOfferCacheKey(outgoing);
+    const cached = state.tradeOfferCache.get(key);
+    if (!cached) return null;
+    return cloneCachedOffers(cached);
+}
+
+function storePlayerTradeOffers(outgoing, offers) {
+    const key = tradeOfferCacheKey(outgoing);
+    state.tradeOfferCache.set(key, cloneCachedOffers(offers));
+
+    // Keep the cache small. Entries from older three-turn windows are no
+    // longer useful once their window has passed.
+    const currentWindow = tradeOfferWindow();
+    for (const existingKey of state.tradeOfferCache.keys()) {
+        const parts = String(existingKey).split('|');
+        const windowNumber = Number(parts[parts.length - 1]);
+        if (Number.isFinite(windowNumber) && windowNumber < currentWindow - 1) {
+            state.tradeOfferCache.delete(existingKey);
+        }
+    }
+}
+
+function seededShuffle(items, seedText) {
+    return [...items]
+        .map((item, index) => {
+            const { seed } = seededRoll(`${seedText}|${index}|${item?.record?.name || item?.opponentIndex || ''}`);
+            return { item, seed };
+        })
+        .sort((a, b) => a.seed - b.seed)
+        .map(entry => entry.item);
+}
+
 function generateRealZooTradeOffers(outgoing) {
-    const records = [...new Set(weightedRealZooPool())];
-    const accepted = [];
-    for (const record of shuffle(records)) {
-        const allAnimals = realZooTradeAnimals(record, true);
-        const matching = allAnimals.filter(animal => animal.level === outgoing.level);
-        if (!matching.length) continue;
-        const favourites = Array.isArray(record.preferred_categories) ? record.preferred_categories : [];
-        const likesOutgoing = favourites.includes(outgoing.category);
-        // Real zoos are deliberately reluctant. Higher-level cards are harder
-        // to obtain, while an offered animal in a favourite category helps.
-        const base = likesOutgoing ? 0.58 : 0.28;
-        const levelPenalty = (outgoing.level - 1) * 0.07;
-        const chance = Math.max(0.10, base - levelPenalty);
-        const { seed, roll } = seededRoll(`${outgoing.id}|${record.name}|${state.turn}`);
-        if (roll > chance) continue;
-        const animal = matching[(seed >>> 8) % matching.length];
-        accepted.push({ record, animal });
-        if (accepted.length >= 6) break;
+    const cached = cachedPlayerTradeOffers(outgoing);
+
+    if (cached) {
+        const recordsByName = new Map(
+            (state.realZooData?.zoos || []).map(record => [record.name, record])
+        );
+        const restored = cached
+            .map(item => {
+                const record = recordsByName.get(item.recordName);
+                if (!record) return null;
+                const animal = animalFromRealZooName(item.animalName);
+                return animal ? { record, animal } : null;
+            })
+            .filter(Boolean);
+
+        state.opponentProfiles = restored.map((item, index) => realZooProfile(item.record, index));
+        state.opponentTradeStocks = restored.map(item => realZooTradeAnimals(item.record, true));
+        state.tradeOffers = restored.map((item, index) => ({ opponentIndex: index, animal: item.animal }));
+        state.selectedTradeOpponent = state.tradeOffers.length ? 0 : null;
+        renderTrade();
+        renderOpponentTradeState();
+        return;
     }
 
-    state.opponentProfiles = accepted.map((item, index) => realZooProfile(item.record, index));
-    state.opponentTradeStocks = accepted.map(item => realZooTradeAnimals(item.record, true));
-    state.tradeOffers = accepted.map((item, index) => ({ opponentIndex: index, animal: item.animal }));
+    const frequency = tradeFrequencyFactor();
+    const records = [...new Set(weightedRealZooPool())];
+    const candidates = [];
+
+    /*
+        The slider is the overall chance that this outgoing card attracts ANY
+        real-zoo interest. At the default 50%, roughly half of eligible cards
+        will receive no offers at all. 0% means none; 100% always passes this
+        first gate when at least one valid zoo exists.
+    */
+    const overallRoll = seededRoll(
+        `real-overall|${outgoing.id}|${tradeOfferWindow()}`
+    ).roll;
+
+    if (frequency > 0 && overallRoll <= frequency) {
+        for (const record of records) {
+            const allAnimals = realZooTradeAnimals(record, true);
+            const matching = allAnimals.filter(animal => animal.level === outgoing.level);
+            if (!matching.length) continue;
+
+            const favourites = Array.isArray(record.preferred_categories)
+                ? record.preferred_categories
+                : [];
+            const likesOutgoing = favourites.includes(outgoing.category);
+
+            /*
+                Once the overall 50/50 gate succeeds, individual zoos are still
+                deliberately reluctant. This makes 1–2 offers normal and 3 rare.
+                Preferred categories help; higher levels remain harder.
+            */
+            const baseInterest = likesOutgoing ? 0.24 : 0.09;
+            const levelPenalty = (outgoing.level - 1) * 0.025;
+            const zooChance = Math.max(0.025, baseInterest - levelPenalty);
+
+            const { seed, roll } = seededRoll(
+                `real-zoo|${outgoing.id}|${record.name}|${tradeOfferWindow()}`
+            );
+            if (roll > zooChance) continue;
+
+            const animal = matching[(seed >>> 8) % matching.length];
+            candidates.push({ record, animal });
+        }
+    }
+
+    // Hard maximum: even if many zoos want the card, only three can appear.
+    const selected = seededShuffle(
+        candidates,
+        `real-select|${outgoing.id}|${tradeOfferWindow()}`
+    ).slice(0, 3);
+
+    storePlayerTradeOffers(
+        outgoing,
+        selected.map(item => ({
+            recordName: item.record.name,
+            animalName: String(item.animal.filename || '').replace(/\.png$/i, '')
+        }))
+    );
+
+    state.opponentProfiles = selected.map((item, index) => realZooProfile(item.record, index));
+    state.opponentTradeStocks = selected.map(item => realZooTradeAnimals(item.record, true));
+    state.tradeOffers = selected.map((item, index) => ({ opponentIndex: index, animal: item.animal }));
     state.selectedTradeOpponent = state.tradeOffers.length ? 0 : null;
     renderTrade();
     renderOpponentTradeState();
@@ -5348,6 +5793,10 @@ function generateRealZooTradeOffers(outgoing) {
 
 function createRealAutonomousOpponentOffer() {
     if (state.outgoingOffer || state.autonomousTradeOffer) return false;
+
+    // The same slider controls spontaneous real-zoo offers.
+    if (Math.random() > tradeFrequencyFactor()) return false;
+
     const pool = weightedRealZooPool();
     if (!pool.length) return false;
 
@@ -5588,6 +6037,10 @@ function clearAutonomousOpponentOffer(resetTimer = true) {
 function createAutonomousOpponentOffer() {
     if (isRealOpponentMode()) return createRealAutonomousOpponentOffer();
     if (state.outgoingOffer || state.autonomousTradeOffer) return false;
+
+    // The same slider controls spontaneous fictional-opponent offers.
+    if (Math.random() > tradeFrequencyFactor()) return false;
+
     const unlocked = [];
     for (let i = 0; i < Math.min(state.unlockedOpponentCount, state.opponentProfiles.length); i++) {
         fillOpponentTradeStock(i);
@@ -5677,26 +6130,77 @@ function generateOpponentTradeOffers(outgoing) {
         generateRealZooTradeOffers(outgoing);
         return;
     }
+
     rotateOpponentTradeStocksIfNeeded();
+
+    const cached = cachedPlayerTradeOffers(outgoing);
+    if (cached) {
+        state.tradeOffers = cached
+            .map(item => {
+                const animal = animalFromRealZooName(item.animalName);
+                return animal
+                    ? { opponentIndex: item.opponentIndex, animal }
+                    : null;
+            })
+            .filter(Boolean);
+        state.selectedTradeOpponent = state.tradeOffers.length
+            ? state.tradeOffers.map(o => o.opponentIndex).sort((a, b) => a - b)[0]
+            : null;
+        renderTrade();
+        renderOpponentTradeState();
+        return;
+    }
+
     state.tradeOffers = [];
     state.selectedTradeOpponent = null;
-    state.opponentProfiles.forEach((profile, index) => {
-        if (index >= state.unlockedOpponentCount) return;
-        const matching = (state.opponentTradeStocks[index] || []).filter(a => a.level === outgoing.level);
-        if (!matching.length) return;
-        const fav = profile.favourites.includes(outgoing.category);
-        const chance = fav ? 0.78 : 0.34;
-        // Keep the answer stable for this exact outgoing card until the five-turn stock refresh.
-        // This prevents repeatedly removing/re-adding the same animal to reroll a better offer.
-        const seedText = `${outgoing.id}|${index}|${state.opponentStockCycle}`;
-        let seed = 2166136261;
-        for (const ch of seedText) { seed ^= ch.charCodeAt(0); seed = Math.imul(seed, 16777619); }
-        const interestRoll = ((seed >>> 0) % 10000) / 10000;
-        if (interestRoll > chance) return;
-        const animal = matching[(seed >>> 8) % matching.length];
-        if (animal) state.tradeOffers.push({ opponentIndex: index, animal });
-    });
-    if (state.tradeOffers.length) state.selectedTradeOpponent = state.tradeOffers.map(o => o.opponentIndex).sort((a,b)=>a-b)[0];
+
+    const frequency = tradeFrequencyFactor();
+    const overallRoll = seededRoll(
+        `fictional-overall|${outgoing.id}|${tradeOfferWindow()}`
+    ).roll;
+
+    if (frequency > 0 && overallRoll <= frequency) {
+        const candidates = [];
+
+        state.opponentProfiles.forEach((profile, index) => {
+            if (index >= state.unlockedOpponentCount) return;
+
+            const matching = (state.opponentTradeStocks[index] || [])
+                .filter(a => a.level === outgoing.level);
+            if (!matching.length) return;
+
+            const fav = profile.favourites.includes(outgoing.category);
+            const zooChance = fav ? 0.30 : 0.12;
+
+            const { seed, roll } = seededRoll(
+                `fictional-zoo|${outgoing.id}|${index}|${tradeOfferWindow()}`
+            );
+            if (roll > zooChance) return;
+
+            const animal = matching[(seed >>> 8) % matching.length];
+            if (animal) candidates.push({ opponentIndex: index, animal });
+        });
+
+        state.tradeOffers = seededShuffle(
+            candidates,
+            `fictional-select|${outgoing.id}|${tradeOfferWindow()}`
+        ).slice(0, 3);
+    }
+
+    storePlayerTradeOffers(
+        outgoing,
+        state.tradeOffers.map(item => ({
+            opponentIndex: item.opponentIndex,
+            animalName: String(item.animal.filename || '').replace(/\.png$/i, '')
+        }))
+    );
+
+    if (state.tradeOffers.length) {
+        state.selectedTradeOpponent = state.tradeOffers
+            .map(o => o.opponentIndex)
+            .sort((a, b) => a - b)[0];
+    }
+
     renderTrade();
     renderOpponentTradeState();
 }
@@ -6258,11 +6762,13 @@ function centerInitialView() {
 
 
 hoverPreview.addEventListener('mouseenter', () => {
+    if (window.matchMedia('(max-width: 700px)').matches) return;
     cancelHoverPreviewHide();
     hoverPreview.classList.add('super-zoom');
 });
 
 hoverPreview.addEventListener('mouseleave', () => {
+    if (window.matchMedia('(max-width: 700px)').matches) return;
     hoverPreview.classList.remove('super-zoom');
     scheduleHoverPreviewHide();
 });
@@ -6271,6 +6777,21 @@ hoverPreview.addEventListener('click', event => {
     if (event.target.closest('#wikiPreviewLink, #ztlPreviewLink, .animal-info-tab, .ztl-record')) return;
     event.preventDefault();
     event.stopPropagation();
+
+    const mobileLayout = window.matchMedia('(max-width: 700px)').matches;
+
+    if (mobileLayout) {
+        // Mobile has no hover. Recreate the desktop two-stage enlargement
+        // deliberately with taps:
+        //   card tap -> preview
+        //   preview tap -> larger preview
+        //   larger-preview tap -> Wikipedia/info back
+        if (!hoverPreview.classList.contains('super-zoom')) {
+            hoverPreview.classList.add('super-zoom');
+            return;
+        }
+    }
+
     flipPreviewToWikipedia();
 });
 
@@ -6300,6 +6821,99 @@ document.addEventListener('pointerdown', event => {
 
     dismissMobileCardPreview();
 }, true);
+
+
+// ============================================================
+// MOBILE TRADE HUD VISIBILITY
+// ============================================================
+
+let mobileTradeFadeTimer = null;
+
+function mobileTradeIsActive() {
+    return Boolean(
+        state.outgoingOffer ||
+        state.autonomousTradeOffer ||
+        state.tradeOffers.length
+    );
+}
+
+function wakeMobileTradeArea() {
+    if (!window.matchMedia('(max-width: 700px)').matches) return;
+
+    const area = document.getElementById('opponentTradeArea');
+    const zoos = document.getElementById('opponentZoos');
+    if (!area) return;
+
+    clearTimeout(mobileTradeFadeTimer);
+    area.classList.remove('trade-hud-idle');
+    zoos?.classList.remove('trade-hud-idle');
+
+    // An active negotiation stays fully visible until completed/cancelled.
+    if (mobileTradeIsActive()) return;
+
+    mobileTradeFadeTimer = setTimeout(() => {
+        if (mobileTradeIsActive()) return;
+        area.classList.add('trade-hud-idle');
+        zoos?.classList.add('trade-hud-idle');
+    }, 2000);
+}
+
+function refreshMobileTradeAreaVisibility() {
+    if (!window.matchMedia('(max-width: 700px)').matches) return;
+
+    const area = document.getElementById('opponentTradeArea');
+    const zoos = document.getElementById('opponentZoos');
+    if (!area) return;
+
+    clearTimeout(mobileTradeFadeTimer);
+
+    if (mobileTradeIsActive()) {
+        area.classList.remove('trade-hud-idle');
+        zoos?.classList.remove('trade-hud-idle');
+        return;
+    }
+
+    area.classList.remove('trade-hud-idle');
+    zoos?.classList.remove('trade-hud-idle');
+    mobileTradeFadeTimer = setTimeout(() => {
+        if (mobileTradeIsActive()) return;
+        area.classList.add('trade-hud-idle');
+        zoos?.classList.add('trade-hud-idle');
+    }, 2000);
+}
+
+document.addEventListener('pointerdown', event => {
+    if (!window.matchMedia('(max-width: 700px)').matches) return;
+    if (event.target.closest('#opponentTradeArea, #opponentZoos')) {
+        wakeMobileTradeArea();
+    }
+}, true);
+
+// renderTrade/renderOpponentTradeState change these nodes whenever a player
+// places/removes a trade card or an opponent creates/cancels an offer.
+const mobileTradeObserver = new MutationObserver(() => {
+    refreshMobileTradeAreaVisibility();
+});
+
+if (outgoingOfferBox) {
+    mobileTradeObserver.observe(outgoingOfferBox, { childList: true, subtree: true });
+}
+if (incomingOfferBox) {
+    mobileTradeObserver.observe(incomingOfferBox, { childList: true, subtree: true });
+}
+const mobileOpponentZoos = document.getElementById('opponentZoos');
+if (mobileOpponentZoos) {
+    mobileTradeObserver.observe(mobileOpponentZoos, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['style', 'class']
+    });
+}
+
+window.addEventListener('resize', refreshMobileTradeAreaVisibility);
+setTimeout(refreshMobileTradeAreaVisibility, 0);
+
 
 // ============================================================
 // SAMPLE CATEGORY COLOURS FROM THE ACTUAL CARD ART
@@ -6572,4 +7186,5 @@ startGame();
 
 
 window.addEventListener('resize', () => { positionOpponentTradeArea(); });
+
 

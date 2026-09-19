@@ -1,8 +1,8 @@
 /*
- * ZOO CURATOR V101 — AUTO-PLACE CLICKS + NEW CARD GLOW + DRAW LABEL + TRADE PROMPT FIX
+ * ZOO CURATOR V102 — DOMAIN ZOO-NAME RESUME REPAIR + V101 FEATURES
  * Known-good GitHub baseline. Future builds must descend from this version.
  */
-const ZOO_CURATOR_VERSION = "V101";
+const ZOO_CURATOR_VERSION = "V102";
 
 
 // ============================================================
@@ -5831,6 +5831,38 @@ function readAutoResumeSnapshot() {
     }
 }
 
+function zooNameNeedsRepair(value) {
+    if (typeof value !== 'string') return true;
+    const name = value.trim();
+    if (!name) return true;
+
+    const placeholder = name.toLowerCase().replace(/\s+/g, ' ');
+    return (
+        placeholder === 'loading zoo...' ||
+        placeholder === 'loading zoo…' ||
+        placeholder === 'loading zoo' ||
+        placeholder === 'loading...'
+    );
+}
+
+function repairLoadedZooName() {
+    if (!zooNameNeedsRepair(state.zooName)) return false;
+
+    const pool = buildZooNamePool(state.zooNamesData);
+    state.zooName = pool.length
+        ? randomItem(pool)
+        : randomItem([
+            'Riverside Zoo',
+            'Forest Wildlife Park',
+            'Lakeside Zoo',
+            'Highland Wildlife Park',
+            'Meadowlands Zoo',
+            'Coastal Animal Park'
+        ]);
+
+    return true;
+}
+
 function restoreAutoResumeSnapshot() {
     const record = readAutoResumeSnapshot();
     if (!record) return false;
@@ -5838,6 +5870,17 @@ function restoreAutoResumeSnapshot() {
     try {
         autoResumeWriteSuppressed = true;
         importGameState(record.game);
+
+        // zoocurator.nl has its own localStorage, separate from localhost.
+        // An older production auto-resume snapshot can therefore contain the
+        // old header placeholder ("Loading zoo...") even when localhost is
+        // perfectly clean. Never let that stale UI placeholder become a saved
+        // zoo name.
+        const repairedZooName = repairLoadedZooName();
+        if (repairedZooName) {
+            createZooNameEditor();
+        }
+
         lastAutoResumeTurn = Number(record.turn) || Number(state.turn) || 0;
         return true;
     } catch (error) {
@@ -11044,9 +11087,14 @@ function loadNonEssentialGameData() {
 
     loadOptionalJsonInBackground('zoo-names.json')
         .then(data => {
-            // Keep the names already assigned to the current zoo/opponents.
-            // The downloaded pool is used for later generated names.
+            // Keep valid names already assigned to the current zoo/opponents.
+            // If an old production save carried a loading placeholder, repair
+            // it now from the real downloaded name pool as a final safeguard.
             state.zooNamesData = data;
+            if (repairLoadedZooName()) {
+                createZooNameEditor();
+                writeAutoResumeSnapshot(true);
+            }
         })
         .catch(error => console.warn('Zoo names unavailable; using built-in fallbacks:', error));
 
@@ -11107,6 +11155,12 @@ async function startGame() {
             assignZooNames();
             createStartingZoo();
             assignOpponentProfiles();
+        } else {
+            // A resumed zoo does not pass through assignZooNames(), so make
+            // sure the header editor is rebuilt from the restored/repaired
+            // name instead of leaving the HTML placeholder behind.
+            repairLoadedZooName();
+            createZooNameEditor();
         }
 
         document.documentElement.style.setProperty('--zoo-zoom', state.zoom);

@@ -925,6 +925,10 @@
     ],
     [
       "Banded Mongoose",
+      "Red-Billed Hornbill"
+    ],
+    [
+      "Banded Mongoose",
       "Rock Hyrax"
     ],
     [
@@ -1316,6 +1320,10 @@
       "Toco Toucan"
     ],
     [
+      "Black-Necked Crane",
+      "Nepalese Red Panda"
+    ],
+    [
       "Black-Tailed Prairie Dog",
       "North American Porcupine"
     ],
@@ -1402,6 +1410,10 @@
     [
       "Blue Crane",
       "Meerkat"
+    ],
+    [
+      "Blue Crane",
+      "Red-Crowned Crane"
     ],
     [
       "Blue Wildebeest",
@@ -2188,6 +2200,30 @@
       "South American Sea Lion"
     ],
     [
+      "Common Crane",
+      "Demoiselle Crane"
+    ],
+    [
+      "Common Crane",
+      "Great White Pelican"
+    ],
+    [
+      "Common Crane",
+      "Red-Crowned Crane"
+    ],
+    [
+      "Common Crane",
+      "Sarus Crane"
+    ],
+    [
+      "Common Crane",
+      "White Stork"
+    ],
+    [
+      "Common Crane",
+      "White-Naped Crane"
+    ],
+    [
       "Common Dwarf Mongoose",
       "Leopard Tortoise"
     ],
@@ -2422,6 +2458,10 @@
     [
       "Common Hoopoe",
       "Western Plantain-Eater"
+    ],
+    [
+      "Common Kusimanse",
+      "African Brush-Tailed Porcupine"
     ],
     [
       "Common Kusimanse",
@@ -2925,6 +2965,14 @@
     ],
     [
       "Demoiselle Crane",
+      "Great White Pelican"
+    ],
+    [
+      "Demoiselle Crane",
+      "Grey Crowned Crane"
+    ],
+    [
+      "Demoiselle Crane",
       "Grey Langur"
     ],
     [
@@ -2938,6 +2986,22 @@
     [
       "Demoiselle Crane",
       "Kori Bustard"
+    ],
+    [
+      "Demoiselle Crane",
+      "Red-Crested Turaco"
+    ],
+    [
+      "Demoiselle Crane",
+      "Tufted Deer"
+    ],
+    [
+      "Demoiselle Crane",
+      "White Stork"
+    ],
+    [
+      "Demoiselle Crane",
+      "White-Naped Crane"
     ],
     [
       "Dhole",
@@ -3797,6 +3861,10 @@
     ],
     [
       "Grey Crowned Crane",
+      "Red-Crested Turaco"
+    ],
+    [
+      "Grey Crowned Crane",
       "Reticulated Giraffe"
     ],
     [
@@ -4609,6 +4677,10 @@
     ],
     [
       "Meerkat",
+      "Scimitar-Horned Oryx"
+    ],
+    [
+      "Meerkat",
       "Western Lowland Gorilla"
     ],
     [
@@ -5024,6 +5096,30 @@
       "White-Faced Saki"
     ],
     [
+      "Red-Crowned Crane",
+      "Demoiselle Crane"
+    ],
+    [
+      "Red-Crowned Crane",
+      "Great White Pelican"
+    ],
+    [
+      "Red-Crowned Crane",
+      "Nepalese Red Panda"
+    ],
+    [
+      "Red-Crowned Crane",
+      "Reeve's Muntjac"
+    ],
+    [
+      "Red-Crowned Crane",
+      "White Stork"
+    ],
+    [
+      "Red-Crowned Crane",
+      "White-Naped Crane"
+    ],
+    [
       "Red-Footed Tortoise",
       "Rodriguez Flying Fox"
     ],
@@ -5146,6 +5242,26 @@
     [
       "Sambar",
       "Southern Red Muntjac"
+    ],
+    [
+      "Sarus Crane",
+      "Demoiselle Crane"
+    ],
+    [
+      "Sarus Crane",
+      "Great White Pelican"
+    ],
+    [
+      "Sarus Crane",
+      "Red-Crowned Crane"
+    ],
+    [
+      "Sarus Crane",
+      "White Stork"
+    ],
+    [
+      "Sarus Crane",
+      "White-Naped Crane"
     ],
     [
       "Scaly-Headed Parrot",
@@ -5370,6 +5486,42 @@
     [
       "White-Faced Saki",
       "Yellow-Spotted Amazon River Turtle"
+    ],
+    [
+      "White-Naped Crane",
+      "Blackbuck"
+    ],
+    [
+      "White-Naped Crane",
+      "Great White Pelican"
+    ],
+    [
+      "White-Naped Crane",
+      "Javan Banteng"
+    ],
+    [
+      "White-Naped Crane",
+      "White Stork"
+    ],
+    [
+      "Yellow Mongoose",
+      "Blue Crane"
+    ],
+    [
+      "Yellow Mongoose",
+      "Leopard Tortoise"
+    ],
+    [
+      "Yellow Mongoose",
+      "Secretary Bird"
+    ],
+    [
+      "Red-Footed Tortoise",
+      "Golden Handed Tamarin"
+    ],
+    [
+      "Red-Footed Tortoise",
+      "Common Marmoset"
     ]
   ],
   "proxy_compatibility": {
@@ -6613,7 +6765,20 @@
     "Old World Monkey Taxon Advisory Group Mixed Species Manual 2007",
     "Animals 2024 — mixed tufted capuchin and squirrel monkey study, Edinburgh Zoo",
     "ZooRope — Mixed exhibit Procyonidae/Ailuridae (Black-capped/Tufted Capuchin examples)",
-    "ZooLex — Apenheul Amazonia spider monkey and capybara exhibit"
+    "ZooLex — Apenheul Amazonia spider monkey and capybara exhibit",
+    "ZooRope — Mixed-species exhibits with Mongooses (Herpestidae) and Madagascar Carnivores (Eupleridae), refreshed 10 May 2020",
+    "ZooChat — Meerkat Cohabitation thread: ARTIS Amsterdam report of Meerkat + Scimitar-Horned Oryx, May 2026",
+    "ZooInstitutes — Seoul Grand Park Zoo Waterfowl mixed exhibit (2016): Common, Sarus, Red-Crowned, Demoiselle and White-Naped Cranes with Great White Pelican and White Stork",
+    "ZooInstitutes — Prospect Park Wildlife Center (2018): Tufted Deer + Demoiselle Crane",
+    "ZooInstitutes — Dalian Forest Zoo (2018): Blue Crane + Red-Crowned Crane",
+    "ZooInstitutes — Badoca Safari Park (2022): Demoiselle Crane + Grey Crowned Crane + Red-Crested Turaco in mixed walk-through",
+    "ZooRope — Procyonidae/Ailuridae mixed exhibits: Red-Crowned Crane + Red Panda/Reeve's Muntjac; Black-Necked Crane + Red Panda",
+    "ZooChat — Zoo Zürich Asian paddock (2009): White-Naped Crane + Javan Banteng + Blackbuck",
+    "Primate Report 64 (2002) — Zoo Magdeburg: Golden-handed tamarin + green iguana + red-footed tortoise mixed exhibit.",
+    "White-faced saki zoo husbandry questionnaire (2019) — Common marmoset + Golden-headed lion tamarin + red-footed tortoise; reported successful.",
+    "Saginaw Children's Zoo — red-footed tortoises share space with Cotton-top Tamarins and Hoffmann's Two-toed Sloth.",
+    "ZooParc Overloon 2025 map — Red-footed Tortoise and Spectacled Caiman both listed in Madidi House; treated as insufficient alone for direct compatibility.",
+    "Vancouver Aquarium Graham Amazon Gallery — Red-footed Tortoise, parrots and Yacare Caiman present in same gallery; treated as insufficient alone for direct compatibility."
   ],
   "metadata": {
     "version": "6.2",
@@ -6630,6 +6795,67 @@
       "v6.7 ZooChat credibility pass. ZooChat was treated as an observational lead source, not as automatic proof. Added only posts that identify a real zoo and an actual mixed exhibit, with preference for recent inventories, long-standing members, photographs, or repeated institutional reports. Speculative 'would this work?' combinations were excluded. Failed/dangerous mixes were excluded. Exact Zoo Curator taxa were required; no loose species proxies were introduced. This pass added Whipsnade rhino mixes; Berlin Zoo mixes; Chester orangutan/gibbon mixes; Ouwehands, Wildlands and Overloon links; detailed US primate exhibits; London Rainforest Life links; several named-zoo armadillo mixes; and well-established giant-anteater combinations.",
       "v6.8 targeted low-coverage ZooChat pass. Searched mixed-exhibit threads for named-institution observations rather than speculative proposals. Added only exact Zoo Curator taxa not already represented as direct pairs. Older reports were accepted only when they described an actual exhibit; recent 2024–2025 observations were preferred where available. Several plausible reports were left out where the exact taxon could not be matched safely to a current card.",
       "v6.9 targeted cleanup/expansion: normalized the typo 'Black-Tailed Prairie Dog' to 'Black-Tailed Prairie Dog' throughout the JSON and deduplicated normalized direct pairs. Added Asian Elephant + Blackbuck (documented at Dublin/Zurich) and Asian Elephant + Red Deer (Dierenrijk) while retaining the existing Asian Elephant + Crab-Eating Macaque evidence. Added complete gameplay proxy groups for capuchins and macaques at the user's request. The existing parrots and spider_monkeys complete groups already provide the requested taxonomic same-group compatibility, so they were preserved rather than duplicated. Proxy rules are explicitly labelled as gameplay extrapolations, not claims that every pair is a documented zoo mixed exhibit."
-    ]
+    ],
+    "mongoose_audit_2026_09_19": "Audited Zoo Curator mongoose taxa against ZooRope's named-institution Herpestidae records, then reviewed ZooChat for additional actual-zoo reports. Added ZooRope-backed pairs: Common Kusimanse + African Brush-Tailed Porcupine (Paignton), Banded Mongoose + Red-Billed Hornbill (Tiergarten Nürnberg), Yellow Mongoose + Blue Crane (Five Sisters), Yellow Mongoose + Leopard Tortoise (Toni's Zoo), and Yellow Mongoose + Secretary Bird (Magdeburg mixed exhibit). Added one ZooChat-backed modern pair: Meerkat + Scimitar-Horned Oryx (ARTIS Amsterdam, reported May 2026). Speculative exhibit-idea posts and unknown-institution ZooRope records were not added.",
+    "crane_pass_2026_09_19": "Targeted crane pass added 30 previously missing direct pairs from named zoo mixed exhibits. Priority was given to modern post-2000 records. Large crane species were not given a blanket compatibility proxy: husbandry literature warns that Sarus and Wattled Cranes can become aggressive in mixed collections, particularly during breeding. Only documented shared exhibits were converted into direct compatibility.",
+    "red_footed_tortoise_targeted_pass_2026_09_20": {
+      "standard": "Named institution / documented mixed exhibit preferred; post-2000 evidence; no broad proxy added where only same-building/speculative evidence was found.",
+      "added_pairs": [
+        {
+          "pair": [
+            "Red-Footed Tortoise",
+            "Golden Handed Tamarin"
+          ],
+          "evidence": "Zoo Magdeburg mixed-species exhibit documented in Primate Report 64 (2002): Golden-handed tamarin + green iguana + red-footed tortoise."
+        },
+        {
+          "pair": [
+            "Red-Footed Tortoise",
+            "Common Marmoset"
+          ],
+          "evidence": "White-faced saki husbandry survey (2019) reports Common marmoset + Golden-headed lion tamarin + Red-footed tortoise, with all combinations working well."
+        }
+      ],
+      "confirmed_existing_pairs": [
+        [
+          "Red-Footed Tortoise",
+          "Cotton-Top Tamarin"
+        ],
+        [
+          "Red-Footed Tortoise",
+          "Goeldi's Monkey"
+        ],
+        [
+          "Red-Footed Tortoise",
+          "Golden Lion Tamarin"
+        ],
+        [
+          "Red-Footed Tortoise",
+          "Golden-Headed Lion Tamarin"
+        ],
+        [
+          "Red-Footed Tortoise",
+          "Linnaeus's Two-Toed Sloth"
+        ],
+        [
+          "Red-Footed Tortoise",
+          "Hoffmann's Two-Toed Sloth"
+        ],
+        [
+          "Red-Footed Tortoise",
+          "Southern Three-Banded Armadillo"
+        ],
+        [
+          "Red-Footed Tortoise",
+          "Cuvier's Dwarf Caiman"
+        ]
+      ],
+      "not_added": {
+        "macaws": "No sufficiently strong named-zoo shared-enclosure record found in this pass. ZooChat specifically cautions that large macaws can be destructive in broad tropical-house mixes.",
+        "other_parrots": "Vancouver Aquarium currently lists red-footed tortoise, monk parakeet and green-cheeked conure in the Graham Amazon Gallery, but this does not establish shared unrestricted enclosure access, so no direct pair was added.",
+        "additional_armadillos": "Evidence found for Southern Three-Banded Armadillo context, already represented. No strong exact shared-exhibit record found for Six-Banded, Nine-Banded or Large Hairy Armadillo with red-footed tortoise.",
+        "additional_caimans": "Overloon and Vancouver house red-footed tortoises and caimans within the same themed houses/galleries, but available sources do not establish unrestricted shared enclosure access. Cuvier's Dwarf Caiman remains the existing direct pair; no blanket managed-caiman rule added."
+      }
+    }
   }
 }

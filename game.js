@@ -29,16 +29,28 @@ const ENCLOSURE_GAP = 20;
 // Fallbacks only. At startup the game samples the actual colour from
 // a random Level 1 card for every category (top-right 20 x 20 pixels).
 const CATEGORY_COLOURS = {
-    'Carnivora': '#b64a43',
-    'Ungulates': '#c88743',
-    'Primates': '#d3ae45',
-    'Other Mammals': '#8f755d',
-    'Other Birds': '#77975b',
-    'Marine Mania': '#4d91ad',
-    'Birds of Prey': '#96734e',
-    'Tropical Birds': '#68a568',
-    'Reptiles': '#6f8d59'
+    'Birds of Prey': '#A26248',
+    'Carnivora': '#A24848',
+    'Marine Mania': '#A24894',
+    'Tropical Birds': '#7248A2',
+    'Primates': '#4875A2',
+    'Reptiles': '#488FA2',
+    'Other Mammals': '#49A248',
+    'Other Birds': '#A29448',
+    'Ungulates': '#A27C48'
 };
+
+const CATEGORY_PROGRESSION_ORDER = [
+    'Birds of Prey',
+    'Carnivora',
+    'Marine Mania',
+    'Tropical Birds',
+    'Primates',
+    'Reptiles',
+    'Other Mammals',
+    'Other Birds',
+    'Ungulates'
+];
 
 
 // ============================================================
@@ -46,15 +58,15 @@ const CATEGORY_COLOURS = {
 // ============================================================
 
 const FOLDERS = {
+    'Birds of Prey': 'birds of prey',
     'Carnivora': 'carnivora',
-    'Ungulates': 'ungulates',
+    'Marine Mania': 'marine mania',
+    'Tropical Birds': 'tropical birds',
     'Primates': 'primates',
+    'Reptiles': 'reptiles',
     'Other Mammals': 'other mammals',
     'Other Birds': 'other birds',
-    'Marine Mania': 'marine mania',
-    'Birds of Prey': 'birds of prey',
-    'Tropical Birds': 'tropical birds',
-    'Reptiles': 'reptiles'
+    'Ungulates': 'ungulates'
 };
 
 
@@ -273,6 +285,13 @@ const state = {
 
     turn: 1,
 
+    // Read-only turn-history snapshots. These contain only the visual zoo
+    // state, so even long games stay compact.
+    turnHistory: [],
+    historyViewTurn: null,
+    historyLiveView: null,
+    suppressHistoryCapture: false,
+
     zoom: 1,
 
     drag: null,
@@ -394,6 +413,38 @@ requireElement(handElement, 'hand');
 let tradeEligibleGlowHideTimer = null;
 let tradeEligibleGlowActive = false;
 
+// ============================================================
+// V46 — OPPONENT CATEGORY PROGRESSION TRADE RULE
+// ============================================================
+
+// To trade FOR a player's level N animal (N > 1), the receiving zoo must
+// already own at least one animal from the same category at level N - 1.
+// Level 1 is deliberately unrestricted.
+function opponentHasCategoryPrerequisite(holdings, wantedAnimal) {
+    if (!wantedAnimal) return false;
+    if (wantedAnimal.level <= 1) return true;
+
+    return (holdings || []).some(animal =>
+        animal &&
+        animal.category === wantedAnimal.category &&
+        animal.level === wantedAnimal.level - 1
+    );
+}
+
+function realZooCanTradeFor(record, wantedAnimal) {
+    return opponentHasCategoryPrerequisite(
+        realZooTradeAnimals(record, false),
+        wantedAnimal
+    );
+}
+
+function fictionalZooCanTradeFor(opponentIndex, wantedAnimal) {
+    return opponentHasCategoryPrerequisite(
+        state.opponentTradeStocks[opponentIndex] || [],
+        wantedAnimal
+    );
+}
+
 function predictedPlayerTradeOffers(animal) {
     if (!animal) return [];
 
@@ -415,6 +466,8 @@ function predictedPlayerTradeOffers(animal) {
         const candidates = [];
 
         for (const record of records) {
+            if (!realZooCanTradeFor(record, animal)) continue;
+
             const matching = realZooTradeAnimals(record, true)
                 .filter(candidate => candidate.level === animal.level);
             if (!matching.length) continue;
@@ -451,6 +504,7 @@ function predictedPlayerTradeOffers(animal) {
 
     state.opponentProfiles.forEach((profile, index) => {
         if (index >= state.unlockedOpponentCount) return;
+        if (!fictionalZooCanTradeFor(index, animal)) return;
 
         const matching = (state.opponentTradeStocks[index] || [])
             .filter(candidate => candidate.level === animal.level);
@@ -499,40 +553,35 @@ function clearTradeEligibleGlow(immediate = true) {
     ];
 
     cards.forEach(card => {
-        // Mobile outside-tap dismissal and other forced clears stay immediate.
+        clearTimeout(card._tradeGlowFadeTimer);
+
         if (immediate) {
-            card.getAnimations().forEach(animation => {
-                if (animation.id === 'trade-eligible-fade') animation.cancel();
-            });
+            card.classList.remove('trade-eligible-glow-fading');
             card.classList.remove('trade-eligible-glow');
             return;
         }
 
-        // Desktop mouse-leave: after the requested one-second hold, smoothly
-        // fade the blue drop-shadow away over another full second.
-        const fromFilter = getComputedStyle(card).filter;
+        // Use the same CSS-transition approach as the yellow exchange glow.
+        // The base blue-glow class remains present while a second class lowers
+        // the shadow to zero, so the browser can interpolate it smoothly.
+        card.classList.add('trade-eligible-glow-fading');
 
-        const animation = card.animate(
-            [
-                { filter: fromFilter, opacity: 1 },
-                { filter: 'none', opacity: 1 }
-            ],
-            {
-                duration: 1000,
-                easing: 'ease-out',
-                fill: 'forwards'
-            }
-        );
-        animation.id = 'trade-eligible-fade';
-
-        animation.addEventListener('finish', () => {
+        card._tradeGlowFadeTimer = setTimeout(() => {
+            card.classList.remove('trade-eligible-glow-fading');
             card.classList.remove('trade-eligible-glow');
-            animation.cancel();
-        }, { once: true });
+            delete card._tradeGlowFadeTimer;
+        }, 1000);
     });
 }
 
 function applyTradeEligibleGlow() {
+    // Trade hints belong only to the live/current turn. Historical snapshots
+    // are strictly read-only inspection states.
+    if (state.historyViewTurn !== null) {
+        clearTradeEligibleGlow();
+        return;
+    }
+
     // Normally this hint is shown while the trade slots are empty. A
     // spontaneous/autonomous incoming offer is the exception: in that case
     // the glow shows which of the player's cards the offering zoo will accept.
@@ -547,12 +596,11 @@ function applyTradeEligibleGlow() {
     clearTimeout(tradeEligibleGlowHideTimer);
     tradeEligibleGlowHideTimer = null;
 
-    // Re-entering the trade area during the fade restores the glow instantly.
+    // Re-entering during the fade restores the full glow immediately.
     document.querySelectorAll('.animal-card.trade-eligible-glow')
         .forEach(card => {
-            card.getAnimations().forEach(animation => {
-                if (animation.id === 'trade-eligible-fade') animation.cancel();
-            });
+            clearTimeout(card._tradeGlowFadeTimer);
+            card.classList.remove('trade-eligible-glow-fading');
         });
 
     tradeEligibleGlowActive = true;
@@ -1781,6 +1829,7 @@ function createStartingZoo() {
     state.tradeOfferCache = new Map();
 
     state.turn = 1;
+    resetTurnHistory();
 
     state.enclosure10Unlocked =
         false;
@@ -1955,10 +2004,12 @@ function createStartingZoo() {
 // ============================================================
 
 function updateTurnDisplay() {
+    if (state.historyViewTurn !== null) {
+        turnOrder.textContent = `Turn ${state.historyViewTurn} · VIEWING`;
+        return;
+    }
 
-    turnOrder.textContent =
-        `Turn ${state.turn}`;
-
+    turnOrder.textContent = `Turn ${state.turn}`;
 }
 
 
@@ -3283,9 +3334,9 @@ function renderProgressTracker() {
         table.appendChild(h);
     }
 
-    const categories = Object.keys(FOLDERS).sort((a, b) =>
-        a.localeCompare(b, undefined, { sensitivity: 'base' })
-    );
+    // Visual order of the Category Progression rows in the header.
+    // Do not alphabetise this list: it follows the game's fixed progression order.
+    const categories = CATEGORY_PROGRESSION_ORDER;
 
     for (const category of categories) {
         const colour = state.categoryColours[category] || CATEGORY_COLOURS[category] || '#777';
@@ -3336,6 +3387,595 @@ function renderProgressTracker() {
     tracker.appendChild(table);
 }
 
+
+// ============================================================
+// V45 — SAVE / LOAD + READ-ONLY TURN HISTORY
+// ============================================================
+
+const SAVE_STORAGE_KEY = 'zooCuratorSavedGamesV1';
+const SAVE_FORMAT_VERSION = 1;
+const MAX_SAVE_SLOTS = 8;
+
+const SAVE_STATE_KEYS = [
+    'gameOptions',
+    'zooName',
+    'opponentNames',
+    'activeCategories',
+    'opponentProfiles',
+    'outgoingOffer',
+    'tradeOffers',
+    'selectedTradeOpponent',
+    'opponentTradeStocks',
+    'opponentStockCycle',
+    'autonomousTradeOffer',
+    'nextAutonomousOfferTurn',
+    'tradeOfferCache',
+    'unlockedOpponentCount',
+    'playerLevelsSeen',
+    'enclosures',
+    'animals',
+    'hand',
+    'exchange',
+    'result',
+    'nextId',
+    'turn',
+    'zoom',
+    'enclosure10Unlocked',
+    'enclosureRewards',
+    'glowingEnclosureIds',
+    'suppressedExchangeGlowIds',
+    'lastExchangeGroupCounts',
+    'discoveredCategoryLevels',
+    'acquiredLevel2Categories',
+    'awardedLevel2Milestones',
+    'awardedProgressMilestones',
+    'progressionGlowPinnedKeys',
+    'realZooUnlockedTier',
+    'realZooSessionHoldings'
+];
+
+function serialiseSpecial(value) {
+    if (value instanceof Set) {
+        return { __zooType: 'Set', values: [...value].map(serialiseSpecial) };
+    }
+    if (value instanceof Map) {
+        return {
+            __zooType: 'Map',
+            entries: [...value.entries()].map(([key, item]) => [
+                serialiseSpecial(key),
+                serialiseSpecial(item)
+            ])
+        };
+    }
+    if (Array.isArray(value)) return value.map(serialiseSpecial);
+    if (value && typeof value === 'object') {
+        const copy = {};
+        for (const [key, item] of Object.entries(value)) {
+            // Never save transient DOM objects, drag state or timers.
+            if (
+                key === 'element' ||
+                key === 'image' ||
+                key === 'sourceElement'
+            ) continue;
+            copy[key] = serialiseSpecial(item);
+        }
+        return copy;
+    }
+    return value;
+}
+
+function deserialiseSpecial(value) {
+    if (Array.isArray(value)) return value.map(deserialiseSpecial);
+    if (value && typeof value === 'object') {
+        if (value.__zooType === 'Set') {
+            return new Set((value.values || []).map(deserialiseSpecial));
+        }
+        if (value.__zooType === 'Map') {
+            return new Map((value.entries || []).map(([key, item]) => [
+                deserialiseSpecial(key),
+                deserialiseSpecial(item)
+            ]));
+        }
+        const copy = {};
+        for (const [key, item] of Object.entries(value)) {
+            copy[key] = deserialiseSpecial(item);
+        }
+        return copy;
+    }
+    return value;
+}
+
+function cloneForSave(value) {
+    return deserialiseSpecial(
+        JSON.parse(JSON.stringify(serialiseSpecial(value)))
+    );
+}
+
+function currentVisualSnapshot() {
+    return {
+        turn: state.turn,
+        zooName: state.zooName,
+        enclosures: cloneForSave(state.enclosures),
+        animals: cloneForSave(state.animals),
+        zoom: state.zoom
+    };
+}
+
+function captureTurnSnapshot() {
+    if (
+        !state.loaded ||
+        state.suppressHistoryCapture ||
+        state.historyViewTurn !== null
+    ) return;
+
+    const snapshot = currentVisualSnapshot();
+    const existingIndex = state.turnHistory.findIndex(
+        item => item.turn === snapshot.turn
+    );
+
+    if (existingIndex >= 0) {
+        state.turnHistory[existingIndex] = snapshot;
+    } else {
+        state.turnHistory.push(snapshot);
+        state.turnHistory.sort((a, b) => a.turn - b.turn);
+    }
+
+    updateHistoryControls();
+}
+
+function resetTurnHistory() {
+    state.turnHistory = [];
+    state.historyViewTurn = null;
+    state.historyLiveView = null;
+    document.body.classList.remove('history-viewing');
+}
+
+function exportCurrentGameState() {
+    const data = {};
+    for (const key of SAVE_STATE_KEYS) {
+        data[key] = cloneForSave(state[key]);
+    }
+
+    return {
+        version: SAVE_FORMAT_VERSION,
+        state: data,
+        turnHistory: cloneForSave(state.turnHistory),
+        view: {
+            scrollLeft: zooBoard.scrollLeft,
+            scrollTop: zooBoard.scrollTop
+        }
+    };
+}
+
+function relinkLoadedPlayerReferences() {
+    const byId = new Map(state.animals.map(animal => [animal.id, animal]));
+    state.hand = (state.hand || [])
+        .map(animal => byId.get(animal.id) || animal);
+    state.exchange = (state.exchange || [null, null])
+        .map(animal => animal ? (byId.get(animal.id) || animal) : null);
+    if (state.outgoingOffer) {
+        state.outgoingOffer =
+            byId.get(state.outgoingOffer.id) || state.outgoingOffer;
+    }
+}
+
+function importGameState(saveData) {
+    if (!saveData || !saveData.state) {
+        throw new Error('This save file does not contain a valid Zoo Curator game.');
+    }
+
+    exitHistoryView(false);
+    state.suppressHistoryCapture = true;
+
+    for (const key of SAVE_STATE_KEYS) {
+        if (Object.prototype.hasOwnProperty.call(saveData.state, key)) {
+            state[key] = cloneForSave(saveData.state[key]);
+        }
+    }
+
+    state.turnHistory = cloneForSave(saveData.turnHistory || []);
+    state.historyViewTurn = null;
+    state.historyLiveView = null;
+    state.drag = null;
+    state.pan = null;
+    relinkLoadedPlayerReferences();
+
+    document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
+    document.body.classList.remove('history-viewing');
+
+    renderAll();
+
+    requestAnimationFrame(() => {
+        if (saveData.view) {
+            zooBoard.scrollLeft = Number(saveData.view.scrollLeft) || 0;
+            zooBoard.scrollTop = Number(saveData.view.scrollTop) || 0;
+        }
+        state.suppressHistoryCapture = false;
+        captureTurnSnapshot();
+        updateHistoryControls();
+    });
+}
+
+function loadSaveSlots() {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(SAVE_STORAGE_KEY) || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.warn('Could not read saved games:', error);
+        return [];
+    }
+}
+
+function writeSaveSlots(slots) {
+    localStorage.setItem(SAVE_STORAGE_KEY, JSON.stringify(slots));
+}
+
+function saveCurrentGame(slotId = null) {
+    if (state.historyViewTurn !== null) {
+        alert('Return to the current turn before saving the game.');
+        return;
+    }
+
+    captureTurnSnapshot();
+
+    const slots = loadSaveSlots();
+    let existingIndex = slotId
+        ? slots.findIndex(slot => slot.id === slotId)
+        : -1;
+
+    let name = existingIndex >= 0
+        ? slots[existingIndex].name
+        : `Save ${slots.length + 1}`;
+
+    const entered = prompt('Name this save game:', name);
+    if (entered === null) return;
+
+    name = entered.trim() || name;
+
+    const record = {
+        id: existingIndex >= 0
+            ? slots[existingIndex].id
+            : `save-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        name,
+        zooName: state.zooName,
+        turn: state.turn,
+        animalCount: state.animals.length,
+        enclosureCount: state.enclosures.length,
+        savedAt: new Date().toISOString(),
+        game: exportCurrentGameState()
+    };
+
+    if (existingIndex >= 0) {
+        slots[existingIndex] = record;
+    } else {
+        if (slots.length >= MAX_SAVE_SLOTS) {
+            alert(`You can keep up to ${MAX_SAVE_SLOTS} saved games. Delete or overwrite one first.`);
+            return;
+        }
+        slots.unshift(record);
+    }
+
+    try {
+        writeSaveSlots(slots);
+        renderSaveSlots();
+    } catch (error) {
+        console.error(error);
+        alert(
+            'The browser could not store this save. Its local storage may be full. ' +
+            'Delete an older save and try again.'
+        );
+    }
+}
+
+function loadSavedGame(slotId) {
+    const record = loadSaveSlots().find(slot => slot.id === slotId);
+    if (!record) return;
+
+    const ok = confirm(
+        `Load “${record.name}”?\n\nYour current unsaved game will be replaced.`
+    );
+    if (!ok) return;
+
+    try {
+        importGameState(record.game);
+        closeSaveLoadMenu();
+    } catch (error) {
+        console.error(error);
+        alert(`Could not load this save:\n\n${error.message}`);
+    }
+}
+
+function deleteSavedGame(slotId) {
+    const slots = loadSaveSlots();
+    const record = slots.find(slot => slot.id === slotId);
+    if (!record) return;
+    if (!confirm(`Delete “${record.name}”?`)) return;
+
+    writeSaveSlots(slots.filter(slot => slot.id !== slotId));
+    renderSaveSlots();
+}
+
+function formatSaveDate(iso) {
+    try {
+        return new Intl.DateTimeFormat(undefined, {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+        }).format(new Date(iso));
+    } catch {
+        return iso || '';
+    }
+}
+
+function renderSaveSlots() {
+    const list = document.getElementById('saveSlotList');
+    if (!list) return;
+
+    const slots = loadSaveSlots();
+    list.innerHTML = '';
+
+    if (!slots.length) {
+        const empty = document.createElement('div');
+        empty.className = 'save-empty';
+        empty.textContent = 'No saved games yet.';
+        list.appendChild(empty);
+        return;
+    }
+
+    for (const slot of slots) {
+        const row = document.createElement('div');
+        row.className = 'save-slot';
+        row.innerHTML = `
+            <div class="save-slot-info">
+                <strong></strong>
+                <span class="save-slot-zoo"></span>
+                <span class="save-slot-meta"></span>
+            </div>
+            <div class="save-slot-actions">
+                <button type="button" data-action="load">Load</button>
+                <button type="button" data-action="overwrite">Overwrite</button>
+                <button type="button" data-action="delete">Delete</button>
+            </div>
+        `;
+
+        row.querySelector('strong').textContent = slot.name;
+        row.querySelector('.save-slot-zoo').textContent =
+            `${slot.zooName || 'Unnamed Zoo'} — Turn ${slot.turn || 1}`;
+        row.querySelector('.save-slot-meta').textContent =
+            `${slot.animalCount || 0} animals · ${slot.enclosureCount || 0} enclosure cards · ${formatSaveDate(slot.savedAt)}`;
+
+        row.querySelector('[data-action="load"]').addEventListener(
+            'click', () => loadSavedGame(slot.id)
+        );
+        row.querySelector('[data-action="overwrite"]').addEventListener(
+            'click', () => saveCurrentGame(slot.id)
+        );
+        row.querySelector('[data-action="delete"]').addEventListener(
+            'click', () => deleteSavedGame(slot.id)
+        );
+
+        list.appendChild(row);
+    }
+}
+
+function openSaveLoadMenu() {
+    if (state.historyViewTurn !== null) return;
+    renderSaveSlots();
+    document.getElementById('saveLoadOverlay')?.classList.add('visible');
+}
+
+function closeSaveLoadMenu() {
+    document.getElementById('saveLoadOverlay')?.classList.remove('visible');
+}
+
+function ensureSaveLoadUI() {
+    if (document.getElementById('saveLoadButton')) return;
+
+    const headerLeft = document.getElementById('headerLeft');
+    const optionsButton = document.getElementById('gameOptionsButton');
+    const turnDisplay = document.getElementById('turnOrder');
+
+    const button = document.createElement('button');
+    button.id = 'saveLoadButton';
+    button.type = 'button';
+    button.className = 'save-load-button';
+    button.textContent = 'Save / Load Game';
+
+    if (headerLeft) {
+        headerLeft.insertBefore(button, optionsButton || turnDisplay || headerLeft.firstChild);
+    }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'saveLoadOverlay';
+    overlay.className = 'save-load-overlay';
+    overlay.innerHTML = `
+        <div class="save-load-modal">
+            <h2>Save / Load Game</h2>
+            <p>Saved games are stored in this browser. Each save also keeps its turn-history viewer.</p>
+            <div id="saveSlotList" class="save-slot-list"></div>
+            <div class="save-load-footer">
+                <button type="button" id="saveCurrentGame">Save Current Game</button>
+                <button type="button" id="closeSaveLoad">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    button.addEventListener('click', openSaveLoadMenu);
+    overlay.querySelector('#saveCurrentGame').addEventListener(
+        'click', () => saveCurrentGame()
+    );
+    overlay.querySelector('#closeSaveLoad').addEventListener(
+        'click', closeSaveLoadMenu
+    );
+    overlay.addEventListener('pointerdown', event => {
+        if (event.target === overlay) closeSaveLoadMenu();
+    });
+}
+
+function ensureTurnHistoryUI() {
+    if (document.getElementById('turnHistoryPanel')) return;
+
+    turnOrder.classList.add('turn-history-trigger');
+    turnOrder.title = 'View previous turns';
+
+    const panel = document.createElement('div');
+    panel.id = 'turnHistoryPanel';
+    panel.className = 'turn-history-panel';
+    panel.innerHTML = `
+        <div class="turn-history-title">Turn History</div>
+        <div id="turnHistoryLabel" class="turn-history-label">Current turn</div>
+        <input id="turnHistorySlider" type="range" min="1" max="1" value="1" step="1">
+        <div class="turn-history-actions">
+            <button type="button" id="returnCurrentTurn">Return to Current Turn</button>
+            <button type="button" id="closeTurnHistory">Close</button>
+        </div>
+        <div class="turn-history-note">
+            Previous turns are view-only. You can still pan and zoom around the zoo.
+        </div>
+    `;
+    document.body.appendChild(panel);
+
+    turnOrder.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        panel.classList.toggle('visible');
+        updateHistoryControls();
+    });
+
+    panel.querySelector('#turnHistorySlider').addEventListener('input', event => {
+        viewHistoricalTurn(Number(event.target.value));
+    });
+
+    panel.querySelector('#returnCurrentTurn').addEventListener('click', () => {
+        exitHistoryView(true);
+    });
+
+    panel.querySelector('#closeTurnHistory').addEventListener('click', () => {
+        panel.classList.remove('visible');
+    });
+}
+
+function updateHistoryControls() {
+    const slider = document.getElementById('turnHistorySlider');
+    const label = document.getElementById('turnHistoryLabel');
+    const returnButton = document.getElementById('returnCurrentTurn');
+    if (!slider || !label) return;
+
+    const turns = state.turnHistory.map(item => item.turn);
+    const minimum = turns.length ? Math.min(...turns) : state.turn;
+    const maximum = turns.length ? Math.max(...turns, state.turn) : state.turn;
+
+    slider.min = String(minimum);
+    slider.max = String(maximum);
+    slider.value = String(
+        state.historyViewTurn === null ? state.turn : state.historyViewTurn
+    );
+
+    if (state.historyViewTurn === null) {
+        label.textContent = `Current Turn ${state.turn}`;
+        if (returnButton) returnButton.disabled = true;
+    } else {
+        label.textContent =
+            `Viewing Turn ${state.historyViewTurn} — READ ONLY`;
+        if (returnButton) returnButton.disabled = false;
+    }
+}
+
+function viewHistoricalTurn(turn) {
+    const snapshot = state.turnHistory.find(item => item.turn === turn);
+
+    // The far-right/current value always means return to the live game.
+    if (!snapshot || turn === state.turn) {
+        exitHistoryView(true);
+        return;
+    }
+
+    if (state.historyViewTurn === null) {
+        state.historyLiveView = currentVisualSnapshot();
+    }
+
+    state.historyViewTurn = turn;
+    state.suppressHistoryCapture = true;
+
+    // Historical turns never show or activate blue trade-interest hints.
+    clearTradeEligibleGlow();
+
+    state.enclosures = cloneForSave(snapshot.enclosures);
+    state.animals = cloneForSave(snapshot.animals);
+    state.zoom = snapshot.zoom || state.zoom;
+    document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
+
+    document.body.classList.add('history-viewing');
+    renderZoo();
+    turnOrder.textContent = `Turn ${turn} · VIEWING`;
+    updateHistoryControls();
+
+    state.suppressHistoryCapture = false;
+}
+
+function exitHistoryView(render = true) {
+    if (state.historyViewTurn === null) return;
+
+    const live = state.historyLiveView;
+    state.suppressHistoryCapture = true;
+
+    if (live) {
+        state.enclosures = cloneForSave(live.enclosures);
+        state.animals = cloneForSave(live.animals);
+        state.zoom = live.zoom || state.zoom;
+        document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
+    }
+
+    state.historyViewTurn = null;
+    state.historyLiveView = null;
+    document.body.classList.remove('history-viewing');
+
+    if (render) renderAll();
+    else updateTurnDisplay();
+
+    state.suppressHistoryCapture = false;
+    updateHistoryControls();
+}
+
+// Capture-phase protection makes historical zoo states genuinely read-only.
+// The zoo board itself is deliberately not blocked, so its pan/zoom handlers
+// continue to work. Animal/enclosure interaction is disabled by CSS below.
+
+document.addEventListener('pointerdown', event => {
+    if (state.historyViewTurn === null) return;
+
+    // Animal cards remain interactive for preview/zoom/info in history mode,
+    // but pointer movement must never become a gameplay drag.
+    if (event.target.closest('#zooCanvas .animal-card')) {
+        // Do not preventDefault(): click/tap and hover preview functionality
+        // must still complete. Stopping propagation keeps board drag logic out.
+        event.stopPropagation();
+        return;
+    }
+
+    // Enclosure cards are never draggable in historical snapshots. Stop the
+    // event before the zoo-board drag handler can interpret it as an enclosure
+    // move. Empty zoo-board space remains available for panning.
+    if (event.target.closest('#zooCanvas .enclosure')) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+    }
+}, true);
+
+document.addEventListener('click', event => {
+    if (state.historyViewTurn === null) return;
+
+    const allowed = event.target.closest(
+        '#turnHistoryPanel, #turnOrder, #zooBoard, #hoverPreview, #animalInfoPanel'
+    );
+    if (allowed) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+}, true);
+
+
 // ============================================================
 // RENDER ALL
 // ============================================================
@@ -3351,6 +3991,7 @@ function renderAll() {
     renderTrade();
     renderProgressTracker();
     updateTurnDisplay();
+    captureTurnSnapshot();
 }
 
 
@@ -7081,12 +7722,9 @@ async function startGame() {
         }
 
 
-        setLoading(
-            'Loading Zoo Curator...',
-            'Matching progression colours to animal cards...'
-        );
-
-        await sampleAllCategoryColours();
+        // Category progression colours are fixed game data. No image sampling
+        // is performed, which avoids mobile image-decoding stalls.
+        state.categoryColours = { ...CATEGORY_COLOURS };
 
         setLoading(
             'Loading Zoo Curator...',
@@ -7096,6 +7734,8 @@ async function startGame() {
 
         assignZooNames();
         ensureGameOptionsUI();
+        ensureSaveLoadUI();
+        ensureTurnHistoryUI();
         setupOpponentTradeClicks();
 
 
@@ -7186,5 +7826,3 @@ startGame();
 
 
 window.addEventListener('resize', () => { positionOpponentTradeArea(); });
-
-

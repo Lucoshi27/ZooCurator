@@ -1838,3 +1838,279 @@ body {
     }
 }
 
+/* ============================================================
+   V44 — BLUE TRADE GLOW FADE
+   ============================================================ */
+.animal-card.trade-eligible-glow {
+    transition: filter 1s ease-out;
+}
+
+.animal-card.trade-eligible-glow.trade-eligible-glow-fading {
+    filter:
+        drop-shadow(0 0 0 rgba(65, 170, 255, 0))
+        drop-shadow(0 0 0 rgba(65, 170, 255, 0))
+        drop-shadow(0 0 0 rgba(65, 170, 255, 0)) !important;
+}
+
+
+/* ============================================================
+   V45 — SAVE / LOAD + TURN HISTORY
+   ============================================================ */
+
+#headerLeft {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+}
+
+/* Save/Load is the new top control. Options and turn counter sit beneath it. */
+#headerLeft .save-load-button {
+    order: 1;
+}
+#headerLeft .game-options-button {
+    order: 2;
+}
+#headerLeft #turnOrder {
+    order: 3;
+}
+
+.save-load-button {
+    border: 1px solid rgba(70, 58, 39, 0.45);
+    background: #fffdf6;
+    color: #30291f;
+    border-radius: 7px;
+    padding: 7px 11px;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 2px 7px rgba(0,0,0,0.12);
+}
+.save-load-button:hover {
+    background: #f7f3e8;
+}
+
+.save-load-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+    background: rgba(18, 17, 14, 0.62);
+}
+.save-load-overlay.visible {
+    display: flex;
+}
+.save-load-modal {
+    width: min(760px, 94vw);
+    max-height: min(760px, 88vh);
+    overflow: auto;
+    background: #fffdf7;
+    color: #29241d;
+    border: 2px solid rgba(75, 62, 42, 0.45);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 20px 70px rgba(0,0,0,0.38);
+}
+.save-load-modal h2 {
+    margin: 0 0 6px;
+}
+.save-load-modal > p {
+    margin: 0 0 16px;
+    opacity: 0.76;
+}
+.save-slot-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+.save-empty {
+    padding: 28px 14px;
+    text-align: center;
+    border: 1px dashed rgba(60,50,35,0.35);
+    border-radius: 8px;
+    opacity: 0.7;
+}
+.save-slot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid rgba(70,58,39,0.25);
+    border-radius: 9px;
+    background: rgba(255,255,255,0.7);
+}
+.save-slot-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.save-slot-info strong {
+    font-size: 16px;
+}
+.save-slot-zoo {
+    font-weight: 700;
+}
+.save-slot-meta {
+    font-size: 12px;
+    opacity: 0.68;
+}
+.save-slot-actions,
+.save-load-footer,
+.turn-history-actions {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+.save-slot-actions button,
+.save-load-footer button,
+.turn-history-actions button {
+    border: 1px solid rgba(70,58,39,0.35);
+    border-radius: 6px;
+    background: #fff;
+    padding: 7px 10px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+.save-slot-actions button:hover,
+.save-load-footer button:hover,
+.turn-history-actions button:hover {
+    background: #f3eee2;
+}
+.save-load-footer {
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.turn-history-trigger {
+    cursor: pointer;
+    user-select: none;
+}
+.turn-history-trigger:hover {
+    text-decoration: underline;
+}
+.turn-history-panel {
+    position: fixed;
+    z-index: 11500;
+    left: 18px;
+    top: 138px;
+    width: min(390px, calc(100vw - 36px));
+    display: none;
+    padding: 14px;
+    border: 2px solid rgba(68,58,42,0.42);
+    border-radius: 10px;
+    background: rgba(255,253,247,0.97);
+    color: #29241d;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.28);
+}
+.turn-history-panel.visible {
+    display: block;
+}
+.turn-history-title {
+    font-weight: 900;
+    font-size: 17px;
+}
+.turn-history-label {
+    margin-top: 4px;
+    font-weight: 800;
+}
+#turnHistorySlider {
+    width: 100%;
+    margin: 14px 0 12px;
+}
+.turn-history-note {
+    margin-top: 10px;
+    font-size: 12px;
+    line-height: 1.35;
+    opacity: 0.72;
+}
+
+/* Historical turns are museum mode: board pan/zoom remains active, but
+   animals/enclosures cannot be dragged and gameplay controls cannot mutate. */
+body.history-viewing #headerActions,
+body.history-viewing #hand,
+body.history-viewing #exchangeControls,
+body.history-viewing #opponentTradeArea,
+body.history-viewing #gameOptionsButton,
+body.history-viewing #saveLoadButton {
+    pointer-events: none !important;
+    opacity: 0.42;
+}
+/* Animal cards deliberately KEEP pointer events in history mode so their
+   normal preview / zoom / flip-to-info functionality remains available.
+   Enclosures stay locked. */
+body.history-viewing #zooCanvas .enclosure {
+    pointer-events: none !important;
+}
+body.history-viewing #turnOrder {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+
+@media (max-width: 700px) {
+    #headerLeft {
+        gap: 4px;
+    }
+    #headerLeft .save-load-button,
+    #headerLeft .game-options-button {
+        font-size: 10px;
+        padding: 5px 7px;
+    }
+    .save-slot {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .save-slot-actions button {
+        flex: 1 1 auto;
+    }
+    .turn-history-panel {
+        left: 10px;
+        top: 110px;
+        width: calc(100vw - 20px);
+    }
+}
+
+/* ============================================================
+   V47 — NO YELLOW UPGRADE GLOW IN TURN-HISTORY VIEW
+   ============================================================ */
+
+/* Historical snapshots are inspection-only. Upgrade-ready/selected yellow
+   effects belong exclusively to the live turn. */
+body.history-viewing #zooCanvas .animal-card {
+    filter: none !important;
+    box-shadow: none !important;
+}
+
+/* ============================================================
+   V48 — NO BLUE TRADE GLOW IN TURN-HISTORY VIEW
+   ============================================================ */
+body.history-viewing #zooCanvas .animal-card.trade-eligible-glow,
+body.history-viewing #zooCanvas .animal-card.trade-eligible-glow-fading {
+    filter: none !important;
+    box-shadow: none !important;
+}
+
+/* ============================================================
+   V49 — LOCK ENCLOSURES IN TURN-HISTORY VIEW
+   ============================================================ */
+body.history-viewing #zooCanvas .enclosure,
+body.history-viewing #zooCanvas .enclosure * {
+    pointer-events: none !important;
+    user-select: none !important;
+    -webkit-user-drag: none !important;
+}
+
+
+
+/* ============================================================
+   V50 — HISTORICAL ANIMAL PREVIEW / ZOOM RESTORED
+   ============================================================ */
+body.history-viewing #zooCanvas .animal-card {
+    pointer-events: auto !important;
+    cursor: zoom-in;
+}

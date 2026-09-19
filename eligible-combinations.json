@@ -1,65 +1,1795 @@
 {
-  "schema_version": 1,
+  "schema_version": "1.6",
   "compatibility_is_symmetric": true,
-  "enclosure_validation": {
-    "supported_space_counts": [
-      1,
-      2,
-      3
-    ],
-    "multi_animal_rule": "connected_compatibility_chain",
-    "rule_description": "An enclosure with two or more different animals is eligible when every animal is connected, directly or through another animal in that enclosure, to the same compatibility chain. Not every possible pair needs its own direct compatibility rule."
-  },
-  "groups": {
-    "meerkat_compatible_animals": [
+  "enclosure_validation": "connected_compatibility_chain",
+  "compatible_pairs": [
+    [
       "Aardvark",
-      "African Brush-Tailed Porcupine",
-      "African Elephant",
-      "African Lion",
-      "African Spurred Tortoise",
-      "Angolan Giraffe",
+      "Aardwolf"
+    ],
+    [
+      "Aardvark",
+      "African Brush-Tailed Porcupine"
+    ],
+    [
+      "Aardvark",
+      "Bat-Eared Fox"
+    ],
+    [
+      "Aardvark",
+      "Cape Porcupine"
+    ],
+    [
+      "Aardvark",
+      "Dwarf Mongoose"
+    ],
+    [
+      "Aardvark",
+      "Egyptian Fruit Bat"
+    ],
+    [
+      "Aardvark",
+      "Fennec Fox"
+    ],
+    [
+      "Aardvark",
+      "Indian Flying Fox"
+    ],
+    [
+      "Aardvark",
+      "Meerkat"
+    ],
+    [
+      "Aardvark",
+      "Rock Hyrax"
+    ],
+    [
+      "Aardvark",
+      "Rodriguez Flying Fox"
+    ],
+    [
       "Aardwolf",
-      "Banded Mongoose",
-      "Bat-Eared Fox",
-      "Black Wildebeest",
-      "Blue Crane",
-      "Cape Porcupine",
-      "Common Warthog",
-      "Dalmatian Pelican",
-      "Dwarf Mongoose",
-      "Fennec Fox",
-      "Great White Pelican",
-      "Grévy's Zebra",
-      "Hamadryas Baboon",
-      "Indian Crested Porcupine",
-      "Kirk's Dik-Dik",
-      "Klipspringer",
-      "Kordofan Giraffe",
-      "Lechwe",
-      "Leopard Tortoise",
-      "Masai Giraffe",
-      "Pink-Backed Pelican",
-      "Plains Zebra",
-      "Red Ruffed Lemur",
-      "Red River Hog",
-      "Red-Crested Turaco",
-      "Red-Faced Spider Monkey",
-      "Reticulated Giraffe",
-      "Ring-Tailed Lemur",
-      "Rock Hyrax",
-      "Rothschild's Giraffe",
-      "Von Der Decken's Hornbill",
-      "Western Lowland Gorilla",
+      "Cape Porcupine"
+    ],
+    [
+      "Aardwolf",
+      "Meerkat"
+    ],
+    [
+      "Abyssian Ground Hornbill",
+      "Secretary Bird"
+    ],
+    [
+      "African Brush-Tailed Porcupine",
+      "Meerkat"
+    ],
+    [
+      "African Elephant",
+      "Meerkat"
+    ],
+    [
+      "African Grey Hornbill",
+      "African Pied Hornbill"
+    ],
+    [
+      "African Grey Hornbill",
+      "Great Blue Turaco"
+    ],
+    [
+      "African Lion",
+      "Meerkat"
+    ],
+    [
+      "African Lion",
       "Yellow Mongoose"
+    ],
+    [
+      "African Pied Hornbill",
+      "Great Blue Turaco"
+    ],
+    [
+      "African Spurred Tortoise",
+      "Cheetah"
+    ],
+    [
+      "African Spurred Tortoise",
+      "Dwarf Mongoose"
+    ],
+    [
+      "African Spurred Tortoise",
+      "Emu"
+    ],
+    [
+      "African Spurred Tortoise",
+      "Indian Crested Porcupine"
+    ],
+    [
+      "African Spurred Tortoise",
+      "Meerkat"
+    ],
+    [
+      "African Spurred Tortoise",
+      "Ring-Tailed Lemur"
+    ],
+    [
+      "African Spurred Tortoise",
+      "Rock Hyrax"
+    ],
+    [
+      "African Spurred Tortoise",
+      "Yellow Mongoose"
+    ],
+    [
+      "African Wild Dog",
+      "Grey Wolf"
+    ],
+    [
+      "African Wild Dog",
+      "White Rhinoceros"
+    ],
+    [
+      "Alaotran Bamboo Lemur",
+      "Crowned Sifaka"
+    ],
+    [
+      "Aldabra Giant Tortoise",
+      "Patagonian Mara"
+    ],
+    [
+      "Aldabra Giant Tortoise",
+      "Sulawesi Babirusa"
+    ],
+    [
+      "Alpaca",
+      "Patagonian Mara"
+    ],
+    [
+      "American Bison",
+      "American Black Bear"
+    ],
+    [
+      "American Black Bear",
+      "Collared Peccary"
+    ],
+    [
+      "American Black Bear",
+      "Cougar"
+    ],
+    [
+      "American Black Bear",
+      "Grey Wolf"
+    ],
+    [
+      "American Black Bear",
+      "Moose"
+    ],
+    [
+      "American Black Bear",
+      "Reindeer"
+    ],
+    [
+      "Angolan Giraffe",
+      "Meerkat"
+    ],
+    [
+      "Arctic Fox",
+      "Brown Bear"
+    ],
+    [
+      "Arctic Fox",
+      "Common Raccoon"
+    ],
+    [
+      "Asian Palm Civet",
+      "Leopard Cat"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "Binturong"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "Black Howler Monkey"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "Bornean Orangutan"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "Capybara"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "Common Raccoon"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "Indian Crested Porcupine"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "Indian Rhinoceros"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "Malayan Tapir"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "Nepalese Red Panda"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "Red Ruffed Lemur"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "Sloth Bear"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "South American Coati"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "South American Tapir"
+    ],
+    [
+      "Asian Small-Clawed Otter",
+      "Spectacled Bear"
+    ],
+    [
+      "Banded Mongoose",
+      "Common Warthog"
+    ],
+    [
+      "Banded Mongoose",
+      "Leopard Tortoise"
+    ],
+    [
+      "Banded Mongoose",
+      "Mandrill"
+    ],
+    [
+      "Banded Mongoose",
+      "Meerkat"
+    ],
+    [
+      "Banded Mongoose",
+      "Red River Hog"
+    ],
+    [
+      "Banded Mongoose",
+      "Rock Hyrax"
+    ],
+    [
+      "Bat-Eared Fox",
+      "Dwarf Mongoose"
+    ],
+    [
+      "Bat-Eared Fox",
+      "Meerkat"
+    ],
+    [
+      "Bat-Eared Fox",
+      "Yellow Mongoose"
+    ],
+    [
+      "Bearded Emperor Tamarin",
+      "Goeldi's Monkey"
+    ],
+    [
+      "Bearded Emperor Tamarin",
+      "Golden Handed Tamarin"
+    ],
+    [
+      "Bearded Emperor Tamarin",
+      "Hilaire's Side-Necked Turtle"
+    ],
+    [
+      "Bearded Emperor Tamarin",
+      "White-Faced Saki"
+    ],
+    [
+      "Binturong",
+      "Dhole"
+    ],
+    [
+      "Binturong",
+      "Leopard Cat"
+    ],
+    [
+      "Binturong",
+      "Lion-Tailed Macaque"
+    ],
+    [
+      "Binturong",
+      "Malayan Tapir"
+    ],
+    [
+      "Binturong",
+      "Sun Bear"
+    ],
+    [
+      "Black and White Ruffed Lemur",
+      "Blue-Eyed Black Lemur"
+    ],
+    [
+      "Black and White Ruffed Lemur",
+      "Crowned Lemur"
+    ],
+    [
+      "Black and White Ruffed Lemur",
+      "Radiated Tortoise"
+    ],
+    [
+      "Black and White Ruffed Lemur",
+      "Red Ruffed Lemur"
+    ],
+    [
+      "Black and White Ruffed Lemur",
+      "Red-Fronted Lemur"
+    ],
+    [
+      "Black and White Ruffed Lemur",
+      "Ring-Tailed Lemur"
+    ],
+    [
+      "Black Howler Monkey",
+      "Golden Lion Tamarin"
+    ],
+    [
+      "Black Howler Monkey",
+      "Golden-Headed Lion Tamarin"
+    ],
+    [
+      "Black Howler Monkey",
+      "Maned Wolf"
+    ],
+    [
+      "Black Howler Monkey",
+      "Nile Softshelled Turtle"
+    ],
+    [
+      "Black Howler Monkey",
+      "South American Coati"
+    ],
+    [
+      "Black Howler Monkey",
+      "White-Faced Saki"
+    ],
+    [
+      "Black Lemur",
+      "Black and White Ruffed Lemur"
+    ],
+    [
+      "Black Lemur",
+      "Blue-Eyed Black Lemur"
+    ],
+    [
+      "Black Lemur",
+      "Crowned Lemur"
+    ],
+    [
+      "Black Lemur",
+      "Red Ruffed Lemur"
+    ],
+    [
+      "Black Lemur",
+      "Ring-Tailed Lemur"
+    ],
+    [
+      "Black Lemur",
+      "White-Fronted Lemur"
+    ],
+    [
+      "Black Wildebeest",
+      "Meerkat"
+    ],
+    [
+      "Blue Crane",
+      "Meerkat"
+    ],
+    [
+      "Blue-And-Yellow Macaw",
+      "Blue-Fronted Amazon"
+    ],
+    [
+      "Blue-And-Yellow Macaw",
+      "Blue-Headed Parrot"
+    ],
+    [
+      "Blue-And-Yellow Macaw",
+      "Blue-Winged Macaw"
+    ],
+    [
+      "Blue-And-Yellow Macaw",
+      "Livingstone's Turaco"
+    ],
+    [
+      "Blue-And-Yellow Macaw",
+      "Military Macaw"
+    ],
+    [
+      "Blue-And-Yellow Macaw",
+      "Red-And-Green Macaw"
+    ],
+    [
+      "Blue-And-Yellow Macaw",
+      "Red-Shouldered Macaw"
+    ],
+    [
+      "Blue-And-Yellow Macaw",
+      "Scaly-Headed Parrot"
+    ],
+    [
+      "Blue-And-Yellow Macaw",
+      "Scarlet Macaw"
+    ],
+    [
+      "Blue-And-Yellow Macaw",
+      "Toco Toucan"
+    ],
+    [
+      "Blue-And-Yellow Macaw",
+      "Vinaceous-Breasted Amazon"
+    ],
+    [
+      "Blue-And-Yellow Macaw",
+      "Yellow-Naped Amazon"
+    ],
+    [
+      "Blue-Eyed Black Lemur",
+      "Red Ruffed Lemur"
+    ],
+    [
+      "Blue-Eyed Black Lemur",
+      "Ring-Tailed Lemur"
+    ],
+    [
+      "Blue-Fronted Amazon",
+      "Military Macaw"
+    ],
+    [
+      "Blue-Fronted Amazon",
+      "Scarlet Macaw"
+    ],
+    [
+      "Blue-Fronted Amazon",
+      "Toco Toucan"
+    ],
+    [
+      "Blue-Fronted Amazon",
+      "Yellow-Naped Amazon"
+    ],
+    [
+      "Blue-Headed Parrot",
+      "Blue-Winged Macaw"
+    ],
+    [
+      "Blue-Headed Parrot",
+      "Red-Shouldered Macaw"
+    ],
+    [
+      "Blue-Headed Parrot",
+      "Scaly-Headed Parrot"
+    ],
+    [
+      "Blue-Headed Parrot",
+      "Scarlet Macaw"
+    ],
+    [
+      "Blue-Headed Parrot",
+      "Vinaceous-Breasted Amazon"
+    ],
+    [
+      "Blue-Winged Macaw",
+      "Red-Shouldered Macaw"
+    ],
+    [
+      "Blue-Winged Macaw",
+      "Scaly-Headed Parrot"
+    ],
+    [
+      "Blue-Winged Macaw",
+      "Scarlet Macaw"
+    ],
+    [
+      "Blue-Winged Macaw",
+      "Southern Three-Banded Armadillo"
+    ],
+    [
+      "Blue-Winged Macaw",
+      "Vinaceous-Breasted Amazon"
+    ],
+    [
+      "Bobcat",
+      "Canadian Lynx"
+    ],
+    [
+      "Bobcat",
+      "Eurasian Lynx"
+    ],
+    [
+      "Bobcat",
+      "Serval"
+    ],
+    [
+      "Brazilian Porcupine",
+      "Green Aracari"
+    ],
+    [
+      "Brown Bear",
+      "Corsac Fox"
+    ],
+    [
+      "Brown Bear",
+      "Eurasian Lynx"
+    ],
+    [
+      "Brown Bear",
+      "Golden Jackal"
+    ],
+    [
+      "Brown Bear",
+      "Grey Wolf"
+    ],
+    [
+      "Brown Bear",
+      "Red Fox"
+    ],
+    [
+      "Brown Bear",
+      "Wolverine"
+    ],
+    [
+      "Bush Dog",
+      "Crab-Eating Raccoon"
+    ],
+    [
+      "Bush Dog",
+      "Spectacled Bear"
+    ],
+    [
+      "Bush Dog",
+      "White-Nosed Coati"
+    ],
+    [
+      "Cape Buffalo",
+      "Trumpeter Hornbill"
+    ],
+    [
+      "Cape Buffalo",
+      "Violet Turaco"
+    ],
+    [
+      "Cape Buffalo",
+      "Von Der Decken's Hornbill"
+    ],
+    [
+      "Cape Buffalo",
+      "White-Crested Turaco"
+    ],
+    [
+      "Cape Porcupine",
+      "Common Warthog"
+    ],
+    [
+      "Cape Porcupine",
+      "Dwarf Mongoose"
+    ],
+    [
+      "Cape Porcupine",
+      "Meerkat"
+    ],
+    [
+      "Cape Porcupine",
+      "Vervet Monkey"
+    ],
+    [
+      "Cape Porcupine",
+      "Yellow Mongoose"
+    ],
+    [
+      "Capybara",
+      "Giant Anteater"
+    ],
+    [
+      "Capybara",
+      "Maned Wolf"
+    ],
+    [
+      "Capybara",
+      "Patagonian Mara"
+    ],
+    [
+      "Capybara",
+      "Pond Slider"
+    ],
+    [
+      "Capybara",
+      "Spectacled Bear"
+    ],
+    [
+      "Capybara",
+      "White-Nosed Coati"
+    ],
+    [
+      "Capybara",
+      "Yellow-Footed Tortoise"
+    ],
+    [
+      "Caracal",
+      "Indian Crested Porcupine"
+    ],
+    [
+      "Caracal",
+      "Serval"
+    ],
+    [
+      "Cheetah",
+      "Common Eland"
+    ],
+    [
+      "Cheetah",
+      "Plains Zebra"
+    ],
+    [
+      "Cheetah",
+      "Pygmy Hippopotamus"
+    ],
+    [
+      "Cheetah",
+      "Reticulated Giraffe"
+    ],
+    [
+      "Cheetah",
+      "White Rhinoceros"
+    ],
+    [
+      "Common Eland",
+      "Serval"
+    ],
+    [
+      "Common Genet",
+      "Western Lowland Gorilla"
+    ],
+    [
+      "Common Kusimanse",
+      "Blue-Eyed Black Lemur"
+    ],
+    [
+      "Common Kusimanse",
+      "Diana Monkey"
+    ],
+    [
+      "Common Marmoset",
+      "Goeldi's Monkey"
+    ],
+    [
+      "Common Marmoset",
+      "White-Faced Saki"
+    ],
+    [
+      "Common Raccoon",
+      "Crab-Eating Raccoon"
+    ],
+    [
+      "Common Raccoon",
+      "Raccoon Dog"
+    ],
+    [
+      "Common Raccoon",
+      "Red Fox"
+    ],
+    [
+      "Common Raccoon",
+      "South American Coati"
+    ],
+    [
+      "Common Raccoon",
+      "Striped Skunk"
+    ],
+    [
+      "Common Squirrel Monkey",
+      "Hilaire's Side-Necked Turtle"
+    ],
+    [
+      "Common Squirrel Monkey",
+      "White-Faced Saki"
+    ],
+    [
+      "Common Squirrel Monkey",
+      "Yellow-Spotted Amazon River Turtle"
+    ],
+    [
+      "Common Warthog",
+      "Hamadryas Baboon"
+    ],
+    [
+      "Common Warthog",
+      "Meerkat"
+    ],
+    [
+      "Coquerel's Sifaka",
+      "Red Ruffed Lemur"
+    ],
+    [
+      "Corsac Fox",
+      "Sloth Bear"
+    ],
+    [
+      "Cotton-Top Tamarin",
+      "Goeldi's Monkey"
+    ],
+    [
+      "Cotton-Top Tamarin",
+      "Golden Lion Tamarin"
+    ],
+    [
+      "Cotton-Top Tamarin",
+      "Linneaus's Two-Toed Sloth"
+    ],
+    [
+      "Cotton-Top Tamarin",
+      "Red-Footed Tortoise"
+    ],
+    [
+      "Cotton-Top Tamarin",
+      "White-Faced Saki"
+    ],
+    [
+      "Cougar",
+      "Grey Wolf"
+    ],
+    [
+      "Crab-Eating Raccoon",
+      "Tayra"
+    ],
+    [
+      "Crab-Eating Raccoon",
+      "White-Nosed Coati"
+    ],
+    [
+      "Crowned Lemur",
+      "Red Ruffed Lemur"
+    ],
+    [
+      "Crowned Lemur",
+      "Red-Fronted Lemur"
+    ],
+    [
+      "Crowned Lemur",
+      "Ring-Tailed Lemur"
+    ],
+    [
+      "Crowned Lemur",
+      "Ring-Tailed Vontsira"
+    ],
+    [
+      "Crowned Lemur",
+      "White-Fronted Lemur"
+    ],
+    [
+      "Dalmatian Pelican",
+      "Meerkat"
+    ],
+    [
+      "De Brazza's Monkey",
+      "Red River Hog"
+    ],
+    [
+      "Dhole",
+      "Sun Bear"
+    ],
+    [
+      "Drill",
+      "Pygmy Hippopotamus"
+    ],
+    [
+      "Dwarf Mongoose",
+      "Fennec Fox"
+    ],
+    [
+      "Dwarf Mongoose",
+      "Indian Crested Porcupine"
+    ],
+    [
+      "Dwarf Mongoose",
+      "Kirk's Dik-Dik"
+    ],
+    [
+      "Dwarf Mongoose",
+      "Klipspringer"
+    ],
+    [
+      "Dwarf Mongoose",
+      "Leopard Tortoise"
+    ],
+    [
+      "Dwarf Mongoose",
+      "Meerkat"
+    ],
+    [
+      "Dwarf Mongoose",
+      "Nile Crocodile"
+    ],
+    [
+      "Dwarf Mongoose",
+      "Rock Hyrax"
+    ],
+    [
+      "Dwarf Mongoose",
+      "Trumpeter Hornbill"
+    ],
+    [
+      "Dwarf Mongoose",
+      "Von Der Decken's Hornbill"
+    ],
+    [
+      "Egyptian Vulture",
+      "Griffon Vulture"
+    ],
+    [
+      "Egyptian Vulture",
+      "Monk Vulture"
+    ],
+    [
+      "Egyptian Vulture",
+      "Red Kite"
+    ],
+    [
+      "Fennec Fox",
+      "Meerkat"
+    ],
+    [
+      "Fennec Fox",
+      "Trumpeter Hornbill"
+    ],
+    [
+      "Fennec Fox",
+      "Yellow Mongoose"
+    ],
+    [
+      "Gelada",
+      "Rock Hyrax"
+    ],
+    [
+      "Geoffroy's Tufted-Ear Marmoset",
+      "Goeldi's Monkey"
+    ],
+    [
+      "Giant Anteater",
+      "Goeldi's Monkey"
+    ],
+    [
+      "Giant Anteater",
+      "Linneaus's Two-Toed Sloth"
+    ],
+    [
+      "Giant Anteater",
+      "Maned Wolf"
+    ],
+    [
+      "Giant Anteater",
+      "Patagonian Mara"
+    ],
+    [
+      "Giant Anteater",
+      "White-Nosed Coati"
+    ],
+    [
+      "Goeldi's Monkey",
+      "African Grey Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Black-Headed Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Blue-Cheeked Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Blue-Fronted Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Blue-Headed Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Bronze-Winged Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Cuban Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Diademed Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Festive Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Golden Lion Tamarin"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Golden-Headed Lion Tamarin"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Kea"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Lilac-Crowned Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Lilacine Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Linnaeus's Two-Toed Sloth"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Linneaus's Two-Toed Sloth"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Mealy Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Meyer's Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Northern Kaka"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Orange-Winged Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Pacific Parrotlet"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Pygmy Marmoset"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Red-Crowned Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Red-Fan Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Red-Fronted Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Red-Lored Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Red-Tailed Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Scaly-Headed Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Senegal Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Southern Three-Banded Armadillo"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Spectacled Parrotlet"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Timneh Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Vinaceous-Breasted Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "White-Bellied Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "White-Crowned Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "White-Faced Saki"
+    ],
+    [
+      "Goeldi's Monkey",
+      "White-Fronted Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Yellow-Billed Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Yellow-Crowned Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Yellow-Faced Parrot"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Yellow-Headed Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Yellow-Naped Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Yellow-Shouldered Amazon"
+    ],
+    [
+      "Goeldi's Monkey",
+      "Yucatan Amazon"
+    ],
+    [
+      "Golden Jackal",
+      "Sloth Bear"
+    ],
+    [
+      "Golden Lion Tamarin",
+      "Golden-Headed Lion Tamarin"
+    ],
+    [
+      "Golden Lion Tamarin",
+      "Linneaus's Two-Toed Sloth"
+    ],
+    [
+      "Golden Lion Tamarin",
+      "Red-Footed Tortoise"
+    ],
+    [
+      "Golden Lion Tamarin",
+      "Southern Three-Banded Armadillo"
+    ],
+    [
+      "Golden Lion Tamarin",
+      "White-Faced Saki"
+    ],
+    [
+      "Golden-Headed Lion Tamarin",
+      "Hilaire's Side-Necked Turtle"
+    ],
+    [
+      "Golden-Headed Lion Tamarin",
+      "White-Faced Saki"
+    ],
+    [
+      "Golden-Headed Lion Tamarin",
+      "Yellow-Spotted Amazon River Turtle"
+    ],
+    [
+      "Great Indian Hornbill",
+      "Oriental Pied Hornbill"
+    ],
+    [
+      "Great White Pelican",
+      "Meerkat"
+    ],
+    [
+      "Greater Rhea",
+      "Patagonian Mara"
+    ],
+    [
+      "Green Aracari",
+      "Burrowing Owl"
+    ],
+    [
+      "Green Aracari",
+      "Common Green Iguana"
+    ],
+    [
+      "Green Aracari",
+      "Roseate Spoonbill"
+    ],
+    [
+      "Green Aracari",
+      "Scarlet Ibis"
+    ],
+    [
+      "Green Aracari",
+      "Scarlet Macaw"
+    ],
+    [
+      "Green Aracari",
+      "Sunbittern"
+    ],
+    [
+      "Grey Kangaroo",
+      "Red Kangaroo"
+    ],
+    [
+      "Grey Kangaroo",
+      "Red-necked Wallaby"
+    ],
+    [
+      "Grey Wolf",
+      "Moose"
+    ],
+    [
+      "Griffon Vulture",
+      "Monk Vulture"
+    ],
+    [
+      "Griffon Vulture",
+      "Red Kite"
+    ],
+    [
+      "Grévy's Zebra",
+      "Meerkat"
+    ],
+    [
+      "Guanaco",
+      "Patagonian Mara"
+    ],
+    [
+      "Hamadryas Baboon",
+      "Meerkat"
+    ],
+    [
+      "Hilaire's Side-Necked Turtle",
+      "Southern Tamandua"
+    ],
+    [
+      "Hoffmann's Two-Toed Sloth",
+      "Red-Footed Tortoise"
+    ],
+    [
+      "Hoffmann's Two-Toed Sloth",
+      "Yellow-Spotted Amazon River Turtle"
+    ],
+    [
+      "Indian Crested Porcupine",
+      "Leopard Tortoise"
+    ],
+    [
+      "Indian Crested Porcupine",
+      "Meerkat"
+    ],
+    [
+      "Indian Crested Porcupine",
+      "Yellow Mongoose"
+    ],
+    [
+      "Kinkajou",
+      "Linnaeus's Two-Toed Sloth"
+    ],
+    [
+      "Kinkajou",
+      "Six-Banded Armadillo"
+    ],
+    [
+      "Kirk's Dik-Dik",
+      "Meerkat"
+    ],
+    [
+      "Klipspringer",
+      "Meerkat"
+    ],
+    [
+      "Kordofan Giraffe",
+      "Meerkat"
+    ],
+    [
+      "Lechwe",
+      "Meerkat"
+    ],
+    [
+      "Leopard Tortoise",
+      "Meerkat"
+    ],
+    [
+      "Leopard Tortoise",
+      "Ring-Tailed Vontsira"
+    ],
+    [
+      "Leopard Tortoise",
+      "Rock Hyrax"
+    ],
+    [
+      "Linnaeus's Two-Toed Sloth",
+      "White-Faced Saki"
+    ],
+    [
+      "Linneaus's Two-Toed Sloth",
+      "Six-Banded Armadillo"
+    ],
+    [
+      "Linneaus's Two-Toed Sloth",
+      "Southern Three-Banded Armadillo"
+    ],
+    [
+      "Linneaus's Two-Toed Sloth",
+      "White-Faced Saki"
+    ],
+    [
+      "Livingstone's Turaco",
+      "Red-And-Green Macaw"
+    ],
+    [
+      "Mandrill",
+      "Mantled Guereza"
+    ],
+    [
+      "Maned Wolf",
+      "South American Tapir"
+    ],
+    [
+      "Maned Wolf",
+      "Tufted Capuchin"
+    ],
+    [
+      "Mantled Guereza",
+      "Western Lowland Gorilla"
+    ],
+    [
+      "Masai Giraffe",
+      "Meerkat"
+    ],
+    [
+      "Meerkat",
+      "Pink-Backed Pelican"
+    ],
+    [
+      "Meerkat",
+      "Plains Zebra"
+    ],
+    [
+      "Meerkat",
+      "Red River Hog"
+    ],
+    [
+      "Meerkat",
+      "Red Ruffed Lemur"
+    ],
+    [
+      "Meerkat",
+      "Red-Crested Turaco"
+    ],
+    [
+      "Meerkat",
+      "Red-Faced Spider Monkey"
+    ],
+    [
+      "Meerkat",
+      "Reticulated Giraffe"
+    ],
+    [
+      "Meerkat",
+      "Ring-Tailed Lemur"
+    ],
+    [
+      "Meerkat",
+      "Rock Hyrax"
+    ],
+    [
+      "Meerkat",
+      "Rothschild's Giraffe"
+    ],
+    [
+      "Meerkat",
+      "Von Der Decken's Hornbill"
+    ],
+    [
+      "Meerkat",
+      "Western Lowland Gorilla"
+    ],
+    [
+      "Meerkat",
+      "Yellow Mongoose"
+    ],
+    [
+      "Military Macaw",
+      "Scarlet Macaw"
+    ],
+    [
+      "Military Macaw",
+      "Toco Toucan"
+    ],
+    [
+      "Military Macaw",
+      "Yellow-Naped Amazon"
+    ],
+    [
+      "North American Porcupine",
+      "Striped Skunk"
+    ],
+    [
+      "Patagonian Mara",
+      "South American Tapir"
+    ],
+    [
+      "Patagonian Mara",
+      "Vicugna"
+    ],
+    [
+      "Pygmy Hippopotamus",
+      "Serval"
+    ],
+    [
+      "Pygmy Marmoset",
+      "White-Faced Saki"
+    ],
+    [
+      "Radiated Tortoise",
+      "Ring-Tailed Lemur"
+    ],
+    [
+      "Red Kangaroo",
+      "Red-necked Wallaby"
+    ],
+    [
+      "Red River Hog",
+      "Yellow Mongoose"
+    ],
+    [
+      "Red Ruffed Lemur",
+      "Red-Fronted Lemur"
+    ],
+    [
+      "Red Ruffed Lemur",
+      "Ring-Tailed Lemur"
+    ],
+    [
+      "Red-Bellied Lemur",
+      "Ring-Tailed Lemur"
+    ],
+    [
+      "Red-Bellied Lemur",
+      "Ring-Tailed Vontsira"
+    ],
+    [
+      "Red-Billed Hornbill",
+      "African Grey Hornbill"
+    ],
+    [
+      "Red-Billed Hornbill",
+      "African Pied Hornbill"
+    ],
+    [
+      "Red-Billed Hornbill",
+      "Great Blue Turaco"
+    ],
+    [
+      "Red-Footed Tortoise",
+      "White-Faced Saki"
+    ],
+    [
+      "Red-Fronted Lemur",
+      "Ring-Tailed Lemur"
+    ],
+    [
+      "Red-Fronted Macaw",
+      "Burrowing Owl"
+    ],
+    [
+      "Red-Shouldered Macaw",
+      "Scaly-Headed Parrot"
+    ],
+    [
+      "Red-Shouldered Macaw",
+      "Scarlet Macaw"
+    ],
+    [
+      "Red-Shouldered Macaw",
+      "Vinaceous-Breasted Amazon"
+    ],
+    [
+      "Rhinoceros Hornbill",
+      "White-Crowned Hornbill"
+    ],
+    [
+      "Ring-Tailed Vontsira",
+      "White-Fronted Lemur"
+    ],
+    [
+      "Ringtail",
+      "Striped Skunk"
+    ],
+    [
+      "Rock Hyrax",
+      "Von Der Decken's Hornbill"
+    ],
+    [
+      "Rock Hyrax",
+      "Yellow Mongoose"
+    ],
+    [
+      "Scaly-Headed Parrot",
+      "Scarlet Macaw"
+    ],
+    [
+      "Scaly-Headed Parrot",
+      "Vinaceous-Breasted Amazon"
+    ],
+    [
+      "Scarlet Macaw",
+      "Burrowing Owl"
+    ],
+    [
+      "Scarlet Macaw",
+      "Common Green Iguana"
+    ],
+    [
+      "Scarlet Macaw",
+      "Roseate Spoonbill"
+    ],
+    [
+      "Scarlet Macaw",
+      "Scarlet Ibis"
+    ],
+    [
+      "Scarlet Macaw",
+      "Sunbittern"
+    ],
+    [
+      "Scarlet Macaw",
+      "Toco Toucan"
+    ],
+    [
+      "Scarlet Macaw",
+      "Vinaceous-Breasted Amazon"
+    ],
+    [
+      "Scarlet Macaw",
+      "Yellow-Naped Amazon"
+    ],
+    [
+      "South American Coati",
+      "South American Tapir"
+    ],
+    [
+      "South American Coati",
+      "Spectacled Bear"
+    ],
+    [
+      "South American Coati",
+      "Striped Skunk"
+    ],
+    [
+      "South American Coati",
+      "Sun Bear"
+    ],
+    [
+      "South American Coati",
+      "Tufted Capuchin"
+    ],
+    [
+      "South American Tapir",
+      "Spectacled Bear"
+    ],
+    [
+      "Southern Three-Banded Armadillo",
+      "White-Faced Saki"
+    ],
+    [
+      "Spectacled Bear",
+      "White-Nosed Coati"
+    ],
+    [
+      "Toco Toucan",
+      "Yellow-Naped Amazon"
+    ],
+    [
+      "Trumpeter Hornbill",
+      "Violet Turaco"
+    ],
+    [
+      "Trumpeter Hornbill",
+      "Von Der Decken's Hornbill"
+    ],
+    [
+      "Trumpeter Hornbill",
+      "White-Crested Turaco"
+    ],
+    [
+      "Violet Turaco",
+      "Von Der Decken's Hornbill"
+    ],
+    [
+      "Violet Turaco",
+      "White-Crested Turaco"
+    ],
+    [
+      "Von Der Decken's Hornbill",
+      "White-Crested Turaco"
+    ],
+    [
+      "White-Faced Saki",
+      "Yellow-Spotted Amazon River Turtle"
+    ]
+  ],
+  "proxy_compatibility": {
+    "enabled": true,
+    "mode": "named_group_rules",
+    "description": "Direct compatible_pairs remain evidence-backed source-of-truth pairs. Named gameplay groups may use complete within-group compatibility or explicit group links, avoiding hundreds of enumerated proxy pairs.",
+    "groups": {
+      "tamarins": [
+        "Golden Handed Tamarin",
+        "Golden-Headed Lion Tamarin",
+        "Geoffroy's Tufted-Ear Marmoset",
+        "Golden Lion Tamarin",
+        "Red-bellied Tamarin",
+        "Silvery Marmoset",
+        "Pied Tamarin",
+        "Goeldi's Monkey",
+        "Cotton-Top Tamarin",
+        "Pygmy Marmoset",
+        "Common Marmoset",
+        "Bearded Emperor Tamarin",
+        "Brown-Mantled Tamarin"
+      ],
+      "lemurs": [
+        "Black Lemur",
+        "Red-Bellied Lemur",
+        "Crowned Lemur",
+        "White-Fronted Lemur",
+        "Black and White Ruffed Lemur",
+        "Ring-Tailed Lemur",
+        "Red Ruffed Lemur",
+        "Alaotran Bamboo Lemur",
+        "Red-Fronted Lemur",
+        "Blue-Eyed Black Lemur"
+      ],
+      "macaws": [
+        "Blue-And-Yellow Macaw",
+        "Red-And-Green Macaw",
+        "Scarlet Macaw",
+        "Military Macaw",
+        "Hyacinth Macaw",
+        "Blue-Throated Macaw",
+        "Blue-Winged Macaw",
+        "Red-Shouldered Macaw",
+        "Great Green Macaw",
+        "Red-Fronted Macaw",
+        "Chestnut-Fronted Macaw",
+        "Blue-Headed Macaw",
+        "Golden-Collared Macaw",
+        "Lear's Macaw",
+        "Red-Bellied Macaw",
+        "Spix's Macaw"
+      ],
+      "parrots": [
+        "African Grey Parrot",
+        "Senegal Parrot",
+        "Kea",
+        "Black-Headed Parrot",
+        "White-Bellied Parrot",
+        "Timneh Parrot",
+        "Blue-Headed Parrot",
+        "Meyer's Parrot",
+        "Red-Fronted Parrot",
+        "Scaly-Headed Parrot",
+        "Red-Fan Parrot",
+        "Pacific Parrotlet",
+        "Bronze-Winged Parrot",
+        "White-Crowned Parrot",
+        "Spectacled Parrotlet",
+        "Northern Kaka"
+      ],
+      "amazons": [
+        "Yellow-Crowned Amazon",
+        "Yellow-Headed Amazon",
+        "Yellow-Naped Amazon",
+        "Red-Lored Amazon",
+        "Mealy Amazon",
+        "Cuban Amazon",
+        "Lilacine Amazon",
+        "Vinaceous-Breasted Amazon",
+        "Red-Crowned Amazon",
+        "White-Fronted Amazon",
+        "Yellow-Shouldered Amazon",
+        "Blue-Cheeked Amazon",
+        "Lilac-Crowned Amazon",
+        "Festive Amazon",
+        "Red-Tailed Amazon",
+        "Yellow-Billed Amazon",
+        "Diademed Amazon",
+        "Yellow-Faced Parrot",
+        "Yucatan Amazon",
+        "Blue-Fronted Amazon",
+        "Orange-Winged Amazon"
+      ],
+      "pond_turtles": [
+        "Pond Slider",
+        "European Pond Turtle",
+        "Chinese Three-Keeled Pond Turtle",
+        "Chinese Stripe-Necked Turtle",
+        "Painted Turtle",
+        "Florida Redbelly Turtle",
+        "Annam Leaf Turtle",
+        "Yellow-Spotted Amazon River Turtle",
+        "Giant Asian Pond Turtle",
+        "Spotted Pond Turtle",
+        "Mediterranean Turtle",
+        "Hilaire's Side-Necked Turtle",
+        "Red-Necked Pond Turtle"
+      ],
+      "tortoises": [
+        "African Spurred Tortoise",
+        "Hermann's Tortoise",
+        "Red-Footed Tortoise",
+        "Leopard Tortoise",
+        "Radiated Tortoise",
+        "Marginated Tortoise",
+        "Pancake Tortoise",
+        "Aldabra Giant Tortoise",
+        "Yellow-Footed Tortoise",
+        "Indian Star Tortoise",
+        "Egyptian Tortoise",
+        "Elongated Tortoise",
+        "Asian Giant Tortoise",
+        "Malagasy Spider Tortoise",
+        "Galapagos Giant Tortoise",
+        "Bell's Hingeback Tortoise",
+        "Burmese Star Tortoise",
+        "Forest Hingeback Tortoise",
+        "Home's Hingeback Tortoise"
+      ],
+      "island_primates": [
+        "Ring-Tailed Lemur",
+        "Black Lemur",
+        "Red-Bellied Lemur",
+        "Crowned Lemur",
+        "White-Fronted Lemur",
+        "Black and White Ruffed Lemur",
+        "Red Ruffed Lemur",
+        "Red-Fronted Lemur",
+        "Blue-Eyed Black Lemur",
+        "Common Squirrel Monkey",
+        "White-Faced Saki",
+        "Black Howler Monkey",
+        "Golden Lion Tamarin",
+        "Golden-Headed Lion Tamarin",
+        "Cotton-Top Tamarin",
+        "Goeldi's Monkey",
+        "Pygmy Marmoset",
+        "Common Marmoset",
+        "Bearded Emperor Tamarin"
+      ],
+      "south_american_water_turtles": [
+        "Yellow-Spotted Amazon River Turtle",
+        "Hilaire's Side-Necked Turtle"
+      ],
+      "south_american_tropical_house_mammals": [
+        "Capybara",
+        "Patagonian Mara",
+        "Southern Tamandua",
+        "Linneaus's Two-Toed Sloth",
+        "Hoffmann's Two-Toed Sloth",
+        "White-Faced Saki",
+        "Common Squirrel Monkey",
+        "Black Howler Monkey",
+        "Golden Lion Tamarin",
+        "Golden-Headed Lion Tamarin",
+        "Cotton-Top Tamarin",
+        "Bearded Emperor Tamarin",
+        "Goeldi's Monkey",
+        "Pygmy Marmoset",
+        "Common Marmoset"
+      ],
+      "pond_turtle_low_conflict_mammals": [
+        "Capybara",
+        "Patagonian Mara",
+        "Southern Tamandua",
+        "Linneaus's Two-Toed Sloth",
+        "Hoffmann's Two-Toed Sloth",
+        "White-Faced Saki",
+        "Common Squirrel Monkey",
+        "Golden Lion Tamarin",
+        "Golden-Headed Lion Tamarin",
+        "Cotton-Top Tamarin",
+        "Bearded Emperor Tamarin",
+        "Goeldi's Monkey",
+        "Pygmy Marmoset",
+        "Common Marmoset",
+        "Ring-Tailed Lemur",
+        "Black Lemur",
+        "Red-Bellied Lemur",
+        "Crowned Lemur",
+        "White-Fronted Lemur",
+        "Black and White Ruffed Lemur",
+        "Red Ruffed Lemur",
+        "Red-Fronted Lemur",
+        "Blue-Eyed Black Lemur"
+      ],
+      "two_toed_sloths": [
+        "Linneaus's Two-Toed Sloth",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "armadillos": [
+        "Southern Three-Banded Armadillo",
+        "Large Hairy Armadillo",
+        "Six-Banded Armadillo",
+        "Nine-Banded Armadillo"
+      ]
+    },
+    "complete_groups": [
+      "tamarins",
+      "lemurs",
+      "macaws",
+      "parrots",
+      "amazons",
+      "pond_turtles",
+      "tortoises",
+      "two_toed_sloths",
+      "armadillos"
+    ],
+    "group_links": [
+      {
+        "from": "pond_turtles",
+        "to": "island_primates",
+        "mode": "habitat_layer_proxy",
+        "note": "Gameplay proxy for semi-aquatic pond/river turtles occupying water/moat space around arboreal/island primates. Supported by modern mixed-exhibit examples including squirrel monkeys/sakis with Yellow-Spotted Amazon River Turtles and Omaha primate/turtle exhibits. Excludes snapping turtles and other high-risk/specialist aquatic turtles from this broad proxy."
+      },
+      {
+        "from": "tortoises",
+        "to": "lemurs",
+        "mode": "habitat_layer_proxy",
+        "note": "Gameplay proxy grounded in repeated modern lemur+tortoise exhibits, especially Ring-Tailed Lemur with Radiated/African Spurred Tortoise. This is an extrapolation for Zoo Curator, not a claim that every real-life individual/species mix is automatically safe."
+      },
+      {
+        "from": "south_american_water_turtles",
+        "to": "south_american_tropical_house_mammals",
+        "mode": "habitat_layer_proxy",
+        "note": "Strong Zoo Curator gameplay proxy based on repeated modern Amazon/tropical-house exhibits. Lincoln Park Zoo explicitly mixes Yellow-Spotted Amazon River Turtle with Hoffmann's Two-Toed Sloth, White-Faced Saki and Golden-Headed Lion Tamarin; Omaha reports the turtle with Common Squirrel Monkey and sakis; Budapest reports Hilaire's Side-Necked Turtle with tamandua and emperor/golden-headed lion tamarins."
+      },
+      {
+        "from": "pond_turtles",
+        "to": "pond_turtle_low_conflict_mammals",
+        "mode": "habitat_layer_proxy",
+        "note": "Broad gameplay proxy for non-predatory pond/river turtles using the water/moat layer of large mammal/primate exhibits. Supported by repeated zoo practice and specific modern examples, but intentionally excludes snapping turtles, softshell turtles and specialist/predatory aquatic turtles from the pond_turtles group."
+      }
     ]
   },
-  "rules": [
-    {
-      "id": "meerkat_mixed_enclosure",
-      "animal": "Meerkat",
-      "compatible_with_groups": [
-        "meerkat_compatible_animals"
-      ]
-    }
+  "gameplay_notes": {
+    "pond_turtle_proxy_caution": "This is a Zoo Curator gameplay abstraction, not husbandry advice. EAZA European Pond Turtle guidelines warn against indiscriminate reptile mixing and note competition/disease risks. The broad proxy is therefore limited to selected non-predatory pond/river turtles and low-conflict mammals occupying different habitat layers.",
+    "tropical_birds_final_pass": "Final Tropical Birds evidence pass. Added modern named-zoo mixed-exhibit records for hornbills/turacos, South American macaws/aracaris, and selected cross-category partners. Broad Goeldi's Monkey + parrot/Amazon compatibility is an explicit Zoo Curator gameplay proxy requested by the designer, grounded in a 2024 EAZA multi-zoo survey documenting Goeldi's Monkey with Green-cheeked Parakeet and Golden Conure; it is not a claim that every listed parrot species has been directly exhibited with Goeldi's Monkey.",
+    "tropical_birds_caution": "No blanket toucan/aracari, turaco, or hornbill complete-group proxy was added. These taxa can show aggression/predation/territoriality in mixed aviaries, so only documented combinations or existing specifically approved proxies are used.",
+    "new_level4_carnivora": "Added Common Kusimanse (Crossarchus obscurus) and Egyptian Mongoose (Herpestes ichneumon) as Level 4 Carnivora. Direct named-institution compatibility: Common Kusimanse + Blue-Eyed Black Lemur (Memphis Zoo), Common Kusimanse + Diana Monkey (Newquay Zoo). ZooRope also documents Common Kusimanse with Hystrix cristata and Atherurus africanus, but these are not mapped to Cape Porcupine (Hystrix africaeaustralis). Egyptian Mongoose + White-tailed Mongoose is documented at Samjung The Park (2016), but White-tailed Mongoose is not in the current Zoo Curator roster."
+  },
+  "source_websites": [
+    "Bartlett, Brereton & Freeman 2024, Journal of Zoological and Botanical Gardens — Goeldi's Monkey mixed-species survey",
+    "ZooLex — Antwerp Zoo Cape Buffalo Aviary (published 2020)",
+    "ZooInstitutes — Zoo Antwerpen mixed African exhibit (2019)",
+    "ZooInstitutes — Sharjah Safari African Aviary (2024)",
+    "ZooInstitutes — Zoomarine South American mixed exhibit (2022)",
+    "ZooInstitutes — Orientarium Zoo Lodz Green Aracari/Prehensile-tailed Porcupine exhibit (2025)",
+    "ZooRope — mixed exhibits with Herpestidae/Eupleridae",
+    "Weltvogelpark Walsrode species/aviary list (2025)",
+    "ZooRope — mixed exhibits with Herpestidae/Eupleridae (refreshed 2020)"
   ]
 }

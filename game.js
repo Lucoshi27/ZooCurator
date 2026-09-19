@@ -1,8 +1,9 @@
+
 /*
  * ZOO CURATOR V89 — RESUME + COMPATIBILITY GROUP RULES
  * Known-good GitHub baseline. Future builds must descend from this version.
  */
-const ZOO_CURATOR_VERSION = "V89";
+const ZOO_CURATOR_VERSION = "V90-MOBILE-BOOT";
 
 
 // ============================================================
@@ -1665,27 +1666,53 @@ function levelFiles(
 // SMART ANIMAL ASSET PRELOADING
 // ============================================================
 
-function preloadImageUrl(url) {
+function preloadImageUrl(url, timeoutMs = 8000) {
     if (!url) return Promise.resolve(false);
 
     if (state.assetPreloadPromises.has(url)) {
         return state.assetPreloadPromises.get(url);
     }
 
+    // Mobile browsers can occasionally leave an image request or image.decode()
+    // pending forever after a tab switch, weak connection, or cache hiccup.
+    // Startup must never wait forever for a card image: the card can fall back
+    // to Back.png and the front can still load normally when it is rendered.
     const promise = new Promise(resolve => {
         const image = new Image();
+        let settled = false;
+        let timer = null;
+
+        const resolveOnce = ok => {
+            if (settled) return;
+            settled = true;
+            if (timer !== null) clearTimeout(timer);
+            image.onload = null;
+            image.onerror = null;
+            resolve(ok);
+        };
 
         const finish = ok => {
-            // decode() makes the already-downloaded image ready for painting
-            // where supported, avoiding a visible decode hitch.
-            if (ok && typeof image.decode === 'function') {
-                image.decode()
-                    .catch(() => {})
-                    .finally(() => resolve(true));
+            if (!ok) {
+                resolveOnce(false);
+                return;
+            }
+
+            if (typeof image.decode === 'function') {
+                // Do not await decode without a ceiling. Some mobile WebKit
+                // versions have been observed to leave this promise pending.
+                Promise.race([
+                    image.decode().catch(() => null),
+                    new Promise(done => setTimeout(done, 1200))
+                ]).then(() => resolveOnce(true));
             } else {
-                resolve(ok);
+                resolveOnce(true);
             }
         };
+
+        timer = setTimeout(() => {
+            console.warn('Timed out preloading animal asset:', url);
+            resolveOnce(false);
+        }, timeoutMs);
 
         image.onload = () => finish(true);
         image.onerror = () => {
@@ -10646,7 +10673,8 @@ async function startGame() {
         state.inventory =
             await loadJson(
                 'asset-inventory.json',
-                'Loading animal asset inventory...'
+                'Loading animal asset inventory...',
+                15000
             );
 
 
@@ -10658,7 +10686,8 @@ async function startGame() {
         state.compatibilityData =
             await loadJson(
                 'eligible-combinations.json',
-                'Loading enclosure compatibility rules...'
+                'Loading enclosure compatibility rules...',
+                15000
             );
 
         rebuildCompatibilityGraphs();
@@ -10674,7 +10703,8 @@ async function startGame() {
         try {
             state.animalDatabase = await loadJson(
                 'assets/data/animals.json',
-                'Loading local animal information database...'
+                'Loading local animal information database...',
+                10000
             );
             indexAnimalDatabase();
         } catch (databaseError) {
@@ -10693,7 +10723,8 @@ async function startGame() {
         state.zooNamesData =
             await loadJson(
                 'zoo-names.json',
-                'Loading zoo names...'
+                'Loading zoo names...',
+                15000
             );
 
         // Real-zoo data is optional during boot. Start loading it now, but do
@@ -10824,6 +10855,8 @@ async function startGame() {
             writeAutoResumeSnapshot(true);
         }
 
+
+        window.__zooGameReady = true;
 
         gameApp.classList.add(
             'visible'

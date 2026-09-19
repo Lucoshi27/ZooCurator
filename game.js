@@ -1,8 +1,8 @@
 /*
- * ZOO CURATOR V87 — TRADE RESULT PLACEMENT FIX
+ * ZOO CURATOR V89 — RESUME + COMPATIBILITY GROUP RULES
  * Known-good GitHub baseline. Future builds must descend from this version.
  */
-const ZOO_CURATOR_VERSION = "V87";
+const ZOO_CURATOR_VERSION = "V89";
 
 
 // ============================================================
@@ -1982,6 +1982,39 @@ function rebuildCompatibilityGraphs() {
         }
     }
 
+    // V89 — honour explicit gameplay structures in newer compatibility JSON.
+    // complete_groups makes every member of a named group mutually compatible.
+    // group_links makes every member of one named group compatible with every
+    // member of the linked group. Direct evidence pairs remain unchanged.
+    const namedGroups = proxy?.groups && typeof proxy.groups === 'object'
+        ? proxy.groups
+        : {};
+
+    const normalisedGroupMembers = groupName =>
+        (Array.isArray(namedGroups[groupName]) ? namedGroups[groupName] : [])
+            .map(compatibilityName)
+            .filter(Boolean);
+
+    for (const groupName of proxy?.complete_groups || []) {
+        const members = normalisedGroupMembers(groupName);
+        for (let i = 0; i < members.length; i++) {
+            for (let j = i + 1; j < members.length; j++) {
+                graphAddEdge(effective, members[i], members[j]);
+            }
+        }
+    }
+
+    for (const link of proxy?.group_links || []) {
+        if (!link || typeof link !== 'object') continue;
+        const fromMembers = normalisedGroupMembers(link.from);
+        const toMembers = normalisedGroupMembers(link.to);
+        for (const fromName of fromMembers) {
+            for (const toName of toMembers) {
+                graphAddEdge(effective, fromName, toName);
+            }
+        }
+    }
+
     state.compatibilityEffectiveGraph = effective;
 }
 
@@ -3439,6 +3472,10 @@ function endTurn() {
     updateAutonomousOpponentOffer();
 
     renderZoo();
+
+    // V89 — endTurn() bypasses renderAll(), so V88's renderAll autosave hook
+    // missed ordinary turns that ended through this path.
+    writeAutoResumeSnapshot();
 
 }
 
@@ -5192,6 +5229,13 @@ const SAVE_STORAGE_KEY = 'zooCuratorSavedGamesV1';
 const SAVE_FORMAT_VERSION = 1;
 const MAX_SAVE_SLOTS = 8;
 
+// V88 — one silent browser-local resume snapshot, separate from named saves.
+// It is intentionally updated only when a NEW turn has been reached.
+const AUTO_RESUME_STORAGE_KEY = 'zooCuratorAutoResumeV1';
+const AUTO_RESUME_FORMAT_VERSION = 1;
+let lastAutoResumeTurn = null;
+let autoResumeWriteSuppressed = false;
+
 const SAVE_STATE_KEYS = [
     'gameOptions',
     'zooName',
@@ -5342,6 +5386,87 @@ function exportCurrentGameState() {
             scrollTop: zooBoard.scrollTop
         }
     };
+}
+
+function clearAutoResumeSnapshot() {
+    try {
+        localStorage.removeItem(AUTO_RESUME_STORAGE_KEY);
+    } catch (error) {
+        console.warn('Could not clear automatic resume snapshot:', error);
+    }
+    lastAutoResumeTurn = null;
+}
+
+function writeAutoResumeSnapshot(force = false) {
+    if (
+        !state.loaded ||
+        autoResumeWriteSuppressed ||
+        state.suppressHistoryCapture ||
+        state.historyViewTurn !== null
+    ) return false;
+
+    const turn = Number(state.turn) || 0;
+    if (!force && lastAutoResumeTurn === turn) return false;
+
+    try {
+        const record = {
+            formatVersion: AUTO_RESUME_FORMAT_VERSION,
+            gameVersion: ZOO_CURATOR_VERSION,
+            savedAt: new Date().toISOString(),
+            turn,
+            zooName: state.zooName,
+            game: serialiseSpecial(exportCurrentGameState())
+        };
+
+        localStorage.setItem(
+            AUTO_RESUME_STORAGE_KEY,
+            JSON.stringify(record)
+        );
+        lastAutoResumeTurn = turn;
+        return true;
+    } catch (error) {
+        // Automatic resume must never interrupt gameplay if storage is
+        // unavailable/full/private-mode restricted.
+        console.warn('Could not update automatic resume snapshot:', error);
+        return false;
+    }
+}
+
+function readAutoResumeSnapshot() {
+    try {
+        const raw = localStorage.getItem(AUTO_RESUME_STORAGE_KEY);
+        if (!raw) return null;
+
+        const record = JSON.parse(raw);
+        if (!record || !record.game) return null;
+
+        return {
+            ...record,
+            game: deserialiseSpecial(record.game)
+        };
+    } catch (error) {
+        console.warn('Automatic resume snapshot is invalid:', error);
+        clearAutoResumeSnapshot();
+        return null;
+    }
+}
+
+function restoreAutoResumeSnapshot() {
+    const record = readAutoResumeSnapshot();
+    if (!record) return false;
+
+    try {
+        autoResumeWriteSuppressed = true;
+        importGameState(record.game);
+        lastAutoResumeTurn = Number(record.turn) || Number(state.turn) || 0;
+        return true;
+    } catch (error) {
+        console.warn('Could not restore automatic resume snapshot:', error);
+        clearAutoResumeSnapshot();
+        return false;
+    } finally {
+        autoResumeWriteSuppressed = false;
+    }
 }
 
 function normaliseLoadedCollection(value, kind = 'Set') {
@@ -5542,7 +5667,10 @@ function loadSavedGame(slotId) {
     if (!ok) return;
 
     try {
+        lastAutoResumeTurn = null;
         importGameState(record.game);
+        // Make the manually loaded game the browser's new resume point.
+        requestAnimationFrame(() => writeAutoResumeSnapshot(true));
         closeSaveLoadMenu();
     } catch (error) {
         console.error(error);
@@ -5876,6 +6004,7 @@ function renderAll() {
     renderProgressTracker();
     updateTurnDisplay();
     captureTurnSnapshot();
+    writeAutoResumeSnapshot();
 }
 
 
@@ -7944,7 +8073,9 @@ drawCard.addEventListener('pointerdown', event => {
 // ============================================================
 function startFreshZooFromCurrentOptions() {
     // New Game deliberately keeps the options currently selected in this
-    // session. It only replaces the zoo itself.
+    // session. It only replaces the zoo itself. The previous automatic resume
+    // point must not bring the old zoo back after a refresh.
+    clearAutoResumeSnapshot();
     assignZooNames();
     createStartingZoo();
     assignOpponentProfiles();
@@ -8200,6 +8331,7 @@ function ensureGameOptionsUI() {
         saveGameOptions();
 
         if (startingZooSizeChanged) {
+            clearAutoResumeSnapshot();
             assignZooNames();
             createStartingZoo();
             assignOpponentProfiles();
@@ -10446,35 +10578,46 @@ async function startGame() {
 
         setLoading(
             'Loading Zoo Curator...',
-            'Generating zoo names...'
+            'Checking for your latest zoo...'
         );
 
-
-        // A normal page load/refresh ALWAYS begins with the standard 20%
-        // starting zoo size. Other saved game options are left intact.
-        state.gameOptions.startingZooSize = 20;
-
-        assignZooNames();
         ensureGameOptionsUI();
         ensureSaveLoadUI();
         ensureTurnHistoryUI();
         setupOpponentTradeClicks();
 
+        const resumedPreviousZoo = restoreAutoResumeSnapshot();
 
-        setLoading(
-            'Loading Zoo Curator...',
-            `Choosing starting enclosures for ${startingZooSizeRules(state.gameOptions.startingZooSize).species} animals...`
-        );
+        if (!resumedPreviousZoo) {
+            setLoading(
+                'Loading Zoo Curator...',
+                'Generating zoo names...'
+            );
 
+            // Only a genuinely new browser session zoo uses the default 20%
+            // starting size. A resumed zoo keeps the options it was saved with.
+            state.gameOptions.startingZooSize = 20;
 
-        createStartingZoo();
-        assignOpponentProfiles();
+            assignZooNames();
 
+            setLoading(
+                'Loading Zoo Curator...',
+                `Choosing starting enclosures for ${startingZooSizeRules(state.gameOptions.startingZooSize).species} animals...`
+            );
 
-        setLoading(
-            'Loading Zoo Curator...',
-            `Placing ${startingZooSizeRules(state.gameOptions.startingZooSize).species} starting animals...`
-        );
+            createStartingZoo();
+            assignOpponentProfiles();
+
+            setLoading(
+                'Loading Zoo Curator...',
+                `Placing ${startingZooSizeRules(state.gameOptions.startingZooSize).species} starting animals...`
+            );
+        } else {
+            setLoading(
+                'Loading Zoo Curator...',
+                `Restoring ${state.zooName || 'your zoo'} — Turn ${state.turn}...`
+            );
+        }
 
 
         document
@@ -10497,6 +10640,12 @@ async function startGame() {
 
         state.loaded =
             true;
+
+        // A new zoo gets its first resume point now. A restored zoo is already
+        // represented by the snapshot we just loaded.
+        if (!resumedPreviousZoo) {
+            writeAutoResumeSnapshot(true);
+        }
 
 
         gameApp.classList.add(

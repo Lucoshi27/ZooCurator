@@ -166,7 +166,7 @@ const DEFAULT_GAME_OPTIONS = {
     startingZooSize: 20,
     showEligibilityGlows: true,
     enclosureRewardMilestones: [1, 5],
-    opponentMode: 'fictional',
+    opponentMode: 'real',
     tradeOfferFrequency: 50
 };
 
@@ -281,7 +281,11 @@ function loadGameOptions() {
                 saved.enclosureRewardMilestones ||
                 DEFAULT_GAME_OPTIONS.enclosureRewardMilestones
             ),
-            opponentMode: saved.opponentMode === 'real' ? 'real' : 'fictional',
+            opponentMode: saved.opponentMode === 'fictional'
+                ? 'fictional'
+                : saved.opponentMode === 'real'
+                    ? 'real'
+                    : DEFAULT_GAME_OPTIONS.opponentMode,
             tradeOfferFrequency: Math.max(
                 0,
                 Math.min(
@@ -569,12 +573,34 @@ function everyPhysicalEnclosureOccupied() {
     });
 }
 
+function hasNextLevelInventory(category, level) {
+    const nextLevel = Number(level) + 1;
+
+    if (
+        !category ||
+        !Number.isFinite(nextLevel) ||
+        nextLevel < 2 ||
+        nextLevel > 5
+    ) {
+        return false;
+    }
+
+    return levelFiles(category, nextLevel).length > 0;
+}
+
 function playerHasAnyUpgradeAvailable() {
     return [...exchangeGroupCounts().entries()]
         .some(([key, count]) => {
             if (count < 3) return false;
-            const level = Number(String(key).split('|').pop());
-            return level < 5;
+
+            const parts = String(key).split('|');
+            const level = Number(parts.pop());
+            const category = parts.join('|');
+
+            return (
+                level < 5 &&
+                hasNextLevelInventory(category, level)
+            );
         });
 }
 
@@ -2027,12 +2053,65 @@ function animalsAreCompatible(a, b) {
     // Same species can always cohabit from the compatibility system's point
     // of view; ordinary slot/capacity rules still apply.
     if (aName && aName === bName) return true;
+    if (!aName || !bName) return false;
 
-    return Boolean(
-        aName &&
-        bName &&
-        state.compatibilityEffectiveGraph.get(aName)?.has(bName)
+    // Fast path: use the prebuilt effective graph. This contains direct
+    // compatible_pairs plus complete_groups and group_links.
+    if (state.compatibilityEffectiveGraph.get(aName)?.has(bName)) return true;
+
+    // V90 — defensive live evaluation of named gameplay groups.
+    // This deliberately duplicates the group part of rebuildCompatibilityGraphs().
+    // It prevents a stale/partially rebuilt graph from silently disabling valid
+    // combinations such as Great White Pelican + Dalmatian Pelican or
+    // Pygmy Marmoset + Southern Three-Banded Armadillo.
+    const proxy = state.compatibilityData?.proxy_compatibility;
+    if (!proxy?.enabled || !proxy.groups || typeof proxy.groups !== 'object') {
+        return false;
+    }
+
+    const groupsForAnimal = animalName => {
+        const result = new Set();
+        for (const [groupName, membersRaw] of Object.entries(proxy.groups)) {
+            if (!Array.isArray(membersRaw)) continue;
+            if (membersRaw.some(member => compatibilityName(member) === animalName)) {
+                result.add(groupName);
+            }
+        }
+        return result;
+    };
+
+    const aGroups = groupsForAnimal(aName);
+    const bGroups = groupsForAnimal(bName);
+
+    // Every pair of members inside a complete group is compatible.
+    const completeGroups = new Set(
+        (Array.isArray(proxy.complete_groups) ? proxy.complete_groups : [])
+            .map(String)
     );
+
+    for (const groupName of aGroups) {
+        if (bGroups.has(groupName) && completeGroups.has(groupName)) {
+            return true;
+        }
+    }
+
+    // Group links are gameplay compatibility links and are symmetric for
+    // placement, regardless of which animal is being dragged first.
+    for (const link of Array.isArray(proxy.group_links) ? proxy.group_links : []) {
+        if (!link || typeof link !== 'object') continue;
+        const from = String(link.from || '');
+        const to = String(link.to || '');
+        if (!from || !to) continue;
+
+        if (
+            (aGroups.has(from) && bGroups.has(to)) ||
+            (aGroups.has(to) && bGroups.has(from))
+        ) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function enclosureGroupForSlot(enclosure, slotIndex) {
@@ -3541,7 +3620,15 @@ function eligibleExchangeCategories() {
     const categories = new Set();
 
     for (const [key, count] of counts) {
-        if (count >= 3) categories.add(key.split('|')[0]);
+        if (count < 3) continue;
+
+        const parts = String(key).split('|');
+        const level = Number(parts.pop());
+        const category = parts.join('|');
+
+        if (hasNextLevelInventory(category, level)) {
+            categories.add(category);
+        }
     }
 
     return [...categories];
@@ -3549,6 +3636,11 @@ function eligibleExchangeCategories() {
 
 function isExchangeEligible(animal) {
     if (!animal || animal.level >= 5) return false;
+
+    if (!hasNextLevelInventory(animal.category, animal.level)) {
+        return false;
+    }
+
     return (exchangeGroupCounts().get(exchangeGroupKey(animal)) || 0) >= 3;
 }
 
@@ -3626,10 +3718,77 @@ function setupAnimalCard(
         animal.id;
 
 
-    image.src =
-        animalImage(
-            animal
-        );
+    // Level 1 cards can briefly need time to decode/repaint after being
+    // dropped into an enclosure. Keep the card visible by showing its back
+    // until the actual animal front is fully loaded and decoded.
+    if (animal.level === 1) {
+
+        const frontSrc =
+            animalImage(
+                animal
+            );
+
+        image.src =
+            animalBackPath(
+                animal.category,
+                animal.level
+            );
+
+        const frontLoader =
+            new Image();
+
+        frontLoader.onload = async () => {
+
+            if (typeof frontLoader.decode === 'function') {
+                try {
+                    await frontLoader.decode();
+                }
+                catch (_) {
+                    // The load event already confirms the asset is usable.
+                }
+            }
+
+            // renderZoo/renderHand can recreate cards while an image is
+            // loading. Only update this element if it still represents the
+            // same animal and is still connected to the document.
+            if (
+                image.isConnected &&
+                image.dataset.animalId === animal.id
+            ) {
+                image.src = frontSrc;
+            }
+
+        };
+
+        frontLoader.onerror = () => {
+            console.error(
+                `Could not load animal card ${animal.filename}:`,
+                frontSrc
+            );
+
+            // Deliberately leave Back.png visible instead of allowing the
+            // card to disappear when the front asset cannot be loaded.
+            if (
+                image.isConnected &&
+                image.dataset.animalId === animal.id
+            ) {
+                image.title =
+                    `Missing asset: ${frontSrc}`;
+            }
+        };
+
+        frontLoader.src =
+            frontSrc;
+
+    }
+    else {
+
+        image.src =
+            animalImage(
+                animal
+            );
+
+    }
 
 
     image.draggable =
@@ -5985,8 +6144,16 @@ function renderAll() {
 
     if (drawCard) {
         const noOpenSpace = !hasAnyOpenEnclosureSpace();
+
         drawCard.classList.toggle('draw-no-space', noOpenSpace);
         drawCard.setAttribute('aria-disabled', noOpenSpace ? 'true' : 'false');
+
+        // JS-side visual failsafe so the Level 1 deck is visibly disabled even
+        // if an older style.css does not yet define .draw-no-space.
+        drawCard.style.opacity = noOpenSpace ? '0.42' : '';
+        drawCard.style.filter = noOpenSpace ? 'grayscale(1)' : '';
+        drawCard.style.cursor = noOpenSpace ? 'not-allowed' : '';
+
         drawCard.title = noOpenSpace
             ? 'No safe empty enclosure available for a new Level 1 card.'
             : '';
@@ -6655,6 +6822,16 @@ function tryDropOnExchange(
         animal.level < 1 ||
         animal.level >= 5
     ) {
+        return false;
+    }
+
+    /*
+        Inventory failsafe:
+        an animal is only exchangeable if its category actually has at least
+        one card in the next level. For example, Level 3 Reptiles remain
+        non-upgradeable while the Level 4 Reptiles inventory is empty.
+    */
+    if (!hasNextLevelInventory(animal.category, animal.level)) {
         return false;
     }
 

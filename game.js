@@ -635,24 +635,32 @@ function emergencyTradeForAnimal(outgoing) {
 function predictedPlayerTradeOffers(animal) {
     if (!animal) return [];
 
-    // Deadlock rescue bypasses reluctance and frequency, and deliberately
-    // exposes exactly one player card as the guaranteed trade route.
+    // Deadlock rescue remains state-dependent and is deliberately not cached.
     const emergency = emergencyTradeForAnimal(animal);
     if (emergency) return [emergency];
 
-    // Mirror the already locked result for this physical card and current
-    // three-turn offer window, if one exists.
+    // Once a normal prediction has been made for this physical card/window,
+    // always use that exact locked result. This makes the blue glow a promise:
+    // a glowing card cannot later reroll to "no offer" when it is dropped.
     const cached = cachedPlayerTradeOffers(animal);
     if (cached) return cached;
 
     const frequency = tradeFrequencyFactor();
-    if (frequency <= 0) return [];
+
+    if (frequency <= 0) {
+        storePlayerTradeOffers(animal, []);
+        return [];
+    }
 
     if (isRealOpponentMode()) {
         const overallRoll = seededRoll(
             `real-overall|${animal.id}|${tradeOfferWindow()}`
         ).roll;
-        if (overallRoll > frequency) return [];
+
+        if (overallRoll > frequency) {
+            storePlayerTradeOffers(animal, []);
+            return [];
+        }
 
         const records = [...new Set(weightedRealZooPool())];
         const candidates = [];
@@ -681,16 +689,28 @@ function predictedPlayerTradeOffers(animal) {
             candidates.push({ record, animal: offeredAnimal });
         }
 
-        return seededShuffle(
+        const selected = seededShuffle(
             candidates,
             `real-select|${animal.id}|${tradeOfferWindow()}`
         ).slice(0, 3);
+
+        const locked = selected.map(item => ({
+            recordName: item.record.name,
+            animalName: String(item.animal.filename || '').replace(/\.png$/i, '')
+        }));
+
+        storePlayerTradeOffers(animal, locked);
+        return locked;
     }
 
     const overallRoll = seededRoll(
         `fictional-overall|${animal.id}|${tradeOfferWindow()}`
     ).roll;
-    if (overallRoll > frequency) return [];
+
+    if (overallRoll > frequency) {
+        storePlayerTradeOffers(animal, []);
+        return [];
+    }
 
     const candidates = [];
 
@@ -716,10 +736,18 @@ function predictedPlayerTradeOffers(animal) {
         }
     });
 
-    return seededShuffle(
+    const selected = seededShuffle(
         candidates,
         `fictional-select|${animal.id}|${tradeOfferWindow()}`
     ).slice(0, 3);
+
+    const locked = selected.map(item => ({
+        opponentIndex: item.opponentIndex,
+        animalName: String(item.animal.filename || '').replace(/\.png$/i, '')
+    }));
+
+    storePlayerTradeOffers(animal, locked);
+    return locked;
 }
 
 function animalCouldReceiveTradeInterest(animal) {
@@ -894,8 +922,6 @@ document.addEventListener('pointerdown', event => {
 'use strict';
 
 window.__zooScriptStarted = true;
-
-
 
 
 requireElement(exchange1, 'exchange1');
@@ -3504,9 +3530,38 @@ function progressionKey(category, level) {
 }
 
 function updateDiscoveredCategoryLevels() {
+    // Category progression is a LIVE view of what is currently in the player's
+    // zoo, not a lifetime achievement record. Cards in the hand, exchange area
+    // or outgoing trade box do not keep a progression box checked.
+    const current = new Set();
+
     for (const animal of state.animals) {
-        state.discoveredCategoryLevels.add(progressionKey(animal.category, animal.level));
+        if (!animal || animal.enclosureId === null) continue;
+        current.add(progressionKey(animal.category, animal.level));
     }
+
+    state.discoveredCategoryLevels = current;
+
+    // A pinned/highlighted progression box cannot remain pinned after the last
+    // matching animal leaves the zoo.
+    state.progressionGlowPinnedKeys = new Set(
+        [...state.progressionGlowPinnedKeys].filter(key => current.has(key))
+    );
+
+    if (
+        state.progressionGlowHoverKey &&
+        !current.has(state.progressionGlowHoverKey)
+    ) {
+        state.progressionGlowHoverKey = null;
+    }
+
+    // Keep the old Level-2 compatibility fields synchronized with CURRENT
+    // progression rather than historical progression.
+    state.acquiredLevel2Categories = new Set(
+        [...current]
+            .filter(key => Number(key.split('|')[1]) === 2)
+            .map(key => key.split('|')[0])
+    );
 }
 
 function hasCategoryLevel(category, level) {
@@ -4295,12 +4350,22 @@ function startAnimalDrag(
             .map(candidate => candidate.id)
     );
 
+    // IMPORTANT: dragging an animal immediately removes it from its enclosure.
+    // A deadlock rescue must therefore be captured here, while the board is
+    // still full. Waiting until the card reaches the trade box is too late:
+    // by then emergencyTradeNeeded() sees an empty enclosure and returns false.
+    const emergencyTradeAtDragStart =
+        location === 'enclosure'
+            ? emergencyTradeForAnimal(animal)
+            : null;
+
     state.drag = {
 
         type:
             'animal',
 
         exchangeGlowIds: exchangeGlowIdsAtDragStart,
+        emergencyTradeAtDragStart,
 
         animal,
 
@@ -5185,38 +5250,56 @@ function addRewardEnclosure() {
 // ============================================================
 
 function progressionCountForLevel(level) {
-    const categories = new Set();
+    // Always count boxes that are checked RIGHT NOW.
+    updateDiscoveredCategoryLevels();
+
+    let count = 0;
     for (const key of state.discoveredCategoryLevels) {
-        const [category, levelText] = key.split('|');
-        if (Number(levelText) === level) categories.add(category);
+        const [, levelText] = key.split('|');
+        if (Number(levelText) === level) count++;
     }
-    return categories.size;
+    return count;
 }
 
-function checkEnclosureReward(animal) {
-    if (!animal) return;
-    state.discoveredCategoryLevels.add(progressionKey(animal.category, animal.level));
+function checkCurrentProgressionRewards() {
+    // Rebuild the checkboxes from the actual animals currently placed in the
+    // zoo before testing reward thresholds.
+    updateDiscoveredCategoryLevels();
 
-    // Each level has its own independent milestone track. Reaching Level 3,
-    // for example, can award its first enclosure even if Level 2 is only 1/9.
-    if (animal.level >= 2 && animal.level <= 5) {
-        const count = progressionCountForLevel(animal.level);
+    for (let level = 2; level <= 5; level++) {
+        const count = progressionCountForLevel(level);
+
         for (const milestone of state.gameOptions.enclosureRewardMilestones) {
-            const rewardKey = `${animal.level}|${milestone}`;
-            if (count >= milestone && !state.awardedProgressMilestones.has(rewardKey)) {
+            const rewardKey = `${level}|${milestone}`;
+
+            // An enclosure reward itself is still awarded only once. What has
+            // changed is the qualification test: the milestone must be met by
+            // simultaneously checked boxes, never by historical boxes.
+            if (
+                count >= milestone &&
+                !state.awardedProgressMilestones.has(rewardKey)
+            ) {
                 state.awardedProgressMilestones.add(rewardKey);
                 addRewardEnclosure();
             }
         }
     }
 
-    // Keep legacy fields synchronized for old UI/state paths.
-    if (animal.level === 2) {
-        state.acquiredLevel2Categories.add(animal.category);
-        for (const m of state.gameOptions.enclosureRewardMilestones) {
-            if (progressionCountForLevel(2) >= m) state.awardedLevel2Milestones.add(m);
-        }
-    }
+    // Legacy Level-2 reward state remains compatible with older saves/UI.
+    state.awardedLevel2Milestones = new Set(
+        [...state.awardedProgressMilestones]
+            .map(key => String(key).split('|'))
+            .filter(([levelText]) => Number(levelText) === 2)
+            .map(([, milestoneText]) => Number(milestoneText))
+    );
+}
+
+function checkEnclosureReward(animal) {
+    if (!animal) return;
+
+    // The incoming/new animal has already been placed before this is called,
+    // so reward eligibility can be determined entirely from current zoo state.
+    checkCurrentProgressionRewards();
     renderProgressTracker();
 }
 
@@ -7131,9 +7214,13 @@ function tryDropOnOutgoingOffer(event, animal) {
         state.outgoingOffer = animal; animal.hand = false; animal.enclosureId = null; animal.slotIndex = null;
         renderTrade(); return true;
     }
-    // Preserve the rescue offer while the card is still physically in its
-    // enclosure. Once removed, the deadlock test would otherwise become false.
-    const pendingEmergencyTrade = emergencyTradeForAnimal(animal);
+    // startAnimalDrag() captured the rescue before removing the animal from
+    // its enclosure. Use that exact preserved offer here.
+    const pendingEmergencyTrade =
+        state.drag?.type === 'animal' &&
+        state.drag.animal?.id === animal.id
+            ? state.drag.emergencyTradeAtDragStart
+            : emergencyTradeForAnimal(animal);
 
     state.outgoingOffer = animal;
     animal.hand = false;
@@ -7211,6 +7298,10 @@ function acceptSelectedTrade(destination=null) {
 
     state.animals.push(incoming);
     markPlayerLevelSeen(incoming.level);
+
+    // Recalculate progression only after BOTH sides of the trade have changed
+    // ownership, so a traded-away last card cannot keep a box checked while
+    // the incoming card is being evaluated.
     checkEnclosureReward(incoming);
     state.tradeOffers=[];
     state.selectedTradeOpponent=null;
@@ -7842,61 +7933,6 @@ function loadImageForColourSample(src) {
     });
 }
 
-async function sampleCategoryColour(category) {
-    const files = levelFiles(category, 1);
-    if (!files.length) return CATEGORY_COLOURS[category] || '#777777';
-
-    const filename = randomItem(files);
-    const src = animalPath(category, 1, filename);
-
-    try {
-        const image = await loadImageForColourSample(src);
-        const sampleSize = 20;
-        const sourceX = Math.max(0, image.naturalWidth - sampleSize);
-        const sourceY = 0;
-        const sourceW = Math.min(sampleSize, image.naturalWidth);
-        const sourceH = Math.min(sampleSize, image.naturalHeight);
-
-        const canvas = document.createElement('canvas');
-        canvas.width = sourceW;
-        canvas.height = sourceH;
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        ctx.drawImage(image, sourceX, sourceY, sourceW, sourceH, 0, 0, sourceW, sourceH);
-
-        const pixels = ctx.getImageData(0, 0, sourceW, sourceH).data;
-        let r = 0, g = 0, b = 0, weight = 0;
-
-        for (let i = 0; i < pixels.length; i += 4) {
-            const alpha = pixels[i + 3] / 255;
-            if (alpha <= 0.05) continue;
-            r += pixels[i] * alpha;
-            g += pixels[i + 1] * alpha;
-            b += pixels[i + 2] * alpha;
-            weight += alpha;
-        }
-
-        if (!weight) return CATEGORY_COLOURS[category] || '#777777';
-
-        r = Math.round(r / weight);
-        g = Math.round(g / weight);
-        b = Math.round(b / weight);
-        return `rgb(${r}, ${g}, ${b})`;
-    }
-    catch (error) {
-        console.warn(error);
-        return CATEGORY_COLOURS[category] || '#777777';
-    }
-}
-
-async function sampleAllCategoryColours() {
-    const categories = Object.keys(FOLDERS);
-    const colours = await Promise.all(categories.map(category => sampleCategoryColour(category)));
-    categories.forEach((category, index) => {
-        state.categoryColours[category] = colours[index];
-    });
-}
-
-
 // ============================================================
 // START
 // ============================================================
@@ -8088,10 +8124,6 @@ async function startGame() {
 // ============================================================
 
 startGame();
-
-
-
-
 
 
 window.addEventListener('resize', () => { positionOpponentTradeArea(); });

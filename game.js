@@ -10743,6 +10743,12 @@ async function startGame() {
         renderAll();
         state.loaded = true;
 
+        // Tell the independent HTML startup watchdog that JavaScript has
+        // successfully reached the playable state. Without this flag the
+        // 20-second watchdog overlays the already-running game and makes it
+        // appear frozen.
+        window.__zooGameReady = true;
+
         if (!resumedPreviousZoo) {
             writeAutoResumeSnapshot(true);
         }
@@ -10751,7 +10757,12 @@ async function startGame() {
         centerInitialView();
 
         setLoading('Zoo Curator ready!', '');
-        setTimeout(() => bootScreen.classList.add('hidden'), 100);
+        setTimeout(() => {
+            // The HTML watchdog gave #bootScreen an inline display:flex.
+            // Inline display overrides the CSS .hidden rule, so remove it explicitly.
+            bootScreen.classList.add('hidden');
+            bootScreen.style.display = 'none';
+        }, 100);
 
         // Nothing below this line is allowed to delay the visible/playable zoo.
         setTimeout(() => {

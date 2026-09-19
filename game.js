@@ -445,8 +445,200 @@ function fictionalZooCanTradeFor(opponentIndex, wantedAnimal) {
     );
 }
 
+// ============================================================
+// V53 — DEADLOCK-SAFETY TRADE
+// ============================================================
+
+// "Full" follows the same physical-enclosure logic as startup: every separate
+// enclosure group must contain at least one animal. A large enclosure therefore
+// counts as occupied as soon as one of its slots is occupied.
+function everyPhysicalEnclosureOccupied() {
+    if (!state.enclosures.length) return false;
+
+    return state.enclosures.every(enclosure => {
+        const groups = GROUPS[enclosure.number] || [[0]];
+
+        return groups.every(group =>
+            group.some(slotIndex =>
+                state.animals.some(animal =>
+                    animal.enclosureId === enclosure.id &&
+                    animal.slotIndex === slotIndex
+                )
+            )
+        );
+    });
+}
+
+function playerHasAnyUpgradeAvailable() {
+    return [...exchangeGroupCounts().entries()]
+        .some(([key, count]) => {
+            if (count < 3) return false;
+            const level = Number(String(key).split('|').pop());
+            return level < 5;
+        });
+}
+
+function emergencyTradeNeeded() {
+    return (
+        state.historyViewTurn === null &&
+        !state.hand.length &&
+        !state.result &&
+        !state.outgoingOffer &&
+        !state.autonomousTradeOffer &&
+        everyPhysicalEnclosureOccupied() &&
+        !playerHasAnyUpgradeAvailable()
+    );
+}
+
+// Find ONE deterministic legal rescue trade. This bypasses only trade
+// reluctance/frequency. Same-level trading, ownership restrictions and the
+// opponent category-progression prerequisite remain in force.
+function emergencyTradeSelection() {
+    if (!emergencyTradeNeeded()) return null;
+
+    const playerAnimals = state.animals.filter(animal =>
+        animal.enclosureId !== null &&
+        animal.level >= 1 &&
+        animal.level <= 5
+    );
+
+    const shuffledPlayers = seededShuffle(
+        playerAnimals,
+        `emergency-player|${state.turn}|${tradeOfferWindow()}`
+    );
+
+    // --------------------------------------------------------
+    // 1. NORMAL CURRENTLY AVAILABLE OPPONENTS
+    // --------------------------------------------------------
+    // Do not alter real-zoo unlocking or normal trading behaviour. During a
+    // deadlock we only bypass reluctance/frequency while searching opponents
+    // that are already available to the player.
+    if (isRealOpponentMode()) {
+        const unlockedRecords = seededShuffle(
+            [...new Set(weightedRealZooPool())],
+            `emergency-real-zoos|${state.turn}|${tradeOfferWindow()}`
+        );
+
+        for (const outgoing of shuffledPlayers) {
+            for (const record of unlockedRecords) {
+                if (!realZooCanTradeFor(record, outgoing)) continue;
+
+                const matching = realZooTradeAnimals(record, true)
+                    .filter(candidate => candidate.level === outgoing.level);
+                if (!matching.length) continue;
+
+                const { seed } = seededRoll(
+                    `emergency-real-animal|${outgoing.id}|${record.name}|${state.turn}`
+                );
+
+                return {
+                    outgoingId: outgoing.id,
+                    record,
+                    animal: matching[seed % matching.length]
+                };
+            }
+        }
+    }
+    else {
+        const opponentIndexes = [];
+        for (
+            let index = 0;
+            index < Math.min(state.unlockedOpponentCount, state.opponentProfiles.length);
+            index++
+        ) {
+            fillOpponentTradeStock(index);
+            opponentIndexes.push(index);
+        }
+
+        const shuffledIndexes = seededShuffle(
+            opponentIndexes.map(opponentIndex => ({ opponentIndex })),
+            `emergency-fictional-zoos|${state.turn}|${tradeOfferWindow()}`
+        ).map(item => item.opponentIndex);
+
+        for (const outgoing of shuffledPlayers) {
+            for (const opponentIndex of shuffledIndexes) {
+                if (!fictionalZooCanTradeFor(opponentIndex, outgoing)) continue;
+
+                const matching = (state.opponentTradeStocks[opponentIndex] || [])
+                    .filter(candidate => candidate.level === outgoing.level);
+                if (!matching.length) continue;
+
+                const { seed } = seededRoll(
+                    `emergency-fictional-animal|${outgoing.id}|${opponentIndex}|${state.turn}`
+                );
+
+                return {
+                    outgoingId: outgoing.id,
+                    opponentIndex,
+                    animal: matching[seed % matching.length]
+                };
+            }
+        }
+    }
+
+    // --------------------------------------------------------
+    // 2. EASTER EGG — PRIVATE PET TRADE
+    // --------------------------------------------------------
+    // If no currently unlocked/available opponent can make a legal rescue
+    // trade, offer a random unused Level 1 animal from "Private Pet Trade".
+    // The player therefore needs a Level 1 animal to exchange in this fallback.
+    const levelOnePlayers = shuffledPlayers.filter(animal => animal.level === 1);
+    if (!levelOnePlayers.length) return null;
+
+    const outgoing = levelOnePlayers[0];
+    const ownedKeys = playerOwnedCardKeys();
+    const available = [];
+
+    for (const category of Object.keys(FOLDERS)) {
+        if (!state.activeCategories.has(category)) continue;
+
+        for (const filename of levelFiles(category, 1)) {
+            const key = animalCardKey(category, 1, filename);
+            if (ownedKeys.has(key)) continue;
+            available.push({ category, filename });
+        }
+    }
+
+    if (!available.length) return null;
+
+    const { seed } = seededRoll(
+        `private-pet-trade|${outgoing.id}|${state.turn}|${tradeOfferWindow()}`
+    );
+    const chosen = available[seed % available.length];
+
+    return {
+        outgoingId: outgoing.id,
+        privatePetTrade: true,
+        record: {
+            name: 'Private Pet Trade',
+            tier: 0,
+            preferred_categories: []
+        },
+        animal: {
+            id: state.nextId++,
+            category: chosen.category,
+            level: 1,
+            filename: cleanFilename(chosen.filename),
+            enclosureId: null,
+            slotIndex: null,
+            hand: false
+        }
+    };
+}
+
+function emergencyTradeForAnimal(outgoing) {
+    if (!outgoing) return null;
+    const rescue = emergencyTradeSelection();
+    return rescue && rescue.outgoingId === outgoing.id ? rescue : null;
+}
+
 function predictedPlayerTradeOffers(animal) {
     if (!animal) return [];
+
+    // Deadlock rescue bypasses reluctance and frequency, and deliberately
+    // exposes exactly one player card as the guaranteed trade route.
+    const emergency = emergencyTradeForAnimal(animal);
+    if (emergency) return [emergency];
 
     // Mirror the already locked result for this physical card and current
     // three-turn offer window, if one exists.
@@ -914,38 +1106,51 @@ function showFatal(error) {
 
 async function loadJson(
     path,
-    description
+    description,
+    timeoutMs = 0
 ) {
+    setLoading('Loading Zoo Curator...', description);
 
-    setLoading(
-        'Loading Zoo Curator...',
-        description
-    );
+    const controller =
+        typeof AbortController !== 'undefined' ? new AbortController() : null;
+    let timeoutId = null;
 
-    const response =
-        await fetch(path);
-
-    if (!response.ok) {
-
-        throw new Error(
-            `Could not load ${path}. HTTP ${response.status}.`
-        );
-
+    if (controller && timeoutMs > 0) {
+        timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     }
 
     try {
-
-        return await response.json();
-
-    }
-    catch (error) {
-
-        throw new Error(
-            `${path} was found but could not be read as JSON: ${error.message}`
+        const response = await fetch(
+            path,
+            controller
+                ? { signal: controller.signal, cache: 'no-store' }
+                : { cache: 'no-store' }
         );
 
-    }
+        if (!response.ok) {
+            throw new Error(`Could not load ${path}. HTTP ${response.status}.`);
+        }
 
+        try {
+            return await response.json();
+        } catch (error) {
+            throw new Error(
+                `${path} was found but could not be read as JSON: ${error.message}`
+            );
+        }
+    } catch (error) {
+        if (
+            timeoutMs > 0 &&
+            (error?.name === 'AbortError' || controller?.signal?.aborted)
+        ) {
+            throw new Error(
+                `${path} did not finish loading within ${Math.round(timeoutMs / 1000)} seconds.`
+            );
+        }
+        throw error;
+    } finally {
+        if (timeoutId !== null) clearTimeout(timeoutId);
+    }
 }
 
 
@@ -6341,7 +6546,33 @@ function seededShuffle(items, seedText) {
         .map(entry => entry.item);
 }
 
-function generateRealZooTradeOffers(outgoing) {
+function generateRealZooTradeOffers(outgoing, pendingEmergencyTrade = null) {
+    const emergency = pendingEmergencyTrade || emergencyTradeForAnimal(outgoing);
+
+    if (emergency) {
+        const selected = [{
+            record: emergency.record,
+            animal: emergency.animal
+        }];
+
+        // Emergency offers are deliberately not cached. Private Pet Trade
+        // exists only while the deadlock requires it.
+        state.opponentProfiles = selected.map(
+            (item, index) => realZooProfile(item.record, index)
+        );
+        state.opponentTradeStocks = selected.map(
+            item => realZooTradeAnimals(item.record, true)
+        );
+        state.tradeOffers = [{
+            opponentIndex: 0,
+            animal: emergency.animal
+        }];
+        state.selectedTradeOpponent = 0;
+        renderTrade();
+        renderOpponentTradeState();
+        return;
+    }
+
     const cached = cachedPlayerTradeOffers(outgoing);
 
     if (cached) {
@@ -6766,13 +6997,41 @@ function renderOpponentTradeState() {
     }
 }
 
-function generateOpponentTradeOffers(outgoing) {
+function generateOpponentTradeOffers(outgoing, pendingEmergencyTrade = null) {
     if (isRealOpponentMode()) {
-        generateRealZooTradeOffers(outgoing);
+        generateRealZooTradeOffers(outgoing, pendingEmergencyTrade);
         return;
     }
 
     rotateOpponentTradeStocksIfNeeded();
+
+    const emergency = pendingEmergencyTrade || emergencyTradeForAnimal(outgoing);
+    if (emergency) {
+        // The Private Pet Trade easter egg uses a temporary one-zoo
+        // real-style profile when the current game uses fictional opponents.
+        if (emergency.record) {
+            state.opponentProfiles = [realZooProfile(emergency.record, 0)];
+            state.opponentTradeStocks = [[emergency.animal]];
+            state.tradeOffers = [{
+                opponentIndex: 0,
+                animal: emergency.animal
+            }];
+            state.selectedTradeOpponent = 0;
+        }
+        else {
+            state.tradeOffers = [{
+                opponentIndex: emergency.opponentIndex,
+                animal: emergency.animal
+            }];
+            state.selectedTradeOpponent = emergency.opponentIndex;
+        }
+
+        // Do not cache emergency rescue offers: the rescue condition is
+        // state-dependent and should disappear as soon as the deadlock does.
+        renderTrade();
+        renderOpponentTradeState();
+        return;
+    }
 
     const cached = cachedPlayerTradeOffers(outgoing);
     if (cached) {
@@ -6872,8 +7131,17 @@ function tryDropOnOutgoingOffer(event, animal) {
         state.outgoingOffer = animal; animal.hand = false; animal.enclosureId = null; animal.slotIndex = null;
         renderTrade(); return true;
     }
-    state.outgoingOffer = animal; animal.hand = false; animal.enclosureId = null; animal.slotIndex = null;
-    generateOpponentTradeOffers(animal); return true;
+    // Preserve the rescue offer while the card is still physically in its
+    // enclosure. Once removed, the deadlock test would otherwise become false.
+    const pendingEmergencyTrade = emergencyTradeForAnimal(animal);
+
+    state.outgoingOffer = animal;
+    animal.hand = false;
+    animal.enclosureId = null;
+    animal.slotIndex = null;
+
+    generateOpponentTradeOffers(animal, pendingEmergencyTrade);
+    return true;
 }
 function renderTrade() {
     if (!outgoingOfferBox || !incomingOfferBox) return;
@@ -7684,7 +7952,8 @@ async function startGame() {
         try {
             state.realZooData = await loadJson(
                 'real_zoo_opponents.json',
-                'Loading real zoo opponents...'
+                'Loading real zoo opponents...',
+                6000
             );
         } catch (realZooError) {
             console.warn('Real zoo opponent database unavailable:', realZooError);

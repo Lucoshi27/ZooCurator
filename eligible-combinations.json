@@ -21,6 +21,10 @@
     ],
     [
       "Aardvark",
+      "Blue Duiker"
+    ],
+    [
+      "Aardvark",
       "Cape Porcupine"
     ],
     [
@@ -46,6 +50,10 @@
     [
       "Aardvark",
       "Indian Flying Fox"
+    ],
+    [
+      "Aardvark",
+      "Kirk's Dik-Dik"
     ],
     [
       "Aardvark",
@@ -346,6 +354,10 @@
     [
       "African Sacred Ibis",
       "Yellow-Billed Stork"
+    ],
+    [
+      "African Spoonbill",
+      "Blue Duiker"
     ],
     [
       "African Spoonbill",
@@ -1004,6 +1016,10 @@
       "Yellow Mongoose"
     ],
     [
+      "Bat-Eared Fox",
+      "Yellow-Backed Duiker"
+    ],
+    [
       "Bear Cuscus",
       "Dusky Pademelon"
     ],
@@ -1058,6 +1074,14 @@
     [
       "Binturong",
       "Malayan Tapir"
+    ],
+    [
+      "Binturong",
+      "Reeve's Muntjac"
+    ],
+    [
+      "Binturong",
+      "Southern Red Muntjac"
     ],
     [
       "Binturong",
@@ -1420,6 +1444,22 @@
       "Red-Crowned Crane"
     ],
     [
+      "Blue Duiker",
+      "Hadada Ibis"
+    ],
+    [
+      "Blue Duiker",
+      "Hamerkop"
+    ],
+    [
+      "Blue Duiker",
+      "Pygmy Hippopotamus"
+    ],
+    [
+      "Blue Duiker",
+      "Von Der Decken's Hornbill"
+    ],
+    [
       "Blue Wildebeest",
       "Common Lechwe"
     ],
@@ -1689,7 +1729,19 @@
     ],
     [
       "Bongo",
+      "Kirk's Dik-Dik"
+    ],
+    [
+      "Bongo",
       "Pygmy Hippopotamus"
+    ],
+    [
+      "Bongo",
+      "Red Duiker"
+    ],
+    [
+      "Bongo",
+      "Yellow-Backed Duiker"
     ],
     [
       "Bonnethead Shark",
@@ -2242,6 +2294,10 @@
     [
       "Common Crane",
       "White-Naped Crane"
+    ],
+    [
+      "Common Dwarf Mongoose",
+      "Kirk's Dik-Dik"
     ],
     [
       "Common Dwarf Mongoose",
@@ -3944,6 +4000,10 @@
       "Javan Chevrotain"
     ],
     [
+      "Grey Slender Loris",
+      "Phillipine Mouse-Deer"
+    ],
+    [
       "Grey Wolf",
       "Moose"
     ],
@@ -4058,6 +4118,10 @@
     [
       "Hamerkop",
       "Hippopotamus"
+    ],
+    [
+      "Hamerkop",
+      "Klipspringer"
     ],
     [
       "Hamerkop",
@@ -4313,6 +4377,10 @@
     ],
     [
       "Indian Rhinoceros",
+      "Reeve's Muntjac"
+    ],
+    [
+      "Indian Rhinoceros",
       "Sambar"
     ],
     [
@@ -4384,12 +4452,24 @@
       "Meerkat"
     ],
     [
+      "Kirk's Dik-Dik",
+      "Red Duiker"
+    ],
+    [
+      "Kirk's Dik-Dik",
+      "Reticulated Giraffe"
+    ],
+    [
       "Klipspringer",
       "Meerkat"
     ],
     [
       "Klipspringer",
       "Red-Billed Hornbill"
+    ],
+    [
+      "Klipspringer",
+      "Rock Hyrax"
     ],
     [
       "Koala",
@@ -4773,6 +4853,14 @@
     ],
     [
       "Nepalese Red Panda",
+      "Reeve's Muntjac"
+    ],
+    [
+      "Nepalese Red Panda",
+      "Southern Red Muntjac"
+    ],
+    [
+      "Nepalese Red Panda",
       "Tufted Deer"
     ],
     [
@@ -4990,6 +5078,10 @@
     [
       "Purple-Crested Turaco",
       "Red-Billed Woodhoopoe"
+    ],
+    [
+      "Pygmy Hippopotamus",
+      "Red Duiker"
     ],
     [
       "Pygmy Hippopotamus",
@@ -5462,6 +5554,10 @@
     [
       "Southern Ground Hornbill",
       "Western Sitatunga"
+    ],
+    [
+      "Southern Pudu",
+      "Toco Toucan"
     ],
     [
       "Southern Tamandua",
@@ -6847,11 +6943,18 @@
     "ZooChat — Parco Natura Viva Linnaeus's Two-toed Sloth + Large Hairy Armadillo exhibit (2024)",
     "ZooChat — Spaycific'Zoo Cotton-top Tamarin + Hairy Armadillo mixed exhibit report (2011)",
     "Smithsonian National Zoo — Golden Lion Tamarin + Linnaeus's Two-toed Sloth + Three-banded Armadillo mixed exhibit",
-    "ZooInstitutes — Cleveland Metroparks Zoo Golden Lion Tamarin + Linne's Two-toed Sloth + Southern Three-banded Armadillo (2018)"
+    "ZooInstitutes — Cleveland Metroparks Zoo Golden Lion Tamarin + Linne's Two-toed Sloth + Southern Three-banded Armadillo (2018)",
+    "BIOPARC Valencia — Natal Red Duiker + Eastern Bongo + Kirk's Dik-dik multispecies enclosure (2018/current)",
+    "ZooRope — Bat-eared Fox + Bongo + Yellow-backed Duiker, Los Angeles Zoo",
+    "ZooRope — Klipspringer + Meerkat / Dwarf Mongoose mixed-exhibit records",
+    "ZooInstitutes — Klipspringer + Rock Hyrax mixed exhibit, San Diego Zoo (2014)",
+    "ZooInstitutes — Klipspringer mixed exhibit, Bioparc Valencia (2019)",
+    "ZooInstitutes — African Aviary, Maryland Zoo: Blue Duiker with African birds (2018)",
+    "AZA Ungulate TAGs — Mixed Species Resources / 2017 Mixed-Species Manual"
   ],
   "metadata": {
-    "version": "7.4",
-    "update": "Focused tamarin/marmoset/armadillo/two-toed-sloth mixed-exhibit audit.",
+    "version": "7.6",
+    "update": "African small-ungulate deep pass: dik-dik, duikers and klipspringer.",
     "legacy_generic_rufous_pairs_removed": 0,
     "direct_pairs_added_this_pass": 8,
     "direct_pairs_removed_this_pass": 0,
@@ -6864,7 +6967,9 @@
       "v6.7 ZooChat credibility pass. ZooChat was treated as an observational lead source, not as automatic proof. Added only posts that identify a real zoo and an actual mixed exhibit, with preference for recent inventories, long-standing members, photographs, or repeated institutional reports. Speculative 'would this work?' combinations were excluded. Failed/dangerous mixes were excluded. Exact Zoo Curator taxa were required; no loose species proxies were introduced. This pass added Whipsnade rhino mixes; Berlin Zoo mixes; Chester orangutan/gibbon mixes; Ouwehands, Wildlands and Overloon links; detailed US primate exhibits; London Rainforest Life links; several named-zoo armadillo mixes; and well-established giant-anteater combinations.",
       "v6.8 targeted low-coverage ZooChat pass. Searched mixed-exhibit threads for named-institution observations rather than speculative proposals. Added only exact Zoo Curator taxa not already represented as direct pairs. Older reports were accepted only when they described an actual exhibit; recent 2024–2025 observations were preferred where available. Several plausible reports were left out where the exact taxon could not be matched safely to a current card.",
       "v6.9 targeted cleanup/expansion: normalized the typo 'Black-Tailed Prairie Dog' to 'Black-Tailed Prairie Dog' throughout the JSON and deduplicated normalized direct pairs. Added Asian Elephant + Blackbuck (documented at Dublin/Zurich) and Asian Elephant + Red Deer (Dierenrijk) while retaining the existing Asian Elephant + Crab-Eating Macaque evidence. Added complete gameplay proxy groups for capuchins and macaques at the user's request. The existing parrots and spider_monkeys complete groups already provide the requested taxonomic same-group compatibility, so they were preserved rather than duplicated. Proxy rules are explicitly labelled as gameplay extrapolations, not claims that every pair is a documented zoo mixed exhibit.",
-      "v7.4 focused tamarin/marmoset/armadillo/two-toed-sloth audit. Added modern named-institution direct pairs: Bearded Emperor Tamarin + Six-Banded Armadillo (CERZA, 2025); Golden-Headed Lion Tamarin + Southern Three-Banded Armadillo (Zoo Brno, 2025); Pygmy Marmoset + Southern Three-Banded Armadillo (Allwetterzoo Münster, 2025); Common Marmoset + Large Hairy Armadillo and + Six-Banded Armadillo (Bridlington Animal Park, 2024); Geoffroy's Tufted-Ear Marmoset + Linnaeus's Two-Toed Sloth (Woodside Wildlife Park, 2024); Large Hairy Armadillo + Linnaeus's Two-Toed Sloth (Parco Natura Viva, 2024); Cotton-Top Tamarin + Large Hairy Armadillo (Spaycific'Zoo, reported 2011). Existing gameplay group-links already make all named tamarins/marmosets compatible with the armadillo and two-toed-sloth groups; this pass strengthens the direct evidence layer without pretending every cross-pair has its own zoo record."
+      "v7.4 focused tamarin/marmoset/armadillo/two-toed-sloth audit. Added modern named-institution direct pairs: Bearded Emperor Tamarin + Six-Banded Armadillo (CERZA, 2025); Golden-Headed Lion Tamarin + Southern Three-Banded Armadillo (Zoo Brno, 2025); Pygmy Marmoset + Southern Three-Banded Armadillo (Allwetterzoo Münster, 2025); Common Marmoset + Large Hairy Armadillo and + Six-Banded Armadillo (Bridlington Animal Park, 2024); Geoffroy's Tufted-Ear Marmoset + Linnaeus's Two-Toed Sloth (Woodside Wildlife Park, 2024); Large Hairy Armadillo + Linnaeus's Two-Toed Sloth (Parco Natura Viva, 2024); Cotton-Top Tamarin + Large Hairy Armadillo (Spaycific'Zoo, reported 2011). Existing gameplay group-links already make all named tamarins/marmosets compatible with the armadillo and two-toed-sloth groups; this pass strengthens the direct evidence layer without pretending every cross-pair has its own zoo record.",
+      "v7.5 small-ungulate pass. Added only direct or tightly taxon-matched named-institution records; no blanket 'small deer/antelope' proxy was created. Kirk's Dik-Dik records include Aardvark (Prague/Faunia), Reticulated Giraffe (Frankfurt/Ramat Gan), Common Dwarf Mongoose (Wroclaw), and the Bongo + Red Duiker community at Bioparc Valencia. Blue Duiker records include Aardvark (Burgers' Zoo) and Pygmy Hippopotamus (San Diego); Red Duiker shares the San Diego mixed exhibit; Yellow-Backed Duiker + Bongo is documented by Saint Louis Zoo and Milwaukee. Reeve's/Chinese Muntjac has modern direct records with Red Panda, Binturong and Indian Rhinoceros; Southern Red Muntjac/Indian Muntjac gets only taxonomically exact Muntiacus muntjak records (Red Panda/Binturong). Philippine/Balabac Mouse-Deer + Grey Slender Loris is based on Antwerp's documented nocturnal mixed exhibit. Southern Pudu + Toco Toucan is directly documented by Brandywine Zoo. Existing Southern Pudu links to Giant Anteater, Capybara, tapir, coati, peccary and rhea were retained. Javan Chevrotain was not blanket-linked to other Tragulus mixed exhibits because species-level evidence was insufficient.",
+      "v7.6 African small-ungulate deep pass. Added exact named-institution records rather than creating a blanket small-antelope proxy. Red Duiker + Bongo is directly documented in Bioparc Valencia's multispecies equatorial-African enclosure and historically at Burgers' Zoo. Yellow-Backed Duiker + Bat-Eared Fox is documented at Los Angeles Zoo. Klipspringer + Rock Hyrax is documented at San Diego Zoo and Bioparc Valencia; Klipspringer + Hamerkop occurs in Bioparc Valencia's 2019 mixed exhibit. Maryland Zoo's 2018 African Aviary directly supports Blue Duiker with Hamerkop, African Spoonbill, Hadada Ibis and Von Der Decken's Hornbill. Existing exact Kirk's Dik-Dik, duiker and klipspringer links were retained. No blanket duiker↔duiker, dik-dik↔klipspringer, or generic small-African-antelope complete group was created because territoriality, body-size differences and exhibit design make those extrapolations too broad."
     ],
     "mongoose_audit_2026_09_19": "Audited Zoo Curator mongoose taxa against ZooRope's named-institution Herpestidae records, then reviewed ZooChat for additional actual-zoo reports. Added ZooRope-backed pairs: Common Kusimanse + African Brush-Tailed Porcupine (Paignton), Banded Mongoose + Red-Billed Hornbill (Tiergarten Nürnberg), Yellow Mongoose + Blue Crane (Five Sisters), Yellow Mongoose + Leopard Tortoise (Toni's Zoo), and Yellow Mongoose + Secretary Bird (Magdeburg mixed exhibit). Added one ZooChat-backed modern pair: Meerkat + Scimitar-Horned Oryx (ARTIS Amsterdam, reported May 2026). Speculative exhibit-idea posts and unknown-institution ZooRope records were not added.",
     "crane_pass_2026_09_19": "Targeted crane pass added 30 previously missing direct pairs from named zoo mixed exhibits. Priority was given to modern post-2000 records. Large crane species were not given a blanket compatibility proxy: husbandry literature warns that Sarus and Wattled Cranes can become aggressive in mixed collections, particularly during breeding. Only documented shared exhibits were converted into direct compatibility.",

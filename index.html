@@ -21,7 +21,18 @@
         reuse the cached stylesheet between visits. Change this value only
         when style.css is actually updated.
     -->
-    <link rel="stylesheet" href="./style.css?v=20260920-mobile-diagnostics-2">
+    <script>
+        // Always revalidate the lightweight app shell files after a normal reload.
+        // Heavy animal/enclosure assets keep their normal browser cache.
+        (function () {
+            var buildRefresh = Date.now();
+            var stylesheet = document.createElement('link');
+            stylesheet.rel = 'stylesheet';
+            stylesheet.href = './style.css?v=' + buildRefresh;
+            document.head.appendChild(stylesheet);
+            window.__zooBuildRefresh = buildRefresh;
+        }());
+    </script>
 </head>
 
 <body>
@@ -488,7 +499,7 @@
         // game.js; a stalled translation request could therefore prevent the
         // game from starting indefinitely on mobile Safari.
         (function () {
-            var version = '20260920-mobile-diagnostics-2';
+            var version = String(window.__zooBuildRefresh || Date.now());
 
             function refreshDutchUi() {
                 // Usually translations finish first because the file is much

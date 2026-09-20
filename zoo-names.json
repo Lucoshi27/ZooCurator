@@ -1,216 +1,5752 @@
 {
-  "prefixes": [
-    "Dierenpark",
-    "Dierpark",
-    "Zoo",
-    "Kleindierpark",
-    "Wildpark",
-    "Faunapark",
-    "Safaripark",
-    "Beleveniswereld",
-    "Experience",
-    "Zoologische Tuinen"
-  ],
-  "places": [
-    "Amsterdam",
-    "Rotterdam",
-    "Den Haag",
-    "Utrecht",
-    "Eindhoven",
-    "Groningen",
-    "Tilburg",
-    "Almere",
-    "Breda",
-    "Nijmegen",
-    "Apeldoorn",
-    "Arnhem",
-    "Haarlem",
-    "Enschede",
-    "Amersfoort",
-    "Zaanstad",
-    "'s-Hertogenbosch",
-    "Zwolle",
-    "Leiden",
-    "Maastricht",
-    "Dordrecht",
-    "Zoetermeer",
-    "Delft",
-    "Alkmaar",
-    "Leeuwarden",
-    "Deventer",
-    "Venlo",
-    "Hilversum",
-    "Heerlen",
-    "Helmond",
-    "Oss",
-    "Amstelveen",
-    "Roosendaal",
-    "Gouda",
-    "Purmerend",
-    "Schiedam",
-    "Spijkenisse",
-    "Vlaardingen",
-    "Almelo",
-    "Hoorn",
-    "Veenendaal",
-    "Zeist",
-    "Assen",
-    "Nieuwegein",
-    "Middelburg",
-    "Lelystad",
-    "Hengelo",
-    "Capelle aan den IJssel",
-    "Katwijk",
-    "Woerden",
-    "Harderwijk",
-    "Sneek",
-    "Kampen",
-    "Zutphen",
-    "Emmen",
-    "Meppel",
-    "Weert",
-    "Sittard",
-    "Geleen",
-    "Kerkrade",
-    "Roermond",
-    "Tiel",
-    "Culemborg",
-    "Gorinchem",
-    "Waalwijk",
-    "Oosterhout",
-    "Etten-Leur",
-    "Bergen op Zoom",
-    "Vlissingen",
-    "Terneuzen",
-    "Goes",
-    "Zierikzee",
-    "Hulst",
-    "Sluis",
-    "Domburg",
-    "Veere",
-    "Renesse",
-    "Oostburg",
-    "Axel",
-    "Yerseke",
-    "Tholen",
-    "Sint-Maartensdijk",
-    "Bruinisse",
-    "Burgh-Haamstede",
-    "Kloetinge",
-    "Kapelle",
-    "Kruiningen",
-    "Wemeldinge",
-    "Breskens",
-    "Cadzand",
-    "Dokkum",
-    "Harlingen",
-    "Franeker",
-    "Bolsward",
-    "Workum",
-    "Hindeloopen",
-    "Stavoren",
-    "Lemmer",
-    "Joure",
-    "Heerenveen",
-    "Drachten",
-    "Wolvega",
-    "Grou",
-    "Akkrum",
-    "Makkum",
-    "Hallum",
-    "Kollum",
-    "Buitenpost",
-    "Surhuisterveen",
-    "Oosterwolde",
-    "Appelscha",
-    "Beetsterzwaag",
-    "Grouw",
-    "Balk",
-    "IJlst",
-    "Sloten",
-    "Dronten",
-    "Emmeloord",
-    "Urk",
-    "Zeewolde",
-    "Biddinghuizen",
-    "Swifterbant",
-    "Marknesse",
-    "Ens",
-    "Nagele",
-    "Luttelgeest",
-    "Bant",
-    "Creil",
-    "Rutten",
-    "Kraggenburg",
-    "Steenwijk",
-    "Hoogeveen",
-    "Coevorden",
-    "Beilen",
-    "Roden",
-    "Zuidlaren",
-    "Eelde",
-    "Paterswolde",
-    "Haren",
-    "Winschoten",
-    "Veendam",
-    "Stadskanaal",
-    "Delfzijl",
-    "Appingedam",
-    "Hoogezand",
-    "Sappemeer",
-    "Leek",
-    "Bedum",
-    "Winsum",
-    "Uithuizen",
-    "Loppersum",
-    "Ter Apel",
-    "Vlagtwedde",
-    "Bourtange",
-    "Musselkanaal",
-    "Oldekerk",
-    "Aduard",
-    "Warffum",
-    "Pieterburen",
-    "Eenrum",
-    "Doetinchem",
-    "Winterswijk",
-    "Aalten",
-    "Lichtenvoorde",
-    "Groenlo",
-    "Lochem",
-    "Borculo",
-    "Eibergen",
-    "Ruurlo",
-    "Vorden",
-    "Doesburg",
-    "Zevenaar",
-    "Duiven",
-    "Westervoort",
-    "Velp",
-    "Rheden",
-    "Dieren",
-    "Brummen",
-    "Epe",
-    "Vaassen",
-    "Nunspeet",
-    "Elburg",
-    "Putten",
-    "Ermelo",
-    "Barneveld",
-    "Nijkerk",
-    "Wageningen",
-    "Ede",
-    "Bennekom",
-    "Rhenen",
-    "Oosterbeek",
-    "Doorwerth",
-    "Huissen",
-    "Bemmel",
-    "Elst",
-    "Druten",
-    "Wijchen",
-    "Groesbeek",
-    "Gennep",
-    "Boxmeer"
-  ]
+  "prefixes": {
+    "Netherlands": {
+      "general": [
+        "Dierenpark",
+        "Dierpark",
+        "Zoo",
+        "Kleindierpark",
+        "Faunapark",
+        "Zoologische Tuinen"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Zeeaquarium",
+        "Aquatisch Centrum"
+      ],
+      "tropical": [
+        "Tropische Tuinen",
+        "Tropisch Dierenpark",
+        "Vlindertuin"
+      ],
+      "safari": [
+        "Safaripark",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildpark",
+        "Natuur- en Dierenpark",
+        "Wildlife Park"
+      ],
+      "farm": [
+        "Kinderboerderij",
+        "Dierenhoeve",
+        "Boerderijpark"
+      ],
+      "bird": [
+        "Vogelpark",
+        "Vogeltuin",
+        "Roofvogelpark"
+      ],
+      "reptile": [
+        "Reptielenpark",
+        "Reptielenhuis",
+        "Reptielenzoo"
+      ],
+      "alpine": [
+        "Bergdierenpark"
+      ]
+    },
+    "Belgium": {
+      "Flanders": {
+        "general": [
+          "Zoo",
+          "Dierentuin",
+          "Dierenpark",
+          "Dierpark",
+          "Diergaarde",
+          "Faunapark",
+          "Natuurpark",
+          "Aquapark",
+          "Avonturenpark",
+          "Zoologische Tuin",
+          "Zoologische Tuinen"
+        ],
+        "aquarium": [
+          "Aquarium"
+        ],
+        "tropical": [
+          "Vlinderpark",
+          "Vlindertuin",
+          "Tropische Tuinen"
+        ],
+        "safari": [
+          "Safaripark"
+        ],
+        "forest": [
+          "Wildpark"
+        ],
+        "farm": [
+          "Animal Farm"
+        ],
+        "bird": [
+          "Vogelpark"
+        ],
+        "reptile": [
+          "Reptielenpark",
+          "Reptielenhuis"
+        ]
+      },
+      "Wallonia": {
+        "general": [
+          "Zoo",
+          "Parc Zoologique",
+          "Jardin Zoologique",
+          "Domaine Animalier",
+          "Parc de la Faune",
+          "Parc Naturel",
+          "Monde Sauvage",
+          "Aquazoo"
+        ],
+        "aquarium": [
+          "Aquarium"
+        ],
+        "tropical": [
+          "Tropical Zoo"
+        ],
+        "safari": [
+          "Parc Safari"
+        ],
+        "forest": [
+          "Parc Animalier",
+          "Réserve Animalière"
+        ],
+        "farm": [
+          "Animal Farm"
+        ],
+        "bird": [
+          "Parc Ornithologique"
+        ],
+        "reptile": [
+          "Reptile Park"
+        ]
+      },
+      "Brussels-Capital": {
+        "general": [
+          "Zoo",
+          "Dierentuin",
+          "Dierenpark",
+          "Zoologische Tuin",
+          "Zoologische Tuinen",
+          "Parc Zoologique",
+          "Jardin Zoologique",
+          "Natuurpark",
+          "Parc Naturel"
+        ],
+        "aquarium": [
+          "Aquarium"
+        ],
+        "tropical": [
+          "Tropical Zoo"
+        ],
+        "safari": [
+          "Safari Park"
+        ],
+        "forest": [
+          "Parc Animalier"
+        ],
+        "farm": [
+          "Animal Farm"
+        ],
+        "bird": [
+          "Bird Park"
+        ],
+        "reptile": [
+          "Reptile Park"
+        ]
+      }
+    },
+    "Germany": {
+      "general": [
+        "Zoo",
+        "Tierpark",
+        "Tiergarten",
+        "Zoologischer Garten",
+        "Wildgehege",
+        "Natur- und Tierpark"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Meeresaquarium",
+        "Aquazoo"
+      ],
+      "tropical": [
+        "Tropenhaus",
+        "Tropenwelt",
+        "Regenwaldhaus"
+      ],
+      "safari": [
+        "Safaripark",
+        "Safari-Park"
+      ],
+      "forest": [
+        "Wildpark",
+        "Wildtierpark",
+        "Tierwelt",
+        "Natur- und Tierpark"
+      ],
+      "farm": [
+        "Tier- und Freizeitbauernhof",
+        "Bauernhofpark"
+      ],
+      "bird": [
+        "Vogelpark",
+        "Vogelwelt",
+        "Greifvogelpark"
+      ],
+      "reptile": [
+        "Reptilienpark",
+        "Reptilienhaus",
+        "Terrarienpark"
+      ],
+      "alpine": [
+        "Alpenzoo",
+        "Alpentierpark",
+        "Bergtierpark",
+        "Alpine Zoo",
+        "Alpine Wildlife Park"
+      ]
+    },
+    "France": {
+      "general": [
+        "Zoo",
+        "Parc Zoologique",
+        "Jardin Zoologique",
+        "Domaine Animalier",
+        "Parc Naturel",
+        "Espace Zoologique",
+        "Réserve Zoologique"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Aquarium Marin",
+        "Aquarium Océanique"
+      ],
+      "tropical": [
+        "Parc Tropical",
+        "Jardin Tropical",
+        "Serre Tropicale"
+      ],
+      "safari": [
+        "Parc Safari",
+        "Safari Parc"
+      ],
+      "forest": [
+        "Parc Animalier",
+        "Réserve Animalière",
+        "Parc de Faune"
+      ],
+      "farm": [
+        "Ferme Animalière",
+        "Ferme Pédagogique",
+        "Parc de la Ferme"
+      ],
+      "bird": [
+        "Parc Ornithologique",
+        "Jardin d'Oiseaux",
+        "Parc des Oiseaux"
+      ],
+      "reptile": [
+        "Parc des Reptiles",
+        "Vivarium",
+        "Reptilarium"
+      ],
+      "alpine": [
+        "Parc Animalier Alpin",
+        "Zoo Alpin",
+        "Alpine Zoo",
+        "Alpine Wildlife Park"
+      ]
+    },
+    "Luxembourg": {
+      "general": [
+        "Zoo",
+        "Déierepark",
+        "Tierpark",
+        "Tiergarten",
+        "Parc Zoologique",
+        "Jardin Zoologique",
+        "Domaine Animalier",
+        "Naturpark",
+        "Parc Naturel"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildpark",
+        "Parc Animalier"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Vogelpark",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "United Kingdom": {
+      "general": [
+        "Zoo",
+        "Zoological Gardens",
+        "Zoological Park",
+        "Zoo Park",
+        "Zoological Reserve"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Sea Life Centre",
+        "Marine Centre"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical World",
+        "Rainforest Centre"
+      ],
+      "safari": [
+        "Safari Park",
+        "Wild Animal Safari Park"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park",
+        "Wildlife Centre",
+        "Wildlife World",
+        "Wildlife Gardens",
+        "Wildlife Conservation Park"
+      ],
+      "farm": [
+        "Farm Park",
+        "Rare Breeds Farm",
+        "Animal Farm Park"
+      ],
+      "bird": [
+        "Bird Garden",
+        "Bird of Prey Centre",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Centre",
+        "Reptile Park",
+        "Reptile Zoo"
+      ],
+      "alpine": [
+        "Mountain Wildlife Park"
+      ]
+    },
+    "Denmark": {
+      "general": [
+        "Zoo",
+        "ZOO",
+        "Dyrepark",
+        "Zoologisk Have",
+        "Park Zoo"
+      ],
+      "aquarium": [
+        "Akvarium & Dyrepark",
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Regnskov",
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Austria": {
+      "general": [
+        "Zoo",
+        "Tiergarten",
+        "Tierpark",
+        "Steppentierpark"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildpark",
+        "Tierwelt",
+        "Wildtierpark"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Vogelpark",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Alpenzoo",
+        "Alpine Zoo",
+        "Alpine Wildlife Park"
+      ]
+    },
+    "Czechia": {
+      "general": [
+        "Zoo",
+        "ZOO",
+        "Zoopark",
+        "Zoologická zahrada"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Mountain Wildlife Park"
+      ]
+    },
+    "Poland": {
+      "general": [
+        "Zoo",
+        "ZOO",
+        "Ogród Zoologiczny",
+        "Miejski Ogród Zoologiczny",
+        "Park Dzikich Zwierząt",
+        "Ogród Zoobotaniczny"
+      ],
+      "aquarium": [
+        "Akwarium",
+        "Oceanarium",
+        "Akwarium Morskie"
+      ],
+      "tropical": [
+        "Tropikalny Ogród Zoologiczny",
+        "Tropikalny Park Zwierząt"
+      ],
+      "safari": [
+        "Zoo Safari",
+        "Park Safari"
+      ],
+      "forest": [
+        "Park Dzikich Zwierząt",
+        "Leśny Park Zwierząt"
+      ],
+      "farm": [
+        "Farma Zwierząt",
+        "Mini Zoo i Farma"
+      ],
+      "bird": [
+        "Park Ptaków",
+        "Ogród Ptaków"
+      ],
+      "reptile": [
+        "Park Gadów",
+        "Terrarium",
+        "Reptilarium"
+      ],
+      "alpine": [
+        "Górski Park Zwierząt"
+      ]
+    },
+    "Switzerland": {
+      "German-speaking": {
+        "general": [
+          "Zoo",
+          "Tierpark",
+          "Natur- und Tierpark",
+          "Kinderzoo",
+          "Tiergarten"
+        ],
+        "aquarium": [
+          "Aquarium"
+        ],
+        "tropical": [
+          "Tropical Zoo"
+        ],
+        "safari": [
+          "Safari Park"
+        ],
+        "forest": [
+          "Wildpark",
+          "Wildnispark"
+        ],
+        "farm": [
+          "Animal Farm"
+        ],
+        "bird": [
+          "Vogelpark"
+        ],
+        "reptile": [
+          "Reptile Park"
+        ],
+        "alpine": [
+          "Alpine Wildlife Park"
+        ]
+      },
+      "French-speaking": {
+        "general": [
+          "Zoo",
+          "Parc zoologique",
+          "Jardin zoologique",
+          "Parc naturel et animalier"
+        ],
+        "aquarium": [
+          "Aquarium-Vivarium"
+        ],
+        "tropical": [
+          "Tropical Zoo"
+        ],
+        "safari": [
+          "Safari Park"
+        ],
+        "forest": [
+          "Parc animalier"
+        ],
+        "farm": [
+          "Animal Farm"
+        ],
+        "bird": [
+          "Bird Park"
+        ],
+        "reptile": [
+          "Reptile Park"
+        ],
+        "alpine": [
+          "Alpine Wildlife Park"
+        ]
+      },
+      "Italian-speaking": {
+        "general": [
+          "Zoo",
+          "Parco zoologico",
+          "Giardino zoologico"
+        ],
+        "aquarium": [
+          "Aquarium"
+        ],
+        "tropical": [
+          "Tropical Zoo"
+        ],
+        "safari": [
+          "Safari Park"
+        ],
+        "forest": [
+          "Parco faunistico"
+        ],
+        "farm": [
+          "Animal Farm"
+        ],
+        "bird": [
+          "Falconeria"
+        ],
+        "reptile": [
+          "Reptile Park"
+        ],
+        "alpine": [
+          "Alpine Wildlife Park"
+        ]
+      }
+    },
+    "Sweden": {
+      "general": [
+        "Zoo",
+        "Djurpark",
+        "Vildmarkspark",
+        "Tropikhus",
+        "Rovdjurspark"
+      ],
+      "aquarium": [
+        "Akvarium",
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Viltpark",
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Fågelpark",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Mountain Wildlife Park"
+      ]
+    },
+    "Norway": {
+      "general": [
+        "Zoo",
+        "Dyrepark",
+        "Dyrehage",
+        "Bjørnepark",
+        "Familiepark"
+      ],
+      "aquarium": [
+        "Akvarium",
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptilpark",
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Mountain Wildlife Park"
+      ]
+    },
+    "Finland": {
+      "general": [
+        "Zoo",
+        "Eläintarha",
+        "Eläinpuisto"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Kotieläinpuisto",
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Lintupuisto",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Ireland": {
+      "general": [
+        "Zoo",
+        "Animal Park",
+        "Zoological Gardens"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wildlife Centre",
+        "Wildlife Sanctuary"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird of Prey Centre",
+        "Falconry Centre"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Italy": {
+      "general": [
+        "Zoo",
+        "Bioparco",
+        "Parco Zoologico",
+        "Giardino Zoologico",
+        "Parco Zoo"
+      ],
+      "aquarium": [
+        "Acquario",
+        "Acquario Marino",
+        "Centro Acquatico"
+      ],
+      "tropical": [
+        "Parco Tropicale",
+        "Casa Tropicale",
+        "Giardino Tropicale"
+      ],
+      "safari": [
+        "Zoosafari",
+        "Zoo Safari",
+        "Parco Safari",
+        "Safari Park"
+      ],
+      "forest": [
+        "Parco Faunistico",
+        "Parco Natura Viva",
+        "Oasi Faunistica",
+        "Parco Natura"
+      ],
+      "farm": [
+        "Fattoria Didattica",
+        "Parco Fattoria",
+        "Fattoria degli Animali"
+      ],
+      "bird": [
+        "Parco Ornitologico",
+        "Parco degli Uccelli",
+        "Falconeria"
+      ],
+      "reptile": [
+        "Rettilario",
+        "Parco Rettili",
+        "Casa dei Rettili"
+      ],
+      "alpine": [
+        "Parco Faunistico Alpino",
+        "Zoo Alpino",
+        "Alpine Zoo",
+        "Alpine Wildlife Park"
+      ]
+    },
+    "Spain": {
+      "general": [
+        "Zoo",
+        "Zoológico",
+        "Parque Zoológico",
+        "Bioparc",
+        "Parque de la Naturaleza",
+        "Jardín Zoológico",
+        "Acuario",
+        "Reserva Natural"
+      ],
+      "aquarium": [
+        "Acuario",
+        "Acuario Marino",
+        "Oceanográfico"
+      ],
+      "tropical": [
+        "Parque Tropical",
+        "Jardín Tropical",
+        "Selva Tropical"
+      ],
+      "safari": [
+        "Safari",
+        "Safari Park",
+        "Safari Aitana",
+        "Río Safari",
+        "Parque Safari"
+      ],
+      "forest": [
+        "Parque de Fauna",
+        "Reserva Natural",
+        "Parque de Naturaleza"
+      ],
+      "farm": [
+        "Granja Escuela",
+        "Parque Granja",
+        "Granja de Animales"
+      ],
+      "bird": [
+        "Parque Ornitológico",
+        "Parque de Aves",
+        "Jardín de Aves"
+      ],
+      "reptile": [
+        "Reptilario",
+        "Parque de Reptiles",
+        "Casa de Reptiles"
+      ],
+      "alpine": [
+        "Parque Faunístico de Montaña"
+      ]
+    },
+    "Portugal": {
+      "general": [
+        "Zoo",
+        "Jardim Zoológico",
+        "Parque Zoológico"
+      ],
+      "aquarium": [
+        "Aquário",
+        "Oceanário",
+        "Aquário Marinho"
+      ],
+      "tropical": [
+        "Parque Tropical",
+        "Jardim Tropical",
+        "Mundo Tropical"
+      ],
+      "safari": [
+        "Safari Park",
+        "Parque Safari"
+      ],
+      "forest": [
+        "Parque Biológico",
+        "Parque Animal",
+        "Parque de Fauna"
+      ],
+      "farm": [
+        "Quinta Pedagógica",
+        "Parque Rural",
+        "Quinta dos Animais"
+      ],
+      "bird": [
+        "Parque Ornitológico",
+        "Parque das Aves",
+        "Jardim de Aves"
+      ],
+      "reptile": [
+        "Parque de Répteis",
+        "Reptilário"
+      ],
+      "alpine": [
+        "Parque de Fauna de Montanha"
+      ]
+    },
+    "Iceland": {
+      "general": [
+        "Dýragarður",
+        "Dýragarður og fjölskyldugarður"
+      ],
+      "aquarium": [
+        "Sædýrasafn",
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Húsdýragarður",
+        "Fjölskyldu- og húsdýragarður"
+      ],
+      "bird": [
+        "Fuglagarður",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Hungary": {
+      "general": [
+        "Állatkert",
+        "Állat- és Növénykert",
+        "Zoo",
+        "Vadas- és Szabadidőpark"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Vadaspark",
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Madárpark",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Slovakia": {
+      "general": [
+        "Zoo",
+        "ZOO",
+        "Zoologická záhrada",
+        "Zoopark",
+        "Vtáčí park"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Zveropark",
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Mountain Wildlife Park"
+      ]
+    },
+    "Slovenia": {
+      "general": [
+        "Živalski vrt",
+        "Zoo",
+        "Živalski park"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari park",
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Ptičji park",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Alpine Zoo",
+        "Alpine Wildlife Park"
+      ]
+    },
+    "Croatia": {
+      "general": [
+        "Zoo",
+        "Zoološki vrt",
+        "Zoološki park"
+      ],
+      "aquarium": [
+        "Akvarij",
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari park",
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Park životinja",
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Romania": {
+      "general": [
+        "Zoo",
+        "Grădină Zoologică",
+        "Parc Zoologic",
+        "Grădina Zoologică",
+        "Rezervație de animale",
+        "Parc de animale"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Mountain Wildlife Park"
+      ]
+    },
+    "Bulgaria": {
+      "general": [
+        "Зоопарк",
+        "Зоологическа градина",
+        "Зоологически парк",
+        "Парк за животни",
+        "Сафари парк"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Mountain Wildlife Park"
+      ]
+    },
+    "Greece": {
+      "general": [
+        "Ζωολογικός Κήπος",
+        "Ζωολογικό Πάρκο",
+        "Πάρκο Ζώων",
+        "Zoo",
+        "Πάρκο Άγριας Ζωής",
+        "Ενυδρείο"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Estonia": {
+      "general": [
+        "Loomaaed",
+        "Zoo",
+        "Looduspark"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Loomapark",
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Linnuparg",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Latvia": {
+      "general": [
+        "Zoodārzs",
+        "Zooloģiskais dārzs",
+        "Zoo",
+        "Dabas parks"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Dzīvnieku parks",
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Putnu parks",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Lithuania": {
+      "general": [
+        "Zoologijos sodas",
+        "Zoo",
+        "Gamtos parkas"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari parkas",
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Gyvūnų parkas",
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Paukščių parkas",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Isle of Man": {
+      "general": [
+        "Zoo",
+        "Animal Park"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wildlife Centre"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Channel Islands": {
+      "general": [
+        "Zoo",
+        "Animal Park"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wildlife Conservation Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Faroe Islands": {
+      "general": [
+        "Djóragarður",
+        "Djóraparkur"
+      ],
+      "aquarium": [
+        "Akvarium",
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Fuglagarður",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Malta": {
+      "general": [
+        "Zoo",
+        "Animal Park"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Falconry Centre"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Albania": {
+      "general": [
+        "Zoo",
+        "Kopsht Zoologjik",
+        "Park Zoologjik"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Mountain Wildlife Park"
+      ]
+    },
+    "Bosnia and Herzegovina": {
+      "general": [
+        "Zoo",
+        "Zoološki vrt",
+        "Zoološki park"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Mountain Wildlife Park"
+      ]
+    },
+    "Serbia": {
+      "general": [
+        "Zoo",
+        "Zoološki vrt",
+        "Zoovrt"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Montenegro": {
+      "general": [
+        "Zoo",
+        "Zoološki vrt"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Park životinja",
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Mountain Wildlife Park"
+      ]
+    },
+    "North Macedonia": {
+      "general": [
+        "Зоолошка градина",
+        "Зоо",
+        "Зоолошки парк"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Mountain Wildlife Park"
+      ]
+    },
+    "Moldova": {
+      "general": [
+        "Zoo",
+        "Grădină Zoologică",
+        "Parc Zoologic"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Ukraine": {
+      "general": [
+        "Зоопарк",
+        "Зоологічний парк",
+        "Зоологічний сад",
+        "Екопарк"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Kosovo": {
+      "general": [
+        "Zoo",
+        "Kopsht Zoologjik",
+        "Park Zoologjik"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Cyprus": {
+      "general": [
+        "Zoo",
+        "Ζωολογικός Κήπος",
+        "Ζωολογικό Πάρκο",
+        "Animal Park"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "Andorra": {
+      "general": [
+        "Zoo",
+        "Parc d'Animals"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Parc Animalier",
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Mountain Wildlife Park"
+      ]
+    },
+    "Liechtenstein": {
+      "general": [
+        "Zoo",
+        "Tierpark"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Wildpark",
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Vogelpark",
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ],
+      "alpine": [
+        "Alpine Zoo",
+        "Alpine Wildlife Park"
+      ]
+    },
+    "Monaco": {
+      "general": [
+        "Jardin Animalier",
+        "Zoo"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Parc Animalier",
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    },
+    "San Marino": {
+      "general": [
+        "Zoo",
+        "Parco Zoologico"
+      ],
+      "aquarium": [
+        "Aquarium",
+        "Marine Aquarium"
+      ],
+      "tropical": [
+        "Tropical Zoo",
+        "Tropical Wildlife Park"
+      ],
+      "safari": [
+        "Safari Park",
+        "Safari Zoo"
+      ],
+      "forest": [
+        "Parco Faunistico",
+        "Wildlife Park",
+        "Wild Animal Park"
+      ],
+      "farm": [
+        "Animal Farm",
+        "Farm Park"
+      ],
+      "bird": [
+        "Bird Park",
+        "Bird Gardens"
+      ],
+      "reptile": [
+        "Reptile Park",
+        "Reptile Centre"
+      ]
+    }
+  },
+  "places": {
+    "Netherlands": {
+      "Noord-Holland": [
+        "Amsterdam",
+        "Haarlem",
+        "Hilversum",
+        "Alkmaar",
+        "Amstelveen",
+        "Purmerend",
+        "Hoorn",
+        "Zaanstad",
+        "Aalsmeer",
+        "Beverwijk",
+        "Blaricum",
+        "Bloemendaal",
+        "Castricum",
+        "Enkhuizen",
+        "Heiloo",
+        "Huizen",
+        "Laren",
+        "Schagen"
+      ],
+      "Zuid-Holland": [
+        "Rotterdam",
+        "Den Haag",
+        "Dordrecht",
+        "Zoetermeer",
+        "Delft",
+        "Gouda",
+        "Schiedam",
+        "Spijkenisse",
+        "Vlaardingen",
+        "Capelle aan den IJssel",
+        "Katwijk",
+        "Gorinchem",
+        "Leiden"
+      ],
+      "Utrecht": [
+        "Utrecht",
+        "Amersfoort",
+        "Veenendaal",
+        "Zeist",
+        "Nieuwegein",
+        "Woerden",
+        "Baarn",
+        "Soest",
+        "Bilthoven",
+        "De Bilt",
+        "Bunnik",
+        "Houten",
+        "IJsselstein",
+        "Leusden",
+        "Lopik",
+        "Montfoort",
+        "Oudewater",
+        "Wijk bij Duurstede"
+      ],
+      "Noord-Brabant": [
+        "Eindhoven",
+        "Tilburg",
+        "Breda",
+        "'s-Hertogenbosch",
+        "Helmond",
+        "Oss",
+        "Roosendaal",
+        "Waalwijk",
+        "Oosterhout",
+        "Etten-Leur",
+        "Bergen op Zoom",
+        "Boxmeer"
+      ],
+      "Gelderland": [
+        "Nijmegen",
+        "Apeldoorn",
+        "Arnhem",
+        "Tiel",
+        "Culemborg",
+        "Zutphen",
+        "Doetinchem",
+        "Winterswijk",
+        "Aalten",
+        "Lichtenvoorde",
+        "Groenlo",
+        "Lochem",
+        "Borculo",
+        "Eibergen",
+        "Ruurlo",
+        "Vorden",
+        "Doesburg",
+        "Zevenaar",
+        "Duiven",
+        "Westervoort",
+        "Velp",
+        "Rheden",
+        "Dieren",
+        "Brummen",
+        "Epe",
+        "Vaassen",
+        "Nunspeet",
+        "Elburg",
+        "Putten",
+        "Ermelo",
+        "Barneveld",
+        "Nijkerk",
+        "Wageningen",
+        "Ede",
+        "Bennekom",
+        "Rhenen",
+        "Oosterbeek",
+        "Doorwerth",
+        "Huissen",
+        "Bemmel",
+        "Elst",
+        "Druten",
+        "Wijchen",
+        "Groesbeek",
+        "Harderwijk"
+      ],
+      "Overijssel": [
+        "Enschede",
+        "Zwolle",
+        "Deventer",
+        "Almelo",
+        "Hengelo",
+        "Kampen",
+        "Steenwijk",
+        "Hardenberg",
+        "Ommen",
+        "Dalfsen",
+        "Raalte",
+        "Oldenzaal",
+        "Haaksbergen",
+        "Rijssen",
+        "Holten",
+        "Hellendoorn",
+        "Nijverdal",
+        "Ootmarsum",
+        "Vriezenveen"
+      ],
+      "Limburg": [
+        "Maastricht",
+        "Venlo",
+        "Heerlen",
+        "Weert",
+        "Sittard",
+        "Geleen",
+        "Kerkrade",
+        "Roermond",
+        "Gennep",
+        "Brunssum",
+        "Landgraaf",
+        "Nederweert",
+        "Vaals",
+        "Valkenburg",
+        "Venray",
+        "Voerendaal",
+        "Horst"
+      ],
+      "Zeeland": [
+        "Middelburg",
+        "Vlissingen",
+        "Terneuzen",
+        "Goes",
+        "Zierikzee",
+        "Hulst",
+        "Sluis",
+        "Domburg",
+        "Veere",
+        "Renesse",
+        "Oostburg",
+        "Axel",
+        "Yerseke",
+        "Tholen",
+        "Sint-Maartensdijk",
+        "Bruinisse",
+        "Burgh-Haamstede",
+        "Kloetinge",
+        "Kapelle",
+        "Kruiningen",
+        "Wemeldinge",
+        "Breskens",
+        "Cadzand"
+      ],
+      "Fryslân": [
+        "Leeuwarden",
+        "Sneek",
+        "Dokkum",
+        "Harlingen",
+        "Franeker",
+        "Bolsward",
+        "Workum",
+        "Hindeloopen",
+        "Stavoren",
+        "Lemmer",
+        "Joure",
+        "Heerenveen",
+        "Drachten",
+        "Wolvega",
+        "Grou",
+        "Akkrum",
+        "Makkum",
+        "Hallum",
+        "Kollum",
+        "Buitenpost",
+        "Surhuisterveen",
+        "Oosterwolde",
+        "Appelscha",
+        "Beetsterzwaag",
+        "Grouw",
+        "Balk",
+        "IJlst",
+        "Sloten"
+      ],
+      "Flevoland": [
+        "Almere",
+        "Lelystad",
+        "Dronten",
+        "Emmeloord",
+        "Urk",
+        "Zeewolde",
+        "Biddinghuizen",
+        "Swifterbant",
+        "Marknesse",
+        "Ens",
+        "Nagele",
+        "Luttelgeest",
+        "Bant",
+        "Creil",
+        "Rutten",
+        "Kraggenburg"
+      ],
+      "Drenthe": [
+        "Assen",
+        "Emmen",
+        "Meppel",
+        "Hoogeveen",
+        "Coevorden",
+        "Beilen",
+        "Roden",
+        "Zuidlaren",
+        "Borger",
+        "Dwingeloo",
+        "Gieten",
+        "Rolde",
+        "Ruinen",
+        "Schoonoord",
+        "Vledder",
+        "Zuidwolde"
+      ],
+      "Groningen": [
+        "Groningen",
+        "Eelde",
+        "Paterswolde",
+        "Haren",
+        "Winschoten",
+        "Veendam",
+        "Stadskanaal",
+        "Delfzijl",
+        "Appingedam",
+        "Hoogezand",
+        "Sappemeer",
+        "Leek",
+        "Bedum",
+        "Winsum",
+        "Uithuizen",
+        "Loppersum",
+        "Ter Apel",
+        "Vlagtwedde",
+        "Bourtange",
+        "Musselkanaal",
+        "Oldekerk",
+        "Aduard",
+        "Warffum",
+        "Pieterburen",
+        "Eenrum"
+      ]
+    },
+    "Belgium": {
+      "Flanders": {
+        "Antwerpen": [
+          "Antwerpen",
+          "Mechelen",
+          "Turnhout",
+          "Lier",
+          "Herentals",
+          "Geel",
+          "Mol",
+          "Boom",
+          "Brasschaat",
+          "Kalmthout",
+          "Schoten",
+          "Mortsel",
+          "Edegem",
+          "Kontich",
+          "Brecht",
+          "Hoogstraten",
+          "Willebroek",
+          "Heist-op-den-Berg",
+          "Duffel",
+          "Bornem",
+          "Malle",
+          "Ranst",
+          "Zoersel",
+          "Wuustwezel",
+          "Arendonk"
+        ],
+        "Limburg": [
+          "Hasselt",
+          "Genk",
+          "Sint-Truiden",
+          "Tongeren",
+          "Beringen",
+          "Lommel",
+          "Maaseik",
+          "Maasmechelen",
+          "Dilsen-Stokkem",
+          "Bree",
+          "Peer",
+          "Bilzen",
+          "Lanaken",
+          "Zonhoven",
+          "Houthalen-Helchteren",
+          "Heusden-Zolder",
+          "Leopoldsburg",
+          "Pelt",
+          "Alken",
+          "Diepenbeek"
+        ],
+        "Oost-Vlaanderen": [
+          "Gent",
+          "Aalst",
+          "Sint-Niklaas",
+          "Dendermonde",
+          "Lokeren",
+          "Oudenaarde",
+          "Ronse",
+          "Ninove",
+          "Geraardsbergen",
+          "Zottegem",
+          "Deinze",
+          "Eeklo",
+          "Wetteren",
+          "Evergem",
+          "Lochristi",
+          "Zelzate",
+          "Zele",
+          "Lebbeke",
+          "Kluisbergen",
+          "Assenede",
+          "Destelbergen",
+          "Nazareth-De Pinte",
+          "Merelbeke-Melle"
+        ],
+        "Vlaams-Brabant": [
+          "Leuven",
+          "Vilvoorde",
+          "Halle",
+          "Tienen",
+          "Diest",
+          "Aarschot",
+          "Asse",
+          "Grimbergen",
+          "Tervuren",
+          "Overijse",
+          "Zaventem",
+          "Dilbeek",
+          "Landen",
+          "Haacht",
+          "Rotselaar",
+          "Kortenberg",
+          "Bertem",
+          "Beersel",
+          "Meise",
+          "Opwijk",
+          "Lennik",
+          "Zemst"
+        ],
+        "West-Vlaanderen": [
+          "Brugge",
+          "Kortrijk",
+          "Oostende",
+          "Roeselare",
+          "Ieper",
+          "Waregem",
+          "Knokke-Heist",
+          "Blankenberge",
+          "De Panne",
+          "Koksijde",
+          "Nieuwpoort",
+          "Diksmuide",
+          "Veurne",
+          "Tielt",
+          "Torhout",
+          "Menen",
+          "Poperinge",
+          "Izegem",
+          "Middelkerke",
+          "Gistel",
+          "Zwevegem",
+          "Wingene"
+        ]
+      },
+      "Wallonia": {
+        "Waals-Brabant": [
+          "Wavre",
+          "Waterloo",
+          "Nivelles",
+          "Braine-l'Alleud",
+          "Braine-le-Château",
+          "Ottignies-Louvain-la-Neuve",
+          "Jodoigne",
+          "Tubize",
+          "Lasne",
+          "Genappe",
+          "Grez-Doiceau",
+          "Perwez",
+          "Rixensart",
+          "La Hulpe",
+          "Chaumont-Gistoux"
+        ],
+        "Henegouwen": [
+          "Charleroi",
+          "Mons",
+          "Tournai",
+          "La Louvière",
+          "Mouscron",
+          "Ath",
+          "Soignies",
+          "Binche",
+          "Chimay",
+          "Thuin",
+          "Enghien",
+          "Péruwelz",
+          "Fleurus",
+          "Châtelet",
+          "Beaumont",
+          "Leuze-en-Hainaut",
+          "Lessines",
+          "Saint-Ghislain",
+          "Dour",
+          "Morlanwelz"
+        ],
+        "Luik": [
+          "Liège",
+          "Verviers",
+          "Huy",
+          "Spa",
+          "Eupen",
+          "Malmedy",
+          "Seraing",
+          "Herstal",
+          "Visé",
+          "Waremme",
+          "Hannut",
+          "Stavelot",
+          "Aywaille",
+          "Chaudfontaine",
+          "Theux",
+          "Welkenraedt",
+          "Dison",
+          "Fléron",
+          "Esneux",
+          "Raeren"
+        ],
+        "Luxemburg": [
+          "Arlon",
+          "Bastogne",
+          "Marche-en-Famenne",
+          "Neufchâteau",
+          "Virton",
+          "Bouillon",
+          "Durbuy",
+          "La Roche-en-Ardenne",
+          "Houffalize",
+          "Aubange",
+          "Libramont-Chevigny",
+          "Saint-Hubert",
+          "Vielsalm",
+          "Florenville",
+          "Bertrix",
+          "Paliseul"
+        ],
+        "Namen": [
+          "Namur",
+          "Dinant",
+          "Ciney",
+          "Gembloux",
+          "Andenne",
+          "Couvin",
+          "Rochefort",
+          "Philippeville",
+          "Florennes",
+          "Sambreville",
+          "Walcourt",
+          "Beauraing",
+          "Gedinne",
+          "Hamois",
+          "Yvoir",
+          "Fosses-la-Ville"
+        ]
+      },
+      "Brussels-Capital": {
+        "Brussels-Capital": [
+          "Brussels",
+          "Anderlecht",
+          "Schaerbeek",
+          "Uccle",
+          "Ixelles",
+          "Etterbeek",
+          "Auderghem",
+          "Forest",
+          "Jette",
+          "Evere",
+          "Woluwe-Saint-Lambert",
+          "Woluwe-Saint-Pierre",
+          "Saint-Gilles",
+          "Koekelberg"
+        ]
+      }
+    },
+    "Germany": {
+      "Baden-Württemberg": [
+        "Stuttgart",
+        "Mannheim",
+        "Karlsruhe",
+        "Freiburg im Breisgau",
+        "Heidelberg",
+        "Heilbronn",
+        "Ulm",
+        "Pforzheim",
+        "Reutlingen",
+        "Tübingen",
+        "Konstanz",
+        "Baden-Baden",
+        "Offenburg",
+        "Ludwigsburg",
+        "Esslingen am Neckar",
+        "Ravensburg",
+        "Villingen-Schwenningen",
+        "Aalen",
+        "Schwäbisch Hall",
+        "Singen"
+      ],
+      "Bayern": [
+        "München",
+        "Nürnberg",
+        "Augsburg",
+        "Regensburg",
+        "Ingolstadt",
+        "Würzburg",
+        "Fürth",
+        "Erlangen",
+        "Bamberg",
+        "Bayreuth",
+        "Landshut",
+        "Passau",
+        "Rosenheim",
+        "Kempten",
+        "Coburg",
+        "Schweinfurt",
+        "Aschaffenburg",
+        "Freising",
+        "Garmisch-Partenkirchen",
+        "Memmingen"
+      ],
+      "Berlin": [
+        "Berlin"
+      ],
+      "Brandenburg": [
+        "Potsdam",
+        "Cottbus",
+        "Brandenburg an der Havel",
+        "Frankfurt (Oder)",
+        "Oranienburg",
+        "Eberswalde",
+        "Bernau bei Berlin",
+        "Königs Wusterhausen",
+        "Neuruppin",
+        "Luckenwalde",
+        "Senftenberg",
+        "Lübben",
+        "Lübbenau",
+        "Bad Belzig"
+      ],
+      "Bremen": [
+        "Bremen",
+        "Bremerhaven"
+      ],
+      "Hamburg": [
+        "Hamburg"
+      ],
+      "Hessen": [
+        "Frankfurt am Main",
+        "Wiesbaden",
+        "Kassel",
+        "Darmstadt",
+        "Offenbach am Main",
+        "Hanau",
+        "Gießen",
+        "Marburg",
+        "Fulda",
+        "Bad Homburg",
+        "Rüsselsheim",
+        "Wetzlar",
+        "Limburg an der Lahn",
+        "Bensheim",
+        "Friedberg"
+      ],
+      "Mecklenburg-Vorpommern": [
+        "Rostock",
+        "Schwerin",
+        "Neubrandenburg",
+        "Stralsund",
+        "Greifswald",
+        "Wismar",
+        "Güstrow",
+        "Waren (Müritz)",
+        "Parchim",
+        "Anklam",
+        "Bad Doberan",
+        "Sassnitz"
+      ],
+      "Niedersachsen": [
+        "Hannover",
+        "Braunschweig",
+        "Oldenburg",
+        "Osnabrück",
+        "Wolfsburg",
+        "Göttingen",
+        "Hildesheim",
+        "Salzgitter",
+        "Celle",
+        "Lüneburg",
+        "Emden",
+        "Wilhelmshaven",
+        "Hameln",
+        "Goslar",
+        "Nordhorn",
+        "Stade",
+        "Cuxhaven",
+        "Nienburg",
+        "Leer",
+        "Meppen"
+      ],
+      "Nordrhein-Westfalen": [
+        "Köln",
+        "Düsseldorf",
+        "Dortmund",
+        "Essen",
+        "Duisburg",
+        "Bochum",
+        "Wuppertal",
+        "Bielefeld",
+        "Bonn",
+        "Münster",
+        "Aachen",
+        "Mönchengladbach",
+        "Gelsenkirchen",
+        "Krefeld",
+        "Oberhausen",
+        "Hagen",
+        "Hamm",
+        "Leverkusen",
+        "Solingen",
+        "Siegen",
+        "Paderborn",
+        "Recklinghausen",
+        "Moers",
+        "Detmold",
+        "Minden"
+      ],
+      "Rheinland-Pfalz": [
+        "Mainz",
+        "Ludwigshafen am Rhein",
+        "Koblenz",
+        "Trier",
+        "Kaiserslautern",
+        "Worms",
+        "Neuwied",
+        "Speyer",
+        "Bad Kreuznach",
+        "Landau in der Pfalz",
+        "Pirmasens",
+        "Zweibrücken",
+        "Bingen am Rhein",
+        "Mayen"
+      ],
+      "Saarland": [
+        "Saarbrücken",
+        "Neunkirchen",
+        "Homburg",
+        "Völklingen",
+        "Saarlouis",
+        "St. Ingbert",
+        "Merzig",
+        "St. Wendel"
+      ],
+      "Sachsen": [
+        "Leipzig",
+        "Dresden",
+        "Chemnitz",
+        "Zwickau",
+        "Görlitz",
+        "Plauen",
+        "Freiberg",
+        "Bautzen",
+        "Meißen",
+        "Pirna",
+        "Radebeul",
+        "Hoyerswerda",
+        "Annaberg-Buchholz"
+      ],
+      "Sachsen-Anhalt": [
+        "Halle (Saale)",
+        "Magdeburg",
+        "Dessau-Roßlau",
+        "Wittenberg",
+        "Halberstadt",
+        "Stendal",
+        "Weißenfels",
+        "Merseburg",
+        "Naumburg",
+        "Quedlinburg",
+        "Wernigerode",
+        "Bernburg"
+      ],
+      "Schleswig-Holstein": [
+        "Kiel",
+        "Lübeck",
+        "Flensburg",
+        "Neumünster",
+        "Norderstedt",
+        "Elmshorn",
+        "Pinneberg",
+        "Itzehoe",
+        "Husum",
+        "Eckernförde",
+        "Rendsburg",
+        "Schleswig",
+        "Ahrensburg"
+      ],
+      "Thüringen": [
+        "Erfurt",
+        "Jena",
+        "Gera",
+        "Weimar",
+        "Gotha",
+        "Eisenach",
+        "Nordhausen",
+        "Suhl",
+        "Mühlhausen",
+        "Altenburg",
+        "Ilmenau",
+        "Meiningen"
+      ]
+    },
+    "France": {
+      "Auvergne-Rhône-Alpes": [
+        "Lyon",
+        "Grenoble",
+        "Saint-Étienne",
+        "Clermont-Ferrand",
+        "Annecy",
+        "Chambéry",
+        "Valence",
+        "Vichy",
+        "Roanne",
+        "Bourg-en-Bresse",
+        "Aurillac",
+        "Montélimar",
+        "Annemasse",
+        "Le Puy-en-Velay",
+        "Aix-les-Bains"
+      ],
+      "Bourgogne-Franche-Comté": [
+        "Dijon",
+        "Besançon",
+        "Belfort",
+        "Chalon-sur-Saône",
+        "Auxerre",
+        "Mâcon",
+        "Nevers",
+        "Montbéliard",
+        "Dole",
+        "Beaune",
+        "Sens",
+        "Vesoul"
+      ],
+      "Bretagne": [
+        "Rennes",
+        "Brest",
+        "Quimper",
+        "Lorient",
+        "Vannes",
+        "Saint-Malo",
+        "Saint-Brieuc",
+        "Fougères",
+        "Morlaix",
+        "Dinan",
+        "Concarneau",
+        "Pontivy"
+      ],
+      "Centre-Val de Loire": [
+        "Tours",
+        "Orléans",
+        "Bourges",
+        "Blois",
+        "Chartres",
+        "Châteauroux",
+        "Vierzon",
+        "Dreux",
+        "Vendôme",
+        "Chinon",
+        "Amboise"
+      ],
+      "Corse": [
+        "Ajaccio",
+        "Bastia",
+        "Porto-Vecchio",
+        "Corte",
+        "Calvi",
+        "Bonifacio",
+        "L'Île-Rousse",
+        "Propriano",
+        "Saint-Florent",
+        "Sartène",
+        "Porticcio",
+        "Ghisonaccia",
+        "Solenzara"
+      ],
+      "Grand Est": [
+        "Strasbourg",
+        "Reims",
+        "Metz",
+        "Nancy",
+        "Mulhouse",
+        "Colmar",
+        "Troyes",
+        "Charleville-Mézières",
+        "Épinal",
+        "Châlons-en-Champagne",
+        "Thionville",
+        "Haguenau",
+        "Saint-Dizier",
+        "Sélestat",
+        "Verdun"
+      ],
+      "Hauts-de-France": [
+        "Lille",
+        "Amiens",
+        "Roubaix",
+        "Tourcoing",
+        "Dunkerque",
+        "Calais",
+        "Arras",
+        "Beauvais",
+        "Valenciennes",
+        "Boulogne-sur-Mer",
+        "Douai",
+        "Lens",
+        "Compiègne",
+        "Saint-Quentin",
+        "Cambrai"
+      ],
+      "Île-de-France": [
+        "Paris",
+        "Versailles",
+        "Saint-Denis",
+        "Boulogne-Billancourt",
+        "Montreuil",
+        "Nanterre",
+        "Créteil",
+        "Argenteuil",
+        "Fontainebleau",
+        "Meaux",
+        "Melun",
+        "Saint-Germain-en-Laye",
+        "Cergy",
+        "Évry-Courcouronnes"
+      ],
+      "Normandie": [
+        "Rouen",
+        "Caen",
+        "Le Havre",
+        "Cherbourg-en-Cotentin",
+        "Évreux",
+        "Dieppe",
+        "Alençon",
+        "Lisieux",
+        "Bayeux",
+        "Honfleur",
+        "Fécamp",
+        "Vernon",
+        "Granville"
+      ],
+      "Nouvelle-Aquitaine": [
+        "Bordeaux",
+        "Limoges",
+        "Poitiers",
+        "Pau",
+        "La Rochelle",
+        "Bayonne",
+        "Angoulême",
+        "Périgueux",
+        "Niort",
+        "Brive-la-Gaillarde",
+        "Agen",
+        "Biarritz",
+        "Bergerac",
+        "Rochefort",
+        "Dax"
+      ],
+      "Occitanie": [
+        "Toulouse",
+        "Montpellier",
+        "Nîmes",
+        "Perpignan",
+        "Béziers",
+        "Montauban",
+        "Albi",
+        "Tarbes",
+        "Carcassonne",
+        "Narbonne",
+        "Rodez",
+        "Auch",
+        "Cahors",
+        "Sète",
+        "Lourdes"
+      ],
+      "Pays de la Loire": [
+        "Nantes",
+        "Angers",
+        "Le Mans",
+        "Saint-Nazaire",
+        "Laval",
+        "La Roche-sur-Yon",
+        "Cholet",
+        "Saumur",
+        "Les Sables-d'Olonne",
+        "Fontenay-le-Comte",
+        "Mayenne"
+      ],
+      "Provence-Alpes-Côte d'Azur": [
+        "Marseille",
+        "Nice",
+        "Toulon",
+        "Aix-en-Provence",
+        "Avignon",
+        "Cannes",
+        "Antibes",
+        "Arles",
+        "Fréjus",
+        "Grasse",
+        "Menton",
+        "Gap",
+        "Digne-les-Bains",
+        "Hyères",
+        "Orange"
+      ]
+    },
+    "Luxembourg": {
+      "Capellen": [
+        "Capellen",
+        "Mamer",
+        "Kehlen",
+        "Steinfort",
+        "Koerich",
+        "Garnich"
+      ],
+      "Clervaux": [
+        "Clervaux",
+        "Troisvierges",
+        "Weiswampach",
+        "Wincrange"
+      ],
+      "Diekirch": [
+        "Diekirch",
+        "Ettelbruck",
+        "Bettendorf",
+        "Erpeldange-sur-Sûre",
+        "Schieren"
+      ],
+      "Echternach": [
+        "Echternach",
+        "Beaufort",
+        "Berdorf",
+        "Consdorf",
+        "Rosport"
+      ],
+      "Esch-sur-Alzette": [
+        "Esch-sur-Alzette",
+        "Differdange",
+        "Dudelange",
+        "Bettembourg",
+        "Pétange",
+        "Schifflange",
+        "Kayl",
+        "Rumelange",
+        "Sanem"
+      ],
+      "Grevenmacher": [
+        "Grevenmacher",
+        "Junglinster",
+        "Wormeldange",
+        "Manternach",
+        "Biwer"
+      ],
+      "Luxembourg": [
+        "Luxembourg",
+        "Hesperange",
+        "Strassen",
+        "Walferdange",
+        "Steinsel",
+        "Niederanven",
+        "Sandweiler"
+      ],
+      "Mersch": [
+        "Mersch",
+        "Lintgen",
+        "Bissen",
+        "Colmar-Berg",
+        "Larochette"
+      ],
+      "Redange-sur-Attert": [
+        "Redange-sur-Attert",
+        "Rambrouch",
+        "Reichlange",
+        "Useldange",
+        "Préizerdaul"
+      ],
+      "Remich": [
+        "Remich",
+        "Mondorf-les-Bains",
+        "Schengen",
+        "Dalheim",
+        "Bous-Waldbredimus"
+      ],
+      "Vianden": [
+        "Vianden",
+        "Tandel",
+        "Putscheid"
+      ],
+      "Wiltz": [
+        "Wiltz",
+        "Esch-sur-Sûre",
+        "Goesdorf",
+        "Kiischpelt",
+        "Winseler"
+      ]
+    },
+    "United Kingdom": {
+      "England": [
+        "London",
+        "Birmingham",
+        "Manchester",
+        "Liverpool",
+        "Leeds",
+        "Sheffield",
+        "Bristol",
+        "Newcastle upon Tyne",
+        "Nottingham",
+        "Leicester",
+        "Coventry",
+        "York",
+        "Oxford",
+        "Cambridge",
+        "Chester",
+        "Blackpool",
+        "Brighton",
+        "Plymouth",
+        "Exeter",
+        "Bath",
+        "Norwich",
+        "Ipswich",
+        "Colchester",
+        "Canterbury",
+        "Dover",
+        "Southampton",
+        "Portsmouth",
+        "Winchester",
+        "Salisbury",
+        "Gloucester",
+        "Cheltenham",
+        "Worcester",
+        "Hereford",
+        "Shrewsbury",
+        "Derby",
+        "Lincoln",
+        "Peterborough",
+        "Northampton",
+        "Bedford",
+        "Reading",
+        "Guildford",
+        "Maidstone",
+        "Lancaster",
+        "Carlisle",
+        "Durham",
+        "Harrogate",
+        "Scarborough",
+        "Whitby",
+        "Torquay",
+        "Paignton",
+        "Newquay",
+        "Truro",
+        "Penzance",
+        "Taunton",
+        "Warwick",
+        "Stratford-upon-Avon",
+        "Windsor",
+        "St Albans",
+        "Hertford",
+        "Doncaster",
+        "Hull",
+        "Middlesbrough"
+      ],
+      "Scotland": [
+        "Edinburgh",
+        "Glasgow",
+        "Aberdeen",
+        "Dundee",
+        "Inverness",
+        "Stirling",
+        "Perth",
+        "Paisley",
+        "Ayr",
+        "Dumfries",
+        "Falkirk",
+        "Kirkcaldy",
+        "Dunfermline",
+        "Oban",
+        "Fort William",
+        "St Andrews",
+        "Elgin",
+        "Pitlochry",
+        "Hamilton",
+        "Livingston"
+      ],
+      "Wales": [
+        "Cardiff",
+        "Swansea",
+        "Newport",
+        "Wrexham",
+        "Bangor",
+        "Aberystwyth",
+        "Llandudno",
+        "Caernarfon",
+        "Conwy",
+        "Tenby",
+        "Pembroke",
+        "Brecon",
+        "Carmarthen",
+        "Llanelli",
+        "Merthyr Tydfil",
+        "Abergavenny"
+      ],
+      "Northern Ireland": [
+        "Belfast",
+        "Derry",
+        "Lisburn",
+        "Newry",
+        "Bangor (NI)",
+        "Armagh",
+        "Enniskillen",
+        "Coleraine",
+        "Ballymena",
+        "Omagh",
+        "Larne",
+        "Antrim"
+      ],
+      "Isle of Wight": [
+        "Newport (Isle of Wight)",
+        "Ryde",
+        "Cowes",
+        "Sandown",
+        "Ventnor"
+      ],
+      "Scottish Islands": [
+        "Kirkwall",
+        "Stromness",
+        "Lerwick",
+        "Stornoway",
+        "Portree",
+        "Tobermory",
+        "Bowmore",
+        "Rothesay"
+      ]
+    },
+    "Denmark": {
+      "Capital Region": [
+        "Copenhagen",
+        "Frederiksberg",
+        "Helsingør",
+        "Hillerød",
+        "Frederikssund",
+        "Allerød",
+        "Birkerød",
+        "Farum",
+        "Lyngby",
+        "Gentofte"
+      ],
+      "Central Denmark": [
+        "Aarhus",
+        "Randers",
+        "Horsens",
+        "Herning",
+        "Silkeborg",
+        "Viborg",
+        "Holstebro",
+        "Skanderborg",
+        "Grenaa",
+        "Ebeltoft",
+        "Ringkøbing",
+        "Skive"
+      ],
+      "North Denmark": [
+        "Aalborg",
+        "Hjørring",
+        "Frederikshavn",
+        "Skagen",
+        "Thisted",
+        "Brønderslev",
+        "Hobro",
+        "Løgstør",
+        "Nykøbing Mors"
+      ],
+      "Region Zealand": [
+        "Roskilde",
+        "Næstved",
+        "Slagelse",
+        "Køge",
+        "Holbæk",
+        "Kalundborg",
+        "Nykøbing Falster",
+        "Vordingborg",
+        "Sorø",
+        "Ringsted",
+        "Maribo"
+      ],
+      "Southern Denmark": [
+        "Odense",
+        "Esbjerg",
+        "Kolding",
+        "Vejle",
+        "Sønderborg",
+        "Svendborg",
+        "Fredericia",
+        "Haderslev",
+        "Aabenraa",
+        "Ribe",
+        "Middelfart",
+        "Nyborg",
+        "Billund"
+      ],
+      "Bornholm": [
+        "Rønne",
+        "Nexø",
+        "Allinge",
+        "Gudhjem"
+      ]
+    },
+    "Austria": {
+      "Vienna": [
+        "Vienna"
+      ],
+      "Lower Austria": [
+        "St. Pölten",
+        "Wiener Neustadt",
+        "Krems an der Donau",
+        "Baden",
+        "Klosterneuburg",
+        "Amstetten",
+        "Melk",
+        "Tulln",
+        "Mödling",
+        "Gmünd"
+      ],
+      "Upper Austria": [
+        "Linz",
+        "Wels",
+        "Steyr",
+        "Braunau am Inn",
+        "Gmunden",
+        "Vöcklabruck",
+        "Bad Ischl",
+        "Freistadt",
+        "Schärding",
+        "Ried im Innkreis"
+      ],
+      "Styria": [
+        "Graz",
+        "Leoben",
+        "Kapfenberg",
+        "Bruck an der Mur",
+        "Judenburg",
+        "Liezen",
+        "Weiz",
+        "Hartberg",
+        "Bad Aussee",
+        "Fürstenfeld"
+      ],
+      "Tyrol": [
+        "Innsbruck",
+        "Kufstein",
+        "Kitzbühel",
+        "Lienz",
+        "Imst",
+        "Hall in Tirol",
+        "Schwaz",
+        "Reutte",
+        "Mayrhofen"
+      ],
+      "Salzburg": [
+        "Salzburg",
+        "Hallein",
+        "Saalfelden",
+        "Zell am See",
+        "St. Johann im Pongau",
+        "Tamsweg",
+        "Bad Gastein"
+      ],
+      "Carinthia": [
+        "Klagenfurt",
+        "Villach",
+        "Wolfsberg",
+        "Spittal an der Drau",
+        "Feldkirchen",
+        "St. Veit an der Glan",
+        "Velden"
+      ],
+      "Vorarlberg": [
+        "Bregenz",
+        "Dornbirn",
+        "Feldkirch",
+        "Bludenz",
+        "Hohenems",
+        "Lustenau"
+      ],
+      "Burgenland": [
+        "Eisenstadt",
+        "Rust",
+        "Neusiedl am See",
+        "Oberwart",
+        "Güssing",
+        "Mattersburg",
+        "Pamhagen"
+      ]
+    },
+    "Czechia": {
+      "Prague": [
+        "Prague"
+      ],
+      "Central Bohemian": [
+        "Kladno",
+        "Mladá Boleslav",
+        "Příbram",
+        "Kolín",
+        "Kutná Hora",
+        "Beroun",
+        "Mělník",
+        "Poděbrady",
+        "Nymburk",
+        "Benešov"
+      ],
+      "South Bohemian": [
+        "České Budějovice",
+        "Tábor",
+        "Písek",
+        "Český Krumlov",
+        "Jindřichův Hradec",
+        "Třeboň",
+        "Strakonice"
+      ],
+      "Plzeň": [
+        "Plzeň",
+        "Klatovy",
+        "Domažlice",
+        "Rokycany",
+        "Tachov",
+        "Sušice"
+      ],
+      "Karlovy Vary": [
+        "Karlovy Vary",
+        "Cheb",
+        "Sokolov",
+        "Mariánské Lázně",
+        "Františkovy Lázně"
+      ],
+      "Ústí nad Labem": [
+        "Ústí nad Labem",
+        "Děčín",
+        "Teplice",
+        "Most",
+        "Chomutov",
+        "Litoměřice",
+        "Louny"
+      ],
+      "Liberec": [
+        "Liberec",
+        "Jablonec nad Nisou",
+        "Česká Lípa",
+        "Turnov",
+        "Semily"
+      ],
+      "Hradec Králové": [
+        "Hradec Králové",
+        "Trutnov",
+        "Náchod",
+        "Jičín",
+        "Dvůr Králové nad Labem",
+        "Vrchlabí"
+      ],
+      "Pardubice": [
+        "Pardubice",
+        "Chrudim",
+        "Svitavy",
+        "Litomyšl",
+        "Ústí nad Orlicí"
+      ],
+      "Vysočina": [
+        "Jihlava",
+        "Třebíč",
+        "Havlíčkův Brod",
+        "Žďár nad Sázavou",
+        "Pelhřimov"
+      ],
+      "South Moravian": [
+        "Brno",
+        "Znojmo",
+        "Břeclav",
+        "Hodonín",
+        "Blansko",
+        "Vyškov",
+        "Mikulov"
+      ],
+      "Olomouc": [
+        "Olomouc",
+        "Prostějov",
+        "Přerov",
+        "Šumperk",
+        "Jeseník"
+      ],
+      "Zlín": [
+        "Zlín",
+        "Kroměříž",
+        "Uherské Hradiště",
+        "Vsetín",
+        "Rožnov pod Radhoštěm"
+      ],
+      "Moravian-Silesian": [
+        "Ostrava",
+        "Opava",
+        "Frýdek-Místek",
+        "Karviná",
+        "Nový Jičín",
+        "Třinec",
+        "Bruntál"
+      ]
+    },
+    "Poland": {
+      "Lower Silesian": [
+        "Wrocław",
+        "Wałbrzych",
+        "Legnica",
+        "Jelenia Góra",
+        "Lubin",
+        "Głogów",
+        "Świdnica",
+        "Kłodzko",
+        "Bolesławiec",
+        "Polanica-Zdrój"
+      ],
+      "Kuyavian-Pomeranian": [
+        "Bydgoszcz",
+        "Toruń",
+        "Włocławek",
+        "Grudziądz",
+        "Inowrocław",
+        "Brodnica",
+        "Chełmno"
+      ],
+      "Lublin": [
+        "Lublin",
+        "Zamość",
+        "Chełm",
+        "Biała Podlaska",
+        "Puławy",
+        "Kazimierz Dolny"
+      ],
+      "Łódź": [
+        "Łódź",
+        "Piotrków Trybunalski",
+        "Pabianice",
+        "Tomaszów Mazowiecki",
+        "Bełchatów",
+        "Sieradz",
+        "Poddębice"
+      ],
+      "Lesser Poland": [
+        "Kraków",
+        "Tarnów",
+        "Nowy Sącz",
+        "Zakopane",
+        "Oświęcim",
+        "Bochnia",
+        "Wieliczka",
+        "Nowy Targ"
+      ],
+      "Mazovian": [
+        "Warsaw",
+        "Radom",
+        "Płock",
+        "Siedlce",
+        "Ciechanów",
+        "Ostrołęka",
+        "Żyrardów"
+      ],
+      "Opole": [
+        "Opole",
+        "Kędzierzyn-Koźle",
+        "Nysa",
+        "Brzeg",
+        "Kluczbork"
+      ],
+      "Podkarpackie": [
+        "Rzeszów",
+        "Przemyśl",
+        "Krosno",
+        "Mielec",
+        "Sanok",
+        "Jarosław"
+      ],
+      "Podlaskie": [
+        "Białystok",
+        "Łomża",
+        "Suwałki",
+        "Augustów",
+        "Bielsk Podlaski"
+      ],
+      "Pomeranian": [
+        "Gdańsk",
+        "Gdynia",
+        "Sopot",
+        "Słupsk",
+        "Tczew",
+        "Wejherowo",
+        "Malbork",
+        "Hel",
+        "Łeba"
+      ],
+      "Silesian": [
+        "Katowice",
+        "Częstochowa",
+        "Sosnowiec",
+        "Gliwice",
+        "Zabrze",
+        "Bielsko-Biała",
+        "Chorzów",
+        "Bytom",
+        "Rybnik",
+        "Tychy",
+        "Ustroń"
+      ],
+      "Holy Cross": [
+        "Kielce",
+        "Ostrowiec Świętokrzyski",
+        "Sandomierz",
+        "Starachowice",
+        "Busko-Zdrój"
+      ],
+      "Warmian-Masurian": [
+        "Olsztyn",
+        "Elbląg",
+        "Ełk",
+        "Giżycko",
+        "Iława",
+        "Mrągowo",
+        "Mikołajki"
+      ],
+      "Greater Poland": [
+        "Poznań",
+        "Kalisz",
+        "Konin",
+        "Leszno",
+        "Gniezno",
+        "Piła",
+        "Ostrów Wielkopolski",
+        "Nowy Tomyśl"
+      ],
+      "West Pomeranian": [
+        "Szczecin",
+        "Koszalin",
+        "Świnoujście",
+        "Kołobrzeg",
+        "Stargard",
+        "Darłowo"
+      ],
+      "Lubusz": [
+        "Zielona Góra",
+        "Gorzów Wielkopolski",
+        "Nowa Sól",
+        "Żary",
+        "Świebodzin"
+      ]
+    },
+    "Switzerland": {
+      "German-speaking": {
+        "Zürich": [
+          "Zürich",
+          "Winterthur",
+          "Uster",
+          "Wädenswil",
+          "Horgen"
+        ],
+        "Bern": [
+          "Bern",
+          "Thun",
+          "Biel/Bienne",
+          "Interlaken",
+          "Burgdorf"
+        ],
+        "Luzern": [
+          "Luzern",
+          "Sursee",
+          "Willisau"
+        ],
+        "Uri": [
+          "Altdorf",
+          "Andermatt"
+        ],
+        "Schwyz": [
+          "Schwyz",
+          "Einsiedeln",
+          "Küssnacht"
+        ],
+        "Obwalden": [
+          "Sarnen",
+          "Engelberg"
+        ],
+        "Nidwalden": [
+          "Stans"
+        ],
+        "Glarus": [
+          "Glarus"
+        ],
+        "Zug": [
+          "Zug",
+          "Baar"
+        ],
+        "Solothurn": [
+          "Solothurn",
+          "Olten"
+        ],
+        "Basel-Stadt": [
+          "Basel"
+        ],
+        "Basel-Landschaft": [
+          "Liestal",
+          "Laufen"
+        ],
+        "Schaffhausen": [
+          "Schaffhausen"
+        ],
+        "Appenzell Ausserrhoden": [
+          "Herisau"
+        ],
+        "Appenzell Innerrhoden": [
+          "Appenzell"
+        ],
+        "St. Gallen": [
+          "St. Gallen",
+          "Rapperswil-Jona",
+          "Gossau",
+          "Buchs"
+        ],
+        "Aargau": [
+          "Aarau",
+          "Baden",
+          "Zofingen"
+        ],
+        "Thurgau": [
+          "Frauenfeld",
+          "Kreuzlingen"
+        ],
+        "Graubünden": [
+          "Chur",
+          "Davos",
+          "St. Moritz",
+          "Arosa"
+        ]
+      },
+      "French-speaking": {
+        "Vaud": [
+          "Lausanne",
+          "Montreux",
+          "Vevey",
+          "Nyon",
+          "Yverdon-les-Bains"
+        ],
+        "Geneva": [
+          "Geneva"
+        ],
+        "Neuchâtel": [
+          "Neuchâtel",
+          "La Chaux-de-Fonds"
+        ],
+        "Jura": [
+          "Delémont",
+          "Porrentruy"
+        ],
+        "Fribourg": [
+          "Fribourg",
+          "Bulle"
+        ],
+        "Valais": [
+          "Sion",
+          "Martigny",
+          "Monthey",
+          "Sierre"
+        ]
+      },
+      "Italian-speaking": {
+        "Ticino": [
+          "Lugano",
+          "Bellinzona",
+          "Locarno",
+          "Mendrisio",
+          "Ascona"
+        ]
+      }
+    },
+    "Sweden": {
+      "Stockholm": [
+        "Stockholm",
+        "Södertälje",
+        "Norrtälje",
+        "Nynäshamn",
+        "Vaxholm",
+        "Sigtuna"
+      ],
+      "Uppsala": [
+        "Uppsala",
+        "Enköping",
+        "Östhammar"
+      ],
+      "Södermanland": [
+        "Eskilstuna",
+        "Nyköping",
+        "Katrineholm",
+        "Strängnäs"
+      ],
+      "Östergötland": [
+        "Linköping",
+        "Norrköping",
+        "Motala",
+        "Vadstena",
+        "Mjölby"
+      ],
+      "Jönköping": [
+        "Jönköping",
+        "Värnamo",
+        "Eksjö",
+        "Nässjö"
+      ],
+      "Kronoberg": [
+        "Växjö",
+        "Ljungby",
+        "Älmhult"
+      ],
+      "Kalmar": [
+        "Kalmar",
+        "Västervik",
+        "Oskarshamn",
+        "Vimmerby"
+      ],
+      "Gotland": [
+        "Visby"
+      ],
+      "Blekinge": [
+        "Karlskrona",
+        "Karlshamn",
+        "Ronneby"
+      ],
+      "Skåne": [
+        "Malmö",
+        "Helsingborg",
+        "Lund",
+        "Kristianstad",
+        "Ystad",
+        "Trelleborg",
+        "Ängelholm",
+        "Hässleholm"
+      ],
+      "Halland": [
+        "Halmstad",
+        "Varberg",
+        "Falkenberg",
+        "Kungsbacka"
+      ],
+      "Västra Götaland": [
+        "Göteborg",
+        "Borås",
+        "Trollhättan",
+        "Uddevalla",
+        "Skövde",
+        "Lidköping",
+        "Alingsås",
+        "Mariestad"
+      ],
+      "Värmland": [
+        "Karlstad",
+        "Arvika",
+        "Kristinehamn",
+        "Sunne"
+      ],
+      "Örebro": [
+        "Örebro",
+        "Karlskoga",
+        "Lindesberg"
+      ],
+      "Västmanland": [
+        "Västerås",
+        "Köping",
+        "Sala"
+      ],
+      "Dalarna": [
+        "Falun",
+        "Borlänge",
+        "Mora",
+        "Leksand",
+        "Avesta"
+      ],
+      "Gävleborg": [
+        "Gävle",
+        "Hudiksvall",
+        "Bollnäs",
+        "Söderhamn"
+      ],
+      "Västernorrland": [
+        "Sundsvall",
+        "Örnsköldsvik",
+        "Härnösand"
+      ],
+      "Jämtland": [
+        "Östersund",
+        "Åre",
+        "Strömsund"
+      ],
+      "Västerbotten": [
+        "Umeå",
+        "Skellefteå",
+        "Lycksele"
+      ],
+      "Norrbotten": [
+        "Luleå",
+        "Piteå",
+        "Kiruna",
+        "Gällivare",
+        "Haparanda"
+      ]
+    },
+    "Norway": {
+      "Oslo": [
+        "Oslo"
+      ],
+      "Rogaland": [
+        "Stavanger",
+        "Sandnes",
+        "Haugesund",
+        "Egersund",
+        "Bryne"
+      ],
+      "Møre og Romsdal": [
+        "Ålesund",
+        "Molde",
+        "Kristiansund",
+        "Volda",
+        "Åndalsnes"
+      ],
+      "Nordland": [
+        "Bodø",
+        "Narvik",
+        "Mo i Rana",
+        "Svolvær",
+        "Leknes",
+        "Brønnøysund"
+      ],
+      "Østfold": [
+        "Fredrikstad",
+        "Sarpsborg",
+        "Moss",
+        "Halden",
+        "Askim"
+      ],
+      "Akershus": [
+        "Lillestrøm",
+        "Sandvika",
+        "Jessheim",
+        "Ski",
+        "Drøbak",
+        "Eidsvoll"
+      ],
+      "Buskerud": [
+        "Drammen",
+        "Kongsberg",
+        "Hønefoss",
+        "Gol",
+        "Geilo"
+      ],
+      "Innlandet": [
+        "Hamar",
+        "Lillehammer",
+        "Gjøvik",
+        "Elverum",
+        "Kongsvinger",
+        "Fagernes",
+        "Otta"
+      ],
+      "Vestfold": [
+        "Tønsberg",
+        "Sandefjord",
+        "Larvik",
+        "Horten",
+        "Holmestrand"
+      ],
+      "Telemark": [
+        "Skien",
+        "Porsgrunn",
+        "Notodden",
+        "Kragerø",
+        "Rjukan"
+      ],
+      "Agder": [
+        "Kristiansand",
+        "Arendal",
+        "Grimstad",
+        "Mandal",
+        "Flekkefjord",
+        "Lillesand"
+      ],
+      "Vestland": [
+        "Bergen",
+        "Førde",
+        "Florø",
+        "Voss",
+        "Odda",
+        "Leirvik"
+      ],
+      "Trøndelag": [
+        "Trondheim",
+        "Steinkjer",
+        "Stjørdal",
+        "Levanger",
+        "Namsos",
+        "Røros"
+      ],
+      "Troms": [
+        "Tromsø",
+        "Harstad",
+        "Finnsnes",
+        "Bardufoss"
+      ],
+      "Finnmark": [
+        "Alta",
+        "Hammerfest",
+        "Kirkenes",
+        "Vadsø",
+        "Vardø",
+        "Lakselv"
+      ]
+    },
+    "Finland": {
+      "Uusimaa": [
+        "Helsinki",
+        "Espoo",
+        "Vantaa",
+        "Porvoo",
+        "Lohja",
+        "Hyvinkää",
+        "Järvenpää",
+        "Hanko"
+      ],
+      "Southwest Finland": [
+        "Turku",
+        "Salo",
+        "Kaarina",
+        "Naantali",
+        "Uusikaupunki",
+        "Loimaa"
+      ],
+      "Satakunta": [
+        "Pori",
+        "Rauma",
+        "Kankaanpää",
+        "Harjavalta"
+      ],
+      "Kanta-Häme": [
+        "Hämeenlinna",
+        "Riihimäki",
+        "Forssa"
+      ],
+      "Pirkanmaa": [
+        "Tampere",
+        "Nokia",
+        "Valkeakoski",
+        "Ylöjärvi",
+        "Sastamala",
+        "Mänttä-Vilppula"
+      ],
+      "Päijät-Häme": [
+        "Lahti",
+        "Heinola",
+        "Orimattila"
+      ],
+      "Kymenlaakso": [
+        "Kouvola",
+        "Kotka",
+        "Hamina"
+      ],
+      "South Karelia": [
+        "Lappeenranta",
+        "Imatra"
+      ],
+      "South Savo": [
+        "Mikkeli",
+        "Savonlinna",
+        "Pieksämäki"
+      ],
+      "North Savo": [
+        "Kuopio",
+        "Iisalmi",
+        "Varkaus"
+      ],
+      "North Karelia": [
+        "Joensuu",
+        "Kitee",
+        "Lieksa",
+        "Nurmes"
+      ],
+      "Central Finland": [
+        "Jyväskylä",
+        "Jämsä",
+        "Äänekoski",
+        "Keuruu"
+      ],
+      "South Ostrobothnia": [
+        "Seinäjoki",
+        "Kauhava",
+        "Kurikka"
+      ],
+      "Ostrobothnia": [
+        "Vaasa",
+        "Pietarsaari",
+        "Kristiinankaupunki"
+      ],
+      "Central Ostrobothnia": [
+        "Kokkola",
+        "Kannus"
+      ],
+      "North Ostrobothnia": [
+        "Oulu",
+        "Raahe",
+        "Kuusamo",
+        "Kalajoki"
+      ],
+      "Kainuu": [
+        "Kajaani",
+        "Kuhmo",
+        "Sotkamo"
+      ],
+      "Lapland": [
+        "Rovaniemi",
+        "Kemi",
+        "Tornio",
+        "Ranua",
+        "Sodankylä",
+        "Ivalo"
+      ],
+      "Åland": [
+        "Mariehamn"
+      ]
+    },
+    "Ireland": {
+      "Leinster": [
+        "Dublin",
+        "Kilkenny",
+        "Wexford",
+        "Wicklow",
+        "Bray",
+        "Drogheda",
+        "Dundalk",
+        "Mullingar",
+        "Athlone",
+        "Portlaoise",
+        "Naas",
+        "Newbridge",
+        "Carlow",
+        "Trim",
+        "Enniscorthy",
+        "Arklow"
+      ],
+      "Munster": [
+        "Cork",
+        "Limerick",
+        "Waterford",
+        "Killarney",
+        "Tralee",
+        "Ennis",
+        "Clonmel",
+        "Cobh",
+        "Kinsale",
+        "Mallow",
+        "Dungarvan",
+        "Thurles",
+        "Nenagh",
+        "Bantry",
+        "Youghal"
+      ],
+      "Connacht": [
+        "Galway",
+        "Sligo",
+        "Castlebar",
+        "Westport",
+        "Ballina",
+        "Roscommon",
+        "Carrick-on-Shannon",
+        "Clifden",
+        "Tuam"
+      ],
+      "Ulster (Republic of Ireland)": [
+        "Letterkenny",
+        "Donegal",
+        "Buncrana",
+        "Monaghan",
+        "Cavan",
+        "Ballybofey",
+        "Carrickmacross"
+      ]
+    },
+    "Italy": {
+      "Abruzzo": [
+        "L'Aquila",
+        "Pescara",
+        "Chieti",
+        "Teramo",
+        "Sulmona",
+        "Avezzano"
+      ],
+      "Basilicata": [
+        "Potenza",
+        "Matera",
+        "Melfi",
+        "Policoro"
+      ],
+      "Calabria": [
+        "Catanzaro",
+        "Reggio Calabria",
+        "Cosenza",
+        "Crotone",
+        "Vibo Valentia",
+        "Tropea"
+      ],
+      "Campania": [
+        "Napoli",
+        "Salerno",
+        "Caserta",
+        "Benevento",
+        "Avellino",
+        "Sorrento",
+        "Pompei"
+      ],
+      "Emilia-Romagna": [
+        "Bologna",
+        "Parma",
+        "Modena",
+        "Reggio Emilia",
+        "Ravenna",
+        "Rimini",
+        "Ferrara",
+        "Piacenza",
+        "Cesena",
+        "Forlì",
+        "Riccione"
+      ],
+      "Friuli-Venezia Giulia": [
+        "Trieste",
+        "Udine",
+        "Pordenone",
+        "Gorizia",
+        "Monfalcone"
+      ],
+      "Lazio": [
+        "Roma",
+        "Latina",
+        "Viterbo",
+        "Frosinone",
+        "Rieti",
+        "Tivoli"
+      ],
+      "Liguria": [
+        "Genova",
+        "La Spezia",
+        "Savona",
+        "Sanremo",
+        "Rapallo",
+        "Chiavari"
+      ],
+      "Lombardia": [
+        "Milano",
+        "Bergamo",
+        "Brescia",
+        "Como",
+        "Cremona",
+        "Lecco",
+        "Mantova",
+        "Monza",
+        "Pavia",
+        "Varese",
+        "Sondrio",
+        "Lodi"
+      ],
+      "Marche": [
+        "Ancona",
+        "Pesaro",
+        "Urbino",
+        "Macerata",
+        "Ascoli Piceno",
+        "Fermo",
+        "Senigallia"
+      ],
+      "Molise": [
+        "Campobasso",
+        "Isernia",
+        "Termoli"
+      ],
+      "Piemonte": [
+        "Torino",
+        "Novara",
+        "Alessandria",
+        "Asti",
+        "Cuneo",
+        "Biella",
+        "Vercelli",
+        "Verbania",
+        "Pinerolo"
+      ],
+      "Puglia": [
+        "Bari",
+        "Lecce",
+        "Taranto",
+        "Foggia",
+        "Brindisi",
+        "Barletta",
+        "Fasano",
+        "Alberobello",
+        "Monopoli"
+      ],
+      "Sardegna": [
+        "Cagliari",
+        "Sassari",
+        "Olbia",
+        "Nuoro",
+        "Oristano",
+        "Alghero",
+        "Carbonia",
+        "Porto Torres",
+        "La Maddalena",
+        "Villasimius",
+        "Santa Teresa Gallura",
+        "Carloforte",
+        "Arbatax"
+      ],
+      "Sicilia": [
+        "Palermo",
+        "Catania",
+        "Messina",
+        "Siracusa",
+        "Trapani",
+        "Ragusa",
+        "Agrigento",
+        "Cefalù",
+        "Taormina",
+        "Marsala",
+        "Noto",
+        "Milazzo",
+        "Lipari",
+        "Favignana",
+        "Pantelleria",
+        "Lampedusa"
+      ],
+      "Toscana": [
+        "Firenze",
+        "Pisa",
+        "Siena",
+        "Lucca",
+        "Livorno",
+        "Arezzo",
+        "Pistoia",
+        "Prato",
+        "Grosseto",
+        "Viareggio"
+      ],
+      "Trentino-Alto Adige": [
+        "Trento",
+        "Bolzano",
+        "Merano",
+        "Rovereto",
+        "Bressanone",
+        "Brunico"
+      ],
+      "Umbria": [
+        "Perugia",
+        "Terni",
+        "Assisi",
+        "Spoleto",
+        "Orvieto",
+        "Gubbio"
+      ],
+      "Valle d'Aosta": [
+        "Aosta",
+        "Courmayeur",
+        "Saint-Vincent"
+      ],
+      "Veneto": [
+        "Venezia",
+        "Verona",
+        "Padova",
+        "Vicenza",
+        "Treviso",
+        "Belluno",
+        "Rovigo",
+        "Chioggia",
+        "Bassano del Grappa"
+      ]
+    },
+    "Spain": {
+      "Andalusia": [
+        "Sevilla",
+        "Málaga",
+        "Córdoba",
+        "Granada",
+        "Cádiz",
+        "Huelva",
+        "Jaén",
+        "Almería",
+        "Jerez de la Frontera",
+        "Marbella",
+        "Ronda"
+      ],
+      "Aragon": [
+        "Zaragoza",
+        "Huesca",
+        "Teruel",
+        "Jaca",
+        "Calatayud"
+      ],
+      "Asturias": [
+        "Oviedo",
+        "Gijón",
+        "Avilés",
+        "Cangas de Onís",
+        "Llanes"
+      ],
+      "Balearic Islands": [
+        "Palma",
+        "Manacor",
+        "Inca",
+        "Sóller",
+        "Alcúdia",
+        "Pollença",
+        "Andratx",
+        "Ibiza",
+        "Sant Antoni de Portmany",
+        "Santa Eulària des Riu",
+        "Ciutadella",
+        "Maó",
+        "Formentera"
+      ],
+      "Basque Country": [
+        "Bilbao",
+        "San Sebastián",
+        "Vitoria-Gasteiz",
+        "Getxo",
+        "Irun",
+        "Zarautz"
+      ],
+      "Canary Islands": [
+        "Las Palmas de Gran Canaria",
+        "Santa Cruz de Tenerife",
+        "Puerto de la Cruz",
+        "San Cristóbal de La Laguna",
+        "Arrecife",
+        "Puerto del Rosario",
+        "San Sebastián de La Gomera",
+        "Santa Cruz de La Palma",
+        "Los Llanos de Aridane",
+        "Valverde",
+        "La Orotava",
+        "Maspalomas"
+      ],
+      "Cantabria": [
+        "Santander",
+        "Torrelavega",
+        "Castro Urdiales",
+        "Santillana del Mar"
+      ],
+      "Castile and León": [
+        "Valladolid",
+        "León",
+        "Burgos",
+        "Salamanca",
+        "Segovia",
+        "Ávila",
+        "Soria",
+        "Palencia",
+        "Zamora",
+        "Ponferrada"
+      ],
+      "Castilla-La Mancha": [
+        "Toledo",
+        "Albacete",
+        "Ciudad Real",
+        "Cuenca",
+        "Guadalajara",
+        "Talavera de la Reina"
+      ],
+      "Catalonia": [
+        "Barcelona",
+        "Girona",
+        "Tarragona",
+        "Lleida",
+        "Figueres",
+        "Reus",
+        "Vic",
+        "Manresa",
+        "Sitges"
+      ],
+      "Extremadura": [
+        "Badajoz",
+        "Cáceres",
+        "Mérida",
+        "Plasencia",
+        "Trujillo"
+      ],
+      "Galicia": [
+        "A Coruña",
+        "Vigo",
+        "Santiago de Compostela",
+        "Lugo",
+        "Ourense",
+        "Pontevedra",
+        "Ferrol"
+      ],
+      "La Rioja": [
+        "Logroño",
+        "Calahorra",
+        "Haro"
+      ],
+      "Madrid": [
+        "Madrid",
+        "Alcalá de Henares",
+        "Aranjuez",
+        "Getafe",
+        "Móstoles"
+      ],
+      "Murcia": [
+        "Murcia",
+        "Cartagena",
+        "Lorca",
+        "Caravaca de la Cruz"
+      ],
+      "Navarre": [
+        "Pamplona",
+        "Tudela",
+        "Estella-Lizarra",
+        "Olite"
+      ],
+      "Valencian Community": [
+        "Valencia",
+        "Alicante",
+        "Castellón de la Plana",
+        "Elche",
+        "Benidorm",
+        "Gandia",
+        "Benicarló",
+        "Dénia"
+      ],
+      "Ceuta": [
+        "Ceuta"
+      ],
+      "Melilla": [
+        "Melilla"
+      ]
+    },
+    "Portugal": {
+      "Norte": [
+        "Porto",
+        "Braga",
+        "Guimarães",
+        "Viana do Castelo",
+        "Vila Real",
+        "Bragança",
+        "Chaves",
+        "Matosinhos",
+        "Vila Nova de Gaia",
+        "Póvoa de Varzim",
+        "Amarante",
+        "Barcelos"
+      ],
+      "Centro": [
+        "Coimbra",
+        "Aveiro",
+        "Viseu",
+        "Leiria",
+        "Castelo Branco",
+        "Guarda",
+        "Figueira da Foz",
+        "Covilhã",
+        "Tomar",
+        "Óbidos",
+        "Caldas da Rainha",
+        "Nazaré"
+      ],
+      "Lisboa": [
+        "Lisboa",
+        "Sintra",
+        "Cascais",
+        "Setúbal",
+        "Almada",
+        "Loures",
+        "Mafra",
+        "Sesimbra",
+        "Torres Vedras"
+      ],
+      "Alentejo": [
+        "Évora",
+        "Beja",
+        "Portalegre",
+        "Elvas",
+        "Estremoz",
+        "Sines",
+        "Moura",
+        "Serpa"
+      ],
+      "Algarve": [
+        "Faro",
+        "Lagos",
+        "Portimão",
+        "Albufeira",
+        "Tavira",
+        "Silves",
+        "Loulé",
+        "Vila Real de Santo António"
+      ],
+      "Azores": [
+        "Ponta Delgada",
+        "Ribeira Grande",
+        "Lagoa",
+        "Angra do Heroísmo",
+        "Praia da Vitória",
+        "Horta",
+        "Madalena",
+        "Velas",
+        "Santa Cruz das Flores"
+      ],
+      "Madeira": [
+        "Funchal",
+        "Câmara de Lobos",
+        "Machico",
+        "Santa Cruz",
+        "Santana",
+        "Ribeira Brava",
+        "Calheta",
+        "Porto Moniz",
+        "Vila Baleira"
+      ]
+    },
+    "Iceland": {
+      "Capital Region": [
+        "Reykjavík",
+        "Kópavogur",
+        "Hafnarfjörður",
+        "Garðabær",
+        "Mosfellsbær"
+      ],
+      "Southern Peninsula": [
+        "Keflavík",
+        "Grindavík",
+        "Sandgerði"
+      ],
+      "West": [
+        "Akranes",
+        "Borgarnes",
+        "Stykkishólmur",
+        "Grundarfjörður"
+      ],
+      "Westfjords": [
+        "Ísafjörður",
+        "Patreksfjörður",
+        "Bolungarvík"
+      ],
+      "Northwest": [
+        "Sauðárkrókur",
+        "Blönduós",
+        "Hvammstangi"
+      ],
+      "Northeast": [
+        "Akureyri",
+        "Húsavík",
+        "Dalvík",
+        "Siglufjörður"
+      ],
+      "East": [
+        "Egilsstaðir",
+        "Seyðisfjörður",
+        "Neskaupstaður"
+      ],
+      "South": [
+        "Selfoss",
+        "Hveragerði",
+        "Vík",
+        "Höfn",
+        "Hella"
+      ]
+    },
+    "Hungary": {
+      "Budapest": [
+        "Budapest"
+      ],
+      "Pest": [
+        "Szentendre",
+        "Vác",
+        "Gödöllő",
+        "Érd",
+        "Cegléd",
+        "Nagykőrös"
+      ],
+      "Baranya": [
+        "Pécs",
+        "Mohács",
+        "Siklós"
+      ],
+      "Bács-Kiskun": [
+        "Kecskemét",
+        "Baja",
+        "Kalocsa"
+      ],
+      "Békés": [
+        "Békéscsaba",
+        "Gyula",
+        "Orosháza"
+      ],
+      "Borsod-Abaúj-Zemplén": [
+        "Miskolc",
+        "Tokaj",
+        "Sárospatak",
+        "Kazincbarcika"
+      ],
+      "Csongrád-Csanád": [
+        "Szeged",
+        "Hódmezővásárhely",
+        "Makó"
+      ],
+      "Fejér": [
+        "Székesfehérvár",
+        "Dunaújváros"
+      ],
+      "Győr-Moson-Sopron": [
+        "Győr",
+        "Sopron",
+        "Mosonmagyaróvár"
+      ],
+      "Hajdú-Bihar": [
+        "Debrecen",
+        "Hajdúszoboszló"
+      ],
+      "Heves": [
+        "Eger",
+        "Gyöngyös"
+      ],
+      "Jász-Nagykun-Szolnok": [
+        "Szolnok",
+        "Jászberény"
+      ],
+      "Komárom-Esztergom": [
+        "Tatabánya",
+        "Esztergom",
+        "Tata"
+      ],
+      "Nógrád": [
+        "Salgótarján",
+        "Balassagyarmat"
+      ],
+      "Somogy": [
+        "Kaposvár",
+        "Siófok"
+      ],
+      "Szabolcs-Szatmár-Bereg": [
+        "Nyíregyháza",
+        "Mátészalka"
+      ],
+      "Tolna": [
+        "Szekszárd",
+        "Paks"
+      ],
+      "Vas": [
+        "Szombathely",
+        "Kőszeg"
+      ],
+      "Veszprém": [
+        "Veszprém",
+        "Balatonfüred",
+        "Pápa"
+      ],
+      "Zala": [
+        "Zalaegerszeg",
+        "Keszthely",
+        "Nagykanizsa"
+      ]
+    },
+    "Slovakia": {
+      "Bratislava": [
+        "Bratislava",
+        "Pezinok",
+        "Senec",
+        "Malacky"
+      ],
+      "Trnava": [
+        "Trnava",
+        "Piešťany",
+        "Dunajská Streda",
+        "Skalica"
+      ],
+      "Trenčín": [
+        "Trenčín",
+        "Prievidza",
+        "Považská Bystrica",
+        "Bojnice"
+      ],
+      "Nitra": [
+        "Nitra",
+        "Komárno",
+        "Nové Zámky",
+        "Levice"
+      ],
+      "Žilina": [
+        "Žilina",
+        "Martin",
+        "Ružomberok",
+        "Liptovský Mikuláš"
+      ],
+      "Banská Bystrica": [
+        "Banská Bystrica",
+        "Zvolen",
+        "Banská Štiavnica",
+        "Lučenec"
+      ],
+      "Prešov": [
+        "Prešov",
+        "Poprad",
+        "Bardejov",
+        "Kežmarok",
+        "Stará Ľubovňa"
+      ],
+      "Košice": [
+        "Košice",
+        "Spišská Nová Ves",
+        "Michalovce",
+        "Rožňava"
+      ]
+    },
+    "Slovenia": {
+      "Central Slovenia": [
+        "Ljubljana",
+        "Kamnik",
+        "Domžale",
+        "Vrhnika"
+      ],
+      "Drava": [
+        "Maribor",
+        "Ptuj",
+        "Slovenska Bistrica"
+      ],
+      "Savinja": [
+        "Celje",
+        "Velenje",
+        "Laško",
+        "Žalec"
+      ],
+      "Upper Carniola": [
+        "Kranj",
+        "Bled",
+        "Jesenice",
+        "Škofja Loka"
+      ],
+      "Coastal-Karst": [
+        "Koper",
+        "Piran",
+        "Izola",
+        "Sežana"
+      ],
+      "Gorizia": [
+        "Nova Gorica",
+        "Tolmin",
+        "Ajdovščina"
+      ],
+      "Southeast Slovenia": [
+        "Novo Mesto",
+        "Kočevje",
+        "Črnomelj"
+      ],
+      "Carinthia": [
+        "Slovenj Gradec",
+        "Ravne na Koroškem"
+      ],
+      "Mura": [
+        "Murska Sobota",
+        "Lendava"
+      ],
+      "Lower Sava": [
+        "Krško",
+        "Brežice"
+      ],
+      "Central Sava": [
+        "Trbovlje",
+        "Litija"
+      ],
+      "Littoral-Inner Carniola": [
+        "Postojna",
+        "Ilirska Bistrica"
+      ]
+    },
+    "Croatia": {
+      "Zagreb": [
+        "Zagreb"
+      ],
+      "Zagreb County": [
+        "Samobor",
+        "Velika Gorica",
+        "Zaprešić"
+      ],
+      "Split-Dalmatia": [
+        "Split",
+        "Trogir",
+        "Makarska",
+        "Sinj"
+      ],
+      "Primorje-Gorski Kotar": [
+        "Rijeka",
+        "Opatija",
+        "Crikvenica",
+        "Delnice"
+      ],
+      "Istria": [
+        "Pula",
+        "Rovinj",
+        "Poreč",
+        "Pazin",
+        "Umag"
+      ],
+      "Zadar": [
+        "Zadar",
+        "Biograd na Moru",
+        "Pag"
+      ],
+      "Šibenik-Knin": [
+        "Šibenik",
+        "Knin",
+        "Vodice"
+      ],
+      "Dubrovnik-Neretva": [
+        "Dubrovnik",
+        "Korčula",
+        "Metković"
+      ],
+      "Osijek-Baranja": [
+        "Osijek",
+        "Đakovo",
+        "Beli Manastir"
+      ],
+      "Varaždin": [
+        "Varaždin",
+        "Ludbreg"
+      ],
+      "Međimurje": [
+        "Čakovec",
+        "Prelog"
+      ],
+      "Karlovac": [
+        "Karlovac",
+        "Ogulin"
+      ],
+      "Sisak-Moslavina": [
+        "Sisak",
+        "Kutina"
+      ],
+      "Krapina-Zagorje": [
+        "Krapina",
+        "Zabok"
+      ],
+      "Bjelovar-Bilogora": [
+        "Bjelovar",
+        "Daruvar"
+      ],
+      "Koprivnica-Križevci": [
+        "Koprivnica",
+        "Križevci"
+      ],
+      "Virovitica-Podravina": [
+        "Virovitica",
+        "Slatina"
+      ],
+      "Požega-Slavonia": [
+        "Požega",
+        "Pakrac"
+      ],
+      "Brod-Posavina": [
+        "Slavonski Brod",
+        "Nova Gradiška"
+      ],
+      "Vukovar-Srijem": [
+        "Vukovar",
+        "Vinkovci",
+        "Ilok"
+      ],
+      "Lika-Senj": [
+        "Gospić",
+        "Senj"
+      ],
+      "Adriatic Islands": [
+        "Hvar",
+        "Stari Grad",
+        "Vela Luka",
+        "Supetar",
+        "Bol",
+        "Vis",
+        "Komiža",
+        "Mali Lošinj",
+        "Cres",
+        "Krk",
+        "Rab"
+      ]
+    },
+    "Romania": {
+      "Bucharest": [
+        "Bucharest"
+      ],
+      "Cluj": [
+        "Cluj-Napoca",
+        "Turda",
+        "Dej"
+      ],
+      "Timiș": [
+        "Timișoara",
+        "Lugoj"
+      ],
+      "Iași": [
+        "Iași",
+        "Pașcani"
+      ],
+      "Constanța": [
+        "Constanța",
+        "Mangalia",
+        "Medgidia"
+      ],
+      "Brașov": [
+        "Brașov",
+        "Făgăraș",
+        "Râșnov"
+      ],
+      "Sibiu": [
+        "Sibiu",
+        "Mediaș"
+      ],
+      "Mureș": [
+        "Târgu Mureș",
+        "Sighișoara",
+        "Reghin"
+      ],
+      "Bihor": [
+        "Oradea",
+        "Beiuș"
+      ],
+      "Dolj": [
+        "Craiova",
+        "Calafat"
+      ],
+      "Prahova": [
+        "Ploiești",
+        "Sinaia",
+        "Câmpina"
+      ],
+      "Arad": [
+        "Arad",
+        "Lipova"
+      ],
+      "Alba": [
+        "Alba Iulia",
+        "Aiud",
+        "Sebeș"
+      ],
+      "Maramureș": [
+        "Baia Mare",
+        "Sighetu Marmației"
+      ],
+      "Suceava": [
+        "Suceava",
+        "Vatra Dornei",
+        "Rădăuți"
+      ],
+      "Bacău": [
+        "Bacău",
+        "Onești"
+      ],
+      "Neamț": [
+        "Piatra Neamț",
+        "Roman"
+      ],
+      "Hunedoara": [
+        "Deva",
+        "Hunedoara",
+        "Petroșani"
+      ],
+      "Argeș": [
+        "Pitești",
+        "Curtea de Argeș"
+      ],
+      "Vâlcea": [
+        "Râmnicu Vâlcea",
+        "Călimănești"
+      ],
+      "Galați": [
+        "Galați",
+        "Tecuci"
+      ],
+      "Brăila": [
+        "Brăila"
+      ],
+      "Buzău": [
+        "Buzău"
+      ],
+      "Harghita": [
+        "Miercurea Ciuc",
+        "Odorheiu Secuiesc"
+      ],
+      "Covasna": [
+        "Sfântu Gheorghe",
+        "Târgu Secuiesc"
+      ]
+    },
+    "Bulgaria": {
+      "Sofia City": [
+        "Sofia"
+      ],
+      "Plovdiv": [
+        "Plovdiv",
+        "Karlovo",
+        "Asenovgrad"
+      ],
+      "Varna": [
+        "Varna",
+        "Devnya"
+      ],
+      "Burgas": [
+        "Burgas",
+        "Nessebar",
+        "Sozopol"
+      ],
+      "Veliko Tarnovo": [
+        "Veliko Tarnovo",
+        "Gorna Oryahovitsa"
+      ],
+      "Ruse": [
+        "Ruse"
+      ],
+      "Stara Zagora": [
+        "Stara Zagora",
+        "Kazanlak"
+      ],
+      "Pleven": [
+        "Pleven"
+      ],
+      "Blagoevgrad": [
+        "Blagoevgrad",
+        "Bansko",
+        "Sandanski"
+      ],
+      "Smolyan": [
+        "Smolyan",
+        "Chepelare"
+      ],
+      "Gabrovo": [
+        "Gabrovo",
+        "Tryavna"
+      ],
+      "Shumen": [
+        "Shumen"
+      ],
+      "Dobrich": [
+        "Dobrich",
+        "Balchik"
+      ],
+      "Pazardzhik": [
+        "Pazardzhik",
+        "Velingrad"
+      ],
+      "Kyustendil": [
+        "Kyustendil"
+      ],
+      "Haskovo": [
+        "Haskovo",
+        "Dimitrovgrad"
+      ],
+      "Sliven": [
+        "Sliven"
+      ],
+      "Yambol": [
+        "Yambol"
+      ],
+      "Vratsa": [
+        "Vratsa"
+      ],
+      "Montana": [
+        "Montana"
+      ],
+      "Vidin": [
+        "Vidin"
+      ],
+      "Lovech": [
+        "Lovech",
+        "Troyan"
+      ],
+      "Silistra": [
+        "Silistra"
+      ],
+      "Razgrad": [
+        "Razgrad"
+      ],
+      "Targovishte": [
+        "Targovishte"
+      ],
+      "Pernik": [
+        "Pernik"
+      ]
+    },
+    "Greece": {
+      "Attica": [
+        "Athens",
+        "Piraeus",
+        "Marathon",
+        "Eleusis"
+      ],
+      "Central Macedonia": [
+        "Thessaloniki",
+        "Serres",
+        "Katerini",
+        "Veria",
+        "Edessa"
+      ],
+      "Eastern Macedonia and Thrace": [
+        "Kavala",
+        "Alexandroupoli",
+        "Drama",
+        "Xanthi",
+        "Komotini"
+      ],
+      "Thessaly": [
+        "Larissa",
+        "Volos",
+        "Trikala",
+        "Karditsa"
+      ],
+      "Epirus": [
+        "Ioannina",
+        "Arta",
+        "Preveza",
+        "Igoumenitsa"
+      ],
+      "Western Greece": [
+        "Patras",
+        "Agrinio",
+        "Nafpaktos",
+        "Pyrgos"
+      ],
+      "Central Greece": [
+        "Lamia",
+        "Chalkida",
+        "Delphi",
+        "Karpenisi"
+      ],
+      "Peloponnese": [
+        "Kalamata",
+        "Tripoli",
+        "Sparta",
+        "Nafplio",
+        "Corinth"
+      ],
+      "Western Macedonia": [
+        "Kozani",
+        "Florina",
+        "Kastoria",
+        "Grevena"
+      ],
+      "North Aegean": [
+        "Mytilene",
+        "Chios",
+        "Samos",
+        "Myrina",
+        "Karlovasi",
+        "Agios Kirykos"
+      ],
+      "South Aegean": [
+        "Rhodes",
+        "Kos",
+        "Ermoupoli",
+        "Naxos",
+        "Mykonos",
+        "Fira",
+        "Paros",
+        "Milos",
+        "Patmos",
+        "Kalymnos",
+        "Karpathos"
+      ],
+      "Crete": [
+        "Heraklion",
+        "Chania",
+        "Rethymno",
+        "Agios Nikolaos",
+        "Sitia",
+        "Ierapetra",
+        "Kissamos",
+        "Malia"
+      ],
+      "Ionian Islands": [
+        "Corfu",
+        "Argostoli",
+        "Zakynthos",
+        "Lefkada",
+        "Lixouri",
+        "Gaios"
+      ]
+    },
+    "Estonia": {
+      "Harju": [
+        "Tallinn",
+        "Keila",
+        "Paldiski"
+      ],
+      "Tartu": [
+        "Tartu",
+        "Elva"
+      ],
+      "Ida-Viru": [
+        "Narva",
+        "Kohtla-Järve",
+        "Sillamäe"
+      ],
+      "Pärnu": [
+        "Pärnu"
+      ],
+      "Lääne-Viru": [
+        "Rakvere"
+      ],
+      "Viljandi": [
+        "Viljandi"
+      ],
+      "Võru": [
+        "Võru"
+      ],
+      "Saare": [
+        "Kuressaare"
+      ],
+      "Jõgeva": [
+        "Jõgeva"
+      ],
+      "Järva": [
+        "Paide"
+      ],
+      "Lääne": [
+        "Haapsalu"
+      ],
+      "Põlva": [
+        "Põlva"
+      ],
+      "Rapla": [
+        "Rapla"
+      ],
+      "Valga": [
+        "Valga"
+      ],
+      "Hiiu": [
+        "Kärdla"
+      ]
+    },
+    "Latvia": {
+      "Riga": [
+        "Riga"
+      ],
+      "Kurzeme": [
+        "Liepāja",
+        "Ventspils",
+        "Kuldīga",
+        "Talsi"
+      ],
+      "Vidzeme": [
+        "Valmiera",
+        "Cēsis",
+        "Sigulda",
+        "Limbaži"
+      ],
+      "Zemgale": [
+        "Jelgava",
+        "Bauska",
+        "Dobele",
+        "Jēkabpils"
+      ],
+      "Latgale": [
+        "Daugavpils",
+        "Rēzekne",
+        "Krāslava",
+        "Ludza"
+      ],
+      "Pierīga": [
+        "Jūrmala",
+        "Ogre",
+        "Salaspils",
+        "Ādaži"
+      ]
+    },
+    "Lithuania": {
+      "Vilnius": [
+        "Vilnius",
+        "Trakai",
+        "Ukmergė"
+      ],
+      "Kaunas": [
+        "Kaunas",
+        "Jonava",
+        "Kėdainiai"
+      ],
+      "Klaipėda": [
+        "Klaipėda",
+        "Palanga",
+        "Nida"
+      ],
+      "Šiauliai": [
+        "Šiauliai",
+        "Radviliškis"
+      ],
+      "Panevėžys": [
+        "Panevėžys",
+        "Biržai"
+      ],
+      "Alytus": [
+        "Alytus",
+        "Druskininkai"
+      ],
+      "Marijampolė": [
+        "Marijampolė"
+      ],
+      "Tauragė": [
+        "Tauragė"
+      ],
+      "Telšiai": [
+        "Telšiai",
+        "Mažeikiai"
+      ],
+      "Utena": [
+        "Utena",
+        "Anykščiai"
+      ]
+    },
+    "Isle of Man": {
+      "Isle of Man": [
+        "Douglas",
+        "Ramsey",
+        "Peel",
+        "Castletown"
+      ]
+    },
+    "Channel Islands": {
+      "Jersey": [
+        "Saint Helier",
+        "Gorey",
+        "Saint Aubin"
+      ],
+      "Guernsey": [
+        "Saint Peter Port",
+        "Saint Sampson"
+      ],
+      "Alderney": [
+        "Saint Anne"
+      ]
+    },
+    "Faroe Islands": {
+      "Faroe Islands": [
+        "Tórshavn",
+        "Klaksvík",
+        "Runavík",
+        "Tvøroyri",
+        "Fuglafjørður",
+        "Vestmanna"
+      ]
+    },
+    "Malta": {
+      "Malta": [
+        "Valletta",
+        "Sliema",
+        "St. Julian's",
+        "Mosta",
+        "Mdina",
+        "Rabat",
+        "Mellieħa",
+        "Marsaxlokk",
+        "Birgu",
+        "Żabbar"
+      ],
+      "Gozo": [
+        "Victoria",
+        "Xagħra",
+        "Marsalforn",
+        "Nadur"
+      ]
+    },
+    "Albania": {
+      "Tirana": [
+        "Tirana",
+        "Kamëz"
+      ],
+      "Durrës": [
+        "Durrës",
+        "Krujë"
+      ],
+      "Vlorë": [
+        "Vlorë",
+        "Himarë",
+        "Sarandë"
+      ],
+      "Shkodër": [
+        "Shkodër"
+      ],
+      "Korçë": [
+        "Korçë",
+        "Pogradec"
+      ],
+      "Berat": [
+        "Berat"
+      ],
+      "Gjirokastër": [
+        "Gjirokastër"
+      ],
+      "Fier": [
+        "Fier"
+      ],
+      "Elbasan": [
+        "Elbasan"
+      ],
+      "Lezhë": [
+        "Lezhë"
+      ],
+      "Kukës": [
+        "Kukës"
+      ],
+      "Dibër": [
+        "Peshkopi"
+      ]
+    },
+    "Bosnia and Herzegovina": {
+      "Federation of Bosnia and Herzegovina": [
+        "Sarajevo",
+        "Mostar",
+        "Tuzla",
+        "Zenica",
+        "Bihać",
+        "Travnik",
+        "Jajce",
+        "Konjic",
+        "Livno",
+        "Gradačac",
+        "Visoko"
+      ],
+      "Republika Srpska": [
+        "Banja Luka",
+        "Bijeljina",
+        "Prijedor",
+        "Doboj",
+        "Trebinje",
+        "Foča",
+        "Višegrad",
+        "Pale"
+      ],
+      "Brčko District": [
+        "Brčko"
+      ]
+    },
+    "Serbia": {
+      "Belgrade": [
+        "Belgrade"
+      ],
+      "Vojvodina": [
+        "Novi Sad",
+        "Subotica",
+        "Zrenjanin",
+        "Pančevo",
+        "Sombor",
+        "Kikinda",
+        "Vršac",
+        "Sremska Mitrovica"
+      ],
+      "Šumadija and Western Serbia": [
+        "Kragujevac",
+        "Čačak",
+        "Kraljevo",
+        "Užice",
+        "Valjevo",
+        "Šabac",
+        "Loznica",
+        "Aranđelovac",
+        "Zlatibor"
+      ],
+      "Southern and Eastern Serbia": [
+        "Niš",
+        "Leskovac",
+        "Vranje",
+        "Zaječar",
+        "Bor",
+        "Pirot",
+        "Prokuplje",
+        "Smederevo",
+        "Požarevac"
+      ]
+    },
+    "Montenegro": {
+      "Coastal": [
+        "Budva",
+        "Kotor",
+        "Herceg Novi",
+        "Bar",
+        "Ulcinj",
+        "Tivat"
+      ],
+      "Central": [
+        "Podgorica",
+        "Cetinje",
+        "Nikšić",
+        "Danilovgrad"
+      ],
+      "Northern": [
+        "Žabljak",
+        "Kolašin",
+        "Pljevlja",
+        "Bijelo Polje",
+        "Berane",
+        "Rožaje"
+      ]
+    },
+    "North Macedonia": {
+      "Skopje": [
+        "Skopje"
+      ],
+      "Pelagonia": [
+        "Bitola",
+        "Prilep",
+        "Kruševo"
+      ],
+      "Southwestern": [
+        "Ohrid",
+        "Struga",
+        "Debar"
+      ],
+      "Polog": [
+        "Tetovo",
+        "Gostivar"
+      ],
+      "Eastern": [
+        "Štip",
+        "Berovo",
+        "Delčevo"
+      ],
+      "Southeastern": [
+        "Strumica",
+        "Gevgelija",
+        "Radoviš"
+      ],
+      "Vardar": [
+        "Veles",
+        "Kavadarci",
+        "Negotino"
+      ],
+      "Northeastern": [
+        "Kumanovo",
+        "Kratovo"
+      ]
+    },
+    "Moldova": {
+      "Chișinău": [
+        "Chișinău"
+      ],
+      "North": [
+        "Bălți",
+        "Soroca",
+        "Edineț",
+        "Drochia"
+      ],
+      "Centre": [
+        "Orhei",
+        "Călărași",
+        "Hîncești",
+        "Ungheni"
+      ],
+      "South": [
+        "Cahul",
+        "Comrat",
+        "Cimișlia",
+        "Taraclia"
+      ],
+      "Dniester": [
+        "Tiraspol",
+        "Bender",
+        "Rîbnița"
+      ]
+    },
+    "Ukraine": {
+      "Kyiv": [
+        "Kyiv"
+      ],
+      "Lviv": [
+        "Lviv",
+        "Drohobych",
+        "Truskavets"
+      ],
+      "Odesa": [
+        "Odesa",
+        "Bilhorod-Dnistrovskyi",
+        "Izmail"
+      ],
+      "Kharkiv": [
+        "Kharkiv"
+      ],
+      "Dnipro": [
+        "Dnipro",
+        "Kryvyi Rih"
+      ],
+      "Zaporizhzhia": [
+        "Zaporizhzhia"
+      ],
+      "Vinnytsia": [
+        "Vinnytsia"
+      ],
+      "Poltava": [
+        "Poltava",
+        "Kremenchuk"
+      ],
+      "Cherkasy": [
+        "Cherkasy",
+        "Uman"
+      ],
+      "Chernihiv": [
+        "Chernihiv"
+      ],
+      "Sumy": [
+        "Sumy"
+      ],
+      "Zhytomyr": [
+        "Zhytomyr"
+      ],
+      "Rivne": [
+        "Rivne"
+      ],
+      "Volyn": [
+        "Lutsk"
+      ],
+      "Ternopil": [
+        "Ternopil"
+      ],
+      "Ivano-Frankivsk": [
+        "Ivano-Frankivsk",
+        "Yaremche"
+      ],
+      "Zakarpattia": [
+        "Uzhhorod",
+        "Mukachevo"
+      ],
+      "Chernivtsi": [
+        "Chernivtsi"
+      ],
+      "Khmelnytskyi": [
+        "Khmelnytskyi",
+        "Kamianets-Podilskyi"
+      ],
+      "Kirovohrad": [
+        "Kropyvnytskyi"
+      ],
+      "Mykolaiv": [
+        "Mykolaiv"
+      ],
+      "Kherson": [
+        "Kherson"
+      ]
+    },
+    "Kosovo": {
+      "Pristina": [
+        "Pristina",
+        "Podujevo"
+      ],
+      "Prizren": [
+        "Prizren"
+      ],
+      "Peja": [
+        "Peja"
+      ],
+      "Gjakova": [
+        "Gjakova"
+      ],
+      "Mitrovica": [
+        "Mitrovica"
+      ],
+      "Gjilan": [
+        "Gjilan"
+      ],
+      "Ferizaj": [
+        "Ferizaj"
+      ]
+    },
+    "Cyprus": {
+      "Republic of Cyprus": [
+        "Nicosia",
+        "Limassol",
+        "Larnaca",
+        "Paphos",
+        "Ayia Napa",
+        "Protaras",
+        "Polis",
+        "Troodos"
+      ]
+    },
+    "Andorra": {
+      "Andorra": [
+        "Andorra la Vella",
+        "Escaldes-Engordany",
+        "Encamp",
+        "La Massana",
+        "Ordino",
+        "Canillo",
+        "Sant Julià de Lòria"
+      ]
+    },
+    "Liechtenstein": {
+      "Liechtenstein": [
+        "Vaduz",
+        "Schaan",
+        "Balzers",
+        "Triesen",
+        "Triesenberg",
+        "Eschen",
+        "Mauren",
+        "Ruggell"
+      ]
+    },
+    "Monaco": {
+      "Monaco": [
+        "Monaco",
+        "Monte Carlo"
+      ]
+    },
+    "San Marino": {
+      "San Marino": [
+        "San Marino",
+        "Borgo Maggiore",
+        "Serravalle",
+        "Domagnano"
+      ]
+    }
+  },
+  "zooTypeSystem": {
+    "types": [
+      "general",
+      "aquarium",
+      "tropical",
+      "safari",
+      "forest",
+      "farm",
+      "bird",
+      "reptile",
+      "alpine"
+    ],
+    "note": "Prefix groups determine zoo type. General is fallback. Group size can be used as natural rarity. Alpine is intentionally sparse outside mountain countries. Tropical remains available regardless of climate because it can represent indoor tropical collections.",
+    "customNameFallback": "general"
+  }
 }

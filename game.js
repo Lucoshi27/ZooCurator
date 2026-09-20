@@ -12176,16 +12176,18 @@ function positionOpponentTradeArea() {
     // the progression tracker rather than hanging from the Exchange row.
     const headerPadding = 8;
     const maxHeaderHeight = Math.max(144, Math.floor(headerRect.height - (headerPadding * 2)));
-    // V167: wide desktop keeps the established 184px trade cards. On a
-    // MacBook/narrow desktop, scale the pair in the same proportion as the
-    // central action HUD instead of letting it consume the wide-desktop width.
+    // V169: wide desktop keeps the established 184px trade cards. At the
+    // measured MacBook viewport, 151px restores their visual weight while
+    // keeping the pair precisely between Upgrade and Other Zoos.
     const narrowDesktop = window.innerWidth > 700 && window.innerWidth <= 1600;
-    const desiredHeight = narrowDesktop ? 144 : 184;
+    const desiredHeight = narrowDesktop ? 151 : 184;
     const cardHeight = Math.min(desiredHeight, maxHeaderHeight);
     const cardWidth = Math.round(cardHeight * (1000 / 1440));
     const cardGap = narrowDesktop ? 10 : 12;
     const areaWidth = (cardWidth * 2) + cardGap;
-    const gapBeforeOpponents = 18;
+    // The compact pair ends at the Other Zoos boundary. This shifts it 18px
+    // right from V167 and leaves an 11px gap after the scaled action group.
+    const gapBeforeOpponents = narrowDesktop ? 0 : 18;
     const screenPadding = 12;
 
     area.style.setProperty('--trade-card-height', `${cardHeight}px`);

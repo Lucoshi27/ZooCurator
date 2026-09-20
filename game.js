@@ -1,8 +1,8 @@
 /*
- * ZOO CURATOR V166 — GENERATE ZOO SETUP
+ * ZOO CURATOR V167 — TAGGED INVENTORY STARTUP FIX
  * Known-good GitHub baseline. Future builds must descend from this version.
  */
-const ZOO_CURATOR_VERSION = "V166";
+const ZOO_CURATOR_VERSION = "V167";
 
 
 // ============================================================
@@ -1637,6 +1637,20 @@ function levelFiles(
             const candidate
             of possible
         ) {
+
+            // V167: tagged zoo-type inventories store a level as an
+            // object whose keys are filenames and values are tag arrays.
+            // Treat those keys exactly like the old filename arrays.
+            if (
+                candidate &&
+                !Array.isArray(candidate) &&
+                typeof candidate === 'object'
+            ) {
+                return Object.keys(candidate)
+                    .map(cleanFilename)
+                    .filter(Boolean)
+                    .filter(filename => !/^back\.png$/i.test(filename));
+            }
 
             if (
                 Array.isArray(candidate)
@@ -14029,8 +14043,7 @@ function loadNonEssentialGameData() {
             indexAnimalDatabase();
         });
 
-    loadOptionalJsonInBackground('zoo-names-europe-zoo-types.txt')
-        .catch(() => loadOptionalJsonInBackground('zoo-names.json'))
+    loadOptionalJsonInBackground('zoo-names.json')
         .then(data => {
             // V166: the expanded European database can provide country,
             // location, prefix and zoo-type information for Generate Zoo.

@@ -1,8 +1,8 @@
 /*
- * ZOO CURATOR V164 — CONSISTENT TRADE HISTORY PROVENANCE POPUPS
+ * ZOO CURATOR V165 — MACBOOK HEADER POSITION + SCALE RESTORE
  * Known-good GitHub baseline. Future builds must descend from this version.
  */
-const ZOO_CURATOR_VERSION = "V164";
+const ZOO_CURATOR_VERSION = "V165";
 
 
 // ============================================================
@@ -12091,14 +12091,13 @@ function ensureOpponentZooElements() {
     }
 }
 
-// V164 — compact desktop/laptop header collision guard.
+// V165 — preserve the established desktop composition on laptop viewports.
 //
-// A MacBook can expose a desktop-width CSS viewport while still leaving too
-// little room for the progression table, Draw/Exchange controls, trade cards
-// and Other Zoos panel on one row. The old code clamped the fixed trade cards
-// to the viewport, but did not reserve the space occupied by the other header
-// elements. These helpers measure the live layout and reduce/reposition only
-// when a collision actually exists, so wide desktop layouts remain unchanged.
+// The normal stylesheet remains the source of truth for position. On a narrower
+// desktop/MacBook viewport we ONLY scale the progression tracker if its natural
+// desktop position would collide with Draw/Exchange. We do not relocate it to a
+// newly calculated x/y coordinate. This keeps the older desktop composition
+// visually identical while allowing it to fit on a smaller screen.
 function visibleElementRect(element) {
     if (!element || !element.isConnected) return null;
     const style = window.getComputedStyle(element);
@@ -12141,19 +12140,8 @@ function fitProgressTrackerAroundActions() {
     const tracker = document.getElementById('progressTracker');
     if (!tracker) return;
 
-    if (window.matchMedia('(max-width: 700px)').matches) {
-        tracker.style.removeProperty('transform');
-        tracker.style.removeProperty('transform-origin');
-        tracker.style.removeProperty('position');
-        tracker.style.removeProperty('left');
-        tracker.style.removeProperty('right');
-        tracker.style.removeProperty('top');
-        tracker.style.removeProperty('z-index');
-        tracker.classList.remove('laptop-header-fitted');
-        return;
-    }
-
-    // Always measure from the stylesheet's normal desktop layout first.
+    // Always restore the exact stylesheet position before measuring. Mobile has
+    // its own CSS and must never inherit a desktop correction.
     tracker.style.removeProperty('transform');
     tracker.style.removeProperty('transform-origin');
     tracker.style.removeProperty('position');
@@ -12163,47 +12151,34 @@ function fitProgressTrackerAroundActions() {
     tracker.style.removeProperty('z-index');
     tracker.classList.remove('laptop-header-fitted');
 
+    if (window.matchMedia('(max-width: 700px)').matches) return;
+
     const controls = actionControlsRect();
-    const leftControls = visibleElementRect(document.getElementById('headerLeft'));
-    let trackerRect = visibleElementRect(tracker);
-    if (!controls || !trackerRect) return;
+    const natural = visibleElementRect(tracker);
+    if (!controls || !natural) return;
 
-    const screenPadding = 10;
     const gap = 12;
-    const naturalWidth = trackerRect.width;
-    const intendedLeft = Math.max(
-        screenPadding,
-        Math.ceil((leftControls?.right || screenPadding) + gap)
-    );
-    const availableWidth = Math.max(1, controls.left - gap - intendedLeft);
-    const scale = Math.max(0.42, Math.min(1, availableWidth / naturalWidth));
 
-    // Transform only the tracker itself. CSS zoom also scales its left/top
-    // coordinates, which caused the MacBook build to jump left over the game
-    // buttons. A top-left transform retains the exact earlier composition.
-    tracker.style.position = 'fixed';
-    tracker.style.left = `${intendedLeft}px`;
-    tracker.style.right = 'auto';
-    tracker.style.top = '4px';
+    // If the old desktop layout already fits, leave BOTH scale and position
+    // completely untouched. This is what makes the transition seamless.
+    if (!rectsOverlap(natural, controls, gap)) return;
+
+    // Preserve the tracker's natural top-left point. Only its rendered width and
+    // height are reduced. This avoids the horizontal/vertical drift introduced
+    // by the previous fixed-position MacBook guard.
+    const availableWidth = Math.max(1, controls.left - gap - natural.left);
+    const scale = Math.max(0.50, Math.min(1, availableWidth / natural.width));
+
     tracker.style.transformOrigin = 'top left';
     tracker.style.transform = `scale(${scale})`;
-    tracker.style.zIndex = '5100';
     tracker.classList.add('laptop-header-fitted');
-    trackerRect = visibleElementRect(tracker);
-
-    // Fractional browser rounding can leave a one-pixel collision. Nudge only
-    // that final pixel-level discrepancy; never move the tracker to a new row.
-    if (trackerRect && rectsOverlap(trackerRect, controls, 8)) {
-        const correctedScale = Math.max(0.40, (availableWidth - 8) / naturalWidth);
-        tracker.style.transform = `scale(${Math.min(scale, correctedScale)})`;
-    }
 }
 
 function positionOpponentTradeArea() {
     const area = document.getElementById('opponentTradeArea');
 
-    // Mobile layout is controlled entirely by CSS. Clear the desktop inline
-    // positioning/sizing so it cannot bunch the phone HUD together.
+    // Mobile layout is controlled entirely by CSS. Clear every desktop inline
+    // correction so the phone HUD remains unchanged.
     if (window.matchMedia('(max-width: 700px)').matches) {
         if (!area) return;
         area.classList.remove('laptop-trade-below-header');
@@ -12219,6 +12194,7 @@ function positionOpponentTradeArea() {
         area.style.removeProperty('--trade-card-gap');
         return;
     }
+
     const opponents = document.getElementById('opponentZoos');
     const rowReference = exchange1 || drawCard || resultBox;
     if (!area || !opponents || !rowReference) return;
@@ -12226,88 +12202,41 @@ function positionOpponentTradeArea() {
     fitProgressTrackerAroundActions();
 
     const opponentRect = opponents.getBoundingClientRect();
-    const rowRect = rowReference.getBoundingClientRect();
     const header = document.getElementById('actionMenu');
-    const headerRect = header ? header.getBoundingClientRect() : { bottom: 220 };
+    const headerRect = header ? header.getBoundingClientRect() : { top: 0, height: 200 };
 
-    // Make the trade cards as large as the remaining header height allows,
-    // while keeping the animal-card 1000:1440 aspect ratio. This keeps them
-    // on the same action row but gives the trade area substantially more
-    // visual weight, roughly matching the progression tracker vertically.
-    // Use the version 65 target size, but never exceed the live header.
-    // Centre the cards vertically inside the header so they sit snugly like
-    // the progression tracker rather than hanging from the Exchange row.
+    // Restore the established V65–V76 trade-card dimensions and positioning.
+    // Crucially, do not shrink the cards according to whatever horizontal gap
+    // happens to remain on a MacBook; that changed both their scale and their
+    // perceived position compared with the older desktop layout.
     const headerPadding = 8;
     const maxHeaderHeight = Math.max(144, Math.floor(headerRect.height - (headerPadding * 2)));
     const desiredHeight = 184;
+    const cardHeight = Math.min(desiredHeight, maxHeaderHeight);
+    const cardWidth = Math.round(cardHeight * (1000 / 1440));
     const cardGap = 12;
+    const areaWidth = (cardWidth * 2) + cardGap;
     const gapBeforeOpponents = 18;
     const screenPadding = 12;
-
-    // Reserve the actual space used by Draw/Exchange and the progression
-    // tracker. Shrink the trade pair to the gap that remains before Other Zoos.
-    const controlsRect = actionControlsRect();
-    const trackerRect = visibleElementRect(document.getElementById('progressTracker'));
-    const leftReservedEdge = Math.max(
-        screenPadding,
-        controlsRect?.right || screenPadding,
-        trackerRect?.right || screenPadding
-    ) + 12;
-    const horizontalRoom = opponentRect.left - gapBeforeOpponents - leftReservedEdge;
-    const heightFromRoom = Math.floor(
-        Math.max(0, (horizontalRoom - cardGap) / 2) * (1440 / 1000)
-    );
-    const cardHeight = Math.max(
-        104,
-        Math.min(desiredHeight, maxHeaderHeight, heightFromRoom || desiredHeight)
-    );
-    const cardWidth = Math.round(cardHeight * (1000 / 1440));
-    const areaWidth = (cardWidth * 2) + cardGap;
 
     area.style.setProperty('--trade-card-height', `${cardHeight}px`);
     area.style.setProperty('--trade-card-width', `${cardWidth}px`);
     area.style.setProperty('--trade-card-gap', `${cardGap}px`);
 
-    // Anchor the trade pair to the OPPONENT panel, not to the transformed
-    // exchange controls. This guarantees that the boxes are always visible
-    // immediately to the left of the opponent zoo names.
+    // Match the older layout: the pair belongs immediately to the left of Other
+    // Zoos. Its x-position therefore follows that panel, not Draw/Exchange or
+    // the progression tracker.
     let left = opponentRect.left - gapBeforeOpponents - areaWidth;
     left = Math.max(screenPadding, Math.min(left, window.innerWidth - areaWidth - screenPadding));
 
+    // Match the older vertical placement as well: centred within the header.
+    const top = headerRect.top + Math.max(headerPadding, (headerRect.height - cardHeight) / 2);
+
+    area.classList.remove('laptop-trade-below-header');
     area.style.position = 'fixed';
     area.style.left = `${Math.round(left)}px`;
     area.style.right = 'auto';
-
-    // Use an actual action card as the vertical reference so Outgoing and
-    // Incoming are exactly level with Draw / Exchange rather than the title.
-    let centredTop = headerRect.top + Math.max(headerPadding, (headerRect.height - cardHeight) / 2);
-
-    const candidate = {
-        left,
-        right: left + areaWidth,
-        top: centredTop,
-        bottom: centredTop + cardHeight
-    };
-    const stillCollides =
-        rectsOverlap(candidate, controlsRect, 8) ||
-        rectsOverlap(candidate, trackerRect, 8);
-
-    // Very narrow desktop Safari windows can have no honest horizontal gap at
-    // all. In that case place the trade cards directly below the header rather
-    // than covering Draw/Exchange. Mobile continues to use its existing CSS.
-    if (stillCollides) {
-        centredTop = headerRect.bottom + 8;
-        left = Math.max(
-            screenPadding,
-            Math.min(opponentRect.right - areaWidth, window.innerWidth - areaWidth - screenPadding)
-        );
-        area.classList.add('laptop-trade-below-header');
-    } else {
-        area.classList.remove('laptop-trade-below-header');
-    }
-
-    area.style.left = `${Math.round(left)}px`;
-    area.style.top = `${Math.round(centredTop)}px`;
+    area.style.top = `${Math.round(top)}px`;
     area.style.display = 'flex';
     area.style.visibility = 'visible';
     area.style.opacity = '1';

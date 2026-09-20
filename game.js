@@ -12166,6 +12166,7 @@ function positionOpponentTradeArea() {
     const rowRect = rowReference.getBoundingClientRect();
     const header = document.getElementById('actionMenu');
     const headerRect = header ? header.getBoundingClientRect() : { bottom: 220 };
+    const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
 
     // Make the trade cards as large as the remaining header height allows,
     // while keeping the animal-card 1000:1440 aspect ratio. This keeps them
@@ -12179,7 +12180,7 @@ function positionOpponentTradeArea() {
     // V169: wide desktop keeps the established 184px trade cards. At the
     // measured MacBook viewport, 151px restores their visual weight while
     // keeping the pair precisely between Upgrade and Other Zoos.
-    const narrowDesktop = window.innerWidth > 700 && window.innerWidth <= 1600;
+    const narrowDesktop = viewportWidth > 700 && viewportWidth <= 1600;
     const desiredHeight = narrowDesktop ? 151 : 184;
     const cardHeight = Math.min(desiredHeight, maxHeaderHeight);
     const cardWidth = Math.round(cardHeight * (1000 / 1440));
@@ -12197,8 +12198,10 @@ function positionOpponentTradeArea() {
     // Anchor the trade pair to the OPPONENT panel, not to the transformed
     // exchange controls. This guarantees that the boxes are always visible
     // immediately to the left of the opponent zoo names.
-    let left = opponentRect.left - gapBeforeOpponents - areaWidth;
-    left = Math.max(screenPadding, Math.min(left, window.innerWidth - areaWidth - screenPadding));
+    const opponentsVisible = opponentRect.width > 0 && opponentRect.left < viewportWidth;
+    const rightBoundary = opponentsVisible ? opponentRect.left : viewportWidth - screenPadding;
+    let left = rightBoundary - gapBeforeOpponents - areaWidth;
+    left = Math.max(screenPadding, Math.min(left, viewportWidth - areaWidth - screenPadding));
 
     area.style.position = 'fixed';
     area.style.left = `${Math.round(left)}px`;

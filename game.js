@@ -12142,7 +12142,8 @@ function fitProgressTrackerAroundActions() {
     if (!tracker) return;
 
     if (window.matchMedia('(max-width: 700px)').matches) {
-        tracker.style.removeProperty('zoom');
+        tracker.style.removeProperty('transform');
+        tracker.style.removeProperty('transform-origin');
         tracker.style.removeProperty('position');
         tracker.style.removeProperty('left');
         tracker.style.removeProperty('right');
@@ -12153,7 +12154,8 @@ function fitProgressTrackerAroundActions() {
     }
 
     // Always measure from the stylesheet's normal desktop layout first.
-    tracker.style.removeProperty('zoom');
+    tracker.style.removeProperty('transform');
+    tracker.style.removeProperty('transform-origin');
     tracker.style.removeProperty('position');
     tracker.style.removeProperty('left');
     tracker.style.removeProperty('right');
@@ -12162,42 +12164,38 @@ function fitProgressTrackerAroundActions() {
     tracker.classList.remove('laptop-header-fitted');
 
     const controls = actionControlsRect();
+    const leftControls = visibleElementRect(document.getElementById('headerLeft'));
     let trackerRect = visibleElementRect(tracker);
-    if (!controls || !trackerRect || !rectsOverlap(trackerRect, controls, 10)) return;
+    if (!controls || !trackerRect) return;
 
     const screenPadding = 10;
-    const gap = 14;
-    const trackerIsLeft = trackerRect.left <= controls.left;
-    const availableWidth = trackerIsLeft
-        ? controls.left - gap - Math.max(screenPadding, trackerRect.left)
-        : window.innerWidth - screenPadding - controls.right - gap;
-    const scale = Math.max(0.58, Math.min(1, availableWidth / trackerRect.width));
+    const gap = 12;
+    const naturalWidth = trackerRect.width;
+    const intendedLeft = Math.max(
+        screenPadding,
+        Math.ceil((leftControls?.right || screenPadding) + gap)
+    );
+    const availableWidth = Math.max(1, controls.left - gap - intendedLeft);
+    const scale = Math.max(0.42, Math.min(1, availableWidth / naturalWidth));
 
-    tracker.style.zoom = String(scale);
+    // Transform only the tracker itself. CSS zoom also scales its left/top
+    // coordinates, which caused the MacBook build to jump left over the game
+    // buttons. A top-left transform retains the exact earlier composition.
+    tracker.style.position = 'fixed';
+    tracker.style.left = `${intendedLeft}px`;
+    tracker.style.right = 'auto';
+    tracker.style.top = '4px';
+    tracker.style.transformOrigin = 'top left';
+    tracker.style.transform = `scale(${scale})`;
+    tracker.style.zIndex = '5100';
     tracker.classList.add('laptop-header-fitted');
     trackerRect = visibleElementRect(tracker);
 
-    // If scaling alone cannot clear the controls, pin the tracker to the side
-    // with the most room. This is intentionally a last-resort laptop layout.
+    // Fractional browser rounding can leave a one-pixel collision. Nudge only
+    // that final pixel-level discrepancy; never move the tracker to a new row.
     if (trackerRect && rectsOverlap(trackerRect, controls, 8)) {
-        const header = document.getElementById('actionMenu');
-        const headerRect = visibleElementRect(header) || { top: 0 };
-        const roomLeft = Math.max(0, controls.left - gap - screenPadding);
-        const roomRight = Math.max(0, window.innerWidth - controls.right - gap - screenPadding);
-
-        tracker.style.position = 'fixed';
-        tracker.style.top = `${Math.round(headerRect.top + 8)}px`;
-        tracker.style.zIndex = '30';
-
-        if (roomLeft >= roomRight) {
-            tracker.style.left = `${screenPadding}px`;
-            tracker.style.right = 'auto';
-            tracker.style.zoom = String(Math.max(0.5, Math.min(scale, roomLeft / Math.max(1, tracker.scrollWidth))));
-        } else {
-            tracker.style.left = 'auto';
-            tracker.style.right = `${screenPadding}px`;
-            tracker.style.zoom = String(Math.max(0.5, Math.min(scale, roomRight / Math.max(1, tracker.scrollWidth))));
-        }
+        const correctedScale = Math.max(0.40, (availableWidth - 8) / naturalWidth);
+        tracker.style.transform = `scale(${Math.min(scale, correctedScale)})`;
     }
 }
 

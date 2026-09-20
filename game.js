@@ -12177,11 +12177,12 @@ function positionOpponentTradeArea() {
     // the progression tracker rather than hanging from the Exchange row.
     const headerPadding = 8;
     const maxHeaderHeight = Math.max(144, Math.floor(headerRect.height - (headerPadding * 2)));
-    // V169: wide desktop keeps the established 184px trade cards. At the
-    // measured MacBook viewport, 151px restores their visual weight while
-    // keeping the pair precisely between Upgrade and Other Zoos.
+    // V171: wide desktop keeps the established 184px trade cards. The
+    // MacBook-class layout uses 170px cards: much closer to the original
+    // visual weight, while still fitting between Upgrade and Other Zoos.
     const narrowDesktop = viewportWidth > 700 && viewportWidth <= 1600;
-    const desiredHeight = narrowDesktop ? 151 : 184;
+    const macbookDesktop = viewportWidth > 700 && viewportWidth <= 1450;
+    const desiredHeight = macbookDesktop ? 170 : (narrowDesktop ? 151 : 184);
     const cardHeight = Math.min(desiredHeight, maxHeaderHeight);
     const cardWidth = Math.round(cardHeight * (1000 / 1440));
     const cardGap = narrowDesktop ? 10 : 12;

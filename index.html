@@ -354,16 +354,28 @@
         // Development cache-busting: always request the current deployed game.js.
         // No manual ?v=101, ?v=102, etc. changes are needed anymore.
         (function () {
-            var script = document.createElement('script');
-            script.src = './game.js?v=' + Date.now();
-            script.onerror = function () {
-                var s = document.getElementById('bootStatus');
-                var d = document.getElementById('bootDetail');
-                if (s) s.textContent = 'Zoo Curator could not load game.js.';
-                if (d) d.textContent =
-                    'Reload the page. If this remains, the deployed game.js path or cache is wrong.';
-            };
-            document.body.appendChild(script);
+            var stamp = Date.now();
+
+            function loadGame() {
+                var script = document.createElement('script');
+                script.src = './game.js?v=' + stamp;
+                script.onerror = function () {
+                    var s = document.getElementById('bootStatus');
+                    var d = document.getElementById('bootDetail');
+                    if (s) s.textContent = 'Zoo Curator could not load game.js.';
+                    if (d) d.textContent =
+                        'Reload the page. If this remains, the deployed game.js path or cache is wrong.';
+                };
+                document.body.appendChild(script);
+            }
+
+            // Translations live outside game.js. If the translation file is
+            // unavailable, Zoo Curator still starts normally in English.
+            var translations = document.createElement('script');
+            translations.src = './translations-nl.js?v=' + stamp;
+            translations.onload = loadGame;
+            translations.onerror = loadGame;
+            document.body.appendChild(translations);
         }());
     </script>
 

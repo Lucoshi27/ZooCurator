@@ -1,8 +1,8 @@
 /*
- * ZOO CURATOR V102 — DOMAIN ZOO-NAME RESUME REPAIR + V101 FEATURES
+ * ZOO CURATOR V164 — CONSISTENT TRADE HISTORY PROVENANCE POPUPS
  * Known-good GitHub baseline. Future builds must descend from this version.
  */
-const ZOO_CURATOR_VERSION = "V102";
+const ZOO_CURATOR_VERSION = "V164";
 
 
 // ============================================================
@@ -168,9 +168,10 @@ const DEFAULT_GAME_OPTIONS = {
     startingCollectionSize: 20,
     startingZooSize: 20,
     showEligibilityGlows: true,
-    enclosureRewardMilestones: [1, 5],
+    enclosureRewardMilestones: [1, 2, 3, 4, 6, 9],
     opponentMode: 'real',
-    tradeOfferFrequency: 50
+    tradeOfferFrequency: 50,
+    animalLanguage: 'en'
 };
 
 function interpolateStartingZooValue(size, points) {
@@ -310,7 +311,8 @@ function loadGameOptions() {
                         ? Number(saved.tradeOfferFrequency)
                         : DEFAULT_GAME_OPTIONS.tradeOfferFrequency
                 )
-            )
+            ),
+            animalLanguage: saved.animalLanguage === 'nl' ? 'nl' : 'en'
         };
     } catch (error) {
         console.warn('Could not load saved game options:', error);
@@ -336,6 +338,10 @@ function saveGameOptions() {
 
 const state = {
     gameOptions: loadGameOptions(),
+
+    // V145 secret sandbox mode is saved with the game but isolated from normal rules.
+    sandboxMode: false,
+    sandboxLooseAnimals: [],
 
     inventory: null,
     animalDatabase: { animals: [] },
@@ -376,6 +382,9 @@ const state = {
     autonomousTradeOffer: null,
     nextAutonomousOfferTurn: null,
     tradeHistory: [],
+    // V161: permanent identity-based provenance for every physical animal card
+    // encountered by the player. Never infer location from species/name.
+    animalLineage: new Map(),
 
     // Player-initiated trade results are cached per physical animal card for
     // a three-turn window. Removing and re-adding the same card therefore
@@ -442,6 +451,13 @@ const state = {
 
     // Eligible cards whose yellow glow the player manually hid.
     suppressedExchangeGlowIds: new Set(),
+    // V157: once the player selects an exchange-eligible card, only that
+    // category+level group keeps its yellow eligibility glow.
+    exchangeGlowFocusKey: null,
+    // V158: hovering the Outgoing Offer temporarily suppresses every yellow
+    // exchange glow so the blue trade-interest glow is visually isolated.
+    outgoingOfferHoverSuppressesExchangeGlow: false,
+    outgoingOfferTradeHoverActive: false,
     lastExchangeGroupCounts: new Map(),
     exchangeGlowReturnUntil: 0,
     exchangeGlowReturnIds: new Set(),
@@ -589,8 +605,7 @@ function everyPhysicalEnclosureOccupied() {
         return groups.every(group =>
             group.some(slotIndex =>
                 state.animals.some(animal =>
-                    animal.enclosureId === enclosure.id &&
-                    animal.slotIndex === slotIndex
+                    animalOccupiesZooSlot(animal, enclosure.id, slotIndex)
                 )
             )
         );
@@ -674,7 +689,10 @@ function emergencyTradeSelection() {
                 if (!realZooCanTradeFor(record, outgoing)) continue;
 
                 const matching = realZooTradeAnimals(record, true)
-                    .filter(candidate => candidate.level === outgoing.level);
+                    .filter(candidate =>
+                        candidate.level === outgoing.level &&
+                        tradeIncomingHasDestinationAfterOutgoing(candidate, outgoing)
+                    );
                 if (!matching.length) continue;
 
                 const { seed } = seededRoll(
@@ -710,7 +728,10 @@ function emergencyTradeSelection() {
                 if (!fictionalZooCanTradeFor(opponentIndex, outgoing)) continue;
 
                 const matching = (state.opponentTradeStocks[opponentIndex] || [])
-                    .filter(candidate => candidate.level === outgoing.level);
+                    .filter(candidate =>
+                        candidate.level === outgoing.level &&
+                        tradeIncomingHasDestinationAfterOutgoing(candidate, outgoing)
+                    );
                 if (!matching.length) continue;
 
                 const { seed } = seededRoll(
@@ -745,6 +766,15 @@ function emergencyTradeSelection() {
         for (const filename of levelFiles(category, 1)) {
             const key = animalCardKey(category, 1, filename);
             if (ownedKeys.has(key)) continue;
+            const candidate = {
+                category,
+                level: 1,
+                filename: cleanFilename(filename),
+                enclosureId: null,
+                slotIndex: null,
+                hand: false
+            };
+            if (!tradeIncomingHasDestinationAfterOutgoing(candidate, outgoing)) continue;
             available.push({ category, filename });
         }
     }
@@ -827,17 +857,21 @@ function predictedPlayerTradeOffers(animal) {
     const emergency = emergencyTradeForAnimal(animal);
     if (emergency) return [emergency];
 
+    // V133: honour an already-promised offer BEFORE recalculating the interest
+    // cap. Once this animal is moved into state.outgoingOffer,
+    // normalTradeInterestAllowed() excludes it from the zoo ranking by design.
+    // Checking the cap first could therefore overwrite its locked offer with [].
+    const cached = cachedPlayerTradeOffers(animal);
+    if (cached) return cached;
+
     // Emergency deadlock rescue bypasses the rarity cap. Ordinary offers do not.
     if (!normalTradeInterestAllowed(animal)) {
         storePlayerTradeOffers(animal, []);
         return [];
     }
 
-    // Once a normal prediction has been made for this physical card/window,
-    // always use that exact locked result. This makes the blue glow a promise:
-    // a glowing card cannot later reroll to "no offer" when it is dropped.
-    const cached = cachedPlayerTradeOffers(animal);
-    if (cached) return cached;
+    // The first prediction for this physical card/window is locked below, so
+    // the blue glow and click/drag trade paths all consume the same result.
 
     const frequency = tradeFrequencyFactor();
 
@@ -863,14 +897,17 @@ function predictedPlayerTradeOffers(animal) {
             if (!realZooCanTradeFor(record, animal)) continue;
 
             const matching = realZooTradeAnimals(record, true)
-                .filter(candidate => candidate.level === animal.level);
+                .filter(candidate =>
+                    candidate.level === animal.level &&
+                    tradeIncomingHasDestinationAfterOutgoing(candidate, animal)
+                );
             if (!matching.length) continue;
 
             const favourites = Array.isArray(record.preferred_categories)
                 ? record.preferred_categories
                 : [];
             const likesOutgoing = favourites.includes(animal.category);
-            const baseInterest = likesOutgoing ? 0.24 : 0.09;
+            const baseInterest = likesOutgoing ? 0.27 : 0.11;
             const levelPenalty = (animal.level - 1) * 0.025;
             const zooChance = Math.max(0.025, baseInterest - levelPenalty);
 
@@ -914,11 +951,14 @@ function predictedPlayerTradeOffers(animal) {
         if (!fictionalZooCanTradeFor(index, animal)) return;
 
         const matching = (state.opponentTradeStocks[index] || [])
-            .filter(candidate => candidate.level === animal.level);
+            .filter(candidate =>
+                candidate.level === animal.level &&
+                tradeIncomingHasDestinationAfterOutgoing(candidate, animal)
+            );
         if (!matching.length) return;
 
         const fav = profile.favourites.includes(animal.category);
-        const zooChance = fav ? 0.30 : 0.12;
+        const zooChance = fav ? 0.34 : 0.14;
 
         const { seed, roll } = seededRoll(
             `fictional-zoo|${animal.id}|${index}|${tradeOfferWindow()}`
@@ -947,7 +987,8 @@ function predictedPlayerTradeOffers(animal) {
 }
 
 function animalCouldReceiveTradeInterest(animal) {
-    if (state.gameOptions.showEligibilityGlows === false) return false;
+    // V163: this is specifically the BLUE trade-interest hint. Do not couple
+    // it to the yellow exchange-eligibility preference.
     if (!animal || animal.level < 1 || animal.level > 5) return false;
     if (animal === state.outgoingOffer) return false;
 
@@ -1091,7 +1132,7 @@ function tradeGlowTarget(target) {
 // Desktop: hover either EMPTY trade space to reveal potentially tradeable
 // cards. The glow lingers for two seconds after leaving, matching the other
 // temporary card hints.
-[outgoingOfferBox, incomingOfferBox].forEach(box => {
+[incomingOfferBox].forEach(box => {
     if (!box) return;
 
     box.addEventListener('mouseenter', () => {
@@ -1841,6 +1882,14 @@ function prepareNextDrawAsset() {
     }
 
     state.nextDrawReadyPromise = preloadAnimalAsset(state.nextDrawSpec);
+
+    // V124: availability depends on the exact prepared card. As soon as that
+    // asynchronous preparation finishes, refresh the deck's disabled state.
+    // Previously the UI could remain visually enabled until the next click/render.
+    state.nextDrawReadyPromise.finally(() => {
+        queueMicrotask(() => refreshDrawAvailabilityState());
+    });
+
     return state.nextDrawReadyPromise;
 }
 
@@ -1908,10 +1957,64 @@ function createAnimal(category, level, filename = null) {
     // unique card, that copy disappears and the opponent immediately refills.
     removePlayerClaimedCardFromOpponents(category, level, chosen);
 
-    return {
+    const animal = {
         id: state.nextId++, category, level,
         filename: cleanFilename(chosen),
         enclosureId: null, slotIndex: null, hand: false
+    };
+    ensureAnimalLineage(animal, state.zooName || 'Your Zoo');
+    return animal;
+}
+
+function ensureAnimalLineage(animal, origin = null) {
+    if (!animal?.id) return null;
+    if (!(state.animalLineage instanceof Map)) state.animalLineage = new Map();
+    let record = state.animalLineage.get(animal.id);
+    if (!record) {
+        record = {
+            animalId: animal.id,
+            name: String(animal.filename || '').replace(/\.png$/i, ''),
+            level: Number(animal.level) || 0,
+            category: animal.category || '',
+            originalFrom: origin || state.zooName || 'Your Zoo',
+            currentAt: state.zooName || 'Your Zoo',
+            exchanged: null
+        };
+        state.animalLineage.set(animal.id, record);
+    } else if (origin && !record.originalFrom) {
+        record.originalFrom = origin;
+    }
+    return record;
+}
+
+function animalLineageRecord(animalId) {
+    if (!(state.animalLineage instanceof Map)) return null;
+    return state.animalLineage.get(Number(animalId)) || state.animalLineage.get(animalId) || null;
+}
+
+function markAnimalTradedTo(animal, zooName) {
+    const record = ensureAnimalLineage(animal, state.zooName || 'Your Zoo');
+    if (!record) return;
+    record.currentAt = zooName || 'Unknown';
+}
+
+function markAnimalTradedFrom(animal, zooName) {
+    const record = ensureAnimalLineage(animal, zooName || 'Unknown');
+    if (!record) return;
+    if (!record.originalFrom || record.originalFrom === 'Unknown') record.originalFrom = zooName || 'Unknown';
+    record.currentAt = state.zooName || 'Your Zoo';
+}
+
+function markAnimalExchangedFor(animal, resultAnimal, turn) {
+    const record = ensureAnimalLineage(animal, state.zooName || 'Your Zoo');
+    if (!record) return;
+    record.currentAt = null;
+    record.exchanged = {
+        by: state.zooName || 'Your Zoo',
+        forAnimalId: resultAnimal?.id ?? null,
+        forName: String(resultAnimal?.filename || '').replace(/\.png$/i, '') || 'upgrade animal',
+        forLevel: Number(resultAnimal?.level) || null,
+        turn: Number(turn) || state.turn
     };
 }
 
@@ -1966,20 +2069,50 @@ function enclosureSlotCapacity(
 // ANIMAL AT SLOT
 // ============================================================
 
+function reserveAnimalZooSlot(animal, enclosureId, slotIndex) {
+    if (!animal || enclosureId == null || slotIndex == null) return;
+    animal.reservedEnclosureId = enclosureId;
+    animal.reservedSlotIndex = slotIndex;
+}
+function clearAnimalZooReservation(animal) {
+    if (!animal) return;
+    delete animal.reservedEnclosureId;
+    delete animal.reservedSlotIndex;
+}
+function animalOccupiesZooSlot(animal, enclosureId, slotIndex) {
+    return Boolean(animal) && (
+        (animal.enclosureId === enclosureId && animal.slotIndex === slotIndex) ||
+        (animal.reservedEnclosureId === enclosureId && animal.reservedSlotIndex === slotIndex)
+    );
+}
+function hasPendingPlayerAction() {
+    return state.exchange.some(Boolean) || Boolean(state.result) || Boolean(state.outgoingOffer);
+}
+function releaseExchangeReservations() {
+    for (const animal of state.exchange.filter(Boolean)) clearAnimalZooReservation(animal);
+}
+function releaseOutgoingTradeReservation() {
+    if (state.outgoingOffer) clearAnimalZooReservation(state.outgoingOffer);
+}
+
 function animalAtSlot(
     enclosureId,
     slotIndex,
-    ignoreAnimalId = null
+    ignoreAnimalId = null,
+    includeReserved = true
 ) {
 
     return state.animals.find(
         animal =>
-            animal.id !==
-                ignoreAnimalId &&
-            animal.enclosureId ===
-                enclosureId &&
-            animal.slotIndex ===
-                slotIndex
+            animal.id !== ignoreAnimalId &&
+            (
+                includeReserved
+                    ? animalOccupiesZooSlot(animal, enclosureId, slotIndex)
+                    : (
+                        animal.enclosureId === enclosureId &&
+                        animal.slotIndex === slotIndex
+                    )
+            )
     );
 
 }
@@ -2193,14 +2326,20 @@ function enclosureGroupForSlot(enclosure, slotIndex) {
     return getGroups(enclosure).find(group => group.includes(slotIndex)) || null;
 }
 
-function animalsInEnclosureGroup(enclosure, group, ignoreAnimalId = null) {
+function animalsInEnclosureGroup(enclosure, group, ignoreAnimalId = null, includeReserved = true) {
     if (!enclosure || !group) return [];
 
     const slots = new Set(group);
     return state.animals.filter(animal =>
         animal.id !== ignoreAnimalId &&
-        animal.enclosureId === enclosure.id &&
-        slots.has(animal.slotIndex)
+        (
+            (animal.enclosureId === enclosure.id && slots.has(animal.slotIndex)) ||
+            (
+                includeReserved &&
+                animal.reservedEnclosureId === enclosure.id &&
+                slots.has(animal.reservedSlotIndex)
+            )
+        )
     );
 }
 
@@ -2242,7 +2381,7 @@ function compatibilityAllowsPlacement(animal, enclosure, slotIndex) {
     // Single-animal exhibits do not need compatibility data.
     if (group.length <= 1) return true;
 
-    const occupants = animalsInEnclosureGroup(enclosure, group, animal.id);
+    const occupants = animalsInEnclosureGroup(enclosure, group, animal.id, false);
 
     // The first animal can enter an empty large exhibit freely.
     if (occupants.length === 0) return true;
@@ -2277,6 +2416,15 @@ function slotIsCompatibilityMatch(enclosure, slotIndex, candidateAnimals = compa
     if (occupants.length === 0) return false; // not "available due to a match"
 
     return candidateAnimals.some(animal => {
+        // V106: once an animal is already in a combination enclosure, that
+        // enclosure is its current home. Do not advertise another empty slot
+        // in the same enclosure as a destination. Other compatible enclosures
+        // may still glow normally.
+        if (animal?.enclosureId !== null && animal?.enclosureId !== undefined &&
+            animal.enclosureId === enclosure.id) {
+            return false;
+        }
+
         // Same-species cohabitation remains legal, but it is not a
         // mixed-species compatibility hint and therefore must not glow blue.
         const candidateName = compatibilityAnimalName(animal);
@@ -2524,7 +2672,7 @@ function finishCompatibilityAnimalHover() {
     }, 1000);
 }
 
-function moveSoleCompatibilityCandidateToSlot(enclosure, slotIndex) {
+function moveCompatibilityCandidateToSlot(enclosure, slotIndex) {
     if (document.body.classList.contains('history-viewing')) return false;
     if (state.drag || state.pan) return false;
 
@@ -2533,14 +2681,25 @@ function moveSoleCompatibilityCandidateToSlot(enclosure, slotIndex) {
         slotIndex
     );
 
-    if (candidates.length !== 1) return false;
+    if (!candidates.length) return false;
 
-    const animal = candidates[0];
-    if (!placeAnimal(animal, enclosure, slotIndex)) return false;
+    // V139: clicking an eligible empty combination slot is also useful when
+    // several animals elsewhere in the zoo can legally move there. Pick one
+    // of those candidates at random. After it moves, clicking the next empty
+    // slot recalculates compatibility against the NEW full occupant set, so
+    // only animals compatible with every animal already in the exhibit remain.
+    const animal = randomItem(candidates);
+    if (!animal || !placeAnimal(animal, enclosure, slotIndex)) return false;
 
     clearCompatibilityHoverImmediately();
     renderAll();
     return true;
+}
+
+// Kept as an alias for older call sites/saved builds that may still reference
+// the previous helper name.
+function moveSoleCompatibilityCandidateToSlot(enclosure, slotIndex) {
+    return moveCompatibilityCandidateToSlot(enclosure, slotIndex);
 }
 
 function ensureCompatibilityGlowStyles() {
@@ -2681,6 +2840,7 @@ function canPlace(
 
 
     if (
+        !state.sandboxMode &&
         enclosure.number === 10 &&
         !state.enclosure10Unlocked
     ) {
@@ -2696,15 +2856,24 @@ function canPlace(
     }
 
 
+    // V155: a reservation keeps this slot logically occupied for draw/full-zoo
+    // capacity, but it must not block another EXISTING zoo animal from moving
+    // into the visually empty slot. Only a physically present card blocks a move.
     if (
         animalAtSlot(
             enclosure.id,
             slotIndex,
-            animal.id
+            animal.id,
+            false
         )
     ) {
         return false;
     }
+
+    // Sandbox deliberately bypasses mixed-species compatibility restrictions.
+    // It still requires a real slot and an empty physical position; incompatible
+    // occupants are signalled visually with a red glow instead of blocking.
+    if (state.sandboxMode) return true;
 
     return compatibilityAllowsPlacement(
         animal,
@@ -2730,7 +2899,7 @@ function ensureDrawSpaceGuardStyles() {
         }
 
         #drawCard::before {
-            content: 'DRAW CARD';
+            content: attr(data-label);
             position: absolute;
             left: 50%;
             top: -17px;
@@ -2745,9 +2914,89 @@ function ensureDrawSpaceGuardStyles() {
         }
 
         #drawCard.draw-no-space {
-            opacity: .42;
-            filter: grayscale(.75);
             cursor: not-allowed !important;
+        }
+
+        /* V114: grey the actual card artwork. The deck image can have its own
+           rendering/compositing, so filtering only #drawCard was not reliably visible. */
+        #drawCard.draw-no-space img {
+            opacity: .38 !important;
+            filter: grayscale(1) brightness(.72) contrast(.82) !important;
+        }
+
+        #drawCard.draw-no-space::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 6px;
+            background: rgba(105, 105, 105, .34);
+            pointer-events: none;
+            z-index: 3;
+        }
+        @keyframes idleActionGuidePulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(50,135,255,0), inset 0 0 0 0 rgba(50,135,255,0);
+                outline-color: rgba(50,135,255,0);
+            }
+            18%, 65% {
+                box-shadow:
+                    0 0 0 4px rgba(50,135,255,.98),
+                    0 0 18px 9px rgba(50,135,255,.88),
+                    0 0 38px 15px rgba(50,135,255,.48),
+                    inset 0 0 0 3px rgba(120,190,255,.9);
+                outline-color: rgba(105,175,255,1);
+            }
+        }
+        .idle-action-guide {
+            position: relative !important;
+            z-index: 30 !important;
+            outline: 3px solid transparent !important;
+            outline-offset: 3px !important;
+            animation: idleActionGuidePulse 4s ease-in-out 1 !important;
+            overflow: visible !important;
+        }
+        /* V122: drawCard's visible artwork is a child image, while the wrapper
+           can be visually tiny/covered. Give the image itself an unmistakable
+           blue ring as well. This also remains visible over the grey disabled
+           treatment and older cached style.css rules. */
+        #drawCard.idle-action-guide img,
+        #outgoingOffer.idle-action-guide img,
+        #outgoingOffer.idle-action-guide .animal-card,
+        #outgoingOffer.idle-action-guide > * {
+            box-shadow:
+                0 0 0 4px rgba(50,135,255,.98),
+                0 0 20px 10px rgba(50,135,255,.78) !important;
+            outline: 3px solid rgba(105,175,255,.95) !important;
+            outline-offset: 2px !important;
+        }
+        /* V112: preserve the original menu width. Controls extend leftward
+           toward their labels instead of widening the Game Options panel. */
+        .game-options-modal label > input,
+        .game-options-modal label > select,
+        .game-options-modal .game-options-button,
+        .game-options-modal button {
+            box-sizing: border-box;
+        }
+        #optRewardMilestones {
+            width: 112px !important;
+            min-width: 112px !important;
+        }
+        .game-options-modal input[type="number"],
+        .game-options-modal input[type="text"],
+        .game-options-modal select,
+        .game-options-modal input[type="range"] {
+            width: 112px;
+            max-width: 100%;
+        }
+        @media (max-width: 600px) {
+            #optRewardMilestones,
+            .game-options-modal input[type="number"],
+            .game-options-modal input[type="text"],
+            .game-options-modal select,
+            .game-options-modal input[type="range"] {
+                width: min(112px, 100%);
+                min-width: 0 !important;
+            }
         }
     `;
     document.head.appendChild(style);
@@ -2828,14 +3077,71 @@ function randomEligibleDestinationForAnimal(animal) {
     return destinations.length ? randomItem(destinations) : null;
 }
 
-function nextLevelOneHasEligibleDestination() {
-    // Once the next card has been prepared, use that exact card for the
-    // disabled-state decision. Before preparation completes, retain the safe
-    // empty-exhibit fallback so the button never promises an impossible draw.
-    if (state.nextDrawSpec) {
-        return eligibleDestinationsForAnimal(state.nextDrawSpec).length > 0;
+// Trade offers must never promise an incoming card that cannot actually be
+// placed after the chosen outgoing animal leaves the zoo. This matters most
+// on a completely full zoo and in combination enclosures.
+function tradeIncomingHasDestinationAfterOutgoing(incoming, outgoing) {
+    if (!incoming || !outgoing) return false;
+
+    const oldEnclosureId = outgoing.enclosureId;
+    const oldSlotIndex = outgoing.slotIndex;
+    const oldReservedEnclosureId = outgoing.reservedEnclosureId;
+    const oldReservedSlotIndex = outgoing.reservedSlotIndex;
+    const oldHand = outgoing.hand;
+
+    try {
+        outgoing.enclosureId = null;
+        outgoing.slotIndex = null;
+        clearAnimalZooReservation(outgoing);
+        outgoing.hand = false;
+        return eligibleDestinationsForAnimal(incoming).length > 0;
+    } finally {
+        outgoing.enclosureId = oldEnclosureId;
+        outgoing.slotIndex = oldSlotIndex;
+        outgoing.hand = oldHand;
+        if (oldReservedEnclosureId != null && oldReservedSlotIndex != null) {
+            reserveAnimalZooSlot(outgoing, oldReservedEnclosureId, oldReservedSlotIndex);
+        }
     }
-    return hasSafeLevelOneDrawSpace();
+}
+
+function nextLevelOneHasEligibleDestination() {
+    // V156: DRAW availability uses LOGICAL zoo occupancy, including reserved
+    // slots. Reserved vacancies may be used to rearrange animals already owned,
+    // but they are NOT new capacity and must never re-enable Draw Card.
+    //
+    // hasSafeLevelOneDrawSpace() already counts reservations and also preserves
+    // the large-combination-exhibit safety rule (an unknown Level 1 draw only
+    // gets access to a genuinely empty logical exhibit).
+    if (!hasSafeLevelOneDrawSpace()) return false;
+
+    // If the exact next card is known, it must additionally have a destination
+    // that is genuinely unreserved. canPlace() is intentionally physical-only
+    // for rearrangement, so filter reserved slots/groups here for DRAW only.
+    if (state.nextDrawSpec) {
+        return eligibleDestinationsForAnimal(state.nextDrawSpec).some(({ enclosure, slotIndex }) => {
+            const group = enclosureGroupForSlot(enclosure, slotIndex);
+            if (!group) return false;
+
+            // Any reservation in this logical exhibit means its apparent
+            // vacancy belongs to an existing animal/action, not to a new draw.
+            const hasReservation = state.animals.some(animal =>
+                animal?.reservedEnclosureId === enclosure.id &&
+                group.includes(animal.reservedSlotIndex)
+            );
+            if (hasReservation) return false;
+
+            // For a combination exhibit, Draw Card may only use a truly empty
+            // logical exhibit, matching hasSafeLevelOneDrawSpace().
+            if (group.length > 1) {
+                return animalsInEnclosureGroup(enclosure, group, null, true).length === 0;
+            }
+
+            return !animalAtSlot(enclosure.id, slotIndex, null, true);
+        });
+    }
+
+    return true;
 }
 
 function markNewPlacementGlow(animal) {
@@ -2901,6 +3207,19 @@ function placeAnimal(
     slotIndex
 ) {
 
+    // V155 reservation hand-off:
+    // If this animal is moving from a real zoo slot into a slot currently
+    // reserved by a card in Exchange/Outgoing Offer, move that reservation
+    // to THIS animal's old slot. The zoo therefore remains logically full
+    // while the visible vacancy can travel around the board.
+    const movingFromEnclosureId = animal?.enclosureId ?? null;
+    const movingFromSlotIndex = animal?.slotIndex ?? null;
+    const displacedReservationOwner = state.animals.find(other =>
+        other?.id !== animal?.id &&
+        other?.reservedEnclosureId === enclosure?.id &&
+        other?.reservedSlotIndex === slotIndex
+    );
+
     if (
         !canPlace(
             animal,
@@ -2911,6 +3230,18 @@ function placeAnimal(
         return false;
     }
 
+
+    if (
+        displacedReservationOwner &&
+        movingFromEnclosureId !== null &&
+        movingFromSlotIndex !== null
+    ) {
+        reserveAnimalZooSlot(
+            displacedReservationOwner,
+            movingFromEnclosureId,
+            movingFromSlotIndex
+        );
+    }
 
     removeAnimalFromLocations(
         animal
@@ -2923,6 +3254,7 @@ function placeAnimal(
     animal.slotIndex =
         slotIndex;
 
+    clearAnimalZooReservation(animal);
 
     checkEnclosure10Unlock();
     updateRealZooTierUnlocks();
@@ -3503,6 +3835,8 @@ function randomAvailableStartingAnimal(levelChances) {
 
 function createStartingZoo() {
 
+    state.sandboxMode = false;
+    state.sandboxLooseAnimals = [];
     state.enclosures = [];
     state.animals = [];
     state.hand = [];
@@ -3521,6 +3855,7 @@ function createStartingZoo() {
     state.autonomousTradeOffer = null;
     state.nextAutonomousOfferTurn = null;
     state.tradeHistory = [];
+    state.animalLineage = new Map();
     state.unlockedOpponentCount = 2;
     state.playerLevelsSeen = new Set([1]);
     state.realZooUnlockedTier = 1;
@@ -3719,6 +4054,10 @@ function createStartingZoo() {
 // ============================================================
 
 function updateTurnDisplay() {
+    if (state.sandboxMode) {
+        turnOrder.textContent = 'Turn ∞ · SANDBOX';
+        return;
+    }
     if (state.historyViewTurn !== null) {
         turnOrder.textContent = `Turn ${state.historyViewTurn} · VIEWING`;
         return;
@@ -3739,6 +4078,12 @@ function updateTurnDisplay() {
 */
 
 function endTurn() {
+    // Sandbox has no turn progression.
+    if (state.sandboxMode) {
+        updateTurnDisplay();
+        writeAutoResumeSnapshot();
+        return;
+    }
 
     /*
         First remove glow from enclosure rewards earned during
@@ -3849,11 +4194,93 @@ function isExchangeEligible(animal) {
     return (exchangeGroupCounts().get(exchangeGroupKey(animal)) || 0) >= 3;
 }
 
-function shouldGlowForExchange(animal) {
-    return state.gameOptions.showEligibilityGlows !== false &&
-        isExchangeEligible(animal) &&
-        !state.suppressedExchangeGlowIds.has(animal.id);
+function activeExchangeGlowFocusKey() {
+    // A card actually sitting in an exchange box always defines the focus.
+    const slotted = state.exchange.find(Boolean);
+    if (slotted) return exchangeGroupKey(slotted);
+    return state.exchangeGlowFocusKey || null;
 }
+
+function shouldGlowForExchange(animal) {
+    if (state.outgoingOfferHoverSuppressesExchangeGlow) return false;
+
+    if (
+        state.gameOptions.showEligibilityGlows === false ||
+        !isExchangeEligible(animal) ||
+        state.suppressedExchangeGlowIds.has(animal.id)
+    ) {
+        return false;
+    }
+
+    const focusKey = activeExchangeGlowFocusKey();
+    return !focusKey || exchangeGroupKey(animal) === focusKey;
+}
+
+function clearExchangeGlowFocusIfIdle() {
+    if (!state.exchange.some(Boolean) && !state.result) {
+        state.exchangeGlowFocusKey = null;
+    }
+}
+
+function ensureTradeHoverExchangeGlowStyles() {
+    if (document.getElementById('trade-hover-exchange-glow-v158')) return;
+    const style = document.createElement('style');
+    style.id = 'trade-hover-exchange-glow-v158';
+    style.textContent = `
+        .animal-card.exchange-eligible {
+            transition: filter .45s ease, box-shadow .45s ease, opacity .45s ease !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+function setOutgoingOfferExchangeGlowSuppression(active) {
+    active = Boolean(active) && !state.sandboxMode;
+    if (state.outgoingOfferHoverSuppressesExchangeGlow === active) return;
+
+    state.outgoingOfferHoverSuppressesExchangeGlow = active;
+    document.body.classList.toggle('trade-hover-suppress-exchange', active);
+
+    if (active) {
+        // V163: NEVER rebuild the zoo here. renderZoo() replaces every animal
+        // DOM node, which destroys a blue trade-eligible class that may have
+        // been applied by the other mouseenter listener a moment earlier.
+        // shouldGlowForExchange() already suppresses yellow for any later
+        // render while this flag is active.
+        document.querySelectorAll('.animal-card.exchange-eligible')
+            .forEach(card => card.classList.remove('exchange-eligible'));
+        document.querySelectorAll('.animal-card.exchange-glow-return')
+            .forEach(card => card.classList.remove('exchange-glow-return'));
+        return;
+    }
+
+    // Restore currently eligible yellow glows with the existing fade-in class.
+    const ids = new Set(
+        state.animals
+            .filter(animal => isExchangeEligible(animal))
+            .filter(animal => {
+                const focusKey = activeExchangeGlowFocusKey();
+                return !focusKey || exchangeGroupKey(animal) === focusKey;
+            })
+            .map(animal => animal.id)
+    );
+    state.exchangeGlowReturnIds = ids;
+    state.exchangeGlowReturnUntil = ids.size ? Date.now() + 1000 : 0;
+    document.body.classList.remove('trade-hover-suppress-exchange');
+
+    // Restore yellow on the existing nodes so an active/fading blue trade glow
+    // is not erased by a full zoo rerender.
+    document.querySelectorAll('.animal-card[data-animal-id]')
+        .forEach(card => {
+            const animal = state.animals.find(item =>
+                item.id === Number(card.dataset.animalId)
+            );
+            if (!animal || !ids.has(animal.id)) return;
+            card.classList.add('exchange-eligible', 'exchange-glow-return');
+        });
+}
+
+ensureTradeHoverExchangeGlowStyles();
 
 
 // ============================================================
@@ -3908,6 +4335,260 @@ function attachImageError(
 // ANIMAL CARD
 // ============================================================
 
+// ============================================================
+// DUTCH CARD + UI LOCALISATION (V105)
+// ============================================================
+
+const translatedCardImageCache = new Map();
+const CARD_NAMEPLATE = Object.freeze({
+    x:72, y:1288, width:856, height:126,
+    background:'#f0e4c0', foreground:'#2b1708'
+});
+const CARD_CATEGORYPLATE = Object.freeze({
+    x:220, y:18, width:760, height:108,
+    foreground:'#2b1708'
+});
+
+function normaliseTranslationKey(value) {
+    return String(value || '')
+        .replace(/\.[^.]+$/, '')
+        .replace(/[‐‑‒–—_-]+/g, ' ')
+        .replace(/[’‘]/g, "'")
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLocaleLowerCase('en');
+}
+
+function translationLookup(table, value) {
+    if (!table) return null;
+    if (Object.prototype.hasOwnProperty.call(table, value)) return table[value];
+    const wanted = normaliseTranslationKey(value);
+    for (const [key, translated] of Object.entries(table)) {
+        if (normaliseTranslationKey(key) === wanted) return translated;
+    }
+    return null;
+}
+
+function dutchAnimalName(animal) {
+    if (![1,2].includes(Number(animal?.level))) return null;
+    return translationLookup(
+        window.ZOO_TRANSLATIONS?.nl?.animals,
+        animalDisplayName(animal)
+    );
+}
+
+function dutchCategoryName(category) {
+    return translationLookup(
+        window.ZOO_TRANSLATIONS?.nl?.categories,
+        category
+    );
+}
+
+function splitCardNameLines(ctx,text,maxWidth) {
+    const words=String(text||'').trim().split(/\s+/).filter(Boolean);
+    if (!words.length || ctx.measureText(text).width<=maxWidth) return [text];
+    let best=null;
+    for(let i=1;i<words.length;i++){
+        const a=words.slice(0,i).join(' '),b=words.slice(i).join(' ');
+        const w=Math.max(ctx.measureText(a).width,ctx.measureText(b).width);
+        if(!best||w<best.w)best={lines:[a,b],w};
+    }
+    return best?.lines||[text];
+}
+
+function paintDutchCardName(ctx,name) {
+    const p=CARD_NAMEPLATE;
+    ctx.fillStyle=p.background;
+    ctx.fillRect(p.x,p.y,p.width,p.height);
+    const maxWidth=p.width-34;
+    let size=102,lines=[name];
+    for(;size>=46;size-=2){
+        ctx.font=`700 ${size}px Arial, Helvetica, sans-serif`;
+        lines=splitCardNameLines(ctx,name,maxWidth);
+        const widest=Math.max(...lines.map(x=>ctx.measureText(x).width));
+        if(widest<=maxWidth && (lines.length===1 || size<=70)) break;
+    }
+    ctx.fillStyle=p.foreground;
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.font=`700 ${size}px Arial, Helvetica, sans-serif`;
+    const cx=p.x+p.width/2,cy=p.y+p.height/2;
+    if(lines.length===1)ctx.fillText(lines[0],cx,cy+2);
+    else {
+        const lh=size*.91;
+        ctx.fillText(lines[0],cx,cy-lh/2);
+        ctx.fillText(lines[1],cx,cy+lh/2);
+    }
+}
+
+function sampledCategoryColour(ctx) {
+    // Sample several quiet pixels in the category banner itself. This makes the
+    // overlay work for every category without hard-coding nine banner colours.
+    const points=[[930,32],[850,28],[760,24],[500,20]];
+    const samples=[];
+    for(const [x,y] of points){
+        try {
+            const d=ctx.getImageData(x,y,1,1).data;
+            if(d[3]>240)samples.push([d[0],d[1],d[2]]);
+        } catch {}
+    }
+    if(!samples.length)return '#a26248';
+    const avg=i=>Math.round(samples.reduce((s,v)=>s+v[i],0)/samples.length);
+    return `rgb(${avg(0)}, ${avg(1)}, ${avg(2)})`;
+}
+
+function paintDutchCardCategory(ctx,name) {
+    if(!name)return;
+    const p=CARD_CATEGORYPLATE;
+    ctx.fillStyle=sampledCategoryColour(ctx);
+    // Deliberately starts at x=220: the level numeral and its cream field remain untouched.
+    ctx.fillRect(p.x,p.y,p.width,p.height);
+    // V106: a second shallow strip removes descenders from the original
+    // category text (the old 'p' in Reptiles was just below the main mask).
+    // It stays well above the curved divider and never enters the level-number area.
+    ctx.fillRect(p.x, p.y + p.height - 2, p.width, 22);
+    const maxWidth=p.width-36;
+    let size=88;
+    for(;size>=48;size-=2){
+        ctx.font=`700 ${size}px Arial, Helvetica, sans-serif`;
+        if(ctx.measureText(name).width<=maxWidth)break;
+    }
+    ctx.fillStyle=p.foreground;
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.font=`700 ${size}px Arial, Helvetica, sans-serif`;
+    ctx.fillText(name,p.x+p.width/2,p.y+p.height/2+2);
+}
+
+function translatedAnimalCardUrl(animal) {
+    const name=dutchAnimalName(animal);
+    const categoryName=dutchCategoryName(animal?.category);
+    const source=animalImage(animal);
+    if(!name && !categoryName)return Promise.resolve(source);
+    const key=`${source}|nl|${name||''}|${categoryName||''}`;
+    if(translatedCardImageCache.has(key))return translatedCardImageCache.get(key);
+    const promise=new Promise(resolve=>{
+        const im=new Image();
+        im.onload=()=>{
+            try{
+                const c=document.createElement('canvas');
+                c.width=im.naturalWidth||1000;
+                c.height=im.naturalHeight||1440;
+                const ctx=c.getContext('2d');
+                ctx.drawImage(im,0,0,c.width,c.height);
+                ctx.save();
+                ctx.scale(c.width/1000,c.height/1440);
+                if(categoryName)paintDutchCardCategory(ctx,categoryName);
+                if(name)paintDutchCardName(ctx,name);
+                ctx.restore();
+                c.toBlob(blob=>resolve(blob?URL.createObjectURL(blob):source),'image/png');
+            }catch(e){
+                console.warn('Dutch card overlay failed:',e);
+                resolve(source);
+            }
+        };
+        im.onerror=()=>resolve(source);
+        im.src=source;
+    });
+    translatedCardImageCache.set(key,promise);
+    return promise;
+}
+
+function applyLocalizedAnimalImage(image,animal) {
+    const source=animalImage(animal);
+    image.src=source;
+    const token=`${animal?.id??''}|${animalCardKey(animal)}|${Date.now()}|${Math.random()}`;
+    image.dataset.localizedImageToken=token;
+    if(state.gameOptions.animalLanguage!=='nl')return;
+    translatedAnimalCardUrl(animal).then(url=>{
+        if(image.dataset.localizedImageToken===token&&state.gameOptions.animalLanguage==='nl')image.src=url;
+    });
+}
+
+// Translate ordinary DOM text as well as categories and menu labels.
+// Original text is remembered so switching back to English remains reversible.
+const uiOriginalText = new WeakMap();
+let uiLocalisationBusy = false;
+
+function translateUiString(text) {
+    const table=window.ZOO_TRANSLATIONS?.nl?.ui||{};
+    const categories=window.ZOO_TRANSLATIONS?.nl?.categories||{};
+    const leading=(text.match(/^\s*/)||[''])[0];
+    const trailing=(text.match(/\s*$/)||[''])[0];
+    let core=text.trim();
+    if(!core)return text;
+
+    if(table[core]) core=table[core];
+    else if(categories[core]) core=categories[core];
+    else {
+        core=core
+            .replace(/^Turn (\d+)$/, 'Beurt $1')
+            .replace(/^Level (\d+)$/, 'Niveau $1')
+            .replace(/^Enclosure (\d+)$/, 'Verblijf $1')
+            .replace(/^Decline \((\d+) turns? left\)$/, 'Weigeren ($1 beurten over)')
+            .replace(/^Current Turn (\d+)$/, 'Huidige beurt $1')
+            .replace(/^Current turn$/, 'Huidige beurt')
+            .replace(/^Viewing Turn (\d+) — READ ONLY$/, 'Beurt $1 bekijken — ALLEEN LEZEN')
+            .replace(/^Turn (\d+) - (.+)$/, 'Beurt $1 - $2')
+            .replace(/^(.+) — Turn (\d+)$/, '$1 — Beurt $2')
+            .replace(/^Turn (\d+) · VIEWING$/, 'Beurt $1 · BEKIJKEN')
+            .replace(/(\d+) animals\b/g, '$1 dieren')
+            .replace(/(\d+) enclosure cards\b/g, '$1 verblijfskaarten')
+            .replace(/(\d+) starting animals\b/g, '$1 startdieren')
+            .replace(/cards up to Level (\d+)/g, 'kaarten tot niveau $1')
+            .replace(/(\d+) starting enclosure spaces\b/g, '$1 startplaatsen')
+            .replace(/(\d+) spare spaces\b/g, '$1 vrije plaatsen')
+            .replace(/Starting collection size:/g, 'Grootte startcollectie:')
+            .replace(/Starting zoo size:/g, 'Grootte startdierentuin:')
+            .replace(/Trade offer frequency:/g, 'Frequentie ruilaanbiedingen:')
+            .replace(/Exchange 2 → Level (\d+)/g, 'Ruil 2 → niveau $1')
+            .replace(/Level (\d+) Animals/g, 'Niveau $1-dieren');
+    }
+    return leading+core+trailing;
+}
+
+function uiText(english) {
+    if (state?.gameOptions?.animalLanguage !== 'nl') return english;
+    return window.ZOO_TRANSLATIONS?.nl?.ui?.[english] || translateUiString(english);
+}
+
+function localizeDocument() {
+    if(uiLocalisationBusy)return;
+    uiLocalisationBusy=true;
+    try {
+        const dutch=state?.gameOptions?.animalLanguage==='nl';
+        if (drawCard) drawCard.dataset.label = dutch ? 'TREK KAART' : 'DRAW CARD';
+        const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+        const nodes=[];
+        while(walker.nextNode())nodes.push(walker.currentNode);
+        for(const node of nodes){
+            const parent=node.parentElement;
+            if(!parent || ['SCRIPT','STYLE','TEXTAREA'].includes(parent.tagName))continue;
+            if(!uiOriginalText.has(node))uiOriginalText.set(node,node.nodeValue);
+            const original=uiOriginalText.get(node);
+            node.nodeValue=dutch?translateUiString(original):original;
+        }
+        for(const el of document.querySelectorAll('[aria-label],[title],[placeholder]')){
+            for(const attr of ['aria-label','title','placeholder']){
+                if(!el.hasAttribute(attr))continue;
+                const key=`i18nOriginal${attr.replace(/-([a-z])/g,(_,c)=>c.toUpperCase()).replace(/^./,c=>c.toUpperCase())}`;
+                if(!(key in el.dataset))el.dataset[key]=el.getAttribute(attr);
+                const original=el.dataset[key];
+                el.setAttribute(attr,dutch?translateUiString(original):original);
+            }
+        }
+    } finally {
+        uiLocalisationBusy=false;
+    }
+}
+
+const uiLocalisationObserver=new MutationObserver(()=>{
+    if(state?.gameOptions?.animalLanguage==='nl')queueMicrotask(localizeDocument);
+});
+window.addEventListener('DOMContentLoaded',()=>{
+    uiLocalisationObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
+});
+
 function setupAnimalCard(
     image,
     animal,
@@ -3925,10 +4606,7 @@ function setupAnimalCard(
 
     // Show the real animal card directly. The temporary Back.png
     // loading/fallback system has been removed.
-    image.src =
-        animalImage(
-            animal
-        );
+    applyLocalizedAnimalImage(image, animal);
 
 
     image.draggable =
@@ -3959,6 +4637,54 @@ function setupAnimalCard(
     );
 
 
+    if (location === 'sandbox-loose' && state.sandboxMode) {
+        image.addEventListener('pointerdown', event => {
+            if (event.button !== 0) return;
+            event.preventDefault(); event.stopPropagation();
+            const animalId = animal.id;
+            const startX=event.clientX, startY=event.clientY;
+            const ox=animal.x, oy=animal.y;
+            const move=e=>{
+                animal.x=clamp(ox+(e.clientX-startX)/state.zoom,20,WORKSPACE_W-ANIMAL_W-20);
+                animal.y=clamp(oy+(e.clientY-startY)/state.zoom,20,WORKSPACE_H-ANIMAL_H-20);
+                const wrap=image.closest('.sandbox-loose-card');
+                if(wrap){wrap.style.left=animal.x+'px';wrap.style.top=animal.y+'px';}
+            };
+            const up=e=>{
+                window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up);
+                const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('.slot.empty-slot');
+                if(target){
+                    const enclosure=state.enclosures.find(x=>String(x.id)===String(target.dataset.enclosureId));
+                    const slotIndex=Number(target.dataset.slotIndex);
+                    if(enclosure && canPlace(animal,enclosure,slotIndex)){
+                        animal.sandboxLoose=false;
+                        state.sandboxLooseAnimals=state.sandboxLooseAnimals.filter(x=>x.id!==animalId);
+                        placeAnimal(animal,enclosure,slotIndex);
+                        renderAll();
+                        return;
+                    }
+                }
+
+                // Free sandbox placement is allowed anywhere around the zoo,
+                // but never on top of an enclosure card unless snapped into a
+                // genuine slot. Also keep loose cards from overlapping each other.
+                const proposed={x:animal.x,y:animal.y,w:ANIMAL_W,h:ANIMAL_H};
+                const hitsEnclosure=state.enclosures.some(enc=>rectanglesOverlap(
+                    proposed,{x:enc.x,y:enc.y,w:ENCLOSURE_W,h:ENCLOSURE_H},0
+                ));
+                const hitsLoose=(state.sandboxLooseAnimals||[]).some(other=>
+                    other.id!==animal.id && other.enclosureId==null &&
+                    rectanglesOverlap(proposed,{x:other.x,y:other.y,w:ANIMAL_W,h:ANIMAL_H},20)
+                );
+                if(hitsEnclosure || hitsLoose){
+                    animal.x=ox; animal.y=oy;
+                }
+                renderAll();
+            };
+            window.addEventListener('pointermove',move); window.addEventListener('pointerup',up,{once:true});
+        });
+    }
+
     if (
         location ===
         'enclosure'
@@ -3985,6 +4711,9 @@ function setupAnimalCard(
         state.progressionGlowPinnedKeys.has(trackerKey)
     ) {
         image.classList.add('progression-highlight');
+        if (state.progressionGlowPinnedKeys.has(trackerKey)) {
+            image.classList.add('progression-highlight-pinned');
+        }
     }
 
     if (
@@ -4186,7 +4915,7 @@ function showHoverPreview(animal) {
     state.previewWikiAnimalId = null;
     hoverPreview.classList.remove('wiki-open');
     hoverPreview.classList.remove('preview-fading');
-    hoverPreviewImage.src = animalImage(animal);
+    applyLocalizedAnimalImage(hoverPreviewImage, animal);
     hoverPreview.classList.add('visible');
 }
 
@@ -4399,7 +5128,7 @@ async function loadWikipediaForAnimal(animal) {
     const query = animalDisplayName(animal);
     titleEl.textContent = query || 'Wikipedia';
     linkEl.removeAttribute('href');
-    statusEl.textContent = 'Loading English Wikipedia…';
+    statusEl.textContent = uiText('Loading English Wikipedia…');
     textEl.textContent = '';
     state.previewScientificName = '';
     state.previewZtlAnimalId = null;
@@ -4437,14 +5166,18 @@ async function loadWikipediaForAnimal(animal) {
         titleEl.textContent = scientificName ? `${pageTitle} (${scientificName})` : pageTitle;
         linkEl.href = `https://en.wikipedia.org/wiki/${encodeURIComponent(pageTitle.replace(/ /g, '_'))}`;
         statusEl.textContent = scientificName
-            ? `English Wikipedia • scientific name: ${scientificName}`
-            : 'English Wikipedia • article text';
-        textEl.textContent = extract || 'Wikipedia returned this page without a text extract.';
+            ? (state.gameOptions.animalLanguage === 'nl'
+                ? `Engelse Wikipedia • wetenschappelijke naam: ${scientificName}`
+                : `English Wikipedia • scientific name: ${scientificName}`)
+            : uiText('English Wikipedia • article text');
+        textEl.textContent = extract || uiText('Wikipedia returned this page without a text extract.');
     }
     catch (error) {
         if (token !== state.previewWikiRequestToken) return;
-        statusEl.textContent = 'Wikipedia could not be loaded.';
-        textEl.textContent = `${error.message}\n\nYou can still use the Wikipedia link once an article is found in a later attempt.`;
+        statusEl.textContent = uiText('Wikipedia could not be loaded.');
+        textEl.textContent = state.gameOptions.animalLanguage === 'nl'
+            ? `${error.message}\n\nJe kunt de Wikipedia-link alsnog gebruiken zodra bij een latere poging een artikel wordt gevonden.`
+            : `${error.message}\n\nYou can still use the Wikipedia link once an article is found in a later attempt.`;
     }
 }
 
@@ -4509,8 +5242,8 @@ async function loadZootierlisteForAnimal(animal, scientificName = '') {
     if (record) {
         titleEl.textContent = `Zootierliste — ${record.english_name}`;
         statusEl.textContent = record.zootierliste?.combined_complete
-            ? 'Local Zoo Curator database • current holdings'
-            : 'Local Zoo Curator database • current collected subtotal';
+            ? uiText('Local Zoo Curator database • current holdings')
+            : uiText('Local Zoo Curator database • current collected subtotal');
         textEl.textContent = formatLocalZootierliste(record);
         const firstUrl = record.zootierliste?.listings?.find(x => x.source_url)?.source_url;
         linkEl.href = firstUrl || 'https://www.zootierliste.de/en/?action=expsuche';
@@ -4520,8 +5253,8 @@ async function loadZootierlisteForAnimal(animal, scientificName = '') {
     }
 
     titleEl.textContent = `Zootierliste — ${animalDisplayName(animal)}`;
-    statusEl.textContent = 'This animal is not in assets/data/animals.json yet.';
-    textEl.textContent = 'Add this animal to the JSON database and reload the game. No game-code change is required.';
+    statusEl.textContent = uiText('This animal is not in assets/data/animals.json yet.');
+    textEl.textContent = uiText('Add this animal to the JSON database and reload the game. No game-code change is required.');
     linkEl.href = 'https://www.zootierliste.de/en/?action=expsuche';
 }
 
@@ -4583,6 +5316,9 @@ function renderZoo() {
 
     }
 
+    // Sandbox cards may exist loose on the board until the player drags them
+    // into an enclosure. They are deliberately outside normal-game state.
+    if (state.sandboxMode) renderSandboxLooseAnimals();
 
     zooBoard.scrollLeft =
         scrollLeft;
@@ -4592,6 +5328,33 @@ function renderZoo() {
 
 }
 
+
+// ============================================================
+// V149 SANDBOX COMPATIBILITY WARNINGS
+// ============================================================
+function sandboxAnimalHasCompatibilityConflict(animal) {
+    if (!state.sandboxMode || !animal || animal.enclosureId == null) return false;
+    const enclosure = state.enclosures.find(e => e.id === animal.enclosureId);
+    if (!enclosure) return false;
+    const group = enclosureGroupForSlot(enclosure, animal.slotIndex);
+    if (!group || group.length <= 1) return false;
+    const occupants = animalsInEnclosureGroup(enclosure, group, animal.id);
+    return occupants.some(other => !animalsAreCompatible(animal, other));
+}
+
+function ensureSandboxConflictStyles() {
+    if (document.getElementById('sandbox-conflict-styles')) return;
+    const style=document.createElement('style');
+    style.id='sandbox-conflict-styles';
+    style.textContent=`
+      .animal-card.sandbox-compatibility-conflict {
+        filter: drop-shadow(0 0 4px rgba(255,30,30,1))
+                drop-shadow(0 0 10px rgba(255,30,30,.95))
+                drop-shadow(0 0 18px rgba(255,30,30,.8)) !important;
+      }
+    `;
+    document.head.appendChild(style);
+}
 
 // ============================================================
 // RENDER ENCLOSURE
@@ -4713,7 +5476,9 @@ function renderEnclosure(
         const animal =
             animalAtSlot(
                 enclosure.id,
-                slotIndex
+                slotIndex,
+                null,
+                false
             );
 
 
@@ -4730,6 +5495,12 @@ function renderEnclosure(
                 animal,
                 'enclosure'
             );
+
+            if (state.sandboxMode && sandboxAnimalHasCompatibilityConflict(animal)) {
+                ensureSandboxConflictStyles();
+                card.classList.add('sandbox-compatibility-conflict');
+                card.title = 'Sandbox: this mixed exhibit is not allowed by the compatibility rules.';
+            }
 
 
             slot.appendChild(
@@ -4774,13 +5545,14 @@ function renderEnclosure(
                     slotIndex
                 );
 
-                // Auto-move is deliberately only available when the choice is
-                // unambiguous. With 0 or 2+ candidates clicking remains normal.
-                if (candidates.length !== 1) return;
+                // V139: if one OR several animals can legally join this
+                // exhibit, clicking the empty slot moves one valid candidate
+                // at random. Zero candidates leaves the click unchanged.
+                if (!candidates.length) return;
 
                 event.preventDefault();
                 event.stopPropagation();
-                moveSoleCompatibilityCandidateToSlot(enclosure, slotIndex);
+                moveCompatibilityCandidateToSlot(enclosure, slotIndex);
             });
 
         }
@@ -4843,6 +5615,16 @@ function renderHand() {
     handElement.innerHTML =
         '';
 
+    // Sandbox has no player hand. Defensive cleanup also repairs any sandbox
+    // card that an older drag path/save accidentally marked as a hand card.
+    if (state.sandboxMode) {
+        for (const animal of state.hand) {
+            if (animal) animal.hand = false;
+        }
+        state.hand = [];
+        return;
+    }
+
 
     for (
         const animal
@@ -4886,10 +5668,7 @@ function setupExchangeCard(
         'exchange-card animal-card';
 
 
-    image.src =
-        animalImage(
-            animal
-        );
+    applyLocalizedAnimalImage(image, animal);
 
 
     image.draggable =
@@ -4963,8 +5742,19 @@ function setupExchangeCard(
 
 function renderExchange() {
 
+    if (state.sandboxMode) {
+        renderSandboxToolbar();
+        return;
+    }
+
+    restoreNormalActionBoxesIfNeeded();
+
     const categories =
         eligibleExchangeCategories();
+
+    // V130: keep the alternating yellow action hint synchronized with the
+    // same eligibility calculation that produces the three yellow card glows.
+    queueMicrotask(refreshYellowExchangeHintState);
 
 
     const ready =
@@ -4988,8 +5778,9 @@ function renderExchange() {
 
     exchange1.innerHTML = '';
     exchange2.innerHTML = '';
-    exchange1.dataset.boxLabel = 'EXCHANGE';
-    exchange2.dataset.boxLabel = 'EXCHANGE';
+    const dutchUi = state.gameOptions.animalLanguage === 'nl';
+    exchange1.dataset.boxLabel = dutchUi ? 'INRUILEN' : 'EXCHANGE';
+    exchange2.dataset.boxLabel = dutchUi ? 'INRUILEN' : 'EXCHANGE';
 
 
     state.exchange.forEach(
@@ -5028,7 +5819,7 @@ function renderExchange() {
 
 
     resultBox.innerHTML = '';
-    resultBox.dataset.boxLabel = 'UPGRADE';
+    resultBox.dataset.boxLabel = dutchUi ? 'UPGRADEN' : 'UPGRADE';
 
 
     resultBox.classList.toggle(
@@ -5093,6 +5884,8 @@ function renderExchange() {
 function startResultDrag(event) {
     if (!state.result || state.drag || state.pan) return;
 
+    releaseExchangeReservations();
+
     const sourceRect = event.currentTarget.getBoundingClientRect();
     const dragImage = document.createElement('img');
     dragImage.className = 'dragging-animal dragging-result';
@@ -5137,6 +5930,7 @@ async function completeExchange(destination = null, autoPlace = false) {
     );
 
     if (autoPlace && !destination) {
+        releaseExchangeReservations();
         destination = randomEligibleDestinationForAnimal(newAnimal);
     }
 
@@ -5156,10 +5950,15 @@ async function completeExchange(destination = null, autoPlace = false) {
     state.animals.push(newAnimal);
     markPlayerLevelSeen(newAnimal.level);
 
-    const exchangedIds = state.exchange.filter(Boolean).map(animal => animal.id);
+    const exchangedAnimals = state.exchange.filter(Boolean);
+    const exchangedIds = exchangedAnimals.map(animal => animal.id);
+    for (const animal of exchangedAnimals) {
+        markAnimalExchangedFor(animal, newAnimal, state.turn);
+    }
     state.animals = state.animals.filter(animal => !exchangedIds.includes(animal.id));
     state.exchange = [null, null];
     state.result = null;
+    state.exchangeGlowFocusKey = null;
 
     for (const id of exchangedIds) state.suppressedExchangeGlowIds.delete(id);
 
@@ -5601,6 +6400,33 @@ function renderProgressTracker() {
 }
 
 
+// V154 — progression tracker highlight polish.
+// Pinned/ticked tracker highlights remain at full strength until explicitly
+// unticked. The glow is also intentionally broader than the old highlight.
+function ensureProgressionGlowStyles() {
+    if (document.getElementById('progression-glow-v154-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'progression-glow-v154-styles';
+    style.textContent = `
+        .animal-card.progression-highlight {
+            filter:
+                drop-shadow(0 0 5px rgba(255,220,45,1))
+                drop-shadow(0 0 13px rgba(255,205,20,.95))
+                drop-shadow(0 0 24px rgba(255,190,0,.72)) !important;
+        }
+        .animal-card.progression-highlight-pinned {
+            animation: none !important;
+            opacity: 1 !important;
+            filter:
+                drop-shadow(0 0 6px rgba(255,225,50,1))
+                drop-shadow(0 0 16px rgba(255,205,20,1))
+                drop-shadow(0 0 30px rgba(255,185,0,.82)) !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+ensureProgressionGlowStyles();
+
 // ============================================================
 // V45 — SAVE / LOAD + READ-ONLY TURN HISTORY
 // ============================================================
@@ -5618,6 +6444,8 @@ let autoResumeWriteSuppressed = false;
 
 const SAVE_STATE_KEYS = [
     'gameOptions',
+    'sandboxMode',
+    'sandboxLooseAnimals',
     'zooName',
     'opponentNames',
     'activeCategories',
@@ -5630,6 +6458,7 @@ const SAVE_STATE_KEYS = [
     'autonomousTradeOffer',
     'nextAutonomousOfferTurn',
     'tradeHistory',
+    'animalLineage',
     'tradeOfferCache',
     'unlockedOpponentCount',
     'playerLevelsSeen',
@@ -5945,6 +6774,7 @@ function normaliseLoadedGameCollections() {
     const mapKeys = [
         'lastExchangeGroupCounts',
         'realZooSessionHoldings',
+        'animalLineage',
         'tradeOfferCache',
         'assetPreloadPromises'
     ];
@@ -5957,6 +6787,12 @@ function normaliseLoadedGameCollections() {
 
 function relinkLoadedPlayerReferences() {
     const byId = new Map(state.animals.map(animal => [animal.id, animal]));
+    if (!(state.animalLineage instanceof Map)) state.animalLineage = new Map();
+    for (const animal of state.animals) {
+        if (!state.animalLineage.has(animal.id)) {
+            ensureAnimalLineage(animal, state.zooName || 'Your Zoo');
+        }
+    }
     state.hand = (state.hand || [])
         .map(animal => byId.get(animal.id) || animal);
     state.exchange = (state.exchange || [null, null])
@@ -5969,7 +6805,7 @@ function relinkLoadedPlayerReferences() {
 
 function importGameState(saveData) {
     if (!saveData || !saveData.state) {
-        throw new Error('This save file does not contain a valid Zoo Curator game.');
+        throw new Error(uiText('This save file does not contain a valid Zoo Curator game.'));
     }
 
     exitHistoryView(false);
@@ -5981,6 +6817,8 @@ function importGameState(saveData) {
         }
     }
 
+    state.sandboxMode = Boolean(state.sandboxMode);
+    if (!Array.isArray(state.sandboxLooseAnimals)) state.sandboxLooseAnimals = [];
     state.turnHistory = cloneForSave(saveData.turnHistory || []);
     state.historyViewTurn = null;
     state.historyLiveView = null;
@@ -6025,7 +6863,7 @@ function writeSaveSlots(slots) {
 
 function saveCurrentGame(slotId = null) {
     if (state.historyViewTurn !== null) {
-        alert('Return to the current turn before saving the game.');
+        alert(uiText('Return to the current turn before saving the game.'));
         return;
     }
 
@@ -6040,7 +6878,7 @@ function saveCurrentGame(slotId = null) {
         ? slots[existingIndex].name
         : `Save ${slots.length + 1}`;
 
-    const entered = prompt('Name this save game:', name);
+    const entered = prompt(uiText('Name this save game:'), name);
     if (entered === null) return;
 
     name = entered.trim() || name;
@@ -6051,7 +6889,7 @@ function saveCurrentGame(slotId = null) {
             : `save-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         name,
         zooName: state.zooName,
-        turn: state.turn,
+        turn: state.sandboxMode ? '∞' : state.turn,
         animalCount: state.animals.length,
         enclosureCount: state.enclosures.length,
         savedAt: new Date().toISOString(),
@@ -6171,16 +7009,19 @@ function renderSaveSlots() {
 
         list.appendChild(row);
     }
+    queueMicrotask(localizeDocument);
 }
 
 function openSaveLoadMenu() {
     if (state.historyViewTurn !== null) return;
+    pauseAllHintGlowsForMenu();
     renderSaveSlots();
     document.getElementById('saveLoadOverlay')?.classList.add('visible');
 }
 
 function closeSaveLoadMenu() {
     document.getElementById('saveLoadOverlay')?.classList.remove('visible');
+    resumeHintGlowsAfterMenu();
 }
 
 function ensureSaveLoadUI() {
@@ -6210,6 +7051,7 @@ function ensureSaveLoadUI() {
             <div id="saveSlotList" class="save-slot-list"></div>
             <div class="save-load-footer">
                 <button type="button" id="startNewGameFromSaveMenu">Start New Game</button>
+                <button type="button" id="sandboxModeButton" style="display:none;">Sandbox Mode</button>
                 <span style="flex:1 1 auto;"></span>
                 <button type="button" id="saveCurrentGame">Save Current Game</button>
                 <button type="button" id="closeSaveLoad">Close</button>
@@ -6217,6 +7059,12 @@ function ensureSaveLoadUI() {
         </div>
     `;
     document.body.appendChild(overlay);
+
+    const sandboxButton = overlay.querySelector('#sandboxModeButton');
+    if (sandboxButton) {
+        sandboxButton.addEventListener('click', startSandboxMode);
+        installSecretSandboxReveal(sandboxButton);
+    }
 
     button.addEventListener('click', openSaveLoadMenu);
     overlay.querySelector('#startNewGameFromSaveMenu').addEventListener(
@@ -6262,7 +7110,10 @@ function ensureTurnHistoryUI() {
     turnOrder.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
+        const opening = !panel.classList.contains('visible');
         panel.classList.toggle('visible');
+        if (opening) pauseAllHintGlowsForMenu();
+        else resumeHintGlowsAfterMenu();
         updateHistoryControls();
     });
 
@@ -6276,6 +7127,7 @@ function ensureTurnHistoryUI() {
 
     panel.querySelector('#closeTurnHistory').addEventListener('click', () => {
         panel.classList.remove('visible');
+        resumeHintGlowsAfterMenu();
     });
 }
 
@@ -6303,6 +7155,7 @@ function updateHistoryControls() {
             `Viewing Turn ${state.historyViewTurn} — READ ONLY`;
         if (returnButton) returnButton.disabled = false;
     }
+    queueMicrotask(localizeDocument);
 }
 
 function viewHistoricalTurn(turn) {
@@ -6404,24 +7257,42 @@ document.addEventListener('click', event => {
 // RENDER ALL
 // ============================================================
 
+let idleGuideSetupWasComplete = false;
+
+function refreshDrawAvailabilityState() {
+    if (!drawCard) return false;
+
+    const noOpenSpace = !nextLevelOneHasEligibleDestination();
+    const drawAlreadyCommitted = state.hand.length > 0 ||
+        state.drag?.type === 'draw' ||
+        state.drag?.type === 'draw-result';
+    const actionPending = hasPendingPlayerAction();
+    const drawUnavailable = noOpenSpace || drawAlreadyCommitted || actionPending;
+
+    drawCard.classList.toggle('draw-no-space', drawUnavailable);
+    drawCard.setAttribute('aria-disabled', drawUnavailable ? 'true' : 'false');
+    drawCard.style.cursor = drawUnavailable ? 'not-allowed' : '';
+
+    const image = drawCard.querySelector('img');
+    if (image) {
+        image.style.setProperty('opacity', drawUnavailable ? '0.38' : '', 'important');
+        image.style.setProperty(
+            'filter',
+            drawUnavailable ? 'grayscale(1) brightness(.72) contrast(.82)' : '',
+            'important'
+        );
+    }
+
+    drawCard.title = noOpenSpace
+        ? 'No eligible enclosure space is available for the next Level 1 card.'
+        : (actionPending ? 'Finish the current exchange or trade first.' : '');
+
+    return !drawUnavailable;
+}
+
 function renderAll() {
 
-    if (drawCard) {
-        const noOpenSpace = !nextLevelOneHasEligibleDestination();
-
-        drawCard.classList.toggle('draw-no-space', noOpenSpace);
-        drawCard.setAttribute('aria-disabled', noOpenSpace ? 'true' : 'false');
-
-        // JS-side visual failsafe so the Level 1 deck is visibly disabled even
-        // if an older style.css does not yet define .draw-no-space.
-        drawCard.style.opacity = noOpenSpace ? '0.42' : '';
-        drawCard.style.filter = noOpenSpace ? 'grayscale(1)' : '';
-        drawCard.style.cursor = noOpenSpace ? 'not-allowed' : '';
-
-        drawCard.title = noOpenSpace
-            ? 'No eligible enclosure space is available for the next Level 1 card.'
-            : '';
-    }
+    refreshDrawAvailabilityState();
 
 
     updateRealZooTierUnlocks();
@@ -6429,6 +7300,13 @@ function renderAll() {
     updateDiscoveredCategoryLevels();
     refreshExchangeGlowSuppression();
     renderZoo();
+    // V163: renderZoo() recreates card nodes. If the pointer is still over
+    // Outgoing Offer, immediately repaint blue trade eligibility on new nodes.
+    if (state.outgoingOfferTradeHoverActive && !state.outgoingOffer) {
+        queueMicrotask(() => {
+            if (state.outgoingOfferTradeHoverActive) applyTradeEligibleGlow();
+        });
+    }
     renderHand();
     renderExchange();
     renderTrade();
@@ -6436,6 +7314,17 @@ function renderAll() {
     updateTurnDisplay();
     captureTurnSnapshot();
     writeAutoResumeSnapshot();
+
+    // V106: render functions rebuild a number of menu/status nodes. Re-run
+    // localisation after every full render so Dutch mode cannot leave freshly
+    // rendered English labels behind, and English mode restores originals.
+    queueMicrotask(localizeDocument);
+    if (state.loaded && !idleGuideSetupWasComplete) {
+        idleGuideSetupWasComplete = true;
+        armActionHint(blueHintInitialDelay());
+    } else if (!state.loaded) {
+        idleGuideSetupWasComplete = false;
+    }
 }
 
 
@@ -6448,6 +7337,108 @@ function startAnimalDrag(
     animal,
     location
 ) {
+
+    // V149: in sandbox, an animal already snapped into an enclosure may be
+    // pulled back out and freely parked around the zoo. The ordinary game drag
+    // system remains untouched.
+    if (state.sandboxMode && location === 'enclosure') {
+        const source = event.currentTarget;
+        const sourceRect = source.getBoundingClientRect();
+        const originalEnclosureId = animal.enclosureId;
+        const originalSlotIndex = animal.slotIndex;
+        const relativeX = (event.clientX - sourceRect.left) / Math.max(sourceRect.width, 1);
+        const relativeY = (event.clientY - sourceRect.top) / Math.max(sourceRect.height, 1);
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        // A foreground drag ghost is independent of the enclosure DOM, so it
+        // remains fully visible even while crossing the enclosure artwork.
+        const ghost = document.createElement('img');
+        ghost.className = 'dragging-animal sandbox-dragging-animal';
+        applyLocalizedAnimalImage(ghost, animal);
+        Object.assign(ghost.style, {
+            position: 'fixed',
+            width: `${ANIMAL_W * state.zoom}px`,
+            height: `${ANIMAL_H * state.zoom}px`,
+            objectFit: 'contain',
+            pointerEvents: 'none',
+            zIndex: '10020',
+            opacity: '1'
+        });
+        document.body.appendChild(ghost);
+        source.style.opacity = '0';
+
+        const positionGhost = e => {
+            ghost.style.left = `${e.clientX - relativeX * ANIMAL_W * state.zoom}px`;
+            ghost.style.top = `${e.clientY - relativeY * ANIMAL_H * state.zoom}px`;
+        };
+        positionGhost(event);
+
+        const move = e => positionGhost(e);
+        const up = e => {
+            window.removeEventListener('pointermove', move);
+            ghost.remove();
+            source.style.opacity = '';
+
+            const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.slot.empty-slot');
+            if (target) {
+                const targetEnc = state.enclosures.find(x => String(x.id) === String(target.dataset.enclosureId));
+                const targetSlot = Number(target.dataset.slotIndex);
+                if (targetEnc && canPlace(animal, targetEnc, targetSlot)) {
+                    // Keep sandbox cards completely out of the hand at every stage.
+                    state.hand = state.hand.filter(x => x.id !== animal.id);
+                    animal.hand = false;
+                    animal.enclosureId = null;
+                    animal.slotIndex = null;
+                    placeAnimal(animal, targetEnc, targetSlot);
+                    renderAll();
+                    return;
+                }
+            }
+
+            // Convert screen drop coordinates back to zoo-canvas coordinates.
+            const canvasRect = zooCanvas.getBoundingClientRect();
+            const x = clamp(
+                (e.clientX - canvasRect.left) / state.zoom - relativeX * ANIMAL_W,
+                20, WORKSPACE_W - ANIMAL_W - 20
+            );
+            const y = clamp(
+                (e.clientY - canvasRect.top) / state.zoom - relativeY * ANIMAL_H,
+                20, WORKSPACE_H - ANIMAL_H - 20
+            );
+            const proposed = {x, y, w:ANIMAL_W, h:ANIMAL_H};
+            const blocked =
+                state.enclosures.some(enc => rectanglesOverlap(
+                    proposed, {x:enc.x,y:enc.y,w:ENCLOSURE_W,h:ENCLOSURE_H}, 0
+                )) ||
+                (state.sandboxLooseAnimals || []).some(other =>
+                    other.id !== animal.id && other.enclosureId == null &&
+                    rectanglesOverlap(proposed, {x:other.x,y:other.y,w:ANIMAL_W,h:ANIMAL_H}, 20)
+                );
+
+            if (blocked) {
+                animal.enclosureId = originalEnclosureId;
+                animal.slotIndex = originalSlotIndex;
+            } else {
+                state.hand = state.hand.filter(x => x.id !== animal.id);
+                animal.hand = false;
+                animal.enclosureId = null;
+                animal.slotIndex = null;
+                animal.sandboxLoose = true;
+                animal.x = x;
+                animal.y = y;
+                if (!(state.sandboxLooseAnimals || []).some(x => x.id === animal.id)) {
+                    state.sandboxLooseAnimals.push(animal);
+                }
+            }
+            renderAll();
+        };
+
+        window.addEventListener('pointermove', move);
+        window.addEventListener('pointerup', up, {once:true});
+        return;
+    }
 
     if (
         state.drag ||
@@ -6507,10 +7498,7 @@ function startAnimalDrag(
         'dragging-animal';
 
 
-    dragImage.src =
-        animalImage(
-            animal
-        );
+    applyLocalizedAnimalImage(dragImage, animal);
 
 
     dragImage.style.width =
@@ -6526,11 +7514,30 @@ function startAnimalDrag(
     );
 
 
+    // V160: the moment an exchange-eligible zoo card is picked up, focus the
+    // yellow glow on that exact category+level group. Unrelated yellow glows
+    // cut off immediately; matching cards keep their CURRENT glow state.
+    //
+    // Capture the already-visible matching glow IDs before changing focus so
+    // renderZoo() can continue the existing animation instead of restarting a
+    // fade-in.
+    const draggedExchangeEligible =
+        location === 'enclosure' &&
+        isExchangeEligible(animal);
+
+    if (draggedExchangeEligible) {
+        state.exchangeGlowFocusKey = exchangeGroupKey(animal);
+    }
+
     state.exchangeGlowDragStartedAt = Date.now();
 
     const exchangeGlowIdsAtDragStart = new Set(
         state.animals
-            .filter(candidate => shouldGlowForExchange(candidate))
+            .filter(candidate => {
+                if (!shouldGlowForExchange(candidate)) return false;
+                if (!draggedExchangeEligible) return true;
+                return exchangeGroupKey(candidate) === exchangeGroupKey(animal);
+            })
             .map(candidate => candidate.id)
     );
 
@@ -6560,10 +7567,10 @@ function startAnimalDrag(
         location,
 
         originalEnclosureId:
-            animal.enclosureId,
+            animal.enclosureId ?? animal.reservedEnclosureId ?? null,
 
         originalSlotIndex:
-            animal.slotIndex,
+            animal.slotIndex ?? animal.reservedSlotIndex ?? null,
 
         originalWasHand:
             state.hand.some(
@@ -6599,9 +7606,30 @@ function startAnimalDrag(
     };
 
 
+    // V126: an animal dragged out of an enclosure is still considered to
+    // occupy that slot until a legal destination/action is committed.
+    // This keeps draw availability, full-zoo checks and placement logic stable
+    // while the card is merely following the cursor.
+    if (
+        location === 'enclosure' &&
+        state.drag.originalEnclosureId !== null &&
+        state.drag.originalSlotIndex !== null
+    ) {
+        reserveAnimalZooSlot(
+            animal,
+            state.drag.originalEnclosureId,
+            state.drag.originalSlotIndex
+        );
+    }
+
     removeAnimalFromLocations(
         animal
     );
+
+    // removeAnimalFromLocations deliberately clears the live location but does
+    // not clear reservedEnclosureId/reservedSlotIndex. Refresh the deck now so
+    // the visual disabled state cannot flicker during the drag.
+    refreshDrawAvailabilityState();
 
 
     /*
@@ -6742,6 +7770,7 @@ function restoreDraggedAnimal() {
         ] =
             animal;
 
+        reserveAnimalZooSlot(animal, drag.originalEnclosureId, drag.originalSlotIndex);
 
         if (
             state.exchange[0] &&
@@ -7149,7 +8178,11 @@ function tryDropOnExchange(
 
     state.exchange[index] =
         animal;
+    state.exchangeGlowFocusKey = exchangeGroupKey(animal);
 
+    if (state.drag?.type === 'animal' && state.drag.animal?.id === animal.id) {
+        reserveAnimalZooSlot(animal, state.drag.originalEnclosureId, state.drag.originalSlotIndex);
+    }
 
     if (
         state.exchange[0] &&
@@ -7463,6 +8496,77 @@ function progressionCountForLevel(level) {
     return count;
 }
 
+
+function progressionRewardKeysForMilestones(milestones) {
+    updateDiscoveredCategoryLevels();
+    const keys = new Set();
+    for (let level = 2; level <= 5; level++) {
+        const count = progressionCountForLevel(level);
+        for (const milestone of normalizeRewardMilestones(milestones)) {
+            if (count >= milestone) keys.add(`${level}|${milestone}`);
+        }
+    }
+    return keys;
+}
+
+function emptyEnclosures() {
+    const occupied = new Set(
+        state.animals
+            .filter(animal => animal && animal.enclosureId !== null && animal.enclosureId !== undefined)
+            .map(animal => animal.enclosureId)
+    );
+    return state.enclosures.filter(enclosure => !occupied.has(enclosure.id));
+}
+
+function removeEmptyEnclosures(count) {
+    const available = emptyEnclosures();
+    const chosen = available
+        .slice()
+        .sort((a,b) => Number(b.id) - Number(a.id))
+        .slice(0, Math.max(0, count));
+    const ids = new Set(chosen.map(enclosure => enclosure.id));
+    state.enclosures = state.enclosures.filter(enclosure => !ids.has(enclosure.id));
+    for (const id of ids) state.glowingEnclosureIds.delete(id);
+    return { removed: chosen.length, available: available.length };
+}
+
+function applyMilestonesToCurrentZoo(newMilestones, retroactive) {
+    const oldAwarded = new Set(state.awardedProgressMilestones || []);
+    const expected = progressionRewardKeysForMilestones(newMilestones);
+
+    if (!retroactive) {
+        // "From now on": milestones already satisfied today count as passed,
+        // but do not add/remove enclosure cards merely because the rule changed.
+        state.awardedProgressMilestones = expected;
+    } else {
+        const delta = expected.size - oldAwarded.size;
+
+        if (delta > 0) {
+            for (let i=0; i<delta; i++) addRewardEnclosure();
+        } else if (delta < 0) {
+            const wanted = -delta;
+            const result = removeEmptyEnclosures(wanted);
+            if (result.removed < wanted) {
+                const missing = wanted - result.removed;
+                alert(
+                    `The new milestone settings would remove ${wanted} enclosure card${wanted===1?'':'s'}, ` +
+                    `but only ${result.removed} completely empty enclosure card${result.removed===1?' is':'s are'} available.\n\n` +
+                    `Only the ${result.removed} available empty enclosure card${result.removed===1?' has':'s have'} been removed. ` +
+                    `${missing} occupied enclosure card${missing===1?' was':'s were'} left in place.`
+                );
+            }
+        }
+        state.awardedProgressMilestones = expected;
+    }
+
+    state.awardedLevel2Milestones = new Set(
+        [...state.awardedProgressMilestones]
+            .map(key => String(key).split('|'))
+            .filter(([levelText]) => Number(levelText) === 2)
+            .map(([, milestoneText]) => Number(milestoneText))
+    );
+}
+
 function checkCurrentProgressionRewards() {
     // Rebuild the checkboxes from the actual animals currently placed in the
     // zoo before testing reward thresholds.
@@ -7517,44 +8621,30 @@ function revealExchangeResult() {
 
 function prepareExchangeGlowAfterAnimalDrag(drag) {
     const before = drag?.exchangeGlowIds || new Set();
-    const nowEligible = new Set(state.animals.filter(a => shouldGlowForExchange(a)).map(a => a.id));
-    const startedAt = state.exchangeGlowDragStartedAt || Date.now();
-    const elapsed = Math.max(0, Date.now() - startedAt);
-    const continuing = new Set([...before].filter(id => nowEligible.has(id)));
-    const newlyEligible = new Set([...nowEligible].filter(id => !before.has(id)));
+    const nowEligible = new Set(
+        state.animals
+            .filter(animal => shouldGlowForExchange(animal))
+            .map(animal => animal.id)
+    );
+
+    // V162:
+    // A card that was already glowing before this drag and is still eligible
+    // afterwards must simply KEEP glowing. Rebuilding the zoo DOM must not
+    // reinterpret it as a newly appearing glow and must not restart a fade-in.
+    //
+    // Only cards that genuinely became eligible during/after this drag get the
+    // exchange-glow-return animation.
+    const newlyEligible = new Set(
+        [...nowEligible].filter(id => !before.has(id))
+    );
+
+    state.exchangeGlowContinueIds.clear();
+    state.exchangeGlowContinueStartedAt = 0;
+    state.exchangeGlowContinueUntil = 0;
 
     state.exchangeGlowReturnIds = newlyEligible;
-    state.exchangeGlowReturnUntil = newlyEligible.size ? Date.now() + 1000 : 0;
-
-    // If a pre-existing glow is still in its 1s hold + 1s fade animation,
-    // continue that exact animation after the DOM is rebuilt instead of
-    // restarting it or replacing it with a new fade-in.
-    if (continuing.size && elapsed < 2000) {
-        state.exchangeGlowContinueIds = continuing;
-        state.exchangeGlowContinueStartedAt = startedAt;
-        state.exchangeGlowContinueUntil = startedAt + 2000;
-        const remaining = Math.max(0, 2000 - elapsed);
-        setTimeout(() => {
-            const ids = new Set([...state.exchangeGlowContinueIds].filter(id =>
-                state.animals.some(a => a.id === id && shouldGlowForExchange(a))
-            ));
-            state.exchangeGlowContinueIds.clear();
-            state.exchangeGlowContinueUntil = 0;
-            if (ids.size) {
-                state.exchangeGlowReturnIds = ids;
-                state.exchangeGlowReturnUntil = Date.now() + 1000;
-                renderZoo();
-            }
-        }, remaining + 20);
-    } else {
-        state.exchangeGlowContinueIds.clear();
-        state.exchangeGlowContinueUntil = 0;
-        // If the old glow already finished fading away, it genuinely needs
-        // the normal 1 second return animation.
-        for (const id of continuing) newlyEligible.add(id);
-        state.exchangeGlowReturnIds = newlyEligible;
-        state.exchangeGlowReturnUntil = newlyEligible.size ? Date.now() + 1000 : 0;
-    }
+    state.exchangeGlowReturnUntil =
+        newlyEligible.size ? Date.now() + 1000 : 0;
 }
 
 // ============================================================
@@ -7579,9 +8669,10 @@ function finishAnimalDrag(event) {
             // exchange-eligibility glow.
             showHoverPreview(animal);
         } else if (isExchangeEligible(animal)) {
-            // Desktop keeps the existing click-to-hide/show yellow glow.
-            if (state.suppressedExchangeGlowIds.has(animal.id)) state.suppressedExchangeGlowIds.delete(animal.id);
-            else state.suppressedExchangeGlowIds.add(animal.id);
+            // V157: selecting an exchange-ready animal focuses the eligibility
+            // glow on this exact category+level group. Other eligible groups
+            // fade away until the exchange is completed or cancelled.
+            state.exchangeGlowFocusKey = exchangeGroupKey(animal);
         }
 
         prepareExchangeGlowAfterAnimalDrag(drag); drag.image?.remove(); state.drag=null; renderAll(); return;
@@ -7596,6 +8687,11 @@ function finishAnimalDrag(event) {
     } else {
         beginCompatibilityGlowFade(drag.compatibilityGlowKeys);
     }
+
+    // If the selected exchange card was returned to the zoo and no exchange
+    // remains pending, restore all otherwise eligible yellow glows.
+    clearExchangeGlowFocusIfIdle();
+
     prepareExchangeGlowAfterAnimalDrag(drag);
     drag.image?.remove(); state.drag=null;
     checkEnclosure10Unlock();
@@ -8429,6 +9525,7 @@ async function createLevelOneForDraw(destination = null, autoPlace = false) {
     updateTurnDisplay();
     updateAutonomousOpponentOffer();
     renderAll();
+    noteNewCardAction();
 
     // Immediately choose and preload the following draw while the player
     // continues playing this turn.
@@ -8485,7 +9582,7 @@ async function finishDrawDrag(event) {
 
     if (!destination) {
         setMessage?.(
-            'That Level 1 card was not dropped on an empty single exhibit or completely empty large exhibit. No card was drawn.'
+            uiText('That Level 1 card was not dropped on an empty single exhibit or completely empty large exhibit. No card was drawn.')
         );
         renderAll?.();
         return;
@@ -8497,14 +9594,432 @@ async function finishDrawDrag(event) {
 
     if (!placed) {
         setMessage?.(
-            'The Level 1 card could not be placed in that exhibit. No turn was used.'
+            uiText('The Level 1 card could not be placed in that exhibit. No turn was used.')
         );
         renderAll?.();
     }
 }
 
+if (drawCard) drawCard.dataset.label = state.gameOptions.animalLanguage === 'nl' ? 'TREK KAART' : 'DRAW CARD';
+
+
+
+// V143: hint rings belong to the game layer, below every modal/menu layer.
+const MENU_SAFE_HINT_Z = 9000;
+
+// ============================================================
+// V141 TURN-AWARE HINT POLICY
+//
+// Turns 1-10: keep the existing beginner hint timing.
+// Turn 11+: hints are true inactivity hints. Any visible user interaction
+// resets them, and they wait 15 quiet seconds before appearing again.
+// ============================================================
+function isBeginnerHintTurn() {
+    return Number(state.turn || 0) <= 10;
+}
+
+function blueHintInitialDelay() {
+    return isBeginnerHintTurn() ? 4000 : 15000;
+}
+
+function blueHintRepeatDelay() {
+    // Existing beginner cycle was 4s glow + 10s quiet = 14s between starts.
+    // Later turns use 15 quiet seconds after the 4s glow.
+    return isBeginnerHintTurn() ? 14000 : 19000;
+}
+
+function yellowHintQuietDelay() {
+    return isBeginnerHintTurn() ? 4000 : 15000;
+}
+
+let lateTurnHintActivityScheduled = false;
+
+function noteLateTurnScreenActivity() {
+    if (isBeginnerHintTurn() || !state.loaded || state.historyViewTurn !== null) return;
+    if (lateTurnHintActivityScheduled) return;
+    lateTurnHintActivityScheduled = true;
+
+    requestAnimationFrame(() => {
+        lateTurnHintActivityScheduled = false;
+        if (isBeginnerHintTurn() || !state.loaded || state.historyViewTurn !== null) return;
+
+        // Blue action hint: cancel anything visible/pending and require a new
+        // uninterrupted 15-second idle period.
+        actionHintGeneration++;
+        if (actionHintTimer) clearTimeout(actionHintTimer);
+        if (actionHintRepeatTimer) clearTimeout(actionHintRepeatTimer);
+        actionHintTimer = null;
+        actionHintRepeatTimer = null;
+        removeActionHintOverlay();
+        armActionHint(15000);
+
+        // Yellow exchange hint follows the same late-game inactivity rule.
+        if (yellowExchangeHintTimer) clearTimeout(yellowExchangeHintTimer);
+        yellowExchangeHintTimer = null;
+        clearYellowExchangeHintOverlays();
+        yellowExchangeHintPhase = 'waiting';
+        yellowExchangeHintWasPossible = yellowExchangePossible();
+        if (yellowExchangeHintWasPossible) scheduleYellowExchangeHint(15000);
+    });
+}
+
+// "Nothing happens onscreen" means genuine user inactivity in the late game.
+// Pointer movement/hovering, clicking/tapping, scrolling and keyboard use all
+// postpone hints. Throttling through requestAnimationFrame prevents mousemove
+// from repeatedly rebuilding timers within the same frame.
+for (const eventName of ['pointermove', 'pointerdown', 'wheel', 'keydown']) {
+    document.addEventListener(eventName, noteLateTurnScreenActivity, {
+        capture: true,
+        passive: eventName !== 'keydown'
+    });
+}
+
+
+// ============================================================
+// V130 ALTERNATING YELLOW EXCHANGE HINT
+//
+// When 3+ matching cards make an upgrade possible:
+//   4s wait -> both EXCHANGE boxes glow yellow for 2s
+//   immediately -> UPGRADE box glows yellow for 2s
+//   4s wait -> repeat
+//
+// This uses fixed body overlays like the blue action hint, so enclosure/menu
+// CSS cannot clip or hide the glow.
+// ============================================================
+let yellowExchangeHintTimer = null;
+let yellowExchangeHintOverlays = [];
+let yellowExchangeHintAnimations = [];
+let yellowExchangeHintWasPossible = false;
+let yellowExchangeHintPhase = 'waiting';
+
+function yellowExchangePossible() {
+    return (
+        !state.sandboxMode &&
+        state.loaded &&
+        state.historyViewTurn === null &&
+        eligibleExchangeCategories().length > 0 &&
+        // V136: this is an idle discovery hint, not guidance while the player
+        // is already performing the exchange. As soon as either exchange box
+        // contains a selected animal, suppress the entire yellow hint cycle.
+        !state.exchange.some(Boolean) &&
+        !state.result
+    );
+}
+
+function clearYellowExchangeHintOverlays() {
+    for (const animation of yellowExchangeHintAnimations) {
+        try { animation?.cancel?.(); } catch (_) {}
+    }
+    yellowExchangeHintAnimations = [];
+
+    for (const overlay of yellowExchangeHintOverlays) {
+        overlay?.remove?.();
+    }
+    yellowExchangeHintOverlays = [];
+}
+
+function makeYellowHintOverlay(target, duration = 2000) {
+    if (!target) return null;
+    const rect = target.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return null;
+
+    const ring = document.createElement('div');
+    Object.assign(ring.style, {
+        position: 'fixed',
+        left: `${rect.left - 7}px`,
+        top: `${rect.top - 7}px`,
+        width: `${rect.width + 14}px`,
+        height: `${rect.height + 14}px`,
+        boxSizing: 'border-box',
+        border: '5px solid rgb(255, 210, 35)',
+        borderRadius: '10px',
+        background: 'rgba(255, 215, 45, .08)',
+        boxShadow: '0 0 13px 7px rgba(255,210,35,.98), 0 0 32px 14px rgba(255,190,20,.72)',
+        pointerEvents: 'none',
+        zIndex: '8999',
+        opacity: '0'
+    });
+    document.body.appendChild(ring);
+    yellowExchangeHintOverlays.push(ring);
+
+    if (typeof ring.animate === 'function') {
+        const animation = ring.animate([
+            { opacity: 0, transform: 'scale(.985)' },
+            { opacity: 1, transform: 'scale(1.025)', offset: .18 },
+            { opacity: 1, transform: 'scale(1.025)', offset: .72 },
+            { opacity: 0, transform: 'scale(.99)' }
+        ], { duration, easing: 'ease-in-out' });
+        yellowExchangeHintAnimations.push(animation);
+    } else {
+        ring.style.opacity = '1';
+    }
+
+    return ring;
+}
+
+function scheduleYellowExchangeHint(delay = 4000) {
+    if (yellowExchangeHintTimer) clearTimeout(yellowExchangeHintTimer);
+    yellowExchangeHintTimer = null;
+
+    if (!yellowExchangePossible()) {
+        yellowExchangeHintWasPossible = false;
+        yellowExchangeHintPhase = 'waiting';
+        clearYellowExchangeHintOverlays();
+        return;
+    }
+
+    yellowExchangeHintWasPossible = true;
+    yellowExchangeHintPhase = 'waiting';
+
+    yellowExchangeHintTimer = setTimeout(() => {
+        yellowExchangeHintTimer = null;
+        if (!yellowExchangePossible()) {
+            clearYellowExchangeHintOverlays();
+            yellowExchangeHintWasPossible = false;
+            return;
+        }
+
+        // V148: blue Draw/Outgoing and yellow Exchange hints are mutually
+        // exclusive. If the blue hint is currently visible, wait until its
+        // four-second animation has cleared before starting yellow.
+        if (actionHintOverlay) {
+            scheduleYellowExchangeHint(isBeginnerHintTurn() ? 4000 : 15000);
+            return;
+        }
+
+        // Phase 1: both exchange boxes together for two seconds.
+        yellowExchangeHintPhase = 'exchange';
+        clearYellowExchangeHintOverlays();
+        makeYellowHintOverlay(exchange1, 2000);
+        makeYellowHintOverlay(exchange2, 2000);
+
+        yellowExchangeHintTimer = setTimeout(() => {
+            yellowExchangeHintTimer = null;
+            if (!yellowExchangePossible()) {
+                clearYellowExchangeHintOverlays();
+                yellowExchangeHintWasPossible = false;
+                return;
+            }
+
+            // Phase 2: upgrade/result box for two seconds.
+            yellowExchangeHintPhase = 'upgrade';
+            clearYellowExchangeHintOverlays();
+            makeYellowHintOverlay(resultBox, 2000);
+
+            yellowExchangeHintTimer = setTimeout(() => {
+                yellowExchangeHintTimer = null;
+                clearYellowExchangeHintOverlays();
+                if (yellowExchangePossible()) {
+                    // Early game: 4s quiet. Turn 11+: 15s quiet.
+                    scheduleYellowExchangeHint(yellowHintQuietDelay());
+                } else {
+                    yellowExchangeHintWasPossible = false;
+                }
+            }, 2000);
+        }, 2000);
+    }, delay);
+}
+
+function refreshYellowExchangeHintState() {
+    const possible = yellowExchangePossible();
+
+    if (possible && !yellowExchangeHintWasPossible) {
+        // Early game keeps the teaching cadence; after turn 10 this becomes
+        // a true inactivity hint and waits 15 seconds.
+        scheduleYellowExchangeHint(yellowHintQuietDelay());
+    } else if (!possible && yellowExchangeHintWasPossible) {
+        if (yellowExchangeHintTimer) clearTimeout(yellowExchangeHintTimer);
+        yellowExchangeHintTimer = null;
+        yellowExchangeHintWasPossible = false;
+        yellowExchangeHintPhase = 'waiting';
+        clearYellowExchangeHintOverlays();
+    }
+}
+
+// renderAll does not run for every drag/drop path in this game, so poll the
+// exchange eligibility state as a safety net. This does not reset the cycle.
+setInterval(refreshYellowExchangeHintState, 250);
+
+// V125 TURN-ACTION BLUE HINT
+// A hint is scheduled whenever the player reaches a stable playable state.
+// It is cancelled ONLY by an action that acquires/commits a new card.
+// Ordinary zoo interaction never cancels it.
+let actionHintTimer = null;
+let actionHintRepeatTimer = null;
+let actionHintOverlay = null;
+let actionHintAnimation = null;
+let actionHintGeneration = 0;
+
+function removeActionHintOverlay() {
+    actionHintAnimation?.cancel?.();
+    actionHintAnimation = null;
+    actionHintOverlay?.remove?.();
+    actionHintOverlay = null;
+}
+
+function pauseAllHintGlowsForMenu() {
+    // Blue action hint.
+    if (actionHintTimer) clearTimeout(actionHintTimer);
+    if (actionHintRepeatTimer) clearTimeout(actionHintRepeatTimer);
+    actionHintTimer = null;
+    actionHintRepeatTimer = null;
+    ++actionHintGeneration;
+    removeActionHintOverlay();
+
+    // Yellow exchange/upgrade hint.
+    if (yellowExchangeHintTimer) clearTimeout(yellowExchangeHintTimer);
+    yellowExchangeHintTimer = null;
+    yellowExchangeHintWasPossible = false;
+    yellowExchangeHintPhase = 'waiting';
+    clearYellowExchangeHintOverlays();
+}
+
+function resumeHintGlowsAfterMenu() {
+    // Menus count as deliberate UI activity: begin a fresh quiet period rather
+    // than immediately restoring a glow that was visible behind the menu.
+    armActionHint(blueHintInitialDelay());
+    refreshYellowExchangeHintState();
+}
+
+function actionHintTarget() {
+    if (!state.loaded) return null;
+
+    // Use the same availability result that now correctly greys the deck.
+    const drawEnabled = drawCard &&
+        drawCard.getAttribute('aria-disabled') !== 'true' &&
+        nextLevelOneHasEligibleDestination();
+
+    return drawEnabled ? drawCard : outgoingOfferBox;
+}
+
+function showActionHintNow() {
+    // V148: never display the blue Draw/Outgoing hint at the same time as the
+    // yellow Exchange/Upgrade hint. The blue scheduler will retry later.
+    if (yellowExchangeHintPhase !== 'waiting' || yellowExchangeHintOverlays.length) {
+        return false;
+    }
+
+    refreshDrawAvailabilityState();
+    const target = actionHintTarget();
+    if (!target) {
+        return false;
+    }
+
+    const rect = target.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) {
+        return false;
+    }
+
+    removeActionHintOverlay();
+
+    const ring = document.createElement('div');
+    ring.setAttribute('data-zoo-action-hint', 'true');
+    Object.assign(ring.style, {
+        position: 'fixed',
+        left: `${rect.left - 8}px`,
+        top: `${rect.top - 8}px`,
+        width: `${rect.width + 16}px`,
+        height: `${rect.height + 16}px`,
+        boxSizing: 'border-box',
+        border: '6px solid #3b9cff',
+        borderRadius: '12px',
+        background: 'rgba(45,145,255,.10)',
+        boxShadow: '0 0 12px 7px rgba(55,155,255,1), 0 0 34px 17px rgba(55,145,255,.85)',
+        pointerEvents: 'none',
+        zIndex: '9000',
+        opacity: '1'
+    });
+    document.body.appendChild(ring);
+    actionHintOverlay = ring;
+
+    // Keep the two hint systems in one alternating cadence rather than letting
+    // their independent timers converge and glow simultaneously.
+    if (yellowExchangeHintTimer) clearTimeout(yellowExchangeHintTimer);
+    yellowExchangeHintTimer = null;
+    clearYellowExchangeHintOverlays();
+
+    if (yellowExchangePossible()) {
+        yellowExchangeHintWasPossible = true;
+        scheduleYellowExchangeHint(isBeginnerHintTurn() ? 4000 : 15000);
+    }
+
+    if (typeof ring.animate === 'function') {
+        actionHintAnimation = ring.animate([
+            { opacity: .25, transform: 'scale(.985)' },
+            { opacity: 1, transform: 'scale(1.035)' },
+            { opacity: .45, transform: 'scale(1)' },
+            { opacity: 1, transform: 'scale(1.035)' },
+            { opacity: 0, transform: 'scale(.99)' }
+        ], { duration: 4000, easing: 'ease-in-out' });
+        actionHintAnimation.onfinish = removeActionHintOverlay;
+    } else {
+        setTimeout(removeActionHintOverlay, 4000);
+    }
+    return true;
+}
+
+function armActionHint(delay = 4000) {
+    if (actionHintTimer) clearTimeout(actionHintTimer);
+    if (actionHintRepeatTimer) clearTimeout(actionHintRepeatTimer);
+    const generation = ++actionHintGeneration;
+
+    actionHintTimer = setTimeout(function fireHint() {
+        if (generation !== actionHintGeneration) {
+            return;
+        }
+
+        // Do not interpret dragging/panning/reading as activity. If the exact
+        // instant lands during a drag, retry quickly rather than resetting.
+        if (state.drag || state.pan) {
+            actionHintTimer = setTimeout(fireHint, 250);
+            return;
+        }
+
+        if (showActionHintNow()) {
+            actionHintRepeatTimer = setTimeout(() => {
+                if (generation === actionHintGeneration) fireHint();
+            }, blueHintRepeatDelay());
+        } else {
+            actionHintTimer = setTimeout(fireHint, 500);
+        }
+    }, delay);
+}
+
+function noteNewCardAction() {
+    // This is the ONLY reset path for the hint.
+    actionHintGeneration++;
+    if (actionHintTimer) clearTimeout(actionHintTimer);
+    if (actionHintRepeatTimer) clearTimeout(actionHintRepeatTimer);
+    actionHintTimer = null;
+    actionHintRepeatTimer = null;
+    removeActionHintOverlay();
+
+    // Early turns keep the teaching delay. From turn 11 onward, a completed
+    // action begins a full 15-second inactivity window.
+    armActionHint(blueHintInitialDelay());
+}
+
+
 drawCard.addEventListener('pointerdown', event => {
     if (event.button !== 0) return;
+
+    // V116: immediate visual feedback as soon as this draw is committed.
+    // renderAll() will subsequently decide whether it remains disabled.
+    drawCard.classList.add('draw-no-space');
+    drawCard.setAttribute('aria-disabled', 'true');
+    const immediateDrawImage = drawCard.querySelector('img');
+    if (immediateDrawImage) {
+        immediateDrawImage.style.opacity = '0.38';
+        immediateDrawImage.style.filter = 'grayscale(1) brightness(.72) contrast(.82)';
+    }
+
+    if (hasPendingPlayerAction()) {
+        event.preventDefault();
+        event.stopPropagation();
+        setMessage?.('Finish or return the current exchange/trade card before drawing a new card.');
+        renderAll?.();
+        return;
+    }
 
     if (!nextLevelOneHasEligibleDestination()) {
         event.preventDefault();
@@ -8521,6 +10036,231 @@ drawCard.addEventListener('pointerdown', event => {
     startDrawDrag(event);
 });
 
+
+// ============================================================
+// V145 SECRET SANDBOX MODE
+// ============================================================
+let sandboxPickerOverlay = null;
+let sandboxToolbarInstalled = false;
+let sandboxCtrlDown = false;
+
+function installSecretSandboxReveal(button) {
+    const sync = () => {
+        const newGameMenuOpen = document.getElementById('saveLoadOverlay')?.classList.contains('visible');
+        button.style.display = sandboxCtrlDown && newGameMenuOpen ? '' : 'none';
+    };
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Control') { sandboxCtrlDown = true; sync(); }
+    });
+    document.addEventListener('keyup', event => {
+        if (event.key === 'Control') { sandboxCtrlDown = false; sync(); }
+    });
+    window.addEventListener('blur', () => { sandboxCtrlDown = false; sync(); });
+    // Save/load is the menu opened by New Game; pointer movement makes reveal
+    // responsive even when Ctrl was already held before the menu appeared.
+    document.addEventListener('pointermove', sync, { passive:true });
+}
+
+function startSandboxMode() {
+    if (!confirm('Start a new Sandbox game? Your current unsaved game will be replaced.')) return;
+    clearAutoResumeSnapshot();
+    exitHistoryView(false);
+    state.sandboxMode = true;
+    state.sandboxLooseAnimals = [];
+    state.enclosures = [];
+    state.animals = [];
+    state.hand = [];
+    state.exchange = [null, null];
+    state.result = null;
+    state.outgoingOffer = null;
+    state.tradeOffers = [];
+    state.selectedTradeOpponent = null;
+    state.autonomousTradeOffer = null;
+    state.tradeHistory = [];
+    state.animalLineage = new Map();
+    state.turn = 1;
+    state.nextId = 1;
+    state.enclosureRewards = new Set();
+    state.glowingEnclosureIds = new Set();
+    state.suppressedExchangeGlowIds = new Set();
+    state.exchangeGlowFocusKey = null;
+    state.discoveredCategoryLevels = new Set();
+    state.awardedProgressMilestones = new Set();
+    state.awardedLevel2Milestones = new Set();
+    assignZooNames();
+    closeSaveLoadMenu();
+    removeActionHintOverlay();
+    clearYellowExchangeHintOverlays();
+    renderAll();
+    centerInitialView();
+    writeAutoResumeSnapshot(true);
+}
+
+function sandboxCardKey(category, level, filename) {
+    return `${category}|${level}|${cleanFilename(filename)}`;
+}
+
+function sandboxOccupiedRects() {
+    const rects = state.enclosures.map(e => ({x:e.x,y:e.y,w:ENCLOSURE_W,h:ENCLOSURE_H}));
+    for (const a of state.sandboxLooseAnimals || []) {
+        rects.push({x:a.x,y:a.y,w:ANIMAL_W,h:ANIMAL_H});
+    }
+    return rects;
+}
+
+function sandboxFindLoosePosition(w = ANIMAL_W, h = ANIMAL_H) {
+    const occupied = sandboxOccupiedRects();
+    const centerX = STARTUP_CENTER_X - w / 2;
+    const centerY = STARTUP_CENTER_Y + 160;
+    for (let ring=0; ring<80; ring++) {
+        for (let dx=-ring; dx<=ring; dx++) {
+            for (const dy of [-ring, ring]) {
+                const x=centerX + dx*(w+20), y=centerY + dy*(h+20);
+                const r={x,y,w,h};
+                if (x<20||y<20||x+w>WORKSPACE_W-20||y+h>WORKSPACE_H-20) continue;
+                if (!occupied.some(o=>rectanglesOverlap(r,o,20))) return {x,y};
+            }
+        }
+        for (let dy=-ring+1; dy<ring; dy++) {
+            for (const dx of [-ring, ring]) {
+                const x=centerX + dx*(w+20), y=centerY + dy*(h+20);
+                const r={x,y,w,h};
+                if (x<20||y<20||x+w>WORKSPACE_W-20||y+h>WORKSPACE_H-20) continue;
+                if (!occupied.some(o=>rectanglesOverlap(r,o,20))) return {x,y};
+            }
+        }
+    }
+    return {x:centerX,y:centerY};
+}
+
+function sandboxSpawnAnimal(category, level, filename) {
+    if (!state.sandboxMode) return;
+    // Sandbox intentionally allows selecting any inventory card directly,
+    // independent of normal deck ownership/progression rules.
+    const pos = sandboxFindLoosePosition();
+    const animal = {
+        id: state.nextId++, category, level, filename: cleanFilename(filename),
+        enclosureId:null, slotIndex:null, hand:false, sandboxLoose:true,
+        x:pos.x, y:pos.y
+    };
+    state.animals.push(animal);
+    state.sandboxLooseAnimals.push(animal);
+    state.hand = state.hand.filter(x => x.id !== animal.id);
+    renderAll();
+}
+
+function sandboxSpawnEnclosure(number) {
+    if (!state.sandboxMode) return;
+    const pos = sandboxFindLoosePosition(ENCLOSURE_W, ENCLOSURE_H);
+    state.enclosures.push({id:state.nextId++, number:Number(number), x:pos.x, y:pos.y});
+    renderAll();
+}
+
+function renderSandboxLooseAnimals() {
+    for (const animal of state.sandboxLooseAnimals || []) {
+        if (!animal || animal.enclosureId !== null) continue;
+        const wrap=document.createElement('div');
+        wrap.className='sandbox-loose-card';
+        wrap.style.cssText=`position:absolute;left:${animal.x}px;top:${animal.y}px;width:${ANIMAL_W}px;height:${ANIMAL_H}px;z-index:12;`;
+        const img=document.createElement('img');
+        setupAnimalCard(img,animal,'sandbox-loose');
+        img.style.cssText='width:100%;height:100%;object-fit:contain;';
+        wrap.appendChild(img);
+        zooCanvas.appendChild(wrap);
+    }
+}
+
+function ensureSandboxPicker() {
+    if (sandboxPickerOverlay) return;
+    sandboxPickerOverlay=document.createElement('div');
+    sandboxPickerOverlay.id='sandboxPickerOverlay';
+    sandboxPickerOverlay.style.cssText='position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.58);z-index:10035;padding:18px;box-sizing:border-box;';
+    sandboxPickerOverlay.innerHTML=`<div style="width:min(900px,96vw);max-height:88vh;overflow:auto;background:#f4efe2;color:#222;border-radius:10px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.45);">
+      <div style="display:flex;gap:10px;align-items:center"><h2 id="sandboxPickerTitle" style="flex:1;margin:0">Sandbox</h2><button id="sandboxPickerClose" type="button">Close</button></div>
+      <input id="sandboxPickerSearch" type="search" placeholder="Search cards..." style="width:100%;box-sizing:border-box;margin:14px 0 10px;padding:9px">
+      <div id="sandboxPickerCards"></div></div>`;
+    document.body.appendChild(sandboxPickerOverlay);
+    sandboxPickerOverlay.querySelector('#sandboxPickerClose').onclick=()=>sandboxPickerOverlay.style.display='none';
+    sandboxPickerOverlay.addEventListener('pointerdown',e=>{if(e.target===sandboxPickerOverlay)sandboxPickerOverlay.style.display='none';});
+}
+
+function openSandboxAnimalPicker(level) {
+    ensureSandboxPicker();
+    const title=sandboxPickerOverlay.querySelector('#sandboxPickerTitle');
+    const search=sandboxPickerOverlay.querySelector('#sandboxPickerSearch');
+    const body=sandboxPickerOverlay.querySelector('#sandboxPickerCards');
+    title.textContent=`Draw Level ${level}`;
+    search.style.display='';
+    search.value='';
+    const draw=()=>{
+        const q=search.value.trim().toLowerCase();
+        body.innerHTML='';
+        for (const category of CATEGORY_PROGRESSION_ORDER) {
+            const files=levelFiles(category,level).filter(f=>!q||String(f).replace(/\.png$/i,'').toLowerCase().includes(q));
+            if(!files.length) continue;
+            const h=document.createElement('h3'); h.textContent=category; body.appendChild(h);
+            const grid=document.createElement('div');
+            grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-bottom:18px;';
+            for(const filename of files){
+                const b=document.createElement('button'); b.type='button'; b.title=String(filename).replace(/\.png$/i,'');
+                b.style.cssText='padding:5px;background:#fff;border:1px solid #999;border-radius:6px;cursor:pointer;';
+                const img=document.createElement('img'); img.src=animalPath(category,level,filename); img.style.cssText='width:100%;height:auto;display:block;';
+                b.appendChild(img);
+                b.onclick=()=>{sandboxSpawnAnimal(category,level,filename); sandboxPickerOverlay.style.display='none';};
+                grid.appendChild(b);
+            }
+            body.appendChild(grid);
+        }
+    };
+    search.oninput=draw; draw();
+    sandboxPickerOverlay.style.display='flex';
+}
+
+function openSandboxEnclosurePicker() {
+    ensureSandboxPicker();
+    sandboxPickerOverlay.querySelector('#sandboxPickerTitle').textContent='Draw Enclosure Card';
+    const search=sandboxPickerOverlay.querySelector('#sandboxPickerSearch');
+    search.style.display='none';
+    const body=sandboxPickerOverlay.querySelector('#sandboxPickerCards');
+    body.innerHTML='';
+    const grid=document.createElement('div');
+    grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:14px;';
+    for(let number=1;number<=10;number++){
+        const b=document.createElement('button'); b.type='button'; b.style.cssText='padding:5px;background:#fff;border:1px solid #999;border-radius:6px;cursor:pointer;';
+        const img=document.createElement('img'); img.src=enclosurePath(number); img.style.cssText='width:100%;height:auto;display:block;';
+        b.appendChild(img); b.onclick=()=>{sandboxSpawnEnclosure(number);sandboxPickerOverlay.style.display='none';}; grid.appendChild(b);
+    }
+    body.appendChild(grid); sandboxPickerOverlay.style.display='flex';
+}
+
+function renderSandboxToolbar() {
+    if (!sandboxToolbarInstalled) {
+        const parent=exchange1.parentElement;
+        if (parent) {
+            const bar=document.createElement('div');
+            bar.id='sandboxToolbar';
+            bar.style.cssText='display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;';
+            for(let level=1;level<=5;level++){
+                const b=document.createElement('button'); b.type='button'; b.textContent=`Draw Level ${level}`;
+                b.onclick=()=>openSandboxAnimalPicker(level); bar.appendChild(b);
+            }
+            const e=document.createElement('button'); e.type='button'; e.textContent='Draw Enclosure Card'; e.onclick=openSandboxEnclosurePicker; bar.appendChild(e);
+            parent.insertBefore(bar,exchange1);
+        }
+        sandboxToolbarInstalled=true;
+    }
+    const bar=document.getElementById('sandboxToolbar');
+    if(bar) bar.style.display='flex';
+    exchange1.style.display='none'; exchange2.style.display='none'; resultBox.style.display='none';
+    if(drawCard) drawCard.style.display='none';
+}
+
+function restoreNormalActionBoxesIfNeeded() {
+    const bar=document.getElementById('sandboxToolbar');
+    if(bar) bar.style.display='none';
+    exchange1.style.display=''; exchange2.style.display=''; resultBox.style.display='';
+    if(drawCard) drawCard.style.display='';
+}
 
 // ============================================================
 // GAME OPTIONS — CATEGORY FILTERS
@@ -8569,6 +10309,8 @@ function ensureGameOptionsUI() {
         newGameButton.className = 'game-options-button';
         newGameButton.addEventListener('click', requestNewGame);
         headerLeft.insertBefore(newGameButton, button);
+
+
     }
 
     const overlay = document.createElement('div');
@@ -8596,9 +10338,11 @@ function ensureGameOptionsUI() {
                     <input id="optEligibilityGlows" type="checkbox" checked>
                 </label>
                 <div class="advanced-options-note">Shows yellow upgrade-ready glows and blue trade-interest glows.</div>
-                <label>
+                <label><span>Language</span><select id="optAnimalLanguage"><option value="en">English</option><option value="nl">Nederlands</option></select></label>
+                <div class="advanced-options-note">Dutch translation covers all Level 1 and Level 2 animal cards, card categories, menus and on-screen interface text.</div>
+                <label class="reward-milestones-option">
                     <span>New enclosure reward milestones</span>
-                    <input id="optRewardMilestones" type="text" placeholder="1, 3, 5, 9">
+                    <input id="optRewardMilestones" type="text" placeholder="1, 2, 3, 4, 6, 9">
                 </label>
                 <label>
                     <span>Opponent zoos</span>
@@ -8645,6 +10389,7 @@ function ensureGameOptionsUI() {
     const startingZooSizeValue = overlay.querySelector('#optStartingZooSizeValue');
     const startingZooSizeNote = overlay.querySelector('#optStartingZooSizeNote');
     const eligibilityGlowsInput = overlay.querySelector('#optEligibilityGlows');
+    const animalLanguageInput = overlay.querySelector('#optAnimalLanguage');
     const milestonesInput = overlay.querySelector('#optRewardMilestones');
     const opponentModeInput = overlay.querySelector('#optOpponentMode');
     const tradeFrequencyInput = overlay.querySelector('#optTradeFrequency');
@@ -8750,6 +10495,7 @@ function ensureGameOptionsUI() {
         startingCollectionSizeInput.value = state.gameOptions.startingCollectionSize;
         startingZooSizeInput.value = state.gameOptions.startingZooSize;
         eligibilityGlowsInput.checked = state.gameOptions.showEligibilityGlows !== false;
+        animalLanguageInput.value = state.gameOptions.animalLanguage === 'nl' ? 'nl' : 'en';
         updateStartingSizePreview();
         milestonesInput.value = state.gameOptions.enclosureRewardMilestones.join(', ');
         opponentModeInput.value = state.gameOptions.opponentMode;
@@ -8762,6 +10508,7 @@ function ensureGameOptionsUI() {
     }
 
     function open() {
+        pauseAllHintGlowsForMenu();
         startingGenerationSlidersTouched = false;
         syncInputs();
         regenerateWarning.style.display = 'none';
@@ -8770,6 +10517,7 @@ function ensureGameOptionsUI() {
 
     function close() {
         overlay.classList.remove('visible');
+        resumeHintGlowsAfterMenu();
     }
 
     button.addEventListener('click', open);
@@ -8786,7 +10534,8 @@ function ensureGameOptionsUI() {
         startingCollectionSizeInput.value = 20;
         startingZooSizeInput.value = 20;
         eligibilityGlowsInput.checked = true;
-        milestonesInput.value = '1, 5';
+        animalLanguageInput.value = 'en';
+        milestonesInput.value = '1, 2, 3, 4, 6, 9';
         opponentModeInput.value = 'real';
         tradeFrequencyInput.value = 50;
         tradeFrequencyValue.textContent = '50%';
@@ -8808,7 +10557,7 @@ function ensureGameOptionsUI() {
             .map(cb => cb.value);
 
         if (!selected.length) {
-            alert('At least one animal category must remain enabled.');
+            alert(uiText('At least one animal category must remain enabled.'));
             return;
         }
 
@@ -8821,6 +10570,7 @@ function ensureGameOptionsUI() {
             Math.min(100, Math.round(Number(startingZooSizeInput.value)))
         );
         const showEligibilityGlows = eligibilityGlowsInput.checked;
+        const animalLanguage = animalLanguageInput.value === 'nl' ? 'nl' : 'en';
         const milestones = normalizeRewardMilestones(milestonesInput.value);
         const opponentMode = opponentModeInput.value === 'real' ? 'real' : 'fictional';
         const tradeOfferFrequency = Math.max(
@@ -8835,6 +10585,7 @@ function ensureGameOptionsUI() {
             startingCollectionSize === state.gameOptions.startingCollectionSize &&
             startingZooSize === state.gameOptions.startingZooSize &&
             showEligibilityGlows === (state.gameOptions.showEligibilityGlows !== false) &&
+            animalLanguage === (state.gameOptions.animalLanguage === 'nl' ? 'nl' : 'en') &&
             milestones.join(',') === state.gameOptions.enclosureRewardMilestones.join(',') &&
             opponentMode === state.gameOptions.opponentMode &&
             tradeOfferFrequency === state.gameOptions.tradeOfferFrequency;
@@ -8860,11 +10611,44 @@ function ensureGameOptionsUI() {
             if (!ok) return;
         }
 
+        const milestonesChanged =
+            milestones.join(',') !== state.gameOptions.enclosureRewardMilestones.join(',');
+        let applyMilestonesRetroactively = false;
+
+        if (milestonesChanged && !startingSetupChanged) {
+            const oldAwardedCount = (state.awardedProgressMilestones || new Set()).size;
+            const expectedCount = progressionRewardKeysForMilestones(milestones).size;
+            const difference = expectedCount - oldAwardedCount;
+
+            if (difference !== 0) {
+                const actionText = difference > 0
+                    ? `This would immediately add ${difference} enclosure card${difference===1?'':'s'} to your current zoo.`
+                    : `This would immediately remove ${-difference} enclosure card${difference===-1?'':'s'} from your current zoo, using completely empty enclosures only.`;
+
+                applyMilestonesRetroactively = confirm(
+                    `The new enclosure milestones change rewards your current zoo would already have earned.
+
+` +
+                    `${actionText}
+
+` +
+                    `OK = Recalculate the current zoo now
+` +
+                    `Cancel = Use the new milestones from this point onward`
+                );
+            }
+        }
+
         state.activeCategories = new Set(selected);
         state.gameOptions.startingCollectionSize = startingCollectionSize;
         state.gameOptions.startingZooSize = startingZooSize;
         state.gameOptions.showEligibilityGlows = showEligibilityGlows;
+        state.gameOptions.animalLanguage = animalLanguage;
+        setTimeout(localizeDocument, 0);
         state.gameOptions.enclosureRewardMilestones = milestones;
+        if (milestonesChanged && !startingSetupChanged) {
+            applyMilestonesToCurrentZoo(milestones, applyMilestonesRetroactively);
+        }
         state.gameOptions.opponentMode = opponentMode;
         state.gameOptions.tradeOfferFrequency = tradeOfferFrequency;
         saveGameOptions();
@@ -9170,6 +10954,10 @@ function materializeLockedPlayerTradeOffers(outgoing, cached) {
             if (!animal) return null;
             if (playerAlreadyHasAnimal(animal)) return null;
             if (!realZooHasAnimal(record, animal)) return null;
+            // V132: the outgoing animal's old slot is deliberately reserved
+            // while it sits in Outgoing Offer. Test the incoming animal against
+            // the post-trade zoo, not against the currently reserved zoo.
+            if (!tradeIncomingHasDestinationAfterOutgoing(animal, outgoing)) return null;
 
             return { record, animal };
         }).filter(Boolean);
@@ -9183,6 +10971,9 @@ function materializeLockedPlayerTradeOffers(outgoing, cached) {
 
         const animal = resolveCachedTradeAnimal(item);
         if (!animal || playerAlreadyHasAnimal(animal)) return null;
+        // Same reservation rule for fictional opponents: materialise the
+        // already-promised offer using the zoo state AFTER outgoing leaves.
+        if (!tradeIncomingHasDestinationAfterOutgoing(animal, outgoing)) return null;
 
         const stillHeld = (state.opponentTradeStocks[item.opponentIndex] || [])
             .some(held => held && animalCardKey(held) === animalCardKey(animal));
@@ -9256,109 +11047,24 @@ function generateRealZooTradeOffers(outgoing, pendingEmergencyTrade = null) {
         return;
     }
 
-    const cached = cachedPlayerTradeOffers(outgoing);
+    // V115: use the exact same prediction/materialisation path as the blue
+    // trade-interest glow. If a card glows, dropping that card is therefore
+    // guaranteed to expose the same currently-valid offers.
+    const locked = predictedPlayerTradeOffers(outgoing);
+    const restored = materializeLockedPlayerTradeOffers(outgoing, locked);
 
-    if (cached) {
-        const restored =
-            materializeLockedPlayerTradeOffers(outgoing, cached);
-
-        state.opponentProfiles = restored.map((item, index) => realZooProfile(item.record, index));
-        state.opponentTradeStocks = restored.map(item => realZooTradeAnimals(item.record, true));
-        state.tradeOffers = restored.map((item, index) => ({ opponentIndex: index, animal: item.animal }));
-        state.selectedTradeOpponent = state.tradeOffers.length ? 0 : null;
-        renderTrade();
-        renderOpponentTradeState();
-        return;
-    }
-
-    const frequency = tradeFrequencyFactor();
-    const records = [...new Set(weightedRealZooPool())];
-    const candidates = [];
-
-    if (!normalTradeInterestAllowed(outgoing)) {
-        storePlayerTradeOffers(outgoing, []);
-        state.opponentProfiles = [];
-        state.opponentTradeStocks = [];
-        state.tradeOffers = [];
-        state.selectedTradeOpponent = null;
-        renderTrade();
-        renderOpponentTradeState();
-        return;
-    }
-
-    /*
-        The slider is the overall chance that this outgoing card attracts ANY
-        real-zoo interest. At the default 50%, roughly half of eligible cards
-        will receive no offers at all. 0% means none; 100% always passes this
-        first gate when at least one valid zoo exists.
-    */
-    const overallRoll = seededRoll(
-        `real-overall|${outgoing.id}|${tradeOfferWindow()}`
-    ).roll;
-
-    if (frequency > 0 && overallRoll <= frequency) {
-        // Unlocking more zoos increases diversity, not the number of response
-        // rolls. Select at most three legally eligible zoos first, then let
-        // only those zoos decide whether they are interested.
-        const eligibleRecords = records.filter(record => {
-            if (realZooHasAnimal(record, outgoing)) return false;
-            return realZooTradeAnimals(record, true)
-                .some(animal => animal.level === outgoing.level);
-        });
-        const interestPool = seededShuffle(
-            eligibleRecords,
-            `real-interest-pool|${outgoing.id}|${tradeOfferWindow()}`
-        ).slice(0, 3);
-
-        for (const record of interestPool) {
-            const matching = realZooTradeAnimals(record, true)
-                .filter(animal => animal.level === outgoing.level);
-
-            const favourites = Array.isArray(record.preferred_categories)
-                ? record.preferred_categories
-                : [];
-            const likesOutgoing = favourites.includes(outgoing.category);
-
-            /*
-                Once the overall 50/50 gate succeeds, individual zoos are still
-                deliberately reluctant. This makes 1–2 offers normal and 3 rare.
-                Preferred categories help; higher levels remain harder.
-            */
-            const baseInterest = likesOutgoing ? 0.24 : 0.09;
-            const levelPenalty = (outgoing.level - 1) * 0.025;
-            const zooChance = Math.max(0.025, baseInterest - levelPenalty);
-
-            const { seed, roll } = seededRoll(
-                `real-zoo|${outgoing.id}|${record.name}|${tradeOfferWindow()}`
-            );
-            if (roll > zooChance) continue;
-
-            const animal = matching[(seed >>> 8) % matching.length];
-            candidates.push({ record, animal });
-        }
-    }
-
-    // Hard maximum: even if many zoos want the card, only three can appear.
-    const selected = seededShuffle(
-        candidates,
-        `real-select|${outgoing.id}|${tradeOfferWindow()}`
-    ).slice(0, 3);
-
-    storePlayerTradeOffers(
-        outgoing,
-        selected.map(item => ({
-            recordName: item.record.name,
-            animalName: String(item.animal.filename || '').replace(/\.png$/i, ''),
-            animalSpec: cachedTradeAnimalSpec(item.animal)
-        }))
+    state.opponentProfiles = restored.map((item, index) =>
+        realZooProfile(item.record, index)
     );
-
-    state.opponentProfiles = selected.map((item, index) => realZooProfile(item.record, index));
-    state.opponentTradeStocks = selected.map(item => realZooTradeAnimals(item.record, true));
-    state.tradeOffers = selected.map((item, index) => ({ opponentIndex: index, animal: item.animal }));
+    state.opponentTradeStocks = restored.map(item =>
+        realZooTradeAnimals(item.record, true)
+    );
+    state.tradeOffers = restored.map((item, index) => ({
+        opponentIndex: index,
+        animal: item.animal
+    }));
     state.selectedTradeOpponent = state.tradeOffers.length ? 0 : null;
 
-    // Do not reveal offer fronts until they are already downloaded/decoded.
     preloadAnimals(state.tradeOffers.map(offer => offer.animal)).then(() => {
         renderTrade();
         renderOpponentTradeState();
@@ -9376,8 +11082,16 @@ function createRealAutonomousOpponentOffer() {
 
     for (let tries = 0; tries < 20; tries++) {
         const record = randomItem(pool);
-        const possible = realZooTradeAnimals(record, true).filter(animal =>
-            animal.level <= Math.max(1, ...state.playerLevelsSeen)
+        const possible = realZooTradeAnimals(record, true).filter(incoming =>
+            incoming.level <= Math.max(1, ...state.playerLevelsSeen) &&
+            state.animals.some(outgoing => {
+                const profile = realZooProfile(record, 0);
+                return outgoing.level === incoming.level &&
+                    profile.favourites.includes(outgoing.category) &&
+                    !realZooHasAnimal(record, outgoing) &&
+                    !playerAlreadyHasAnimal(incoming) &&
+                    tradeIncomingHasDestinationAfterOutgoing(incoming, outgoing);
+            })
         );
         if (!possible.length) continue;
         const animal = randomItem(possible);
@@ -9432,16 +11146,32 @@ function ensureOtherZoosUI() {
         header.id = 'otherZoosHeader';
         header.style.cssText =
             'display:flex;align-items:center;justify-content:flex-end;gap:10px;' +
-            'min-height:28px;margin-bottom:6px;box-sizing:border-box;';
+            'min-height:34px;margin-bottom:8px;box-sizing:border-box;';
         container.insertBefore(header, container.firstChild);
     }
     if (title && title.parentElement !== header) {
         header.appendChild(title);
     }
     if (title) {
+        // V135: hidden-button behaviour. Keep this looking exactly like the
+        // ordinary "Other Zoos" heading: no underline, button chrome or
+        // pointer cursor. It is nevertheless clickable/tappable.
         title.style.cssText =
             'margin:0;flex:1;min-width:0;text-align:right;font-size:13px;' +
-            'font-weight:700;opacity:.6;white-space:nowrap;';
+            'font-weight:700;opacity:.6;white-space:nowrap;cursor:default;';
+        title.setAttribute('role', 'button');
+        title.setAttribute('tabindex', '0');
+        title.setAttribute('aria-label', 'Open all zoos directory');
+        if (!title.dataset.realZooDirectoryBound) {
+            title.dataset.realZooDirectoryBound = '1';
+            title.addEventListener('click', openRealZooDirectory);
+            title.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    openRealZooDirectory();
+                }
+            });
+        }
     }
 
     let historyButton = document.getElementById('tradeHistoryButton');
@@ -9452,9 +11182,9 @@ function ensureOtherZoosUI() {
         historyButton.textContent = 'Trade History';
         historyButton.title = 'Trade history';
         historyButton.setAttribute('aria-label', 'Trade history');
+        historyButton.className = 'save-load-button';
         historyButton.style.cssText =
-            'position:static;flex:0 0 auto;height:24px;padding:2px 8px;' +
-            'font-size:11px;line-height:18px;white-space:nowrap;cursor:pointer;z-index:3;';
+            'position:static;flex:0 0 auto;white-space:nowrap;cursor:pointer;z-index:3;';
         historyButton.addEventListener('click', openTradeHistoryMenu);
     }
     if (historyButton.parentElement !== header) header.appendChild(historyButton);
@@ -9463,7 +11193,7 @@ function ensureOtherZoosUI() {
         const popup = document.createElement('div');
         popup.id = 'opponentInfoPopup';
         popup.style.cssText =
-            'position:fixed;display:none;z-index:10020;max-width:min(430px,calc(100vw - 24px));' +
+            'position:fixed;display:none;z-index:10040;max-width:min(430px,calc(100vw - 24px));' +
             'max-height:calc(100vh - 24px);overflow-y:auto;overflow-x:hidden;box-sizing:border-box;' +
             'padding:12px 14px;background:rgba(25,25,25,.97);color:white;border:1px solid rgba(255,255,255,.3);' +
             'border-radius:8px;box-shadow:0 8px 28px rgba(0,0,0,.45);white-space:pre-wrap;' +
@@ -9476,6 +11206,82 @@ function ensureOtherZoosUI() {
         }, { passive: true });
     }
 
+    if (!document.getElementById('realZooDirectoryOverlay')) {
+        const overlay = document.createElement('div');
+        overlay.id = 'realZooDirectoryOverlay';
+        overlay.style.cssText =
+            'position:fixed;inset:0;display:none;align-items:center;justify-content:center;' +
+            'background:rgba(0,0,0,.55);z-index:10028;padding:18px;box-sizing:border-box;';
+        overlay.innerHTML = `
+            <div id="realZooDirectoryPanel" style="width:min(620px,94vw);max-height:84vh;overflow:auto;
+                        background:#f4efe2;color:#222;border-radius:10px;padding:18px;
+                        box-shadow:0 12px 40px rgba(0,0,0,.45);">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+                    <h2 style="margin:0;flex:1;">All Zoos</h2>
+                    <button type="button" id="closeRealZooDirectory">Close</button>
+                </div>
+                <div style="font-size:12px;opacity:.72;margin-bottom:12px;">
+                    Hover over a zoo to view its current collection and trade history.
+                </div>
+                <div id="realZooDirectoryList"></div>
+            </div>`;
+        document.body.appendChild(overlay);
+        overlay.querySelector('#closeRealZooDirectory')
+            .addEventListener('click', closeRealZooDirectory);
+        overlay.addEventListener('pointerdown', event => {
+            if (event.target === overlay) closeRealZooDirectory();
+        });
+    }
+
+    if (!document.getElementById('zooTradePopup')) {
+        const popup = document.createElement('div');
+        popup.id = 'zooTradePopup';
+        popup.style.cssText =
+            'position:fixed;display:none;z-index:10040;width:min(360px,calc(100vw - 24px));' +
+            'max-height:calc(100vh - 24px);overflow:auto;box-sizing:border-box;padding:12px 14px;' +
+            'background:rgba(25,25,25,.97);color:white;border:1px solid rgba(255,255,255,.3);' +
+            'border-radius:8px;box-shadow:0 8px 28px rgba(0,0,0,.45);font-size:13px;line-height:1.4;' +
+            'opacity:1;transition:opacity 1s ease;';
+        document.body.appendChild(popup);
+        popup.addEventListener('mouseenter', cancelOpponentInfoHide);
+        popup.addEventListener('mouseleave', scheduleOpponentInfoHide);
+        popup.addEventListener('wheel', event => event.stopPropagation(), { passive: true });
+    }
+
+    if (!document.getElementById('tradeAnimalInteractionStyles')) {
+        const style = document.createElement('style');
+        style.id = 'tradeAnimalInteractionStyles';
+        style.textContent = `
+            .trade-animal-name { cursor: default; transition: color .08s linear; }
+            .trade-animal-name.trade-animal-yellow { color:#ffd52a !important; }
+            #tradeHistoryList .trade-animal-name.trade-history-animal-name {
+                cursor:pointer;
+                color:inherit !important;
+                font-weight:inherit;
+            }
+            #tradeHistoryList .trade-animal-name.trade-history-animal-name.trade-animal-locked {
+                color:inherit !important;
+                font-weight:800;
+            }
+            #tradeAnimalLocationPopup {
+                position:fixed; display:none; z-index:10060; max-width:280px;
+                padding:9px 11px; border-radius:7px; background:rgba(20,20,20,.97);
+                color:white; border:1px solid rgba(255,255,255,.3);
+                box-shadow:0 7px 22px rgba(0,0,0,.4); font-size:12px; line-height:1.35;
+            }
+            #tradeAnimalLocationPopup button {
+                margin-left:4px; padding:2px 6px; font:inherit; font-weight:700; cursor:pointer;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    if (!document.getElementById('tradeAnimalLocationPopup')) {
+        const popup = document.createElement('div');
+        popup.id = 'tradeAnimalLocationPopup';
+        document.body.appendChild(popup);
+    }
+
     if (!document.getElementById('tradeHistoryOverlay')) {
         const overlay = document.createElement('div');
         overlay.id = 'tradeHistoryOverlay';
@@ -9483,16 +11289,21 @@ function ensureOtherZoosUI() {
             'position:fixed;inset:0;display:none;align-items:center;justify-content:center;' +
             'background:rgba(0,0,0,.55);z-index:10030;padding:18px;box-sizing:border-box;';
         overlay.innerHTML = `
-            <div style="width:min(720px,96vw);max-height:85vh;overflow:auto;background:#f4efe2;color:#222;
+            <div id="tradeHistoryPanel" style="width:min(720px,96vw);max-height:85vh;overflow:auto;background:#f4efe2;color:#222;
                         border-radius:10px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.45);">
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-                    <h2 style="margin:0;flex:1;">Trade History</h2>
-                    <button type="button" id="closeTradeHistory">Close</button>
+                    <button type="button" id="tradeHistoryAllZoos" class="save-load-button">All Zoos</button>
+                    <h2 style="margin:0;flex:1;font-size:20px;line-height:1.15;">Trade History</h2>
+                    <button type="button" id="closeTradeHistory" class="game-options-button">Close</button>
                 </div>
                 <div id="tradeHistoryList"></div>
             </div>`;
         document.body.appendChild(overlay);
         overlay.querySelector('#closeTradeHistory').addEventListener('click', closeTradeHistoryMenu);
+        overlay.querySelector('#tradeHistoryAllZoos').addEventListener('click', () => {
+            closeTradeHistoryMenu(false);
+            openRealZooDirectory();
+        });
         overlay.addEventListener('pointerdown', event => {
             if (event.target === overlay) closeTradeHistoryMenu();
         });
@@ -9508,24 +11319,583 @@ function cancelOpponentInfoHide() {
     clearTimeout(opponentInfoHideTimer);
     clearTimeout(opponentInfoFadeTimer);
     const popup = document.getElementById('opponentInfoPopup');
+    const tradePopup = document.getElementById('zooTradePopup');
     if (popup && popup.style.display !== 'none') popup.style.opacity = '1';
+    if (tradePopup && tradePopup.style.display !== 'none') tradePopup.style.opacity = '1';
 }
 
 function scheduleOpponentInfoHide() {
+    if (pinnedZooPopupName) return;
     clearTimeout(opponentInfoShowTimer);
     opponentInfoShowTimer = null;
     clearTimeout(opponentInfoHideTimer);
     clearTimeout(opponentInfoFadeTimer);
     opponentInfoHideTimer = setTimeout(() => {
         const popup = document.getElementById('opponentInfoPopup');
-        if (!popup) return;
+        const tradePopup = document.getElementById('zooTradePopup');
+        if (!popup && !tradePopup) return;
         opponentInfoFadeStarted = true;
-        popup.style.opacity = '0';
+        if (popup) popup.style.opacity = '0';
+        if (tradePopup) tradePopup.style.opacity = '0';
         opponentInfoFadeTimer = setTimeout(() => {
-            if (popup.style.opacity === '0') popup.style.display = 'none';
+            if (popup?.style.opacity === '0') popup.style.display = 'none';
+            if (tradePopup?.style.opacity === '0') tradePopup.style.display = 'none';
             opponentInfoFadeStarted = false;
         }, 1000);
     }, 1000);
+}
+
+
+let pinnedZooPopupName = null;
+let activeZooMenuRecord = null;
+let tradeAnimalLockedKey = null;
+let tradeAnimalHoverKey = null;
+let tradeAnimalLockTimer = null;
+
+function tradeAnimalKey(name, level = null) {
+    return `${String(name || '').replace(/\.png$/i, '').trim().toLowerCase()}|${level == null ? '' : Number(level)}`;
+}
+
+function refreshTradeAnimalHighlights() {
+    document.querySelectorAll('.trade-animal-name[data-animal-key]').forEach(node => {
+        const key = node.dataset.animalKey;
+        const active = key === tradeAnimalLockedKey || key === tradeAnimalHoverKey;
+        const locked = key === tradeAnimalLockedKey;
+        const inTradeHistoryMiddle = node.classList.contains('trade-history-animal-name');
+
+        // V142: the middle Trade History menu keeps its normal text colour.
+        // Its animal name becomes bold only once selected/locked. The two
+        // side popups continue to use yellow for hover and locked selection.
+        node.classList.toggle('trade-animal-yellow', active && !inTradeHistoryMiddle);
+        node.classList.toggle('trade-animal-locked', locked && inTradeHistoryMiddle);
+    });
+}
+
+function clearTradeAnimalTransientHover(key = null) {
+    if (key && tradeAnimalHoverKey !== key) return;
+    clearTimeout(tradeAnimalLockTimer);
+    tradeAnimalLockTimer = null;
+    tradeAnimalHoverKey = null;
+    refreshTradeAnimalHighlights();
+    hideTradeAnimalLocationPopup();
+}
+
+function animalCurrentRealZooRecord(name, level = null) {
+    const wantedName = String(name || '').replace(/\.png$/i, '').trim().toLowerCase();
+    for (const record of state.realZooData?.zoos || []) {
+        const found = realZooSessionAnimalNames(record).some(raw => {
+            const animal = animalFromRealZooName(raw);
+            if (!animal) return false;
+            const sameName = String(animal.filename || '').replace(/\.png$/i, '').trim().toLowerCase() === wantedName;
+            return sameName && (level == null || Number(animal.level) === Number(level));
+        });
+        if (found) return record;
+    }
+    return null;
+}
+
+function playerCurrentlyHasTradeAnimal(name, level = null) {
+    const wantedName = String(name || '').replace(/\.png$/i, '').trim().toLowerCase();
+    return (state.animals || []).some(animal =>
+        String(animal?.filename || '').replace(/\.png$/i, '').trim().toLowerCase() === wantedName &&
+        (level == null || Number(animal.level) === Number(level))
+    );
+}
+
+function activeZooCurrentlyHasTradeAnimal(name, level = null) {
+    if (!activeZooMenuRecord) return false;
+    const wantedName = String(name || '').replace(/\.png$/i, '').trim().toLowerCase();
+    return realZooSessionAnimalNames(activeZooMenuRecord).some(raw => {
+        const animal = animalFromRealZooName(raw);
+        if (!animal) return false;
+        return String(animal.filename || '').replace(/\.png$/i, '').trim().toLowerCase() === wantedName &&
+            (level == null || Number(animal.level) === Number(level));
+    });
+}
+
+function hideTradeAnimalLocationPopup() {
+    const popup = document.getElementById('tradeAnimalLocationPopup');
+    if (popup) popup.style.display = 'none';
+}
+
+function showTradeAnimalLocationPopup(node, name, level, animalId = null) {
+    const popup = document.getElementById('tradeAnimalLocationPopup');
+    if (!popup) return;
+
+    popup.innerHTML = '';
+
+    // V161: current trade-history rows carry the exact physical animal ID.
+    // Older saved histories do not, so they retain the old best-effort fallback.
+    const hasPhysicalAnimalId = animalId != null && String(animalId).trim() !== '';
+    const lineage = hasPhysicalAnimalId ? animalLineageRecord(animalId) : null;
+
+    if (lineage) {
+        const origin = lineage.originalFrom || 'Unknown';
+        const first = document.createElement('div');
+        first.textContent = `Originally from ${origin}.`;
+        popup.appendChild(first);
+
+        const second = document.createElement('div');
+        second.style.marginTop = '4px';
+
+        if (lineage.exchanged) {
+            const ex = lineage.exchanged;
+            second.textContent =
+                `Exchanged by ${ex.by || state.zooName || 'Your Zoo'} for ` +
+                `${ex.forName || 'upgrade animal'}` +
+                `${ex.forLevel ? ` (L${ex.forLevel})` : ''} at turn ${ex.turn}.`;
+        } else {
+            second.append(document.createTextNode('Currently at '));
+            const current = lineage.currentAt || 'Unknown';
+
+            const realRecord = (state.realZooData?.zoos || []).find(record =>
+                String(record?.name || '').trim().toLowerCase() ===
+                String(current).trim().toLowerCase()
+            );
+
+            if (realRecord) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.textContent = realRecord.name;
+                button.addEventListener('click', event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    selectTradeHistoryZoo(realRecord);
+                    hideTradeAnimalLocationPopup();
+                });
+                second.appendChild(button);
+            } else {
+                const strong = document.createElement('strong');
+                strong.textContent = current;
+                second.appendChild(strong);
+            }
+            second.append(document.createTextNode('.'));
+        }
+
+        popup.appendChild(second);
+    } else if (hasPhysicalAnimalId) {
+        // V164: an ID-bearing history entry represents one exact physical card.
+        // If its lineage record is unavailable, NEVER guess by species/name,
+        // because another zoo may own a different card of the same species.
+        const first = document.createElement('div');
+        first.textContent = 'Specific animal history unavailable.';
+        popup.appendChild(first);
+        const second = document.createElement('div');
+        second.style.marginTop = '4px';
+        second.textContent = 'Its current location cannot be determined without its provenance record.';
+        popup.appendChild(second);
+    } else {
+        // Legacy-save fallback only: old trade entries genuinely lack physical card IDs.
+        const realRecord = animalCurrentRealZooRecord(name, level);
+        const atPlayer = playerCurrentlyHasTradeAnimal(name, level);
+        const first = document.createElement('div');
+        first.textContent = 'Original zoo unavailable (legacy trade record).';
+        popup.appendChild(first);
+        const second = document.createElement('div');
+        second.style.marginTop = '4px';
+        second.append(document.createTextNode('Currently at '));
+        const strong = document.createElement('strong');
+        strong.textContent = realRecord?.name || (atPlayer ? (state.zooName || 'Your Zoo') : 'an unknown location');
+        second.appendChild(strong);
+        second.append(document.createTextNode('.'));
+        popup.appendChild(second);
+    }
+
+    popup.style.display = 'block';
+    const rect = node.getBoundingClientRect();
+    requestAnimationFrame(() => {
+        const width = popup.offsetWidth, height = popup.offsetHeight;
+        let left = Math.min(rect.left, innerWidth - width - 12);
+        let top = rect.bottom + 6;
+        if (top + height > innerHeight - 12) top = rect.top - height - 6;
+        popup.style.left = `${Math.max(12, left)}px`;
+        popup.style.top = `${Math.max(12, top)}px`;
+    });
+}
+
+function beginTradeAnimalHover(node, allowLocation = false) {
+    const key = node?.dataset?.animalKey;
+    if (!key) return;
+    tradeAnimalHoverKey = key;
+    refreshTradeAnimalHighlights();
+    clearTimeout(tradeAnimalLockTimer);
+    tradeAnimalLockTimer = setTimeout(() => {
+        if (tradeAnimalHoverKey !== key) return;
+        tradeAnimalLockedKey = key;
+        tradeAnimalHoverKey = null;
+        refreshTradeAnimalHighlights();
+    }, 2000);
+
+    if (allowLocation) {
+        showTradeAnimalLocationPopup(
+            node,
+            node.dataset.animalName || node.textContent,
+            Number(node.dataset.animalLevel || 0) || null,
+            node.dataset.animalId || null
+        );
+    }
+}
+
+function makeTradeAnimalSpan(name, level, allowLocation = false, inTradeHistoryMiddle = false, animalId = null) {
+    const span = document.createElement('span');
+    span.className = 'trade-animal-name' + (inTradeHistoryMiddle ? ' trade-history-animal-name' : '');
+    span.textContent = name;
+    span.dataset.animalName = name;
+    span.dataset.animalLevel = String(level ?? '');
+    if (animalId != null) span.dataset.animalId = String(animalId);
+    span.dataset.animalKey = animalId != null
+        ? `id:${animalId}`
+        : tradeAnimalKey(name, level);
+    span.addEventListener('mouseenter', () => {
+        if (inTradeHistoryMiddle) {
+            // V146: middle Trade History names may show transient hover/location
+            // feedback, but hovering there can never create or replace a lock.
+            const key = span.dataset.animalKey;
+            tradeAnimalHoverKey = key;
+            refreshTradeAnimalHighlights();
+            clearTimeout(tradeAnimalLockTimer);
+            tradeAnimalLockTimer = null;
+            if (allowLocation) {
+                showTradeAnimalLocationPopup(
+                    span,
+                    span.dataset.animalName || span.textContent,
+                    Number(span.dataset.animalLevel || 0) || null,
+                    span.dataset.animalId || null
+                );
+            }
+            return;
+        }
+
+        // Popup animal names retain the existing 2-second hover-to-lock rule.
+        beginTradeAnimalHover(span, allowLocation);
+    });
+    span.addEventListener('mouseleave', () => clearTradeAnimalTransientHover(span.dataset.animalKey));
+
+    // Clicking an animal name is the instant equivalent of the 2-second hover
+    // lock. Clicking another animal immediately switches the selection.
+    span.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        clearTimeout(tradeAnimalLockTimer);
+        tradeAnimalLockTimer = null;
+
+        const key = span.dataset.animalKey;
+
+        // V144: clicking the animal that is already locked toggles it off.
+        // Clicking a different animal still switches the lock immediately.
+        if (tradeAnimalLockedKey === key) {
+            tradeAnimalLockedKey = null;
+            tradeAnimalHoverKey = null;
+            hideTradeAnimalLocationPopup();
+            refreshTradeAnimalHighlights();
+            return;
+        }
+
+        tradeAnimalLockedKey = key;
+        tradeAnimalHoverKey = null;
+        refreshTradeAnimalHighlights();
+        if (allowLocation) {
+            showTradeAnimalLocationPopup(
+                span,
+                span.dataset.animalName || span.textContent,
+                Number(span.dataset.animalLevel || 0) || null,
+                span.dataset.animalId || null
+            );
+        }
+    });
+    return span;
+}
+
+function resetTradeAnimalHighlightUI(clearLock = false) {
+    clearTimeout(tradeAnimalLockTimer);
+    tradeAnimalLockTimer = null;
+    tradeAnimalHoverKey = null;
+    if (clearLock) tradeAnimalLockedKey = null;
+    hideTradeAnimalLocationPopup();
+    refreshTradeAnimalHighlights();
+}
+
+function tradesForZooName(zooName) {
+    const wanted = String(zooName || '').trim().toLowerCase();
+    return (state.tradeHistory || []).filter(trade =>
+        String(trade?.zooName || '').trim().toLowerCase() === wanted
+    );
+}
+
+function fillZooTradePopup(recordOrName) {
+    const popup = document.getElementById('zooTradePopup');
+    if (!popup) return;
+    const zooName = typeof recordOrName === 'string'
+        ? recordOrName
+        : recordOrName?.name || 'Zoo';
+    const trades = tradesForZooName(zooName);
+
+    popup.innerHTML = '';
+    const title = document.createElement('strong');
+    title.textContent = `${zooName} — Trade History`;
+    popup.appendChild(title);
+
+    if (!trades.length) {
+        const empty = document.createElement('div');
+        empty.textContent = 'No trades with this zoo yet.';
+        empty.style.marginTop = '10px';
+        popup.appendChild(empty);
+        return;
+    }
+
+    for (const trade of [...trades].reverse()) {
+        const row = document.createElement('div');
+        row.style.cssText = 'padding:9px 0;border-top:1px solid rgba(255,255,255,.18);';
+        const turn = document.createElement('div');
+        turn.innerHTML = `<strong>Turn ${trade.turn}</strong>`;
+        const line = document.createElement('div');
+        line.append(
+            makeTradeAnimalSpan(trade.outgoingName, trade.outgoingLevel, true, false, trade.outgoingId),
+            document.createTextNode(` (L${trade.outgoingLevel}) ↔ `),
+            makeTradeAnimalSpan(trade.incomingName, trade.incomingLevel, true, false, trade.incomingId),
+            document.createTextNode(` (L${trade.incomingLevel})`)
+        );
+        row.append(turn, line);
+        popup.appendChild(row);
+    }
+    refreshTradeAnimalHighlights();
+}
+
+function positionZooSidePopups(panel) {
+    const collection = document.getElementById('opponentInfoPopup');
+    const trades = document.getElementById('zooTradePopup');
+    if (!panel || !collection || !trades) return;
+    const panelRect = panel.getBoundingClientRect();
+
+    const place = () => {
+        const cw = collection.offsetWidth, ch = collection.offsetHeight;
+        const tw = trades.offsetWidth, th = trades.offsetHeight;
+        collection.style.left = `${Math.max(12, panelRect.left - cw - 10)}px`;
+        collection.style.top = `${Math.max(12, Math.min(panelRect.top, innerHeight - ch - 12))}px`;
+
+        let tradeLeft = panelRect.right + 10;
+        if (tradeLeft + tw > innerWidth - 12) tradeLeft = Math.max(12, innerWidth - tw - 12);
+        trades.style.left = `${tradeLeft}px`;
+        trades.style.top = `${Math.max(12, Math.min(panelRect.top, innerHeight - th - 12))}px`;
+    };
+    requestAnimationFrame(place);
+}
+
+function fillZooCollectionPopup(record) {
+    const popup = document.getElementById('opponentInfoPopup');
+    if (!popup || !record) return;
+    const currentAnimals = [...realZooSessionAnimalNames(record)]
+        .map(name => animalFromRealZooName(name))
+        .filter(Boolean);
+
+    popup.innerHTML = '';
+    const title = document.createElement('strong');
+    title.textContent = record.name || 'Zoo';
+    popup.append(title, document.createElement('br'), document.createElement('br'));
+    const label = document.createElement('strong');
+    label.textContent = 'Animals by category:';
+    popup.append(label, document.createElement('br'));
+
+    const grouped = new Map();
+    for (const animal of currentAnimals) {
+        if (!grouped.has(animal.category)) grouped.set(animal.category, []);
+        grouped.get(animal.category).push(animal);
+    }
+    const order = [...CATEGORY_PROGRESSION_ORDER, ...[...grouped.keys()].filter(c => !CATEGORY_PROGRESSION_ORDER.includes(c)).sort()];
+    for (const category of order.filter(c => grouped.get(c)?.length)) {
+        const cat = document.createElement('div');
+        cat.style.marginTop = '8px';
+        const catName = document.createElement('strong');
+        catName.textContent = `${category}:`;
+        cat.appendChild(catName);
+        for (const animal of [...grouped.get(category)].sort((a,b)=>a.level-b.level || String(a.filename).localeCompare(String(b.filename)))) {
+            const line = document.createElement('div');
+            line.style.paddingLeft = '10px';
+            const name = String(animal.filename || '').replace(/\.png$/i,'');
+            line.append(makeTradeAnimalSpan(name, animal.level, false), document.createTextNode(` (L${animal.level})`));
+            cat.appendChild(line);
+        }
+        popup.appendChild(cat);
+    }
+    refreshTradeAnimalHighlights();
+}
+
+function showZooDualPopups(record, panel, pinned = false) {
+    if (!record) return;
+    const collection = document.getElementById('opponentInfoPopup');
+    const trades = document.getElementById('zooTradePopup');
+    if (!collection || !trades) return;
+
+    clearTimeout(opponentInfoHideTimer);
+    clearTimeout(opponentInfoFadeTimer);
+    clearTimeout(opponentInfoShowTimer);
+    opponentInfoFadeStarted = false;
+
+    activeZooMenuRecord = record;
+    fillZooCollectionPopup(record);
+    fillZooTradePopup(record);
+
+    for (const popup of [collection, trades]) {
+        popup.style.display = 'block';
+        popup.style.opacity = '1';
+    }
+    pinnedZooPopupName = pinned ? String(record.name || '') : null;
+    positionZooSidePopups(panel);
+}
+
+function hideZooDualPopups(immediate = false) {
+    pinnedZooPopupName = null;
+    activeZooMenuRecord = null;
+    resetTradeAnimalHighlightUI(false);
+    clearTimeout(opponentInfoHideTimer);
+    clearTimeout(opponentInfoFadeTimer);
+    const popups = [
+        document.getElementById('opponentInfoPopup'),
+        document.getElementById('zooTradePopup')
+    ].filter(Boolean);
+    if (immediate) {
+        for (const popup of popups) {
+            popup.style.opacity = '0';
+            popup.style.display = 'none';
+        }
+        return;
+    }
+    for (const popup of popups) popup.style.opacity = '0';
+    opponentInfoFadeTimer = setTimeout(() => {
+        for (const popup of popups) {
+            if (popup.style.opacity === '0') popup.style.display = 'none';
+        }
+    }, 1000);
+}
+
+function closeRealZooDirectory() {
+    resetTradeAnimalHighlightUI(true);
+    const overlay = document.getElementById('realZooDirectoryOverlay');
+    if (overlay) overlay.style.display = 'none';
+    hideZooDualPopups(false);
+    resumeHintGlowsAfterMenu();
+    hideZooDualPopups(true);
+}
+
+function showRealZooDirectoryCollection(record, anchor) {
+    ensureOtherZoosUI();
+    const popup = document.getElementById('opponentInfoPopup');
+    if (!popup || !record || !anchor) return;
+
+    opponentInfoFadeStarted = false;
+    clearTimeout(opponentInfoHideTimer);
+    clearTimeout(opponentInfoFadeTimer);
+    clearTimeout(opponentInfoShowTimer);
+
+    // IMPORTANT: use the session holdings, not record.animals. Trades update
+    // realZooSessionAnimalNames(), so this is the zoo's collection NOW.
+    const currentNames = [...realZooSessionAnimalNames(record)];
+    const currentAnimals = currentNames
+        .map(name => animalFromRealZooName(name))
+        .filter(Boolean);
+
+    popup.textContent =
+        `${record.name || 'Zoo'}\n\n` +
+        `Animals by category:\n${opponentAnimalsGroupedByCategory(currentAnimals) || 'none'}`;
+
+    popup.style.display = 'block';
+    popup.style.opacity = '1';
+
+    requestAnimationFrame(() => {
+        const rect = anchor.getBoundingClientRect();
+        const width = popup.offsetWidth;
+        const height = popup.offsetHeight;
+        const overlay = document.getElementById('realZooDirectoryOverlay');
+        const panel = document.getElementById('realZooDirectoryPanel');
+        const panelRect = panel?.getBoundingClientRect();
+
+        // Prefer immediately to the left of the directory panel, then right,
+        // then clamp to the viewport. This keeps the collection visible while
+        // the user moves down the zoo list.
+        let left = panelRect ? panelRect.left - width - 10 : rect.left - width - 8;
+        if (left < 12 && panelRect && panelRect.right + width + 10 <= window.innerWidth - 12) {
+            left = panelRect.right + 10;
+        }
+        if (left < 12) left = Math.max(12, Math.min(rect.left, window.innerWidth - width - 12));
+
+        let top = Math.min(rect.top, window.innerHeight - height - 12);
+        if (top < 12) top = 12;
+        popup.style.left = `${Math.round(left)}px`;
+        popup.style.top = `${Math.round(top)}px`;
+    });
+}
+
+function openRealZooDirectory() {
+    pauseAllHintGlowsForMenu();
+    ensureOtherZoosUI();
+    const overlay = document.getElementById('realZooDirectoryOverlay');
+    const list = document.getElementById('realZooDirectoryList');
+    if (!overlay || !list) return;
+
+    list.innerHTML = '';
+    // V137: directory mirrors actual progression. Only zoos whose tier has
+    // been unlocked for the current zoo are visible.
+    updateRealZooTierUnlocks();
+    const zoos = Array.isArray(state.realZooData?.zoos)
+        ? state.realZooData.zoos.filter(record =>
+            Number(record?.tier || 1) <= Number(state.realZooUnlockedTier || 1)
+        )
+        : [];
+
+    zoos.sort((a, b) =>
+        Number(a?.tier || 1) - Number(b?.tier || 1) ||
+        String(a?.name || '').localeCompare(String(b?.name || ''))
+    );
+
+    if (!zoos.length) {
+        const empty = document.createElement('div');
+        empty.textContent = 'Real zoo database is still loading.';
+        empty.style.cssText = 'padding:10px 0;opacity:.72;';
+        list.appendChild(empty);
+    } else {
+        let lastTier = null;
+        for (const record of zoos) {
+            const tier = Number(record?.tier || 1);
+            if (tier !== lastTier) {
+                const heading = document.createElement('div');
+                heading.textContent = `Tier ${tier}`;
+                heading.style.cssText =
+                    'margin:13px 0 4px;font-size:11px;font-weight:800;opacity:.55;' +
+                    'text-transform:uppercase;letter-spacing:.06em;';
+                list.appendChild(heading);
+                lastTier = tier;
+            }
+
+            const row = document.createElement('div');
+            row.className = 'real-zoo-directory-row';
+            row.textContent = record.name || 'Zoo';
+            row.style.cssText =
+                'padding:5px 2px;border-top:1px solid rgba(0,0,0,.10);' +
+                'font-size:13px;line-height:1.35;cursor:default;';
+
+            row.addEventListener('mouseenter', () =>
+                showZooDualPopups(record, document.getElementById('realZooDirectoryPanel'), false)
+            );
+            row.addEventListener('mouseleave', () => {
+                if (!pinnedZooPopupName) scheduleOpponentInfoHide();
+            });
+
+            // Touch devices have no hover: tapping a zoo name shows the same
+            // current-collection popup without turning the row into a button.
+            row.addEventListener('pointerdown', event => {
+                if (event.pointerType === 'touch') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    showRealZooDirectoryCollection(record, row);
+                }
+            });
+
+            list.appendChild(row);
+        }
+    }
+
+    overlay.style.display = 'flex';
+    queueMicrotask(localizeDocument);
 }
 
 function showOpponentInfoPopup(index, anchor) {
@@ -9569,12 +11939,35 @@ function showOpponentInfoPopup(index, anchor) {
     }, 1000);
 }
 
+function selectTradeHistoryZoo(record) {
+    const panel = document.getElementById('tradeHistoryPanel');
+    if (!record || !panel) return;
+    const sameZoo = pinnedZooPopupName === String(record.name || '');
+    document.querySelectorAll('#tradeHistoryList button[data-zoo-name]')
+        .forEach(button => button.classList.remove('selected-zoo-history'));
+    if (sameZoo) {
+        hideZooDualPopups(false);
+        return;
+    }
+    document.querySelectorAll('#tradeHistoryList button[data-zoo-name]').forEach(button => {
+        if (String(button.dataset.zooName || '').trim().toLowerCase() === String(record.name || '').trim().toLowerCase()) {
+            button.classList.add('selected-zoo-history');
+        }
+    });
+    showZooDualPopups(record, panel, true);
+}
+
 function openTradeHistoryMenu() {
+    pauseAllHintGlowsForMenu();
     ensureOtherZoosUI();
     const overlay = document.getElementById('tradeHistoryOverlay');
     const list = document.getElementById('tradeHistoryList');
-    if (!overlay || !list) return;
+    const panel = document.getElementById('tradeHistoryPanel');
+    if (!overlay || !list || !panel) return;
 
+    pinnedZooPopupName = null;
+    activeZooMenuRecord = null;
+    resetTradeAnimalHighlightUI(false);
     list.innerHTML = '';
     const history = state.tradeHistory || [];
 
@@ -9583,28 +11976,59 @@ function openTradeHistoryMenu() {
     } else {
         for (const trade of [...history].reverse()) {
             const row = document.createElement('div');
-            row.style.cssText =
-                'padding:10px 0;border-top:1px solid rgba(0,0,0,.18);line-height:1.45;';
-            row.innerHTML =
-                `<strong>Turn ${trade.turn} - ${escapeHtml(trade.zooName)}</strong>` +
-                `<div style="display:flex;align-items:center;gap:8px;margin-top:3px;">` +
-                    `<span>${escapeHtml(trade.outgoingName)} (L${trade.outgoingLevel})</span>` +
-                    `<span aria-label="traded for" style="display:inline-flex;flex-direction:column;` +
-                        `justify-content:center;font-weight:800;font-size:10px;line-height:.72;">` +
-                        `<span>-&gt;</span><span>&lt;-</span>` +
-                    `</span>` +
-                    `<span>${escapeHtml(trade.incomingName)} (L${trade.incomingLevel})</span>` +
-                `</div>`;
+            row.style.cssText = 'padding:10px 0;border-top:1px solid rgba(0,0,0,.18);line-height:1.45;';
+
+            const heading = document.createElement('div');
+            heading.style.cssText = 'display:flex;align-items:center;gap:8px;';
+            const turn = document.createElement('strong');
+            turn.textContent = `Turn ${trade.turn} -`;
+            const zooButton = document.createElement('button');
+            zooButton.type = 'button';
+            zooButton.textContent = trade.zooName;
+            zooButton.dataset.zooName = trade.zooName;
+            zooButton.style.cssText = 'font:inherit;font-weight:700;padding:2px 7px;cursor:pointer;';
+            heading.append(turn, zooButton);
+
+            const details = document.createElement('div');
+            details.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:3px;';
+            details.append(
+                makeTradeAnimalSpan(trade.outgoingName, trade.outgoingLevel, true, true, trade.outgoingId),
+                document.createTextNode(` (L${trade.outgoingLevel}) `)
+            );
+            const arrows = document.createElement('span');
+            arrows.setAttribute('aria-label','traded for');
+            arrows.style.cssText='display:inline-flex;flex-direction:column;justify-content:center;font-weight:800;font-size:10px;line-height:.72;';
+            arrows.innerHTML='<span>-&gt;</span><span>&lt;-</span>';
+            details.append(
+                arrows,
+                makeTradeAnimalSpan(trade.incomingName, trade.incomingLevel, true, true, trade.incomingId),
+                document.createTextNode(` (L${trade.incomingLevel})`)
+            );
+
+            zooButton.addEventListener('click', () => {
+                const record = (state.realZooData?.zoos || []).find(zoo =>
+                    String(zoo?.name || '').trim().toLowerCase() === String(trade.zooName || '').trim().toLowerCase()
+                );
+                if (record) selectTradeHistoryZoo(record);
+            });
+
+            row.append(heading, details);
             list.appendChild(row);
         }
     }
 
     overlay.style.display = 'flex';
+    refreshTradeAnimalHighlights();
+    queueMicrotask(localizeDocument);
 }
 
-function closeTradeHistoryMenu() {
+function closeTradeHistoryMenu(resumeHints = true) {
+    resetTradeAnimalHighlightUI(true);
     const overlay = document.getElementById('tradeHistoryOverlay');
     if (overlay) overlay.style.display = 'none';
+    // V142: Trade History itself vanishes instantly, so its side popups do too.
+    hideZooDualPopups(true);
+    if (resumeHints) resumeHintGlowsAfterMenu();
 }
 
 function escapeHtml(value) {
@@ -9845,8 +12269,17 @@ function createAutonomousOpponentOffer() {
     }
     if (!unlocked.length) return false;
     const opponentIndex = randomItem(unlocked);
+    const profile = state.opponentProfiles[opponentIndex];
     const stock = (state.opponentTradeStocks[opponentIndex] || [])
-        .filter(animal => !playerAlreadyHasAnimal(animal));
+        .filter(incoming =>
+            !playerAlreadyHasAnimal(incoming) &&
+            state.animals.some(outgoing =>
+                outgoing.level === incoming.level &&
+                profile?.favourites?.includes(outgoing.category) &&
+                !opponentAlreadyHasAnimal(opponentIndex, outgoing) &&
+                tradeIncomingHasDestinationAfterOutgoing(incoming, outgoing)
+            )
+        );
     const animal = randomItem(stock);
     if (!animal) return false;
     state.autonomousTradeOffer = {
@@ -9863,6 +12296,7 @@ function createAutonomousOpponentOffer() {
 }
 
 function updateAutonomousOpponentOffer() {
+    if (state.sandboxMode) return;
     if (state.autonomousTradeOffer) {
         if (state.turn >= state.autonomousTradeOffer.expiresTurn) {
             clearAutonomousOpponentOffer(true);
@@ -9913,6 +12347,7 @@ function opponentAnimalsGroupedByCategory(stock) {
 }
 
 function renderOpponentTradeState() {
+    if (state.sandboxMode) return;
     ensureOpponentZooElements();
     ensureTradeAreaLayout();
     positionOpponentTradeArea();
@@ -9991,95 +12426,51 @@ function generateOpponentTradeOffers(outgoing, pendingEmergencyTrade = null) {
         return;
     }
 
-    const cached = cachedPlayerTradeOffers(outgoing);
-    if (cached) {
-        state.tradeOffers =
-            materializeLockedPlayerTradeOffers(outgoing, cached);
+    // V115: materialise exactly the same locked offer set used by the blue
+    // eligibility glow. This removes the old second calculation that could
+    // make a non-glowing animal unexpectedly receive offers.
+    const locked = predictedPlayerTradeOffers(outgoing);
+    state.tradeOffers = materializeLockedPlayerTradeOffers(outgoing, locked);
+    state.selectedTradeOpponent = state.tradeOffers.length
+        ? state.tradeOffers.map(o => o.opponentIndex).sort((a, b) => a - b)[0]
+        : null;
+
+    preloadAnimals(state.tradeOffers.map(offer => offer.animal)).then(() => {
+        renderTrade();
+        renderOpponentTradeState();
+    });
+}
+
+function materializeCapturedPlayerTradeOffers(outgoing, locked) {
+    if (!outgoing || !Array.isArray(locked) || !locked.length) return false;
+
+    if (isRealOpponentMode()) {
+        const restored = materializeLockedPlayerTradeOffers(outgoing, locked);
+
+        state.opponentProfiles = restored.map((item, index) =>
+            realZooProfile(item.record, index)
+        );
+        state.opponentTradeStocks = restored.map(item =>
+            realZooTradeAnimals(item.record, true)
+        );
+        state.tradeOffers = restored.map((item, index) => ({
+            opponentIndex: index,
+            animal: item.animal
+        }));
+        state.selectedTradeOpponent = state.tradeOffers.length ? 0 : null;
+    } else {
+        state.tradeOffers = materializeLockedPlayerTradeOffers(outgoing, locked);
         state.selectedTradeOpponent = state.tradeOffers.length
             ? state.tradeOffers.map(o => o.opponentIndex).sort((a, b) => a - b)[0]
             : null;
-        renderTrade();
-        renderOpponentTradeState();
-        return;
-    }
-
-    state.tradeOffers = [];
-    state.selectedTradeOpponent = null;
-
-    if (!normalTradeInterestAllowed(outgoing)) {
-        storePlayerTradeOffers(outgoing, []);
-        renderTrade();
-        renderOpponentTradeState();
-        return;
-    }
-
-    const frequency = tradeFrequencyFactor();
-    const overallRoll = seededRoll(
-        `fictional-overall|${outgoing.id}|${tradeOfferWindow()}`
-    ).roll;
-
-    if (frequency > 0 && overallRoll <= frequency) {
-        const candidates = [];
-
-        // As with real zoos, unlocking additional fictional zoos only widens
-        // the possible opponent pool. It never adds more than three interest
-        // rolls to a single trade attempt.
-        const eligibleOpponents = state.opponentProfiles
-            .map((profile, index) => ({ profile, index }))
-            .filter(({ index }) => {
-                if (index >= state.unlockedOpponentCount) return false;
-                if (!fictionalZooCanTradeFor(index, outgoing)) return false;
-                if (fictionalOpponentHasAnimal(index, outgoing)) return false;
-                return (state.opponentTradeStocks[index] || []).some(a =>
-                    a.level === outgoing.level && !playerAlreadyHasAnimal(a)
-                );
-            });
-        const interestPool = seededShuffle(
-            eligibleOpponents,
-            `fictional-interest-pool|${outgoing.id}|${tradeOfferWindow()}`
-        ).slice(0, 3);
-
-        interestPool.forEach(({ profile, index }) => {
-            const matching = (state.opponentTradeStocks[index] || [])
-                .filter(a => a.level === outgoing.level && !playerAlreadyHasAnimal(a));
-
-            const fav = profile.favourites.includes(outgoing.category);
-            const zooChance = fav ? 0.30 : 0.12;
-
-            const { seed, roll } = seededRoll(
-                `fictional-zoo|${outgoing.id}|${index}|${tradeOfferWindow()}`
-            );
-            if (roll > zooChance) return;
-
-            const animal = matching[(seed >>> 8) % matching.length];
-            if (animal) candidates.push({ opponentIndex: index, animal });
-        });
-
-        state.tradeOffers = seededShuffle(
-            candidates,
-            `fictional-select|${outgoing.id}|${tradeOfferWindow()}`
-        ).slice(0, 3);
-    }
-
-    storePlayerTradeOffers(
-        outgoing,
-        state.tradeOffers.map(item => ({
-            opponentIndex: item.opponentIndex,
-            animalName: String(item.animal.filename || '').replace(/\.png$/i, ''),
-            animalSpec: cachedTradeAnimalSpec(item.animal)
-        }))
-    );
-
-    if (state.tradeOffers.length) {
-        state.selectedTradeOpponent = state.tradeOffers
-            .map(o => o.opponentIndex)
-            .sort((a, b) => a - b)[0];
     }
 
     preloadAnimals(state.tradeOffers.map(offer => offer.animal)).then(() => {
         renderTrade();
         renderOpponentTradeState();
     });
+
+    return state.tradeOffers.length > 0;
 }
 
 function selectedTradeOffer() {
@@ -10096,7 +12487,8 @@ function outgoingFitsAutonomousOffer(animal = state.outgoingOffer) {
         animal.level === offer.animal.level &&
         profile.favourites.includes(animal.category) &&
         !opponentAlreadyHasAnimal(offer.opponentIndex, animal) &&
-        !playerAlreadyHasAnimal(offer.animal)
+        !playerAlreadyHasAnimal(offer.animal) &&
+        tradeIncomingHasDestinationAfterOutgoing(offer.animal, animal)
     );
 }
 
@@ -10110,7 +12502,12 @@ function tryDropOnOutgoingOffer(event, animal) {
     if (state.outgoingOffer && state.outgoingOffer.id !== animal.id) return false;
     if (state.autonomousTradeOffer) {
         if (!outgoingFitsAutonomousOffer(animal)) return false;
-        state.outgoingOffer = animal; animal.hand = false; animal.enclosureId = null; animal.slotIndex = null;
+        state.outgoingOffer = animal;
+        if (state.drag?.type === 'animal' && state.drag.animal?.id === animal.id) {
+            reserveAnimalZooSlot(animal, state.drag.originalEnclosureId, state.drag.originalSlotIndex);
+        }
+        animal.hand = false; animal.enclosureId = null; animal.slotIndex = null;
+        noteNewCardAction();
         renderTrade(); return true;
     }
     // startAnimalDrag() captured the rescue before removing the animal from
@@ -10122,30 +12519,168 @@ function tryDropOnOutgoingOffer(event, animal) {
             : emergencyTradeForAnimal(animal);
 
     state.outgoingOffer = animal;
+    if (state.drag?.type === 'animal' && state.drag.animal?.id === animal.id) {
+        reserveAnimalZooSlot(animal, state.drag.originalEnclosureId, state.drag.originalSlotIndex);
+    }
     animal.hand = false;
     animal.enclosureId = null;
     animal.slotIndex = null;
 
+    noteNewCardAction();
     generateOpponentTradeOffers(animal, pendingEmergencyTrade);
     return true;
 }
+
+function autoSelectOutgoingOfferAnimal() {
+    if (!state.loaded || state.drag || state.pan) return false;
+    if (state.outgoingOffer || state.result || state.exchange.some(Boolean)) return false;
+
+    // Only animals genuinely in the zoo are candidates. A card in hand or
+    // already committed elsewhere is never auto-selected.
+    const candidates = state.animals.flatMap(animal => {
+        if (animal.hand) return [];
+        if (animal.enclosureId === null || animal.enclosureId === undefined) return [];
+
+        // V134: "predicted" is not enough. The blue trade-interest glow only
+        // promises an offer after materializeLockedPlayerTradeOffers() has
+        // verified that the opponent still exists/holds the card and that the
+        // incoming animal is genuinely placeable after this outgoing animal.
+        //
+        // Capture those fully materialised LIVE offers while the animal is
+        // still in its enclosure. The click shortcut will use these exact
+        // objects; nothing is rerolled or revalidated after state changes.
+        const lockedOffers = predictedPlayerTradeOffers(animal);
+        const liveOffers = materializeLockedPlayerTradeOffers(animal, lockedOffers);
+        return liveOffers.length ? [{ animal, liveOffers }] : [];
+    });
+
+    if (!candidates.length) return false;
+
+    const selected = candidates[Math.floor(Math.random() * candidates.length)];
+    const animal = selected.animal;
+    const liveOffers = selected.liveOffers;
+
+    // Preserve the zoo slot exactly as if the player had dragged this card
+    // into Outgoing Offer manually. It remains logically occupied until the
+    // incoming card is picked up/accepted.
+    reserveAnimalZooSlot(animal, animal.enclosureId, animal.slotIndex);
+
+    state.outgoingOffer = animal;
+    animal.hand = false;
+    animal.enclosureId = null;
+    animal.slotIndex = null;
+
+    noteNewCardAction();
+    refreshDrawAvailabilityState();
+    renderZoo();
+
+    // V134: install the exact VERIFIED live offers captured above. Do not call
+    // predictedPlayerTradeOffers() or materializeLockedPlayerTradeOffers()
+    // again after the animal has moved into Outgoing Offer.
+    if (isRealOpponentMode()) {
+        state.opponentProfiles = liveOffers.map((item, index) =>
+            realZooProfile(item.record, index)
+        );
+        state.opponentTradeStocks = liveOffers.map(item =>
+            realZooTradeAnimals(item.record, true)
+        );
+        state.tradeOffers = liveOffers.map((item, index) => ({
+            opponentIndex: index,
+            animal: item.animal
+        }));
+        state.selectedTradeOpponent = state.tradeOffers.length ? 0 : null;
+    } else {
+        state.tradeOffers = liveOffers.map(item => ({
+            opponentIndex: item.opponentIndex,
+            animal: item.animal
+        }));
+        state.selectedTradeOpponent = state.tradeOffers.length
+            ? state.tradeOffers.map(o => o.opponentIndex).sort((a, b) => a - b)[0]
+            : null;
+    }
+
+    // The offer is now in state synchronously, so renderTrade() can show it
+    // immediately. Preloading only improves the image and can no longer decide
+    // whether the trade exists.
+    renderTrade();
+    renderOpponentTradeState();
+    preloadAnimals(state.tradeOffers.map(offer => offer.animal)).then(() => {
+        renderTrade();
+        renderOpponentTradeState();
+    });
+    return true;
+}
+
+// Clicking/tapping the empty Outgoing Offer box is a shortcut for choosing a
+// random zoo animal that is already known to have at least one valid offer.
+outgoingOfferBox.addEventListener('click', event => {
+    if (state.drag || state.pan) return;
+    if (state.outgoingOffer) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    autoSelectOutgoingOfferAnimal();
+});
+
+// V163: one authoritative Outgoing Offer hover path.
+// Order matters: suppress yellow first WITHOUT rebuilding DOM, then calculate
+// and paint the blue trade glow onto those same card nodes.
+outgoingOfferBox.addEventListener('mouseenter', () => {
+    if (state.sandboxMode) return;
+
+    state.outgoingOfferTradeHoverActive = true;
+    setOutgoingOfferExchangeGlowSuppression(true);
+
+    if (!window.matchMedia('(max-width: 700px)').matches &&
+        tradeGlowTarget(outgoingOfferBox)) {
+        applyTradeEligibleGlow();
+    }
+});
+
+outgoingOfferBox.addEventListener('mouseleave', () => {
+    if (state.sandboxMode) return;
+
+    state.outgoingOfferTradeHoverActive = false;
+    setOutgoingOfferExchangeGlowSuppression(false);
+
+    if (!window.matchMedia('(max-width: 700px)').matches &&
+        tradeEligibleGlowActive) {
+        scheduleTradeEligibleGlowFade();
+    }
+});
+
 function renderTrade() {
     if (!outgoingOfferBox || !incomingOfferBox) return;
+    if (state.sandboxMode) {
+        outgoingOfferBox.style.display = 'none';
+        incomingOfferBox.style.display = 'none';
+        const area = document.getElementById('opponentTradeArea');
+        if (area) area.style.display = 'none';
+        return;
+    }
+    outgoingOfferBox.style.display = '';
+    incomingOfferBox.style.display = '';
+    const area = document.getElementById('opponentTradeArea');
+    if (area) area.style.display = '';
     outgoingOfferBox.innerHTML = ''; incomingOfferBox.innerHTML = '';
     outgoingOfferBox.classList.toggle('trade-filled', Boolean(state.outgoingOffer));
     if (state.outgoingOffer) { const img=document.createElement('img'); setupAnimalCard(img,state.outgoingOffer,'outgoing'); img.classList.add('trade-card'); outgoingOfferBox.appendChild(img); }
-    else outgoingOfferBox.innerHTML='<span>OUTGOING<br>OFFER</span>';
+    else outgoingOfferBox.innerHTML = state.gameOptions.animalLanguage === 'nl'
+        ? '<span>UITGAAND<br>AANBOD</span>'
+        : '<span>OUTGOING<br>OFFER</span>';
     const offer=selectedTradeOffer(); incomingOfferBox.classList.toggle('trade-filled',Boolean(offer));
     const canAcceptIncoming = Boolean(offer) && incomingOfferCanBeAccepted();
     incomingOfferBox.classList.toggle('trade-locked', Boolean(offer) && !canAcceptIncoming);
     if (offer) {
-        const img=document.createElement('img'); img.className='animal-card trade-card incoming-trade-card'; img.src=animalImage(offer.animal); img.draggable=false; attachImageError(img,`trade offer ${offer.animal.filename}`);
+        const img=document.createElement('img'); img.className='animal-card trade-card incoming-trade-card'; applyLocalizedAnimalImage(img,offer.animal); img.draggable=false; attachImageError(img,`trade offer ${offer.animal.filename}`);
         img.addEventListener('mouseenter',()=>requestHoverPreview(offer.animal)); img.addEventListener('mouseleave',()=>hideHoverPreviewIfAllowed(offer.animal));
         if (canAcceptIncoming) img.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();e.stopPropagation();startTradeResultDrag(e);});
         else img.title='Offer a same-level animal from one of this opponent’s three preferred categories first.';
         incomingOfferBox.appendChild(img);
     }
-    else incomingOfferBox.innerHTML='<span>INCOMING<br>OFFER</span>';
+    else incomingOfferBox.innerHTML = state.gameOptions.animalLanguage === 'nl'
+        ? '<span>INKOMEND<br>AANBOD</span>'
+        : '<span>INCOMING<br>OFFER</span>';
     let decline = document.getElementById('declineOpponentOffer');
     if (state.autonomousTradeOffer) {
         if (!decline) {
@@ -10170,11 +12705,34 @@ function renderTrade() {
 }
 function startTradeResultDrag(event) {
     const offer=selectedTradeOffer(); if(!offer||!incomingOfferCanBeAccepted()||state.drag||state.pan)return;
-    const rect=event.currentTarget.getBoundingClientRect(), image=document.createElement('img'); image.className='dragging-animal'; image.src=animalImage(offer.animal); image.style.width=`${rect.width}px`; image.style.height=`${rect.height}px`; image.style.pointerEvents='none'; document.body.appendChild(image);
-    // V87: keep the exact incoming animal on the drag itself. Trade-result
-    // placement must never fall back to state.result (which belongs to the
-    // upgrade system and can be null or describe a completely different card).
-    state.drag={type:'trade-result',image,incomingAnimal:offer.animal,startClientX:event.clientX,startClientY:event.clientY,offsetX:event.clientX-rect.left,offsetY:event.clientY-rect.top}; moveTradeResultDragImage(event);
+    const rect=event.currentTarget.getBoundingClientRect(), image=document.createElement('img'); image.className='dragging-animal'; applyLocalizedAnimalImage(image,offer.animal); image.style.width=`${rect.width}px`; image.style.height=`${rect.height}px`; image.style.pointerEvents='none'; document.body.appendChild(image);
+
+    // V117: until the player actually picks up the incoming animal, the
+    // outgoing animal's former zoo slot stays logically occupied. The instant
+    // the incoming card is dragged, release that reservation so the incoming
+    // card can be dropped into precisely that newly-vacated slot.
+    const outgoing = state.outgoingOffer;
+    const releasedReservation = outgoing && outgoing.reservedEnclosureId != null
+        ? {
+            enclosureId: outgoing.reservedEnclosureId,
+            slotIndex: outgoing.reservedSlotIndex
+        }
+        : null;
+    if (outgoing) clearAnimalZooReservation(outgoing);
+
+    // Keep the exact incoming animal on the drag itself.
+    state.drag={
+        type:'trade-result',
+        image,
+        incomingAnimal:offer.animal,
+        releasedOutgoingReservation:releasedReservation,
+        startClientX:event.clientX,
+        startClientY:event.clientY,
+        offsetX:event.clientX-rect.left,
+        offsetY:event.clientY-rect.top
+    };
+    moveTradeResultDragImage(event);
+    renderAll();
 }
 function moveTradeResultDragImage(event){if(state.drag?.type!=='trade-result')return;state.drag.image.style.left=`${event.clientX-state.drag.offsetX}px`;state.drag.image.style.top=`${event.clientY-state.drag.offsetY}px`;}
 function acceptSelectedTrade(destination=null, autoPlace=false) {
@@ -10186,6 +12744,7 @@ function acceptSelectedTrade(destination=null, autoPlace=false) {
     if(autonomous && !outgoingFitsAutonomousOffer()) return false;
 
     const outgoingForHistory = state.outgoingOffer;
+    releaseOutgoingTradeReservation();
     const tradeProfile = state.opponentProfiles[offer.opponentIndex];
     const tradeZooName = tradeProfile?.name || `Zoo ${offer.opponentIndex + 1}`;
 
@@ -10231,12 +12790,17 @@ function acceptSelectedTrade(destination=null, autoPlace=false) {
 
     fillOpponentTradeStock(offer.opponentIndex);
 
+    // V161: update the exact physical cards' provenance before ownership moves.
+    markAnimalTradedTo(outgoingForHistory, tradeZooName);
+    markAnimalTradedFrom(incoming, tradeZooName);
+
     // Every accepted trade is an exchange: the player's offered animal
     // leaves the zoo whether the negotiation was player- or opponent-initiated.
     const outgoingId=state.outgoingOffer.id;
     state.animals=state.animals.filter(a=>a.id!==outgoingId);
     state.suppressedExchangeGlowIds.delete(outgoingId);
     state.outgoingOffer=null;
+    setOutgoingOfferExchangeGlowSuppression(false);
 
     state.animals.push(incoming);
     markPlayerLevelSeen(incoming.level);
@@ -10255,8 +12819,10 @@ function acceptSelectedTrade(destination=null, autoPlace=false) {
     state.tradeHistory.push({
         turn: state.turn,
         zooName: tradeZooName,
+        outgoingId: outgoingForHistory.id,
         outgoingName: String(outgoingForHistory.filename || '').replace(/\.png$/i, ''),
         outgoingLevel: outgoingForHistory.level,
+        incomingId: incoming.id,
         incomingName: String(incoming.filename || '').replace(/\.png$/i, ''),
         incomingLevel: incoming.level
     });
@@ -10272,7 +12838,19 @@ function finishTradeResultDrag(event) {
     const dragRect=drag.image?.getBoundingClientRect?.()||null;
     const incoming=drag.incomingAnimal||selectedTradeOffer()?.animal||null;
     drag.image?.remove();state.drag=null;
-    if(distance<6){acceptSelectedTrade(null,true);return;}
+    if(distance<6){
+        // A click/very short drag uses auto-placement. The reservation remains
+        // released while the destination is chosen.
+        if(!acceptSelectedTrade(null,true) && state.outgoingOffer && drag.releasedOutgoingReservation) {
+            reserveAnimalZooSlot(
+                state.outgoingOffer,
+                drag.releasedOutgoingReservation.enclosureId,
+                drag.releasedOutgoingReservation.slotIndex
+            );
+            renderAll();
+        }
+        return;
+    }
 
     // V87: validate the destination against the ACTUAL incoming trade card.
     // The outgoing card has already been removed from its enclosure when it
@@ -10284,7 +12862,27 @@ function finishTradeResultDrag(event) {
            resultDropDestination(event,incoming))
         : null;
 
-    if(destination)acceptSelectedTrade(destination); else renderTrade();
+    if(destination) {
+        if(!acceptSelectedTrade(destination) && state.outgoingOffer && drag.releasedOutgoingReservation) {
+            reserveAnimalZooSlot(
+                state.outgoingOffer,
+                drag.releasedOutgoingReservation.enclosureId,
+                drag.releasedOutgoingReservation.slotIndex
+            );
+            renderAll();
+        }
+    } else {
+        // Cancelled/invalid drop: the trade has not happened, so put the
+        // logical occupancy reservation back exactly where it was.
+        if(state.outgoingOffer && drag.releasedOutgoingReservation) {
+            reserveAnimalZooSlot(
+                state.outgoingOffer,
+                drag.releasedOutgoingReservation.enclosureId,
+                drag.releasedOutgoingReservation.slotIndex
+            );
+        }
+        renderAll();
+    }
 }
 function setupOpponentTradeClicks() {
     ensureOpponentZooElements();
@@ -10300,8 +12898,8 @@ function setupOpponentTradeClicks() {
             renderTrade();
         });
 
-        el.addEventListener('mouseenter', () => showOpponentInfoPopup(i, el));
-        el.addEventListener('mouseleave', scheduleOpponentInfoHide);
+        // V152: opponent names on the main game screen no longer open
+        // collection popups. All Zoos and Trade History retain their popups.
     }
 }
 
@@ -11104,7 +13702,10 @@ function loadNonEssentialGameData() {
 }
 
 async function startGame() {
-    if (incomingOfferBox) incomingOfferBox.innerHTML = '<span>INCOMING<br>OFFER</span>';
+    if (incomingOfferBox) incomingOfferBox.innerHTML =
+        state.gameOptions.animalLanguage === 'nl'
+            ? '<span>INKOMEND<br>AANBOD</span>'
+            : '<span>INCOMING<br>OFFER</span>';
 
     try {
         // asset-inventory.json is the one external data file required to build
@@ -11166,6 +13767,13 @@ async function startGame() {
         document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
         renderAll();
         state.loaded = true;
+
+        // V128: the game is now genuinely playable. The old hint code waited
+        // for state.setupComplete, a legacy property that is no longer set in
+        // the current auto-generated-starting-zoo flow, so its timer never
+        // armed. Start the decision hint from the real ready-state instead.
+        idleGuideSetupWasComplete = true;
+        armActionHint(blueHintInitialDelay());
 
         // Tell the independent HTML startup watchdog that JavaScript has
         // successfully reached the playable state. Without this flag the

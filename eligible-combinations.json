@@ -1033,6 +1033,10 @@
     ],
     [
       "Bearded Emperor Tamarin",
+      "Six-Banded Armadillo"
+    ],
+    [
+      "Bearded Emperor Tamarin",
       "White-Faced Saki"
     ],
     [
@@ -1973,6 +1977,10 @@
     ],
     [
       "Capybara",
+      "Azara's Agouti"
+    ],
+    [
+      "Capybara",
       "Collared Peccary"
     ],
     [
@@ -2013,7 +2021,15 @@
     ],
     [
       "Capybara",
+      "Red-Crested Turaco"
+    ],
+    [
+      "Capybara",
       "Red-Legged Seriema"
+    ],
+    [
+      "Capybara",
+      "Red-Rumped Agouti"
     ],
     [
       "Capybara",
@@ -2034,6 +2050,10 @@
     [
       "Capybara",
       "Vicuña"
+    ],
+    [
+      "Capybara",
+      "White-Cheeked Turaco"
     ],
     [
       "Capybara",
@@ -2517,6 +2537,14 @@
     ],
     [
       "Common Marmoset",
+      "Large Hairy Armadillo"
+    ],
+    [
+      "Common Marmoset",
+      "Six-Banded Armadillo"
+    ],
+    [
+      "Common Marmoset",
       "White-Faced Saki"
     ],
     [
@@ -2798,6 +2826,10 @@
     [
       "Cotton-Top Tamarin",
       "Great Curassow"
+    ],
+    [
+      "Cotton-Top Tamarin",
+      "Large Hairy Armadillo"
     ],
     [
       "Cotton-Top Tamarin",
@@ -3276,6 +3308,10 @@
       "Goeldi's Monkey"
     ],
     [
+      "Geoffroy's Tufted-Ear Marmoset",
+      "Linnaeus's Two-Toed Sloth"
+    ],
+    [
       "Giant Anteater",
       "Goeldi's Monkey"
     ],
@@ -3602,6 +3638,10 @@
     [
       "Golden-Headed Lion Tamarin",
       "Southern Tamandua"
+    ],
+    [
+      "Golden-Headed Lion Tamarin",
+      "Southern Three-Banded Armadillo"
     ],
     [
       "Golden-Headed Lion Tamarin",
@@ -4393,6 +4433,10 @@
     ],
     [
       "Large Hairy Armadillo",
+      "Linnaeus's Two-Toed Sloth"
+    ],
+    [
+      "Large Hairy Armadillo",
       "South American Coati"
     ],
     [
@@ -4997,6 +5041,10 @@
     ],
     [
       "Pygmy Marmoset",
+      "Southern Three-Banded Armadillo"
+    ],
+    [
+      "Pygmy Marmoset",
       "White-Faced Saki"
     ],
     [
@@ -5118,6 +5166,14 @@
     [
       "Red-Crowned Crane",
       "White-Naped Crane"
+    ],
+    [
+      "Red-Footed Tortoise",
+      "Common Marmoset"
+    ],
+    [
+      "Red-Footed Tortoise",
+      "Golden Handed Tamarin"
     ],
     [
       "Red-Footed Tortoise",
@@ -5270,6 +5326,18 @@
     [
       "Scaly-Headed Parrot",
       "Vinaceous-Breasted Amazon"
+    ],
+    [
+      "Scarlet Ibis",
+      "Azara's Agouti"
+    ],
+    [
+      "Scarlet Ibis",
+      "Capybara"
+    ],
+    [
+      "Scarlet Ibis",
+      "Red-Rumped Agouti"
     ],
     [
       "Scarlet Ibis",
@@ -5514,14 +5582,6 @@
     [
       "Yellow Mongoose",
       "Secretary Bird"
-    ],
-    [
-      "Red-Footed Tortoise",
-      "Golden Handed Tamarin"
-    ],
-    [
-      "Red-Footed Tortoise",
-      "Common Marmoset"
     ]
   ],
   "proxy_compatibility": {
@@ -6778,14 +6838,23 @@
     "White-faced saki zoo husbandry questionnaire (2019) — Common marmoset + Golden-headed lion tamarin + red-footed tortoise; reported successful.",
     "Saginaw Children's Zoo — red-footed tortoises share space with Cotton-top Tamarins and Hoffmann's Two-toed Sloth.",
     "ZooParc Overloon 2025 map — Red-footed Tortoise and Spectacled Caiman both listed in Madidi House; treated as insufficient alone for direct compatibility.",
-    "Vancouver Aquarium Graham Amazon Gallery — Red-footed Tortoise, parrots and Yacare Caiman present in same gallery; treated as insufficient alone for direct compatibility."
+    "Vancouver Aquarium Graham Amazon Gallery — Red-footed Tortoise, parrots and Yacare Caiman present in same gallery; treated as insufficient alone for direct compatibility.",
+    "ZooChat — CERZA Six-banded Armadillo + Emperor Tamarin exhibit (2025)",
+    "ZooChat — Zoo Brno Golden-headed Lion Tamarin + Southern Three-banded Armadillo mixed exhibit (2025)",
+    "ZooChat — Allwetterzoo Münster Golden Lion Tamarin + Pygmy Marmoset + Southern Three-banded Armadillo exhibit (2025)",
+    "ZooChat — Bridlington Animal Park Common Marmoset + Large Hairy Armadillo + Six-banded Armadillo exhibit (2024)",
+    "Woodside Wildlife Park review — Geoffroy's Marmoset + Linnaeus's Two-toed Sloth mixed enclosure (2024)",
+    "ZooChat — Parco Natura Viva Linnaeus's Two-toed Sloth + Large Hairy Armadillo exhibit (2024)",
+    "ZooChat — Spaycific'Zoo Cotton-top Tamarin + Hairy Armadillo mixed exhibit report (2011)",
+    "Smithsonian National Zoo — Golden Lion Tamarin + Linnaeus's Two-toed Sloth + Three-banded Armadillo mixed exhibit",
+    "ZooInstitutes — Cleveland Metroparks Zoo Golden Lion Tamarin + Linne's Two-toed Sloth + Southern Three-banded Armadillo (2018)"
   ],
   "metadata": {
-    "version": "6.2",
-    "update": "Marine Mania cetacean deep dive. Added five well-supported direct relationships, prioritising actual captive co-housing where available and strong modern repeated wild mixed-species associations for pelagic dolphins where zoo evidence is intrinsically sparse.",
+    "version": "7.4",
+    "update": "Focused tamarin/marmoset/armadillo/two-toed-sloth mixed-exhibit audit.",
     "legacy_generic_rufous_pairs_removed": 0,
-    "direct_pairs_added_this_pass": 5,
-    "direct_pairs_removed_this_pass": 1,
+    "direct_pairs_added_this_pass": 8,
+    "direct_pairs_removed_this_pass": 0,
     "proxy_group_change": "Added managed_caimans plus pond_sliders/green_iguanas group-links; managed_caimans is NOT a complete_group.",
     "research_pass_notes": [
       "v6.3 coati/meerkat/raccoon/skunk pass: added 17 exact Zoo Curator pairs backed by named-institution mixed-exhibit records. Unknown-institution-only records were excluded. Meerkat already had very broad coverage (42 pairs), so this pass concentrated on under-covered coatis, raccoons and skunks.",
@@ -6794,7 +6863,8 @@
       "v6.6 focused pass: Chester Zoo, London Zoo, Tierpark Berlin, Zoo Berlin and Zoo Plzeň. Added 12 new exact Zoo Curator pairs. Chester's strongest documented matches (e.g. Aardvark + Meerkat and Grevy's Zebra + Common Ostrich) were already present, so no duplicate Chester pairs were added. London added Humboldt Penguin + Rockhopper Penguin and White-Faced Saki + Southern Tamandua. Tierpark Berlin added missing links from its African Savannah plus Asian Small-Clawed Otter + Sulawesi Babirusa. Zoo Berlin added South American Tapir + Visayan Warty Pig from the Rhino Pagoda. Plzeň added the three pairwise links among Capybara, Vicuña and Lesser Rhea from its current shared South American Pampas exhibit. No species proxy was used where the exact Zoo Curator animal was absent.",
       "v6.7 ZooChat credibility pass. ZooChat was treated as an observational lead source, not as automatic proof. Added only posts that identify a real zoo and an actual mixed exhibit, with preference for recent inventories, long-standing members, photographs, or repeated institutional reports. Speculative 'would this work?' combinations were excluded. Failed/dangerous mixes were excluded. Exact Zoo Curator taxa were required; no loose species proxies were introduced. This pass added Whipsnade rhino mixes; Berlin Zoo mixes; Chester orangutan/gibbon mixes; Ouwehands, Wildlands and Overloon links; detailed US primate exhibits; London Rainforest Life links; several named-zoo armadillo mixes; and well-established giant-anteater combinations.",
       "v6.8 targeted low-coverage ZooChat pass. Searched mixed-exhibit threads for named-institution observations rather than speculative proposals. Added only exact Zoo Curator taxa not already represented as direct pairs. Older reports were accepted only when they described an actual exhibit; recent 2024–2025 observations were preferred where available. Several plausible reports were left out where the exact taxon could not be matched safely to a current card.",
-      "v6.9 targeted cleanup/expansion: normalized the typo 'Black-Tailed Prairie Dog' to 'Black-Tailed Prairie Dog' throughout the JSON and deduplicated normalized direct pairs. Added Asian Elephant + Blackbuck (documented at Dublin/Zurich) and Asian Elephant + Red Deer (Dierenrijk) while retaining the existing Asian Elephant + Crab-Eating Macaque evidence. Added complete gameplay proxy groups for capuchins and macaques at the user's request. The existing parrots and spider_monkeys complete groups already provide the requested taxonomic same-group compatibility, so they were preserved rather than duplicated. Proxy rules are explicitly labelled as gameplay extrapolations, not claims that every pair is a documented zoo mixed exhibit."
+      "v6.9 targeted cleanup/expansion: normalized the typo 'Black-Tailed Prairie Dog' to 'Black-Tailed Prairie Dog' throughout the JSON and deduplicated normalized direct pairs. Added Asian Elephant + Blackbuck (documented at Dublin/Zurich) and Asian Elephant + Red Deer (Dierenrijk) while retaining the existing Asian Elephant + Crab-Eating Macaque evidence. Added complete gameplay proxy groups for capuchins and macaques at the user's request. The existing parrots and spider_monkeys complete groups already provide the requested taxonomic same-group compatibility, so they were preserved rather than duplicated. Proxy rules are explicitly labelled as gameplay extrapolations, not claims that every pair is a documented zoo mixed exhibit.",
+      "v7.4 focused tamarin/marmoset/armadillo/two-toed-sloth audit. Added modern named-institution direct pairs: Bearded Emperor Tamarin + Six-Banded Armadillo (CERZA, 2025); Golden-Headed Lion Tamarin + Southern Three-Banded Armadillo (Zoo Brno, 2025); Pygmy Marmoset + Southern Three-Banded Armadillo (Allwetterzoo Münster, 2025); Common Marmoset + Large Hairy Armadillo and + Six-Banded Armadillo (Bridlington Animal Park, 2024); Geoffroy's Tufted-Ear Marmoset + Linnaeus's Two-Toed Sloth (Woodside Wildlife Park, 2024); Large Hairy Armadillo + Linnaeus's Two-Toed Sloth (Parco Natura Viva, 2024); Cotton-Top Tamarin + Large Hairy Armadillo (Spaycific'Zoo, reported 2011). Existing gameplay group-links already make all named tamarins/marmosets compatible with the armadillo and two-toed-sloth groups; this pass strengthens the direct evidence layer without pretending every cross-pair has its own zoo record."
     ],
     "mongoose_audit_2026_09_19": "Audited Zoo Curator mongoose taxa against ZooRope's named-institution Herpestidae records, then reviewed ZooChat for additional actual-zoo reports. Added ZooRope-backed pairs: Common Kusimanse + African Brush-Tailed Porcupine (Paignton), Banded Mongoose + Red-Billed Hornbill (Tiergarten Nürnberg), Yellow Mongoose + Blue Crane (Five Sisters), Yellow Mongoose + Leopard Tortoise (Toni's Zoo), and Yellow Mongoose + Secretary Bird (Magdeburg mixed exhibit). Added one ZooChat-backed modern pair: Meerkat + Scimitar-Horned Oryx (ARTIS Amsterdam, reported May 2026). Speculative exhibit-idea posts and unknown-institution ZooRope records were not added.",
     "crane_pass_2026_09_19": "Targeted crane pass added 30 previously missing direct pairs from named zoo mixed exhibits. Priority was given to modern post-2000 records. Large crane species were not given a blanket compatibility proxy: husbandry literature warns that Sarus and Wattled Cranes can become aggressive in mixed collections, particularly during breeding. Only documented shared exhibits were converted into direct compatibility.",
@@ -6856,6 +6926,7 @@
         "additional_armadillos": "Evidence found for Southern Three-Banded Armadillo context, already represented. No strong exact shared-exhibit record found for Six-Banded, Nine-Banded or Large Hairy Armadillo with red-footed tortoise.",
         "additional_caimans": "Overloon and Vancouver house red-footed tortoises and caimans within the same themed houses/galleries, but available sources do not establish unrestricted shared enclosure access. Cuvier's Dwarf Caiman remains the existing direct pair; no blanket managed-caiman rule added."
       }
-    }
+    },
+    "capybara_agouti_scarlet_ibis_turaco_pass_2026_09_20": "Added/confirmed Capybara + agouti and Scarlet Ibis + Capybara/agouti from documented mixed exhibits and capybara husbandry guidance. EAZA Turaco Best Practice Guidelines explicitly list Capybara with Red-crested and White-cheeked Turacos without reported problems. No blanket all-turaco proxy added."
   }
 }

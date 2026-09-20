@@ -17,7 +17,7 @@
     ],
     [
       "Aardvark",
-      "Black-And-Refous Elephant Shrew"
+      "Black-and-Rufous Elephant Shrew"
     ],
     [
       "Aardvark",
@@ -145,7 +145,7 @@
     ],
     [
       "Addax",
-      "Grevy's Zebra"
+      "Grévy's Zebra"
     ],
     [
       "Addax",
@@ -161,7 +161,7 @@
     ],
     [
       "Addax",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Adelie Penguin",
@@ -170,6 +170,10 @@
     [
       "Adelie Penguin",
       "Gentoo Penguin"
+    ],
+    [
+      "African Brush-Tailed Porcupine",
+      "Common Kusimanse"
     ],
     [
       "African Brush-Tailed Porcupine",
@@ -433,10 +437,6 @@
     ],
     [
       "African Spurred Tortoise",
-      "Common Dwarf Mongoose"
-    ],
-    [
-      "African Spurred Tortoise",
       "Dwarf Mongoose"
     ],
     [
@@ -665,7 +665,7 @@
     ],
     [
       "Arabian Oryx",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Arabian Oryx",
@@ -752,8 +752,8 @@
       "Common Raccoon"
     ],
     [
-      "Asian Small-clawed Otter",
-      "Francois' Langur"
+      "Asian Small-Clawed Otter",
+      "François' Langur"
     ],
     [
       "Asian Small-Clawed Otter",
@@ -776,7 +776,7 @@
       "Red Ruffed Lemur"
     ],
     [
-      "Asian Small-clawed Otter",
+      "Asian Small-Clawed Otter",
       "Siamang"
     ],
     [
@@ -797,10 +797,6 @@
     ],
     [
       "Asian Small-Clawed Otter",
-      "White-Handed Gibbon"
-    ],
-    [
-      "Asian Small-clawed Otter",
       "White-Handed Gibbon"
     ],
     [
@@ -853,15 +849,11 @@
     ],
     [
       "Axis Deer",
-      "Common Lechwe"
+      "Elk"
     ],
     [
       "Axis Deer",
-      "Elk (Wapiti)"
-    ],
-    [
-      "Axis Deer",
-      "Eurasian Wild Boar"
+      "Wild Boar"
     ],
     [
       "Axis Deer",
@@ -873,11 +865,19 @@
     ],
     [
       "Axis Deer",
+      "Indian Muntjac"
+    ],
+    [
+      "Axis Deer",
       "Indian Rhinoceros"
     ],
     [
       "Axis Deer",
       "Indian Swamp Deer"
+    ],
+    [
+      "Axis Deer",
+      "Lechwe"
     ],
     [
       "Axis Deer",
@@ -893,19 +893,23 @@
     ],
     [
       "Axis Deer",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Axis Deer",
       "Sika Deer"
     ],
     [
-      "Axis Deer",
-      "Southern Red Muntjac"
+      "Azara's Agouti",
+      "Capybara"
     ],
     [
       "Azara's Agouti",
       "Golden Lion Tamarin"
+    ],
+    [
+      "Azara's Agouti",
+      "Scarlet Ibis"
     ],
     [
       "Azara's Agouti",
@@ -993,7 +997,7 @@
     ],
     [
       "Barbary Sheep",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Barbary Sheep",
@@ -1032,36 +1036,16 @@
       "Pygmy Hippopotamus"
     ],
     [
-      "Bearded Emperor Tamarin",
-      "Goeldi's Monkey"
-    ],
-    [
-      "Bearded Emperor Tamarin",
-      "Golden Handed Tamarin"
-    ],
-    [
-      "Bearded Emperor Tamarin",
-      "Hilaire's Side-Necked Turtle"
-    ],
-    [
-      "Bearded Emperor Tamarin",
-      "Linnaeus's Two-Toed Sloth"
-    ],
-    [
-      "Bearded Emperor Tamarin",
-      "Six-Banded Armadillo"
-    ],
-    [
-      "Bearded Emperor Tamarin",
-      "White-Faced Saki"
-    ],
-    [
       "Beluga",
       "Harbour Seal"
     ],
     [
       "Binturong",
       "Dhole"
+    ],
+    [
+      "Binturong",
+      "Indian Muntjac"
     ],
     [
       "Binturong",
@@ -1081,35 +1065,7 @@
     ],
     [
       "Binturong",
-      "Southern Red Muntjac"
-    ],
-    [
-      "Binturong",
       "Sun Bear"
-    ],
-    [
-      "Black and White Ruffed Lemur",
-      "Blue-Eyed Black Lemur"
-    ],
-    [
-      "Black and White Ruffed Lemur",
-      "Crowned Lemur"
-    ],
-    [
-      "Black and White Ruffed Lemur",
-      "Radiated Tortoise"
-    ],
-    [
-      "Black and White Ruffed Lemur",
-      "Red Ruffed Lemur"
-    ],
-    [
-      "Black and White Ruffed Lemur",
-      "Red-Fronted Lemur"
-    ],
-    [
-      "Black and White Ruffed Lemur",
-      "Ring-Tailed Lemur"
     ],
     [
       "Black Crested Mangabey",
@@ -1153,7 +1109,7 @@
     ],
     [
       "Black Lemur",
-      "Black and White Ruffed Lemur"
+      "Black-and-White Ruffed Lemur"
     ],
     [
       "Black Lemur",
@@ -1185,7 +1141,7 @@
     ],
     [
       "Black Rhinoceros",
-      "Grevy's Zebra"
+      "Grévy's Zebra"
     ],
     [
       "Black Rhinoceros",
@@ -1205,11 +1161,11 @@
     ],
     [
       "Black Rhinoceros",
-      "Thomson's Gazelle"
+      "Sitatunga"
     ],
     [
       "Black Rhinoceros",
-      "Western Sitatunga"
+      "Thompson's Gazelle"
     ],
     [
       "Black Sable Antelope",
@@ -1222,10 +1178,6 @@
     [
       "Black Sable Antelope",
       "Common Eland"
-    ],
-    [
-      "Black Sable Antelope",
-      "Common Lechwe"
     ],
     [
       "Black Sable Antelope",
@@ -1253,6 +1205,10 @@
     ],
     [
       "Black Sable Antelope",
+      "Lechwe"
+    ],
+    [
+      "Black Sable Antelope",
       "Marabou Stork"
     ],
     [
@@ -1269,7 +1225,7 @@
     ],
     [
       "Black Sable Antelope",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Black Sable Antelope",
@@ -1301,11 +1257,35 @@
     ],
     [
       "Black Wildebeest",
-      "Grevy's Zebra"
+      "Grévy's Zebra"
     ],
     [
       "Black Wildebeest",
       "Meerkat"
+    ],
+    [
+      "Black-and-White Ruffed Lemur",
+      "Blue-Eyed Black Lemur"
+    ],
+    [
+      "Black-and-White Ruffed Lemur",
+      "Crowned Lemur"
+    ],
+    [
+      "Black-and-White Ruffed Lemur",
+      "Radiated Tortoise"
+    ],
+    [
+      "Black-and-White Ruffed Lemur",
+      "Red Ruffed Lemur"
+    ],
+    [
+      "Black-and-White Ruffed Lemur",
+      "Red-Fronted Lemur"
+    ],
+    [
+      "Black-and-White Ruffed Lemur",
+      "Ring-Tailed Lemur"
     ],
     [
       "Black-Capped Capuchin",
@@ -1361,11 +1341,15 @@
     ],
     [
       "Blackbuck",
-      "Elk (Wapiti)"
+      "Elk"
     ],
     [
       "Blackbuck",
-      "Eurasian Wild Boar"
+      "Wild Boar"
+    ],
+    [
+      "Blackbuck",
+      "Indian Muntjac"
     ],
     [
       "Blackbuck",
@@ -1393,7 +1377,7 @@
     ],
     [
       "Blackbuck",
-      "Southern Red Muntjac"
+      "White-Naped Crane"
     ],
     [
       "Blacktip Reef Shark",
@@ -1405,10 +1389,6 @@
     ],
     [
       "Blesbok",
-      "Common Lechwe"
-    ],
-    [
-      "Blesbok",
       "Common Ostrich"
     ],
     [
@@ -1417,7 +1397,11 @@
     ],
     [
       "Blesbok",
-      "Grevy's Zebra"
+      "Grévy's Zebra"
+    ],
+    [
+      "Blesbok",
+      "Lechwe"
     ],
     [
       "Blesbok",
@@ -1429,7 +1413,7 @@
     ],
     [
       "Blesbok",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Blesbok",
@@ -1442,6 +1426,10 @@
     [
       "Blue Crane",
       "Red-Crowned Crane"
+    ],
+    [
+      "Blue Crane",
+      "Yellow Mongoose"
     ],
     [
       "Blue Duiker",
@@ -1458,10 +1446,6 @@
     [
       "Blue Duiker",
       "Von Der Decken's Hornbill"
-    ],
-    [
-      "Blue Wildebeest",
-      "Common Lechwe"
     ],
     [
       "Blue Wildebeest",
@@ -1485,7 +1469,7 @@
     ],
     [
       "Blue Wildebeest",
-      "Grevy's Zebra"
+      "Grévy's Zebra"
     ],
     [
       "Blue Wildebeest",
@@ -1494,6 +1478,10 @@
     [
       "Blue Wildebeest",
       "Impala"
+    ],
+    [
+      "Blue Wildebeest",
+      "Lechwe"
     ],
     [
       "Blue Wildebeest",
@@ -1525,7 +1513,7 @@
     ],
     [
       "Blue Wildebeest",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Blue Wildebeest",
@@ -1533,7 +1521,7 @@
     ],
     [
       "Blue Wildebeest",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Blue Wildebeest",
@@ -1553,11 +1541,11 @@
     ],
     [
       "Blue-And-Yellow Macaw",
-      "Common Green Iguana"
+      "Green Iguana"
     ],
     [
       "Blue-And-Yellow Macaw",
-      "Linneaus's Two-Toed Sloth"
+      "Linnaeus's Two-Toed Sloth"
     ],
     [
       "Blue-And-Yellow Macaw",
@@ -1625,7 +1613,7 @@
     ],
     [
       "Blue-Fronted Amazon",
-      "Linneaus's Two-Toed Sloth"
+      "Linnaeus's Two-Toed Sloth"
     ],
     [
       "Blue-Fronted Amazon",
@@ -1657,7 +1645,7 @@
     ],
     [
       "Blue-Headed Parrot",
-      "Linneaus's Two-Toed Sloth"
+      "Linnaeus's Two-Toed Sloth"
     ],
     [
       "Blue-Headed Parrot",
@@ -1677,7 +1665,7 @@
     ],
     [
       "Blue-Winged Macaw",
-      "Linneaus's Two-Toed Sloth"
+      "Linnaeus's Two-Toed Sloth"
     ],
     [
       "Blue-Winged Macaw",
@@ -1701,7 +1689,7 @@
     ],
     [
       "Boa Constrictor",
-      "Common Green Iguana"
+      "Green Iguana"
     ],
     [
       "Bobcat",
@@ -1745,7 +1733,7 @@
     ],
     [
       "Bonnethead Shark",
-      "Green Seaturtle"
+      "Green Sea Turtle"
     ],
     [
       "Bonnethead Shark",
@@ -1785,7 +1773,7 @@
     ],
     [
       "Brazilian Porcupine",
-      "Linneaus's Two-Toed Sloth"
+      "Linnaeus's Two-Toed Sloth"
     ],
     [
       "Broad-Snouted Caiman",
@@ -1832,11 +1820,15 @@
       "Dusky Pademelon"
     ],
     [
-      "Burmese Rock Python",
-      "Common Green Iguana"
+      "Brushtail Possum",
+      "Red Kangaroo"
     ],
     [
-      "Burmese Rock Python",
+      "Burmese Python",
+      "Green Iguana"
+    ],
+    [
+      "Burmese Python",
       "Reticulated Python"
     ],
     [
@@ -1866,10 +1858,6 @@
     [
       "Bush Dog",
       "White-Nosed Coati"
-    ],
-    [
-      "Bushtail Possum",
-      "Red Kangaroo"
     ],
     [
       "Caiman Lizard",
@@ -1909,7 +1897,7 @@
     ],
     [
       "Cape Buffalo",
-      "Grevy's Zebra"
+      "Grévy's Zebra"
     ],
     [
       "Cape Buffalo",
@@ -1953,7 +1941,11 @@
     ],
     [
       "Cape Buffalo",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
+    ],
+    [
+      "Cape Buffalo",
+      "Sitatunga"
     ],
     [
       "Cape Buffalo",
@@ -1961,7 +1953,7 @@
     ],
     [
       "Cape Buffalo",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Cape Buffalo",
@@ -1977,10 +1969,6 @@
     ],
     [
       "Cape Buffalo",
-      "Western Sitatunga"
-    ],
-    [
-      "Cape Buffalo",
       "White Rhinoceros"
     ],
     [
@@ -1990,10 +1978,6 @@
     [
       "Cape Fur Seal",
       "Humboldt Penguin"
-    ],
-    [
-      "Cape Porcupine",
-      "Common Lechwe"
     ],
     [
       "Cape Porcupine",
@@ -2013,6 +1997,10 @@
     ],
     [
       "Cape Porcupine",
+      "Lechwe"
+    ],
+    [
+      "Cape Porcupine",
       "Meerkat"
     ],
     [
@@ -2026,10 +2014,6 @@
     [
       "Cape Porcupine",
       "Yellow Mongoose"
-    ],
-    [
-      "Capybara",
-      "Azara's Agouti"
     ],
     [
       "Capybara",
@@ -2085,6 +2069,10 @@
     ],
     [
       "Capybara",
+      "Scarlet Ibis"
+    ],
+    [
+      "Capybara",
       "South American Coati"
     ],
     [
@@ -2136,6 +2124,22 @@
       "Serval"
     ],
     [
+      "Central Bearded Dragon",
+      "Centralian Blue-Tongued Skink"
+    ],
+    [
+      "Central Bearded Dragon",
+      "Frilled Dragon"
+    ],
+    [
+      "Central Bearded Dragon",
+      "Kimberley Rock Monitor"
+    ],
+    [
+      "Central Bearded Dragon",
+      "Shingleback Skink"
+    ],
+    [
       "Chacoan Peccary",
       "Greater Rhea"
     ],
@@ -2149,7 +2153,7 @@
     ],
     [
       "Channel-Billed Toucan",
-      "Common Green Iguana"
+      "Green Iguana"
     ],
     [
       "Cheetah",
@@ -2217,11 +2221,11 @@
     ],
     [
       "Collared Peccary",
-      "Common Fallow Deer"
+      "Elk"
     ],
     [
       "Collared Peccary",
-      "Elk (Wapiti)"
+      "Fallow Deer"
     ],
     [
       "Collared Peccary",
@@ -2296,18 +2300,6 @@
       "White-Naped Crane"
     ],
     [
-      "Common Dwarf Mongoose",
-      "Kirk's Dik-Dik"
-    ],
-    [
-      "Common Dwarf Mongoose",
-      "Leopard Tortoise"
-    ],
-    [
-      "Common Eland",
-      "Common Lechwe"
-    ],
-    [
       "Common Eland",
       "Common Ostrich"
     ],
@@ -2325,7 +2317,7 @@
     ],
     [
       "Common Eland",
-      "Grevy's Zebra"
+      "Grévy's Zebra"
     ],
     [
       "Common Eland",
@@ -2334,6 +2326,10 @@
     [
       "Common Eland",
       "Kori Bustard"
+    ],
+    [
+      "Common Eland",
+      "Lechwe"
     ],
     [
       "Common Eland",
@@ -2365,7 +2361,7 @@
     ],
     [
       "Common Eland",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Common Eland",
@@ -2373,15 +2369,15 @@
     ],
     [
       "Common Eland",
+      "Sitatunga"
+    ],
+    [
+      "Common Eland",
       "Springbok"
     ],
     [
       "Common Eland",
-      "Thomson's Gazelle"
-    ],
-    [
-      "Common Eland",
-      "Western Sitatunga"
+      "Thompson's Gazelle"
     ],
     [
       "Common Eland",
@@ -2392,108 +2388,8 @@
       "Zebu"
     ],
     [
-      "Common Fallow Deer",
-      "Guanaco"
-    ],
-    [
       "Common Genet",
       "Western Lowland Gorilla"
-    ],
-    [
-      "Common Green Iguana",
-      "Cotton-Top Tamarin"
-    ],
-    [
-      "Common Green Iguana",
-      "Dwarf Crocodile"
-    ],
-    [
-      "Common Green Iguana",
-      "Goeldi's Monkey"
-    ],
-    [
-      "Common Green Iguana",
-      "Golden Lion Tamarin"
-    ],
-    [
-      "Common Green Iguana",
-      "Golden-Headed Lion Tamarin"
-    ],
-    [
-      "Common Green Iguana",
-      "Green Aracari"
-    ],
-    [
-      "Common Green Iguana",
-      "Indian Star Tortoise"
-    ],
-    [
-      "Common Green Iguana",
-      "Keel-Billed Toucan"
-    ],
-    [
-      "Common Green Iguana",
-      "Large Flying Fox"
-    ],
-    [
-      "Common Green Iguana",
-      "Linnaeus's Two-Toed Sloth"
-    ],
-    [
-      "Common Green Iguana",
-      "Lyle's Flying Fox"
-    ],
-    [
-      "Common Green Iguana",
-      "Military Macaw"
-    ],
-    [
-      "Common Green Iguana",
-      "Pond Slider"
-    ],
-    [
-      "Common Green Iguana",
-      "Red-Footed Tortoise"
-    ],
-    [
-      "Common Green Iguana",
-      "Red-Rumped Agouti"
-    ],
-    [
-      "Common Green Iguana",
-      "Rhinoceros Iguana"
-    ],
-    [
-      "Common Green Iguana",
-      "Scarlet Macaw"
-    ],
-    [
-      "Common Green Iguana",
-      "Southern Tamandua"
-    ],
-    [
-      "Common Green Iguana",
-      "Toco Toucan"
-    ],
-    [
-      "Common Green Iguana",
-      "White-Faced Saki"
-    ],
-    [
-      "Common Green Iguana",
-      "Yellow-Crowned Amazon"
-    ],
-    [
-      "Common Green Iguana",
-      "Yellow-Headed Amazon"
-    ],
-    [
-      "Common Green Iguana",
-      "Yellow-Shouldered Amazon"
-    ],
-    [
-      "Common Hog Deer",
-      "Common Lechwe"
     ],
     [
       "Common Hog Deer",
@@ -2509,11 +2405,15 @@
     ],
     [
       "Common Hog Deer",
+      "Lechwe"
+    ],
+    [
+      "Common Hog Deer",
       "Reeve's Muntjac"
     ],
     [
       "Common Hog Deer",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Common Hog Deer",
@@ -2537,55 +2437,7 @@
     ],
     [
       "Common Kusimanse",
-      "African Brush-Tailed Porcupine"
-    ],
-    [
-      "Common Kusimanse",
       "Diana Monkey"
-    ],
-    [
-      "Common Lechwe",
-      "Common Ostrich"
-    ],
-    [
-      "Common Lechwe",
-      "Common Warthog"
-    ],
-    [
-      "Common Lechwe",
-      "Common Waterbuck"
-    ],
-    [
-      "Common Lechwe",
-      "Grevy's Zebra"
-    ],
-    [
-      "Common Lechwe",
-      "Hippopotamus"
-    ],
-    [
-      "Common Lechwe",
-      "Impala"
-    ],
-    [
-      "Common Lechwe",
-      "Meerkat"
-    ],
-    [
-      "Common Lechwe",
-      "Nile Lechwe"
-    ],
-    [
-      "Common Lechwe",
-      "Plains Zebra"
-    ],
-    [
-      "Common Lechwe",
-      "Rothschild's Giraffe"
-    ],
-    [
-      "Common Lechwe",
-      "Scimitar-Horned Oryx"
     ],
     [
       "Common Marmoset",
@@ -2594,6 +2446,10 @@
     [
       "Common Marmoset",
       "Large Hairy Armadillo"
+    ],
+    [
+      "Common Marmoset",
+      "Red-Footed Tortoise"
     ],
     [
       "Common Marmoset",
@@ -2625,7 +2481,7 @@
     ],
     [
       "Common Ostrich",
-      "Grevy's Zebra"
+      "Grévy's Zebra"
     ],
     [
       "Common Ostrich",
@@ -2634,6 +2490,10 @@
     [
       "Common Ostrich",
       "Impala"
+    ],
+    [
+      "Common Ostrich",
+      "Lechwe"
     ],
     [
       "Common Ostrich",
@@ -2669,7 +2529,7 @@
     ],
     [
       "Common Ostrich",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Common Ostrich",
@@ -2681,7 +2541,7 @@
     ],
     [
       "Common Ostrich",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Common Ostrich",
@@ -2773,6 +2633,10 @@
     ],
     [
       "Common Warthog",
+      "Lechwe"
+    ],
+    [
+      "Common Warthog",
       "Marabou Stork"
     ],
     [
@@ -2809,7 +2673,7 @@
     ],
     [
       "Common Warthog",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Common Warthog",
@@ -2821,7 +2685,7 @@
     ],
     [
       "Common Warthog",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Common Warthog",
@@ -2830,6 +2694,10 @@
     [
       "Common Waterbuck",
       "Impala"
+    ],
+    [
+      "Common Waterbuck",
+      "Lechwe"
     ],
     [
       "Common Waterbuck",
@@ -2849,11 +2717,11 @@
     ],
     [
       "Common Waterbuck",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Common Waterbuck",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Common Waterbuck",
@@ -2885,15 +2753,15 @@
     ],
     [
       "Cotton-Top Tamarin",
+      "Green Iguana"
+    ],
+    [
+      "Cotton-Top Tamarin",
       "Large Hairy Armadillo"
     ],
     [
       "Cotton-Top Tamarin",
       "Linnaeus's Two-Toed Sloth"
-    ],
-    [
-      "Cotton-Top Tamarin",
-      "Linneaus's Two-Toed Sloth"
     ],
     [
       "Cotton-Top Tamarin",
@@ -3081,6 +2949,14 @@
     ],
     [
       "Demoiselle Crane",
+      "Red-Crowned Crane"
+    ],
+    [
+      "Demoiselle Crane",
+      "Sarus Crane"
+    ],
+    [
+      "Demoiselle Crane",
       "Tufted Deer"
     ],
     [
@@ -3100,7 +2976,7 @@
       "Goeldi's Monkey"
     ],
     [
-      "Diana's Monkey",
+      "Diana Monkey",
       "Drill"
     ],
     [
@@ -3117,7 +2993,7 @@
     ],
     [
       "Dugong",
-      "Green Seaturtle"
+      "Green Sea Turtle"
     ],
     [
       "Dusky Langur",
@@ -3130,6 +3006,10 @@
     [
       "Dusky Pademelon",
       "Matschie's Tree-Kangaroo"
+    ],
+    [
+      "Dwarf Crocodile",
+      "Green Iguana"
     ],
     [
       "Dwarf Crocodile",
@@ -3200,44 +3080,68 @@
       "Red Kite"
     ],
     [
-      "Elk (Wapiti)",
-      "Eurasian Wild Boar"
+      "Elk",
+      "Wild Boar"
     ],
     [
-      "Elk (Wapiti)",
+      "Elk",
+      "Indian Muntjac"
+    ],
+    [
+      "Elk",
       "Indian Rhinoceros"
     ],
     [
-      "Elk (Wapiti)",
+      "Elk",
       "Indian Swamp Deer"
     ],
     [
-      "Elk (Wapiti)",
+      "Elk",
       "Mouflon"
     ],
     [
-      "Elk (Wapiti)",
+      "Elk",
       "Nilgai"
     ],
     [
-      "Elk (Wapiti)",
+      "Elk",
       "Sambar"
     ],
     [
-      "Elk (Wapiti)",
+      "Elk",
       "Sika Deer"
     ],
     [
-      "Elk (Wapiti)",
-      "Southern Red Muntjac"
-    ],
-    [
-      "Elk (Wapiti)",
+      "Elk",
       "White-Tailed Deer"
     ],
     [
       "Emerald Toucanet",
       "White-Cheeked Turaco"
+    ],
+    [
+      "Emperor Tamarin",
+      "Goeldi's Monkey"
+    ],
+    [
+      "Emperor Tamarin",
+      "Golden-Handed Tamarin"
+    ],
+    [
+      "Emperor Tamarin",
+      "Hilaire's Side-Necked Turtle"
+    ],
+    [
+      "Emperor Tamarin",
+      "Linnaeus's Two-Toed Sloth"
+    ],
+    [
+      "Emperor Tamarin",
+      "Six-Banded Armadillo"
+    ],
+    [
+      "Emperor Tamarin",
+      "White-Faced Saki"
     ],
     [
       "Emu",
@@ -3253,7 +3157,7 @@
     ],
     [
       "Emu",
-      "Red-necked Wallaby"
+      "Red-Necked Wallaby"
     ],
     [
       "Eurasian Beaver",
@@ -3264,36 +3168,40 @@
       "Striped Skunk"
     ],
     [
-      "Eurasian Wild Boar",
+      "Wild Boar",
+      "Indian Muntjac"
+    ],
+    [
+      "Wild Boar",
       "Indian Rhinoceros"
     ],
     [
-      "Eurasian Wild Boar",
+      "Wild Boar",
       "Indian Swamp Deer"
     ],
     [
-      "Eurasian Wild Boar",
+      "Wild Boar",
       "Mouflon"
     ],
     [
-      "Eurasian Wild Boar",
+      "Wild Boar",
       "Nilgai"
     ],
     [
-      "Eurasian Wild Boar",
+      "Wild Boar",
       "Sambar"
     ],
     [
-      "Eurasian Wild Boar",
+      "Wild Boar",
       "Sika Deer"
-    ],
-    [
-      "Eurasian Wild Boar",
-      "Southern Red Muntjac"
     ],
     [
       "European Pond Turtle",
       "White Stork"
+    ],
+    [
+      "Fallow Deer",
+      "Guanaco"
     ],
     [
       "False Gharial",
@@ -3389,10 +3297,6 @@
     ],
     [
       "Giant Anteater",
-      "Linneaus's Two-Toed Sloth"
-    ],
-    [
-      "Giant Anteater",
       "Maned Wolf"
     ],
     [
@@ -3417,7 +3321,7 @@
     ],
     [
       "Giant Anteater",
-      "Vicuna"
+      "Vicuña"
     ],
     [
       "Giant Anteater",
@@ -3469,6 +3373,10 @@
     ],
     [
       "Goeldi's Monkey",
+      "Green Iguana"
+    ],
+    [
+      "Goeldi's Monkey",
       "Kea"
     ],
     [
@@ -3482,10 +3390,6 @@
     [
       "Goeldi's Monkey",
       "Linnaeus's Two-Toed Sloth"
-    ],
-    [
-      "Goeldi's Monkey",
-      "Linneaus's Two-Toed Sloth"
     ],
     [
       "Goeldi's Monkey",
@@ -3633,11 +3537,11 @@
     ],
     [
       "Golden Lion Tamarin",
-      "Linnaeus's Two-Toed Sloth"
+      "Green Iguana"
     ],
     [
       "Golden Lion Tamarin",
-      "Linneaus's Two-Toed Sloth"
+      "Linnaeus's Two-Toed Sloth"
     ],
     [
       "Golden Lion Tamarin",
@@ -3662,6 +3566,14 @@
     [
       "Golden Lion Tamarin",
       "White-Faced Saki"
+    ],
+    [
+      "Golden-Handed Tamarin",
+      "Red-Footed Tortoise"
+    ],
+    [
+      "Golden-Headed Lion Tamarin",
+      "Green Iguana"
     ],
     [
       "Golden-Headed Lion Tamarin",
@@ -3737,7 +3649,7 @@
     ],
     [
       "Great White Pelican",
-      "Grevy's Zebra"
+      "Grévy's Zebra"
     ],
     [
       "Great White Pelican",
@@ -3765,15 +3677,27 @@
     ],
     [
       "Great White Pelican",
+      "Red-Crowned Crane"
+    ],
+    [
+      "Great White Pelican",
+      "Sarus Crane"
+    ],
+    [
+      "Great White Pelican",
       "Southern Bald Ibis"
     ],
     [
       "Great White Pelican",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Great White Pelican",
       "White-Handed Gibbon"
+    ],
+    [
+      "Great White Pelican",
+      "White-Naped Crane"
     ],
     [
       "Great White Pelican",
@@ -3821,7 +3745,7 @@
     ],
     [
       "Greater Kudu",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Greater Kudu",
@@ -3837,7 +3761,7 @@
     ],
     [
       "Greater Kudu",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Greater Kudu",
@@ -3865,6 +3789,10 @@
     ],
     [
       "Green Aracari",
+      "Green Iguana"
+    ],
+    [
+      "Green Aracari",
       "Roseate Spoonbill"
     ],
     [
@@ -3880,6 +3808,74 @@
       "Sunbittern"
     ],
     [
+      "Green Iguana",
+      "Indian Star Tortoise"
+    ],
+    [
+      "Green Iguana",
+      "Keel-Billed Toucan"
+    ],
+    [
+      "Green Iguana",
+      "Large Flying Fox"
+    ],
+    [
+      "Green Iguana",
+      "Linnaeus's Two-Toed Sloth"
+    ],
+    [
+      "Green Iguana",
+      "Lyle's Flying Fox"
+    ],
+    [
+      "Green Iguana",
+      "Military Macaw"
+    ],
+    [
+      "Green Iguana",
+      "Pond Slider"
+    ],
+    [
+      "Green Iguana",
+      "Red-Footed Tortoise"
+    ],
+    [
+      "Green Iguana",
+      "Red-Rumped Agouti"
+    ],
+    [
+      "Green Iguana",
+      "Rhinoceros Iguana"
+    ],
+    [
+      "Green Iguana",
+      "Scarlet Macaw"
+    ],
+    [
+      "Green Iguana",
+      "Southern Tamandua"
+    ],
+    [
+      "Green Iguana",
+      "Toco Toucan"
+    ],
+    [
+      "Green Iguana",
+      "White-Faced Saki"
+    ],
+    [
+      "Green Iguana",
+      "Yellow-Crowned Amazon"
+    ],
+    [
+      "Green Iguana",
+      "Yellow-Headed Amazon"
+    ],
+    [
+      "Green Iguana",
+      "Yellow-Shouldered Amazon"
+    ],
+    [
       "Green Turaco",
       "Okapi"
     ],
@@ -3892,36 +3888,40 @@
       "Western Plantain-Eater"
     ],
     [
-      "Grevy's Zebra",
+      "Grévy's Zebra",
       "Impala"
     ],
     [
-      "Grevy's Zebra",
+      "Grévy's Zebra",
+      "Lechwe"
+    ],
+    [
+      "Grévy's Zebra",
       "Meerkat"
     ],
     [
-      "Grevy's Zebra",
+      "Grévy's Zebra",
       "Nile Lechwe"
     ],
     [
-      "Grevy's Zebra",
+      "Grévy's Zebra",
       "Pygmy Hippopotamus"
     ],
     [
-      "Grevy's Zebra",
+      "Grévy's Zebra",
       "Rothschild's Giraffe"
     ],
     [
-      "Grevy's Zebra",
-      "Scimitar-Horned Oryx"
+      "Grévy's Zebra",
+      "Scimitar Oryx"
     ],
     [
-      "Grevy's Zebra",
-      "Thomson's Gazelle"
+      "Grévy's Zebra",
+      "Sitatunga"
     ],
     [
-      "Grevy's Zebra",
-      "Western Sitatunga"
+      "Grévy's Zebra",
+      "Thompson's Gazelle"
     ],
     [
       "Grey Crowned Crane",
@@ -3973,7 +3973,7 @@
     ],
     [
       "Grey Crowned Crane",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Grey Crowned Crane",
@@ -3989,7 +3989,7 @@
     ],
     [
       "Grey Kangaroo",
-      "Red-necked Wallaby"
+      "Red-Necked Wallaby"
     ],
     [
       "Grey Seal",
@@ -4046,10 +4046,6 @@
     [
       "Griffon Vulture",
       "Red Kite"
-    ],
-    [
-      "Grévy's Zebra",
-      "Meerkat"
     ],
     [
       "Guaian Bearded Saki",
@@ -4193,6 +4189,10 @@
     ],
     [
       "Hippopotamus",
+      "Lechwe"
+    ],
+    [
+      "Hippopotamus",
       "Marabou Stork"
     ],
     [
@@ -4209,15 +4209,15 @@
     ],
     [
       "Hippopotamus",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
+    ],
+    [
+      "Hippopotamus",
+      "Sitatunga"
     ],
     [
       "Hippopotamus",
       "Southern Bald Ibis"
-    ],
-    [
-      "Hippopotamus",
-      "Western Sitatunga"
     ],
     [
       "Hippopotamus",
@@ -4258,6 +4258,10 @@
     [
       "Impala",
       "Kori Bustard"
+    ],
+    [
+      "Impala",
+      "Lechwe"
     ],
     [
       "Impala",
@@ -4305,7 +4309,11 @@
     ],
     [
       "Impala",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
+    ],
+    [
+      "Impala",
+      "Sitatunga"
     ],
     [
       "Impala",
@@ -4313,11 +4321,7 @@
     ],
     [
       "Impala",
-      "Thomson's Gazelle"
-    ],
-    [
-      "Impala",
-      "Western Sitatunga"
+      "Thompson's Gazelle"
     ],
     [
       "Impala",
@@ -4364,6 +4368,34 @@
       "Spotted Pond Turtle"
     ],
     [
+      "Indian Muntjac",
+      "Indian Rhinoceros"
+    ],
+    [
+      "Indian Muntjac",
+      "Indian Swamp Deer"
+    ],
+    [
+      "Indian Muntjac",
+      "Mouflon"
+    ],
+    [
+      "Indian Muntjac",
+      "Nepalese Red Panda"
+    ],
+    [
+      "Indian Muntjac",
+      "Nilgai"
+    ],
+    [
+      "Indian Muntjac",
+      "Sambar"
+    ],
+    [
+      "Indian Muntjac",
+      "Sika Deer"
+    ],
+    [
       "Indian Rhinoceros",
       "Indian Swamp Deer"
     ],
@@ -4388,10 +4420,6 @@
       "Sika Deer"
     ],
     [
-      "Indian Rhinoceros",
-      "Southern Red Muntjac"
-    ],
-    [
       "Indian Swamp Deer",
       "Mouflon"
     ],
@@ -4408,16 +4436,16 @@
       "Sika Deer"
     ],
     [
-      "Indian Swamp Deer",
-      "Southern Red Muntjac"
-    ],
-    [
       "Javan Banteng",
       "Reeve's Muntjac"
     ],
     [
       "Javan Banteng",
       "Siamang"
+    ],
+    [
+      "Javan Banteng",
+      "White-Naped Crane"
     ],
     [
       "Kea",
@@ -4489,7 +4517,7 @@
     ],
     [
       "Kori Bustard",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Kori Bustard",
@@ -4524,6 +4552,22 @@
       "Meerkat"
     ],
     [
+      "Lechwe",
+      "Nile Lechwe"
+    ],
+    [
+      "Lechwe",
+      "Plains Zebra"
+    ],
+    [
+      "Lechwe",
+      "Rothschild's Giraffe"
+    ],
+    [
+      "Lechwe",
+      "Scimitar Oryx"
+    ],
+    [
       "Leopard Tortoise",
       "Meerkat"
     ],
@@ -4538,6 +4582,10 @@
     [
       "Leopard Tortoise",
       "Rock Hyrax"
+    ],
+    [
+      "Leopard Tortoise",
+      "Yellow Mongoose"
     ],
     [
       "Lesser Adjutant",
@@ -4565,11 +4613,27 @@
     ],
     [
       "Linnaeus's Two-Toed Sloth",
+      "Red-Shouldered Macaw"
+    ],
+    [
+      "Linnaeus's Two-Toed Sloth",
       "Rodriguez Flying Fox"
     ],
     [
       "Linnaeus's Two-Toed Sloth",
+      "Scaly-Headed Parrot"
+    ],
+    [
+      "Linnaeus's Two-Toed Sloth",
       "Scarlet Ibis"
+    ],
+    [
+      "Linnaeus's Two-Toed Sloth",
+      "Scarlet Macaw"
+    ],
+    [
+      "Linnaeus's Two-Toed Sloth",
+      "Six-Banded Armadillo"
     ],
     [
       "Linnaeus's Two-Toed Sloth",
@@ -4581,38 +4645,10 @@
     ],
     [
       "Linnaeus's Two-Toed Sloth",
-      "White-Faced Saki"
-    ],
-    [
-      "Linneaus's Two-Toed Sloth",
-      "Red-Rumped Agouti"
-    ],
-    [
-      "Linneaus's Two-Toed Sloth",
-      "Red-Shouldered Macaw"
-    ],
-    [
-      "Linneaus's Two-Toed Sloth",
-      "Scaly-Headed Parrot"
-    ],
-    [
-      "Linneaus's Two-Toed Sloth",
-      "Scarlet Macaw"
-    ],
-    [
-      "Linneaus's Two-Toed Sloth",
-      "Six-Banded Armadillo"
-    ],
-    [
-      "Linneaus's Two-Toed Sloth",
-      "Southern Three-Banded Armadillo"
-    ],
-    [
-      "Linneaus's Two-Toed Sloth",
       "Vinaceous-Breasted Amazon"
     ],
     [
-      "Linneaus's Two-Toed Sloth",
+      "Linnaeus's Two-Toed Sloth",
       "White-Faced Saki"
     ],
     [
@@ -4705,7 +4741,11 @@
     ],
     [
       "Marabou Stork",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
+    ],
+    [
+      "Marabou Stork",
+      "Sitatunga"
     ],
     [
       "Marabou Stork",
@@ -4714,10 +4754,6 @@
     [
       "Marabou Stork",
       "Springbok"
-    ],
-    [
-      "Marabou Stork",
-      "Western Sitatunga"
     ],
     [
       "Marabou Stork",
@@ -4745,7 +4781,7 @@
     ],
     [
       "Masai Giraffe",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Masai Giraffe",
@@ -4801,7 +4837,7 @@
     ],
     [
       "Meerkat",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Meerkat",
@@ -4844,20 +4880,16 @@
       "Sika Deer"
     ],
     [
-      "Mouflon",
-      "Southern Red Muntjac"
-    ],
-    [
       "Neotropical Painted Wood Turtle",
       "Pond Slider"
     ],
     [
       "Nepalese Red Panda",
-      "Reeve's Muntjac"
+      "Red-Crowned Crane"
     ],
     [
       "Nepalese Red Panda",
-      "Southern Red Muntjac"
+      "Reeve's Muntjac"
     ],
     [
       "Nepalese Red Panda",
@@ -4881,15 +4913,15 @@
     ],
     [
       "Nile Lechwe",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Nile Lechwe",
-      "Thomson's Gazelle"
+      "Sitatunga"
     ],
     [
       "Nile Lechwe",
-      "Western Sitatunga"
+      "Thompson's Gazelle"
     ],
     [
       "Nilgai",
@@ -4898,10 +4930,6 @@
     [
       "Nilgai",
       "Sika Deer"
-    ],
-    [
-      "Nilgai",
-      "Southern Red Muntjac"
     ],
     [
       "North American Porcupine",
@@ -4917,7 +4945,7 @@
     ],
     [
       "Nyala",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Nyala",
@@ -4977,10 +5005,6 @@
     ],
     [
       "Patagonian Mara",
-      "Vicugna"
-    ],
-    [
-      "Patagonian Mara",
       "Vicuña"
     ],
     [
@@ -4997,7 +5021,7 @@
     ],
     [
       "Pink-Backed Pelican",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Pink-Backed Pelican",
@@ -5021,7 +5045,7 @@
     ],
     [
       "Plains Zebra",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Plains Zebra",
@@ -5033,7 +5057,7 @@
     ],
     [
       "Plains Zebra",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Plains Zebra",
@@ -5097,7 +5121,7 @@
     ],
     [
       "Pygmy Hippopotamus",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Pygmy Hippopotamus",
@@ -5109,6 +5133,10 @@
     ],
     [
       "Pygmy Hippopotamus",
+      "Sitatunga"
+    ],
+    [
+      "Pygmy Hippopotamus",
       "Southern Pudu"
     ],
     [
@@ -5117,7 +5145,7 @@
     ],
     [
       "Pygmy Hippopotamus",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Pygmy Hippopotamus",
@@ -5126,10 +5154,6 @@
     [
       "Pygmy Hippopotamus",
       "Violet Turaco"
-    ],
-    [
-      "Pygmy Hippopotamus",
-      "Western Sitatunga"
     ],
     [
       "Pygmy Marmoset",
@@ -5161,7 +5185,7 @@
     ],
     [
       "Red Kangaroo",
-      "Red-necked Wallaby"
+      "Red-Necked Wallaby"
     ],
     [
       "Red Kangaroo",
@@ -5177,7 +5201,7 @@
     ],
     [
       "Red River Hog",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Red River Hog",
@@ -5237,19 +5261,11 @@
     ],
     [
       "Red-Crowned Crane",
-      "Demoiselle Crane"
-    ],
-    [
-      "Red-Crowned Crane",
-      "Great White Pelican"
-    ],
-    [
-      "Red-Crowned Crane",
-      "Nepalese Red Panda"
-    ],
-    [
-      "Red-Crowned Crane",
       "Reeve's Muntjac"
+    ],
+    [
+      "Red-Crowned Crane",
+      "Sarus Crane"
     ],
     [
       "Red-Crowned Crane",
@@ -5258,14 +5274,6 @@
     [
       "Red-Crowned Crane",
       "White-Naped Crane"
-    ],
-    [
-      "Red-Footed Tortoise",
-      "Common Marmoset"
-    ],
-    [
-      "Red-Footed Tortoise",
-      "Golden Handed Tamarin"
     ],
     [
       "Red-Footed Tortoise",
@@ -5300,6 +5308,10 @@
       "Sunbittern"
     ],
     [
+      "Red-Rumped Agouti",
+      "Scarlet Ibis"
+    ],
+    [
       "Red-Shouldered Macaw",
       "Scaly-Headed Parrot"
     ],
@@ -5321,7 +5333,7 @@
     ],
     [
       "Reticulated Giraffe",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Rhesus Macaque",
@@ -5365,15 +5377,15 @@
     ],
     [
       "Rothschild's Giraffe",
-      "Scimitar-Horned Oryx"
+      "Scimitar Oryx"
     ],
     [
       "Rothschild's Giraffe",
-      "Thomson's Gazelle"
+      "Sitatunga"
     ],
     [
       "Rothschild's Giraffe",
-      "Western Sitatunga"
+      "Thompson's Gazelle"
     ],
     [
       "Rothschild's Giraffe",
@@ -5381,27 +5393,11 @@
     ],
     [
       "Saddle-Billed Stork",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
     ],
     [
       "Sambar",
       "Sika Deer"
-    ],
-    [
-      "Sambar",
-      "Southern Red Muntjac"
-    ],
-    [
-      "Sarus Crane",
-      "Demoiselle Crane"
-    ],
-    [
-      "Sarus Crane",
-      "Great White Pelican"
-    ],
-    [
-      "Sarus Crane",
-      "Red-Crowned Crane"
     ],
     [
       "Sarus Crane",
@@ -5418,18 +5414,6 @@
     [
       "Scaly-Headed Parrot",
       "Vinaceous-Breasted Amazon"
-    ],
-    [
-      "Scarlet Ibis",
-      "Azara's Agouti"
-    ],
-    [
-      "Scarlet Ibis",
-      "Capybara"
-    ],
-    [
-      "Scarlet Ibis",
-      "Red-Rumped Agouti"
     ],
     [
       "Scarlet Ibis",
@@ -5456,12 +5440,16 @@
       "White-Crested Turaco"
     ],
     [
-      "Scimitar-Horned Oryx",
+      "Scimitar Oryx",
       "Springbok"
     ],
     [
-      "Scimitar-Horned Oryx",
+      "Scimitar Oryx",
       "White Rhinoceros"
+    ],
+    [
+      "Secretary Bird",
+      "Yellow Mongoose"
     ],
     [
       "Serval",
@@ -5476,16 +5464,20 @@
       "Tasmanian Devil"
     ],
     [
-      "Sika Deer",
-      "Southern Red Muntjac"
-    ],
-    [
       "Silvery Gibbon",
       "Sumatran Orangutan"
     ],
     [
       "Silvery-Cheeked Hornbill",
-      "Thomson's Gazelle"
+      "Thompson's Gazelle"
+    ],
+    [
+      "Sitatunga",
+      "Southern Ground Hornbill"
+    ],
+    [
+      "Sitatunga",
+      "Thompson's Gazelle"
     ],
     [
       "Six-Banded Armadillo",
@@ -5552,10 +5544,6 @@
       "Yellow-Billed Stork"
     ],
     [
-      "Southern Ground Hornbill",
-      "Western Sitatunga"
-    ],
-    [
       "Southern Pudu",
       "Toco Toucan"
     ],
@@ -5592,11 +5580,7 @@
       "Umbrella Cockatoo"
     ],
     [
-      "Thomson's Gazelle",
-      "Western Sitatunga"
-    ],
-    [
-      "Thomson's Gazelle",
+      "Thompson's Gazelle",
       "White Stork"
     ],
     [
@@ -5644,40 +5628,16 @@
       "Yemen Chameleon"
     ],
     [
+      "White Stork",
+      "White-Naped Crane"
+    ],
+    [
       "White-Crested Turaco",
       "Yellow-Crested Cockatoo"
     ],
     [
       "White-Faced Saki",
       "Yellow-Spotted Amazon River Turtle"
-    ],
-    [
-      "White-Naped Crane",
-      "Blackbuck"
-    ],
-    [
-      "White-Naped Crane",
-      "Great White Pelican"
-    ],
-    [
-      "White-Naped Crane",
-      "Javan Banteng"
-    ],
-    [
-      "White-Naped Crane",
-      "White Stork"
-    ],
-    [
-      "Yellow Mongoose",
-      "Blue Crane"
-    ],
-    [
-      "Yellow Mongoose",
-      "Leopard Tortoise"
-    ],
-    [
-      "Yellow Mongoose",
-      "Secretary Bird"
     ]
   ],
   "proxy_compatibility": {
@@ -5686,18 +5646,18 @@
     "description": "Direct compatible_pairs remain evidence-backed source-of-truth pairs. Named gameplay groups may use complete within-group compatibility or explicit group links, avoiding hundreds of enumerated proxy pairs.",
     "groups": {
       "tamarins": [
-        "Golden Handed Tamarin",
+        "Golden-Handed Tamarin",
         "Golden-Headed Lion Tamarin",
         "Geoffroy's Tufted-Ear Marmoset",
         "Golden Lion Tamarin",
-        "Red-bellied Tamarin",
+        "Red-Bellied Tamarin",
         "Silvery Marmoset",
         "Pied Tamarin",
         "Goeldi's Monkey",
         "Cotton-Top Tamarin",
         "Pygmy Marmoset",
         "Common Marmoset",
-        "Bearded Emperor Tamarin",
+        "Emperor Tamarin",
         "Brown-Mantled Tamarin"
       ],
       "lemurs": [
@@ -5705,7 +5665,7 @@
         "Red-Bellied Lemur",
         "Crowned Lemur",
         "White-Fronted Lemur",
-        "Black and White Ruffed Lemur",
+        "Black-and-White Ruffed Lemur",
         "Ring-Tailed Lemur",
         "Red Ruffed Lemur",
         "Alaotran Bamboo Lemur",
@@ -5813,7 +5773,7 @@
         "Red-Bellied Lemur",
         "Crowned Lemur",
         "White-Fronted Lemur",
-        "Black and White Ruffed Lemur",
+        "Black-and-White Ruffed Lemur",
         "Red Ruffed Lemur",
         "Red-Fronted Lemur",
         "Blue-Eyed Black Lemur",
@@ -5826,7 +5786,7 @@
         "Goeldi's Monkey",
         "Pygmy Marmoset",
         "Common Marmoset",
-        "Bearded Emperor Tamarin"
+        "Emperor Tamarin"
       ],
       "south_american_water_turtles": [
         "Yellow-Spotted Amazon River Turtle",
@@ -5836,7 +5796,7 @@
         "Capybara",
         "Patagonian Mara",
         "Southern Tamandua",
-        "Linneaus's Two-Toed Sloth",
+        "Linnaeus's Two-Toed Sloth",
         "Hoffmann's Two-Toed Sloth",
         "White-Faced Saki",
         "Common Squirrel Monkey",
@@ -5844,7 +5804,7 @@
         "Golden Lion Tamarin",
         "Golden-Headed Lion Tamarin",
         "Cotton-Top Tamarin",
-        "Bearded Emperor Tamarin",
+        "Emperor Tamarin",
         "Goeldi's Monkey",
         "Pygmy Marmoset",
         "Common Marmoset"
@@ -5853,14 +5813,14 @@
         "Capybara",
         "Patagonian Mara",
         "Southern Tamandua",
-        "Linneaus's Two-Toed Sloth",
+        "Linnaeus's Two-Toed Sloth",
         "Hoffmann's Two-Toed Sloth",
         "White-Faced Saki",
         "Common Squirrel Monkey",
         "Golden Lion Tamarin",
         "Golden-Headed Lion Tamarin",
         "Cotton-Top Tamarin",
-        "Bearded Emperor Tamarin",
+        "Emperor Tamarin",
         "Goeldi's Monkey",
         "Pygmy Marmoset",
         "Common Marmoset",
@@ -5869,13 +5829,13 @@
         "Red-Bellied Lemur",
         "Crowned Lemur",
         "White-Fronted Lemur",
-        "Black and White Ruffed Lemur",
+        "Black-and-White Ruffed Lemur",
         "Red Ruffed Lemur",
         "Red-Fronted Lemur",
         "Blue-Eyed Black Lemur"
       ],
       "two_toed_sloths": [
-        "Linneaus's Two-Toed Sloth",
+        "Linnaeus's Two-Toed Sloth",
         "Hoffmann's Two-Toed Sloth"
       ],
       "armadillos": [
@@ -5884,13 +5844,149 @@
         "Six-Banded Armadillo",
         "Nine-Banded Armadillo"
       ],
+      "domestic_farmyard_ungulates": [
+        "Alpaca",
+        "Cameroon Sheep",
+        "Domestic Donkey",
+        "Highland Cattle",
+        "Llama",
+        "West African Dwarf Goat",
+        "Zebu"
+      ],
+      "south_american_camelids": [
+        "Alpaca",
+        "Llama",
+        "Guanaco",
+        "Vicuña"
+      ],
+      "south_american_camelid_open_habitat_partners": [
+        "Capybara",
+        "Collared Peccary",
+        "Giant Anteater",
+        "Greater Rhea",
+        "Lesser Rhea",
+        "Patagonian Mara",
+        "South American Tapir",
+        "Red-Legged Seriema"
+      ],
+      "managed_camels": [
+        "Bactrian Camel",
+        "Dromedary Camel"
+      ],
+      "dromedary_camel_profile": [
+        "Dromedary Camel"
+      ],
+      "dromedary_hot_desert_and_safari_partners": [
+        "Addax",
+        "Dama Gazelle",
+        "Arabian Oryx",
+        "Arabian Sand Gazelle",
+        "Scimitar Oryx",
+        "Gemsbok",
+        "Somali Wild Ass",
+        "Common Ostrich",
+        "Kordofan Giraffe",
+        "Reticulated Giraffe",
+        "Rothschild's Giraffe",
+        "Angolan Giraffe",
+        "Masai Giraffe",
+        "White Rhinoceros"
+      ],
+      "temperate_deer": [
+        "European Roe Deer",
+        "Fallow Deer",
+        "Red Deer"
+      ],
+      "bactrian_camel_asian_savanna_partners": [
+        "Bactrian Camel"
+      ],
+      "curated_asian_savanna_ungulates": [
+        "Axis Deer",
+        "Blackbuck",
+        "Indian Swamp Deer",
+        "Sika Deer",
+        "Nilgai",
+        "Sambar",
+        "Javan Banteng"
+      ],
+      "alpine_ibex_profile": [
+        "Alpine Ibex"
+      ],
+      "alpine_ibex_rocky_caprine_partners": [
+        "Nubian Ibex",
+        "Mouflon",
+        "Barbary Sheep",
+        "Dall Sheep",
+        "Mountain Goat",
+        "Himalayan Tahr",
+        "Markhor",
+        "Blue Sheep"
+      ],
+      "domestic_yak_profile": [
+        "Domestic Yak"
+      ],
+      "domestic_yak_cold_asian_partners": [
+        "Bactrian Camel",
+        "Kiang",
+        "Onager",
+        "Przewalski's Horse",
+        "Blue Sheep",
+        "Himalayan Tahr",
+        "Markhor"
+      ],
+      "wisent_profile": [
+        "Wisent"
+      ],
+      "wisent_temperate_large_paddock_partners": [
+        "Red Deer",
+        "Elk",
+        "Fallow Deer",
+        "Sika Deer",
+        "Wild Boar"
+      ],
+      "reindeer_profile": [
+        "Reindeer"
+      ],
+      "reindeer_cold_paddock_partners": [
+        "Musk Ox",
+        "Dall Sheep",
+        "Mountain Goat"
+      ],
+      "kirks_dikdik_profile": [
+        "Kirk's Dik-Dik"
+      ],
+      "kirks_dikdik_curated_savannah_partners": [
+        "Common Eland",
+        "Impala",
+        "Plains Zebra",
+        "Common Ostrich",
+        "Greater Kudu",
+        "Springbok",
+        "Thompson's Gazelle",
+        "Grévy's Zebra",
+        "Kordofan Giraffe",
+        "Rothschild's Giraffe",
+        "Masai Giraffe",
+        "Angolan Giraffe"
+      ],
+      "plains_zebra_profile": [
+        "Plains Zebra"
+      ],
+      "plains_zebra_additional_savannah_partners": [
+        "Addax",
+        "Dama Gazelle",
+        "Blesbok",
+        "Gerenuk",
+        "Nile Lechwe",
+        "Gemsbok"
+      ],
       "flamingos": [
         "Greater Flamingo",
         "Chilean Flamingo",
         "American Flamingo",
         "Lesser Flamingo",
         "Andean Flamingo",
-        "James Flamingo"
+        "James's Flamingo"
       ],
       "spoonbills": [
         "African Spoonbill",
@@ -5905,6 +6001,7 @@
       "cold_water_mixed_penguins": [
         "Gentoo Penguin",
         "King Penguin",
+        "Adelie Penguin",
         "Rockhopper Penguin",
         "Macaroni Penguin",
         "Chinstrap Penguin"
@@ -5920,7 +6017,7 @@
         "Nursehound",
         "Brown-Banded Bambooshark",
         "Zebra Shark",
-        "Atlantic Nurse Shark",
+        "Nurse Shark",
         "Epaulette Shark",
         "Sandbar Shark",
         "Sand Tiger Shark",
@@ -5935,9 +6032,12 @@
         "Bluespotted Ribbontail Ray",
         "Cownose Ray",
         "Common Eagle Ray",
-        "Ocellated Eagle Ray",
-        "West Atlantic Devil Ray",
+        "Ocellated Eagly Ray",
+        "Lesser Devil Ray",
         "Atlantic Manta Ray"
+      ],
+      "large_public_aquarium_sawfish": [
+        "Green Sawfish"
       ],
       "maras": [
         "Patagonian Mara",
@@ -5949,7 +6049,7 @@
         "Red-Rumped Agouti"
       ],
       "wallabies_and_ground_kangaroos": [
-        "Red-necked Wallaby",
+        "Red-Necked Wallaby",
         "Parma Wallaby",
         "Swamp Wallaby",
         "Agile Wallaby",
@@ -5958,6 +6058,153 @@
         "Eastern Wallaroo",
         "Dusky Pademelon",
         "Yellow-Footed Rock Wallaby"
+      ],
+      "emus": [
+        "Emu"
+      ],
+      "koalas": [
+        "Koala"
+      ],
+      "koala_ground_macropods": [
+        "Swamp Wallaby",
+        "Parma Wallaby",
+        "Red-Necked Wallaby",
+        "Red Kangaroo",
+        "Grey Kangaroo",
+        "Dusky Pademelon"
+      ],
+      "common_wombats": [
+        "Common Wombat"
+      ],
+      "conservative_wombat_ground_macropods": [
+        "Swamp Wallaby",
+        "Red-Necked Wallaby",
+        "Red Kangaroo",
+        "Grey Kangaroo"
+      ],
+      "tree_kangaroos": [
+        "Goodfellow's Tree-Kangaroo",
+        "Matschie's Tree-Kangaroo"
+      ],
+      "new_guinea_ground_macropods": [
+        "Dusky Pademelon",
+        "Brown Dorcopsis"
+      ],
+      "neotropical_psittacine_profile": [
+        "Blue-And-Yellow Macaw",
+        "Red-And-Green Macaw",
+        "Scarlet Macaw",
+        "Military Macaw",
+        "Hyacinth Macaw",
+        "Blue-Throated Macaw",
+        "Blue-Winged Macaw",
+        "Red-Shouldered Macaw",
+        "Great Green Macaw",
+        "Red-Fronted Macaw",
+        "Chestnut-Fronted Macaw",
+        "Blue-Headed Macaw",
+        "Golden-Collared Macaw",
+        "Lear's Macaw",
+        "Red-Bellied Macaw",
+        "Spix's Macaw",
+        "Black-Headed Parrot",
+        "White-Bellied Parrot",
+        "Blue-Headed Parrot",
+        "Scaly-Headed Parrot",
+        "Red-Fan Parrot",
+        "Pacific Parrotlet",
+        "Bronze-Winged Parrot",
+        "White-Crowned Parrot",
+        "Spectacled Parrotlet",
+        "Yellow-Crowned Amazon",
+        "Yellow-Naped Amazon",
+        "Red-Lored Amazon",
+        "Mealy Amazon",
+        "Lilacine Amazon",
+        "Vinaceous-Breasted Amazon",
+        "White-Fronted Amazon",
+        "Yellow-Shouldered Amazon",
+        "Blue-Cheeked Amazon",
+        "Festive Amazon",
+        "Red-Tailed Amazon",
+        "Diademed Amazon",
+        "Yellow-Faced Parrot",
+        "Blue-Fronted Amazon",
+        "Orange-Winged Amazon"
+      ],
+      "neotropical_psittacine_external_partners": [
+        "Burrowing Owl",
+        "Cotton-Top Tamarin",
+        "Curl-Crested Aracari",
+        "Goeldi's Monkey",
+        "Green Aracari",
+        "Green Iguana",
+        "Hartlaub's Turaco",
+        "Linnaeus's Two-Toed Sloth",
+        "Livingstone's Turaco",
+        "Pond Slider",
+        "Roseate Spoonbill",
+        "Scarlet Ibis",
+        "Southern Three-Banded Armadillo",
+        "Sunbittern",
+        "Toco Toucan",
+        "Umbrella Cockatoo"
+      ],
+      "neotropical_tropical_house_mammals": [
+        "Golden-Handed Tamarin",
+        "Golden-Headed Lion Tamarin",
+        "Geoffroy's Tufted-Ear Marmoset",
+        "Golden Lion Tamarin",
+        "Red-Bellied Tamarin",
+        "Silvery Marmoset",
+        "Pied Tamarin",
+        "Goeldi's Monkey",
+        "Cotton-Top Tamarin",
+        "Pygmy Marmoset",
+        "Common Marmoset",
+        "White-Headed Marmoset",
+        "Emperor Tamarin",
+        "Brown-Mantled Tamarin",
+        "Southern Three-Banded Armadillo",
+        "Large Hairy Armadillo",
+        "Six-Banded Armadillo",
+        "Nine-Banded Armadillo",
+        "Linnaeus's Two-Toed Sloth",
+        "Hoffmann's Two-Toed Sloth",
+        "Brown-Throated Sloth",
+        "Azara's Agouti",
+        "Black-Rumped Agouti",
+        "Red-Rumped Agouti",
+        "Patagonian Mara",
+        "Chacoan Mara",
+        "Capybara",
+        "Lowland Paca",
+        "Brazilian Porcupine",
+        "Southern Tamandua",
+        "Plains Viscacha",
+        "Bolivian Squirrel Monkey",
+        "Common Squirrel Monkey",
+        "Black Howler Monkey",
+        "Red Howler Monkey",
+        "White-Faced Saki",
+        "Guaian Bearded Saki",
+        "Red Titi",
+        "Grey-Handed Night Monkey"
+      ],
+      "managed_neotropical_small_carnivorans": [
+        "South American Coati",
+        "Kinkajou"
+      ],
+      "tropical_house_fruit_bats": [
+        "Egyptian Fruit Bat",
+        "Indian Flying Fox",
+        "Large Flying Fox",
+        "Lyle's Flying Fox",
+        "Rodriguez Flying Fox"
+      ],
+      "neotropical_forest_tortoises": [
+        "Red-Footed Tortoise",
+        "Yellow-Footed Tortoise"
       ],
       "south_american_ground_mammals": [
         "Patagonian Mara",
@@ -5974,7 +6221,7 @@
         "Plains Viscacha"
       ],
       "south_american_arboreal_low_conflict": [
-        "Linneaus's Two-Toed Sloth",
+        "Linnaeus's Two-Toed Sloth",
         "Hoffmann's Two-Toed Sloth",
         "White-Faced Saki",
         "Common Squirrel Monkey",
@@ -5985,7 +6232,7 @@
         "Goeldi's Monkey",
         "Pygmy Marmoset",
         "Common Marmoset",
-        "Bearded Emperor Tamarin"
+        "Emperor Tamarin"
       ],
       "managed_caimans": [
         "Cuvier's Dwarf Caiman",
@@ -5998,7 +6245,7 @@
         "Pond Slider"
       ],
       "green_iguanas": [
-        "Common Green Iguana"
+        "Green Iguana"
       ],
       "gibbons": [
         "White-Handed Gibbon",
@@ -6020,10 +6267,10 @@
       ],
       "bushbabies": [
         "Senegal Bushbaby",
-        "Moholi Bushbaby"
+        "Mohol Bushbaby"
       ],
       "asian_small_clawed_otters": [
-        "Asian Small-clawed Otter"
+        "Asian Small-Clawed Otter"
       ],
       "pygmy_hippos": [
         "Pygmy Hippopotamus"
@@ -6059,12 +6306,12 @@
         "Lesser Hedgehog Tenrec"
       ],
       "freshwater_stingrays": [
-        "Ocellate River Stingray",
+        "Peacock-Eye Stingray",
         "Xingu River Ray"
       ],
       "marine_sea_turtles": [
         "Loggerhead Turtle",
-        "Green Seaturtle",
+        "Green Sea Turtle",
         "Hawksbill Turtle",
         "Atlantic Ridley Turtle"
       ],
@@ -6077,6 +6324,37 @@
         "Rhesus Macaque",
         "Crab-Eating Macaque",
         "Lion-Tailed Macaque"
+      ],
+      "red_footed_tortoises": [
+        "Red-Footed Tortoise"
+      ],
+      "small_african_mongooses": [
+        "Dwarf Mongoose",
+        "Yellow Mongoose",
+        "Banded Mongoose"
+      ],
+      "african_savanna_tortoises": [
+        "African Spurred Tortoise",
+        "Leopard Tortoise"
+      ],
+      "rheas": [
+        "Greater Rhea",
+        "Lesser Rhea"
+      ],
+      "conservative_pampas_mammals": [
+        "Capybara",
+        "Patagonian Mara",
+        "Vicuña",
+        "Guanaco",
+        "Southern Pudu"
+      ],
+      "south_american_robust_water_turtles": [
+        "Pond Slider",
+        "Yellow-Spotted Amazon River Turtle",
+        "Arrau River Turtle",
+        "Mata-Mata",
+        "Geoffroy's Side-Necked Turtle",
+        "Neotropical Painted Wood Turtle"
       ]
     },
     "complete_groups": [
@@ -6085,10 +6363,15 @@
       "macaws",
       "parrots",
       "amazons",
+      "neotropical_psittacine_profile",
       "pond_turtles",
       "tortoises",
       "two_toed_sloths",
       "armadillos",
+      "domestic_farmyard_ungulates",
+      "south_american_camelids",
+      "managed_camels",
+      "temperate_deer",
       "flamingos",
       "spoonbills",
       "pelicans",
@@ -6110,6 +6393,60 @@
       "macaques"
     ],
     "group_links": [
+      {
+        "from": "alpine_ibex_profile",
+        "to": "alpine_ibex_rocky_caprine_partners",
+        "mode": "managed_rocky_caprine_proxy",
+        "note": "Narrow gameplay proxy for large rocky exhibits containing similarly managed ibex, sheep, goats and tahr. It assumes ample escape routes, visual barriers and separation of incompatible breeding males; it is not a blanket all-caprine rule."
+      },
+      {
+        "from": "domestic_yak_profile",
+        "to": "domestic_yak_cold_asian_partners",
+        "mode": "cold_asian_steppe_proxy",
+        "note": "Curated cold-steppe/highland proxy for Domestic Yak with large Asian equids and caprines. Hot-desert ungulates and the Dromedary Camel profile are deliberately excluded."
+      },
+      {
+        "from": "wisent_profile",
+        "to": "wisent_temperate_large_paddock_partners",
+        "mode": "temperate_large_paddock_proxy",
+        "note": "Large-paddock gameplay proxy for Wisent with robust temperate deer and Wild Boar. Requires extensive space and separation options; rutting bulls, calving females and boar piglets require active management."
+      },
+      {
+        "from": "reindeer_profile",
+        "to": "reindeer_cold_paddock_partners",
+        "mode": "cold_paddock_proxy",
+        "note": "Conservative cold-climate gameplay proxy for Reindeer with Musk Ox and selected North American mountain ungulates. It assumes a large paddock, compatible individuals and seasonal separation."
+      },
+      {
+        "from": "kirks_dikdik_profile",
+        "to": "kirks_dikdik_curated_savannah_partners",
+        "mode": "sheltered_savannah_proxy",
+        "note": "Curated savannah proxy extending Kirk's Dik-Dik's existing giraffe, bongo and small-mammal mixed-exhibit evidence. Because dik-diks are tiny, territorial browsers, this rule assumes dense thorny refuge zones inaccessible to larger hoofstock and excludes aggressive predators and large pigs."
+      },
+      {
+        "from": "plains_zebra_profile",
+        "to": "plains_zebra_additional_savannah_partners",
+        "mode": "large_savannah_proxy",
+        "note": "Narrow extension of Plains Zebra's thirty established combinations to six further open-savannah antelope already represented in comparable large mixed paddocks. It assumes substantial space and avoids small forest antelope, camelids and additional pigs."
+      },
+      {
+        "from": "south_american_camelids",
+        "to": "south_american_camelid_open_habitat_partners",
+        "mode": "south_american_open_habitat_proxy",
+        "note": "Curated Zoo Curator proxy extending repeated Guanaco, Vicuña and Alpaca mixed-exhibit patterns across the four closely related South American camelids. Partners are restricted to established open-ground South American species; Fallow Deer and Sulawesi Babirusa are not inherited despite isolated direct records. Collared Peccary requires space and separation options."
+      },
+      {
+        "from": "dromedary_camel_profile",
+        "to": "dromedary_hot_desert_and_safari_partners",
+        "mode": "hot_desert_safari_proxy",
+        "note": "Curated large-paddock gameplay proxy for Dromedary Camel. It combines repeated safari-park camel/giraffe/rhinoceros practice with compatible hot-desert antelope, Somali Wild Ass and Common Ostrich. This rule assumes substantial space, retreat areas and managed feeding; it is not transferred to cold-adapted Bactrian Camel."
+      },
+      {
+        "from": "bactrian_camel_asian_savanna_partners",
+        "to": "curated_asian_savanna_ungulates",
+        "mode": "large_asian_savanna_proxy",
+        "note": "Curated gameplay proxy based on large open-range Asian savanna practice, including San Diego Zoo Safari Park's Bactrian camel landscape with Asian deer, blackbuck, nilgai and banteng. It does not imply that every camel or every Asian hoofstock species is interchangeable."
+      },
       {
         "from": "pond_turtles",
         "to": "island_primates",
@@ -6157,6 +6494,30 @@
         "to": "public_aquarium_rays",
         "mode": "large_aquarium_proxy",
         "note": "Large-public-aquarium gameplay proxy. Modern public aquaria routinely maintain selected sharks and rays together in very large systems. Species selection and feeding remain important; freshwater rays and Tiger Shark are excluded from this broad rule."
+      },
+      {
+        "from": "large_public_aquarium_sawfish",
+        "to": "public_aquarium_sharks",
+        "mode": "large_aquarium_proxy",
+        "note": "Large-public-aquarium gameplay proxy for Green Sawfish with the curated shark roster. It represents professionally managed, very large multispecies systems; Tiger Shark remains excluded."
+      },
+      {
+        "from": "large_public_aquarium_sawfish",
+        "to": "public_aquarium_rays",
+        "mode": "large_aquarium_proxy",
+        "note": "Large-public-aquarium gameplay proxy for Green Sawfish with marine rays. Freshwater stingrays are deliberately outside this rule."
+      },
+      {
+        "from": "marine_sea_turtles",
+        "to": "public_aquarium_sharks",
+        "mode": "large_aquarium_proxy",
+        "note": "Curated large-aquarium proxy for sea turtles with established public-aquarium sharks. Existing direct records already anchor Green, Hawksbill and Loggerhead turtles with Bonnethead Shark. Tiger Shark is excluded because its predation risk is not appropriate for blanket compatibility."
+      },
+      {
+        "from": "marine_sea_turtles",
+        "to": "public_aquarium_rays",
+        "mode": "large_aquarium_proxy",
+        "note": "Curated large-aquarium proxy for marine sea turtles with marine rays in spacious public-aquarium systems. It does not include freshwater stingrays."
       },
       {
         "from": "maras",
@@ -6269,6 +6630,108 @@
         "to": "macaques",
         "mode": "taxonomic_husbandry_gameplay_proxy",
         "note": "Requested Zoo Curator gameplay proxy. Mixed macaque exhibits have real institutional precedent, including a long-running National Zoological Park association involving Barbary, lion-tailed and Sulawesi macaques. Because macaques can be socially assertive and closely related species may hybridize, this is a gameplay compatibility rule rather than a blanket real-world husbandry recommendation."
+      },
+      {
+        "from": "red_footed_tortoises",
+        "to": "tamarins",
+        "mode": "repeated_tropical_house_gameplay_proxy",
+        "note": "Six distinct Zoo Curator tamarins/marmosets already have direct modern red-footed-tortoise mixed-exhibit evidence. The remaining tamarin-group members inherit this low-conflict terrestrial-versus-arboreal gameplay compatibility."
+      },
+      {
+        "from": "red_footed_tortoises",
+        "to": "armadillos",
+        "mode": "tropical_house_layer_gameplay_proxy",
+        "note": "Southern Three-Banded Armadillo is directly documented with Red-Footed Tortoise, while multiple other armadillos are independently documented with the same low-conflict tropical-house mammals. Zoo Curator extends this managed ground-layer pattern to the armadillo group."
+      },
+      {
+        "from": "red_footed_tortoises",
+        "to": "two_toed_sloths",
+        "mode": "repeated_tropical_house_gameplay_proxy",
+        "note": "Modern mixed-exhibit evidence supports Red-Footed Tortoise with both two-toed-sloth taxa represented by the Zoo Curator group; this explicit link also prevents spelling variants from fragmenting the rule."
+      },
+      {
+        "from": "small_african_mongooses",
+        "to": "african_savanna_tortoises",
+        "mode": "repeated_named_zoo_gameplay_proxy",
+        "note": "Seven of eight cross-pairs are already directly documented at named institutions. The single inferred pair is Banded Mongoose + African Spurred Tortoise. Breeding animals still require refuge and monitoring."
+      },
+      {
+        "from": "rheas",
+        "to": "conservative_pampas_mammals",
+        "mode": "open_grassland_gameplay_proxy",
+        "note": "A deliberately narrow South American open-grassland proxy supported by multiple modern rhea exhibits. It excludes predators, very small species and dense-forest specialists; individual rheas can still be assertive during breeding."
+      },
+      {
+        "from": "south_american_robust_water_turtles",
+        "to": "managed_caimans",
+        "mode": "managed_crocodilian_turtle_gameplay_proxy",
+        "note": "Gameplay extrapolation grounded in multiple actual zoo exhibits: Pond Slider with Cuvier's, Spectacled and Yacare Caimans; Cuvier's Dwarf Caiman with Arrau, Yellow-Spotted Amazon River, Geoffroy's Side-Necked and Neotropical Painted Wood Turtles; and Yacare Caiman with Mata-Mata. Intended for large adults, ample water/land space, refuges and managed feeding—not as zero-risk breeding advice."
+      },
+      {
+        "from": "emus",
+        "to": "wallabies_and_ground_kangaroos",
+        "mode": "repeated_australian_walkthrough_gameplay_proxy",
+        "note": "Strong gameplay proxy. Five members already have direct Emu evidence in this dataset (Agile, Parma and Red-Necked Wallabies plus Red and Grey Kangaroos). The rule extends that repeated open-walkthrough pattern to Swamp Wallaby, Eastern Wallaroo, Dusky Pademelon and Yellow-Footed Rock Wallaby; breeding males and small macropods still require space, refuge and monitoring."
+      },
+      {
+        "from": "koalas",
+        "to": "koala_ground_macropods",
+        "mode": "arboreal_over_ground_macropod_gameplay_proxy",
+        "note": "Cautious layer-based proxy. Koala + Swamp Wallaby is already a direct pair; Healesville's Koalas area also associates koalas with Parma Wallaby and a pademelon, while Kookaburra Animal Park documents a walkthrough zone containing koala, Red Kangaroo and Red-Necked Wallaby. This does not extend to every ground macropod or imply unrestricted access to koala feeding/rest trees."
+      },
+      {
+        "from": "common_wombats",
+        "to": "conservative_wombat_ground_macropods",
+        "mode": "conservative_shared_ground_habitat_gameplay_proxy",
+        "note": "Narrow gameplay proxy. Common Wombat + Swamp Wallaby is directly documented in the dataset; Budapest's Australian zone places Common Wombat and Red Kangaroo in the same small Australian complex, and field research records wallabies and kangaroos repeatedly using common-wombat burrow landscapes. Kept to four robust/common ground macropods rather than the full wallaby group because wombats are powerful, burrowing and often solitary."
+      },
+      {
+        "from": "tree_kangaroos",
+        "to": "new_guinea_ground_macropods",
+        "mode": "new_guinea_vertical_layer_gameplay_proxy",
+        "note": "Narrow New Guinea forest-layer proxy. Both Goodfellow's and Matschie's Tree-Kangaroos already have direct Dusky Pademelon evidence; Avilon Zoo also holds Matschie's Tree-Kangaroo alongside Dorcopsis records, supporting cautious extension to Brown Dorcopsis. Tree-kangaroos are not made compatible with one another, and the rule does not extend to Australian kangaroos or wallabies."
+      },
+      {
+        "from": "neotropical_psittacine_profile",
+        "to": "neotropical_psittacine_external_partners",
+        "mode": "designer_approved_neotropical_profile_equivalence",
+        "note": "Requested Zoo Curator gameplay rule: the listed New World macaws, mainland Neotropical parrots and geographically eligible Amazons inherit one another's established external partners. Central American taxa are included when their native mainland range reaches modern sloth territory: White-Crowned Parrot, White-Fronted Amazon and Yellow-Naped Amazon qualify. Yellow-Headed Amazon is excluded from this profile because its only Honduran range is in the far northwest/lower Sula Valley, while Hoffmann's Two-Toed Sloth begins in eastern Honduras. Cuban, Yellow-Billed and Yucatan Amazons are excluded as island/Yucatan endemics without modern native sloth overlap; Red-Crowned and Lilac-Crowned Amazons are excluded as Mexico-only taxa. African Grey, Timneh, Senegal, Meyer's and Red-Fronted Parrots, Kea and Northern Kaka are also excluded. This is a gameplay extrapolation, not proof that every generated pair has been directly co-housed."
+      },
+      {
+        "from": "neotropical_psittacine_profile",
+        "to": "neotropical_tropical_house_mammals",
+        "mode": "large_tropical_house_layer_gameplay_proxy",
+        "note": "Designer-approved tropical-house proxy. The 40 eligible New World psittacines may share a sufficiently large, planted, structurally complex tropical house with the listed low-conflict terrestrial, aquatic-edge and small/medium arboreal South American mammals. This extends the existing sloth, Cotton-Top Tamarin, Goeldi's Monkey and Southern Three-Banded Armadillo anchors to all tamarins/marmosets, all four armadillos, all three agoutis, Lowland Paca, Capybara, Brazilian Porcupine, Southern Tamandua, maras, Plains Viscacha, squirrel monkeys, howlers, sakis, Red Titi, Grey-Handed Night Monkey and Brown-Throated Sloth. It represents managed exhibit viability, not unrestricted contact, breeding-season safety or identical husbandry needs."
+      },
+      {
+        "from": "neotropical_psittacine_profile",
+        "to": "managed_neotropical_small_carnivorans",
+        "mode": "conditional_large_tropical_house_gameplay_proxy",
+        "note": "Requested cautious gameplay rule for South American Coati and Kinkajou. Both are agile climbers and potential nest/food competitors, so this compatibility assumes a very large zoned tropical house, inaccessible bird nesting and feeding stations, vertical refuges and managed introductions. It is deliberately separate from the lower-risk mammal group and is not a blanket real-world safety claim."
+      },
+      {
+        "from": "neotropical_psittacine_profile",
+        "to": "tropical_house_fruit_bats",
+        "mode": "free_flight_tropical_house_gameplay_proxy",
+        "note": "Gameplay proxy based on large free-flight tropical-house practice. These fruit bats and flying foxes are Old World rather than South American, but occupy a comparable nocturnal aerial/canopy layer and have mixed-tropical-house precedent alongside parrots and small primates. Compatibility assumes substantial flight volume, separate roosting/feeding areas and monitoring."
+      },
+      {
+        "from": "neotropical_psittacine_profile",
+        "to": "neotropical_forest_tortoises",
+        "mode": "forest_floor_tropical_house_gameplay_proxy",
+        "note": "Low-conflict forest-floor proxy for Red-Footed and Yellow-Footed Tortoises beneath free-flying Neotropical parrots. Arid and island giant tortoises are not generalized into this rule merely because they belong to the broader tortoise gameplay group."
+      },
+      {
+        "from": "neotropical_psittacine_profile",
+        "to": "pond_turtles",
+        "mode": "water_layer_tropical_house_gameplay_proxy",
+        "note": "Requested water-layer proxy for the established non-predatory pond-turtle group beneath free-flying parrots. It assumes separated dry basking/rest areas, adequate water quality and species-appropriate temperatures; snapping turtles, softshells and other predatory or specialist turtles remain excluded."
+      },
+      {
+        "from": "neotropical_psittacine_profile",
+        "to": "south_american_robust_water_turtles",
+        "mode": "neotropical_water_layer_gameplay_proxy",
+        "note": "Adds the curated South American robust water-turtle group, including Arrau River Turtle, Mata-Mata, Geoffroy's Side-Necked Turtle and Neotropical Painted Wood Turtle, to the tropical-house bird profile. This is a habitat-layer rule; suitable water depth, feeding separation and haul-out areas remain necessary."
       }
     ]
   },
@@ -6622,7 +7085,12 @@
         "North Atlantic Harbour Porpoise": "Wild sympatry/hybridisation with Dall's porpoise exists, but Dall's porpoise is not in the current roster.",
         "Green Sawfish/Tiger Shark": "Large-aquarium leads remain to be verified at exact species and shared-tank level before adding."
       }
-    }
+    },
+    "proxy_expansion_v7_7": "New rules are gameplay extrapolations, not universal husbandry advice. Red-footed tortoise/tamarin and mongoose/tortoise links have dense direct-evidence coverage. Rhea/Pampas and caiman/water-turtle links are deliberately curated and carry breeding, refuge, feeding and individual-temperament cautions.",
+    "central_bearded_dragon_v7_7": "Central Bearded Dragon receives only named-institution mixed-exhibit partners. No blanket Australian-lizard group was created because agamids, skinks and monitors can differ strongly in aggression and predation risk.",
+    "australian_marsupial_proxy_pass_v7_8": "Added four deliberately separated Australian/New Guinea rules: Emu with the existing ground-macropod group; Koala with a curated six-species ground-macropod subset; Common Wombat with a still narrower four-species subset; and tree-kangaroos with Dusky Pademelon/Brown Dorcopsis. Koalas, wombats and tree-kangaroos remain outside the complete wallaby/kangaroo group, and tree-kangaroos are not made mutually compatible.",
+    "neotropical_psittacine_profile_v7_9": "Designer-approved external-profile equivalence for 40 New World psittacines: all 16 macaws plus 9 selected parrots and 15 selected Amazons. The Central American boundary follows actual native-range overlap with living sloths rather than a South-America-only cutoff. White-Crowned Parrot, White-Fronted Amazon and Yellow-Naped Amazon are therefore included; Yellow-Headed Amazon is excluded because its northwestern Honduran population does not overlap the sloth's eastern Honduran range. Oceanic Caribbean endemics and African/Oceanic parrots do not inherit this profile. The 16-member external-partner union is derived from the pre-v7.9 effective compatibility graph; no direct-evidence pair was added or rewritten.",
+    "tropical_house_psittacine_proxy_v8_0": "Expanded the 40-species Neotropical psittacine profile to curated tropical-house mammals, fruit bats/flying foxes, Red-/Yellow-Footed Tortoises, pond turtles and robust South American water turtles. Green Iguana was already inherited by all 40 birds in v7.9 and remains so. South American Coati and Kinkajou are isolated in a higher-caution conditional group. Lowland Paca, White-Headed Marmoset and Brown-Throated Sloth are now covered even though they previously had no entry in the effective graph. Reticulated Python and all other constrictors are explicitly excluded because predation risk is incompatible with a free-flight bird proxy."
   },
   "source_websites": [
     "Bartlett, Brereton & Freeman 2024, Journal of Zoological and Botanical Gardens — Goeldi's Monkey mixed-species survey",
@@ -6950,15 +7418,43 @@
     "ZooInstitutes — Klipspringer + Rock Hyrax mixed exhibit, San Diego Zoo (2014)",
     "ZooInstitutes — Klipspringer mixed exhibit, Bioparc Valencia (2019)",
     "ZooInstitutes — African Aviary, Maryland Zoo: Blue Duiker with African birds (2018)",
-    "AZA Ungulate TAGs — Mixed Species Resources / 2017 Mixed-Species Manual"
+    "AZA Ungulate TAGs — Mixed Species Resources / 2017 Mixed-Species Manual",
+    "Toledo Zoo official Ziems Conservatory page — Australian desert exhibit with Central Bearded Dragon, Centralian Blue-Tongued Skink, Frilled Dragon and Kimberley Rock Monitor (accessed 2026-09-20)",
+    "ZooInstitutes — Wilhelma Shingleback Skink + Inland/Central Bearded Dragon photographed mixed exhibit (2005)",
+    "Healesville Sanctuary exhibit roster — Koalas area with Koala, Parma Wallaby and Tasmanian Pademelon",
+    "Kookaburra Animal Park walkthrough record — Emu, Red Kangaroo, Red-Necked Wallaby and Koala House (2024)",
+    "Budapest Zoo Australian-zone descriptions — Common Wombat and Red Kangaroo in the Australian/Hillhouse complex",
+    "Linley et al. / Journal of Mammalogy wombat-burrow study (2024) — wallabies and kangaroos repeatedly use common-wombat burrow landscapes",
+    "ZooInstitutes Avilon Zoo roster — Matschie's Tree-Kangaroo and Dorcopsis records",
+    "McLelland et al., Zoo Biology (2015) — successful Goodfellow's Tree-Kangaroo joey transfer to a Yellow-Footed Rock Wallaby foster",
+    "World Parrot Trust — Yellow-naped Amazon species profile: Pacific slope Oaxaca to northwestern Costa Rica; separate northeastern Honduras/northeastern Nicaragua and Bay Islands populations",
+    "World Parrot Trust — White-fronted Amazon species profile: Yucatan/Belize/northern Guatemala south to western Costa Rica",
+    "World Parrot Trust — White-crowned Parrot species profile: Caribbean slope of Mexico to central Costa Rica and both slopes onward to western Panama",
+    "World Parrot Trust — Yellow-headed Amazon species profile: Belize/Guatemala and lower Sula Valley of northwestern Honduras, with separate Mexican and Tres Marias populations",
+    "Hoffmann's Two-Toed Sloth range review — Central American population from eastern Honduras through Nicaragua, Costa Rica and Panama to western Ecuador",
+    "Central Park Zoo Tropic Zone species community — Rodrigues Flying Fox, tamarins/titis and free-flying parrots including White-Fronted Amazon, Blue-Headed Macaw, Blue-And-Yellow Macaw and Red-And-Green Macaw",
+    "Cincinnati Zoo — Brazilian Porcupine species account: primarily canopy-dwelling, using curved claws and a prehensile tail",
+    "Zoo Curator asset-inventory(5).json — confirmed current card names including Lowland Paca, White-Headed Marmoset, Brown-Throated Sloth, four flying foxes and Reticulated Python",
+    "SeaWorld San Diego — Penguin Encounter: current colony includes King, Adelie, Gentoo, Chinstrap and Macaroni Penguins — https://seaworld.com/san-diego/animals/penguins/",
+    "Georgia Aquarium — Ocean Voyager: 6.3-million-gallon multispecies habitat with whale sharks, manta rays, other rays and several shark species — https://www.georgiaaquarium.org/gallery/ocean-voyager/",
+    "Smithsonian's National Zoo — Kids' Farm: alpacas, cattle, goats and miniature donkeys in the same managed farm exhibit — https://nationalzoo.si.edu/animals/exhibits/kids-farm",
+    "Taronga Zoo Sydney — Backyard to Bush: managed farm trail lists alpaca, sheep and goats — https://www.taronga.org.au/sydney-zoo/habitats-and-trails/backyard-to-bush",
+    "San Diego Zoo Safari Park — Asian Savanna/open-range husbandry precedent for Bactrian camel with selected Asian deer, antelope and banteng; proxy restricted to the exact curated roster",
+    "Zoo Schwerin — 2024 mixed exhibit video record of Vicuña with South American Tapir and Capybara — https://zooinstitutes.com/video/south-american-tapir-vicugna-and-capybara-in-mixed-exhibit-1285.html",
+    "Metro Richmond Zoo — South American exhibit records Llama and Alpaca within a broader collection including tapir, Greater Rhea, Giant Anteater and Capybara; used as supporting habitat-pattern evidence rather than proof of every pair",
+    "Pombia Safari Park — named-institution gallery record of Dromedary Camel with giraffe and White Rhinoceros; used with broader safari-park husbandry evidence for the curated Dromedary profile — http://www.safaripark.it/",
+    "Brookfield Zoo Chicago — Kirk's Dik-Dik husbandry profile: territorial pair, dense shrubs/thorny cover and rocky refuge requirements — https://www.brookfieldzoo.org/animals/kirks-dik-dik",
+    "Smithsonian's National Zoo — Red River Hog profile: territorial omnivore with tusks, capable of taking eggs, reptiles, carrion and domestic animals; supports retaining evidence-only hog partners — https://nationalzoo.si.edu/animals/red-river-hog",
+    "San Diego Zoo Safari Park and other large open-range savannah exhibits — recurring zebra with antelope, giraffe, rhinoceros and ratite husbandry pattern; v8.4 extension restricted to six additional open-savannah ungulates"
   ],
   "metadata": {
-    "version": "7.6",
-    "update": "African small-ungulate deep pass: dik-dik, duikers and klipspringer.",
+    "version": "8.4",
+    "update": "Level 2 ungulate audit: filled Alpine Ibex, Domestic Yak and Wisent coverage gaps; expanded Reindeer, Kirk's Dik-Dik and Plains Zebra conservatively; retained hogs as evidence-led rather than blanket-grouped.",
     "legacy_generic_rufous_pairs_removed": 0,
-    "direct_pairs_added_this_pass": 8,
+    "direct_pairs_added_this_pass": 0,
     "direct_pairs_removed_this_pass": 0,
-    "proxy_group_change": "Added managed_caimans plus pond_sliders/green_iguanas group-links; managed_caimans is NOT a complete_group.",
+    "effective_proxy_pairs_added_this_pass": 41,
+    "proxy_group_change": "Added six narrow single-species profiles: Alpine Ibex with eight rocky caprines; Domestic Yak with seven cold Asian steppe/highland ungulates; Wisent with five robust temperate paddock partners; Reindeer with three cold-paddock partners; Kirk's Dik-Dik with twelve sheltered-savannah partners; and Plains Zebra with six additional open-savannah antelope. Red River Hog and Collared Peccary received no blanket proxy.",
     "research_pass_notes": [
       "v6.3 coati/meerkat/raccoon/skunk pass: added 17 exact Zoo Curator pairs backed by named-institution mixed-exhibit records. Unknown-institution-only records were excluded. Meerkat already had very broad coverage (42 pairs), so this pass concentrated on under-covered coatis, raccoons and skunks.",
       "v6.4 Burgers' Zoo mixed-exhibit pass. Added direct official-zoo evidence from Burgers' Desert and Rimba. This includes Black-Tailed Prairie Dog + North American Porcupine, several Rimba hoofstock/siamang links, and Turkey Vulture links where Burgers explicitly describes free-flying Desert birds as able to enter the peccary, porcupine and prairie-dog enclosures. No pairs were inferred merely because species occur in the same ecodisplay.",
@@ -6969,8 +7465,132 @@
       "v6.9 targeted cleanup/expansion: normalized the typo 'Black-Tailed Prairie Dog' to 'Black-Tailed Prairie Dog' throughout the JSON and deduplicated normalized direct pairs. Added Asian Elephant + Blackbuck (documented at Dublin/Zurich) and Asian Elephant + Red Deer (Dierenrijk) while retaining the existing Asian Elephant + Crab-Eating Macaque evidence. Added complete gameplay proxy groups for capuchins and macaques at the user's request. The existing parrots and spider_monkeys complete groups already provide the requested taxonomic same-group compatibility, so they were preserved rather than duplicated. Proxy rules are explicitly labelled as gameplay extrapolations, not claims that every pair is a documented zoo mixed exhibit.",
       "v7.4 focused tamarin/marmoset/armadillo/two-toed-sloth audit. Added modern named-institution direct pairs: Bearded Emperor Tamarin + Six-Banded Armadillo (CERZA, 2025); Golden-Headed Lion Tamarin + Southern Three-Banded Armadillo (Zoo Brno, 2025); Pygmy Marmoset + Southern Three-Banded Armadillo (Allwetterzoo Münster, 2025); Common Marmoset + Large Hairy Armadillo and + Six-Banded Armadillo (Bridlington Animal Park, 2024); Geoffroy's Tufted-Ear Marmoset + Linnaeus's Two-Toed Sloth (Woodside Wildlife Park, 2024); Large Hairy Armadillo + Linnaeus's Two-Toed Sloth (Parco Natura Viva, 2024); Cotton-Top Tamarin + Large Hairy Armadillo (Spaycific'Zoo, reported 2011). Existing gameplay group-links already make all named tamarins/marmosets compatible with the armadillo and two-toed-sloth groups; this pass strengthens the direct evidence layer without pretending every cross-pair has its own zoo record.",
       "v7.5 small-ungulate pass. Added only direct or tightly taxon-matched named-institution records; no blanket 'small deer/antelope' proxy was created. Kirk's Dik-Dik records include Aardvark (Prague/Faunia), Reticulated Giraffe (Frankfurt/Ramat Gan), Common Dwarf Mongoose (Wroclaw), and the Bongo + Red Duiker community at Bioparc Valencia. Blue Duiker records include Aardvark (Burgers' Zoo) and Pygmy Hippopotamus (San Diego); Red Duiker shares the San Diego mixed exhibit; Yellow-Backed Duiker + Bongo is documented by Saint Louis Zoo and Milwaukee. Reeve's/Chinese Muntjac has modern direct records with Red Panda, Binturong and Indian Rhinoceros; Southern Red Muntjac/Indian Muntjac gets only taxonomically exact Muntiacus muntjak records (Red Panda/Binturong). Philippine/Balabac Mouse-Deer + Grey Slender Loris is based on Antwerp's documented nocturnal mixed exhibit. Southern Pudu + Toco Toucan is directly documented by Brandywine Zoo. Existing Southern Pudu links to Giant Anteater, Capybara, tapir, coati, peccary and rhea were retained. Javan Chevrotain was not blanket-linked to other Tragulus mixed exhibits because species-level evidence was insufficient.",
-      "v7.6 African small-ungulate deep pass. Added exact named-institution records rather than creating a blanket small-antelope proxy. Red Duiker + Bongo is directly documented in Bioparc Valencia's multispecies equatorial-African enclosure and historically at Burgers' Zoo. Yellow-Backed Duiker + Bat-Eared Fox is documented at Los Angeles Zoo. Klipspringer + Rock Hyrax is documented at San Diego Zoo and Bioparc Valencia; Klipspringer + Hamerkop occurs in Bioparc Valencia's 2019 mixed exhibit. Maryland Zoo's 2018 African Aviary directly supports Blue Duiker with Hamerkop, African Spoonbill, Hadada Ibis and Von Der Decken's Hornbill. Existing exact Kirk's Dik-Dik, duiker and klipspringer links were retained. No blanket duiker↔duiker, dik-dik↔klipspringer, or generic small-African-antelope complete group was created because territoriality, body-size differences and exhibit design make those extrapolations too broad."
+      "v7.6 African small-ungulate deep pass. Added exact named-institution records rather than creating a blanket small-antelope proxy. Red Duiker + Bongo is directly documented in Bioparc Valencia's multispecies equatorial-African enclosure and historically at Burgers' Zoo. Yellow-Backed Duiker + Bat-Eared Fox is documented at Los Angeles Zoo. Klipspringer + Rock Hyrax is documented at San Diego Zoo and Bioparc Valencia; Klipspringer + Hamerkop occurs in Bioparc Valencia's 2019 mixed exhibit. Maryland Zoo's 2018 African Aviary directly supports Blue Duiker with Hamerkop, African Spoonbill, Hadada Ibis and Von Der Decken's Hornbill. Existing exact Kirk's Dik-Dik, duiker and klipspringer links were retained. No blanket duiker↔duiker, dik-dik↔klipspringer, or generic small-African-antelope complete group was created because territoriality, body-size differences and exhibit design make those extrapolations too broad.",
+      "v7.7 duplicate cleanup and proxy/reptile pass. Canonicalized genuine spelling, capitalization and taxonomic-name duplicates, then deduplicated symmetric direct pairs. Added four Central Bearded Dragon direct pairs: Shingleback Skink (Wilhelma photographed mixed exhibit, 2005) and Centralian Blue-Tongued Skink, Frilled Dragon and Kimberley Rock Monitor (Toledo Zoo Ziems Conservatory Australian desert exhibit). Added narrowly labelled gameplay group-links only where several independent direct records establish the same ecological/husbandry pattern. The water-turtle rule is restricted to robust South American taxa and managed caimans; no blanket all-turtle/all-crocodilian rule was created. Dwarf Crocodile was not folded into the caiman proxy because the evidence base and geography are different.",
+      "v7.8 Australian marsupial proxy pass. Emu is linked to the existing wallaby/ground-kangaroo group because five members already have independent direct Emu evidence. Koala receives a curated six-species ground-macropod subset based on the existing Swamp Wallaby pair plus Healesville/Kookaburra exhibit patterns. Common Wombat receives a narrower four-species subset because captive evidence is sparse and wombats are powerful, burrowing and often solitary. Goodfellow's and Matschie's Tree-Kangaroos link only to Dusky Pademelon and Brown Dorcopsis, reflecting New Guinea forest-layer evidence; tree-kangaroos are not made compatible with each other. No new pair was inserted into compatible_pairs without exact shared-exhibit proof.",
+      "v7.9 Neotropical psittacine profile pass. All 16 macaws plus 9 selected New World parrots and 15 Amazons now form one designer-approved gameplay profile and inherit the union of the group's established non-psittacine partners. Central American inclusion was checked at range level: White-Crowned Parrot, White-Fronted Amazon and Yellow-Naped Amazon reach territory occupied by living sloths. Yellow-Headed Amazon was not included because its northwestern Honduran range does not overlap Hoffmann's Two-Toed Sloth in eastern Honduras. Cuban, Yellow-Billed and Yucatan Amazons, Mexico-only Red-Crowned and Lilac-Crowned Amazons, and African/Oceanic parrots remain outside this external-profile rule. The direct compatible_pairs evidence list is unchanged.",
+      "v8.0 tropical-house psittacine proxy pass. Added curated habitat-layer links from the 40 eligible New World psittacines to all tamarins/marmosets, all armadillos, three sloths, all agoutis, Lowland Paca, Capybara, Brazilian Porcupine, Southern Tamandua, maras, Plains Viscacha, squirrel monkeys, howlers, sakis, Red Titi and Grey-Handed Night Monkey. South American Coati and Kinkajou are included only as a separately labelled conditional large-house proxy. Five fruit bats/flying foxes receive a free-flight tropical-house rule despite being Old World taxa. Red-/Yellow-Footed Tortoises, the non-predatory pond-turtle group and robust South American water turtles receive ground/water-layer links. Green Iguana was already compatible with all profile birds in v7.9. Reticulated Python and other constrictors remain excluded because the predation risk is categorical rather than a habitat-layer issue. No direct compatible_pairs record was added or changed.",
+      "v8.1 Marine Mania aquarium pass. Corrected Atlantic Nurse Shark→Nurse Shark, West Atlantic Devil Ray→Lesser Devil Ray and Ocellate River Stingray→Peacock-Eye Stingray in proxy groups so the rules match current card names. Green Sawfish now participates in the curated large public-aquarium shark/ray network. Marine sea turtles inherit compatible curated sharks and rays, while Tiger Shark and freshwater rays remain excluded. Adelie Penguin joins the cold-water mixed-penguin group based on SeaWorld San Diego's documented King/Adelie/Gentoo/Chinstrap/Macaroni colony. Pinnipeds, cetaceans, Orca, Northern Elephant Seal and other difficult specialists remain direct-evidence-only.",
+      "v8.2 Level 1 ungulate pass. Audited all 14 current Level 1 ungulate cards. Ten direct records used the obsolete label Eurasian Wild Boar and were canonicalized to Wild Boar. A seven-card domestic-farmyard group is supported by modern zoo farm exhibits and provides practical partners for Cameroon Sheep, Domestic Donkey, Highland Cattle, West African Dwarf Goat, Zebu, Alpaca and Llama. Alpaca/Llama also join Guanaco/Vicuña in a South American camelid gameplay group. Bactrian Camel receives Dromedary Camel plus a curated seven-species Asian-savanna roster; European Roe Deer receives Fallow Deer and Red Deer through a narrow temperate-deer group. No universal deer, cattle, sheep/goat, pig or all-ungulate rule was added.",
+      "v8.3 camelid deep pass. South American camelids now inherit a curated union of repeatedly documented open-ground partners: Capybara, Collared Peccary, Giant Anteater, Greater and Lesser Rheas, Patagonian Mara, South American Tapir and Red-Legged Seriema. Isolated non-geographic Alpaca records such as Sulawesi Babirusa and Fallow Deer were not propagated. Dromedary Camel receives a separately filtered hot-desert/safari roster of desert antelope, Somali Wild Ass, Common Ostrich, giraffes and White Rhinoceros. Bactrian Camel remains restricted to its cooler Asian-savanna profile. These are labelled gameplay proxies and assume large paddocks, managed feeding and separation options.",
+      "v8.4 Level 2 ungulate pass. Audited all 17 current Level 2 cards. The three zero-coverage cards receive climate- and habitat-filtered profiles: Alpine Ibex with selected rocky caprines, Domestic Yak with cold Asian steppe/highland ungulates, and Wisent with robust temperate paddock species. Reindeer expands from one to four partners. Kirk's Dik-Dik expands from six to eighteen through a sheltered-savannah rule requiring dense refuges inaccessible to larger hoofstock. Plains Zebra expands from thirty to thirty-seven total partners, adding only six further open-savannah antelope because most likely partners were already documented. Red River Hog and Collared Peccary were deliberately left at sixteen and eighteen: their existing evidence is already strong, while territoriality, tusks and omnivory make a generic hog or pig proxy unsafe."
     ],
+    "level2_ungulate_pass_v8_4": {
+      "cards_audited": 17,
+      "effective_pairs_before": 6910,
+      "effective_pairs_after": 6951,
+      "effective_pairs_added": 41,
+      "direct_pairs_added": 0,
+      "coverage_after_pass": {
+        "Alpine Ibex": 8,
+        "Barbary Sheep": 16,
+        "Blackbuck": 13,
+        "Collared Peccary": 18,
+        "Domestic Yak": 7,
+        "Dromedary Camel": 15,
+        "Elk": 13,
+        "Guanaco": 12,
+        "Kirk's Dik-Dik": 18,
+        "Lechwe": 18,
+        "Plains Zebra": 37,
+        "Red River Hog": 16,
+        "Reeve's Muntjac": 7,
+        "Reindeer": 4,
+        "Sika Deer": 12,
+        "Vicuña": 11,
+        "Wisent": 5
+      },
+      "hog_review": {
+        "Collared Peccary": "Retained 18 effective partners. No blanket peccary/hog rule added.",
+        "Red River Hog": "Retained 16 direct partners. No forest-primate or all-savannah inheritance added because omnivory, tusks, territoriality and risk to young animals require exact exhibit evidence."
+      },
+      "savannah_boundaries": [
+        "Kirk's Dik-Dik compatibility assumes dense thorny refuge zones and escape routes that larger hoofstock cannot enter.",
+        "Plains Zebra was not linked to every African hoofstock card; the extension is restricted to six additional open-savannah antelope.",
+        "No predator, large pig or forest-antelope compatibility was inferred merely from living on the same continent."
+      ]
+    },
+    "camelid_deep_pass_v8_3": {
+      "effective_pairs_before": 6879,
+      "effective_pairs_after": 6910,
+      "effective_pairs_added": 31,
+      "direct_pairs_added": 0,
+      "coverage_after_pass": {
+        "Alpaca": 17,
+        "Llama": 16,
+        "Guanaco": 12,
+        "Vicuña": 11,
+        "Bactrian Camel": 8,
+        "Dromedary Camel": 15
+      },
+      "deliberate_boundaries": [
+        "Bactrian Camel and Dromedary Camel remain mutually compatible but do not inherit each other's climate-specific partner profiles.",
+        "Fallow Deer and Sulawesi Babirusa remain isolated direct Alpaca/Guanaco evidence and were not generalized across South American camelids.",
+        "Dromedary Camel's safari profile assumes a very large managed paddock and is not a recommendation for small enclosures.",
+        "Collared Peccary is included from two independent camelid anchors but requires retreat space and active management."
+      ]
+    },
+    "level1_ungulate_pass_v8_2": {
+      "cards_audited": 14,
+      "effective_pairs_before": 6843,
+      "effective_pairs_after": 6879,
+      "new_current_name_or_new_rule_pairs": 46,
+      "stale_alias_pairs_retired": 10,
+      "net_effective_pairs_added": 36,
+      "coverage_after_pass": {
+        "Alpaca": 13,
+        "Axis Deer": 16,
+        "Bactrian Camel": 8,
+        "Cameroon Sheep": 6,
+        "Domestic Donkey": 8,
+        "European Roe Deer": 2,
+        "Fallow Deer": 4,
+        "Highland Cattle": 6,
+        "Llama": 8,
+        "Mouflon": 10,
+        "Red Deer": 3,
+        "West African Dwarf Goat": 6,
+        "Wild Boar": 10,
+        "Zebu": 8
+      },
+      "cautions": [
+        "The farmyard and camelid rules are gameplay proxies for compatible managed groups, not a claim that arbitrary intact breeding males can always share space.",
+        "Wild Boar retains only the ten previously evidenced direct combinations recovered by correcting its card name; no broad pig/deer proxy was added.",
+        "Mouflon and Axis Deer already had substantial direct coverage and were not given additional blanket taxonomic rules."
+      ]
+    },
+    "marine_mania_aquarium_pass_v8_1": {
+      "scope": "All 81 current Marine Mania cards audited against direct and proxy-generated compatibility.",
+      "direct_pairs_changed": 0,
+      "effective_pairs_before": 6737,
+      "effective_pairs_after": 6843,
+      "new_current_name_or_new_rule_pairs": 146,
+      "stale_alias_pairs_retired": 40,
+      "net_effective_pairs_added": 106,
+      "current_card_aliases_repaired": {
+        "Atlantic Nurse Shark": "Nurse Shark",
+        "West Atlantic Devil Ray": "Lesser Devil Ray",
+        "Ocellate River Stingray": "Peacock-Eye Stingray"
+      },
+      "deliberate_exclusions": [
+        "Tiger Shark is excluded from broad mixed-aquarium proxies because of predation and size risk.",
+        "Freshwater stingrays are not linked to marine shark, ray, sawfish or sea-turtle groups.",
+        "Pinnipeds and cetaceans remain direct-evidence-only because social structure, aggression, predation, water temperature and pool design make blanket taxonomic rules unsafe.",
+        "Orca, Northern Elephant Seal and sparsely documented specialist cetaceans were not given speculative combinations.",
+        "Emperor Penguin retains only its documented direct compatibility; it was not added to the broad colony proxy without equivalent mixed-colony evidence."
+      ],
+      "current_marine_cards_still_at_zero_effective_pairs": [
+        "Harbour Porpoise",
+        "Indian Ocean Humpback Dolphin",
+        "Melon-Headed Whale",
+        "Northern Elephant Seal",
+        "Orca",
+        "Orinoco Dolphin",
+        "Short-Finned Pilot Whale",
+        "Tiger Shark",
+        "Yangtze Finless Porpoise"
+      ]
+    },
     "mongoose_audit_2026_09_19": "Audited Zoo Curator mongoose taxa against ZooRope's named-institution Herpestidae records, then reviewed ZooChat for additional actual-zoo reports. Added ZooRope-backed pairs: Common Kusimanse + African Brush-Tailed Porcupine (Paignton), Banded Mongoose + Red-Billed Hornbill (Tiergarten Nürnberg), Yellow Mongoose + Blue Crane (Five Sisters), Yellow Mongoose + Leopard Tortoise (Toni's Zoo), and Yellow Mongoose + Secretary Bird (Magdeburg mixed exhibit). Added one ZooChat-backed modern pair: Meerkat + Scimitar-Horned Oryx (ARTIS Amsterdam, reported May 2026). Speculative exhibit-idea posts and unknown-institution ZooRope records were not added.",
     "crane_pass_2026_09_19": "Targeted crane pass added 30 previously missing direct pairs from named zoo mixed exhibits. Priority was given to modern post-2000 records. Large crane species were not given a blanket compatibility proxy: husbandry literature warns that Sarus and Wattled Cranes can become aggressive in mixed collections, particularly during breeding. Only documented shared exhibits were converted into direct compatibility.",
     "red_footed_tortoise_targeted_pass_2026_09_20": {
@@ -7032,6 +7652,37 @@
         "additional_caimans": "Overloon and Vancouver house red-footed tortoises and caimans within the same themed houses/galleries, but available sources do not establish unrestricted shared enclosure access. Cuvier's Dwarf Caiman remains the existing direct pair; no blanket managed-caiman rule added."
       }
     },
-    "capybara_agouti_scarlet_ibis_turaco_pass_2026_09_20": "Added/confirmed Capybara + agouti and Scarlet Ibis + Capybara/agouti from documented mixed exhibits and capybara husbandry guidance. EAZA Turaco Best Practice Guidelines explicitly list Capybara with Red-crested and White-cheeked Turacos without reported problems. No blanket all-turaco proxy added."
+    "capybara_agouti_scarlet_ibis_turaco_pass_2026_09_20": "Added/confirmed Capybara + agouti and Scarlet Ibis + Capybara/agouti from documented mixed exhibits and capybara husbandry guidance. EAZA Turaco Best Practice Guidelines explicitly list Capybara with Red-crested and White-cheeked Turacos without reported problems. No blanket all-turaco proxy added.",
+    "aliases_normalized_this_pass": {
+      "Asian Small-clawed Otter": "Asian Small-Clawed Otter",
+      "Diana's Monkey": "Diana Monkey",
+      "Grevy's Zebra": "Grévy's Zebra",
+      "Linneaus's Two-Toed Sloth": "Linnaeus's Two-Toed Sloth",
+      "Vicuna": "Vicuña",
+      "Vicugna": "Vicuña",
+      "Common Dwarf Mongoose": "Dwarf Mongoose",
+      "Common Green Iguana": "Green Iguana",
+      "Golden Handed Tamarin": "Golden-Handed Tamarin",
+      "Black and White Ruffed Lemur": "Black-and-White Ruffed Lemur",
+      "Black-And-Refous Elephant Shrew": "Black-and-Rufous Elephant Shrew",
+      "Bushtail Possum": "Brushtail Possum",
+      "Burmese Rock Python": "Burmese Python",
+      "Francois' Langur": "François' Langur",
+      "Green Seaturtle": "Green Sea Turtle",
+      "James Flamingo": "James's Flamingo",
+      "Moholi Bushbaby": "Mohol Bushbaby",
+      "Ocellated Eagle Ray": "Ocellated Eagly Ray",
+      "Red-bellied Tamarin": "Red-Bellied Tamarin",
+      "Red-necked Wallaby": "Red-Necked Wallaby",
+      "Scimitar-Horned Oryx": "Scimitar Oryx",
+      "Thomson's Gazelle": "Thompson's Gazelle",
+      "Common Fallow Deer": "Fallow Deer",
+      "Common Lechwe": "Lechwe",
+      "Western Sitatunga": "Sitatunga",
+      "Elk (Wapiti)": "Elk",
+      "Southern Red Muntjac": "Indian Muntjac",
+      "Bearded Emperor Tamarin": "Emperor Tamarin",
+      "Eurasian Wild Boar": "Wild Boar"
+    }
   }
 }

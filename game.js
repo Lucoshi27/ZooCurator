@@ -1839,6 +1839,32 @@ function preloadAnimals(animals) {
     );
 }
 
+// Startup-only progress counter for the images already present in the zoo.
+// A completed count advances whether an image loaded successfully or hit the
+// existing fail-safe, so a bad asset cannot leave the counter frozen forever.
+async function preloadAnimalsWithProgress(animals) {
+    const items = (animals || []).filter(Boolean);
+    const total = items.length;
+
+    setLoading('Loading Zoo Curator...', `Loading image data 0/${total}`);
+
+    if (total === 0) return [];
+
+    let completed = 0;
+
+    return Promise.all(
+        items.map(animal =>
+            preloadAnimalAsset(animal).finally(() => {
+                completed += 1;
+                setLoading(
+                    'Loading Zoo Curator...',
+                    `Loading image data ${completed}/${total}`
+                );
+            })
+        )
+    );
+}
+
 function chooseNextLevelOneSpec() {
     const availableCategories = Object.keys(FOLDERS).filter(category => {
         if (!state.activeCategories.has(category)) return false;
@@ -13764,6 +13790,10 @@ async function startGame() {
             createZooNameEditor();
         }
 
+        // Make startup progress visible on mobile instead of showing only a
+        // generic image-loading message.
+        await preloadAnimalsWithProgress(state.animals);
+
         document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
         renderAll();
         state.loaded = true;
@@ -13799,9 +13829,6 @@ async function startGame() {
         // Nothing below this line is allowed to delay the visible/playable zoo.
         setTimeout(() => {
             loadNonEssentialGameData();
-            preloadAnimals(state.animals).catch(error =>
-                console.warn('Starting-card preload did not finish:', error)
-            );
             prepareNextDrawAsset();
         }, 0);
     }

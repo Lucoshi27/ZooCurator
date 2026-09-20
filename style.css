@@ -2141,7 +2141,8 @@ body.history-viewing #zooCanvas .animal-card {
         transform-origin: top center;
     }
 
-    /* The JS uses the matching 144px narrow-desktop trade-card target. */
+    /* JavaScript chooses the matching trade-card size for the active desktop
+       width; V171 overrides MacBook-class widths below. */
     #opponentTradeArea {
         --trade-card-gap: 10px;
     }
@@ -2181,5 +2182,29 @@ body.history-viewing #zooCanvas .animal-card {
         position: fixed;
         left: auto;
         right: 18px;
+    }
+}
+
+/* ============================================================
+   V171 â€” MACBOOK VISUAL MATCH
+   Restore more of the established wide-desktop visual weight at the
+   1363/1365px MacBook-class viewport. The narrower Other Zoos column creates
+   enough right-side room for larger trade cards and a deliberate gap after
+   Upgrade, without disturbing either mobile or the 1920px composition.
+   ============================================================ */
+@media (min-width: 701px) and (max-width: 1450px) {
+    #progressTracker {
+        transform: scale(0.65);
+        transform-origin: top left;
+    }
+
+    #headerActions {
+        left: 51.25vw;
+        transform: translateX(-50%) scale(0.86);
+        transform-origin: top center;
+    }
+
+    #opponentZoos {
+        width: 201px;
     }
 }

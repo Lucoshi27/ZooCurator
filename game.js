@@ -1,8 +1,8 @@
 /*
- * ZOO CURATOR V166 — EXACT PRE-MACBOOK HEADER LAYOUT RESTORE
+ * ZOO CURATOR V166 — GENERATE ZOO SETUP
  * Known-good GitHub baseline. Future builds must descend from this version.
  */
-const ZOO_CURATOR_VERSION = "V167";
+const ZOO_CURATOR_VERSION = "V166";
 
 
 // ============================================================
@@ -6424,6 +6424,12 @@ function renderProgressTracker() {
 
     tracker.appendChild(table);
 
+    // The tracker is rebuilt as progression changes, so re-check the live
+    // desktop header after the browser has laid out the new table.
+    queueMicrotask(() => {
+        fitProgressTrackerAroundActions();
+        positionOpponentTradeArea();
+    });
 }
 
 
@@ -10304,15 +10310,245 @@ function startFreshZooFromCurrentOptions() {
     centerInitialView();
 }
 
+// ============================================================
+// V166 — GENERATE ZOO / NEW GAME SETUP
+// ============================================================
+function zooSetupCountries() {
+    const places = state.zooNamesData?.places;
+    if (!places || typeof places !== 'object' || Array.isArray(places)) return [];
+    return Object.keys(places).sort((a, b) => a.localeCompare(b));
+}
+
+function flattenZooSetupLocations(value, output = []) {
+    if (Array.isArray(value)) {
+        for (const item of value) {
+            if (typeof item === 'string' && item.trim()) output.push(item.trim());
+            else if (item && typeof item === 'object') flattenZooSetupLocations(item, output);
+        }
+    } else if (value && typeof value === 'object') {
+        for (const child of Object.values(value)) flattenZooSetupLocations(child, output);
+    }
+    return [...new Set(output)];
+}
+
+function zooSetupLocations(country) {
+    return flattenZooSetupLocations(state.zooNamesData?.places?.[country]);
+}
+
+function zooSetupPrefixGroups(country, location = '') {
+    const root = state.zooNamesData?.prefixes?.[country];
+    if (!root || typeof root !== 'object') return [];
+
+    const types = new Set(['general','aquarium','tropical','safari','forest','farm','bird','reptile','alpine']);
+    const groups = [];
+
+    function visit(node) {
+        if (!node || typeof node !== 'object') return;
+        for (const [key, value] of Object.entries(node)) {
+            if (types.has(key) && Array.isArray(value)) {
+                for (const prefix of value) {
+                    if (typeof prefix === 'string' && prefix.trim()) {
+                        groups.push({ prefix: prefix.trim(), zooType: key });
+                    }
+                }
+            } else if (value && typeof value === 'object') {
+                visit(value);
+            }
+        }
+    }
+    visit(root);
+    return groups;
+}
+
+function generateZooSetupIdentity(country, keepCountry = true) {
+    const countries = zooSetupCountries();
+    const chosenCountry =
+        keepCountry && country && countries.includes(country)
+            ? country
+            : (countries.length ? randomItem(countries) : 'Netherlands');
+
+    const locations = zooSetupLocations(chosenCountry);
+    const location = locations.length ? randomItem(locations) : chosenCountry;
+    const groups = zooSetupPrefixGroups(chosenCountry, location);
+    const choice = groups.length
+        ? randomItem(groups)
+        : { prefix: 'Zoo', zooType: 'general' };
+
+    return {
+        country: chosenCountry,
+        location,
+        zooName: `${choice.prefix} ${location}`.replace(/\s+/g, ' ').trim(),
+        zooType: choice.zooType || 'general'
+    };
+}
+
+function inferZooTypeFromGeneratedName(country, zooName) {
+    const name = String(zooName || '').trim().toLowerCase();
+    if (!name) return 'general';
+
+    const groups = zooSetupPrefixGroups(country);
+    const match = groups
+        .filter(item => name.includes(item.prefix.toLowerCase()))
+        .sort((a, b) => b.prefix.length - a.prefix.length)[0];
+
+    return match?.zooType || 'general';
+}
+
+function ensureGenerateZooUI() {
+    let overlay = document.getElementById('generateZooOverlay');
+    if (overlay) return overlay;
+
+    overlay = document.createElement('div');
+    overlay.id = 'generateZooOverlay';
+    overlay.className = 'game-options-overlay';
+    overlay.innerHTML = `
+        <div class="game-options-modal" style="max-width:560px">
+            <h2>Generate Zoo</h2>
+            <p>Choose where your new zoo is based. Generated values can be edited before starting.</p>
+
+            <div class="advanced-game-rules">
+                <label>
+                    <span>Country</span>
+                    <select id="generateZooCountry"></select>
+                </label>
+                <label>
+                    <span>Location</span>
+                    <input id="generateZooLocation" type="text" autocomplete="off">
+                </label>
+                <label>
+                    <span>Zoo Name</span>
+                    <input id="generateZooName" type="text" autocomplete="off">
+                </label>
+                <div class="advanced-options-note">
+                    Zoo Type: <strong id="generateZooType">general</strong>
+                </div>
+            </div>
+
+            <div class="options-actions" style="flex-wrap:wrap">
+                <button type="button" id="generateZooRandomZoo">Randomize Zoo</button>
+                <button type="button" id="generateZooRandomEverything">Randomize Everything</button>
+                <span style="flex:1 1 auto"></span>
+                <button type="button" id="generateZooCancel">Cancel</button>
+                <button type="button" id="generateZooStart">Start New Game</button>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+
+    const country = overlay.querySelector('#generateZooCountry');
+    const location = overlay.querySelector('#generateZooLocation');
+    const zooName = overlay.querySelector('#generateZooName');
+    const zooType = overlay.querySelector('#generateZooType');
+
+    function refreshCountries(preferred) {
+        const countries = zooSetupCountries();
+        country.innerHTML = '';
+        const pool = countries.length ? countries : ['Netherlands'];
+        for (const value of pool) {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            country.appendChild(option);
+        }
+        country.value = pool.includes(preferred) ? preferred : pool[0];
+    }
+
+    function applyIdentity(identity) {
+        refreshCountries(identity.country);
+        country.value = identity.country;
+        location.value = identity.location;
+        zooName.value = identity.zooName;
+        zooType.textContent = identity.zooType || 'general';
+        overlay.dataset.generatedZooType = identity.zooType || 'general';
+    }
+
+    function updateInferredType() {
+        const inferred = inferZooTypeFromGeneratedName(country.value, zooName.value);
+        zooType.textContent = inferred;
+        overlay.dataset.generatedZooType = inferred;
+    }
+
+    country.addEventListener('change', () => {
+        applyIdentity(generateZooSetupIdentity(country.value, true));
+    });
+    zooName.addEventListener('input', updateInferredType);
+
+    overlay.querySelector('#generateZooRandomZoo').addEventListener('click', () => {
+        applyIdentity(generateZooSetupIdentity(country.value, true));
+    });
+    overlay.querySelector('#generateZooRandomEverything').addEventListener('click', () => {
+        applyIdentity(generateZooSetupIdentity('', false));
+    });
+    overlay.querySelector('#generateZooCancel').addEventListener('click', () => {
+        overlay.classList.remove('visible');
+        resumeHintGlowsAfterMenu();
+    });
+    overlay.addEventListener('pointerdown', event => {
+        if (event.target === overlay) {
+            overlay.classList.remove('visible');
+            resumeHintGlowsAfterMenu();
+        }
+    });
+
+    overlay.querySelector('#generateZooStart').addEventListener('click', () => {
+        const finalName = zooName.value.trim();
+        const finalLocation = location.value.trim();
+        if (!finalName) {
+            alert('Please enter a zoo name.');
+            zooName.focus();
+            return;
+        }
+        if (!finalLocation) {
+            alert('Please enter a location.');
+            location.focus();
+            return;
+        }
+
+        clearAutoResumeSnapshot();
+
+        // createStartingZoo resets the playable zoo; assign the chosen identity
+        // afterwards so the normal random-name routine cannot overwrite it.
+        createStartingZoo();
+        state.zooName = finalName;
+        state.zooCountry = country.value;
+        state.zooLocation = finalLocation;
+        state.zooType = inferZooTypeFromGeneratedName(country.value, finalName);
+
+        assignOpponentProfiles();
+        createZooNameEditor();
+        renderAll();
+        centerInitialView();
+        writeAutoResumeSnapshot(true);
+
+        overlay.classList.remove('visible');
+        resumeHintGlowsAfterMenu();
+    });
+
+    overlay._applyZooIdentity = applyIdentity;
+    return overlay;
+}
+
+function openGenerateZooMenu() {
+    pauseAllHintGlowsForMenu();
+    const overlay = ensureGenerateZooUI();
+
+    const countries = zooSetupCountries();
+    const rememberedCountry =
+        state.zooCountry && countries.includes(state.zooCountry)
+            ? state.zooCountry
+            : (countries.includes('Netherlands') ? 'Netherlands' : countries[0]);
+
+    overlay._applyZooIdentity(generateZooSetupIdentity(rememberedCountry, true));
+    overlay.classList.add('visible');
+}
+
 function requestNewGame() {
     if (state.historyViewTurn !== null) {
         exitHistoryView(true);
     }
 
-    // New Game now routes through the existing Save / Load menu. This gives
-    // the player an explicit opportunity to save before starting over, without
-    // the ambiguous OK/Cancel confirmation prompt.
-    openSaveLoadMenu();
+    // V166: New Game opens the dedicated Generate Zoo setup instead of
+    // immediately replacing the zoo or routing through Save / Load.
+    openGenerateZooMenu();
 }
 
 function ensureGameOptionsUI() {
@@ -12085,14 +12321,13 @@ function ensureOpponentZooElements() {
     }
 }
 
-// V164 — compact desktop/laptop header collision guard.
+// V165 — preserve the established desktop composition on laptop viewports.
 //
-// A MacBook can expose a desktop-width CSS viewport while still leaving too
-// little room for the progression table, Draw/Exchange controls, trade cards
-// and Other Zoos panel on one row. The old code clamped the fixed trade cards
-// to the viewport, but did not reserve the space occupied by the other header
-// elements. These helpers measure the live layout and reduce/reposition only
-// when a collision actually exists, so wide desktop layouts remain unchanged.
+// The normal stylesheet remains the source of truth for position. On a narrower
+// desktop/MacBook viewport we ONLY scale the progression tracker if its natural
+// desktop position would collide with Draw/Exchange. We do not relocate it to a
+// newly calculated x/y coordinate. This keeps the older desktop composition
+// visually identical while allowing it to fit on a smaller screen.
 function visibleElementRect(element) {
     if (!element || !element.isConnected) return null;
     const style = window.getComputedStyle(element);
@@ -12132,20 +12367,51 @@ function actionControlsRect() {
 }
 
 function fitProgressTrackerAroundActions() {
-    // V166: intentionally no-op. The 09:33 pre-MacBook-fix build left the
-    // progression tracker entirely in its stylesheet-defined desktop position
-    // and scale. Keeping this function inert prevents newer gameplay code from
-    // accidentally reintroducing the responsive header rewrite.
-    return;
+    const tracker = document.getElementById('progressTracker');
+    if (!tracker) return;
+
+    // Always restore the exact stylesheet position before measuring. Mobile has
+    // its own CSS and must never inherit a desktop correction.
+    tracker.style.removeProperty('transform');
+    tracker.style.removeProperty('transform-origin');
+    tracker.style.removeProperty('position');
+    tracker.style.removeProperty('left');
+    tracker.style.removeProperty('right');
+    tracker.style.removeProperty('top');
+    tracker.style.removeProperty('z-index');
+    tracker.classList.remove('laptop-header-fitted');
+
+    if (window.matchMedia('(max-width: 700px)').matches) return;
+
+    const controls = actionControlsRect();
+    const natural = visibleElementRect(tracker);
+    if (!controls || !natural) return;
+
+    const gap = 12;
+
+    // If the old desktop layout already fits, leave BOTH scale and position
+    // completely untouched. This is what makes the transition seamless.
+    if (!rectsOverlap(natural, controls, gap)) return;
+
+    // Preserve the tracker's natural top-left point. Only its rendered width and
+    // height are reduced. This avoids the horizontal/vertical drift introduced
+    // by the previous fixed-position MacBook guard.
+    const availableWidth = Math.max(1, controls.left - gap - natural.left);
+    const scale = Math.max(0.50, Math.min(1, availableWidth / natural.width));
+
+    tracker.style.transformOrigin = 'top left';
+    tracker.style.transform = `scale(${scale})`;
+    tracker.classList.add('laptop-header-fitted');
 }
 
 function positionOpponentTradeArea() {
     const area = document.getElementById('opponentTradeArea');
 
-    // Mobile layout is controlled entirely by CSS. Clear the desktop inline
-    // positioning/sizing so it cannot bunch the phone HUD together.
+    // Mobile layout is controlled entirely by CSS. Clear every desktop inline
+    // correction so the phone HUD remains unchanged.
     if (window.matchMedia('(max-width: 700px)').matches) {
         if (!area) return;
+        area.classList.remove('laptop-trade-below-header');
         area.style.position = '';
         area.style.left = '';
         area.style.right = '';
@@ -12158,60 +12424,49 @@ function positionOpponentTradeArea() {
         area.style.removeProperty('--trade-card-gap');
         return;
     }
+
     const opponents = document.getElementById('opponentZoos');
     const rowReference = exchange1 || drawCard || resultBox;
     if (!area || !opponents || !rowReference) return;
 
-    const opponentRect = opponents.getBoundingClientRect();
-    const rowRect = rowReference.getBoundingClientRect();
-    const header = document.getElementById('actionMenu');
-    const headerRect = header ? header.getBoundingClientRect() : { bottom: 220 };
-    const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+    fitProgressTrackerAroundActions();
 
-    // Make the trade cards as large as the remaining header height allows,
-    // while keeping the animal-card 1000:1440 aspect ratio. This keeps them
-    // on the same action row but gives the trade area substantially more
-    // visual weight, roughly matching the progression tracker vertically.
-    // Use the version 65 target size, but never exceed the live header.
-    // Centre the cards vertically inside the header so they sit snugly like
-    // the progression tracker rather than hanging from the Exchange row.
+    const opponentRect = opponents.getBoundingClientRect();
+    const header = document.getElementById('actionMenu');
+    const headerRect = header ? header.getBoundingClientRect() : { top: 0, height: 200 };
+
+    // Restore the established V65–V76 trade-card dimensions and positioning.
+    // Crucially, do not shrink the cards according to whatever horizontal gap
+    // happens to remain on a MacBook; that changed both their scale and their
+    // perceived position compared with the older desktop layout.
     const headerPadding = 8;
     const maxHeaderHeight = Math.max(144, Math.floor(headerRect.height - (headerPadding * 2)));
-    // V171: wide desktop keeps the established 184px trade cards. The
-    // MacBook-class layout uses 170px cards: much closer to the original
-    // visual weight, while still fitting between Upgrade and Other Zoos.
-    const narrowDesktop = viewportWidth > 700 && viewportWidth <= 1600;
-    const macbookDesktop = viewportWidth > 700 && viewportWidth <= 1450;
-    const desiredHeight = macbookDesktop ? 170 : (narrowDesktop ? 151 : 184);
+    const desiredHeight = 184;
     const cardHeight = Math.min(desiredHeight, maxHeaderHeight);
     const cardWidth = Math.round(cardHeight * (1000 / 1440));
-    const cardGap = narrowDesktop ? 10 : 12;
+    const cardGap = 12;
     const areaWidth = (cardWidth * 2) + cardGap;
-    // The compact pair ends at the Other Zoos boundary. This shifts it 18px
-    // right from V167 and leaves an 11px gap after the scaled action group.
-    const gapBeforeOpponents = narrowDesktop ? 0 : 18;
+    const gapBeforeOpponents = 18;
     const screenPadding = 12;
 
     area.style.setProperty('--trade-card-height', `${cardHeight}px`);
     area.style.setProperty('--trade-card-width', `${cardWidth}px`);
     area.style.setProperty('--trade-card-gap', `${cardGap}px`);
 
-    // Anchor the trade pair to the OPPONENT panel, not to the transformed
-    // exchange controls. This guarantees that the boxes are always visible
-    // immediately to the left of the opponent zoo names.
-    const opponentsVisible = opponentRect.width > 0 && opponentRect.left < viewportWidth;
-    const rightBoundary = opponentsVisible ? opponentRect.left : viewportWidth - screenPadding;
-    let left = rightBoundary - gapBeforeOpponents - areaWidth;
-    left = Math.max(screenPadding, Math.min(left, viewportWidth - areaWidth - screenPadding));
+    // Match the older layout: the pair belongs immediately to the left of Other
+    // Zoos. Its x-position therefore follows that panel, not Draw/Exchange or
+    // the progression tracker.
+    let left = opponentRect.left - gapBeforeOpponents - areaWidth;
+    left = Math.max(screenPadding, Math.min(left, window.innerWidth - areaWidth - screenPadding));
 
+    // Match the older vertical placement as well: centred within the header.
+    const top = headerRect.top + Math.max(headerPadding, (headerRect.height - cardHeight) / 2);
+
+    area.classList.remove('laptop-trade-below-header');
     area.style.position = 'fixed';
     area.style.left = `${Math.round(left)}px`;
     area.style.right = 'auto';
-
-    // Use an actual action card as the vertical reference so Outgoing and
-    // Incoming are exactly level with Draw / Exchange rather than the title.
-    const centredTop = headerRect.top + Math.max(headerPadding, (headerRect.height - cardHeight) / 2);
-    area.style.top = `${Math.round(centredTop)}px`;
+    area.style.top = `${Math.round(top)}px`;
     area.style.display = 'flex';
     area.style.visibility = 'visible';
     area.style.opacity = '1';
@@ -13774,11 +14029,11 @@ function loadNonEssentialGameData() {
             indexAnimalDatabase();
         });
 
-    loadOptionalJsonInBackground('zoo-names.json')
+    loadOptionalJsonInBackground('zoo-names-europe-zoo-types.txt')
+        .catch(() => loadOptionalJsonInBackground('zoo-names.json'))
         .then(data => {
-            // Keep valid names already assigned to the current zoo/opponents.
-            // If an old production save carried a loading placeholder, repair
-            // it now from the real downloaded name pool as a final safeguard.
+            // V166: the expanded European database can provide country,
+            // location, prefix and zoo-type information for Generate Zoo.
             state.zooNamesData = data;
             if (repairLoadedZooName()) {
                 createZooNameEditor();

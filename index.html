@@ -16,15 +16,12 @@
 
     <title>Zoo Curator</title>
 
-    <script>
-        // Development cache-busting: always request the current deployed CSS.
-        (function () {
-            var link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = './style.css?v=' + Date.now();
-            document.head.appendChild(link);
-        }());
-    </script>
+    <!--
+        Use a fixed deployment version instead of Date.now(). Phones can now
+        reuse the cached stylesheet between visits. Change this value only
+        when style.css is actually updated.
+    -->
+    <link rel="stylesheet" href="./style.css?v=20260920-mobile-diagnostics-2">
 </head>
 
 <body>
@@ -45,6 +42,13 @@
 
         <div id="bootDetail">
             Starting...
+        </div>
+
+        <pre id="bootDiagnostics" style="display:none; width:min(680px,92vw); max-height:42vh; margin:18px 0 0; padding:12px; overflow:auto; border:1px solid #999; border-radius:6px; background:#fff; color:#111; font:12px/1.4 monospace; text-align:left; white-space:pre-wrap; overflow-wrap:anywhere;"></pre>
+
+        <div id="bootDiagnosticActions" style="display:none; gap:8px; margin-top:10px; flex-wrap:wrap; justify-content:center;">
+            <button id="copyBootDiagnostics" type="button">Copy diagnostics</button>
+            <button id="freshBootRetry" type="button">Retry without auto-resume</button>
         </div>
 
     </div>
@@ -260,6 +264,17 @@
             window.__zooScriptStarted = false;
             window.__zooGameReady = false;
 
+            var diagnosticStartedAt = Date.now();
+            var diagnosticEntries = [];
+            var previousDiagnostics = '';
+
+            try {
+                previousDiagnostics = sessionStorage.getItem('zooStartupDiagnosticsV2') || '';
+                sessionStorage.removeItem('zooStartupDiagnosticsV2');
+            } catch (storageError) {
+                previousDiagnostics = 'Previous diagnostics unavailable: ' + storageError;
+            }
+
             function bootElement(id) {
                 return document.getElementById(id);
             }
@@ -288,10 +303,85 @@
                 boot.style.textAlign = 'center';
             }
 
+            function diagnosticText(includePrevious) {
+                var lines = [
+                    'Zoo Curator mobile startup diagnostics',
+                    'URL: ' + location.href,
+                    'Online: ' + String(navigator.onLine),
+                    'User agent: ' + navigator.userAgent,
+                    '',
+                    diagnosticEntries.join('\n')
+                ];
+
+                try {
+                    var resources = performance.getEntriesByType('resource')
+                        .filter(function (entry) {
+                            return /(?:game\.js|translations-nl\.js|asset-inventory\.json|style\.css)/.test(entry.name);
+                        })
+                        .map(function (entry) {
+                            var name = entry.name.split('/').pop();
+                            return name + ': ' + Math.round(entry.duration) + 'ms, ' +
+                                (entry.transferSize || 0) + ' bytes transferred';
+                        });
+                    if (resources.length) {
+                        lines.push('', 'Resources:', resources.join('\n'));
+                    }
+                } catch (performanceError) {
+                    lines.push('', 'Resource timing unavailable: ' + performanceError);
+                }
+
+                if (includePrevious && previousDiagnostics) {
+                    lines.push('', 'Previous attempt:', previousDiagnostics);
+                }
+                return lines.join('\n');
+            }
+
+            function saveDiagnostics() {
+                try {
+                    sessionStorage.setItem(
+                        'zooStartupDiagnosticsV2',
+                        diagnosticText(false).slice(0, 12000)
+                    );
+                } catch (storageError) {
+                    // Diagnostics must never become a startup dependency.
+                }
+            }
+
+            function recordDiagnostic(stage, detail) {
+                var elapsed = Date.now() - diagnosticStartedAt;
+                var line = '+' + elapsed + 'ms — ' + stage;
+                if (detail) line += ': ' + detail;
+                diagnosticEntries.push(line);
+                if (diagnosticEntries.length > 120) diagnosticEntries.shift();
+                saveDiagnostics();
+
+                var panel = bootElement('bootDiagnostics');
+                if (panel && panel.style.display !== 'none') {
+                    panel.textContent = diagnosticText(true);
+                }
+            }
+
+            function showDiagnostics() {
+                var panel = bootElement('bootDiagnostics');
+                var actions = bootElement('bootDiagnosticActions');
+                if (panel) {
+                    panel.style.display = 'block';
+                    panel.textContent = diagnosticText(true);
+                }
+                if (actions) actions.style.display = 'flex';
+            }
+
+            window.__zooDiag = recordDiagnostic;
+            window.__zooShowDiagnostics = showDiagnostics;
+            recordDiagnostic('HTML watchdog started');
+
             function showStartupProblem(title, detail) {
                 if (window.__zooGameReady) return;
 
+                recordDiagnostic('Startup problem', (title || '') + ' — ' + (detail || ''));
+
                 makeBootVisible();
+                showDiagnostics();
 
                 var status = bootElement('bootStatus');
                 var info = bootElement('bootDetail');
@@ -302,11 +392,45 @@
 
             makeBootVisible();
 
+            var copyButton = bootElement('copyBootDiagnostics');
+            if (copyButton) {
+                copyButton.addEventListener('click', function () {
+                    var text = diagnosticText(true);
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(text).then(function () {
+                            copyButton.textContent = 'Copied';
+                        }, function () {
+                            copyButton.textContent = 'Copy failed — take a screenshot';
+                        });
+                    } else {
+                        copyButton.textContent = 'Copy unavailable — take a screenshot';
+                    }
+                });
+            }
+
+            var freshRetryButton = bootElement('freshBootRetry');
+            if (freshRetryButton) {
+                freshRetryButton.addEventListener('click', function () {
+                    recordDiagnostic('User requested retry without auto-resume');
+                    try {
+                        localStorage.removeItem('zooCuratorAutoResumeV1');
+                    } catch (storageError) {
+                        recordDiagnostic('Could not clear auto-resume', String(storageError));
+                    }
+                    location.reload();
+                });
+            }
+
             window.addEventListener('error', function (event) {
                 if (window.__zooGameReady) return;
 
                 var target = event.target;
-                if (target && target.tagName === 'SCRIPT') {
+                if (
+                    target &&
+                    target.tagName === 'SCRIPT' &&
+                    /(?:^|\/)game\.js(?:\?|$)/.test(target.src || '')
+                ) {
+                    recordDiagnostic('game.js resource error', target.src || 'unknown script URL');
                     showStartupProblem(
                         'Zoo Curator could not load game.js.',
                         'The game script was blocked, missing, or an old cached copy was used. Reload the page.'
@@ -315,6 +439,7 @@
                 }
 
                 if (!window.__zooScriptStarted) {
+                    recordDiagnostic('JavaScript error before game startup', event.message || 'Unknown error');
                     showStartupProblem(
                         'Zoo Curator could not start.',
                         (event.message || 'JavaScript failed before startup.') +
@@ -326,6 +451,7 @@
             window.addEventListener('unhandledrejection', function (event) {
                 if (window.__zooGameReady) return;
                 var reason = event.reason;
+                recordDiagnostic('Unhandled startup rejection', reason && reason.message ? reason.message : String(reason));
                 showStartupProblem(
                     'Zoo Curator hit a startup error.',
                     reason && (reason.message || reason.toString) ?
@@ -334,14 +460,20 @@
                 );
             });
 
+            window.setTimeout(function () {
+                if (window.__zooGameReady) return;
+                recordDiagnostic('Startup still running after 12 seconds');
+                showDiagnostics();
+            }, 12000);
+
             // Never allow a phone to sit on an unexplained blank/loading page.
             window.setTimeout(function () {
                 if (window.__zooGameReady) return;
                 showStartupProblem(
                     'Zoo Curator is taking longer than expected.',
-                    'Startup has not finished after 20 seconds. Check the connection and reload. The game now times out stalled data/image requests instead of waiting forever.'
+                    'Startup has not finished after 60 seconds. Copy the diagnostics below or take a screenshot and send it to me.'
                 );
-            }, 20000);
+            }, 60000);
         }());
     </script>
 
@@ -351,15 +483,41 @@
          ===================================================== -->
 
     <script>
-        // Development cache-busting: always request the current deployed game.js.
-        // No manual ?v=101, ?v=102, etc. changes are needed anymore.
+        // Start the optional translations and the game independently. The old
+        // loader waited for translations-nl.js before it even requested
+        // game.js; a stalled translation request could therefore prevent the
+        // game from starting indefinitely on mobile Safari.
         (function () {
-            var stamp = Date.now();
+            var version = '20260920-mobile-diagnostics-2';
+
+            function refreshDutchUi() {
+                // Usually translations finish first because the file is much
+                // smaller than game.js. If they finish second, refresh the
+                // already-running game without making translations mandatory.
+                try {
+                    if (typeof window.localizeDocument === 'function') {
+                        window.localizeDocument();
+                    }
+                    if (
+                        window.__zooGameReady &&
+                        typeof window.renderAll === 'function'
+                    ) {
+                        window.renderAll();
+                    }
+                } catch (error) {
+                    console.warn('Could not refresh translated UI:', error);
+                }
+            }
 
             function loadGame() {
                 var script = document.createElement('script');
-                script.src = './game.js?v=' + stamp;
+                script.src = './game.js?v=' + version;
+                if (window.__zooDiag) window.__zooDiag('game.js requested', script.src);
+                script.onload = function () {
+                    if (window.__zooDiag) window.__zooDiag('game.js downloaded and executed');
+                };
                 script.onerror = function () {
+                    if (window.__zooDiag) window.__zooDiag('game.js download failed', script.src);
                     var s = document.getElementById('bootStatus');
                     var d = document.getElementById('bootDetail');
                     if (s) s.textContent = 'Zoo Curator could not load game.js.';
@@ -369,13 +527,21 @@
                 document.body.appendChild(script);
             }
 
-            // Translations live outside game.js. If the translation file is
-            // unavailable, Zoo Curator still starts normally in English.
+            // Translations remain optional and download in parallel.
             var translations = document.createElement('script');
-            translations.src = './translations-nl.js?v=' + stamp;
-            translations.onload = loadGame;
-            translations.onerror = loadGame;
+            translations.src = './translations-nl.js?v=' + version;
+            if (window.__zooDiag) window.__zooDiag('Translations requested', translations.src);
+            translations.onload = function () {
+                if (window.__zooDiag) window.__zooDiag('Translations downloaded');
+                refreshDutchUi();
+            };
+            translations.onerror = function () {
+                if (window.__zooDiag) window.__zooDiag('Translations unavailable; continuing in English');
+                console.warn('Dutch translations could not be loaded; continuing in English.');
+            };
             document.body.appendChild(translations);
+
+            loadGame();
         }());
     </script>
 

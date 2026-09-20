@@ -1,5 +1,5 @@
 /*
- * ZOO CURATOR V76 — DRAG + COMPATIBILITY HOVER FIXES
+ * ZOO CURATOR V76 â€” DRAG + COMPATIBILITY HOVER FIXES
  * Known-good GitHub baseline. Future builds must descend from this version.
  */
 
@@ -1181,7 +1181,7 @@ body {
 
 
 /* ============================================================
-   V18 — OPPONENT TRADE AREA / EXPANDING OPPONENT LIST
+   V18 â€” OPPONENT TRADE AREA / EXPANDING OPPONENT LIST
    ============================================================ */
 .opponent-trade-area {
     /* Same vertical action row as Draw/Exchange. JavaScript positions this
@@ -1217,7 +1217,7 @@ body {
 
 
 /* ============================================================
-   V21 — AUTONOMOUS OPPONENT OFFERS
+   V21 â€” AUTONOMOUS OPPONENT OFFERS
    ============================================================ */
 .decline-opponent-offer {
     position:absolute;
@@ -1237,7 +1237,7 @@ body {
 
 
 /* ============================================================
-   V26 — LARGE HEADER-FITTING TRADE CARDS
+   V26 â€” LARGE HEADER-FITTING TRADE CARDS
    ============================================================ */
 .opponent-trade-area {
     gap: var(--trade-card-gap, 12px) !important;
@@ -1260,7 +1260,7 @@ body {
 
 
 /* ============================================================
-   V27 — OPPONENT TRADE VALIDATION + PREFERENCE BARS
+   V27 â€” OPPONENT TRADE VALIDATION + PREFERENCE BARS
    ============================================================ */
 .trade-offer.trade-locked .incoming-trade-card {
     cursor: not-allowed !important;
@@ -1382,7 +1382,7 @@ body {
     opacity: .68;
 }
 /* ============================================================
-   V32 — PHONE ACTION HUD
+   V32 â€” PHONE ACTION HUD
    Keep the zoo world unchanged; only reorganise the fixed header.
    ============================================================ */
 @media (max-width: 700px) {
@@ -1534,7 +1534,7 @@ body {
 }
 
 /* ============================================================
-   V33 — OPTIONS/TURN ORDER + MOBILE TAP PREVIEW
+   V33 â€” OPTIONS/TURN ORDER + MOBILE TAP PREVIEW
    ============================================================ */
 
 /* Game Options sits above the turn counter on desktop and mobile. */
@@ -1612,7 +1612,7 @@ body {
 
 
 /* ============================================================
-   V35 — MOBILE TOP BAR + SMOOTH TOUCH ZOOM SUPPORT
+   V35 â€” MOBILE TOP BAR + SMOOTH TOUCH ZOOM SUPPORT
    ============================================================ */
 .advanced-game-rules select {
     box-sizing: border-box;
@@ -1687,7 +1687,7 @@ body {
 }
 
 /* ============================================================
-   V39 — MOBILE PREVIEW / PINCH / BOTTOM TRADE HUD
+   V39 â€” MOBILE PREVIEW / PINCH / BOTTOM TRADE HUD
    ============================================================ */
 
 @media (max-width: 700px) {
@@ -1825,7 +1825,7 @@ body {
 
 
 /* ============================================================
-   V40 — TRADE-ELIGIBLE BLUE CARD GLOW
+   V40 â€” TRADE-ELIGIBLE BLUE CARD GLOW
    ============================================================ */
 .animal-card.trade-eligible-glow {
     filter:
@@ -1844,7 +1844,7 @@ body {
 }
 
 /* ============================================================
-   V44 — BLUE TRADE GLOW FADE
+   V44 â€” BLUE TRADE GLOW FADE
    ============================================================ */
 .animal-card.trade-eligible-glow {
     transition: filter 1s ease-out;
@@ -1859,7 +1859,7 @@ body {
 
 
 /* ============================================================
-   V45 — SAVE / LOAD + TURN HISTORY
+   V45 â€” SAVE / LOAD + TURN HISTORY
    ============================================================ */
 
 #headerLeft {
@@ -2081,7 +2081,7 @@ body.history-viewing #turnOrder {
 }
 
 /* ============================================================
-   V47 — NO YELLOW UPGRADE GLOW IN TURN-HISTORY VIEW
+   V47 â€” NO YELLOW UPGRADE GLOW IN TURN-HISTORY VIEW
    ============================================================ */
 
 /* Historical snapshots are inspection-only. Upgrade-ready/selected yellow
@@ -2092,7 +2092,7 @@ body.history-viewing #zooCanvas .animal-card {
 }
 
 /* ============================================================
-   V48 — NO BLUE TRADE GLOW IN TURN-HISTORY VIEW
+   V48 â€” NO BLUE TRADE GLOW IN TURN-HISTORY VIEW
    ============================================================ */
 body.history-viewing #zooCanvas .animal-card.trade-eligible-glow,
 body.history-viewing #zooCanvas .animal-card.trade-eligible-glow-fading {
@@ -2101,7 +2101,7 @@ body.history-viewing #zooCanvas .animal-card.trade-eligible-glow-fading {
 }
 
 /* ============================================================
-   V49 — LOCK ENCLOSURES IN TURN-HISTORY VIEW
+   V49 â€” LOCK ENCLOSURES IN TURN-HISTORY VIEW
    ============================================================ */
 body.history-viewing #zooCanvas .enclosure,
 body.history-viewing #zooCanvas .enclosure * {
@@ -2113,9 +2113,36 @@ body.history-viewing #zooCanvas .enclosure * {
 
 
 /* ============================================================
-   V50 — HISTORICAL ANIMAL PREVIEW / ZOOM RESTORED
+   V50 â€” HISTORICAL ANIMAL PREVIEW / ZOOM RESTORED
    ============================================================ */
 body.history-viewing #zooCanvas .animal-card {
     pointer-events: auto !important;
     cursor: zoom-in;
+}
+
+/* ============================================================
+   V167 â€” NARROW DESKTOP / MACBOOK HEADER FIT
+   Keep the established wide-desktop composition, but scale the
+   three central HUD groups proportionally when the viewport is
+   narrower than a full-size desktop. Mobile remains untouched.
+   ============================================================ */
+@media (min-width: 701px) and (max-width: 1600px) {
+    /* Keep the progression table at its established anchor. Scaling from the
+       top-left preserves its old position instead of re-centering it. */
+    #progressTracker {
+        transform: scale(0.78);
+        transform-origin: top left;
+    }
+
+    /* Scale the complete Draw / Exchange group as one object. This preserves
+       all internal card gaps and labels from the wide desktop layout. */
+    #headerActions {
+        transform: translateX(-50%) scale(0.82);
+        transform-origin: top center;
+    }
+
+    /* The JS uses the matching 144px narrow-desktop trade-card target. */
+    #opponentTradeArea {
+        --trade-card-gap: 10px;
+    }
 }

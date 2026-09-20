@@ -35,8 +35,7 @@
       ],
       "bird": [
         "Vogelpark",
-        "Vogeltuin",
-        "Roofvogelpark"
+        "Vogeltuin"
       ],
       "reptile": [
         "Reptielenpark",
@@ -45,6 +44,9 @@
       ],
       "alpine": [
         "Bergdierenpark"
+      ],
+      "raptor": [
+        "Roofvogelpark"
       ]
     },
     "Belgium": {
@@ -191,8 +193,7 @@
       ],
       "bird": [
         "Vogelpark",
-        "Vogelwelt",
-        "Greifvogelpark"
+        "Vogelwelt"
       ],
       "reptile": [
         "Reptilienpark",
@@ -205,6 +206,9 @@
         "Bergtierpark",
         "Alpine Zoo",
         "Alpine Wildlife Park"
+      ],
+      "raptor": [
+        "Greifvogelpark"
       ]
     },
     "France": {
@@ -337,7 +341,6 @@
       ],
       "bird": [
         "Bird Garden",
-        "Bird of Prey Centre",
         "Bird Park",
         "Bird Gardens"
       ],
@@ -348,6 +351,9 @@
       ],
       "alpine": [
         "Mountain Wildlife Park"
+      ],
+      "raptor": [
+        "Bird of Prey Centre"
       ]
     },
     "Denmark": {
@@ -602,14 +608,15 @@
         "farm": [
           "Animal Farm"
         ],
-        "bird": [
-          "Falconeria"
-        ],
+        "bird": [],
         "reptile": [
           "Reptile Park"
         ],
         "alpine": [
           "Alpine Wildlife Park"
+        ],
+        "raptor": [
+          "Falconeria"
         ]
       }
     },
@@ -762,13 +769,14 @@
         "Animal Farm",
         "Farm Park"
       ],
-      "bird": [
-        "Bird of Prey Centre",
-        "Falconry Centre"
-      ],
+      "bird": [],
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "raptor": [
+        "Bird of Prey Centre",
+        "Falconry Centre"
       ]
     },
     "Italy": {
@@ -808,8 +816,7 @@
       ],
       "bird": [
         "Parco Ornitologico",
-        "Parco degli Uccelli",
-        "Falconeria"
+        "Parco degli Uccelli"
       ],
       "reptile": [
         "Rettilario",
@@ -821,6 +828,9 @@
         "Zoo Alpino",
         "Alpine Zoo",
         "Alpine Wildlife Park"
+      ],
+      "raptor": [
+        "Falconeria"
       ]
     },
     "Spain": {
@@ -1474,12 +1484,14 @@
         "Farm Park"
       ],
       "bird": [
-        "Bird Park",
-        "Falconry Centre"
+        "Bird Park"
       ],
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "raptor": [
+        "Falconry Centre"
       ]
     },
     "Albania": {

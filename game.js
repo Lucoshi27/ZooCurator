@@ -1,8 +1,8 @@
 /*
- * ZOO CURATOR V167 — TAGGED INVENTORY STARTUP FIX
+ * ZOO CURATOR V171 — NEW ZOO LAYOUT + FULLER STARTS
  * Known-good GitHub baseline. Future builds must descend from this version.
  */
-const ZOO_CURATOR_VERSION = "V167";
+const ZOO_CURATOR_VERSION = "V171";
 
 
 // ============================================================
@@ -197,12 +197,12 @@ function startingCollectionSizeRules(value = 20) {
     // interpolate smoothly, so the slider changes continuously rather than in
     // five hard brackets.
     const species = Math.round(interpolateStartingZooValue(size, [
-        [0, 3],
-        [20, 5],
-        [40, 8],
-        [60, 14],
-        [80, 26],
-        [100, 48]
+        [0, 0],
+        [20, 8],
+        [40, 14],
+        [60, 24],
+        [80, 36],
+        [100, 52]
     ]));
 
     // Collection-space safety baseline. Actual startup capacity is controlled
@@ -254,12 +254,12 @@ function startingZooSizeRules(value = 20) {
     // 20% is the new standard: 12 spaces. The remaining anchors preserve
     // approximately the same proportional growth/shrinkage as the old curve.
     const maxSpaces = Math.round(interpolateStartingZooValue(size, [
-        [0, 6],
+        [0, 8],
         [20, 12],
-        [40, 16],
-        [60, 23],
-        [80, 40],
-        [100, 70]
+        [40, 18],
+        [60, 30],
+        [80, 44],
+        [100, 62]
     ]));
 
     return { size, maxSpaces };
@@ -371,6 +371,9 @@ const state = {
     realZooUnlockedTier: 1,
 
     zooName: '',
+    zooCountry: '',
+    zooLocation: '',
+    zooType: 'general',
     opponentNames: [],
     activeCategories: new Set(Object.keys(FOLDERS)),
     opponentProfiles: [],
@@ -916,7 +919,11 @@ function predictedPlayerTradeOffers(animal) {
             );
             if (roll > zooChance) continue;
 
-            const offeredAnimal = matching[(seed >>> 8) % matching.length];
+            const offeredAnimal = weightedRandomItem(
+                matching,
+                candidate => animalZooTypeWeight(candidate, record.zoo_types || record.zooTypes || 'general', 'trade'),
+                ((seed >>> 8) % 1000000) / 1000000
+            );
             candidates.push({ record, animal: offeredAnimal });
         }
 
@@ -965,7 +972,11 @@ function predictedPlayerTradeOffers(animal) {
         );
         if (roll > zooChance) return;
 
-        const offeredAnimal = matching[(seed >>> 8) % matching.length];
+        const offeredAnimal = weightedRandomItem(
+            matching,
+            candidate => animalZooTypeWeight(candidate, profile.zooTypes || 'general', 'trade'),
+            ((seed >>> 8) % 1000000) / 1000000
+        );
         if (offeredAnimal) {
             candidates.push({ opponentIndex: index, animal: offeredAnimal });
         }
@@ -1510,6 +1521,12 @@ function loadRealZooDataInBackground() {
 
             state.realZooData = data;
             resetRealZooSessionHoldings();
+            // Predictions made before the optional database arrived may have
+            // cached an empty offer set. Recompute them against the real data.
+            state.tradeOfferCache.clear();
+            if (tradeEligibleGlowActive || state.outgoingOfferTradeHoverActive) {
+                queueMicrotask(applyTradeEligibleGlow);
+            }
 
             // If the player chose real opponents, refresh the passive opponent
             // display now that the database is available. This does not restart
@@ -1777,6 +1794,82 @@ function levelFiles(
 
     return [];
 
+}
+
+// Tagged inventories may attach tags to filenames and define category/tag
+// multipliers under zooTypeWeights. Old inventories default every card to 1.
+function levelInventoryEntry(category, level) {
+    const source = getCategorySource(category);
+    if (!source || Array.isArray(source) || typeof source !== 'object') return null;
+    return source[level] ?? source[String(level)] ?? source[`Level ${level}`] ?? source[`level${level}`] ?? null;
+}
+
+function animalInventoryTags(category, level, filename) {
+    const entry = levelInventoryEntry(category, level);
+    if (!entry || Array.isArray(entry) || typeof entry !== 'object') return [];
+    const wanted = cleanFilename(filename).toLowerCase();
+    const key = Object.keys(entry).find(item => cleanFilename(item).toLowerCase() === wanted);
+    const value = key ? entry[key] : null;
+    const tags = Array.isArray(value) ? value : (Array.isArray(value?.tags) ? value.tags : []);
+    return tags.map(tag => String(tag).trim().toLowerCase()).filter(Boolean);
+}
+
+function normaliseZooTypes(value) {
+    const values = Array.isArray(value) ? value : [value];
+    const result = [...new Set(values.map(type => String(type || '').trim().toLowerCase()).filter(Boolean))];
+    return result.length ? result : ['general'];
+}
+
+function zooTypeWeightSettings() {
+    const root = state.inventory?.zooTypeWeights || state.inventory?.zoo_type_weights || {};
+    const generation = root.generation || root;
+    return {
+        types: generation.weights || generation.types || generation.zooTypes || generation.zoo_types || generation,
+        baseline: Number(generation.baseline ?? generation.defaultWeight ?? 1) || 1,
+        minimum: Number(generation.min ?? generation.minimum ?? generation.minWeight ?? 1) || 1,
+        maximum: Number(generation.max ?? generation.maximum ?? generation.maxWeight ?? 8) || 8,
+        tradeStrength: Math.max(0, Math.min(1, Number(root.tradePreferenceStrength ?? root.trade_preference_strength ?? generation.tradePreferenceStrength ?? 0.6))),
+        tradeMaximum: Number(root.tradeMaximum ?? root.trade_maximum ?? root.incomingOffers?.max ?? 5) || 5
+    };
+}
+
+function animalZooTypeWeight(animal, zooTypes, mode = 'generation') {
+    if (!animal) return 1;
+    const settings = zooTypeWeightSettings();
+    const tags = new Set(animalInventoryTags(animal.category, animal.level, animal.filename));
+    let multiplier = settings.baseline;
+    for (const type of normaliseZooTypes(zooTypes)) {
+        const rules = settings.types?.[type];
+        if (!rules || typeof rules !== 'object') continue;
+        const categories = rules.category || rules.categories || {};
+        const categoryKey = Object.keys(categories).find(key => key.toLowerCase() === String(animal.category).toLowerCase());
+        if (categoryKey) multiplier *= Number(categories[categoryKey]) || 1;
+        const tagWeights = rules.tags || rules.tag || {};
+        for (const [tag, weight] of Object.entries(tagWeights)) {
+            if (tags.has(String(tag).trim().toLowerCase())) multiplier *= Number(weight) || 1;
+        }
+    }
+    multiplier = Math.max(settings.minimum, Math.min(settings.maximum, multiplier));
+    if (mode === 'trade') {
+        multiplier = Math.min(
+            settings.tradeMaximum,
+            1 + ((multiplier - 1) * settings.tradeStrength)
+        );
+    }
+    return Math.max(0.0001, multiplier);
+}
+
+function weightedRandomItem(items, weightFor, roll = Math.random()) {
+    if (!Array.isArray(items) || !items.length) return null;
+    const weights = items.map(item => Math.max(0, Number(weightFor(item)) || 0));
+    const total = weights.reduce((sum, weight) => sum + weight, 0);
+    if (total <= 0) return items[Math.min(items.length - 1, Math.floor(roll * items.length))];
+    let target = Math.max(0, Math.min(0.999999999, roll)) * total;
+    for (let index = 0; index < items.length; index++) {
+        target -= weights[index];
+        if (target < 0) return items[index];
+    }
+    return items[items.length - 1];
 }
 
 
@@ -2736,11 +2829,6 @@ function moveCompatibilityCandidateToSlot(enclosure, slotIndex) {
     return true;
 }
 
-// Kept as an alias for older call sites/saved builds that may still reference
-// the previous helper name.
-function moveSoleCompatibilityCandidateToSlot(enclosure, slotIndex) {
-    return moveCompatibilityCandidateToSlot(enclosure, slotIndex);
-}
 
 function ensureCompatibilityGlowStyles() {
     if (document.getElementById('compatibilityGlowStyles')) return;
@@ -3028,6 +3116,17 @@ function ensureDrawSpaceGuardStyles() {
             width: 112px;
             max-width: 100%;
         }
+        .game-options-modal.new-zoo-modal {
+            width: min(760px, calc(100vw - 40px));
+            max-width: 760px !important;
+        }
+        .new-zoo-modal #generateZooCountry,
+        .new-zoo-modal #generateZooLocation,
+        .new-zoo-modal #generateZooName,
+        .new-zoo-modal #newZooSize {
+            width: 280px !important;
+            min-width: 224px !important;
+        }
         @media (max-width: 600px) {
             #optRewardMilestones,
             .game-options-modal input[type="number"],
@@ -3035,6 +3134,13 @@ function ensureDrawSpaceGuardStyles() {
             .game-options-modal select,
             .game-options-modal input[type="range"] {
                 width: min(112px, 100%);
+                min-width: 0 !important;
+            }
+            .new-zoo-modal #generateZooCountry,
+            .new-zoo-modal #generateZooLocation,
+            .new-zoo-modal #generateZooName,
+            .new-zoo-modal #newZooSize {
+                width: 100% !important;
                 min-width: 0 !important;
             }
         }
@@ -3092,10 +3198,6 @@ function hasSafeLevelOneDrawSpace() {
     });
 }
 
-function hasAnyOpenEnclosureSpace() {
-    // Kept as an alias because older V78 call sites use this name.
-    return hasSafeLevelOneDrawSpace();
-}
 
 
 function eligibleDestinationsForAnimal(animal) {
@@ -3413,9 +3515,9 @@ function getCombinations(
 //
 // RULE:
 //
-// - enough separate physical enclosures for all starting animals
-// - total slot capacity may be BELOW the configured maximum
-// - configured startingMaxEnclosureSpaces is a ceiling, not a target
+// - hit the configured enclosure-space target as closely as possible
+// - starting animals may share a physical exhibit when compatibility allows
+// - higher zoo-size settings deliberately generate fairly full zoos
 // - Enclosure 10 prohibited
 // ============================================================
 
@@ -3470,74 +3572,51 @@ function chooseStartupEnclosures(rewardCount = 0) {
         5. If the reward cards or the need for separate animal exhibits push the
            zoo beyond the slider target, that is intentionally allowed.
     */
-    const baselineSpots = startingZooSizeRules(20).maxSpaces;
-    // Keep roughly five spare spaces above the starting collection. This is
-    // also enforced live by the two option sliders.
-    const targetSpots = Math.max(zooRules.maxSpaces, requiredAnimals + 5);
+    const targetSpots = zooRules.maxSpaces;
 
-    // Earned rewards are real enclosure cards, not merely extra capacity.
+    // Earned rewards are real enclosure cards, not merely abstract capacity.
     const numbers = [];
     for (let i = 0; i < rewardCount; i++) {
         numbers.push(randomItem(available));
     }
 
-    let stats = startupLayoutStats(numbers);
-    const minimumSpots = Math.max(baselineSpots, targetSpots);
+    const stats = startupLayoutStats(numbers);
+    const missingSpots = Math.max(0, targetSpots - stats.spots);
 
-    // Dynamic programming adds the smallest useful set of ordinary enclosure
-    // cards that reaches the requested capacity AND provides enough separate
-    // physical exhibits for every starting animal. Overshooting is permitted.
-    const maxExtraSpots = Math.max(
-        80,
-        minimumSpots + requiredAnimals + 30
-    );
-    const maxPhysicalNeeded = Math.max(0, requiredAnimals - stats.physical);
-    const maxSpotsNeeded = Math.max(0, minimumSpots - stats.spots);
-
-    const dp = Array.from(
-        { length: maxExtraSpots + 1 },
-        () => Array(maxPhysicalNeeded + 1).fill(null)
-    );
-    dp[0][0] = [];
+    // Find the smallest overshoot of the requested slot target. We no longer
+    // require one physical exhibit per animal: mixed compatible starting
+    // exhibits are intentionally allowed and sometimes required (e.g. 20%).
+    const maxExtraSpots = Math.max(40, missingSpots + 12);
+    const dp = Array(maxExtraSpots + 1).fill(null);
+    dp[0] = [];
 
     for (let spots = 0; spots <= maxExtraSpots; spots++) {
-        for (let physical = 0; physical <= maxPhysicalNeeded; physical++) {
-            const current = dp[spots][physical];
-            if (!current) continue;
+        const current = dp[spots];
+        if (!current) continue;
 
-            for (const number of shuffle(available)) {
-                const nextSpots = spots + enclosureSlotCapacity(number);
-                if (nextSpots > maxExtraSpots) continue;
-
-                const nextPhysical = Math.min(
-                    maxPhysicalNeeded,
-                    physical + (GROUPS[number] || [[0]]).length
-                );
-                const proposed = [...current, number];
-                const existing = dp[nextSpots][nextPhysical];
-
-                if (!existing || proposed.length < existing.length) {
-                    dp[nextSpots][nextPhysical] = proposed;
-                }
+        for (const number of shuffle(available)) {
+            const nextSpots = spots + enclosureSlotCapacity(number);
+            if (nextSpots > maxExtraSpots) continue;
+            const proposed = [...current, number];
+            if (!dp[nextSpots] || proposed.length < dp[nextSpots].length) {
+                dp[nextSpots] = proposed;
             }
         }
     }
 
     const candidates = [];
-    for (let extraSpots = maxSpotsNeeded; extraSpots <= maxExtraSpots; extraSpots++) {
-        const extra = dp[extraSpots][maxPhysicalNeeded];
-        if (!extra) continue;
+    for (let extraSpots = missingSpots; extraSpots <= maxExtraSpots; extraSpots++) {
+        if (!dp[extraSpots]) continue;
         candidates.push({
-            extra,
+            extra: dp[extraSpots],
             totalSpots: stats.spots + extraSpots,
-            totalCards: numbers.length + extra.length
+            totalCards: numbers.length + dp[extraSpots].length
         });
     }
 
     if (!candidates.length) {
         throw new Error(
-            `Could not build a starting enclosure layout for ${requiredAnimals} animals ` +
-            `with at least ${targetSpots} starting enclosure spaces.`
+            `Could not build a starting enclosure layout with about ${targetSpots} spaces.`
         );
     }
 
@@ -3854,7 +3933,12 @@ function randomAvailableStartingAnimal(levelChances) {
     // This lets early L1 cards create the foundation for later L2/L3/L4 rolls.
     for (let level = rolledLevel; level >= 1; level--) {
         const candidates = availableStartingCardsAtLevel(level);
-        if (candidates.length) return randomItem(candidates);
+        if (candidates.length) {
+            return weightedRandomItem(
+                candidates,
+                candidate => animalZooTypeWeight(candidate, state.zooType, 'generation')
+            );
+        }
     }
 
     throw new Error('No unused legal starting animal cards remain.');
@@ -3996,62 +4080,103 @@ function createStartingZoo() {
 
 
     /*
-        We need one different physical enclosure per starting animal.
-
-        The chosen cards should provide enough, but verify it
-        explicitly so a bad map never silently breaks setup.
+        V171 startup placement:
+        - a physical exhibit may contain multiple starting animals when the
+          compatibility rules permit it;
+        - placement uses backtracking instead of a greedy random choice, so an
+          early card cannot accidentally consume the only valid spot for a
+          later card;
+        - if a generated collection genuinely cannot fit, replace one animal
+          at a time with a fresh legal card and try again. This preserves the
+          requested starting-animal count instead of crashing or silently
+          leaving a card unplaced.
     */
-
-    if (
-        startupEnclosures.length < startupRules.species
-    ) {
-
-        throw new Error(
-            `Startup enclosure selection did not provide ${startupRules.species} separate enclosures.`
-        );
-
+    function clearStartupPlacements() {
+        for (const animal of state.animals) {
+            animal.enclosureId = null;
+            animal.slotIndex = null;
+        }
     }
 
+    function placeStartingCollectionBacktracking(animals, index = 0) {
+        if (index >= animals.length) return true;
 
-    const startingAnimals = shuffle([...state.animals]);
+        // Most constrained animals first greatly reduces dead ends.
+        let bestIndex = index;
+        let bestCandidates = null;
 
-    /*
-        V79 startup placement:
-        - single exhibits still hold one animal;
-        - large exhibits may hold multiple starting animals when the JSON-backed
-          compatibility rules say the new animal can join the existing group;
-        - combinations are allowed, not forced. Candidate destinations are
-          shuffled so a compatible pair may naturally start together.
-    */
-    for (const animal of startingAnimals) {
-        const candidates = [];
-
-        for (const entry of startupEnclosures) {
-            for (const slotIndex of entry.group) {
-                if (
-                    canPlaceStartingAnimal(
-                        animal,
-                        entry.enclosure,
-                        slotIndex
-                    )
-                ) {
-                    candidates.push({
-                        enclosure: entry.enclosure,
-                        slotIndex
-                    });
+        for (let i = index; i < animals.length; i++) {
+            const animal = animals[i];
+            const candidates = [];
+            for (const entry of startupEnclosures) {
+                for (const slotIndex of entry.group) {
+                    if (canPlaceStartingAnimal(animal, entry.enclosure, slotIndex)) {
+                        candidates.push({ enclosure: entry.enclosure, slotIndex });
+                    }
                 }
             }
+            if (bestCandidates === null || candidates.length < bestCandidates.length) {
+                bestCandidates = candidates;
+                bestIndex = i;
+            }
+            if (!candidates.length) break;
         }
 
-        if (!candidates.length) {
-            throw new Error(
-                `No legal starting enclosure position remained for ${animalName(animal)}.`
+        if (!bestCandidates?.length) return false;
+
+        [animals[index], animals[bestIndex]] = [animals[bestIndex], animals[index]];
+        const animal = animals[index];
+
+        for (const destination of shuffle(bestCandidates)) {
+            animal.enclosureId = destination.enclosure.id;
+            animal.slotIndex = destination.slotIndex;
+
+            if (placeStartingCollectionBacktracking(animals, index + 1)) return true;
+
+            animal.enclosureId = null;
+            animal.slotIndex = null;
+        }
+
+        [animals[index], animals[bestIndex]] = [animals[bestIndex], animals[index]];
+        return false;
+    }
+
+    let placed = false;
+    const maxCollectionRepairs = Math.max(30, startupRules.species * 8);
+
+    for (let attempt = 0; attempt <= maxCollectionRepairs && !placed; attempt++) {
+        clearStartupPlacements();
+        const ordered = shuffle([...state.animals]);
+        placed = placeStartingCollectionBacktracking(ordered);
+
+        if (placed) break;
+        if (attempt === maxCollectionRepairs || !state.animals.length) break;
+
+        // Replace one generated card and retry the whole layout. The replacement
+        // still obeys level/progression availability and zoo-type weighting.
+        const replaceIndex = Math.floor(Math.random() * state.animals.length);
+        const oldAnimal = state.animals[replaceIndex];
+        state.animals.splice(replaceIndex, 1);
+
+        try {
+            const replacementCard = randomAvailableStartingAnimal(startupRules.levelChances);
+            const replacement = createAnimal(
+                replacementCard.category,
+                replacementCard.level,
+                replacementCard.filename
             );
+            state.animals.splice(replaceIndex, 0, replacement);
+            markPlayerLevelSeen(replacement.level);
+        } catch (error) {
+            state.animals.splice(replaceIndex, 0, oldAnimal);
         }
+    }
 
-        const destination = randomItem(candidates);
-        animal.enclosureId = destination.enclosure.id;
-        animal.slotIndex = destination.slotIndex;
+    if (!placed) {
+        throw new Error(
+            `Could not find a compatible starting layout for ${startupRules.species} animals ` +
+            `inside ${startingZooSizeRules(state.gameOptions.startingZooSize).maxSpaces} starting spaces.`
+        );
     }
 
     // A generated Level 4 card counts as placed now, so Enclosure 10 becomes
@@ -4643,6 +4768,13 @@ function setupAnimalCard(
     image.dataset.animalId =
         animal.id;
 
+    image.addEventListener('pointerenter', () => {
+        if (state.sandboxMode) sandboxHoveredAnimalId = animal.id;
+    });
+    image.addEventListener('pointerleave', () => {
+        if (state.sandboxMode && sandboxHoveredAnimalId === animal.id) sandboxHoveredAnimalId = null;
+    });
+
 
     // Show the real animal card directly. The temporary Back.png
     // loading/fallback system has been removed.
@@ -5088,8 +5220,19 @@ function ensureWikipediaBack() {
     back.id = 'hoverPreviewWiki';
     back.innerHTML = `
         <div class="animal-info-tabs">
-            <button type="button" class="animal-info-tab active" data-info-tab="wikipedia">Wikipedia</button>
+            <button type="button" class="animal-info-tab active" data-info-tab="information">Information</button>
+            <button type="button" class="animal-info-tab" data-info-tab="wikipedia">Wikipedia</button>
             <button type="button" class="animal-info-tab" data-info-tab="zootierliste">Zootierliste</button>
+        </div>
+        <div id="animalInformationPane">
+            <div class="wiki-preview-toolbar">
+                <strong id="animalInformationTitle">Information</strong>
+            </div>
+            <div id="animalInformationText">
+                <div class="animal-continent-row"><strong>Continent:</strong> <span id="animalContinentValue">Loading…</span></div>
+                <div class="animal-combinations-heading">Possible combinations</div>
+                <div id="animalCombinationList"></div>
+            </div>
         </div>
         <div class="wiki-preview-toolbar">
             <strong id="wikiPreviewTitle">Wikipedia</strong>
@@ -5120,22 +5263,202 @@ function ensureWikipediaBack() {
 
 function selectAnimalInfoTab(tab) {
     ensureWikipediaBack();
+
+    const infoPane = document.getElementById('animalInformationPane');
     const wikiText = document.getElementById('wikiPreviewText');
     const wikiStatus = document.getElementById('wikiPreviewStatus');
     const wikiToolbar = document.querySelector('#hoverPreviewWiki > .wiki-preview-toolbar');
     const ztlPane = document.getElementById('ztlPreviewPane');
+
     document.querySelectorAll('.animal-info-tab').forEach(button =>
         button.classList.toggle('active', button.dataset.infoTab === tab)
     );
 
+    const information = tab === 'information';
     const ztl = tab === 'zootierliste';
-    wikiText.hidden = ztl;
-    wikiStatus.hidden = ztl;
-    wikiToolbar.hidden = ztl;
+    const wikipedia = !information && !ztl;
+
+    infoPane.hidden = !information;
+    wikiText.hidden = !wikipedia;
+    wikiStatus.hidden = !wikipedia;
+    wikiToolbar.hidden = !wikipedia;
     ztlPane.hidden = !ztl;
 
-    if (ztl && state.lastHoveredAnimal && state.previewScientificName) {
-        loadZootierlisteForAnimal(state.lastHoveredAnimal, state.previewScientificName);
+    if (information && state.lastHoveredAnimal) {
+        renderAnimalInformation(state.lastHoveredAnimal);
+    }
+
+    if (ztl && state.lastHoveredAnimal) {
+        loadZootierlisteForAnimal(state.lastHoveredAnimal, state.previewScientificName || '');
+    }
+
+    // Wikipedia remains lazy: only fetch it when its tab is actually selected.
+    if (wikipedia && state.lastHoveredAnimal &&
+        state.previewWikiAnimalId !== state.lastHoveredAnimal.id) {
+        state.previewWikiAnimalId = state.lastHoveredAnimal.id;
+        loadWikipediaForAnimal(state.lastHoveredAnimal);
+    }
+}
+
+
+function compatibilityPairKey(a, b) {
+    return [compatibilityName(a), compatibilityName(b)].filter(Boolean).sort().join('|||');
+}
+
+function rebuildCompatibilityEvidenceIndex() {
+    const index = new Map();
+    const seenObjects = new WeakSet();
+
+    const add = (pair, source) => {
+        if (!Array.isArray(pair) || pair.length < 2 || !source) return;
+        const key = compatibilityPairKey(pair[0], pair[1]);
+        if (!key) return;
+        if (!index.has(key)) index.set(key, []);
+        const text = typeof source === 'string'
+            ? source.trim()
+            : [source.zoo, source.institution, source.country, source.date || source.year,
+               source.source, source.url, source.note, source.notes]
+                .filter(Boolean).join(' • ');
+        if (text && !index.get(key).includes(text)) index.get(key).push(text);
+    };
+
+    const walk = value => {
+        if (!value || typeof value !== 'object') return;
+        if (seenObjects.has(value)) return;
+        seenObjects.add(value);
+
+        if (!Array.isArray(value)) {
+            const pair = value.pair || value.animals || value.species;
+            const source = value.source || value.evidence || value.citation ||
+                value.reference || value.sources;
+            if (Array.isArray(pair) && pair.length >= 2) {
+                if (Array.isArray(source)) source.forEach(item => add(pair, item));
+                else add(pair, source);
+            }
+        }
+
+        if (Array.isArray(value)) value.forEach(walk);
+        else Object.values(value).forEach(walk);
+    };
+
+    walk(state.compatibilityData);
+    state.compatibilityEvidenceIndex = index;
+}
+
+function proxyExplanationForPair(a, b) {
+    const proxy = state.compatibilityData?.proxy_compatibility;
+    const groups = proxy?.groups || {};
+    const aName = compatibilityName(a);
+    const bName = compatibilityName(b);
+    const aGroups = [];
+    const bGroups = [];
+
+    for (const [groupName, members] of Object.entries(groups)) {
+        if (!Array.isArray(members)) continue;
+        if (members.some(x => compatibilityName(x) === aName)) aGroups.push(groupName);
+        if (members.some(x => compatibilityName(x) === bName)) bGroups.push(groupName);
+    }
+
+    const complete = new Set(proxy?.complete_groups || []);
+    const sharedComplete = aGroups.find(group => bGroups.includes(group) && complete.has(group));
+    if (sharedComplete) {
+        return `Gameplay compatibility inherited through the “${sharedComplete}” group. No direct pair source is stored for this inherited combination.`;
+    }
+
+    for (const link of proxy?.group_links || []) {
+        if (!link) continue;
+        if ((aGroups.includes(link.from) && bGroups.includes(link.to)) ||
+            (aGroups.includes(link.to) && bGroups.includes(link.from))) {
+            return `Gameplay compatibility inherited through the “${link.from} ↔ ${link.to}” group link. No direct pair source is stored for this inherited combination.`;
+        }
+    }
+
+    return 'Compatible in the current gameplay data. No pair-specific source is stored yet.';
+}
+
+function sourceTextForCombination(a, b) {
+    const sources = state.compatibilityEvidenceIndex?.get(compatibilityPairKey(a, b)) || [];
+    if (sources.length) return sources.join('\n\n');
+    return proxyExplanationForPair(a, b);
+}
+
+function continentFromAnimalRecord(record) {
+    if (!record) return '';
+    const raw = record.continents ?? record.continent ?? record.native_continents ??
+        record.native_continent ?? record.native_range ?? record.range ??
+        record.distribution ?? record.region ?? record.regions;
+    if (Array.isArray(raw)) return raw.filter(Boolean).join(', ');
+    if (raw && typeof raw === 'object') {
+        return Object.values(raw).flat().filter(x => typeof x === 'string' && x.trim()).join(', ');
+    }
+    return String(raw || '').trim();
+}
+
+function inventoryDisplayNameForCompatibilityName(value) {
+    const wanted = compatibilityName(value);
+    if (!wanted) return String(value || '');
+
+    // Card filenames are the canonical player-facing names in Zoo Curator.
+    for (const category of Object.keys(FOLDERS)) {
+        for (let level = 1; level <= 5; level++) {
+            for (const file of levelFiles(category, level)) {
+                const display = String(file || '')
+                    .replace(/\.[^.]+$/, '')
+                    .replace(/[_-]+/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+                if (compatibilityName(display) === wanted) return display;
+            }
+        }
+    }
+
+    // Fallback for a compatibility entry not currently represented by a card.
+    return String(value || '')
+        .replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function renderAnimalInformation(animal) {
+    if (!animal) return;
+    ensureWikipediaBack();
+
+    const name = animalDisplayName(animal);
+    const title = document.getElementById('animalInformationTitle');
+    const continent = document.getElementById('animalContinentValue');
+    const list = document.getElementById('animalCombinationList');
+    if (!title || !continent || !list) return;
+
+    title.textContent = name || 'Information';
+
+    const record = databaseRecordForAnimal(animal);
+    const localContinent = continentFromAnimalRecord(record);
+    continent.textContent = localContinent || 'Not listed yet';
+
+    const animalName = compatibilityName(name);
+    const partners = [...(state.compatibilityEffectiveGraph?.get(animalName) || [])]
+        .sort((a, b) => a.localeCompare(b));
+
+    list.innerHTML = '';
+    if (!partners.length) {
+        const empty = document.createElement('div');
+        empty.className = 'animal-combination-empty';
+        empty.textContent = state.compatibilityData?.compatible_pairs?.length
+            ? 'No compatible species are currently listed.'
+            : 'Compatibility data is still loading…';
+        list.appendChild(empty);
+        return;
+    }
+
+    for (const partner of partners) {
+        const row = document.createElement('div');
+        row.className = 'animal-combination-row';
+        row.textContent = inventoryDisplayNameForCompatibilityName(partner);
+
+        const popup = document.createElement('div');
+        popup.className = 'combination-source-popup';
+        popup.textContent = sourceTextForCombination(animalName, partner);
+        row.appendChild(popup);
+
+        list.appendChild(row);
     }
 }
 
@@ -5221,55 +5544,6 @@ async function loadWikipediaForAnimal(animal) {
     }
 }
 
-function ztlSpeciesBinomial(scientificName) {
-    return String(scientificName || '').trim().split(/\s+/).slice(0, 2).join(' ');
-}
-
-function ztlProxyUrl(url) {
-    return `https://r.jina.ai/${url}`;
-}
-
-function ztlExtractSearchLinks(text) {
-    const links = [];
-    const re = /https?:\/\/(?:www\.)?zootierliste\.de\/(?:en\/)?(?:index\.php)?\?[^\s)\]<>]+/gi;
-    for (const match of String(text || '').matchAll(re)) {
-        const url = match[0].replace(/[.,;]+$/, '').replace(/&amp;/g, '&');
-        if (/\bart=\d+/i.test(url) && !links.includes(url)) links.push(url);
-    }
-    return links;
-}
-
-function ztlHoldingCount(section) {
-    const totals = [...String(section || '').matchAll(/Holdings?:\s*(\d+)/gi)].map(m => Number(m[1]));
-    if (totals.length) return totals[totals.length - 1];
-    const countryCounts = [...String(section || '').matchAll(/\((\d+)\s+Holding\(s\)\)/gi)].map(m => Number(m[1]));
-    return countryCounts.reduce((a, b) => a + b, 0);
-}
-
-function parseZtlPage(text, url, binomial) {
-    const clean = String(text || '').replace(/\r/g, '');
-    const latinMatches = [...clean.matchAll(new RegExp(`\\b${binomial.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}(?:\\s+[a-z-]+)?\\b`, 'gi'))];
-    if (!latinMatches.length) return null;
-    const scientificName = latinMatches[0][0].trim();
-    const isRelevant = scientificName.toLowerCase() === binomial.toLowerCase() ||
-        scientificName.toLowerCase().startsWith(binomial.toLowerCase() + ' ');
-    if (!isRelevant) return null;
-
-    const beforeLatin = clean.slice(Math.max(0, latinMatches[0].index - 500), latinMatches[0].index)
-        .split('\n').map(x => x.trim()).filter(Boolean);
-    let commonName = beforeLatin.reverse().find(line =>
-        line.length < 100 && !/^image\b/i.test(line) && !/^#+\s*$/.test(line) && !/^zootierliste/i.test(line)
-    ) || scientificName;
-    commonName = commonName.replace(/^#+\s*/, '').trim();
-
-    const currentPart = clean.split(/Former\s+Holdings/i)[0];
-    const euMatch = currentPart.match(/Europe\s*\(EU\)([\s\S]*?)(?=Europe\s*\((?:Non-?EU|NichtEU)\)|Africa|Asia|North America|South America|Oceania|$)/i);
-    const nonEuMatch = currentPart.match(/Europe\s*\((?:Non-?EU|NichtEU)\)([\s\S]*?)(?=Africa|Asia|North America|South America|Oceania|$)/i);
-    const eu = euMatch ? ztlHoldingCount(euMatch[1]) : 0;
-    const nonEu = nonEuMatch ? ztlHoldingCount(nonEuMatch[1]) : 0;
-
-    return { commonName, scientificName, url, eu, nonEu, europe: eu + nonEu };
-}
 
 async function loadZootierlisteForAnimal(animal, scientificName = '') {
     if (!animal) return;
@@ -5312,13 +5586,16 @@ async function flipPreviewToWikipedia() {
 
     hoverPreview.classList.add('wiki-open');
 
-    // Wikipedia is the default information view. Zootierliste is available
-    // as the second tab and is only loaded when that tab is selected.
-    selectAnimalInfoTab('wikipedia');
-    if (state.previewWikiAnimalId !== animal.id) {
-        state.previewWikiAnimalId = animal.id;
-        await loadWikipediaForAnimal(animal);
-    }
+    // Colour belongs to the whole information card, not specifically Wikipedia.
+    // Apply it immediately so the default Information tab opens in the correct category colour.
+    const back = ensureWikipediaBack();
+    back.style.background =
+        state.categoryColours[animal.category] ||
+        CATEGORY_COLOURS[animal.category] ||
+        '#777777';
+
+    // Information is the default view; Wikipedia and Zootierliste are secondary tabs.
+    selectAnimalInfoTab('information');
 }
 
 // ============================================================
@@ -5430,6 +5707,13 @@ function renderEnclosure(
 
     element.dataset.enclosureId =
         enclosure.id;
+
+    element.addEventListener('pointerenter', () => {
+        if (state.sandboxMode) sandboxHoveredEnclosureId = enclosure.id;
+    });
+    element.addEventListener('pointerleave', () => {
+        if (state.sandboxMode && sandboxHoveredEnclosureId === enclosure.id) sandboxHoveredEnclosureId = null;
+    });
 
 
     element.style.left =
@@ -6494,6 +6778,9 @@ const SAVE_STATE_KEYS = [
     'sandboxMode',
     'sandboxLooseAnimals',
     'zooName',
+    'zooCountry',
+    'zooLocation',
+    'zooType',
     'opponentNames',
     'activeCategories',
     'opponentProfiles',
@@ -6864,6 +7151,11 @@ function importGameState(saveData) {
         }
     }
 
+    if (!Object.prototype.hasOwnProperty.call(saveData.state, 'zooType')) {
+        state.zooType = inferZooTypeFromAnyGeneratedName(state.zooName);
+    }
+    state.zooType = normaliseZooTypes(state.zooType)[0];
+
     state.sandboxMode = Boolean(state.sandboxMode);
     if (!Array.isArray(state.sandboxLooseAnimals)) state.sandboxLooseAnimals = [];
     state.turnHistory = cloneForSave(saveData.turnHistory || []);
@@ -7098,7 +7390,6 @@ function ensureSaveLoadUI() {
             <div id="saveSlotList" class="save-slot-list"></div>
             <div class="save-load-footer">
                 <button type="button" id="startNewGameFromSaveMenu">Start New Game</button>
-                <button type="button" id="sandboxModeButton" style="display:none;">Sandbox Mode</button>
                 <span style="flex:1 1 auto;"></span>
                 <button type="button" id="saveCurrentGame">Save Current Game</button>
                 <button type="button" id="closeSaveLoad">Close</button>
@@ -7106,12 +7397,6 @@ function ensureSaveLoadUI() {
         </div>
     `;
     document.body.appendChild(overlay);
-
-    const sandboxButton = overlay.querySelector('#sandboxModeButton');
-    if (sandboxButton) {
-        sandboxButton.addEventListener('click', startSandboxMode);
-        installSecretSandboxReveal(sandboxButton);
-    }
 
     button.addEventListener('click', openSaveLoadMenu);
     overlay.querySelector('#startNewGameFromSaveMenu').addEventListener(
@@ -7347,11 +7632,14 @@ function renderAll() {
     updateDiscoveredCategoryLevels();
     refreshExchangeGlowSuppression();
     renderZoo();
-    // V163: renderZoo() recreates card nodes. If the pointer is still over
-    // Outgoing Offer, immediately repaint blue trade eligibility on new nodes.
-    if (state.outgoingOfferTradeHoverActive && !state.outgoingOffer) {
+    // renderZoo() recreates card nodes. Repaint whenever the hint is active,
+    // including incoming-box hints and cases where layout/rendering happened
+    // without a fresh mouseenter event.
+    if ((tradeEligibleGlowActive || state.outgoingOfferTradeHoverActive) && !state.outgoingOffer) {
         queueMicrotask(() => {
-            if (state.outgoingOfferTradeHoverActive) applyTradeEligibleGlow();
+            if (tradeEligibleGlowActive || state.outgoingOfferTradeHoverActive) {
+                applyTradeEligibleGlow();
+            }
         });
     }
     renderHand();
@@ -10089,25 +10377,70 @@ drawCard.addEventListener('pointerdown', event => {
 // ============================================================
 let sandboxPickerOverlay = null;
 let sandboxToolbarInstalled = false;
-let sandboxCtrlDown = false;
+let sandboxHoveredAnimalId = null;
+let sandboxHoveredEnclosureId = null;
 
-function installSecretSandboxReveal(button) {
-    const sync = () => {
-        const newGameMenuOpen = document.getElementById('saveLoadOverlay')?.classList.contains('visible');
-        button.style.display = sandboxCtrlDown && newGameMenuOpen ? '' : 'none';
-    };
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Control') { sandboxCtrlDown = true; sync(); }
-    });
-    document.addEventListener('keyup', event => {
-        if (event.key === 'Control') { sandboxCtrlDown = false; sync(); }
-    });
-    window.addEventListener('blur', () => { sandboxCtrlDown = false; sync(); });
-    // Save/load is the menu opened by New Game; pointer movement makes reveal
-    // responsive even when Ctrl was already held before the menu appeared.
-    document.addEventListener('pointermove', sync, { passive:true });
+function removeSandboxAnimalById(animalId) {
+    // Deliberately hard-gated: this destructive shortcut must NEVER work in a normal game.
+    if (!state.sandboxMode) return false;
+    const id = Number(animalId);
+    if (!Number.isFinite(id) || !state.animals.some(animal => animal.id === id)) return false;
+
+    state.animals = state.animals.filter(animal => animal.id !== id);
+    state.sandboxLooseAnimals = (state.sandboxLooseAnimals || []).filter(animal => animal.id !== id);
+    state.hand = (state.hand || []).filter(animal => animal?.id !== id);
+    state.exchange = (state.exchange || []).map(animal => animal?.id === id ? null : animal);
+    if (state.result?.id === id) state.result = null;
+    if (state.outgoingOffer?.id === id) state.outgoingOffer = null;
+    state.tradeOffers = (state.tradeOffers || []).filter(offer =>
+        offer?.animal?.id !== id && offer?.outgoing?.id !== id
+    );
+    sandboxHoveredAnimalId = null;
+    renderAll();
+    writeAutoResumeSnapshot(true);
+    return true;
 }
 
+function removeSandboxEnclosureById(enclosureId) {
+    if (!state.sandboxMode) return false;
+    const id = Number(enclosureId);
+    const enclosure = state.enclosures.find(item => item.id === id);
+    if (!enclosure) return false;
+
+    // Removing an enclosure also removes the animal cards physically inside it.
+    const animalIds = new Set(
+        state.animals.filter(animal => animal.enclosureId === id).map(animal => animal.id)
+    );
+    state.animals = state.animals.filter(animal => !animalIds.has(animal.id));
+    state.sandboxLooseAnimals = (state.sandboxLooseAnimals || []).filter(animal => !animalIds.has(animal.id));
+    state.enclosures = state.enclosures.filter(item => item.id !== id);
+    state.glowingEnclosureIds.delete(id);
+    sandboxHoveredEnclosureId = null;
+    sandboxHoveredAnimalId = null;
+    renderAll();
+    writeAutoResumeSnapshot(true);
+    return true;
+}
+
+window.addEventListener('keydown', event => {
+    if (!state.sandboxMode) return;
+    if (event.key !== 'Backspace' && event.key !== 'Delete') return;
+    if (event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement ||
+        event.target instanceof HTMLSelectElement ||
+        event.target?.isContentEditable) return;
+
+    // Animal takes priority when it sits on top of an enclosure.
+    if (sandboxHoveredAnimalId != null && removeSandboxAnimalById(sandboxHoveredAnimalId)) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+    }
+    if (sandboxHoveredEnclosureId != null && removeSandboxEnclosureById(sandboxHoveredEnclosureId)) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+});
 function startSandboxMode() {
     if (!confirm('Start a new Sandbox game? Your current unsaved game will be replaced.')) return;
     clearAutoResumeSnapshot();
@@ -10134,8 +10467,14 @@ function startSandboxMode() {
     state.discoveredCategoryLevels = new Set();
     state.awardedProgressMilestones = new Set();
     state.awardedLevel2Milestones = new Set();
+    state.opponentProfiles = [];
+    state.opponentTradeStocks = [];
+    state.tradeOffers = [];
+    state.autonomousTradeOffer = null;
+    state.selectedTradeOpponent = null;
     assignZooNames();
     closeSaveLoadMenu();
+    document.getElementById('generateZooOverlay')?.classList.remove('visible');
     removeActionHintOverlay();
     clearYellowExchangeHintOverlays();
     renderAll();
@@ -10353,7 +10692,7 @@ function zooSetupPrefixGroups(country, location = '') {
     const root = state.zooNamesData?.prefixes?.[country];
     if (!root || typeof root !== 'object') return [];
 
-    const types = new Set(['general','aquarium','tropical','safari','forest','farm','bird','reptile','alpine']);
+    const types = new Set(['general','aquarium','tropical','safari','forest','farm','bird','raptor','reptile','alpine']);
     const groups = [];
 
     function visit(node) {
@@ -10408,6 +10747,15 @@ function inferZooTypeFromGeneratedName(country, zooName) {
     return match?.zooType || 'general';
 }
 
+function inferZooTypeFromAnyGeneratedName(zooName) {
+    const name = String(zooName || '').trim().toLowerCase();
+    if (!name) return 'general';
+    const matches = zooSetupCountries().flatMap(country => zooSetupPrefixGroups(country))
+        .filter(item => name.includes(item.prefix.toLowerCase()))
+        .sort((a, b) => b.prefix.length - a.prefix.length);
+    return matches[0]?.zooType || 'general';
+}
+
 function ensureGenerateZooUI() {
     let overlay = document.getElementById('generateZooOverlay');
     if (overlay) return overlay;
@@ -10416,34 +10764,43 @@ function ensureGenerateZooUI() {
     overlay.id = 'generateZooOverlay';
     overlay.className = 'game-options-overlay';
     overlay.innerHTML = `
-        <div class="game-options-modal" style="max-width:560px">
-            <h2>Generate Zoo</h2>
+        <div class="game-options-modal new-zoo-modal">
+            <h2>New Zoo</h2>
             <p>Choose where your new zoo is based. Generated values can be edited before starting.</p>
 
             <div class="advanced-game-rules">
                 <label>
                     <span>Country</span>
-                    <select id="generateZooCountry"></select>
+                    <span class="new-zoo-field-with-random">
+                        <button type="button" class="new-zoo-randomize" id="randomizeZooCountry" title="Randomize country" aria-label="Randomize country">↻</button>
+                        <select id="generateZooCountry"></select>
+                    </span>
                 </label>
                 <label>
                     <span>Location</span>
-                    <input id="generateZooLocation" type="text" autocomplete="off">
+                    <span class="new-zoo-field-with-random">
+                        <button type="button" class="new-zoo-randomize" id="randomizeZooLocation" title="Randomize location" aria-label="Randomize location">↻</button>
+                        <input id="generateZooLocation" type="text" autocomplete="off">
+                    </span>
                 </label>
                 <label>
                     <span>Zoo Name</span>
-                    <input id="generateZooName" type="text" autocomplete="off">
+                    <span class="new-zoo-field-with-random">
+                        <button type="button" class="new-zoo-randomize" id="randomizeZooName" title="Randomize zoo name" aria-label="Randomize zoo name">↻</button>
+                        <input id="generateZooName" type="text" autocomplete="off">
+                    </span>
                 </label>
-                <div class="advanced-options-note">
-                    Zoo Type: <strong id="generateZooType">general</strong>
-                </div>
+                <label class="trade-frequency-option new-zoo-size-option">
+                    <span>Zoo size: <strong id="newZooSizeValue">20%</strong></span>
+                    <input id="newZooSize" type="range" min="0" max="100" step="1" value="20">
+                </label>
+                <div class="advanced-options-note" id="newZooSizeNote"></div>
             </div>
 
-            <div class="options-actions" style="flex-wrap:wrap">
-                <button type="button" id="generateZooRandomZoo">Randomize Zoo</button>
-                <button type="button" id="generateZooRandomEverything">Randomize Everything</button>
-                <span style="flex:1 1 auto"></span>
+            <div class="options-actions new-zoo-actions" style="flex-wrap:wrap">
+                <button type="button" id="newZooSandbox" style="margin-right:auto">Sandbox Mode</button>
                 <button type="button" id="generateZooCancel">Cancel</button>
-                <button type="button" id="generateZooStart">Start New Game</button>
+                <button type="button" id="generateZooStart">Open New Zoo</button>
             </div>
         </div>`;
     document.body.appendChild(overlay);
@@ -10451,7 +10808,24 @@ function ensureGenerateZooUI() {
     const country = overlay.querySelector('#generateZooCountry');
     const location = overlay.querySelector('#generateZooLocation');
     const zooName = overlay.querySelector('#generateZooName');
-    const zooType = overlay.querySelector('#generateZooType');
+    const zooSize = overlay.querySelector('#newZooSize');
+    const zooSizeValue = overlay.querySelector('#newZooSizeValue');
+    const zooSizeNote = overlay.querySelector('#newZooSizeNote');
+
+    function updateZooSizePreview() {
+        const collectionRules = startingCollectionSizeRules(zooSize.value);
+        const enclosureRules = startingZooSizeRules(zooSize.value);
+        const possibleLevels = Object.entries(collectionRules.levelChances)
+            .filter(([, chance]) => chance > 0)
+            .map(([level]) => Number(level));
+        const maxLevel = possibleLevels.length ? Math.max(...possibleLevels) : 1;
+        zooSizeValue.textContent = `${collectionRules.size}%`;
+        zooSizeNote.textContent =
+            `${collectionRules.species} starting animals · cards up to Level ${maxLevel} · ` +
+            `${enclosureRules.maxSpaces} starting enclosure spaces`;
+    }
+
+    zooSize.addEventListener('input', updateZooSizePreview);
 
     function refreshCountries(preferred) {
         const countries = zooSetupCountries();
@@ -10471,13 +10845,11 @@ function ensureGenerateZooUI() {
         country.value = identity.country;
         location.value = identity.location;
         zooName.value = identity.zooName;
-        zooType.textContent = identity.zooType || 'general';
         overlay.dataset.generatedZooType = identity.zooType || 'general';
     }
 
     function updateInferredType() {
         const inferred = inferZooTypeFromGeneratedName(country.value, zooName.value);
-        zooType.textContent = inferred;
         overlay.dataset.generatedZooType = inferred;
     }
 
@@ -10486,11 +10858,23 @@ function ensureGenerateZooUI() {
     });
     zooName.addEventListener('input', updateInferredType);
 
-    overlay.querySelector('#generateZooRandomZoo').addEventListener('click', () => {
-        applyIdentity(generateZooSetupIdentity(country.value, true));
+    overlay.querySelector('#randomizeZooCountry').addEventListener('click', () => {
+        const countries = zooSetupCountries();
+        const alternatives = countries.filter(value => value !== country.value);
+        const nextCountry = randomItem(alternatives.length ? alternatives : countries) || country.value;
+        applyIdentity(generateZooSetupIdentity(nextCountry, true));
     });
-    overlay.querySelector('#generateZooRandomEverything').addEventListener('click', () => {
-        applyIdentity(generateZooSetupIdentity('', false));
+    overlay.querySelector('#randomizeZooLocation').addEventListener('click', () => {
+        const identity = generateZooSetupIdentity(country.value, true);
+        location.value = identity.location;
+    });
+    overlay.querySelector('#randomizeZooName').addEventListener('click', () => {
+        const identity = generateZooSetupIdentity(country.value, true);
+        zooName.value = identity.zooName;
+        updateInferredType();
+    });
+    overlay.querySelector('#newZooSandbox').addEventListener('click', () => {
+        startSandboxMode();
     });
     overlay.querySelector('#generateZooCancel').addEventListener('click', () => {
         overlay.classList.remove('visible');
@@ -10519,13 +10903,17 @@ function ensureGenerateZooUI() {
 
         clearAutoResumeSnapshot();
 
-        // createStartingZoo resets the playable zoo; assign the chosen identity
-        // afterwards so the normal random-name routine cannot overwrite it.
-        createStartingZoo();
+        // Install the identity before startup animals are selected so the
+        // chosen zoo type can bias that collection.
         state.zooName = finalName;
         state.zooCountry = country.value;
         state.zooLocation = finalLocation;
         state.zooType = inferZooTypeFromGeneratedName(country.value, finalName);
+        const selectedZooSize = Math.max(0, Math.min(100, Math.round(Number(zooSize.value))));
+        state.gameOptions.startingCollectionSize = selectedZooSize;
+        state.gameOptions.startingZooSize = selectedZooSize;
+        saveGameOptions();
+        createStartingZoo();
 
         assignOpponentProfiles();
         createZooNameEditor();
@@ -10538,6 +10926,12 @@ function ensureGenerateZooUI() {
     });
 
     overlay._applyZooIdentity = applyIdentity;
+    overlay._syncZooSize = () => {
+        // New Zoo always opens at the standard 20% preset. The user's previous
+        // zoo size is deliberately not carried into the next New Zoo dialog.
+        zooSize.value = 20;
+        updateZooSizePreview();
+    };
     return overlay;
 }
 
@@ -10552,6 +10946,7 @@ function openGenerateZooMenu() {
             : (countries.includes('Netherlands') ? 'Netherlands' : countries[0]);
 
     overlay._applyZooIdentity(generateZooSetupIdentity(rememberedCountry, true));
+    overlay._syncZooSize();
     overlay.classList.add('visible');
 }
 
@@ -10560,7 +10955,7 @@ function requestNewGame() {
         exitHistoryView(true);
     }
 
-    // V166: New Game opens the dedicated Generate Zoo setup instead of
+    // New Game opens the dedicated New Zoo setup instead of
     // immediately replacing the zoo or routing through Save / Load.
     openGenerateZooMenu();
 }
@@ -10596,20 +10991,9 @@ function ensureGameOptionsUI() {
     overlay.innerHTML = `
         <div class="game-options-modal">
             <h2>Game Options</h2>
-            <p>Change the starting zoo and choose which animal categories may appear.</p>
+            <p>Choose gameplay preferences and which animal categories may appear.</p>
 
             <div class="advanced-game-rules" id="advancedGameRules">
-                <div class="advanced-options-title">GAME SETUP</div>
-                <label class="trade-frequency-option">
-                    <span>Starting collection size: <strong id="optStartingCollectionSizeValue">20%</strong></span>
-                    <input id="optStartingCollectionSize" type="range" min="0" max="100" step="1" value="20">
-                </label>
-                <div class="advanced-options-note" id="optStartingCollectionSizeNote"></div>
-                <label class="trade-frequency-option">
-                    <span>Starting zoo size: <strong id="optStartingZooSizeValue">20%</strong></span>
-                    <input id="optStartingZooSize" type="range" min="0" max="100" step="1" value="20">
-                </label>
-                <div class="advanced-options-note" id="optStartingZooSizeNote"></div>
                 <label class="glow-option">
                     <span>Eligibility glows</span>
                     <input id="optEligibilityGlows" type="checkbox" checked>
@@ -10645,10 +11029,6 @@ function ensureGameOptionsUI() {
             <div class="advanced-options-title">ANIMAL CATEGORIES</div>
             <div id="categoryOptionList" class="category-option-list"></div>
 
-            <div class="options-warning" id="gameOptionsRegenerateWarning" style="display:none;">
-                Changing the Starting Collection Size or Starting Zoo Size regenerates the zoo from scratch.
-                Save your current zoo before applying these changes if you want to keep it.
-            </div>
             <div class="options-actions">
                 <button type="button" id="resetGameOptionsChanges">Reset Changes</button>
                 <span style="flex:1 1 auto;"></span>
@@ -10659,102 +11039,12 @@ function ensureGameOptionsUI() {
     document.body.appendChild(overlay);
 
     const list = overlay.querySelector('#categoryOptionList');
-    const startingCollectionSizeInput = overlay.querySelector('#optStartingCollectionSize');
-    const startingCollectionSizeValue = overlay.querySelector('#optStartingCollectionSizeValue');
-    const startingCollectionSizeNote = overlay.querySelector('#optStartingCollectionSizeNote');
-    const startingZooSizeInput = overlay.querySelector('#optStartingZooSize');
-    const startingZooSizeValue = overlay.querySelector('#optStartingZooSizeValue');
-    const startingZooSizeNote = overlay.querySelector('#optStartingZooSizeNote');
     const eligibilityGlowsInput = overlay.querySelector('#optEligibilityGlows');
     const animalLanguageInput = overlay.querySelector('#optAnimalLanguage');
     const milestonesInput = overlay.querySelector('#optRewardMilestones');
     const opponentModeInput = overlay.querySelector('#optOpponentMode');
     const tradeFrequencyInput = overlay.querySelector('#optTradeFrequency');
     const tradeFrequencyValue = overlay.querySelector('#optTradeFrequencyValue');
-    const applyGameOptionsButton = overlay.querySelector('#applyGameOptions');
-    const regenerateWarning = overlay.querySelector('#gameOptionsRegenerateWarning');
-    let startingGenerationSlidersTouched = false;
-
-    function updateGameOptionsApplyState() {
-        const sizeChanged =
-            Math.round(Number(startingCollectionSizeInput.value)) !==
-                Number(state.gameOptions.startingCollectionSize) ||
-            Math.round(Number(startingZooSizeInput.value)) !==
-                Number(state.gameOptions.startingZooSize);
-
-        applyGameOptionsButton.textContent = sizeChanged
-            ? 'Apply & Regenerate Zoo'
-            : 'Apply';
-
-        // Do not show the yellow warning merely because the menu opened with
-        // values that differ from an old/default state. It appears only after
-        // the player has deliberately interacted with one of the two startup
-        // generation sliders, and only while that interaction leaves a change.
-        regenerateWarning.style.display =
-            startingGenerationSlidersTouched && sizeChanged ? '' : 'none';
-    }
-
-    function enforceStartingSizeBuffer(changed) {
-        let collectionValue = Math.round(Number(startingCollectionSizeInput.value));
-        let zooValue = Math.round(Number(startingZooSizeInput.value));
-
-        let collectionRules = startingCollectionSizeRules(collectionValue);
-        let zooRules = startingZooSizeRules(zooValue);
-
-        // Aim for roughly five spare enclosure spaces. The sliders remain
-        // independent until a choice would create an impossible/unsafe start.
-        if (zooRules.maxSpaces < collectionRules.species + 5) {
-            if (changed === 'collection') {
-                // Raise zoo size just enough to restore the buffer.
-                while (zooValue < 100 &&
-                       startingZooSizeRules(zooValue).maxSpaces < collectionRules.species + 5) {
-                    zooValue++;
-                }
-                startingZooSizeInput.value = zooValue;
-            } else {
-                // Lower collection size just enough to fit the chosen zoo.
-                while (collectionValue > 0 &&
-                       startingCollectionSizeRules(collectionValue).species + 5 > zooRules.maxSpaces) {
-                    collectionValue--;
-                }
-                startingCollectionSizeInput.value = collectionValue;
-            }
-        }
-    }
-
-    function updateStartingSizePreview() {
-        const collectionRules = startingCollectionSizeRules(startingCollectionSizeInput.value);
-        const zooRules = startingZooSizeRules(startingZooSizeInput.value);
-
-        startingCollectionSizeValue.textContent = `${collectionRules.size}%`;
-        startingZooSizeValue.textContent = `${zooRules.size}%`;
-
-        const possibleLevels = Object.entries(collectionRules.levelChances)
-            .filter(([, chance]) => chance > 0)
-            .map(([level]) => Number(level));
-        const maxLevel = Math.max(...possibleLevels);
-
-        startingCollectionSizeNote.textContent =
-            `${collectionRules.species} starting animals · cards up to Level ${maxLevel}`;
-        startingZooSizeNote.textContent =
-            `${zooRules.maxSpaces} starting enclosure spaces · ` +
-            `${Math.max(0, zooRules.maxSpaces - collectionRules.species)} spare spaces`;
-    }
-
-    startingCollectionSizeInput.addEventListener('input', () => {
-        startingGenerationSlidersTouched = true;
-        enforceStartingSizeBuffer('collection');
-        updateStartingSizePreview();
-        updateGameOptionsApplyState();
-    });
-
-    startingZooSizeInput.addEventListener('input', () => {
-        startingGenerationSlidersTouched = true;
-        enforceStartingSizeBuffer('zoo');
-        updateStartingSizePreview();
-        updateGameOptionsApplyState();
-    });
-
     tradeFrequencyInput.addEventListener('input', () => {
         tradeFrequencyValue.textContent = `${Math.round(Number(tradeFrequencyInput.value))}%`;
     });
@@ -10769,11 +11059,8 @@ function ensureGameOptionsUI() {
     }
 
     function syncInputs() {
-        startingCollectionSizeInput.value = state.gameOptions.startingCollectionSize;
-        startingZooSizeInput.value = state.gameOptions.startingZooSize;
         eligibilityGlowsInput.checked = state.gameOptions.showEligibilityGlows !== false;
         animalLanguageInput.value = state.gameOptions.animalLanguage === 'nl' ? 'nl' : 'en';
-        updateStartingSizePreview();
         milestonesInput.value = state.gameOptions.enclosureRewardMilestones.join(', ');
         opponentModeInput.value = state.gameOptions.opponentMode;
         tradeFrequencyInput.value = state.gameOptions.tradeOfferFrequency;
@@ -10781,14 +11068,11 @@ function ensureGameOptionsUI() {
         for (const cb of list.querySelectorAll('input[type="checkbox"]')) {
             cb.checked = state.activeCategories.has(cb.value);
         }
-        updateGameOptionsApplyState();
     }
 
     function open() {
         pauseAllHintGlowsForMenu();
-        startingGenerationSlidersTouched = false;
         syncInputs();
-        regenerateWarning.style.display = 'none';
         overlay.classList.add('visible');
     }
 
@@ -10801,15 +11085,8 @@ function ensureGameOptionsUI() {
     overlay.querySelector('#cancelGameOptions').addEventListener('click', close);
 
     overlay.querySelector('#resetGameOptionsChanges').addEventListener('click', () => {
-        const generationValuesWillChange =
-            Math.round(Number(startingCollectionSizeInput.value)) !== 20 ||
-            Math.round(Number(startingZooSizeInput.value)) !== 20;
-        if (generationValuesWillChange) startingGenerationSlidersTouched = true;
-
         // Restore the standard/default option values in the menu only.
         // The player can still Cancel, or press Apply to commit them.
-        startingCollectionSizeInput.value = 20;
-        startingZooSizeInput.value = 20;
         eligibilityGlowsInput.checked = true;
         animalLanguageInput.value = 'en';
         milestonesInput.value = '1, 2, 3, 4, 6, 9';
@@ -10821,8 +11098,6 @@ function ensureGameOptionsUI() {
             cb.checked = true;
         }
 
-        updateStartingSizePreview();
-        updateGameOptionsApplyState();
     });
 
     overlay.addEventListener('pointerdown', event => {
@@ -10838,14 +11113,6 @@ function ensureGameOptionsUI() {
             return;
         }
 
-        const startingCollectionSize = Math.max(
-            0,
-            Math.min(100, Math.round(Number(startingCollectionSizeInput.value)))
-        );
-        const startingZooSize = Math.max(
-            0,
-            Math.min(100, Math.round(Number(startingZooSizeInput.value)))
-        );
         const showEligibilityGlows = eligibilityGlowsInput.checked;
         const animalLanguage = animalLanguageInput.value === 'nl' ? 'nl' : 'en';
         const milestones = normalizeRewardMilestones(milestonesInput.value);
@@ -10859,8 +11126,6 @@ function ensureGameOptionsUI() {
             selected.length === state.activeCategories.size &&
             selected.every(category => state.activeCategories.has(category));
         const rulesSame =
-            startingCollectionSize === state.gameOptions.startingCollectionSize &&
-            startingZooSize === state.gameOptions.startingZooSize &&
             showEligibilityGlows === (state.gameOptions.showEligibilityGlows !== false) &&
             animalLanguage === (state.gameOptions.animalLanguage === 'nl' ? 'nl' : 'en') &&
             milestones.join(',') === state.gameOptions.enclosureRewardMilestones.join(',') &&
@@ -10872,27 +11137,11 @@ function ensureGameOptionsUI() {
             return;
         }
 
-        const startingCollectionSizeChanged =
-            startingCollectionSize !== state.gameOptions.startingCollectionSize;
-        const startingZooSizeChanged =
-            startingZooSize !== state.gameOptions.startingZooSize;
-        const startingSetupChanged =
-            startingCollectionSizeChanged || startingZooSizeChanged;
-
-        if (startingSetupChanged) {
-            const ok = confirm(
-                `Changing the Starting Collection Size or Starting Zoo Size will regenerate the game from scratch.\n\n` +
-                `The current zoo “${state.zooName}” and all its animals will be lost.\n\n` +
-                `Save your current zoo before applying if you want to keep it.\n\nContinue?`
-            );
-            if (!ok) return;
-        }
-
         const milestonesChanged =
             milestones.join(',') !== state.gameOptions.enclosureRewardMilestones.join(',');
         let applyMilestonesRetroactively = false;
 
-        if (milestonesChanged && !startingSetupChanged) {
+        if (milestonesChanged) {
             const oldAwardedCount = (state.awardedProgressMilestones || new Set()).size;
             const expectedCount = progressionRewardKeysForMilestones(milestones).size;
             const difference = expectedCount - oldAwardedCount;
@@ -10917,33 +11166,20 @@ function ensureGameOptionsUI() {
         }
 
         state.activeCategories = new Set(selected);
-        state.gameOptions.startingCollectionSize = startingCollectionSize;
-        state.gameOptions.startingZooSize = startingZooSize;
         state.gameOptions.showEligibilityGlows = showEligibilityGlows;
         state.gameOptions.animalLanguage = animalLanguage;
         setTimeout(localizeDocument, 0);
         state.gameOptions.enclosureRewardMilestones = milestones;
-        if (milestonesChanged && !startingSetupChanged) {
+        if (milestonesChanged) {
             applyMilestonesToCurrentZoo(milestones, applyMilestonesRetroactively);
         }
         state.gameOptions.opponentMode = opponentMode;
         state.gameOptions.tradeOfferFrequency = tradeOfferFrequency;
         saveGameOptions();
 
-        if (startingSetupChanged) {
-            clearAutoResumeSnapshot();
-            assignZooNames();
-            createStartingZoo();
-            assignOpponentProfiles();
-            renderAll();
-            centerInitialView();
-        } else {
-            // All non-size options apply to the current zoo without destroying it.
-            // Refresh opponent presentation when opponent mode changes, and redraw
-            // everything so glow/category/rule changes take effect immediately.
-            assignOpponentProfiles();
-            renderAll();
-        }
+        // Game Options now contains only live, non-size preferences.
+        assignOpponentProfiles();
+        renderAll();
 
         close();
     });
@@ -11152,6 +11388,7 @@ function realZooProfile(record, index) {
         favourites: Array.isArray(record.preferred_categories)
             ? record.preferred_categories.filter(Boolean).slice(0, 3)
             : [],
+        zooTypes: normaliseZooTypes(record.zoo_types || record.zooTypes || 'general'),
         realZooRecord: record
     };
 }
@@ -11371,7 +11608,10 @@ function createRealAutonomousOpponentOffer() {
             })
         );
         if (!possible.length) continue;
-        const animal = randomItem(possible);
+        const animal = weightedRandomItem(
+            possible,
+            candidate => animalZooTypeWeight(candidate, record.zoo_types || record.zooTypes || 'general', 'trade')
+        );
         state.opponentProfiles = [realZooProfile(record, 0)];
         state.opponentTradeStocks = [possible];
         state.autonomousTradeOffer = {
@@ -12517,22 +12757,27 @@ function randomOpponentStockAnimal(profile) {
     const maxPlayerLevel = Math.max(1, ...state.playerLevelsSeen);
     const possibleLevels = [];
     for (let level = 1; level <= Math.min(5, maxPlayerLevel); level++) possibleLevels.push(level);
-    for (let tries = 0; tries < 80; tries++) {
-        const weightedCategories = [...(profile?.favourites || []), ...(profile?.favourites || []), ...enabled];
-        const category = randomItem(weightedCategories);
-        const level = randomItem(possibleLevels);
-        if (!category || !level) continue;
-        const files = levelFiles(category, level);
-        if (!files.length) continue;
-        const existingKeys = new Set([
-            ...state.animals.map(a => `${a.category}|${a.level}|${a.filename.toLowerCase()}`),
-            ...state.opponentTradeStocks.flat().filter(Boolean).map(a => `${a.category}|${a.level}|${a.filename.toLowerCase()}`)
-        ]);
-        const available = files.filter(f => !existingKeys.has(`${category}|${level}|${f.toLowerCase()}`));
-        if (!available.length) continue;
-        return { id: state.nextId++, category, level, filename: randomItem(available), enclosureId: null, slotIndex: null, hand: false };
+    const existingKeys = new Set([
+        ...state.animals.map(a => `${a.category}|${a.level}|${a.filename.toLowerCase()}`),
+        ...state.opponentTradeStocks.flat().filter(Boolean).map(a => `${a.category}|${a.level}|${a.filename.toLowerCase()}`)
+    ]);
+    const candidates = [];
+    for (const category of enabled) {
+        for (const level of possibleLevels) {
+            for (const filename of levelFiles(category, level)) {
+                if (!existingKeys.has(`${category}|${level}|${filename.toLowerCase()}`)) {
+                    candidates.push({ category, level, filename });
+                }
+            }
+        }
     }
-    return null;
+    const selected = weightedRandomItem(candidates, candidate => {
+        const favouriteMultiplier = profile?.favourites?.includes(candidate.category) ? 3 : 1;
+        return favouriteMultiplier * animalZooTypeWeight(candidate, profile?.zooTypes || 'general', 'trade');
+    });
+    return selected
+        ? { id: state.nextId++, ...selected, enclosureId: null, slotIndex: null, hand: false }
+        : null;
 }
 
 function fillOpponentTradeStock(index) {
@@ -12589,7 +12834,8 @@ function assignOpponentProfiles() {
     const enabled = [...state.activeCategories];
     state.opponentProfiles = state.opponentNames.slice(0, 6).map((name, index) => ({
         index, name,
-        favourites: shuffle([...enabled]).slice(0, Math.min(3, enabled.length))
+        favourites: shuffle([...enabled]).slice(0, Math.min(3, enabled.length)),
+        zooTypes: [inferZooTypeFromAnyGeneratedName(name)]
     }));
     state.opponentTradeStocks = state.opponentProfiles.map(() => []);
     state.opponentStockCycle = Math.floor((state.turn - 1) / 5);
@@ -12640,7 +12886,10 @@ function createAutonomousOpponentOffer() {
                 tradeIncomingHasDestinationAfterOutgoing(incoming, outgoing)
             )
         );
-    const animal = randomItem(stock);
+    const animal = weightedRandomItem(
+        stock,
+        candidate => animalZooTypeWeight(candidate, profile?.zooTypes || 'general', 'trade')
+    );
     if (!animal) return false;
     state.autonomousTradeOffer = {
         opponentIndex,
@@ -12707,7 +12956,15 @@ function opponentAnimalsGroupedByCategory(stock) {
 }
 
 function renderOpponentTradeState() {
-    if (state.sandboxMode) return;
+    const opponentContainer = document.getElementById('opponentZoos');
+    const opponentTradeArea = document.getElementById('opponentTradeArea');
+    if (state.sandboxMode) {
+        if (opponentContainer) opponentContainer.style.display = 'none';
+        if (opponentTradeArea) opponentTradeArea.style.display = 'none';
+        return;
+    }
+    if (opponentContainer) opponentContainer.style.display = '';
+    if (opponentTradeArea) opponentTradeArea.style.display = '';
     ensureOpponentZooElements();
     ensureTradeAreaLayout();
     positionOpponentTradeArea();
@@ -13768,6 +14025,10 @@ function assignZooNames() {
     }
     state.opponentNames = state.opponentNames.slice(0, 6);
 
+    // The instant-start path has no setup country, but a generated name can
+    // still identify its type once the expanded name data is available.
+    state.zooType = inferZooTypeFromAnyGeneratedName(state.zooName);
+
 
     createZooNameEditor();
 
@@ -14027,6 +14288,7 @@ function loadNonEssentialGameData() {
                 proxy_compatibility: { enabled: false, groups: {} }
             };
             rebuildCompatibilityGraphs();
+            rebuildCompatibilityEvidenceIndex();
             ensureCompatibilityGlowStyles();
             renderAll();
         })
@@ -14045,8 +14307,8 @@ function loadNonEssentialGameData() {
 
     loadOptionalJsonInBackground('zoo-names.json')
         .then(data => {
-            // V166: the expanded European database can provide country,
-            // location, prefix and zoo-type information for Generate Zoo.
+            // The expanded European database can provide country, location,
+            // prefix and zoo-type information for New Zoo.
             state.zooNamesData = data;
             if (repairLoadedZooName()) {
                 createZooNameEditor();
@@ -14092,6 +14354,7 @@ async function startGame() {
             proxy_compatibility: { enabled: false, groups: {} }
         };
         rebuildCompatibilityGraphs();
+        rebuildCompatibilityEvidenceIndex();
         ensureCompatibilityGlowStyles();
         ensureDrawSpaceGuardStyles();
 
@@ -14108,8 +14371,6 @@ async function startGame() {
         const resumedPreviousZoo = restoreAutoResumeSnapshot();
 
         if (!resumedPreviousZoo) {
-            state.gameOptions.startingZooSize = 20;
-
             // assignZooNames already has built-in fallback names when the
             // external zoo-name pool has not arrived yet.
             assignZooNames();

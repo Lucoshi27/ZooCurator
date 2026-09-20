@@ -3820,6 +3820,19 @@
             "temperate": 1.15
           },
           "description": "Mountain collection. Strongly favours mountain fauna, with smaller cold-climate and mountain-associated ungulate, carnivore and raptor preferences."
+        },
+        "raptor": {
+          "category": {
+            "Birds of Prey": 8.0,
+            "Other Birds": 1.15,
+            "Tropical Birds": 1.1
+          },
+          "tags": {
+            "forest": 1.1,
+            "mountain": 1.1,
+            "wetland": 1.05
+          },
+          "description": "Raptor and falconry specialist. Very strongly favours Birds of Prey while retaining a small chance of other bird groups and habitat-associated species."
         }
       }
     },

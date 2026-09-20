@@ -1149,12 +1149,49 @@ body {
     box-shadow:0 14px 45px rgba(0,0,0,.3);
 }
 .game-options-modal h2 { margin:0 0 8px; }
+.game-options-modal button {
+    border:1px solid rgba(70,58,39,.45);
+    border-radius:7px;
+    background:#fffdf6;
+    color:#30291f;
+    font:inherit;
+    font-weight:800;
+    box-shadow:0 2px 7px rgba(0,0,0,.12);
+}
+.game-options-modal button:hover { background:#f7f3e8; }
+.new-zoo-modal {
+    width:min(760px,calc(100vw - 40px));
+    max-width:760px;
+}
+.new-zoo-modal .advanced-game-rules label {
+    grid-template-columns:minmax(120px,1fr) minmax(224px,280px);
+}
+.new-zoo-modal #generateZooCountry,
+.new-zoo-modal #generateZooLocation,
+.new-zoo-modal #generateZooName,
+.new-zoo-modal #newZooSize {
+    width:280px;
+    min-width:224px;
+}
 .category-option-list { display:grid; grid-template-columns:1fr 1fr; gap:7px 12px; margin:18px 0; }
 .category-option { display:flex; align-items:center; gap:8px; padding:7px; border-radius:6px; background:rgba(255,255,255,.65); cursor:pointer; }
 .category-option-colour { width:16px; height:16px; border-radius:3px; border:1px solid rgba(0,0,0,.25); }
 .options-warning { padding:10px; border-radius:6px; background:#fff0bd; font-size:13px; font-weight:700; }
 .options-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
 .options-actions button { padding:8px 12px; cursor:pointer; }
+
+@media (max-width:600px) {
+    .new-zoo-modal .advanced-game-rules label {
+        grid-template-columns:minmax(90px,1fr) minmax(0,1.7fr);
+    }
+    .new-zoo-modal #generateZooCountry,
+    .new-zoo-modal #generateZooLocation,
+    .new-zoo-modal #generateZooName,
+    .new-zoo-modal #newZooSize {
+        width:100%;
+        min-width:0;
+    }
+}
 
 /* ============================================================
    OPPONENT TRADING
@@ -2232,5 +2269,240 @@ body.history-viewing #zooCanvas .animal-card {
 
     #opponentZoos {
         width: 201px;
+    }
+}
+
+
+/* ============================================================
+   ANIMAL INFORMATION — CONTINENT + COMPATIBILITY SOURCES
+   ============================================================ */
+
+#animalInformationPane {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    flex-direction: column;
+}
+
+#animalInformationPane[hidden] {
+    display: none;
+}
+
+#animalInformationText {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    margin-top: 9px;
+    padding: 10px 12px;
+    border-radius: 7px;
+    background: rgba(255,255,255,.90);
+    color: #242424;
+    text-shadow: none;
+    user-select: text;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.animal-continent-row {
+    padding: 8px 9px;
+    border-radius: 6px;
+    background: rgba(0,0,0,.07);
+}
+
+.animal-combinations-heading {
+    margin: 12px 0 7px;
+    font-weight: 900;
+}
+
+#animalCombinationList {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.animal-combination-row {
+    position: relative;
+    padding: 7px 9px;
+    border: 1px solid rgba(0,0,0,.14);
+    border-radius: 5px;
+    background: #fff;
+    cursor: help;
+}
+
+.animal-combination-row:hover {
+    background: #f3f1ea;
+}
+
+.combination-source-popup {
+    display: none;
+    position: fixed;
+    left: 430px;
+    bottom: 30px;
+    z-index: 30000;
+    width: min(390px, calc(100vw - 460px));
+    max-height: min(300px, calc(100vh - 60px));
+    overflow: auto;
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.38);
+    border-radius: 7px;
+    background: #fff;
+    color: #242424;
+    box-shadow: 0 8px 24px rgba(0,0,0,.28);
+    white-space: pre-wrap;
+    pointer-events: none;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.animal-combination-row:hover > .combination-source-popup {
+    display: block;
+}
+
+.animal-combination-empty {
+    padding: 9px;
+    opacity: .65;
+    font-style: italic;
+}
+
+#hoverPreview.super-zoom #animalInformationText {
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+#hoverPreview.super-zoom .combination-source-popup {
+    left: min(828px, calc(100vw - 408px));
+    width: min(390px, calc(100vw - 36px));
+}
+
+@media (max-width: 900px) {
+    .combination-source-popup {
+        left: 18px;
+        right: 18px;
+        bottom: 18px;
+        width: auto;
+        max-height: 34vh;
+    }
+}
+
+
+
+/* ============================================================
+   V171 — GAME OPTIONS + COMPACT NEW ZOO MENU
+   ============================================================ */
+
+/* Game Options alignment retained from V170. */
+.game-options-modal #advancedGameRules label {
+    grid-template-columns: minmax(170px, 1fr) 210px;
+}
+.game-options-modal #optAnimalLanguage,
+.game-options-modal #optOpponentMode,
+.game-options-modal #optRewardMilestones,
+.game-options-modal #optTradeFrequency {
+    width: 210px;
+    min-width: 210px;
+}
+.game-options-modal #optAnimalLanguage,
+.game-options-modal #optOpponentMode {
+    justify-self: end;
+}
+.game-options-modal .glow-option #optEligibilityGlows {
+    width: auto;
+    min-width: 0;
+    justify-self: start;
+}
+
+/* The New Zoo dialog no longer wastes a large empty right-hand area. */
+.new-zoo-modal {
+    width: min(470px, calc(100vw - 32px));
+    max-width: 470px;
+    padding: 24px 26px;
+    font-size: 16px;
+}
+.new-zoo-modal h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+.new-zoo-modal > p {
+    margin: 0 0 18px;
+    font-size: 15px;
+    line-height: 1.4;
+}
+.new-zoo-modal .advanced-game-rules {
+    font-size: 16px;
+}
+.new-zoo-modal .advanced-game-rules label {
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 11px;
+}
+.new-zoo-modal .advanced-game-rules label > span:first-child {
+    font-size: 16px;
+    font-weight: 800;
+}
+
+/* Randomizer is a separate 26x26 control on the LEFT, exactly like the
+   ↻ button that appears beside the editable main-screen zoo name. */
+.new-zoo-modal .new-zoo-field-with-random {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+}
+.new-zoo-modal button.new-zoo-randomize {
+    width: 26px;
+    min-width: 26px;
+    height: 26px;
+    padding: 0;
+    line-height: 24px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+}
+.new-zoo-modal #generateZooCountry,
+.new-zoo-modal #generateZooLocation,
+.new-zoo-modal #generateZooName {
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+    font-size: 15px;
+}
+.new-zoo-modal #newZooSize {
+    width: 100%;
+    min-width: 0;
+}
+.new-zoo-modal #newZooSizeNote {
+    font-size: 14px;
+    line-height: 1.35;
+}
+.new-zoo-modal .options-actions button {
+    font-size: 15px;
+    padding: 9px 13px;
+}
+.new-zoo-actions #generateZooStart {
+    min-width: 128px;
+}
+
+@media (max-width: 600px) {
+    .game-options-modal #advancedGameRules label {
+        grid-template-columns: minmax(90px, 1fr) minmax(0, 1.7fr);
+    }
+    .game-options-modal #optAnimalLanguage,
+    .game-options-modal #optOpponentMode,
+    .game-options-modal #optRewardMilestones,
+    .game-options-modal #optTradeFrequency {
+        width: 100%;
+        min-width: 0;
+    }
+    .new-zoo-modal {
+        width: calc(100vw - 24px);
+        padding: 18px;
+    }
+    .new-zoo-modal .advanced-game-rules label {
+        grid-template-columns: 92px minmax(0, 1fr);
     }
 }

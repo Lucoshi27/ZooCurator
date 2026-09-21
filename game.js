@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V220.23";
+const ZOO_CURATOR_VERSION = "V220.27";
 
 
 // ============================================================
@@ -420,8 +420,6 @@ const state = {
 
     enclosures: [],
     animals: [],
-    hand: [],
-
     exchange: [
         null,
         null
@@ -550,8 +548,6 @@ const incomingOfferBox = $('ingoingOffer');
 
 const zooBoard = $('zooBoard');
 const zooCanvas = $('zooCanvas');
-
-const handElement = $('hand');
 
 const hoverPreview = $('hoverPreview');
 const hoverPreviewImage = $('hoverPreviewImage');
@@ -687,7 +683,6 @@ function playerHasAnyUpgradeAvailable() {
 function emergencyTradeNeeded() {
     return (
         state.historyViewTurn === null &&
-        !state.hand.length &&
         !state.result &&
         !state.outgoingOffer &&
         !state.autonomousTradeOffer &&
@@ -813,8 +808,7 @@ function emergencyTradeSelection(writeState = true) {
                 filename: cleanFilename(filename),
                 enclosureId: null,
                 slotIndex: null,
-                hand: false
-            };
+                    };
             if (!tradeIncomingHasDestinationAfterOutgoing(candidate, outgoing)) continue;
             available.push({ category, filename });
         }
@@ -843,8 +837,7 @@ function emergencyTradeSelection(writeState = true) {
             filename: cleanFilename(chosen.filename),
             enclosureId: null,
             slotIndex: null,
-            hand: false
-        }
+            }
     };
 }
 
@@ -1136,7 +1129,6 @@ function applyTradeEligibleGlow() {
     const workToken = ++tradeEligibleGlowWorkToken;
     const animalById = new Map();
     for (const animal of state.animals) animalById.set(animal.id, animal);
-    for (const animal of state.hand) animalById.set(animal.id, animal);
 
     const cards = [...document.querySelectorAll('.animal-card[data-animal-id]')];
     let cursor = 0;
@@ -2309,7 +2301,7 @@ function createAnimal(category, level, filename = null) {
     const animal = {
         id: state.nextId++, category, level,
         filename: cleanFilename(chosen),
-        enclosureId: null, slotIndex: null, hand: false
+        enclosureId: null, slotIndex: null
     };
     ensureAnimalLineage(animal, state.zooName || 'Your Zoo');
     return animal;
@@ -3966,18 +3958,15 @@ function tradeIncomingHasDestinationAfterOutgoing(incoming, outgoing) {
     const oldSlotIndex = outgoing.slotIndex;
     const oldReservedEnclosureId = outgoing.reservedEnclosureId;
     const oldReservedSlotIndex = outgoing.reservedSlotIndex;
-    const oldHand = outgoing.hand;
 
     try {
         outgoing.enclosureId = null;
         outgoing.slotIndex = null;
         clearAnimalZooReservation(outgoing);
-        outgoing.hand = false;
         return eligibleDestinationsForAnimal(incoming).length > 0;
     } finally {
         outgoing.enclosureId = oldEnclosureId;
         outgoing.slotIndex = oldSlotIndex;
-        outgoing.hand = oldHand;
         if (oldReservedEnclosureId != null && oldReservedSlotIndex != null) {
             reserveAnimalZooSlot(outgoing, oldReservedEnclosureId, oldReservedSlotIndex);
         }
@@ -4051,17 +4040,6 @@ function removeAnimalFromLocations(
 
     animal.enclosureId = null;
     animal.slotIndex = null;
-    animal.hand = false;
-
-
-    state.hand =
-        state.hand.filter(
-            item =>
-                item.id !==
-                animal.id
-        );
-
-
     state.exchange =
         state.exchange.map(
             item =>
@@ -4090,7 +4068,7 @@ function placeAnimal(
     slotIndex
 ) {
 
-    // reservation hand-off:
+    // reservation transfer:
     // If this animal is moving from a real zoo slot into a slot currently
     // reserved by a card in Exchange/Outgoing Offer, move that reservation
     // to THIS animal's old slot. The zoo therefore remains logically full
@@ -4648,7 +4626,6 @@ function createStartingZoo() {
     state.sandboxLooseAnimals = [];
     state.enclosures = [];
     state.animals = [];
-    state.hand = [];
 
     state.exchange = [
         null,
@@ -5642,7 +5619,7 @@ function setupAnimalCard(
     image.draggable =
         false;
 
-    // DOM cards are recreated by renderZoo/renderHand. Reapply any active
+    // DOM cards are recreated by renderZoo. Reapply any active
     // compatibility-hover highlight from the shared timestamped state.
     if (state.compatibilityAnimalHoverIds?.has(animal.id)) {
         const now = renderNow;
@@ -6855,7 +6832,17 @@ function renderAnimalInformation(animal) {
 
         row.addEventListener('mouseenter', showSource);
         row.addEventListener('mousemove', moveSource);
-        row.addEventListener('mouseleave', hideSource);
+        row.addEventListener('mouseleave', event => {
+            if (!window.matchMedia('(max-width: 700px)').matches) hideSource();
+        });
+        row.addEventListener('click', event => {
+            if (!window.matchMedia('(max-width: 700px)').matches) return;
+            event.preventDefault();
+            event.stopPropagation();
+            showSource(event);
+            const popup = document.getElementById('combinationSourceTooltip');
+            if (popup) popup.dataset.mobilePinned = '1';
+        });
 
         list.appendChild(row);
     }
@@ -7308,9 +7295,58 @@ function renderEnclosure(
             }
 
 
+            const mobileTouch =
+                event.pointerType === 'touch' &&
+                window.matchMedia('(max-width: 700px)').matches;
+
+            if (mobileTouch) {
+                // On phones, an enclosure press is panning by default. Only a
+                // stationary two-second hold promotes it to an enclosure drag.
+                // The board's capture listener has already seen this pointer,
+                // so ordinary touch movement continues to pan the zoo.
+                event.preventDefault();
+
+                const pointerId = event.pointerId;
+                const startX = event.clientX;
+                const startY = event.clientY;
+                let cancelled = false;
+
+                const cleanup = () => {
+                    clearTimeout(timer);
+                    window.removeEventListener('pointermove', cancelOnMove, true);
+                    window.removeEventListener('pointerup', cancelHold, true);
+                    window.removeEventListener('pointercancel', cancelHold, true);
+                };
+                const cancelHold = () => {
+                    cancelled = true;
+                    cleanup();
+                };
+                const cancelOnMove = moveEvent => {
+                    if (moveEvent.pointerId !== pointerId) return;
+                    if (Math.hypot(moveEvent.clientX - startX, moveEvent.clientY - startY) > 8) {
+                        cancelHold();
+                    }
+                };
+                const timer = setTimeout(() => {
+                    if (cancelled || state.drag) return cleanup();
+                    cleanup();
+
+                    // A successful hold switches ownership from zoo panning to
+                    // enclosure dragging without requiring a second touch.
+                    state.pan = null;
+                    startEnclosureDrag(event, enclosure, element);
+                    element.classList.add('mobile-longpress-dragging');
+                    navigator.vibrate?.(18);
+                }, 2000);
+
+                window.addEventListener('pointermove', cancelOnMove, true);
+                window.addEventListener('pointerup', cancelHold, true);
+                window.addEventListener('pointercancel', cancelHold, true);
+                return;
+            }
+
             event.preventDefault();
             event.stopPropagation();
-
 
             startEnclosureDrag(
                 event,
@@ -7322,58 +7358,16 @@ function renderEnclosure(
     );
 
 
+    element.addEventListener('contextmenu', event => {
+        if (window.matchMedia('(max-width: 700px)').matches) event.preventDefault();
+    });
+
     zooCanvas.appendChild(
         element
     );
 
 }
 
-
-// ============================================================
-// RENDER HAND
-// ============================================================
-
-function renderHand() {
-
-    handElement.innerHTML =
-        '';
-
-    // Sandbox has no player hand. Defensive cleanup also repairs any sandbox
-    // card that an older drag path/save accidentally marked as a hand card.
-    if (state.sandboxMode) {
-        for (const animal of state.hand) {
-            if (animal) animal.hand = false;
-        }
-        state.hand = [];
-        return;
-    }
-
-
-    for (
-        const animal
-        of state.hand
-    ) {
-
-        const image =
-            document.createElement(
-                'img'
-            );
-
-
-        setupAnimalCard(
-            image,
-            animal,
-            'hand'
-        );
-
-
-        handElement.appendChild(
-            image
-        );
-
-    }
-
-}
 
 
 // ============================================================
@@ -7663,11 +7657,9 @@ async function completeExchange(destination = null, autoPlace = false) {
         }
         if (autoPlace) markNewPlacementGlow(newAnimal);
     } else {
-        // A clicked upgrade result must be placed automatically. If there is
-        // nowhere legal to put it, leave the upgrade untouched.
-        if (autoPlace) return false;
-        newAnimal.hand = true;
-        state.hand.push(newAnimal);
+        // Upgrade completion is committed only when the new animal has a legal
+        // destination. Invalid drags leave the upgrade result untouched.
+        return false;
     }
 
     state.animals.push(newAnimal);
@@ -8008,7 +8000,7 @@ function progressionKey(category, level) {
 
 function updateDiscoveredCategoryLevels() {
     // Category progression is a LIVE view of what is currently in the player's
-    // zoo, not a lifetime achievement record. Cards in the hand, exchange area
+    // zoo, not a lifetime achievement record. Cards in the exchange area
     // or outgoing trade box do not keep a progression box checked.
     const current = new Set();
 
@@ -8228,7 +8220,6 @@ const SAVE_STATE_KEYS = [
     'playerLevelsSeen',
     'enclosures',
     'animals',
-    'hand',
     'exchange',
     'result',
     'nextId',
@@ -8562,8 +8553,6 @@ function relinkLoadedPlayerReferences() {
             ensureAnimalLineage(animal, state.zooName || 'Your Zoo');
         }
     }
-    state.hand = (state.hand || [])
-        .map(animal => byId.get(animal.id) || animal);
     state.exchange = (state.exchange || [null, null])
         .map(animal => animal ? (byId.get(animal.id) || animal) : null);
     if (state.outgoingOffer) {
@@ -8579,6 +8568,15 @@ function importGameState(saveData, { deferRender = false } = {}) {
 
     exitHistoryView(false);
     state.suppressHistoryCapture = true;
+
+    // V220.27 removes the old Hand subsystem. Older saves may still contain
+    // one or more pending hand-card references; remember their ids solely for
+    // one-time migration after the normal zoo state has been restored.
+    const legacyHandIds = new Set(
+        Array.isArray(saveData.state.hand)
+            ? saveData.state.hand.map(animal => Number(animal?.id)).filter(Number.isFinite)
+            : []
+    );
 
     for (const key of SAVE_STATE_KEYS) {
         if (Object.prototype.hasOwnProperty.call(saveData.state, key)) {
@@ -8604,6 +8602,21 @@ function importGameState(saveData, { deferRender = false } = {}) {
     // compatible with newer state fields such as progressionGlowPinnedKeys.
     normaliseLoadedGameCollections();
     relinkLoadedPlayerReferences();
+
+    // One-time compatibility migration for pre-V220.27 saves. Modern gameplay
+    // never creates an unplaced owned animal: draw, upgrade and incoming-trade
+    // actions commit only after a legal destination is known.
+    for (const id of legacyHandIds) {
+        const animal = state.animals.find(item => Number(item?.id) === id);
+        if (!animal || animal.enclosureId != null) continue;
+        const destination = randomEligibleDestinationForAnimal(animal);
+        if (destination) {
+            placeAnimal(animal, destination.enclosure, destination.slotIndex);
+        } else {
+            console.warn(`Legacy hand card ${id} could not be auto-placed; leaving save unchanged for that card.`);
+        }
+    }
+
     if (!Object.prototype.hasOwnProperty.call(saveData.state, 'zooProvince')) {
         state.zooProvince = zooSetupProvinceForLocation(
             state.zooCountry,
@@ -8875,6 +8888,77 @@ function ensureSaveLoadUI() {
     });
 }
 
+
+function ensureMobileSettingsHub() {
+    if (document.getElementById('mobileSettingsButton')) return;
+
+    const headerLeft = document.getElementById('headerLeft');
+    if (!headerLeft) return;
+
+    const button = document.createElement('button');
+    button.id = 'mobileSettingsButton';
+    button.type = 'button';
+    button.className = 'mobile-settings-button';
+    button.textContent = '⚙';
+    button.title = 'Settings';
+    button.setAttribute('aria-label', 'Settings');
+    headerLeft.appendChild(button);
+
+    const overlay = document.createElement('div');
+    overlay.id = 'mobileSettingsOverlay';
+    overlay.className = 'mobile-settings-overlay';
+    overlay.innerHTML = `
+        <div class="mobile-settings-menu" role="dialog" aria-label="Settings">
+            <button type="button" data-mobile-menu="save">Save / Load Game</button>
+            <button type="button" data-mobile-menu="new">New Game</button>
+            <button type="button" data-mobile-menu="options">Game Options</button>
+            <button type="button" data-mobile-menu="history">Trade History</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const close = () => overlay.classList.remove('visible');
+    const open = () => {
+        if (state.historyViewTurn !== null) return;
+        pauseAllHintGlowsForMenu();
+        overlay.classList.add('visible');
+    };
+    const closeAndResume = () => {
+        close();
+        resumeHintGlowsAfterMenu();
+    };
+
+    button.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (overlay.classList.contains('visible')) closeAndResume();
+        else open();
+    });
+
+    overlay.addEventListener('pointerdown', event => {
+        if (event.target === overlay) closeAndResume();
+    });
+
+    overlay.querySelector('[data-mobile-menu="save"]').addEventListener('click', () => {
+        close();
+        openSaveLoadMenu();
+    });
+    overlay.querySelector('[data-mobile-menu="new"]').addEventListener('click', () => {
+        close();
+        resumeHintGlowsAfterMenu();
+        requestNewGame();
+    });
+    overlay.querySelector('[data-mobile-menu="options"]').addEventListener('click', () => {
+        close();
+        document.getElementById('gameOptionsButton')?.click();
+    });
+    overlay.querySelector('[data-mobile-menu="history"]').addEventListener('click', () => {
+        close();
+        openTradeHistoryMenu();
+    });
+}
+
+
 function ensureTurnHistoryUI() {
     if (document.getElementById('turnHistoryPanel')) return;
 
@@ -9054,7 +9138,7 @@ function refreshDrawAvailabilityState() {
     if (!drawCard) return false;
 
     const noOpenSpace = !nextLevelOneHasEligibleDestination();
-    const drawAlreadyCommitted = state.hand.length > 0 ||
+    const drawAlreadyCommitted =
         state.drag?.type === 'draw' ||
         state.drag?.type === 'draw-result';
     const actionPending = hasPendingPlayerAction();
@@ -9107,7 +9191,6 @@ function renderAll(persist = true) {
             }
         });
     }
-    renderHand();
     renderExchange();
     renderTrade();
     renderProgressTracker();
@@ -9189,8 +9272,6 @@ function startAnimalDrag(
                 const targetSlot = Number(target.dataset.slotIndex);
                 if (targetEnc && canPlace(animal, targetEnc, targetSlot)) {
                     // Keep sandbox cards completely out of the hand at every stage.
-                    state.hand = state.hand.filter(x => x.id !== animal.id);
-                    animal.hand = false;
                     animal.enclosureId = null;
                     animal.slotIndex = null;
                     placeAnimal(animal, targetEnc, targetSlot);
@@ -9223,8 +9304,6 @@ function startAnimalDrag(
                 animal.enclosureId = originalEnclosureId;
                 animal.slotIndex = originalSlotIndex;
             } else {
-                state.hand = state.hand.filter(x => x.id !== animal.id);
-                animal.hand = false;
                 animal.enclosureId = null;
                 animal.slotIndex = null;
                 animal.sandboxLoose = true;
@@ -9380,12 +9459,6 @@ function startAnimalDrag(
         originalSlotIndex:
             animal.slotIndex ?? animal.reservedSlotIndex ?? null,
 
-        originalWasHand:
-            state.hand.some(
-                item =>
-                    item.id ===
-                    animal.id
-            ),
 
         originalExchangeIndex:
             state.exchange.findIndex(
@@ -9462,7 +9535,6 @@ function startAnimalDrag(
 
 
     renderZoo();
-    renderHand();
     renderExchange();
 
 }
@@ -9603,27 +9675,6 @@ function restoreDraggedAnimal() {
         return;
     }
 
-    /*
-        Restore to hand.
-    */
-
-    animal.hand =
-        true;
-
-
-    if (
-        !state.hand.some(
-            item =>
-                item.id ===
-                animal.id
-        )
-    ) {
-
-        state.hand.push(
-            animal
-        );
-
-    }
 
 }
 
@@ -10457,11 +10508,10 @@ function prepareExchangeGlowAfterAnimalDrag(drag) {
 // ============================================================
 
 function renderAfterTransientAnimalDrag() {
-    // A cancelled drag/tap can temporarily remove a card from zoo/hand/
+    // A cancelled drag/tap can temporarily remove a card from zoo/
     // exchange/trade DOM, so restore those visual components only. Do NOT
     // capture turn history or autosave: no gameplay action was committed.
     renderZoo();
-    renderHand();
     renderExchange();
     renderTrade();
     enqueueMicrotask(localizeDocument);
@@ -10484,6 +10534,7 @@ function finishAnimalDrag(event) {
             // A tap on mobile deliberately does NOT suppress the yellow
             // exchange-eligibility glow.
             showHoverPreview(animal);
+            setHoverPreviewSuperZoom(true);
         } else if (isExchangeEligible(animal)) {
             // selecting an exchange-ready animal focuses the eligibility
             // glow on this exact category+level group. Other eligible groups
@@ -11952,7 +12003,6 @@ function removeSandboxAnimalById(animalId) {
 
     state.animals = state.animals.filter(animal => animal.id !== id);
     state.sandboxLooseAnimals = (state.sandboxLooseAnimals || []).filter(animal => animal.id !== id);
-    state.hand = (state.hand || []).filter(animal => animal?.id !== id);
     state.exchange = (state.exchange || []).map(animal => animal?.id === id ? null : animal);
     if (state.result?.id === id) state.result = null;
     if (state.outgoingOffer?.id === id) state.outgoingOffer = null;
@@ -12013,7 +12063,6 @@ function startSandboxMode() {
     state.sandboxLooseAnimals = [];
     state.enclosures = [];
     state.animals = [];
-    state.hand = [];
     state.exchange = [null, null];
     state.result = null;
     state.outgoingOffer = null;
@@ -12089,12 +12138,11 @@ function sandboxSpawnAnimal(category, level, filename) {
     const pos = sandboxFindLoosePosition();
     const animal = {
         id: state.nextId++, category, level, filename: cleanFilename(filename),
-        enclosureId:null, slotIndex:null, hand:false, sandboxLoose:true,
+        enclosureId:null, slotIndex:null, sandboxLoose:true,
         x:pos.x, y:pos.y
     };
     state.animals.push(animal);
     state.sandboxLooseAnimals.push(animal);
-    state.hand = state.hand.filter(x => x.id !== animal.id);
     renderAll();
 }
 
@@ -13384,7 +13432,6 @@ function animalFromRealZooName(name) {
         filename: spec.filename,
         enclosureId: null,
         slotIndex: null,
-        hand: false
     } : null;
 }
 
@@ -13480,8 +13527,7 @@ function realZooTradeAnimals(record, excludePlayerOwned = false) {
             filename: spec.filename,
             enclosureId: null,
             slotIndex: null,
-            hand: false
-        });
+            });
     }
 
     return result;
@@ -14947,7 +14993,7 @@ function randomOpponentStockAnimal(profile) {
         return favouriteMultiplier * animalZooTypeWeight(candidate, profile?.zooTypes || 'general', 'trade');
     });
     return selected
-        ? { id: state.nextId++, ...selected, enclosureId: null, slotIndex: null, hand: false }
+        ? { id: state.nextId++, ...selected, enclosureId: null, slotIndex: null }
         : null;
 }
 
@@ -15257,8 +15303,7 @@ function tryDropOnOutgoingOffer(event, animal) {
         state.outgoingOffer = animal;
         if (state.drag?.type === 'animal' && state.drag.animal?.id === animal.id) {
             reserveAnimalZooSlot(animal, state.drag.originalEnclosureId, state.drag.originalSlotIndex);
-        }
-        animal.hand = false; animal.enclosureId = null; animal.slotIndex = null;
+        } animal.enclosureId = null; animal.slotIndex = null;
         noteNewCardAction();
         renderTrade(); return true;
     }
@@ -15273,8 +15318,7 @@ function tryDropOnOutgoingOffer(event, animal) {
     state.outgoingOffer = animal;
     if (state.drag?.type === 'animal' && state.drag.animal?.id === animal.id) {
         reserveAnimalZooSlot(animal, state.drag.originalEnclosureId, state.drag.originalSlotIndex);
-    }
-    animal.hand = false;
+    } 
     animal.enclosureId = null;
     animal.slotIndex = null;
 
@@ -15287,10 +15331,8 @@ function autoSelectOutgoingOfferAnimal() {
     if (!state.loaded || state.drag || state.pan) return false;
     if (state.outgoingOffer || state.result || state.exchange.some(Boolean)) return false;
 
-    // Only animals genuinely in the zoo are candidates. A card in hand or
-    // already committed elsewhere is never auto-selected.
+    // Only animals genuinely placed in the zoo are candidates.
     const candidates = state.animals.flatMap(animal => {
-        if (animal.hand) return [];
         if (animal.enclosureId === null || animal.enclosureId === undefined) return [];
 
         // "predicted" is not enough. The blue trade-interest glow only
@@ -15317,8 +15359,7 @@ function autoSelectOutgoingOfferAnimal() {
     // incoming card is picked up/accepted.
     reserveAnimalZooSlot(animal, animal.enclosureId, animal.slotIndex);
 
-    state.outgoingOffer = animal;
-    animal.hand = false;
+    state.outgoingOffer = animal; 
     animal.enclosureId = null;
     animal.slotIndex = null;
 
@@ -15529,11 +15570,9 @@ function acceptSelectedTrade(destination=null, autoPlace=false) {
         if(!placeAnimal(incoming,destination.enclosure,destination.slotIndex)) return false;
         if(autoPlace) markNewPlacementGlow(incoming);
     } else {
-        // Clicking an incoming trade card now requires a legal automatic
-        // destination. Dragging remains the manual placement path.
-        if(autoPlace) return false;
-        incoming.hand=true;
-        state.hand.push(incoming);
+        // A trade is committed only when its incoming animal has a legal
+        // destination. Invalid drags leave the offer untouched.
+        return false;
     }
 
     // In Real Zoo mode, update only this game's in-memory holdings:
@@ -16247,18 +16286,8 @@ hoverPreview?.addEventListener('click', event => {
 
     const mobileLayout = window.matchMedia('(max-width: 700px)').matches;
 
-    if (mobileLayout) {
-        // Mobile has no hover. Recreate the desktop two-stage enlargement
-        // deliberately with taps:
-        //   card tap -> preview
-        //   preview tap -> larger preview
-        //   larger-preview tap -> Wikipedia/info back
-        if (!hoverPreview.classList.contains('super-zoom')) {
-            setHoverPreviewSuperZoom(true);
-            return;
-        }
-    }
-
+    // Mobile animal taps already open the full-size centred card. A tap
+    // anywhere on the card face therefore flips directly to Information.
     flipPreviewToWikipedia();
 });
 
@@ -16277,6 +16306,17 @@ function dismissMobileCardPreview() {
 
 document.addEventListener('pointerdown', event => {
     if (!window.matchMedia('(max-width: 700px)').matches) return;
+
+    const evidencePopup = document.getElementById('combinationSourceTooltip');
+    if (
+        evidencePopup?.dataset.mobilePinned === '1' &&
+        !event.target.closest('.animal-combination-row') &&
+        event.target !== evidencePopup
+    ) {
+        evidencePopup.style.display = 'none';
+        delete evidencePopup.dataset.mobilePinned;
+    }
+
     if (!hoverPreview.classList.contains('visible')) return;
 
     // Tapping the preview itself keeps it open so its info/back controls work.
@@ -16387,13 +16427,22 @@ if (mobileOpponentZoos && mobileTradeObserver) {
 // Resize/orientation changes can fire in bursts on iOS Safari. Coalesce them
 // into one visibility check per animation frame.
 let mobileTradeResizeFrame = 0;
-window.addEventListener('resize', () => {
+function refreshResponsiveTradeLayout() {
     if (mobileTradeResizeFrame) return;
     mobileTradeResizeFrame = requestAnimationFrame(() => {
         mobileTradeResizeFrame = 0;
+        positionOpponentTradeArea();
         refreshMobileTradeAreaVisibility();
     });
-});
+}
+
+window.addEventListener('resize', refreshResponsiveTradeLayout);
+
+// iOS Safari can resize the visual viewport (address bar / keyboard) without
+// producing a useful layout-viewport resize every time. Reuse the SAME
+// coalesced callback so this never doubles the work in one animation frame.
+window.visualViewport?.addEventListener('resize', refreshResponsiveTradeLayout);
+
 setTimeout(refreshMobileTradeAreaVisibility, 0);
 
 
@@ -16491,7 +16540,6 @@ async function startGame() {
         requireElement(drawCard, 'drawCard');
         requireElement(zooBoard, 'zooBoard');
         requireElement(zooCanvas, 'zooCanvas');
-        requireElement(handElement, 'hand');
         requireElement(turnOrder, 'turnOrder');
         requireElement(exchange1, 'exchange1');
         requireElement(exchange2, 'exchange2');
@@ -16540,6 +16588,7 @@ async function startGame() {
         ensureCollectionButton();
         ensureCollectionCategoryLinks();
         setupOpponentTradeClicks();
+        ensureMobileSettingsHub();
 
         const resumedPreviousZoo = restoreAutoResumeSnapshot();
 
@@ -16632,4 +16681,4 @@ async function startGame() {
 startGame();
 
 
-window.addEventListener('resize', () => { positionOpponentTradeArea(); });
+

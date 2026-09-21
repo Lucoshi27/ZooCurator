@@ -1,8 +1,5 @@
 
-<!--
-    ZOO CURATOR V76 — DRAG + COMPATIBILITY HOVER FIXES
-    Known-good GitHub baseline. Future builds must descend from this version.
--->
+<!-- ZOO CURATOR V220.27 -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,15 +19,15 @@
         when style.css is actually updated.
     -->
     <script>
-        // Always revalidate the lightweight app shell files after a normal reload.
-        // Heavy animal/enclosure assets keep their normal browser cache.
+        // One deployment key for the complete app shell. Change only when a
+        // new build is deployed, so Safari cannot mix files from two builds.
         (function () {
-            var buildRefresh = Date.now();
+            var version = 'V220.27';
+            window.__zooBuildVersion = version;
             var stylesheet = document.createElement('link');
             stylesheet.rel = 'stylesheet';
-            stylesheet.href = './style.css?v=' + buildRefresh;
+            stylesheet.href = './style.css?v=' + encodeURIComponent(version);
             document.head.appendChild(stylesheet);
-            window.__zooBuildRefresh = buildRefresh;
         }());
     </script>
 </head>
@@ -231,22 +228,14 @@
 
 
         <!-- =================================================
-             HAND
-             ================================================= -->
-
-        <div
-            id="hand"
-            class="hand"
-        ></div>
-
-
-        <!-- =================================================
              HOVER PREVIEW
              ================================================= -->
 
         <div
             id="hoverPreview"
             class="hover-preview"
+            aria-hidden="true"
+            style="visibility:hidden;opacity:0;pointer-events:none;"
         >
 
             <img
@@ -264,7 +253,7 @@
          ===================================================== -->
     <script>
         (function () {
-            var version = String(window.__zooBuildRefresh || Date.now());
+            var version = String(window.__zooBuildVersion || 'V220.27');
 
             var translations = document.createElement('script');
             translations.src = './translations-nl.js?v=' + version;

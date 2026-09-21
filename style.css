@@ -828,52 +828,6 @@ body {
 }
 
 
-/* ============================================================
-   HAND
-   ============================================================ */
-
-#hand {
-    position: fixed;
-
-    left: 50%;
-    bottom: 15px;
-
-    transform:
-        translateX(-50%);
-
-    z-index: 6000;
-
-    display: flex;
-
-    align-items: flex-end;
-    justify-content: center;
-
-    gap: 12px;
-
-    pointer-events: none;
-}
-
-#hand .animal-card {
-    position: relative;
-
-    left: auto;
-    top: auto;
-
-    width: 270px;
-    height: 388.8px;
-
-    transform: none;
-
-    flex: 0 0 auto;
-
-    pointer-events: auto;
-
-    border-radius: 11px;
-
-    box-shadow:
-        0 5px 14px
-        rgba(0, 0, 0, 0.26);
-}
 
 
 /* ============================================================
@@ -1548,8 +1502,6 @@ body {
     #zooBoard { top: 300px; }
 
     /* Hand remains usable without covering most of a phone screen. */
-    #hand { bottom: 8px; }
-    #hand .animal-card { width: 150px; height: 216px; }
 
     /* Desktop hover panel is too large for phones; keep its information card
        inside the available screen if touch interaction opens it. */
@@ -2078,7 +2030,6 @@ body {
 /* Historical turns are museum mode: board pan/zoom remains active, but
    animals/enclosures cannot be dragged and gameplay controls cannot mutate. */
 body.history-viewing #headerActions,
-body.history-viewing #hand,
 body.history-viewing #exchangeControls,
 body.history-viewing #opponentTradeArea,
 body.history-viewing #gameOptionsButton,
@@ -3206,3 +3157,488 @@ body.history-viewing #zooCanvas .animal-card {
     }
 }
 
+
+
+/* ============================================================
+   V220.24 — MOBILE VIEWPORT / HUD COLLISION GUARDS
+   ============================================================ */
+@media (max-width: 700px) {
+    /*
+       Safari's visible viewport changes as its browser chrome expands/collapses.
+       dvh follows the actually visible height; the vh declarations above remain
+       the fallback for older browsers.
+    */
+    .save-load-modal {
+        max-height: min(760px, 88dvh);
+    }
+    .collection-window {
+        max-height: 94dvh;
+    }
+    #hoverPreview,
+    #hoverPreview.super-zoom {
+        max-height: calc(100dvh - 16px);
+    }
+
+}
+
+
+/* ============================================================
+   V220.26 — AUTHORITATIVE PHONE HUD / SAFE-AREA CLEANUP
+   This final mobile block deliberately wins over the historical V32/V33/V35/
+   V39 phone rules above. Keep future phone geometry changes here.
+   ============================================================ */
+@media (max-width: 700px) {
+    :root {
+        --mobile-safe-top: env(safe-area-inset-top, 0px);
+        --mobile-safe-right: env(safe-area-inset-right, 0px);
+        --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+        --mobile-safe-left: env(safe-area-inset-left, 0px);
+        --mobile-header-height: calc(118px + var(--mobile-safe-top));
+        --mobile-edge: 6px;
+    }
+
+    /* One compact, authoritative top HUD. Old V32's 300px action menu and
+       intermediate layouts no longer get to determine the final phone size. */
+    #actionMenu {
+        height: var(--mobile-header-height) !important;
+        padding-top: var(--mobile-safe-top);
+        overflow: visible !important;
+    }
+
+    #headerLeft {
+        position: absolute !important;
+        left: max(var(--mobile-edge), var(--mobile-safe-left)) !important;
+        right: max(var(--mobile-edge), var(--mobile-safe-right)) !important;
+        top: calc(var(--mobile-safe-top) + 5px) !important;
+        width: auto !important;
+        height: 30px !important;
+        display: block !important;
+        pointer-events: none;
+        z-index: 7200;
+    }
+
+    #headerLeft #turnOrder {
+        left: 0 !important;
+        top: 0 !important;
+    }
+
+    #headerLeft .game-options-button {
+        right: 0 !important;
+        top: 0 !important;
+    }
+
+    #playerZooName {
+        left: 50% !important;
+        right: auto !important;
+        top: calc(var(--mobile-safe-top) + 5px) !important;
+        width: calc(100vw - var(--mobile-safe-left) - var(--mobile-safe-right) - 116px) !important;
+        max-width: 360px;
+        transform: translateX(-50%) !important;
+    }
+
+    #playerZooName .zoo-name-text {
+        max-width: calc(100vw - var(--mobile-safe-left) - var(--mobile-safe-right) - 150px) !important;
+    }
+
+    #headerActions {
+        left: 50% !important;
+        top: calc(var(--mobile-safe-top) + 43px) !important;
+        width: auto !important;
+        transform: translateX(-50%) !important;
+        transform-origin: top center !important;
+    }
+
+    /* The zoo starts immediately below the actual phone header rather than
+       inheriting the old V32 300px spacer. */
+    #zooBoard {
+        top: var(--mobile-header-height) !important;
+    }
+
+    /* Bottom trade controls respect home-indicator/notch safe areas. */
+    #opponentZoos {
+        left: calc(8px + var(--mobile-safe-left)) !important;
+        right: calc(8px + var(--mobile-safe-right)) !important;
+        bottom: calc(5px + var(--mobile-safe-bottom)) !important;
+    }
+
+    #opponentTradeArea {
+        bottom: calc(62px + var(--mobile-safe-bottom)) !important;
+        max-width: calc(100vw - var(--mobile-safe-left) - var(--mobile-safe-right) - 16px) !important;
+    }
+
+    /* Keep modal content reachable above Safari's bars and iPhone safe areas. */
+    .save-load-modal,
+    .collection-window {
+        max-width: calc(100vw - var(--mobile-safe-left) - var(--mobile-safe-right) - 12px);
+    }
+
+    #hoverPreview,
+    #hoverPreview.super-zoom {
+        left: calc(8px + var(--mobile-safe-left)) !important;
+        bottom: calc(8px + var(--mobile-safe-bottom)) !important;
+        max-width: calc(100vw - var(--mobile-safe-left) - var(--mobile-safe-right) - 16px) !important;
+    }
+}
+
+@media (max-width: 700px) and (orientation: landscape) {
+    :root {
+        --mobile-header-height: calc(104px + var(--mobile-safe-top));
+    }
+
+    /* Landscape needs the action row centred too; the historical 35% rule
+       could overlap the turn/name controls on short phones. */
+    #headerActions {
+        left: 50% !important;
+        top: calc(var(--mobile-safe-top) + 40px) !important;
+    }
+
+    #zooBoard {
+        top: var(--mobile-header-height) !important;
+    }
+}
+
+
+/* ============================================================
+   V220.27 — MOBILE COMPACT HEADER / SETTINGS HUB / TOUCH CARDS
+   ============================================================ */
+@media (max-width: 700px) {
+    :root {
+        --mobile-top-row: 30px;
+        --mobile-action-w: min(52px, calc((100vw - 22px) / 6));
+        --mobile-action-h: calc(var(--mobile-action-w) * 1.44);
+        --mobile-header-height: calc(var(--mobile-safe-top) + var(--mobile-top-row) + var(--mobile-action-h) + 10px);
+    }
+
+    #actionMenu {
+        height: var(--mobile-header-height) !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Top line: Collection | Prestige | Zoo name/edit | Turn | Settings */
+    #headerLeft {
+        top: var(--mobile-safe-top) !important;
+        left: max(4px, var(--mobile-safe-left)) !important;
+        right: max(4px, var(--mobile-safe-right)) !important;
+        height: var(--mobile-top-row) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        pointer-events: auto !important;
+    }
+
+    #collectionTurnRow {
+        position: static !important;
+        display: contents !important;
+    }
+
+    #collectionButton {
+        order: 1 !important;
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 16px !important;
+    }
+
+    #prestigeCounter {
+        order: 2 !important;
+        margin: 0 !important;
+        font-size: 9px !important;
+        line-height: 1 !important;
+        max-width: 54px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #turnOrder {
+        order: 4 !important;
+        position: static !important;
+        width: auto !important;
+        min-width: 42px !important;
+        padding: 4px 5px !important;
+        margin: 0 !important;
+        font-size: 9px !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+    }
+
+    #mobileSettingsButton {
+        order: 5;
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        padding: 0;
+        border: 1px solid #bbb6aa;
+        border-radius: 6px;
+        background: #ebe8df;
+        color: #403d36;
+        font-size: 18px;
+        line-height: 1;
+    }
+
+    /* Old individual menu buttons stay available to JS/desktop, but the phone
+       exposes them only through the settings hub. */
+    #headerLeft > #gameOptionsButton,
+    #headerLeft > #saveLoadButton,
+    #headerLeft > #newGameButton,
+    #tradeHistoryButton {
+        display: none !important;
+    }
+
+    #playerZooName {
+        order: 3;
+        position: absolute !important;
+        top: var(--mobile-safe-top) !important;
+        left: 50% !important;
+        width: min(47vw, 220px) !important;
+        min-height: 28px !important;
+        height: 28px !important;
+        transform: translateX(-50%) !important;
+        font-size: 12px !important;
+        line-height: 28px !important;
+        z-index: 7250;
+    }
+
+    #playerZooName .zoo-name-editor {
+        height: 28px;
+        gap: 3px !important;
+    }
+    #playerZooName .zoo-name-text {
+        max-width: calc(100% - 25px) !important;
+        font-size: 12px !important;
+    }
+    #playerZooName .zoo-name-edit-button {
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        font-size: 13px !important;
+    }
+    #playerZooName .zoo-name-input {
+        width: calc(100% - 25px) !important;
+        height: 24px !important;
+        font-size: 11px !important;
+        padding: 1px 4px !important;
+    }
+
+    /* Exactly six compact action cards on row two. */
+    #headerActions {
+        top: calc(var(--mobile-safe-top) + var(--mobile-top-row)) !important;
+        left: 50% !important;
+        width: calc(100vw - var(--mobile-safe-left) - var(--mobile-safe-right) - 8px) !important;
+        height: var(--mobile-action-h) !important;
+        transform: translateX(-50%) !important;
+    }
+    #exchangeControls {
+        width: 100% !important;
+        height: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: flex-start !important;
+        gap: 3px !important;
+    }
+    #headerActions .action-card,
+    #headerActions .action-slot,
+    #headerActions .exchange-result,
+    #headerActions .trade-offer,
+    #headerActions #outgoingOffer,
+    #headerActions #ingoingOffer {
+        display: flex !important;
+        width: var(--mobile-action-w) !important;
+        min-width: var(--mobile-action-w) !important;
+        height: var(--mobile-action-h) !important;
+        flex: 0 0 var(--mobile-action-w) !important;
+        border-radius: 5px !important;
+        font-size: 7px !important;
+        line-height: 1.05 !important;
+    }
+    #drawCard.action-card > img,
+    #headerActions .exchange-card,
+    #headerActions .result-card,
+    #headerActions .trade-animal-card,
+    #headerActions .incoming-trade-card {
+        width: 100% !important;
+        height: 100% !important;
+        min-width: 0 !important;
+    }
+
+    #zooBoard {
+        top: var(--mobile-header-height) !important;
+    }
+
+    /* Settings launcher */
+    .mobile-settings-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 30000;
+        display: none;
+        align-items: flex-start;
+        justify-content: flex-end;
+        padding: calc(var(--mobile-safe-top) + 34px) max(6px, var(--mobile-safe-right)) 6px 6px;
+        box-sizing: border-box;
+        background: rgba(0,0,0,.16);
+    }
+    .mobile-settings-overlay.visible { display: flex; }
+    .mobile-settings-menu {
+        width: min(210px, calc(100vw - 12px));
+        display: grid;
+        gap: 5px;
+        padding: 7px;
+        border: 1px solid #aaa397;
+        border-radius: 8px;
+        background: #f4f1e9;
+        box-shadow: 0 8px 24px rgba(0,0,0,.28);
+    }
+    .mobile-settings-menu button {
+        min-height: 34px;
+        border: 1px solid #bbb6aa;
+        border-radius: 6px;
+        background: #fff;
+        font-weight: 700;
+        text-align: left;
+        padding: 6px 9px;
+    }
+
+    /* Fit Game Options on a phone without making the modal itself scroll. */
+    #gameOptionsOverlay {
+        padding: max(4px, var(--mobile-safe-top)) max(4px, var(--mobile-safe-right))
+                 max(4px, var(--mobile-safe-bottom)) max(4px, var(--mobile-safe-left)) !important;
+        align-items: center !important;
+    }
+    #gameOptionsOverlay .game-options-modal {
+        width: min(520px, 100%) !important;
+        max-height: calc(100dvh - var(--mobile-safe-top) - var(--mobile-safe-bottom) - 8px) !important;
+        overflow: visible !important;
+        padding: 8px 10px !important;
+        font-size: 10px !important;
+    }
+    #gameOptionsOverlay .game-options-modal h2 {
+        margin: 0 0 3px !important;
+        font-size: 17px !important;
+    }
+    #gameOptionsOverlay .game-options-modal > p,
+    #gameOptionsOverlay .advanced-options-note {
+        display: none !important;
+    }
+    #gameOptionsOverlay .advanced-game-rules {
+        gap: 3px !important;
+        margin: 3px 0 !important;
+    }
+    #gameOptionsOverlay .advanced-game-rules label,
+    #gameOptionsOverlay .game-options-modal #advancedGameRules label {
+        grid-template-columns: minmax(92px,1fr) minmax(92px,1fr) !important;
+        gap: 5px !important;
+        margin: 0 !important;
+        min-height: 24px !important;
+        font-size: 10px !important;
+    }
+    #gameOptionsOverlay .game-options-modal #optAnimalLanguage,
+    #gameOptionsOverlay .game-options-modal #optOpponentMode,
+    #gameOptionsOverlay .game-options-modal #optRewardMilestones,
+    #gameOptionsOverlay .game-options-modal #optTradeFrequency {
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 24px !important;
+        padding: 2px 4px !important;
+        font-size: 10px !important;
+    }
+    #gameOptionsOverlay .advanced-options-title {
+        margin: 5px 0 3px !important;
+        font-size: 10px !important;
+    }
+    #gameOptionsOverlay .category-option-list {
+        grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+        gap: 2px 5px !important;
+        margin: 3px 0 !important;
+    }
+    #gameOptionsOverlay .category-option {
+        min-height: 20px !important;
+        gap: 3px !important;
+        font-size: 9px !important;
+        line-height: 1 !important;
+    }
+    #gameOptionsOverlay .options-actions {
+        margin-top: 5px !important;
+        gap: 4px !important;
+    }
+    #gameOptionsOverlay .options-actions button {
+        padding: 5px 7px !important;
+        font-size: 9px !important;
+    }
+
+    /* Two-second enclosure hold: no text selection / iOS callout while the
+       player is deciding between panning and moving the enclosure. */
+    .enclosure-card,
+    .enclosure-card * {
+        -webkit-user-select: none !important;
+        user-select: none !important;
+        -webkit-touch-callout: none !important;
+    }
+
+    /* Animal taps open directly into the single useful, flippable preview. */
+    #hoverPreview,
+    #hoverPreview.super-zoom {
+        left: 50% !important;
+        top: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%) !important;
+        transform-origin: center center !important;
+        max-width: calc(100vw - var(--mobile-safe-left) - var(--mobile-safe-right) - 16px) !important;
+        max-height: calc(100dvh - var(--mobile-safe-top) - var(--mobile-safe-bottom) - 16px) !important;
+    }
+    #hoverPreviewWiki {
+        padding: 10px !important;
+    }
+    .animal-info-tabs {
+        gap: 3px !important;
+    }
+    .animal-info-tab,
+    #hoverPreview.super-zoom .animal-info-tab {
+        min-width: 0 !important;
+        flex: 1 1 0 !important;
+        padding: 6px 3px !important;
+        font-size: 10px !important;
+        line-height: 1.05 !important;
+        white-space: nowrap !important;
+    }
+
+    /* Keep the animal title typography consistent on all three information tabs. */
+    #animalInformationTitle,
+    #wikiPreviewTitle,
+    #ztlPreviewTitle,
+    #hoverPreview.super-zoom #animalInformationTitle,
+    #hoverPreview.super-zoom #wikiPreviewTitle,
+    #hoverPreview.super-zoom #ztlPreviewTitle {
+        font-size: 15px !important;
+        line-height: 1.15 !important;
+    }
+
+    .animal-combination-row {
+        cursor: pointer !important;
+    }
+    #combinationSourceTooltip {
+        left: 50% !important;
+        top: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        width: min(360px, calc(100vw - 24px)) !important;
+        max-height: min(52dvh, 360px) !important;
+        transform: translate(-50%, -50%) !important;
+        pointer-events: none !important;
+        font-size: 11px !important;
+    }
+}
+
+@media (max-width: 700px) and (orientation: landscape) {
+    :root {
+        --mobile-action-w: min(44px, calc((100vw - 22px) / 6));
+        --mobile-header-height: calc(var(--mobile-safe-top) + var(--mobile-top-row) + var(--mobile-action-h) + 7px);
+    }
+    #gameOptionsOverlay .game-options-modal {
+        transform: scale(.86);
+        transform-origin: center;
+        width: min(620px, 114vw) !important;
+    }
+}

@@ -101,6 +101,19 @@
     },
     {
       "animals": [
+        "Common Kusimanse",
+        "Aardvark"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope Orycteropodidae",
+          "country": "unknown",
+          "date": "2020"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Aardvark",
         "Dwarf Mongoose"
       ],
@@ -183,7 +196,13 @@
         "Aardvark",
         "Hadada Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZOO Wrocław",
+          "country": "Poland",
+          "date": "2022-11-12"
+        }
+      ]
     },
     {
       "animals": [
@@ -238,6 +257,13 @@
       "animals": [
         "Aardvark",
         "Lesser Hedgehog Tenrec"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Lyle's Flying Fox",
+        "Aardvark"
       ],
       "evidence": []
     },
@@ -457,6 +483,42 @@
     },
     {
       "animals": [
+        "Rock Hyrax",
+        "Aardwolf"
+      ],
+      "evidence": [
+        {
+          "zoo": "Cincinnati Zoo & Botanical Garden",
+          "country": "United States",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Openbill",
+        "Abdim's Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Magdeburg Africambo",
+          "country": "Germany",
+          "date": "2020"
+        },
+        {
+          "zoo": "ZooParc de Beauval",
+          "country": "France",
+          "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoologischer Garten Magdeburg",
+          "country": "Germany",
+          "date": "2020"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Abdim's Stork",
         "African Sacred Ibis"
       ],
@@ -493,7 +555,26 @@
         "Abdim's Stork",
         "Glossy Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZOO Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Grey Crowned Crane",
+        "Abdim's Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooParc de Beauval",
+          "country": "France",
+          "date": "2022-06-15"
+        }
+      ]
     },
     {
       "animals": [
@@ -559,6 +640,19 @@
     },
     {
       "animals": [
+        "Red-Crested Turaco",
+        "Abdim's Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Abdim's Stork",
         "Southern Bald Ibis"
       ],
@@ -575,28 +669,52 @@
         "Abdim's Stork",
         "Trumpeter Hornbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
     },
     {
       "animals": [
         "Abdim's Stork",
         "Violet Turaco"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
     },
     {
       "animals": [
         "Abdim's Stork",
         "Von Der Decken's Hornbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
     },
     {
       "animals": [
         "Abdim's Stork",
         "White-Crested Turaco"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
     },
     {
       "animals": [
@@ -608,6 +726,37 @@
           "zoo": "ZooParc de Beauval",
           "country": "France",
           "date": "2022-06-15"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Gelada Baboon",
+        "Abyssian Ground Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "CERZA Lisieux",
+          "country": "unknown",
+          "date": "undated"
+        },
+        {
+          "zoo": "CERZA",
+          "country": "France",
+          "date": "2025"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Crested Turaco",
+        "Abyssian Ground Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Attica Zoological Park",
+          "country": "Greece",
+          "date": "2018"
         }
       ]
     },
@@ -666,6 +815,29 @@
           "zoo": "Jerusalem Biblical Zoo",
           "country": "Israel",
           "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Marabou Stork",
+        "Addax"
+      ],
+      "evidence": [
+        {
+          "zoo": "Jerusalem Biblical Zoo",
+          "country": "Israel",
+          "date": "2019"
+        },
+        {
+          "zoo": "Jerusalem Biblical Zoo",
+          "country": "Israel",
+          "date": "2022"
+        },
+        {
+          "zoo": "Jerusalem Biblical Zoo",
+          "country": "Israel",
+          "date": "2022-06-15"
         }
       ]
     },
@@ -778,6 +950,24 @@
     },
     {
       "animals": [
+        "Cape Genet",
+        "African Brush-Tailed Porcupine"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "undated"
+        },
+        {
+          "zoo": "ZOO Antwerpen",
+          "country": "Belgium",
+          "date": "2020-05-25"
+        }
+      ]
+    },
+    {
+      "animals": [
         "African Brush-Tailed Porcupine",
         "Common Kusimanse"
       ],
@@ -803,6 +993,49 @@
           "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
           "country": "United States",
           "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rock Hyrax",
+        "African Brush-Tailed Porcupine"
+      ],
+      "evidence": [
+        {
+          "zoo": "Omaha's Henry Doorly Zoo",
+          "country": "United States",
+          "date": "2022"
+        },
+        {
+          "zoo": "Randers Regnskov",
+          "country": "Denmark",
+          "date": "2022-11-12"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Senegal Bushbaby",
+        "African Brush-Tailed Porcupine"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Western Woylie",
+        "African Brush-Tailed Porcupine"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort De Nacht,",
+          "country": "Netherlands",
+          "date": "undated"
+        },
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2025"
         }
       ]
     },
@@ -879,49 +1112,91 @@
         "African Grey Hornbill",
         "African Pied Hornbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "African Grey Hornbill",
         "Allen's Gallinule"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "African Grey Hornbill",
         "Demoiselle Crane"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "African Grey Hornbill",
         "Great Blue Turaco"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "African Grey Hornbill",
         "Hadada Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "African Grey Hornbill",
         "Hamerkop"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "African Grey Hornbill",
         "Red-Billed Hornbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoological and Botanical Garden Pilsen",
+          "country": "Czech Republic",
+          "date": "2022-06-15"
+        }
+      ]
     },
     {
       "animals": [
@@ -1035,29 +1310,6 @@
           "zoo": "Zoologischer Garten Schwerin",
           "country": "Germany",
           "date": "2020-05-18"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "African Openbill",
-        "Abdim's Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Magdeburg Africambo",
-          "country": "Germany",
-          "date": "2020"
-        },
-        {
-          "zoo": "ZooParc de Beauval",
-          "country": "France",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoologischer Garten Magdeburg",
-          "country": "Germany",
-          "date": "2020"
         }
       ]
     },
@@ -1264,42 +1516,78 @@
         "African Penguin",
         "Pink-Backed Pelican"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
         "African Pied Hornbill",
         "Allen's Gallinule"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "African Pied Hornbill",
         "Demoiselle Crane"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "African Pied Hornbill",
         "Great Blue Turaco"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "African Pied Hornbill",
         "Hadada Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "African Pied Hornbill",
         "Hamerkop"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
@@ -1540,6 +1828,19 @@
     },
     {
       "animals": [
+        "Marabou Stork",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bioparc Valencia",
+          "country": "Spain",
+          "date": "undated"
+        }
+      ]
+    },
+    {
+      "animals": [
         "African Sacred Ibis",
         "Pink-Backed Pelican"
       ],
@@ -1596,6 +1897,13 @@
           "date": "2022-06-15"
         }
       ]
+    },
+    {
+      "animals": [
+        "Black Stork",
+        "African Spoonbill"
+      ],
+      "evidence": []
     },
     {
       "animals": [
@@ -1805,6 +2113,19 @@
     },
     {
       "animals": [
+        "Red-Crested Turaco",
+        "African Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Attica Zoological Park",
+          "country": "Greece",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
         "African Spoonbill",
         "Southern Bald Ibis"
       ],
@@ -1857,7 +2178,13 @@
         "African Spoonbill",
         "Von Der Decken's Hornbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
@@ -1968,6 +2295,19 @@
     },
     {
       "animals": [
+        "Green Iguana",
+        "African Spurred Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Berkenhof's Tropical Zoo",
+          "country": "Netherlands",
+          "date": "2021-11-25"
+        }
+      ]
+    },
+    {
+      "animals": [
         "African Spurred Tortoise",
         "Grey Crowned Crane"
       ],
@@ -2010,6 +2350,24 @@
           "zoo": "Dierenpark Zie-Zoo",
           "country": "Netherlands",
           "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Maned Wolf",
+        "African Spurred Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "date": "2018-10-23"
+        },
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "date": "2020-05-26"
         }
       ]
     },
@@ -2144,14 +2502,26 @@
         "Agile Wallaby",
         "Emu"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Royal Melbourne Zoological Gardens",
+          "country": "Australia",
+          "date": "2005"
+        }
+      ]
     },
     {
       "animals": [
         "Agile Wallaby",
         "Red Kangaroo"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Royal Melbourne Zoological Gardens",
+          "country": "Australia",
+          "date": "2005"
+        }
+      ]
     },
     {
       "animals": [
@@ -2169,6 +2539,13 @@
     },
     {
       "animals": [
+        "Large Flying Fox",
+        "Aldabra Giant Tortoise"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
         "Aldabra Giant Tortoise",
         "Patagonian Mara"
       ],
@@ -2176,8 +2553,28 @@
     },
     {
       "animals": [
+        "Red-Fronted Lemur",
+        "Aldabra Giant Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bioparc Valencia",
+          "country": "Spain",
+          "date": "2019"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Aldabra Giant Tortoise",
         "Rhinoceros Iguana"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Rodriguez Flying Fox",
+        "Aldabra Giant Tortoise"
       ],
       "evidence": []
     },
@@ -2199,28 +2596,52 @@
         "Allen's Gallinule",
         "Demoiselle Crane"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "Allen's Gallinule",
         "Great Blue Turaco"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "Allen's Gallinule",
         "Hadada Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "Allen's Gallinule",
         "Hamerkop"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
@@ -2250,6 +2671,19 @@
           "zoo": "Nyíregyházi Állatpark",
           "country": "Hungary",
           "date": "2021-06-24"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Greater Rhea",
+        "Alpaca"
+      ],
+      "evidence": [
+        {
+          "zoo": "Hai Park",
+          "country": "Israel",
+          "date": "2020"
         }
       ]
     },
@@ -2766,6 +3200,19 @@
     },
     {
       "animals": [
+        "Crested Caracara",
+        "Andean Condor"
+      ],
+      "evidence": [
+        {
+          "zoo": "Ostrava Zoo",
+          "country": "Czech Republic",
+          "date": "undated"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Angolan Giraffe",
         "Meerkat"
       ],
@@ -3220,7 +3667,13 @@
         "Arctic Fox",
         "Mountain Goat"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Woodland Park Zoo",
+          "country": "United States",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -3232,6 +3685,19 @@
           "zoo": "Korkeasaari Zoo",
           "country": "Finland",
           "date": "2020-05-26"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Anaconda",
+        "Argentine Black And White Tegu"
+      ],
+      "evidence": [
+        {
+          "zoo": "Louisville Zoo",
+          "country": "United States",
+          "date": "2010"
         }
       ]
     },
@@ -3661,6 +4127,19 @@
     },
     {
       "animals": [
+        "Black-and-White Ruffed Lemur",
+        "Asian Small-Clawed Otter"
+      ],
+      "evidence": [
+        {
+          "zoo": "Memphis Zoo",
+          "country": "United States",
+          "date": "2020-06-12"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Asian Small-Clawed Otter",
         "Black-Headed Spider Monkey"
       ],
@@ -4072,6 +4551,34 @@
     },
     {
       "animals": [
+        "Southern Cassowary",
+        "Asian Small-Clawed Otter"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bioparc Fuengirola",
+          "country": "Spain",
+          "date": "undated"
+        },
+        {
+          "zoo": "Bioparc Fuengirola",
+          "country": "Spain",
+          "date": "2020-06-07"
+        },
+        {
+          "zoo": "Bioparc Fuengirola",
+          "country": "Spain",
+          "date": "2020-06-12"
+        },
+        {
+          "zoo": "Bioparc Fuengirola",
+          "country": "Spain",
+          "date": "2020"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Asian Small-Clawed Otter",
         "Spectacled Bear"
       ],
@@ -4148,6 +4655,54 @@
     },
     {
       "animals": [
+        "Sumatran Orangutan",
+        "Asian Small-Clawed Otter"
+      ],
+      "evidence": [
+        {
+          "zoo": "Tierpark Hagenbeck",
+          "country": "Germany",
+          "date": "2020-06-12"
+        },
+        {
+          "zoo": "Zoo Dortmund",
+          "country": "Germany",
+          "date": "2020-06-12"
+        },
+        {
+          "zoo": "Pairi Daiza",
+          "country": "Belgium",
+          "date": "2020-06-12"
+        },
+        {
+          "zoo": "Zoo d'Amnéville",
+          "country": "France",
+          "date": "2020-06-12"
+        },
+        {
+          "zoo": "Chester Zoo",
+          "country": "United Kingdom",
+          "date": "2020-06-12"
+        },
+        {
+          "zoo": "Jersey Zoo",
+          "country": "Channel Islands",
+          "date": "2020-06-12"
+        },
+        {
+          "zoo": "Zoo La Boissière du Doré",
+          "country": "France",
+          "date": "2020-06-12"
+        },
+        {
+          "zoo": "Fort Worth Zoo",
+          "country": "United States",
+          "date": "2020-06-12"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Asian Small-Clawed Otter",
         "Tufted Capuchin"
       ],
@@ -4166,6 +4721,24 @@
           "zoo": "South Lakes Safari Zoo",
           "country": "United Kingdom",
           "date": "2012"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Visayan Warty Pig",
+        "Asian Small-Clawed Otter"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "unknown",
+          "date": "2021"
+        },
+        {
+          "zoo": "Zoo Basel",
+          "country": "Switzerland",
+          "date": "2020-06-12"
         }
       ]
     },
@@ -4257,8 +4830,28 @@
     },
     {
       "animals": [
+        "Binturong",
+        "Asian Water Monitor"
+      ],
+      "evidence": [
+        {
+          "zoo": "Singapore Zoo",
+          "country": "Singapore",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Asian Water Monitor",
         "False Gharial"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Asian Water Monitor"
       ],
       "evidence": []
     },
@@ -4320,6 +4913,44 @@
           "zoo": "Nagyerdei Kultúrpark",
           "country": "Hungary",
           "date": "2020-05-05"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Corsac Fox",
+        "Asiatic Black Bear"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dierenrijk",
+          "country": "Netherlands",
+          "date": "2012-04-12"
+        },
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2012-04-12"
+        },
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2020-05-26"
+        },
+        {
+          "zoo": "Dierenrijk",
+          "country": "Netherlands",
+          "date": "2020-05-05"
+        },
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2020-05-05"
+        },
+        {
+          "zoo": "Dierenrijk",
+          "country": "Netherlands",
+          "date": "2020-05-26"
         }
       ]
     },
@@ -4409,7 +5040,13 @@
         "Axis Deer",
         "Elk"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -4430,7 +5067,13 @@
         "Axis Deer",
         "Indian Muntjac"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -4450,14 +5093,26 @@
         "Axis Deer",
         "Indian Swamp Deer"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Axis Deer",
         "Mouflon"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -4477,21 +5132,39 @@
         "Axis Deer",
         "Sambar"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Axis Deer",
         "Sika Deer"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Axis Deer",
         "Wild Boar"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -4525,12 +5198,25 @@
         "Azara's Agouti",
         "Golden Lion Tamarin"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Smithsonian's National Zoo",
+          "country": "United States",
+          "date": "2015-10-26"
+        }
+      ]
     },
     {
       "animals": [
         "Azara's Agouti",
         "Greater Rhea"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Kinkajou",
+        "Azara's Agouti"
       ],
       "evidence": []
     },
@@ -4579,7 +5265,13 @@
         "Azara's Agouti",
         "White-Faced Saki"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Skansen Akvariet",
+          "country": "Sweden",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
@@ -4604,6 +5296,37 @@
           "zoo": "Serengeti Park Hodenhagen",
           "country": "Germany",
           "date": "2020-05-05"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Mishmi Takin",
+        "Bactrian Camel"
+      ],
+      "evidence": [
+        {
+          "zoo": "Kolmården Wildlife Park visitor-documented",
+          "country": "unknown",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Père David's Deer",
+        "Bactrian Camel"
+      ],
+      "evidence": [
+        {
+          "zoo": "Whipsnade Zoo",
+          "country": "United Kingdom",
+          "date": "undated"
+        },
+        {
+          "zoo": "ZSL Whipsnade Zoo",
+          "country": "United Kingdom",
+          "date": "2025"
         }
       ]
     },
@@ -4635,6 +5358,24 @@
     },
     {
       "animals": [
+        "Giant Anteater",
+        "Baird's Tapir"
+      ],
+      "evidence": [
+        {
+          "zoo": "Houston Zoo Pantanal",
+          "country": "United States",
+          "date": "2021"
+        },
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Baird's Tapir",
         "Guanaco"
       ],
@@ -4643,6 +5384,37 @@
           "zoo": "San Diego Zoo Wildlife Alliance",
           "country": "United States",
           "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Crested Caracara",
+        "Bald Eagle"
+      ],
+      "evidence": [
+        {
+          "zoo": "BREC Baton Rouge Zoo",
+          "country": "United States",
+          "date": "2024"
+        },
+        {
+          "zoo": "BREC's Baton Rouge Zoo",
+          "country": "United States",
+          "date": "2024"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Harris's Hawk",
+        "Bald Eagle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Pakawi Park",
+          "country": "Belgium",
+          "date": "2015"
         }
       ]
     },
@@ -4791,6 +5563,24 @@
     },
     {
       "animals": [
+        "Patas Monkey",
+        "Barbary Macaque"
+      ],
+      "evidence": [
+        {
+          "zoo": "Woburn Safari Park Monkey Forest,",
+          "country": "unknown",
+          "date": "2011"
+        },
+        {
+          "zoo": "Woburn Safari Park",
+          "country": "United Kingdom",
+          "date": "2012"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Barbary Macaque",
         "Pygmy Hippopotamus"
       ],
@@ -4808,7 +5598,13 @@
         "Barbary Macaque",
         "Vervet Monkey"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Erlebnis-Zoo Hannover",
+          "country": "Germany",
+          "date": "2002"
+        }
+      ]
     },
     {
       "animals": [
@@ -4841,6 +5637,19 @@
           "zoo": "Xantus János Állatkert",
           "country": "Hungary",
           "date": "2021-05-09"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Gelada Baboon",
+        "Barbary Sheep"
+      ],
+      "evidence": [
+        {
+          "zoo": "Wilhelma Stuttgart",
+          "country": "unknown",
+          "date": "2025"
         }
       ]
     },
@@ -5185,6 +5994,24 @@
     },
     {
       "animals": [
+        "Marabou Stork",
+        "Bearded Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Magdeburg Zoo",
+          "country": "Germany",
+          "date": "2023"
+        },
+        {
+          "zoo": "Zoologischer Garten Magdeburg",
+          "country": "Germany",
+          "date": "2023"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Beluga",
         "Harbour Seal"
       ],
@@ -5208,19 +6035,6 @@
           "zoo": "Oceanogràfic València",
           "country": "Spain",
           "date": "2020-06-06"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Binturong",
-        "Asian Water Monitor"
-      ],
-      "evidence": [
-        {
-          "zoo": "Singapore Zoo",
-          "country": "Singapore",
-          "date": "2018"
         }
       ]
     },
@@ -5524,6 +6338,19 @@
     },
     {
       "animals": [
+        "Marabou Stork",
+        "Black Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Parc Zoologique de Paris",
+          "country": "France",
+          "date": "2024"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Black Crowned Crane",
         "Okapi"
       ],
@@ -5620,31 +6447,114 @@
     },
     {
       "animals": [
+        "Spectacled Bear",
+        "Black Howler Monkey"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Frankfurt",
+          "country": "Germany",
+          "date": "2012-04-12"
+        },
+        {
+          "zoo": "Jersey Zoo",
+          "country": "Jersey",
+          "date": "2012-04-12"
+        },
+        {
+          "zoo": "Jersey Zoo",
+          "country": "Jersey",
+          "date": "2020-06-12"
+        },
+        {
+          "zoo": "Zoo Frankfurt",
+          "country": "Germany",
+          "date": "2020-05-05"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Black Howler Monkey",
         "White-Faced Saki"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoo Frankfurt",
+          "country": "Germany",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Brahminy Kite",
+        "Black Kite"
+      ],
+      "evidence": [
+        {
+          "zoo": "Thiruvananthapuram Zoo",
+          "country": "unknown",
+          "date": "undated"
+        }
+      ]
     },
     {
       "animals": [
         "Black Kite",
         "Common Buzzard"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Midbarium (former Negev Zoo)",
+          "country": "Israel",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
         "Black Kite",
         "Common Raven"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Vogelpark Avifauna",
+          "country": "Netherlands",
+          "date": "2022-08-28"
+        }
+      ]
     },
     {
       "animals": [
         "Black Kite",
         "Golden Eagle"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Midbarium (former Negev Zoo)",
+          "country": "Israel",
+          "date": "2025"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Marabou Stork",
+        "Black Kite"
+      ],
+      "evidence": [
+        {
+          "zoo": "Rotterdam Zoo",
+          "country": "Netherlands",
+          "date": "2021"
+        },
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2021"
+        }
+      ]
     },
     {
       "animals": [
@@ -6195,23 +7105,28 @@
     {
       "animals": [
         "Black Stork",
-        "African Spoonbill"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Black Stork",
         "Black-Headed Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
         "Black Stork",
         "Lesser Adjutant"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
@@ -6238,6 +7153,26 @@
       "animals": [
         "Black Tree Monitor",
         "Red-Bellied Short-Necked Turtle"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Harris's Hawk",
+        "Black Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Pakawi Park",
+          "country": "Belgium",
+          "date": "2015"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Headed Vulture",
+        "Black Vulture"
       ],
       "evidence": []
     },
@@ -6336,8 +7271,113 @@
     },
     {
       "animals": [
+        "Black-and-White Ruffed Lemur",
+        "Blue Duiker"
+      ],
+      "evidence": [
+        {
+          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
+          "country": "unknown",
+          "date": "2011"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-and-White Ruffed Lemur",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
+          "country": "unknown",
+          "date": "2011"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-and-White Ruffed Lemur",
+        "Hermann's Tortoise"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Black-and-White Ruffed Lemur",
+        "Meerkat"
+      ],
+      "evidence": [
+        {
+          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
+          "country": "unknown",
+          "date": "2011"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-and-White Ruffed Lemur",
+        "Radiated Tortoise"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Black-and-White Ruffed Lemur",
+        "Red Ruffed Lemur"
+      ],
+      "evidence": [
+        {
+          "zoo": "Memphis Zoo",
+          "country": "United States",
+          "date": "2020-06-12"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-and-White Ruffed Lemur",
+        "Rock Hyrax"
+      ],
+      "evidence": [
+        {
+          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
+          "country": "unknown",
+          "date": "2011"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-and-White Ruffed Lemur",
+        "Striped Skunk"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific' Zoo",
+          "country": "France",
+          "date": "2020-06-12"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Black-Capped Capuchin",
         "South American Coati"
+      ],
+      "evidence": [
+        {
+          "zoo": "Parque de las Leyendas",
+          "country": "Peru",
+          "date": "2020"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Spectacled Bear",
+        "Black-Capped Capuchin"
       ],
       "evidence": []
     },
@@ -6346,7 +7386,13 @@
         "Black-Headed Ibis",
         "Lesser Adjutant"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
@@ -6354,6 +7400,19 @@
         "Milky Stork"
       ],
       "evidence": []
+    },
+    {
+      "animals": [
+        "Oriental Stork",
+        "Black-Headed Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Planckendael",
+          "country": "Belgium",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -6627,122 +7686,29 @@
     },
     {
       "animals": [
-        "Black-and-White Ruffed Lemur",
-        "Asian Small-Clawed Otter"
-      ],
-      "evidence": [
-        {
-          "zoo": "Memphis Zoo",
-          "country": "United States",
-          "date": "2020-06-12"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black-and-White Ruffed Lemur",
-        "Blue Duiker"
-      ],
-      "evidence": [
-        {
-          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
-          "country": "unknown",
-          "date": "2011"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black-and-White Ruffed Lemur",
-        "Grey Crowned Crane"
-      ],
-      "evidence": [
-        {
-          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
-          "country": "unknown",
-          "date": "2011"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black-and-White Ruffed Lemur",
-        "Hermann's Tortoise"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Black-and-White Ruffed Lemur",
-        "Meerkat"
-      ],
-      "evidence": [
-        {
-          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
-          "country": "unknown",
-          "date": "2011"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black-and-White Ruffed Lemur",
-        "Radiated Tortoise"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Black-and-White Ruffed Lemur",
-        "Red Ruffed Lemur"
-      ],
-      "evidence": [
-        {
-          "zoo": "Memphis Zoo",
-          "country": "United States",
-          "date": "2020-06-12"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black-and-White Ruffed Lemur",
-        "Rock Hyrax"
-      ],
-      "evidence": [
-        {
-          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
-          "country": "unknown",
-          "date": "2011"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black-and-White Ruffed Lemur",
-        "Striped Skunk"
-      ],
-      "evidence": [
-        {
-          "zoo": "Spaycific' Zoo",
-          "country": "France",
-          "date": "2020-06-12"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Blackbuck",
         "Elk"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Blackbuck",
         "Indian Muntjac"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -6762,14 +7728,26 @@
         "Blackbuck",
         "Indian Swamp Deer"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Blackbuck",
         "Mouflon"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -6804,6 +7782,24 @@
     },
     {
       "animals": [
+        "Père David's Deer",
+        "Blackbuck"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen Asian safari",
+          "country": "Netherlands",
+          "date": "undated"
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Blackbuck",
         "Reeve's Muntjac"
       ],
@@ -6820,7 +7816,13 @@
         "Blackbuck",
         "Sambar"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -6837,6 +7839,19 @@
     },
     {
       "animals": [
+        "Visayan Warty Pig",
+        "Blackbuck"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "unknown",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Blackbuck",
         "White-Naped Crane"
       ],
@@ -6847,12 +7862,25 @@
         "Blackbuck",
         "Wild Boar"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Blacktip Reef Shark",
         "Zebra Shark"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Blue Wildebeest",
+        "Blesbok"
       ],
       "evidence": []
     },
@@ -6885,8 +7913,22 @@
     },
     {
       "animals": [
+        "Common Waterbuck",
+        "Blesbok"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
         "Blesbok",
         "Grévy's Zebra"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Impala",
+        "Blesbok"
       ],
       "evidence": []
     },
@@ -6899,8 +7941,28 @@
     },
     {
       "animals": [
+        "Plains Zebra",
+        "Blesbok"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
+          "country": "Israel",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Blesbok",
         "Rothschild's Giraffe"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Saddle-Billed Stork",
+        "Blesbok"
       ],
       "evidence": []
     },
@@ -6951,6 +8013,19 @@
     },
     {
       "animals": [
+        "Crowned Lemur",
+        "Blue Duiker"
+      ],
+      "evidence": [
+        {
+          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
+          "country": "unknown",
+          "date": "2011"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Blue Duiker",
         "Hadada Ibis"
       ],
@@ -6995,6 +8070,32 @@
     },
     {
       "animals": [
+        "Red Ruffed Lemur",
+        "Blue Duiker"
+      ],
+      "evidence": [
+        {
+          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
+          "country": "unknown",
+          "date": "2011"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Ring-Tailed Lemur",
+        "Blue Duiker"
+      ],
+      "evidence": [
+        {
+          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
+          "country": "unknown",
+          "date": "2011"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Blue Duiker",
         "Von Der Decken's Hornbill"
       ],
@@ -7008,10 +8109,36 @@
     },
     {
       "animals": [
-        "Blue Wildebeest",
-        "Blesbok"
+        "Common Eland",
+        "Blue Wildebeest"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Monde Sauvage Safari Parc",
+          "country": "Belgium",
+          "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
+          "country": "Israel",
+          "date": "2022-06-15"
+        },
+        {
+          "zoo": "Monde Sauvage Safari Parc",
+          "country": "Belgium",
+          "date": "2021"
+        },
+        {
+          "zoo": "ZOO Antwerpen",
+          "country": "Belgium",
+          "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
+          "country": "Israel",
+          "date": "2022"
+        }
+      ]
     },
     {
       "animals": [
@@ -7500,6 +8627,29 @@
     },
     {
       "animals": [
+        "Marabou Stork",
+        "Blue Wildebeest"
+      ],
+      "evidence": [
+        {
+          "zoo": "Jerusalem Biblical Zoo",
+          "country": "Israel",
+          "date": "2019"
+        },
+        {
+          "zoo": "ZOO Antwerpen",
+          "country": "Belgium",
+          "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
+          "country": "Israel",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Blue Wildebeest",
         "Masai Giraffe"
       ],
@@ -7858,21 +9008,39 @@
         "Blue-And-Yellow Macaw",
         "Blue-Headed Parrot"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
         "Blue-And-Yellow Macaw",
         "Blue-Winged Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
         "Blue-And-Yellow Macaw",
         "Green Iguana"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -7914,7 +9082,13 @@
         "Blue-And-Yellow Macaw",
         "Red-Shouldered Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -7928,7 +9102,13 @@
         "Blue-And-Yellow Macaw",
         "Scarlet Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -8026,7 +9206,13 @@
         "Blue-Headed Parrot",
         "Blue-Winged Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -8047,7 +9233,13 @@
         "Blue-Headed Parrot",
         "Red-Shouldered Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -8061,12 +9253,38 @@
         "Blue-Headed Parrot",
         "Scarlet Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
         "Blue-Headed Parrot",
         "Vinaceous-Breasted Amazon"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Giant Wood-Rail",
+        "Blue-Throated Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoologischer Garten Magdeburg",
+          "country": "Germany",
+          "date": "2014"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Matschie's Tree-Kangaroo",
+        "Blue-Winged Kookaburra"
       ],
       "evidence": []
     },
@@ -8082,7 +9300,13 @@
         "Blue-Winged Macaw",
         "Red-Shouldered Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -8096,7 +9320,13 @@
         "Blue-Winged Macaw",
         "Scarlet Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -8130,7 +9360,13 @@
         "Boa Constrictor",
         "Green Iguana"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Randers Regnskov Tropical Zoo",
+          "country": "Denmark",
+          "date": "2021-11-25"
+        }
+      ]
     },
     {
       "animals": [
@@ -8152,6 +9388,34 @@
         "Serval"
       ],
       "evidence": []
+    },
+    {
+      "animals": [
+        "Spectacled Bear",
+        "Bolivian Squirrel Monkey"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZOO Antwerpen",
+          "country": "Belgium",
+          "date": "2012-04-12"
+        },
+        {
+          "zoo": "Bioparc de Doué-la-Fontaine",
+          "country": "France",
+          "date": "2012-04-12"
+        },
+        {
+          "zoo": "ZOO Antwerpen",
+          "country": "Belgium",
+          "date": "2020-05-05"
+        },
+        {
+          "zoo": "Bioparc de Doué-la-Fontaine",
+          "country": "France",
+          "date": "2020-05-05"
+        }
+      ]
     },
     {
       "animals": [
@@ -8179,7 +9443,31 @@
         "Bongo",
         "Kirk's Dik-Dik"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Bioparc Valencia",
+          "country": "Spain",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Patas Monkey",
+        "Bongo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Woburn Safari Park Monkey Forest,",
+          "country": "unknown",
+          "date": "2011"
+        },
+        {
+          "zoo": "Woburn Safari Park",
+          "country": "United Kingdom",
+          "date": "2012"
+        }
+      ]
     },
     {
       "animals": [
@@ -8212,7 +9500,13 @@
         "Bongo",
         "Yellow-Backed Duiker"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Los Angeles Zoo",
+          "country": "United States",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
@@ -8293,19 +9587,6 @@
         "Striped Dolphin"
       ],
       "evidence": []
-    },
-    {
-      "animals": [
-        "Brahminy Kite",
-        "Black Kite"
-      ],
-      "evidence": [
-        {
-          "zoo": "Thiruvananthapuram Zoo",
-          "country": "unknown",
-          "date": "undated"
-        }
-      ]
     },
     {
       "animals": [
@@ -8758,6 +10039,19 @@
     },
     {
       "animals": [
+        "Humboldt Penguin",
+        "Brown Pelican"
+      ],
+      "evidence": [
+        {
+          "zoo": "Vogelpark Marlow",
+          "country": "Germany",
+          "date": "2024"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Brushtail Possum",
         "Red Kangaroo"
       ],
@@ -8775,7 +10069,26 @@
         "Burmese Python",
         "Reticulated Python"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Khao Kheow Open Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow Anaconda",
+        "Burmese Python"
+      ],
+      "evidence": [
+        {
+          "zoo": "Ulm Zoo",
+          "country": "Germany",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -8786,8 +10099,39 @@
     },
     {
       "animals": [
+        "Giant Wood-Rail",
+        "Burrowing Owl"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine Albufeira",
+          "country": "unknown",
+          "date": "2022"
+        },
+        {
+          "zoo": "Zoomarine Albufeira",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Burrowing Owl",
         "Green Aracari"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine Algarve",
+          "country": "Portugal",
+          "date": "2023"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Plains Viscacha",
+        "Burrowing Owl"
       ],
       "evidence": []
     },
@@ -8803,7 +10147,13 @@
         "Burrowing Owl",
         "Scarlet Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
     },
     {
       "animals": [
@@ -8881,6 +10231,19 @@
         "Goeldi's Monkey"
       ],
       "evidence": []
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Caiman Lizard"
+      ],
+      "evidence": [
+        {
+          "zoo": "Aquarium of Boise",
+          "country": "United States",
+          "date": "2012-03-15"
+        }
+      ]
     },
     {
       "animals": [
@@ -9082,7 +10445,13 @@
         "Cape Buffalo",
         "Grévy's Zebra"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Parque Zoológico Nacional",
+          "country": "Cuba",
+          "date": "2022-06-15"
+        }
+      ]
     },
     {
       "animals": [
@@ -9379,21 +10748,17 @@
     },
     {
       "animals": [
-        "Cape Genet",
-        "African Brush-Tailed Porcupine"
+        "Nubian Vulture",
+        "Cape Vulture"
       ],
-      "evidence": [
-        {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "undated"
-        },
-        {
-          "zoo": "ZOO Antwerpen",
-          "country": "Belgium",
-          "date": "2020-05-25"
-        }
-      ]
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Wattled Crane",
+        "Cape Vulture"
+      ],
+      "evidence": []
     },
     {
       "animals": [
@@ -9503,6 +10868,34 @@
           "zoo": "Zoológico da UFMT",
           "country": "Brazil",
           "date": "2020-06-12"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Greater Rhea",
+        "Capybara"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Dortmund",
+          "country": "Germany",
+          "date": "2021"
+        },
+        {
+          "zoo": "Zoo Dortmund",
+          "country": "Germany",
+          "date": "2021-06-24"
+        },
+        {
+          "zoo": "Hai Park",
+          "country": "Israel",
+          "date": "2020"
+        },
+        {
+          "zoo": "Tierpark Hellabrunn",
+          "country": "Germany",
+          "date": "2020"
         }
       ]
     },
@@ -9725,14 +11118,26 @@
         "Capybara",
         "Red-Rumped Agouti"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Cameron Park Zoo",
+          "country": "United States",
+          "date": "2010-08-15"
+        }
+      ]
     },
     {
       "animals": [
         "Capybara",
         "Scarlet Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Cameron Park Zoo",
+          "country": "United States",
+          "date": "2010-08-15"
+        }
+      ]
     },
     {
       "animals": [
@@ -10013,7 +11418,13 @@
         "Carpet Python",
         "Green Tree Python"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Monroe Reptile Zoo",
+          "country": "United States",
+          "date": "2013-12-06"
+        }
+      ]
     },
     {
       "animals": [
@@ -10157,6 +11568,11 @@
           "zoo": "National Aquarium Australia",
           "country": "United States",
           "date": "undated"
+        },
+        {
+          "zoo": "National Aquarium of Australia",
+          "country": "Australia",
+          "date": "2020"
         }
       ]
     },
@@ -10209,6 +11625,11 @@
           "zoo": "National Aquarium Australia",
           "country": "United States",
           "date": "undated"
+        },
+        {
+          "zoo": "National Aquarium of Australia",
+          "country": "Australia",
+          "date": "2020"
         }
       ]
     },
@@ -10519,21 +11940,39 @@
         "Chinese Water Dragon",
         "Green Iguana"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "TerraZoo Rheinberg",
+          "country": "Germany",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
         "Chinstrap Penguin",
         "Gentoo Penguin"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Loro Parque",
+          "country": "Spain",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
         "Chinstrap Penguin",
         "King Penguin"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Loro Parque",
+          "country": "Spain",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -10547,7 +11986,13 @@
         "Chinstrap Penguin",
         "Rockhopper Penguin"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Loro Parque",
+          "country": "Spain",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -10959,19 +12404,6 @@
     {
       "animals": [
         "Common Anaconda",
-        "Argentine Black And White Tegu"
-      ],
-      "evidence": [
-        {
-          "zoo": "Louisville Zoo",
-          "country": "United States",
-          "date": "2010"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Common Anaconda",
         "Red-Footed Tortoise"
       ],
       "evidence": [
@@ -10994,7 +12426,13 @@
         "Common Buzzard",
         "Golden Eagle"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Midbarium (former Negev Zoo)",
+          "country": "Israel",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -11044,39 +12482,6 @@
         "White-Naped Crane"
       ],
       "evidence": []
-    },
-    {
-      "animals": [
-        "Common Eland",
-        "Blue Wildebeest"
-      ],
-      "evidence": [
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
-          "zoo": "ZOO Antwerpen",
-          "country": "Belgium",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
-        }
-      ]
     },
     {
       "animals": [
@@ -11278,7 +12683,13 @@
         "Common Eland",
         "Grévy's Zebra"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Parque Zoológico Nacional",
+          "country": "Cuba",
+          "date": "2022-06-15"
+        }
+      ]
     },
     {
       "animals": [
@@ -11757,6 +13168,19 @@
     },
     {
       "animals": [
+        "Visayan Warty Pig",
+        "Common Hog Deer"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "unknown",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Common Hoopoe",
         "Green Turaco"
       ],
@@ -11785,23 +13209,23 @@
     },
     {
       "animals": [
-        "Common Kusimanse",
-        "Aardvark"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope Orycteropodidae",
-          "country": "unknown",
-          "date": "2020"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Common Marmoset",
         "Goeldi's Monkey"
       ],
       "evidence": []
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Common Marmoset"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoologischer Garten Duisburg",
+          "country": "Germany",
+          "date": "2021-11-25"
+        }
+      ]
     },
     {
       "animals": [
@@ -11870,7 +13294,13 @@
         "Common Marmoset",
         "White-Faced Saki"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Parc Zoologique de Lille",
+          "country": "France",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
@@ -12032,6 +13462,19 @@
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
           "date": "2021-05-09"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Cuvier's Gazelle",
+        "Common Ostrich"
+      ],
+      "evidence": [
+        {
+          "zoo": "Rio Safari Elche",
+          "country": "Spain",
+          "date": "undated"
         }
       ]
     },
@@ -12828,7 +14271,13 @@
         "Common Raccoon",
         "Coypu"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Tierpark Hellabrunn",
+          "country": "Germany",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
@@ -12842,7 +14291,13 @@
         "Common Raccoon",
         "Eurasian Otter"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoo sauvage de Saint-Félicien",
+          "country": "Canada",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -12863,7 +14318,13 @@
         "Common Raccoon",
         "Red Fox"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoo sauvage de Saint-Félicien",
+          "country": "Canada",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -12876,6 +14337,39 @@
       "animals": [
         "Common Raccoon",
         "Striped Skunk"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaZOO",
+          "country": "Netherlands",
+          "date": "2015-05-02"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "European Badger",
+        "Common Raven"
+      ],
+      "evidence": [
+        {
+          "zoo": "Miskolci Állatkert és Kultúrpark",
+          "country": "Hungary",
+          "date": "2025"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Golden Eagle",
+        "Common Raven"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "White-Tailed Eagle",
+        "Common Raven"
       ],
       "evidence": []
     },
@@ -12915,6 +14409,26 @@
     },
     {
       "animals": [
+        "Patagonian Mara",
+        "Common Squirrel Monkey"
+      ],
+      "evidence": [
+        {
+          "zoo": "Cameron Park Zoo",
+          "country": "United States",
+          "date": "2010-08-15"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Ross's Turaco",
+        "Common Squirrel Monkey"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
         "Common Squirrel Monkey",
         "Six-Banded Armadillo"
       ],
@@ -12924,6 +14438,13 @@
       "animals": [
         "Common Squirrel Monkey",
         "South American Coati"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Spectacled Bear",
+        "Common Squirrel Monkey"
       ],
       "evidence": []
     },
@@ -13095,6 +14616,19 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2021-05-09"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Cuvier's Gazelle",
+        "Common Warthog"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "United States",
+          "date": "undated"
         }
       ]
     },
@@ -13356,6 +14890,24 @@
     },
     {
       "animals": [
+        "Patas Monkey",
+        "Common Warthog"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope pig review",
+          "country": "Hungary",
+          "date": "undated"
+        },
+        {
+          "zoo": "Xantus János Zoo",
+          "country": "Hungary",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Common Warthog",
         "Pink-Backed Pelican"
       ],
@@ -13535,6 +15087,19 @@
     },
     {
       "animals": [
+        "Somali Wild Ass",
+        "Common Warthog"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope Suidae review exact",
+          "country": "unknown",
+          "date": "undated"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Common Warthog",
         "Springbok"
       ],
@@ -13600,13 +15165,6 @@
           "date": "2021-04"
         }
       ]
-    },
-    {
-      "animals": [
-        "Common Waterbuck",
-        "Blesbok"
-      ],
-      "evidence": []
     },
     {
       "animals": [
@@ -13953,6 +15511,13 @@
     },
     {
       "animals": [
+        "Saddle-Billed Stork",
+        "Common Waterbuck"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
         "Common Waterbuck",
         "Scimitar Oryx"
       ],
@@ -14082,44 +15647,6 @@
     {
       "animals": [
         "Corsac Fox",
-        "Asiatic Black Bear"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dierenrijk",
-          "country": "Netherlands",
-          "date": "2012-04-12"
-        },
-        {
-          "zoo": "DierenPark Amersfoort",
-          "country": "Netherlands",
-          "date": "2012-04-12"
-        },
-        {
-          "zoo": "DierenPark Amersfoort",
-          "country": "Netherlands",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Dierenrijk",
-          "country": "Netherlands",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "DierenPark Amersfoort",
-          "country": "Netherlands",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Dierenrijk",
-          "country": "Netherlands",
-          "date": "2020-05-26"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Corsac Fox",
         "Sloth Bear"
       ],
       "evidence": [
@@ -14156,6 +15683,13 @@
       "animals": [
         "Cotton-Top Tamarin",
         "Golden Lion Tamarin"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Golden-Headed Lion Tamarin",
+        "Cotton-Top Tamarin"
       ],
       "evidence": []
     },
@@ -14208,6 +15742,19 @@
     },
     {
       "animals": [
+        "Red-Fronted Lemur",
+        "Cotton-Top Tamarin"
+      ],
+      "evidence": [
+        {
+          "zoo": "Ziegler",
+          "country": "unknown",
+          "date": "2000"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Cotton-Top Tamarin",
         "Red-Rumped Agouti"
       ],
@@ -14218,6 +15765,13 @@
           "date": "2024-11"
         }
       ]
+    },
+    {
+      "animals": [
+        "Rodriguez Flying Fox",
+        "Cotton-Top Tamarin"
+      ],
+      "evidence": []
     },
     {
       "animals": [
@@ -14238,7 +15792,13 @@
         "Cotton-Top Tamarin",
         "White-Faced Saki"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoo de Besançon",
+          "country": "France",
+          "date": "2021"
+        }
+      ]
     },
     {
       "animals": [
@@ -14275,7 +15835,13 @@
         "Coypu",
         "Northern Raccoon"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Tierpark Hellabrunn",
+          "country": "Germany",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
@@ -14290,32 +15856,6 @@
         "White-Nosed Coati"
       ],
       "evidence": []
-    },
-    {
-      "animals": [
-        "Crested Caracara",
-        "Andean Condor"
-      ],
-      "evidence": [
-        {
-          "zoo": "Ostrava Zoo",
-          "country": "Czech Republic",
-          "date": "undated"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Crested Caracara",
-        "Bald Eagle"
-      ],
-      "evidence": [
-        {
-          "zoo": "BREC Baton Rouge Zoo",
-          "country": "United States",
-          "date": "2024"
-        }
-      ]
     },
     {
       "animals": [
@@ -14370,19 +15910,6 @@
         "Malaysian Painted River Turtle"
       ],
       "evidence": []
-    },
-    {
-      "animals": [
-        "Crowned Lemur",
-        "Blue Duiker"
-      ],
-      "evidence": [
-        {
-          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
-          "country": "unknown",
-          "date": "2011"
-        }
-      ]
     },
     {
       "animals": [
@@ -14531,32 +16058,6 @@
     {
       "animals": [
         "Cuvier's Gazelle",
-        "Common Ostrich"
-      ],
-      "evidence": [
-        {
-          "zoo": "Rio Safari Elche",
-          "country": "Spain",
-          "date": "undated"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Cuvier's Gazelle",
-        "Common Warthog"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "United States",
-          "date": "undated"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Cuvier's Gazelle",
         "Plains Zebra"
       ],
       "evidence": [
@@ -14586,6 +16087,19 @@
         "Meerkat"
       ],
       "evidence": []
+    },
+    {
+      "animals": [
+        "Marabou Stork",
+        "Dama Gazelle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Parc Zoologique de Paris",
+          "country": "France",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
@@ -14642,7 +16156,13 @@
         "Demoiselle Crane",
         "Great Blue Turaco"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
@@ -14656,7 +16176,13 @@
         "Demoiselle Crane",
         "Grey Crowned Crane"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
     },
     {
       "animals": [
@@ -14670,14 +16196,26 @@
         "Demoiselle Crane",
         "Hadada Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "Demoiselle Crane",
         "Hamerkop"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
@@ -14691,7 +16229,13 @@
         "Demoiselle Crane",
         "Red-Crested Turaco"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
     },
     {
       "animals": [
@@ -14807,14 +16351,26 @@
         "Domestic Donkey",
         "Serval"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Tierpark Nadermann",
+          "country": "Germany",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
         "Domestic Donkey",
         "Zebu"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Greater Vancouver Zoo",
+          "country": "Canada",
+          "date": "2022-06-07"
+        }
+      ]
     },
     {
       "animals": [
@@ -15226,21 +16782,39 @@
         "Elk",
         "Indian Muntjac"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Elk",
         "Indian Rhinoceros"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Elk",
         "Indian Swamp Deer"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -15260,7 +16834,13 @@
         "Elk",
         "Mouflon"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -15280,7 +16860,13 @@
         "Elk",
         "Nilgai"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -15300,14 +16886,26 @@
         "Elk",
         "Sambar"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Elk",
         "Sika Deer"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -15321,7 +16919,26 @@
         "Elk",
         "Wild Boar"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Prevost's Squirrel",
+        "Elongated Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2009"
+        }
+      ]
     },
     {
       "animals": [
@@ -15333,6 +16950,19 @@
           "zoo": "Zoológico La Aurora",
           "country": "Guatemala",
           "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Tree Python",
+        "Emerald Tree Boa"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoologická zahrada Ústí nad Labem",
+          "country": "Czech Republic",
+          "date": "2021"
         }
       ]
     },
@@ -15362,6 +16992,19 @@
         "Emperor Tamarin",
         "Linnaeus's Two-Toed Sloth"
       ],
+      "evidence": [
+        {
+          "zoo": "ZSL London Zoo",
+          "country": "United Kingdom",
+          "date": "2014-06-24"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rodriguez Flying Fox",
+        "Emperor Tamarin"
+      ],
       "evidence": []
     },
     {
@@ -15382,7 +17025,13 @@
         "Emperor Tamarin",
         "White-Faced Saki"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Vogelpark Avifauna",
+          "country": "Netherlands",
+          "date": "2021"
+        }
+      ]
     },
     {
       "animals": [
@@ -15403,7 +17052,13 @@
         "Emu",
         "Red Kangaroo"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Royal Melbourne Zoological Gardens",
+          "country": "Australia",
+          "date": "2005"
+        }
+      ]
     },
     {
       "animals": [
@@ -15417,7 +17072,13 @@
         "Eurasian Beaver",
         "Eurasian Otter"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Edinburgh Zoo",
+          "country": "United Kingdom",
+          "date": "2012"
+        }
+      ]
     },
     {
       "animals": [
@@ -15438,14 +17099,13 @@
         "Eurasian Otter",
         "Striped Skunk"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "European Badger",
-        "Common Raven"
-      ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoo sauvage de Saint-Félicien",
+          "country": "Canada",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -15487,7 +17147,13 @@
         "European Roe Deer",
         "Wild Boar"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoologischer Garten Schwerin",
+          "country": "Germany",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -15526,6 +17192,39 @@
           "zoo": "Zoo Neuwied",
           "country": "Germany",
           "date": "2020-05-26"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rock Hyrax",
+        "Fennec Fox"
+      ],
+      "evidence": [
+        {
+          "zoo": "Pittsburgh Zoo & PPG Aquarium",
+          "country": "United States",
+          "date": "2022-11-12"
+        },
+        {
+          "zoo": "ZOO Dvůr Králové",
+          "country": "Czech Republic",
+          "date": "2020-05-26"
+        },
+        {
+          "zoo": "Brookfield Zoo",
+          "country": "United States",
+          "date": "2020-05-26"
+        },
+        {
+          "zoo": "ZOO Dvůr Králové",
+          "country": "Czech Republic",
+          "date": "2018"
+        },
+        {
+          "zoo": "Brookfield Zoo",
+          "country": "United States",
+          "date": "2018"
         }
       ]
     },
@@ -15585,6 +17284,19 @@
     },
     {
       "animals": [
+        "Sugar Glider",
+        "Four-Toed Hedgehog"
+      ],
+      "evidence": [
+        {
+          "zoo": "Taman Safari Bogor",
+          "country": "Indonesia",
+          "date": "2024"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Frill-Necked Lizard",
         "Spiny-Tailed Monitor"
       ],
@@ -15606,7 +17318,71 @@
         "Galah",
         "Gang-Gang Cockatoo"
       ],
+      "evidence": [
+        {
+          "zoo": "Attica Zoological Park",
+          "country": "Greece",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Kea",
+        "Galah"
+      ],
+      "evidence": [
+        {
+          "zoo": "Loro Parque",
+          "country": "Spain",
+          "date": "2001"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Little Corella",
+        "Galah"
+      ],
       "evidence": []
+    },
+    {
+      "animals": [
+        "Long-Billed Corella",
+        "Galah"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Long-Nosed Potoroo",
+        "Galah"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dierenpark Wissel / Blackpool Zoo",
+          "country": "United Kingdom",
+          "date": "undated"
+        },
+        {
+          "zoo": "Blackpool Zoo",
+          "country": "United Kingdom",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pink Cockatoo",
+        "Galah"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -15617,46 +17393,40 @@
     },
     {
       "animals": [
+        "Yellow-Crested Cockatoo",
+        "Galah"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo de Lille",
+          "country": "France",
+          "date": "2015"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Galah",
         "Yellow-Tailed Black Cockatoo"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Loro Parque",
+          "country": "Spain",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
         "Gelada",
         "Rock Hyrax"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Gelada Baboon",
-        "Abyssian Ground Hornbill"
-      ],
       "evidence": [
         {
-          "zoo": "CERZA Lisieux",
-          "country": "unknown",
-          "date": "undated"
-        },
-        {
-          "zoo": "CERZA",
-          "country": "France",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Gelada Baboon",
-        "Barbary Sheep"
-      ],
-      "evidence": [
-        {
-          "zoo": "Wilhelma Stuttgart",
-          "country": "unknown",
-          "date": "2025"
+          "zoo": "Bronx Zoo",
+          "country": "United States",
+          "date": "2005-06-11"
         }
       ]
     },
@@ -15693,6 +17463,20 @@
     },
     {
       "animals": [
+        "Plains Zebra",
+        "Gemsbok"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Reticulated Giraffe",
+        "Gemsbok"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
         "Gemsbok",
         "White Rhinoceros"
       ],
@@ -15703,7 +17487,13 @@
         "Gentoo Penguin",
         "King Penguin"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Loro Parque",
+          "country": "Spain",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -15717,7 +17507,13 @@
         "Gentoo Penguin",
         "Rockhopper Penguin"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Loro Parque",
+          "country": "Spain",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -15736,24 +17532,6 @@
           "zoo": "Woodside Wildlife Park",
           "country": "United Kingdom",
           "date": "2024"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Giant Anteater",
-        "Baird's Tapir"
-      ],
-      "evidence": [
-        {
-          "zoo": "Houston Zoo Pantanal",
-          "country": "United States",
-          "date": "2021"
-        },
-        {
-          "zoo": "Houston Zoo",
-          "country": "United States",
-          "date": "2021"
         }
       ]
     },
@@ -15792,6 +17570,13 @@
           "date": "2020"
         }
       ]
+    },
+    {
+      "animals": [
+        "Grey-Handed Night Monkey",
+        "Giant Anteater"
+      ],
+      "evidence": []
     },
     {
       "animals": [
@@ -15944,6 +17729,29 @@
     },
     {
       "animals": [
+        "South American Coati",
+        "Giant Anteater"
+      ],
+      "evidence": [
+        {
+          "zoo": "Loro Parque",
+          "country": "Spain",
+          "date": "2019"
+        },
+        {
+          "zoo": "Yorkshire Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2019-01-30"
+        },
+        {
+          "zoo": "Loro Parque",
+          "country": "Spain",
+          "date": "2019-01-30"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Giant Anteater",
         "South American Tapir"
       ],
@@ -16073,37 +17881,6 @@
           "zoo": "Zoo Leipzig",
           "country": "Germany",
           "date": "2020"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Giant Wood-Rail",
-        "Blue-Throated Macaw"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoologischer Garten Magdeburg",
-          "country": "Germany",
-          "date": "2014"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Giant Wood-Rail",
-        "Burrowing Owl"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoomarine Albufeira",
-          "country": "unknown",
-          "date": "2022"
-        },
-        {
-          "zoo": "Zoomarine Albufeira",
-          "country": "Portugal",
-          "date": "2022"
         }
       ]
     },
@@ -16353,6 +18130,19 @@
     },
     {
       "animals": [
+        "Laughing Kookaburra",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological Center Tel Aviv-Ramat Gan",
+          "country": "Israel",
+          "date": "2007"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Glossy Ibis",
         "Marabou Stork"
       ],
@@ -16384,6 +18174,19 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Crested Turaco",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Attica Zoological Park",
+          "country": "Greece",
+          "date": "2018"
         }
       ]
     },
@@ -16436,7 +18239,13 @@
         "Glossy Ibis",
         "Von Der Decken's Hornbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZOO Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
     },
     {
       "animals": [
@@ -16479,7 +18288,13 @@
         "Glossy Ibis",
         "White-Cheeked Turaco"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Parc Zoologique de Paris",
+          "country": "France",
+          "date": "2023"
+        }
+      ]
     },
     {
       "animals": [
@@ -16525,7 +18340,13 @@
         "Goeldi's Monkey",
         "Green Iguana"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ARTIS Amsterdam Royal Zoo",
+          "country": "Netherlands",
+          "date": "2021-11-25"
+        }
+      ]
     },
     {
       "animals": [
@@ -16847,13 +18668,6 @@
     {
       "animals": [
         "Golden Eagle",
-        "Common Raven"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Golden Eagle",
         "White-Tailed Eagle"
       ],
       "evidence": []
@@ -16901,7 +18715,13 @@
         "Golden Lion Tamarin",
         "Green Iguana"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Randers Regnskov Tropical Zoo",
+          "country": "Denmark",
+          "date": "2021-11-25"
+        }
+      ]
     },
     {
       "animals": [
@@ -16960,6 +18780,13 @@
       "animals": [
         "Golden Lion Tamarin",
         "Red-Rumped Agouti"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Rodriguez Flying Fox",
+        "Golden Lion Tamarin"
       ],
       "evidence": []
     },
@@ -17068,6 +18895,19 @@
     },
     {
       "animals": [
+        "Visayan Warty Pig",
+        "Golden Takin"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "unknown",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Golden-Handed Tamarin",
         "Red-Footed Tortoise"
       ],
@@ -17078,13 +18918,6 @@
           "date": "2002"
         }
       ]
-    },
-    {
-      "animals": [
-        "Golden-Headed Lion Tamarin",
-        "Cotton-Top Tamarin"
-      ],
-      "evidence": []
     },
     {
       "animals": [
@@ -17138,7 +18971,13 @@
         "Golden-Headed Lion Tamarin",
         "Red Titi"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZSL London Zoo",
+          "country": "United Kingdom",
+          "date": "2014-06-24"
+        }
+      ]
     },
     {
       "animals": [
@@ -17191,7 +19030,13 @@
         "Golden-Headed Lion Tamarin",
         "White-Faced Saki"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Copenhagen Zoo",
+          "country": "Denmark",
+          "date": "2021"
+        }
+      ]
     },
     {
       "animals": [
@@ -17205,14 +19050,26 @@
         "Great Blue Turaco",
         "Hadada Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
         "Great Blue Turaco",
         "Hamerkop"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari",
+          "country": "United Arab Emirates",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
@@ -17280,14 +19137,26 @@
         "Great White Pelican",
         "Hadada Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoological and Botanical Garden Pilsen",
+          "country": "Czech Republic",
+          "date": "2022-06-15"
+        }
+      ]
     },
     {
       "animals": [
         "Great White Pelican",
         "Hamerkop"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoological and Botanical Garden Pilsen",
+          "country": "Czech Republic",
+          "date": "2022-06-15"
+        }
+      ]
     },
     {
       "animals": [
@@ -17330,7 +19199,13 @@
         "Great White Pelican",
         "Pink-Backed Pelican"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BestZOO",
+          "country": "Netherlands",
+          "date": "2019-05-25"
+        }
+      ]
     },
     {
       "animals": [
@@ -17421,6 +19296,19 @@
         "Great White Pelican",
         "Yellow-Billed Stork"
       ],
+      "evidence": [
+        {
+          "zoo": "Zoological and Botanical Garden Pilsen",
+          "country": "Czech Republic",
+          "date": "2022-06-15"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Greater Flamingo"
+      ],
       "evidence": []
     },
     {
@@ -17464,7 +19352,13 @@
         "Greater Flamingo",
         "Pink-Backed Pelican"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Odense Zoo",
+          "country": "Denmark",
+          "date": "2013-12-18"
+        }
+      ]
     },
     {
       "animals": [
@@ -17871,47 +19765,6 @@
     {
       "animals": [
         "Greater Rhea",
-        "Alpaca"
-      ],
-      "evidence": [
-        {
-          "zoo": "Hai Park",
-          "country": "Israel",
-          "date": "2020"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Greater Rhea",
-        "Capybara"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "Hai Park",
-          "country": "Israel",
-          "date": "2020"
-        },
-        {
-          "zoo": "Tierpark Hellabrunn",
-          "country": "Germany",
-          "date": "2020"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Greater Rhea",
         "Guanaco"
       ],
       "evidence": [
@@ -18030,70 +19883,65 @@
         "Green Aracari",
         "Green Iguana"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine Algarve",
+          "country": "Portugal",
+          "date": "2023"
+        }
+      ]
     },
     {
       "animals": [
         "Green Aracari",
         "Roseate Spoonbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine Algarve",
+          "country": "Portugal",
+          "date": "2023"
+        }
+      ]
     },
     {
       "animals": [
         "Green Aracari",
         "Scarlet Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine Algarve",
+          "country": "Portugal",
+          "date": "2023"
+        }
+      ]
     },
     {
       "animals": [
         "Green Aracari",
         "Scarlet Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
     },
     {
       "animals": [
         "Green Aracari",
         "Sunbittern"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "African Spurred Tortoise"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Asian Water Monitor"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Caiman Lizard"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Common Marmoset"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Greater Flamingo"
-      ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
     },
     {
       "animals": [
@@ -18114,7 +19962,13 @@
         "Green Iguana",
         "Large Flying Fox"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Randers Regnskov Tropical Zoo",
+          "country": "Denmark",
+          "date": "2021-11-25"
+        }
+      ]
     },
     {
       "animals": [
@@ -18152,24 +20006,55 @@
     },
     {
       "animals": [
+        "Patagonian Mara",
+        "Green Iguana"
+      ],
+      "evidence": [
+        {
+          "zoo": "Brandywine Zoo",
+          "country": "United States",
+          "date": "2026-07-23"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Green Iguana",
         "Pond Slider"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine Algarve",
+          "country": "Portugal",
+          "date": "2023"
+        }
+      ]
     },
     {
       "animals": [
         "Green Iguana",
         "Pygmy Marmoset"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ARTIS Amsterdam Royal Zoo",
+          "country": "Netherlands",
+          "date": "2021-11-25"
+        }
+      ]
     },
     {
       "animals": [
         "Green Iguana",
         "Red-Footed Tortoise"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Brandywine Zoo",
+          "country": "United States",
+          "date": "2026-07-23"
+        }
+      ]
     },
     {
       "animals": [
@@ -18196,14 +20081,26 @@
         "Green Iguana",
         "Ring-Tailed Lemur"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Bali Zoo",
+          "country": "Indonesia",
+          "date": "2021-11-25"
+        }
+      ]
     },
     {
       "animals": [
         "Green Iguana",
         "Scarlet Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Randers Regnskov Tropical Zoo",
+          "country": "Denmark",
+          "date": "2021-11-25"
+        }
+      ]
     },
     {
       "animals": [
@@ -18231,21 +20128,39 @@
         "Green Iguana",
         "Toco Toucan"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoo Miami",
+          "country": "United States",
+          "date": "2026-08"
+        }
+      ]
     },
     {
       "animals": [
         "Green Iguana",
         "West Indian Manatee"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Randers Regnskov Tropical Zoo",
+          "country": "Denmark",
+          "date": "2021-11-25"
+        }
+      ]
     },
     {
       "animals": [
         "Green Iguana",
         "White-Faced Saki"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ARTIS Amsterdam Royal Zoo",
+          "country": "Netherlands",
+          "date": "2021-11-25"
+        }
+      ]
     },
     {
       "animals": [
@@ -18270,17 +20185,23 @@
     },
     {
       "animals": [
-        "Green Tree Python",
-        "Emerald Tree Boa"
+        "Green Turaco",
+        "Okapi"
       ],
       "evidence": []
     },
     {
       "animals": [
-        "Green Turaco",
-        "Okapi"
+        "Red-Crested Turaco",
+        "Green Turaco"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
     },
     {
       "animals": [
@@ -18295,19 +20216,6 @@
         "Western Plantain-Eater"
       ],
       "evidence": []
-    },
-    {
-      "animals": [
-        "Grey Crowned Crane",
-        "Abdim's Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooParc de Beauval",
-          "country": "France",
-          "date": "2022-06-15"
-        }
-      ]
     },
     {
       "animals": [
@@ -18428,6 +20336,34 @@
     },
     {
       "animals": [
+        "Marabou Stork",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Parc Zoologique de Paris",
+          "country": "France",
+          "date": "2024"
+        },
+        {
+          "zoo": "Jerusalem Biblical Zoo",
+          "country": "Israel",
+          "date": "2022-06-15"
+        },
+        {
+          "zoo": "Montgomery Zoo and Mann Wildlife Learning Museum",
+          "country": "United States",
+          "date": "2022"
+        },
+        {
+          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
+          "country": "Israel",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Grey Crowned Crane",
         "Masai Giraffe"
       ],
@@ -18530,12 +20466,25 @@
         "Grey Crowned Crane",
         "Red-Crested Turaco"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
     },
     {
       "animals": [
         "Grey Crowned Crane",
         "Reticulated Giraffe"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Rodriguez Flying Fox",
+        "Grey Crowned Crane"
       ],
       "evidence": []
     },
@@ -18554,6 +20503,31 @@
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2022-06-15"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Grey Crowned Crane"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Saddle-Billed Stork",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Cincinnati Zoo Savanna",
+          "country": "United States",
+          "date": "2019"
+        },
+        {
+          "zoo": "Cincinnati Zoo",
+          "country": "United States",
+          "date": "2019"
         }
       ]
     },
@@ -18628,6 +20602,19 @@
           "zoo": "Parque Zoológico Nacional",
           "country": "Cuba",
           "date": "2022-06-15"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White Rhinoceros",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
+          "country": "Israel",
+          "date": "2022"
         }
       ]
     },
@@ -18889,13 +20876,6 @@
     {
       "animals": [
         "Grey-Handed Night Monkey",
-        "Giant Anteater"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Grey-Handed Night Monkey",
         "Hoffmann's Two-Toed Sloth"
       ],
       "evidence": []
@@ -18916,10 +20896,43 @@
     },
     {
       "animals": [
+        "Western Woylie",
+        "Grey-Handed Night Monkey"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Harris's Hawk",
+        "Griffon Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Pakawi Park",
+          "country": "Belgium",
+          "date": "2015"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Griffon Vulture",
         "Monk Vulture"
       ],
       "evidence": []
+    },
+    {
+      "animals": [
+        "Nubian Vulture",
+        "Griffon Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Cotswold Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
@@ -18989,6 +21002,19 @@
     },
     {
       "animals": [
+        "Somali Wild Ass",
+        "Grévy's Zebra"
+      ],
+      "evidence": [
+        {
+          "zoo": "Cologne Zoo",
+          "country": "unknown",
+          "date": "2005"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Grévy's Zebra",
         "Thompson's Gazelle"
       ],
@@ -19000,6 +21026,19 @@
         "White-Faced Saki"
       ],
       "evidence": []
+    },
+    {
+      "animals": [
+        "Lesser Rhea",
+        "Guanaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Audubon Zoo",
+          "country": "United States",
+          "date": "2021-06-24"
+        }
+      ]
     },
     {
       "animals": [
@@ -19039,6 +21078,29 @@
           "zoo": "Audubon Zoo",
           "country": "United States",
           "date": "2021-06-24"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "South American Tapir",
+        "Guanaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoologischer Garten Schwerin",
+          "country": "Germany",
+          "date": "2021"
+        },
+        {
+          "zoo": "Audubon Zoo",
+          "country": "United States",
+          "date": "2021-06-24"
+        },
+        {
+          "zoo": "Copenhagen Zoo",
+          "country": "Denmark",
+          "date": "2020"
         }
       ]
     },
@@ -19192,7 +21254,13 @@
         "Hadada Ibis",
         "Von Der Decken's Hornbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
@@ -19279,6 +21347,24 @@
     },
     {
       "animals": [
+        "Marabou Stork",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Rotterdam Zoo",
+          "country": "Netherlands",
+          "date": "2021"
+        },
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Hamerkop",
         "Northern Bald Ibis"
       ],
@@ -19315,7 +21401,26 @@
         "Hamerkop",
         "Red-Billed Hornbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoological and Botanical Garden Pilsen",
+          "country": "Czech Republic",
+          "date": "2022-06-15"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Crested Turaco",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Attica Zoological Park",
+          "country": "Greece",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
@@ -19361,7 +21466,26 @@
         "Hamerkop",
         "Von Der Decken's Hornbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Wattled Crane",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Cotswold Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
@@ -19491,27 +21615,6 @@
     },
     {
       "animals": [
-        "Harris's Hawk",
-        "Bald Eagle"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Harris's Hawk",
-        "Black Vulture"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Harris's Hawk",
-        "Griffon Vulture"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Hartlaub's Turaco",
         "Scaly-Headed Parrot"
       ],
@@ -19535,6 +21638,26 @@
       "animals": [
         "Hilaire's Side-Necked Turtle",
         "Southern Tamandua"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Mishmi Takin",
+        "Himalayan Tahr"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2008"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Headed Vulture",
+        "Himalayan Vulture"
       ],
       "evidence": []
     },
@@ -19705,6 +21828,13 @@
           "date": "2021-04"
         }
       ]
+    },
+    {
+      "animals": [
+        "Rodriguez Flying Fox",
+        "Hippopotamus"
+      ],
+      "evidence": []
     },
     {
       "animals": [
@@ -19886,6 +22016,24 @@
     },
     {
       "animals": [
+        "Marabou Stork",
+        "Hooded Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Rotterdam Zoo",
+          "country": "Netherlands",
+          "date": "2021"
+        },
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Hooded Vulture",
         "Palm-Nut Vulture"
       ],
@@ -19904,14 +22052,32 @@
     },
     {
       "animals": [
-        "Humboldt Penguin",
-        "Brown Pelican"
+        "Yellow Mongoose",
+        "Hooded Vulture"
       ],
       "evidence": [
         {
-          "zoo": "Vogelpark Marlow",
+          "zoo": "ZooRope",
           "country": "Germany",
-          "date": "2024"
+          "date": "undated"
+        },
+        {
+          "zoo": "Zoologischer Garten Magdeburg",
+          "country": "Germany",
+          "date": "2020-05-10"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Hooded Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooParc de Beauval",
+          "country": "France",
+          "date": "2022-06-15"
         }
       ]
     },
@@ -19952,13 +22118,6 @@
       "animals": [
         "Hyacinth Macaw",
         "Umbrella Cockatoo"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Impala",
-        "Blesbok"
       ],
       "evidence": []
     },
@@ -20432,6 +22591,29 @@
     },
     {
       "animals": [
+        "Yellow Mongoose",
+        "Indian Crested Porcupine"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dierenpark Zie-ZOO",
+          "country": "Netherlands",
+          "date": "2018"
+        },
+        {
+          "zoo": "Zoo de Lille",
+          "country": "France",
+          "date": "2018"
+        },
+        {
+          "zoo": "Zoo de Bordeaux Pessac",
+          "country": "France",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Indian Flying Fox",
         "Linnaeus's Two-Toed Sloth"
       ],
@@ -20484,14 +22666,26 @@
         "Indian Muntjac",
         "Indian Rhinoceros"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Indian Muntjac",
         "Indian Swamp Deer"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -20516,7 +22710,13 @@
         "Indian Muntjac",
         "Mouflon"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -20530,35 +22730,78 @@
         "Indian Muntjac",
         "Nilgai"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Indian Muntjac",
         "Sambar"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Indian Muntjac",
         "Sika Deer"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Wild Boar",
+        "Indian Muntjac"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Indian Rhinoceros",
         "Indian Swamp Deer"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Indian Rhinoceros",
         "Mouflon"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -20580,6 +22823,24 @@
     },
     {
       "animals": [
+        "Père David's Deer",
+        "Indian Rhinoceros"
+      ],
+      "evidence": [
+        {
+          "zoo": "Omaha Henry Doorly Zoo Asian Highlands",
+          "country": "United States",
+          "date": "2023"
+        },
+        {
+          "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
+          "country": "United States",
+          "date": "2023"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Indian Rhinoceros",
         "Reeve's Muntjac"
       ],
@@ -20596,42 +22857,135 @@
         "Indian Rhinoceros",
         "Sambar"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Indian Rhinoceros",
         "Sika Deer"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Visayan Warty Pig",
+        "Indian Rhinoceros"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "unknown",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Wild Boar",
+        "Indian Rhinoceros"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Indian Swamp Deer",
         "Mouflon"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Indian Swamp Deer",
         "Nilgai"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Indian Swamp Deer",
         "Sambar"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Indian Swamp Deer",
         "Sika Deer"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Wild Boar",
+        "Indian Swamp Deer"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "South American Tapir",
+        "Jabiru"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Dortmund",
+          "country": "Germany",
+          "date": "2021"
+        },
+        {
+          "zoo": "Zoo Dortmund",
+          "country": "Germany",
+          "date": "2021-06-24"
+        }
+      ]
     },
     {
       "animals": [
@@ -20669,16 +23023,10 @@
     },
     {
       "animals": [
-        "Kea",
-        "Galah"
+        "Pygmy Slow Loris",
+        "Javan Chevrotain"
       ],
-      "evidence": [
-        {
-          "zoo": "Loro Parque",
-          "country": "Spain",
-          "date": "2001"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -20719,14 +23067,13 @@
         "King Penguin",
         "Rockhopper Penguin"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Kinkajou",
-        "Azara's Agouti"
-      ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Loro Parque",
+          "country": "Spain",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -20822,7 +23169,13 @@
         "Kirk's Dik-Dik",
         "Red Duiker"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Bioparc Valencia",
+          "country": "Spain",
+          "date": "2026"
+        }
+      ]
     },
     {
       "animals": [
@@ -21018,8 +23371,8 @@
     },
     {
       "animals": [
-        "Lanner Falcon",
-        "Saker Falcon"
+        "Peregrine Falcon",
+        "Lanner Falcon"
       ],
       "evidence": [
         {
@@ -21031,10 +23384,16 @@
     },
     {
       "animals": [
-        "Large Flying Fox",
-        "Aldabra Giant Tortoise"
+        "Lanner Falcon",
+        "Saker Falcon"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Parc des Oiseaux",
+          "country": "France",
+          "date": "2016"
+        }
+      ]
     },
     {
       "animals": [
@@ -21065,6 +23424,13 @@
     },
     {
       "animals": [
+        "Rodriguez Flying Fox",
+        "Large Hairy Armadillo"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
         "Large Hairy Armadillo",
         "South American Coati"
       ],
@@ -21078,31 +23444,55 @@
     },
     {
       "animals": [
-        "Laughing Kookaburra",
-        "Glossy Ibis"
+        "Long-Nosed Potoroo",
+        "Laughing Kookaburra"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoo Duisburg",
+          "country": "Germany",
+          "date": "2021"
+        }
+      ]
     },
     {
       "animals": [
         "Laughing Kookaburra",
         "Northern Bald Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoological Center Tel Aviv-Ramat Gan",
+          "country": "Israel",
+          "date": "2007"
+        }
+      ]
     },
     {
       "animals": [
         "Laughing Kookaburra",
         "Scarlet Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoological Center Tel Aviv-Ramat Gan",
+          "country": "Israel",
+          "date": "2007"
+        }
+      ]
     },
     {
       "animals": [
         "Laughing Kookaburra",
         "Sunbittern"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoological Center Tel Aviv-Ramat Gan",
+          "country": "Israel",
+          "date": "2007"
+        }
+      ]
     },
     {
       "animals": [
@@ -21220,14 +23610,27 @@
     },
     {
       "animals": [
-        "Lesser Rhea",
-        "Guanaco"
+        "Peregrine Falcon",
+        "Lesser Kestrel"
       ],
       "evidence": [
         {
-          "zoo": "Audubon Zoo",
-          "country": "United States",
-          "date": "2021-06-24"
+          "zoo": "Parc des Oiseaux",
+          "country": "France",
+          "date": "2016"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Saker Falcon",
+        "Lesser Kestrel"
+      ],
+      "evidence": [
+        {
+          "zoo": "Parc des Oiseaux",
+          "country": "France",
+          "date": "2016"
         }
       ]
     },
@@ -21282,7 +23685,13 @@
         "Linnaeus's Two-Toed Sloth",
         "Red Titi"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZSL London Zoo",
+          "country": "United Kingdom",
+          "date": "2014-06-24"
+        }
+      ]
     },
     {
       "animals": [
@@ -21363,10 +23772,23 @@
     },
     {
       "animals": [
+        "Senegal Bushbaby",
+        "Linnaeus's Two-Toed Sloth"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
         "Linnaeus's Two-Toed Sloth",
         "Six-Banded Armadillo"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Memphis Zoo",
+          "country": "United States",
+          "date": "2025-10-02"
+        }
+      ]
     },
     {
       "animals": [
@@ -21408,6 +23830,24 @@
     },
     {
       "animals": [
+        "Western Woylie",
+        "Linnaeus's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort De Nacht,",
+          "country": "Netherlands",
+          "date": "undated"
+        },
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2025"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Linnaeus's Two-Toed Sloth",
         "White-Faced Saki"
       ],
@@ -21421,8 +23861,8 @@
     },
     {
       "animals": [
-        "Little Corella",
-        "Galah"
+        "Long-Billed Corella",
+        "Little Corella"
       ],
       "evidence": []
     },
@@ -21456,23 +23896,22 @@
     {
       "animals": [
         "Long-Billed Corella",
-        "Galah"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Long-Billed Corella",
-        "Little Corella"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Long-Billed Corella",
         "Palm Cockatoo"
       ],
       "evidence": []
+    },
+    {
+      "animals": [
+        "Tawny Owl",
+        "Long-Eared Owl"
+      ],
+      "evidence": [
+        {
+          "zoo": "Alpenzoo Innsbruck",
+          "country": "Austria",
+          "date": "2015"
+        }
+      ]
     },
     {
       "animals": [
@@ -21484,32 +23923,6 @@
     {
       "animals": [
         "Long-Nosed Potoroo",
-        "Galah"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dierenpark Wissel / Blackpool Zoo",
-          "country": "United Kingdom",
-          "date": "undated"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Long-Nosed Potoroo",
-        "Laughing Kookaburra"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Duisburg",
-          "country": "Germany",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Long-Nosed Potoroo",
         "Short-Beaked Echidna"
       ],
       "evidence": [
@@ -21517,6 +23930,29 @@
           "zoo": "Paignton Zoo",
           "country": "unknown",
           "date": "undated"
+        },
+        {
+          "zoo": "Paignton Zoo",
+          "country": "United Kingdom",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Western Woylie",
+        "Long-Nosed Potoroo"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort De Nacht,",
+          "country": "Netherlands",
+          "date": "undated"
+        },
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2025"
         }
       ]
     },
@@ -21537,13 +23973,6 @@
           "date": "2021-05-09"
         }
       ]
-    },
-    {
-      "animals": [
-        "Lyle's Flying Fox",
-        "Aardvark"
-      ],
-      "evidence": []
     },
     {
       "animals": [
@@ -21604,6 +24033,19 @@
           "zoo": "Tierpark Hellabrunn",
           "country": "Germany",
           "date": "2021-04"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Visayan Warty Pig",
+        "Malayan Tapir"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "unknown",
+          "date": "2021"
         }
       ]
     },
@@ -21715,24 +24157,6 @@
     {
       "animals": [
         "Maned Wolf",
-        "African Spurred Tortoise"
-      ],
-      "evidence": [
-        {
-          "zoo": "Houston Zoo",
-          "country": "United States",
-          "date": "2018-10-23"
-        },
-        {
-          "zoo": "Houston Zoo",
-          "country": "United States",
-          "date": "2020-05-26"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Maned Wolf",
         "Tufted Capuchin"
       ],
       "evidence": [
@@ -21740,6 +24164,24 @@
           "zoo": "CERZA Parc Zoologique Lisieux",
           "country": "France",
           "date": "2018-10-23"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Patas Monkey",
+        "Mantled Guereza"
+      ],
+      "evidence": [
+        {
+          "zoo": "CERZA",
+          "country": "unknown",
+          "date": "undated"
+        },
+        {
+          "zoo": "CERZA",
+          "country": "France",
+          "date": "2025"
         }
       ]
     },
@@ -21766,6 +24208,19 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2022-06-15"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Ring-Tailed Lemur",
+        "Mantled Guereza"
+      ],
+      "evidence": [
+        {
+          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
+          "country": "unknown",
+          "date": "2011"
         }
       ]
     },
@@ -21801,191 +24256,6 @@
         "Western Lowland Gorilla"
       ],
       "evidence": []
-    },
-    {
-      "animals": [
-        "Marabou Stork",
-        "Addax"
-      ],
-      "evidence": [
-        {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2019"
-        },
-        {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022"
-        },
-        {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022-06-15"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Marabou Stork",
-        "African Sacred Ibis"
-      ],
-      "evidence": [
-        {
-          "zoo": "Bioparc Valencia",
-          "country": "Spain",
-          "date": "undated"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Marabou Stork",
-        "Bearded Vulture"
-      ],
-      "evidence": [
-        {
-          "zoo": "Magdeburg Zoo",
-          "country": "Germany",
-          "date": "2023"
-        },
-        {
-          "zoo": "Zoologischer Garten Magdeburg",
-          "country": "Germany",
-          "date": "2023"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Marabou Stork",
-        "Black Crowned Crane"
-      ],
-      "evidence": [
-        {
-          "zoo": "Parc Zoologique de Paris",
-          "country": "France",
-          "date": "2024"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Marabou Stork",
-        "Black Kite"
-      ],
-      "evidence": [
-        {
-          "zoo": "Rotterdam Zoo",
-          "country": "Netherlands",
-          "date": "2021"
-        },
-        {
-          "zoo": "Diergaarde Blijdorp",
-          "country": "Netherlands",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Marabou Stork",
-        "Blue Wildebeest"
-      ],
-      "evidence": [
-        {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2019"
-        },
-        {
-          "zoo": "ZOO Antwerpen",
-          "country": "Belgium",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Marabou Stork",
-        "Dama Gazelle"
-      ],
-      "evidence": [
-        {
-          "zoo": "Parc Zoologique de Paris",
-          "country": "France",
-          "date": "2024"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Marabou Stork",
-        "Grey Crowned Crane"
-      ],
-      "evidence": [
-        {
-          "zoo": "Parc Zoologique de Paris",
-          "country": "France",
-          "date": "2024"
-        },
-        {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Montgomery Zoo and Mann Wildlife Learning Museum",
-          "country": "United States",
-          "date": "2022"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Marabou Stork",
-        "Hamerkop"
-      ],
-      "evidence": [
-        {
-          "zoo": "Rotterdam Zoo",
-          "country": "Netherlands",
-          "date": "2021"
-        },
-        {
-          "zoo": "Diergaarde Blijdorp",
-          "country": "Netherlands",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Marabou Stork",
-        "Hooded Vulture"
-      ],
-      "evidence": [
-        {
-          "zoo": "Rotterdam Zoo",
-          "country": "Netherlands",
-          "date": "2021"
-        },
-        {
-          "zoo": "Diergaarde Blijdorp",
-          "country": "Netherlands",
-          "date": "2021"
-        }
-      ]
     },
     {
       "animals": [
@@ -22303,6 +24573,19 @@
     },
     {
       "animals": [
+        "Mishmi Takin",
+        "Markhor"
+      ],
+      "evidence": [
+        {
+          "zoo": "Réserve zoologique de la Haute-Touche",
+          "country": "France",
+          "date": "2017"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Masai Giraffe",
         "Meerkat"
       ],
@@ -22381,13 +24664,6 @@
       "animals": [
         "Mata-Mata",
         "Yacare Caiman"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Matschie's Tree-Kangaroo",
-        "Blue-Winged Kookaburra"
       ],
       "evidence": []
     },
@@ -22623,6 +24899,13 @@
           "date": "2018"
         }
       ]
+    },
+    {
+      "animals": [
+        "Senegal Bushbaby",
+        "Meerkat"
+      ],
+      "evidence": []
     },
     {
       "animals": [
@@ -22883,45 +25166,6 @@
     {
       "animals": [
         "Mishmi Takin",
-        "Bactrian Camel"
-      ],
-      "evidence": [
-        {
-          "zoo": "Kolmården Wildlife Park visitor-documented",
-          "country": "unknown",
-          "date": "2022"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Mishmi Takin",
-        "Himalayan Tahr"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2008"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Mishmi Takin",
-        "Markhor"
-      ],
-      "evidence": [
-        {
-          "zoo": "Réserve zoologique de la Haute-Touche",
-          "country": "France",
-          "date": "2017"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Mishmi Takin",
         "Nepalese Red Panda"
       ],
       "evidence": [
@@ -22960,6 +25204,19 @@
     },
     {
       "animals": [
+        "Visayan Warty Pig",
+        "Mishmi Takin"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "unknown",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Mishmi Takin",
         "White-Naped Crane"
       ],
@@ -22968,6 +25225,19 @@
           "zoo": "Réserve zoologique de la Haute-Touche",
           "country": "France",
           "date": "2017"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Ural Owl",
+        "Monk Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Alpenzoo Innsbruck",
+          "country": "Austria",
+          "date": "2012"
         }
       ]
     },
@@ -23002,21 +25272,52 @@
         "Mouflon",
         "Nilgai"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Mouflon",
         "Sambar"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
         "Mouflon",
         "Sika Deer"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Wild Boar",
+        "Mouflon"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -23143,6 +25444,19 @@
     },
     {
       "animals": [
+        "Plains Zebra",
+        "Nile Lechwe"
+      ],
+      "evidence": [
+        {
+          "zoo": "Monde Sauvage Safari Parc",
+          "country": "Belgium",
+          "date": "2022-06-15"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Nile Lechwe",
         "Pygmy Hippopotamus"
       ],
@@ -23169,10 +25483,36 @@
     },
     {
       "animals": [
+        "Reticulated Giraffe",
+        "Nile Lechwe"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Rothschild's Giraffe",
+        "Nile Lechwe"
+      ],
+      "evidence": [
+        {
+          "zoo": "Monde Sauvage Safari Parc",
+          "country": "Belgium",
+          "date": "2022-06-15"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Nilgai",
         "Sambar"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -23189,10 +25529,42 @@
     },
     {
       "animals": [
+        "Visayan Warty Pig",
+        "Nilgai"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "unknown",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Wild Boar",
+        "Nilgai"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
+    },
+    {
+      "animals": [
         "North American Porcupine",
         "Striped Skunk"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoo Braunschweig 'Arche Noah'",
+          "country": "Germany",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
@@ -23286,22 +25658,44 @@
           "zoo": "ZooRope",
           "country": "United Kingdom",
           "date": "undated"
+        },
+        {
+          "zoo": "Newquay Zoo",
+          "country": "United Kingdom",
+          "date": "2020"
         }
       ]
     },
     {
       "animals": [
-        "Nubian Vulture",
-        "Cape Vulture"
+        "Saddle-Billed Stork",
+        "Nubian Vulture"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Cincinnati Zoo Savanna",
+          "country": "United States",
+          "date": "2019"
+        },
+        {
+          "zoo": "Cincinnati Zoo",
+          "country": "United States",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
-        "Nubian Vulture",
-        "Griffon Vulture"
+        "Wattled Crane",
+        "Nubian Vulture"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Cotswold Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
@@ -23400,19 +25794,6 @@
     {
       "animals": [
         "Oriental Stork",
-        "Black-Headed Ibis"
-      ],
-      "evidence": [
-        {
-          "zoo": "Planckendael",
-          "country": "Belgium",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Oriental Stork",
         "Yellow-Billed Stork"
       ],
       "evidence": [
@@ -23473,6 +25854,24 @@
     },
     {
       "animals": [
+        "Yellow Mongoose",
+        "Palm-Nut Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "Germany",
+          "date": "undated"
+        },
+        {
+          "zoo": "Zoologischer Garten Magdeburg",
+          "country": "Germany",
+          "date": "2020-05-10"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Parma Wallaby",
         "Patagonian Mara"
       ],
@@ -23487,20 +25886,6 @@
     {
       "animals": [
         "Patagonian Mara",
-        "Common Squirrel Monkey"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Patagonian Mara",
-        "Green Iguana"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Patagonian Mara",
         "Pond Slider"
       ],
       "evidence": []
@@ -23510,21 +25895,39 @@
         "Patagonian Mara",
         "Red-Footed Tortoise"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Brandywine Zoo",
+          "country": "United States",
+          "date": "2026-07-23"
+        }
+      ]
     },
     {
       "animals": [
         "Patagonian Mara",
         "Roseate Spoonbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Brevard Zoo",
+          "country": "United States",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
         "Patagonian Mara",
         "Scarlet Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Cameron Park Zoo",
+          "country": "United States",
+          "date": "2010-08-15"
+        }
+      ]
     },
     {
       "animals": [
@@ -23615,104 +26018,6 @@
     },
     {
       "animals": [
-        "Patas Monkey",
-        "Barbary Macaque"
-      ],
-      "evidence": [
-        {
-          "zoo": "Woburn Safari Park Monkey Forest,",
-          "country": "unknown",
-          "date": "2011"
-        },
-        {
-          "zoo": "Woburn Safari Park",
-          "country": "United Kingdom",
-          "date": "2012"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Patas Monkey",
-        "Bongo"
-      ],
-      "evidence": [
-        {
-          "zoo": "Woburn Safari Park Monkey Forest,",
-          "country": "unknown",
-          "date": "2011"
-        },
-        {
-          "zoo": "Woburn Safari Park",
-          "country": "United Kingdom",
-          "date": "2012"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Patas Monkey",
-        "Common Warthog"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope pig review",
-          "country": "Hungary",
-          "date": "undated"
-        },
-        {
-          "zoo": "Xantus János Zoo",
-          "country": "Hungary",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Patas Monkey",
-        "Mantled Guereza"
-      ],
-      "evidence": [
-        {
-          "zoo": "CERZA",
-          "country": "unknown",
-          "date": "undated"
-        },
-        {
-          "zoo": "CERZA",
-          "country": "France",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Peregrine Falcon",
-        "Lanner Falcon"
-      ],
-      "evidence": [
-        {
-          "zoo": "Parc des Oiseaux",
-          "country": "France",
-          "date": "2016"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Peregrine Falcon",
-        "Lesser Kestrel"
-      ],
-      "evidence": [
-        {
-          "zoo": "Parc des Oiseaux",
-          "country": "France",
-          "date": "2016"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Peregrine Falcon",
         "Saker Falcon"
       ],
@@ -23747,19 +26052,6 @@
           "zoo": "Loro Parque",
           "country": "Spain",
           "date": "2022"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Pink Cockatoo",
-        "Galah"
-      ],
-      "evidence": [
-        {
-          "zoo": "Weltvogelpark Walsrode",
-          "country": "Germany",
-          "date": "2019"
         }
       ]
     },
@@ -23818,46 +26110,6 @@
         {
           "zoo": "ZooParc de Beauval",
           "country": "France",
-          "date": "2022-06-15"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Plains Viscacha",
-        "Burrowing Owl"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Plains Zebra",
-        "Blesbok"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Plains Zebra",
-        "Gemsbok"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Plains Zebra",
-        "Nile Lechwe"
-      ],
-      "evidence": [
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
           "date": "2022-06-15"
         }
       ]
@@ -24111,14 +26363,26 @@
         "Pond Slider",
         "Roseate Spoonbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine Algarve",
+          "country": "Portugal",
+          "date": "2023"
+        }
+      ]
     },
     {
       "animals": [
         "Pond Slider",
         "Scarlet Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine Algarve",
+          "country": "Portugal",
+          "date": "2023"
+        }
+      ]
     },
     {
       "animals": [
@@ -24158,22 +26422,27 @@
     {
       "animals": [
         "Prevost's Squirrel",
-        "Elongated Tortoise"
-      ],
-      "evidence": [
-        {
-          "zoo": "Diergaarde Blijdorp",
-          "country": "Netherlands",
-          "date": "2009"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Prevost's Squirrel",
         "White-Faced Saki"
       ],
       "evidence": []
+    },
+    {
+      "animals": [
+        "Père David's Deer",
+        "Przewalski's Horse"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen Asian safari",
+          "country": "Netherlands",
+          "date": "undated"
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "date": "2021"
+        }
+      ]
     },
     {
       "animals": [
@@ -24471,14 +26740,13 @@
         "Pygmy Marmoset",
         "White-Faced Saki"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Pygmy Slow Loris",
-        "Javan Chevrotain"
-      ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZooParc de Beauval",
+          "country": "France",
+          "date": "2021"
+        }
+      ]
     },
     {
       "animals": [
@@ -24493,68 +26761,6 @@
         "Senegal Bushbaby"
       ],
       "evidence": []
-    },
-    {
-      "animals": [
-        "Père David's Deer",
-        "Bactrian Camel"
-      ],
-      "evidence": [
-        {
-          "zoo": "Whipsnade Zoo",
-          "country": "United Kingdom",
-          "date": "undated"
-        },
-        {
-          "zoo": "ZSL Whipsnade Zoo",
-          "country": "United Kingdom",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Père David's Deer",
-        "Blackbuck"
-      ],
-      "evidence": [
-        {
-          "zoo": "Safaripark Beekse Bergen Asian safari",
-          "country": "Netherlands",
-          "date": "undated"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Père David's Deer",
-        "Indian Rhinoceros"
-      ],
-      "evidence": [
-        {
-          "zoo": "Omaha Henry Doorly Zoo Asian Highlands",
-          "country": "United States",
-          "date": "2023"
-        },
-        {
-          "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
-          "country": "United States",
-          "date": "2023"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Père David's Deer",
-        "Przewalski's Horse"
-      ],
-      "evidence": [
-        {
-          "zoo": "Safaripark Beekse Bergen Asian safari",
-          "country": "Netherlands",
-          "date": "undated"
-        }
-      ]
     },
     {
       "animals": [
@@ -24742,30 +26948,29 @@
     },
     {
       "animals": [
-        "Red Ruffed Lemur",
-        "Blue Duiker"
-      ],
-      "evidence": [
-        {
-          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
-          "country": "unknown",
-          "date": "2011"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Red Squirrel",
         "Striped Skunk"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Tropical Wings Zoo",
+          "country": "United Kingdom",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
         "Red Titi",
         "Red-Footed Tortoise"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZSL London Zoo",
+          "country": "United Kingdom",
+          "date": "2014-06-24"
+        }
+      ]
     },
     {
       "animals": [
@@ -24779,7 +26984,13 @@
         "Red Titi",
         "Southern Tamandua"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZSL London Zoo",
+          "country": "United Kingdom",
+          "date": "2014-06-24"
+        }
+      ]
     },
     {
       "animals": [
@@ -24868,23 +27079,28 @@
     {
       "animals": [
         "Red-Crested Turaco",
-        "African Spoonbill"
+        "Roloway Monkey"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Ouwehands Dierenpark",
+          "country": "Netherlands",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
         "Red-Crested Turaco",
-        "Glossy Ibis"
+        "Sunbittern"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Red-Crested Turaco",
-        "Hamerkop"
-      ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Cotswold Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2004-07-27"
+        }
+      ]
     },
     {
       "animals": [
@@ -24934,6 +27150,13 @@
     },
     {
       "animals": [
+        "Rodriguez Flying Fox",
+        "Red-Faced Spider Monkey"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
         "Red-Footed Tortoise",
         "Rodriguez Flying Fox"
       ],
@@ -24957,7 +27180,13 @@
         "Red-Footed Tortoise",
         "Southern Tamandua"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZSL London Zoo",
+          "country": "United Kingdom",
+          "date": "2014-06-24"
+        }
+      ]
     },
     {
       "animals": [
@@ -24977,47 +27206,13 @@
         "Red-Footed Tortoise",
         "White-Faced Saki"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Red-Fronted Lemur",
-        "Aldabra Giant Tortoise"
-      ],
       "evidence": [
         {
-          "zoo": "Bioparc Valencia",
-          "country": "Spain",
-          "date": "2019"
+          "zoo": "Zoo de Lille",
+          "country": "France",
+          "date": "2018"
         }
       ]
-    },
-    {
-      "animals": [
-        "Red-Fronted Lemur",
-        "Cotton-Top Tamarin"
-      ],
-      "evidence": [
-        {
-          "zoo": "Ziegler",
-          "country": "unknown",
-          "date": "2000"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Red-Headed Vulture",
-        "Black Vulture"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Red-Headed Vulture",
-        "Himalayan Vulture"
-      ],
-      "evidence": []
     },
     {
       "animals": [
@@ -25031,7 +27226,13 @@
         "Red-Legged Seriema",
         "Scarlet Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine Algarve",
+          "country": "Portugal",
+          "date": "2023"
+        }
+      ]
     },
     {
       "animals": [
@@ -25051,14 +27252,26 @@
         "Red-Legged Seriema",
         "Sunbittern"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "GaiaPark Kerkrade Zoo",
+          "country": "Netherlands",
+          "date": "2006"
+        }
+      ]
     },
     {
       "animals": [
         "Red-Rumped Agouti",
         "Scarlet Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Cameron Park Zoo",
+          "country": "United States",
+          "date": "2010-08-15"
+        }
+      ]
     },
     {
       "animals": [
@@ -25072,7 +27285,13 @@
         "Red-Shouldered Macaw",
         "Scarlet Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -25090,22 +27309,33 @@
     },
     {
       "animals": [
-        "Reticulated Giraffe",
-        "Gemsbok"
+        "Visayan Warty Pig",
+        "Reeve's Muntjac"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Reticulated Giraffe",
-        "Nile Lechwe"
-      ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "unknown",
+          "date": "2021"
+        },
+        {
+          "zoo": "Zoo Basel",
+          "country": "Switzerland",
+          "date": "2020-06-12"
+        }
+      ]
     },
     {
       "animals": [
         "Reticulated Giraffe",
         "Silvery-Cheeked Hornbill"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Southern Ground Hornbill",
+        "Reticulated Giraffe"
       ],
       "evidence": []
     },
@@ -25175,29 +27405,10 @@
     },
     {
       "animals": [
-        "Ring-Tailed Lemur",
-        "Blue Duiker"
+        "Tawny Owl",
+        "Ring-Necked Pheasant"
       ],
-      "evidence": [
-        {
-          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
-          "country": "unknown",
-          "date": "2011"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Ring-Tailed Lemur",
-        "Mantled Guereza"
-      ],
-      "evidence": [
-        {
-          "zoo": "AZA Prosimian TAG Mixed-Species Manual",
-          "country": "unknown",
-          "date": "2011"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -25221,70 +27432,6 @@
           "zoo": "Royal Burgers' Zoo",
           "country": "Netherlands",
           "date": "2020-06-12"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Rock Hyrax",
-        "Aardwolf"
-      ],
-      "evidence": [
-        {
-          "zoo": "Cincinnati Zoo & Botanical Garden",
-          "country": "United States",
-          "date": "2018"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Rock Hyrax",
-        "African Brush-Tailed Porcupine"
-      ],
-      "evidence": [
-        {
-          "zoo": "Omaha's Henry Doorly Zoo",
-          "country": "United States",
-          "date": "2022"
-        },
-        {
-          "zoo": "Randers Regnskov",
-          "country": "Denmark",
-          "date": "2022-11-12"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Rock Hyrax",
-        "Fennec Fox"
-      ],
-      "evidence": [
-        {
-          "zoo": "Pittsburgh Zoo & PPG Aquarium",
-          "country": "United States",
-          "date": "2022-11-12"
-        },
-        {
-          "zoo": "ZOO Dvůr Králové",
-          "country": "Czech Republic",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Brookfield Zoo",
-          "country": "United States",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "ZOO Dvůr Králové",
-          "country": "Czech Republic",
-          "date": "2018"
-        },
-        {
-          "zoo": "Brookfield Zoo",
-          "country": "United States",
-          "date": "2018"
         }
       ]
     },
@@ -25330,65 +27477,15 @@
     {
       "animals": [
         "Rodriguez Flying Fox",
-        "Aldabra Giant Tortoise"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Rodriguez Flying Fox",
-        "Cotton-Top Tamarin"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Rodriguez Flying Fox",
-        "Emperor Tamarin"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Rodriguez Flying Fox",
-        "Golden Lion Tamarin"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Rodriguez Flying Fox",
-        "Grey Crowned Crane"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Rodriguez Flying Fox",
-        "Hippopotamus"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Rodriguez Flying Fox",
-        "Large Hairy Armadillo"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Rodriguez Flying Fox",
-        "Red-Faced Spider Monkey"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Rodriguez Flying Fox",
         "Scarlet Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Central Park Wildlife Center",
+          "country": "United States",
+          "date": "2004"
+        }
+      ]
     },
     {
       "animals": [
@@ -25409,14 +27506,26 @@
         "Rodriguez Flying Fox",
         "Sunbittern"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Central Park Wildlife Center",
+          "country": "United States",
+          "date": "2004"
+        }
+      ]
     },
     {
       "animals": [
         "Rodriguez Flying Fox",
         "Violet Turaco"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Central Park Wildlife Center",
+          "country": "United States",
+          "date": "2004"
+        }
+      ]
     },
     {
       "animals": [
@@ -25451,14 +27560,13 @@
         "Roseate Spoonbill",
         "Scarlet Macaw"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Ross's Turaco",
-        "Common Squirrel Monkey"
-      ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
     },
     {
       "animals": [
@@ -25469,16 +27577,10 @@
     },
     {
       "animals": [
-        "Rothschild's Giraffe",
-        "Nile Lechwe"
+        "Saddle-Billed Stork",
+        "Rothschild's Giraffe"
       ],
-      "evidence": [
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -25537,70 +27639,6 @@
     },
     {
       "animals": [
-        "Rüppell's Vulture",
-        "Grey Crowned Crane"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Saddle-Billed Stork",
-        "Blesbok"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Saddle-Billed Stork",
-        "Common Waterbuck"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Saddle-Billed Stork",
-        "Grey Crowned Crane"
-      ],
-      "evidence": [
-        {
-          "zoo": "Cincinnati Zoo Savanna",
-          "country": "United States",
-          "date": "2019"
-        },
-        {
-          "zoo": "Cincinnati Zoo",
-          "country": "United States",
-          "date": "2019"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Saddle-Billed Stork",
-        "Nubian Vulture"
-      ],
-      "evidence": [
-        {
-          "zoo": "Cincinnati Zoo Savanna",
-          "country": "United States",
-          "date": "2019"
-        },
-        {
-          "zoo": "Cincinnati Zoo",
-          "country": "United States",
-          "date": "2019"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Saddle-Billed Stork",
-        "Rothschild's Giraffe"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Saddle-Billed Stork",
         "Rüppell's Vulture"
       ],
@@ -25619,6 +27657,26 @@
     },
     {
       "animals": [
+        "Yellow Mongoose",
+        "Rüppell's Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "Germany",
+          "date": "undated"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Rüppell's Vulture"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
         "Saddle-Billed Stork",
         "Thompson's Gazelle"
       ],
@@ -25626,14 +27684,14 @@
     },
     {
       "animals": [
-        "Saker Falcon",
-        "Lesser Kestrel"
+        "Wattled Crane",
+        "Saddle-Billed Stork"
       ],
       "evidence": [
         {
-          "zoo": "Parc des Oiseaux",
-          "country": "France",
-          "date": "2016"
+          "zoo": "Cotswold Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2010"
         }
       ]
     },
@@ -25642,7 +27700,26 @@
         "Sambar",
         "Sika Deer"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Wild Boar",
+        "Sambar"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -25677,14 +27754,39 @@
         "Scarlet Ibis",
         "Scarlet Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Violet Turaco",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Central Park Wildlife Center",
+          "country": "United States",
+          "date": "2004"
+        }
+      ]
     },
     {
       "animals": [
         "Scarlet Macaw",
         "Sunbittern"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
     },
     {
       "animals": [
@@ -25783,31 +27885,16 @@
     },
     {
       "animals": [
-        "Senegal Bushbaby",
-        "African Brush-Tailed Porcupine"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Senegal Bushbaby",
-        "Linnaeus's Two-Toed Sloth"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Senegal Bushbaby",
-        "Meerkat"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Serval",
         "Zebu"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Tierpark Nadermann",
+          "country": "Germany",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
@@ -25822,6 +27909,39 @@
         "Tasmanian Devil"
       ],
       "evidence": []
+    },
+    {
+      "animals": [
+        "Sumatran Orangutan",
+        "Siamang"
+      ],
+      "evidence": []
+    },
+    {
+      "animals": [
+        "Visayan Warty Pig",
+        "Sichuan Takin"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope",
+          "country": "unknown",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Wild Boar",
+        "Sika Deer"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo Safari Park",
+          "country": "United States",
+          "date": "2021-05-09"
+        }
+      ]
     },
     {
       "animals": [
@@ -25907,32 +28027,6 @@
     {
       "animals": [
         "Somali Wild Ass",
-        "Common Warthog"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope Suidae review exact",
-          "country": "unknown",
-          "date": "undated"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Somali Wild Ass",
-        "Grévy's Zebra"
-      ],
-      "evidence": [
-        {
-          "zoo": "Cologne Zoo",
-          "country": "unknown",
-          "date": "2005"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Somali Wild Ass",
         "Southern Ground Hornbill"
       ],
       "evidence": [
@@ -25940,29 +28034,6 @@
           "zoo": "Basel Zoo husbandry paper",
           "country": "unknown",
           "date": "undated"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "South American Coati",
-        "Giant Anteater"
-      ],
-      "evidence": [
-        {
-          "zoo": "Loro Parque",
-          "country": "Spain",
-          "date": "2019"
-        },
-        {
-          "zoo": "Yorkshire Wildlife Park",
-          "country": "United Kingdom",
-          "date": "2019-01-30"
-        },
-        {
-          "zoo": "Loro Parque",
-          "country": "Spain",
-          "date": "2019-01-30"
         }
       ]
     },
@@ -26204,6 +28275,29 @@
     },
     {
       "animals": [
+        "White-Lipped Peccary",
+        "South American Coati"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooRope peccary review",
+          "country": "Belgium",
+          "date": "undated"
+        },
+        {
+          "zoo": "ZOO Planckendael",
+          "country": "Belgium",
+          "date": "2020"
+        },
+        {
+          "zoo": "ZOO Planckendael",
+          "country": "Belgium",
+          "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
         "South American Coati",
         "White-Nosed Coati"
       ],
@@ -26246,47 +28340,6 @@
         "Spotted Seal"
       ],
       "evidence": []
-    },
-    {
-      "animals": [
-        "South American Tapir",
-        "Guanaco"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoologischer Garten Schwerin",
-          "country": "Germany",
-          "date": "2021"
-        },
-        {
-          "zoo": "Audubon Zoo",
-          "country": "United States",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "Copenhagen Zoo",
-          "country": "Denmark",
-          "date": "2020"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "South American Tapir",
-        "Jabiru"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        }
-      ]
     },
     {
       "animals": [
@@ -26409,41 +28462,6 @@
     },
     {
       "animals": [
-        "Southern Cassowary",
-        "Asian Small-Clawed Otter"
-      ],
-      "evidence": [
-        {
-          "zoo": "Bioparc Fuengirola",
-          "country": "Spain",
-          "date": "undated"
-        },
-        {
-          "zoo": "Bioparc Fuengirola",
-          "country": "Spain",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Bioparc Fuengirola",
-          "country": "Spain",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Bioparc Fuengirola",
-          "country": "Spain",
-          "date": "2020"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Southern Ground Hornbill",
-        "Reticulated Giraffe"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Southern Pudu",
         "Toco Toucan"
       ],
@@ -26487,76 +28505,6 @@
           "date": "2018"
         }
       ]
-    },
-    {
-      "animals": [
-        "Spectacled Bear",
-        "Black Howler Monkey"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Frankfurt",
-          "country": "Germany",
-          "date": "2012-04-12"
-        },
-        {
-          "zoo": "Jersey Zoo",
-          "country": "Jersey",
-          "date": "2012-04-12"
-        },
-        {
-          "zoo": "Jersey Zoo",
-          "country": "Jersey",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoo Frankfurt",
-          "country": "Germany",
-          "date": "2020-05-05"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Spectacled Bear",
-        "Black-Capped Capuchin"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Spectacled Bear",
-        "Bolivian Squirrel Monkey"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZOO Antwerpen",
-          "country": "Belgium",
-          "date": "2012-04-12"
-        },
-        {
-          "zoo": "Bioparc de Doué-la-Fontaine",
-          "country": "France",
-          "date": "2012-04-12"
-        },
-        {
-          "zoo": "ZOO Antwerpen",
-          "country": "Belgium",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Bioparc de Doué-la-Fontaine",
-          "country": "France",
-          "date": "2020-05-05"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Spectacled Bear",
-        "Common Squirrel Monkey"
-      ],
-      "evidence": []
     },
     {
       "animals": [
@@ -26633,74 +28581,6 @@
     },
     {
       "animals": [
-        "Sugar Glider",
-        "Four-Toed Hedgehog"
-      ],
-      "evidence": [
-        {
-          "zoo": "Taman Safari Bogor",
-          "country": "Indonesia",
-          "date": "2024"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Sumatran Orangutan",
-        "Asian Small-Clawed Otter"
-      ],
-      "evidence": [
-        {
-          "zoo": "Tierpark Hagenbeck",
-          "country": "Germany",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Pairi Daiza",
-          "country": "Belgium",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoo d'Amnéville",
-          "country": "France",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Chester Zoo",
-          "country": "United Kingdom",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Jersey Zoo",
-          "country": "Channel Islands",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoo La Boissière du Doré",
-          "country": "France",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Fort Worth Zoo",
-          "country": "United States",
-          "date": "2020-06-12"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Sumatran Orangutan",
-        "Siamang"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Sumatran Orangutan",
         "White-Handed Gibbon"
       ],
@@ -26743,23 +28623,15 @@
     {
       "animals": [
         "Tawny Owl",
-        "Long-Eared Owl"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Tawny Owl",
-        "Ring-Necked Pheasant"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Tawny Owl",
         "Western Barn Owl"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
@@ -26831,7 +28703,13 @@
         "Trumpeter Hornbill",
         "Von Der Decken's Hornbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
     },
     {
       "animals": [
@@ -26848,30 +28726,29 @@
     },
     {
       "animals": [
-        "Ural Owl",
-        "Monk Vulture"
+        "Visayan Warty Pig",
+        "Tufted Deer"
       ],
       "evidence": [
         {
-          "zoo": "Alpenzoo Innsbruck",
-          "country": "Austria",
-          "date": "2012"
+          "zoo": "ZooRope",
+          "country": "unknown",
+          "date": "2021"
         }
       ]
     },
     {
       "animals": [
         "Violet Turaco",
-        "Scarlet Ibis"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Violet Turaco",
         "Von Der Decken's Hornbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
     },
     {
       "animals": [
@@ -26895,191 +28772,16 @@
     },
     {
       "animals": [
-        "Visayan Warty Pig",
-        "Asian Small-Clawed Otter"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
-        },
-        {
-          "zoo": "Zoo Basel",
-          "country": "Switzerland",
-          "date": "2020-06-12"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Visayan Warty Pig",
-        "Blackbuck"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Visayan Warty Pig",
-        "Common Hog Deer"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Visayan Warty Pig",
-        "Golden Takin"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Visayan Warty Pig",
-        "Indian Rhinoceros"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Visayan Warty Pig",
-        "Malayan Tapir"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Visayan Warty Pig",
-        "Mishmi Takin"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Visayan Warty Pig",
-        "Nilgai"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Visayan Warty Pig",
-        "Reeve's Muntjac"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
-        },
-        {
-          "zoo": "Zoo Basel",
-          "country": "Switzerland",
-          "date": "2020-06-12"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Visayan Warty Pig",
-        "Sichuan Takin"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Visayan Warty Pig",
-        "Tufted Deer"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Von Der Decken's Hornbill",
         "White-Crested Turaco"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Wattled Crane",
-        "Cape Vulture"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Wattled Crane",
-        "Hamerkop"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Wattled Crane",
-        "Nubian Vulture"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Wattled Crane",
-        "Saddle-Billed Stork"
-      ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
     },
     {
       "animals": [
@@ -27087,80 +28789,6 @@
         "Yemen Chameleon"
       ],
       "evidence": []
-    },
-    {
-      "animals": [
-        "Western Woylie",
-        "African Brush-Tailed Porcupine"
-      ],
-      "evidence": [
-        {
-          "zoo": "DierenPark Amersfoort De Nacht,",
-          "country": "Netherlands",
-          "date": "undated"
-        },
-        {
-          "zoo": "DierenPark Amersfoort",
-          "country": "Netherlands",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Western Woylie",
-        "Grey-Handed Night Monkey"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Western Woylie",
-        "Linnaeus's Two-Toed Sloth"
-      ],
-      "evidence": [
-        {
-          "zoo": "DierenPark Amersfoort De Nacht,",
-          "country": "Netherlands",
-          "date": "undated"
-        },
-        {
-          "zoo": "DierenPark Amersfoort",
-          "country": "Netherlands",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Western Woylie",
-        "Long-Nosed Potoroo"
-      ],
-      "evidence": [
-        {
-          "zoo": "DierenPark Amersfoort De Nacht,",
-          "country": "Netherlands",
-          "date": "undated"
-        },
-        {
-          "zoo": "DierenPark Amersfoort",
-          "country": "Netherlands",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "White Rhinoceros",
-        "Grey Crowned Crane"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
-        }
-      ]
     },
     {
       "animals": [
@@ -27198,192 +28826,6 @@
       "animals": [
         "White-Faced Saki",
         "Yellow-Spotted Amazon River Turtle"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "White-Lipped Peccary",
-        "South American Coati"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope peccary review",
-          "country": "Belgium",
-          "date": "undated"
-        },
-        {
-          "zoo": "ZOO Planckendael",
-          "country": "Belgium",
-          "date": "2020"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "White-Tailed Eagle",
-        "Common Raven"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Wild Boar",
-        "Indian Muntjac"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Wild Boar",
-        "Indian Rhinoceros"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Wild Boar",
-        "Indian Swamp Deer"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Wild Boar",
-        "Mouflon"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Wild Boar",
-        "Nilgai"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Wild Boar",
-        "Sambar"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Wild Boar",
-        "Sika Deer"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Yellow Anaconda",
-        "Burmese Python"
-      ],
-      "evidence": [
-        {
-          "zoo": "Ulm Zoo",
-          "country": "Germany",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Yellow Mongoose",
-        "Hooded Vulture"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "Germany",
-          "date": "undated"
-        },
-        {
-          "zoo": "Zoologischer Garten Magdeburg",
-          "country": "Germany",
-          "date": "2020-05-10"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Yellow Mongoose",
-        "Indian Crested Porcupine"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dierenpark Zie-ZOO",
-          "country": "Netherlands",
-          "date": "2018"
-        },
-        {
-          "zoo": "Zoo de Lille",
-          "country": "France",
-          "date": "2018"
-        },
-        {
-          "zoo": "Zoo de Bordeaux Pessac",
-          "country": "France",
-          "date": "2018"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Yellow Mongoose",
-        "Palm-Nut Vulture"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "Germany",
-          "date": "undated"
-        },
-        {
-          "zoo": "Zoologischer Garten Magdeburg",
-          "country": "Germany",
-          "date": "2020-05-10"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Yellow Mongoose",
-        "Rüppell's Vulture"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "Germany",
-          "date": "undated"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Yellow-Billed Stork",
-        "Hooded Vulture"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooParc de Beauval",
-          "country": "France",
-          "date": "2022-06-15"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Yellow-Billed Stork",
-        "Rüppell's Vulture"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Yellow-Crested Cockatoo",
-        "Galah"
       ],
       "evidence": []
     }
@@ -29393,18 +30835,594 @@
     ]
   },
   "evidence_status": {
-    "pairs_with_evidence": 1062,
-    "pairs_awaiting_evidence": 887,
-    "total_direct_pairs": 1949,
-    "last_batch_new_evidence_entries": 14,
-    "last_batch_pairs_newly_evidenced": 1,
+    "pairs_with_evidence": 1289,
+    "pairs_awaiting_evidence": 665,
+    "total_direct_pairs": 1954,
+    "last_batch_new_evidence_entries": 11,
+    "last_batch_pairs_newly_evidenced": 11,
     "last_batch_new_direct_pairs": 0,
-    "note": "v11.20 old-master free-text Hippopotamidae crossmatch, verified against ZooRoPE's 15 June 2022 review. Unknown-institution records excluded; problematic Brookfield bird-primate inferences not used."
+    "note": "v11.55 recovered evidence from ZooInstitutes' explicitly labelled 2025 mixed walk-through South American aviary at BioParque do Rio."
   },
   "metadata": {
     "v11_19_old_master_structured_audit": {
       "structured_old_master_unsupported_records_remaining": 0,
       "result": "All structured new_direct_pairs records from the old v9.99 master that still exist in the current direct-pair graph already have evidence. Further old-master recovery must come from free-text research notes/findings rather than new_direct_pairs blocks."
+    },
+    "v11_21_level1_priority": {
+      "strategy": "Prioritize Level 1 animals: Level1-Level1 first, then Level1-higher-level. Old master remains the first candidate source.",
+      "old_master_sections_used": [
+        "v8_8_level1_low_match_pass",
+        "v8_9_level1_low_match_pass"
+      ],
+      "newly_evidenced_pairs": 10
+    },
+    "v11_22_level1_priority": {
+      "strategy": "Continue Level 1 and common early-game animals first; old master candidate source first.",
+      "newly_evidenced_pairs": 0
+    },
+    "v11_23_level1_zero_evidence": {
+      "strategy": "Level 1 evidence:[] only; old master first, web verification second.",
+      "newly_evidenced_pairs": 6
+    },
+    "v11_24_level1_100_target": {
+      "target": 100,
+      "newly_evidenced_pairs": 87,
+      "policy": "Only pairs that were evidence:[] at the start of this pass. Level-1/early-game animals prioritized. Multi-species exhibits were expanded pairwise only when the source clearly described a shared exhibit.",
+      "major_sources": [
+        "ZooRoPE Mixed-species exhibits with Pigs (Suidae), 2021-05-09",
+        "Mo & Mo, Green Iguanas in mixed-species exhibits, 2021-11-25",
+        "Zoomarine mixed-species walkthrough veterinary paper, 2023",
+        "ZooLex/ZooInstitutes/ZooChat named mixed-exhibit records"
+      ]
+    },
+    "v11_25_level1_priority": {
+      "target": 100,
+      "newly_evidenced_pairs": 2,
+      "sources": [
+        "ZooRoPE Hippopotamidae review, 2022-06-15",
+        "ZooRoPE Suidae review, 2021-05-09",
+        "ZooRoPE Orycteropodidae review, 2022-11-12",
+        "ZooRoPE Canidae review, refreshed 2020-05-26"
+      ],
+      "priority": "common/early-game species and Level-1-heavy exhibit networks; evidence-empty pairs only"
+    },
+    "v11_26_level1_birds": {
+      "newly_evidenced_pairs": 25,
+      "sources": [
+        "ZooInstitutes Sharjah Safari African Aviary (2024)",
+        "ZooRoPE Hippopotamidae review, Pilsen exhibit (2022-06-15)"
+      ]
+    },
+    "v11_27_level1_aviaries": {
+      "newly_evidenced_pairs": 10,
+      "sources": [
+        "ZooInstitutes Ramat Gan walk-through aviary (2007)",
+        "ZooInstitutes Central Park rainforest mixed exhibit (2004)",
+        "ZooInstitutes GaiaPark South American mixed exhibit (2006)",
+        "ZooInstitutes Zoomarine mixed walk-through exhibit (2022)"
+      ]
+    },
+    "v11_28_level1": {
+      "newly_evidenced_pairs": 3
+    },
+    "v11_29_level1_saki": {
+      "newly_evidenced_pairs": 8,
+      "primary_source": "EAZA White-Faced Saki Best Practice Guidelines, Appendix IV / husbandry survey"
+    },
+    "v11_30_level1_callitrichids": {
+      "newly_evidenced_pairs": 1
+    },
+    "v11_31_level1_skunk_otter": {
+      "newly_evidenced_pairs": 3,
+      "source": "ZooRoPE Mixed exhibit Mustelidae Mephitidae"
+    },
+    "v11_32_red_crested_turaco": {
+      "newly_evidenced_pairs": 5,
+      "new_combinations_found": 0,
+      "research_note": "EAZA Turaco Best Practice Guidelines explicitly list Red-crested Turaco + Capybara as a practiced mix, but the table does not name the institution, so it remains evidence:[] under the project's named-zoo rule.",
+      "additional_supported_mix_types": "EAZA BPG also documents Red-crested Turaco with ibis species, crowned cranes, Asian small-clawed otter, bats, rock hyrax, colobus, gorilla, blue duiker, various pigeons, parrots, starlings and other birds; existing game pairs were retained and problematic mixes were not generalized."
+    },
+    "v11_33_red_crested_turaco_new_pairs": {
+      "new_direct_pairs": [
+        [
+          "Red-Crested Turaco",
+          "Green Turaco"
+        ],
+        [
+          "Red-Crested Turaco",
+          "Abdim's Stork"
+        ],
+        [
+          "Red-Crested Turaco",
+          "Abyssian Ground Hornbill"
+        ]
+      ],
+      "note": "EAZA BPG contains further Red-crested Turaco mixes (e.g. Asian small-clawed otter, rock hyrax, blue duiker, bats, capybara) but without institution names in its table; these were not added under the project's named-zoo evidence rule."
+    },
+    "v11_34_red_crested_turaco_new": {
+      "new_direct_pairs": [
+        [
+          "Red-Crested Turaco",
+          "Roloway Monkey"
+        ]
+      ],
+      "research_note": "EAZA BPG additionally supports Red-crested Turaco with Asian small-clawed otter, bats, rock hyrax, capybara, green acouchi, colobus, gorilla and blue duiker. Pairs without a recoverable named institution were not added as new direct pairs in this pass."
+    },
+    "v11_35_red_crested_turaco_new_pairs": {
+      "new_direct_pairs": [
+        [
+          "Red-Crested Turaco",
+          "Sunbittern"
+        ]
+      ],
+      "exclusion": "Blue-Bellied Roller: co-housed historically at Cotswold/Cameron Park, but EAZA BPG reports Red-crested Turaco chasing nesting adults and fledglings, resulting in turacos being removed."
+    },
+    "v11_36_red_crested_turaco_discovery": {
+      "new_direct_pairs": [],
+      "result": "No additional named-institution pair passed all filters in this pass.",
+      "birmingham_inventory_crossmatch": {
+        "goose": [
+          "Banded Mongoose",
+          "Dwarf Mongoose",
+          "Yellow Mongoose"
+        ],
+        "lapwing": [],
+        "pigeon": [],
+        "roadrunner": [],
+        "robin": [],
+        "mousebird": [],
+        "dove": [],
+        "bettong": [],
+        "otter": [
+          "Asian Small-Clawed Otter",
+          "Eurasian Otter",
+          "Giant Otter",
+          "Sea Otter"
+        ],
+        "hyrax": [
+          "Rock Hyrax"
+        ],
+        "duiker": [
+          "Blue Duiker",
+          "Red Duiker",
+          "Yellow-Backed Duiker"
+        ],
+        "acouchi": [],
+        "bat": [
+          "Bat-Eared Fox",
+          "Bateleur",
+          "Common Wombat",
+          "Egyptian Fruit Bat"
+        ],
+        "colobus": []
+      },
+      "excluded": "Blue-Bellied Roller despite current Birmingham co-housing, because EAZA BPG documents harmful Red-crested Turaco aggression toward nesting rollers."
+    },
+    "v11_37_100_target": {
+      "target": 100,
+      "newly_evidenced_pairs": 3,
+      "note": "Part 1; official Brandywine Hidden Falls and named-institution Mo & Mo Green Iguana records."
+    },
+    "v11_38_100_target_part2": {
+      "newly_evidenced_pairs": 1,
+      "sources": [
+        "Cameron Park Zoo mixed exhibit (2010-08-15)",
+        "Badoca Safari Park walkthrough (2022)",
+        "Attica Zoological Park African aviary (2018)"
+      ]
+    },
+    "v11_39_100_target_part3": {
+      "newly_evidenced_pairs": 0,
+      "cumulative_newly_evidenced_since_v11_36": 4,
+      "target": 100
+    },
+    "v11_40_old_master_reaudit": {
+      "old_master": "eligible-combinations_v9.99_level3_high_yield_social_species.json",
+      "current_base": "eligible-combinations_v11.39_evidence_batch_100_target_part3.json",
+      "current_unsupported_before": 723,
+      "structured_new_direct_pairs_still_unsupported": 13,
+      "free_text_pair_cooccurrence_candidates": 80,
+      "auto_recovered_named_evidence": 0,
+      "note": "Full recursive re-audit of old v9.99 metadata/research notes. Auto-addition required an unsupported current pair plus explicit machine-readable zoo, country and date in the same old-master record; ambiguous free-text leads were not fabricated."
+    },
+    "v11_41_old_master_prose_recovery": {
+      "newly_evidenced_pairs": 16,
+      "pairs": [
+        [
+          "Harris's Hawk",
+          "Black Vulture",
+          "Pakawi Park"
+        ],
+        [
+          "Harris's Hawk",
+          "Griffon Vulture",
+          "Pakawi Park"
+        ],
+        [
+          "Galah",
+          "Yellow-Crested Cockatoo",
+          "Zoo de Lille"
+        ],
+        [
+          "Galah",
+          "Yellow-Tailed Black Cockatoo",
+          "Loro Parque"
+        ],
+        [
+          "Chinstrap Penguin",
+          "Gentoo Penguin",
+          "Loro Parque"
+        ],
+        [
+          "Chinstrap Penguin",
+          "King Penguin",
+          "Loro Parque"
+        ],
+        [
+          "Chinstrap Penguin",
+          "Rockhopper Penguin",
+          "Loro Parque"
+        ],
+        [
+          "Gentoo Penguin",
+          "King Penguin",
+          "Loro Parque"
+        ],
+        [
+          "Gentoo Penguin",
+          "Rockhopper Penguin",
+          "Loro Parque"
+        ],
+        [
+          "King Penguin",
+          "Rockhopper Penguin",
+          "Loro Parque"
+        ],
+        [
+          "Black Stork",
+          "Black-Headed Ibis",
+          "Dusit Zoo"
+        ],
+        [
+          "Black Stork",
+          "Lesser Adjutant",
+          "Dusit Zoo"
+        ],
+        [
+          "Black-Headed Ibis",
+          "Lesser Adjutant",
+          "Dusit Zoo"
+        ],
+        [
+          "Burmese Python",
+          "Reticulated Python",
+          "Khao Kheow Open Zoo"
+        ],
+        [
+          "Green Iguana",
+          "Toco Toucan",
+          "Zoo Miami"
+        ],
+        [
+          "Galah",
+          "Gang-Gang Cockatoo",
+          "Attica Zoological Park"
+        ]
+      ],
+      "rule": "No inferred institution or invented date. Ambiguous/natural-coexistence/proxy notes excluded."
+    },
+    "v11_42_old_master_prose_recovery_2": {
+      "newly_evidenced_pairs": 4,
+      "pairs": [
+        [
+          "Saddle-Billed Stork",
+          "Wattled Crane",
+          "Cotswold Wildlife Park"
+        ],
+        [
+          "Hamerkop",
+          "Wattled Crane",
+          "Cotswold Wildlife Park"
+        ],
+        [
+          "Nubian Vulture",
+          "Wattled Crane",
+          "Cotswold Wildlife Park"
+        ],
+        [
+          "Griffon Vulture",
+          "Nubian Vulture",
+          "Cotswold Wildlife Park"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 24,
+      "excluded_without_date": [
+        "Coypu + Northern Raccoon — Tierpark Hellabrunn / Zoo Děčín"
+      ]
+    },
+    "v11_43_old_master_prose_recovery_3": {
+      "newly_evidenced_pairs": 1,
+      "pairs": [
+        [
+          "Harris's Hawk",
+          "Bald Eagle",
+          "Pakawi Park"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 25
+    },
+    "v11_44_old_master_verified_recovery": {
+      "newly_evidenced_pairs": 3,
+      "pairs": [
+        [
+          "Hamerkop",
+          "Von Der Decken's Hornbill",
+          "The Maryland Zoo in Baltimore"
+        ],
+        [
+          "African Spoonbill",
+          "Von Der Decken's Hornbill",
+          "The Maryland Zoo in Baltimore"
+        ],
+        [
+          "Hadada Ibis",
+          "Von Der Decken's Hornbill",
+          "The Maryland Zoo in Baltimore"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 28,
+      "important_exclusion": "Secretary Bird + Yellow Mongoose not evidenced: ZooLex says the Magdeburg trial was halted after secretary birds injured a mongoose."
+    },
+    "v11_45_old_master_verified_recovery": {
+      "newly_evidenced_pairs": 1,
+      "pairs": [
+        [
+          "Barbary Macaque",
+          "Vervet Monkey",
+          "Erlebnis-Zoo Hannover"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 29,
+      "source_notes": [
+        "Maryland African Aviary 2018 exact exhibit roster.",
+        "Ziegler, Primate Report 64 (2002), Association 2: four primates associated since 1997; association ended 2000."
+      ]
+    },
+    "v11_46_verified_recovery": {
+      "newly_evidenced_pairs": 2,
+      "pairs": [
+        [
+          "Kirk's Dik-Dik",
+          "Bongo",
+          "Bioparc Valencia"
+        ],
+        [
+          "Kirk's Dik-Dik",
+          "Red Duiker",
+          "Bioparc Valencia"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 31
+    },
+    "v11_47_old_master_verified_recovery": {
+      "newly_evidenced_pairs": 1,
+      "pairs": [
+        [
+          "Linnaeus's Two-Toed Sloth",
+          "Six-Banded Armadillo",
+          "Memphis Zoo"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 32,
+      "exclusion": "San Diego Kopje ground-squirrel cross-pairs were not used because the source documents mongoose chasing/molesting and squirrel avoidance."
+    },
+    "v11_48_mongoose_recovery": {
+      "newly_evidenced_pairs": 0,
+      "pairs": [],
+      "cumulative_100_target_since_v11_36": 32,
+      "source_date_rule": "2020 used for Svábik published mixed-mongoose compilation; 2026-05-14 for ARTIS report."
+    },
+    "v11_49_old_master_ungulate_recovery": {
+      "newly_evidenced_pairs": 1,
+      "pairs": [
+        [
+          "Bongo",
+          "Yellow-Backed Duiker",
+          "Los Angeles Zoo"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 33
+    },
+    "v11_50_old_master_peccary_raccoon_recovery": {
+      "newly_evidenced_pairs": 1,
+      "pairs": [
+        [
+          "South American Coati",
+          "Black-Capped Capuchin",
+          "Parque de las Leyendas"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 34
+    },
+    "v11_51_old_research_trail_recovery": {
+      "newly_evidenced_pairs": 6,
+      "pairs": [
+        [
+          "Linnaeus's Two-Toed Sloth",
+          "Emperor Tamarin",
+          "ZSL London Zoo"
+        ],
+        [
+          "Linnaeus's Two-Toed Sloth",
+          "Red Titi",
+          "ZSL London Zoo"
+        ],
+        [
+          "Golden-Headed Lion Tamarin",
+          "Red Titi",
+          "ZSL London Zoo"
+        ],
+        [
+          "Red Titi",
+          "Red-Footed Tortoise",
+          "ZSL London Zoo"
+        ],
+        [
+          "Red Titi",
+          "Southern Tamandua",
+          "ZSL London Zoo"
+        ],
+        [
+          "Red-Footed Tortoise",
+          "Southern Tamandua",
+          "ZSL London Zoo"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 40
+    },
+    "v11_52_old_master_exhibit_recovery": {
+      "newly_evidenced_pairs": 7,
+      "pairs": [
+        [
+          "Trumpeter Hornbill",
+          "Von Der Decken's Hornbill",
+          "Antwerp Zoo"
+        ],
+        [
+          "Trumpeter Hornbill",
+          "Abdim's Stork",
+          "Antwerp Zoo"
+        ],
+        [
+          "Von Der Decken's Hornbill",
+          "Abdim's Stork",
+          "Antwerp Zoo"
+        ],
+        [
+          "Von Der Decken's Hornbill",
+          "Violet Turaco",
+          "Antwerp Zoo"
+        ],
+        [
+          "Von Der Decken's Hornbill",
+          "White-Crested Turaco",
+          "Antwerp Zoo"
+        ],
+        [
+          "Abdim's Stork",
+          "Violet Turaco",
+          "Antwerp Zoo"
+        ],
+        [
+          "Abdim's Stork",
+          "White-Crested Turaco",
+          "Antwerp Zoo"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 47
+    },
+    "v11_53_old_master_hyrax_raccoon_recovery": {
+      "newly_evidenced_pairs": 2,
+      "pairs": [
+        [
+          "Gelada",
+          "Rock Hyrax",
+          "Bronx Zoo"
+        ],
+        [
+          "Coypu",
+          "Northern Raccoon",
+          "Tierpark Hellabrunn"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 49,
+      "notes": [
+        "Bronx Zoo ZooLex record explicitly states all four species share the 2-acre Baboon Reserve.",
+        "ZooRoPE explicitly lists Northern Raccoon + Coypu at Tierpark Hellabrunn and Zoo Decin; one institution retained in compact evidence."
+      ]
+    },
+    "v11_54_old_master_beaver_iguana_recovery": {
+      "newly_evidenced_pairs": 2,
+      "pairs": [
+        [
+          "Eurasian Beaver",
+          "Eurasian Otter",
+          "Edinburgh Zoo"
+        ],
+        [
+          "Green Iguana",
+          "Caiman Lizard",
+          "Aquarium of Boise"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 51,
+      "source_notes": [
+        "Edinburgh beaver/otter husbandry account explicitly reports shared pool/lodge, successful otter breeding and no injuries.",
+        "Mo & Mo 2021 explicitly captions Green Iguana + African Spurred Tortoise at Berkenhof's Tropical Zoo.",
+        "Aquarium of Boise 2012 exhibit record explicitly lists Green Iguana + Caiman Lizard."
+      ]
+    },
+    "v11_55_bioparque_do_rio_recovery": {
+      "newly_evidenced_pairs": 11,
+      "pairs": [
+        [
+          "Green Iguana",
+          "Blue-And-Yellow Macaw",
+          "BioParque do Rio"
+        ],
+        [
+          "Scarlet Macaw",
+          "Blue-And-Yellow Macaw",
+          "BioParque do Rio"
+        ],
+        [
+          "Scarlet Macaw",
+          "Blue-Headed Parrot",
+          "BioParque do Rio"
+        ],
+        [
+          "Scarlet Macaw",
+          "Red-Shouldered Macaw",
+          "BioParque do Rio"
+        ],
+        [
+          "Scarlet Macaw",
+          "Blue-Winged Macaw",
+          "BioParque do Rio"
+        ],
+        [
+          "Blue-And-Yellow Macaw",
+          "Blue-Headed Parrot",
+          "BioParque do Rio"
+        ],
+        [
+          "Blue-And-Yellow Macaw",
+          "Red-Shouldered Macaw",
+          "BioParque do Rio"
+        ],
+        [
+          "Blue-And-Yellow Macaw",
+          "Blue-Winged Macaw",
+          "BioParque do Rio"
+        ],
+        [
+          "Blue-Headed Parrot",
+          "Red-Shouldered Macaw",
+          "BioParque do Rio"
+        ],
+        [
+          "Blue-Headed Parrot",
+          "Blue-Winged Macaw",
+          "BioParque do Rio"
+        ],
+        [
+          "Red-Shouldered Macaw",
+          "Blue-Winged Macaw",
+          "BioParque do Rio"
+        ]
+      ],
+      "cumulative_100_target_since_v11_36": 62,
+      "source_note": "Only species names matching Zoo Curator inventory were used; all are listed by ZooInstitutes as animals in the same 2025 mixed walk-through exhibit."
     }
   }
 }

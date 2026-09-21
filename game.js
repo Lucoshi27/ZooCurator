@@ -368,10 +368,13 @@ const state = {
     // Mutable copy of real-zoo holdings for THIS game only.
     // real_zoo_opponents.json remains untouched.
     realZooSessionHoldings: new Map(),
-    realZooUnlockedTier: 1,
+    provinceConnections: { provinces: {} },
+    provinceDistanceCache: new Map(),
+    highestZooPrestige: 0,
 
     zooName: '',
     zooCountry: '',
+    zooProvince: '',
     zooLocation: '',
     zooType: 'general',
     opponentNames: [],
@@ -684,17 +687,12 @@ function emergencyTradeSelection() {
     // --------------------------------------------------------
     // 1. NORMAL CURRENTLY AVAILABLE OPPONENTS
     // --------------------------------------------------------
-    // Do not alter real-zoo unlocking or normal trading behaviour. During a
-    // deadlock we only bypass reluctance/frequency while searching opponents
-    // that are already available to the player.
+    // During a deadlock, bypass reluctance/frequency but keep the same
+    // prestige-window and geographical partner rules as normal trading.
     if (isRealOpponentMode()) {
-        const unlockedRecords = seededShuffle(
-            [...new Set(weightedRealZooPool())],
-            `emergency-real-zoos|${state.turn}|${tradeOfferWindow()}`
-        );
-
         for (const outgoing of shuffledPlayers) {
-            for (const record of unlockedRecords) {
+            const candidates = [];
+            for (const record of realZooRecordsAvailable()) {
                 if (!realZooCanTradeFor(record, outgoing)) continue;
 
                 const matching = realZooTradeAnimals(record, true)
@@ -707,11 +705,22 @@ function emergencyTradeSelection() {
                 const { seed } = seededRoll(
                     `emergency-real-animal|${outgoing.id}|${record.name}|${state.turn}`
                 );
-
-                return {
-                    outgoingId: outgoing.id,
+                candidates.push({
                     record,
                     animal: matching[seed % matching.length]
+                });
+            }
+
+            const selected = selectPrestigeLocationCandidates(
+                candidates,
+                1,
+                `emergency-real-zoos|${outgoing.id}|${state.turn}|${tradeOfferWindow()}`
+            )[0];
+            if (selected) {
+                return {
+                    outgoingId: outgoing.id,
+                    record: selected.record,
+                    animal: selected.animal
                 };
             }
         }
@@ -800,7 +809,8 @@ function emergencyTradeSelection() {
         privatePetTrade: true,
         record: {
             name: 'Private Pet Trade',
-            tier: 0,
+            country: '',
+            province: '',
             preferred_categories: []
         },
         animal: {
@@ -899,7 +909,7 @@ function predictedPlayerTradeOffers(animal) {
             return [];
         }
 
-        const records = [...new Set(weightedRealZooPool())];
+        const records = realZooRecordsAvailable();
         const candidates = [];
 
         for (const record of records) {
@@ -933,10 +943,11 @@ function predictedPlayerTradeOffers(animal) {
             candidates.push({ record, animal: offeredAnimal });
         }
 
-        const selected = seededShuffle(
+        const selected = selectPrestigeLocationCandidates(
             candidates,
+            3,
             `real-select|${animal.id}|${tradeOfferWindow()}`
-        ).slice(0, 3);
+        );
 
         const locked = selected.map(item => ({
             recordName: item.record.name,
@@ -1494,6 +1505,40 @@ async function loadJson(
 // used. Therefore it is loaded independently after startup has already moved
 // on. Failure or timeout simply leaves real-zoo data empty for this session.
 
+// Older files store `zoos` as a flat array. The current file still uses its
+// legacy country -> province -> tier-shaped containers for compatibility, but
+// tiers no longer participate in gameplay. Normalize both shapes once at load
+// and deliberately discard the obsolete per-zoo tier field.
+function normaliseRealZooRecords(rawZoos) {
+    if (Array.isArray(rawZoos)) {
+        return rawZoos
+            .filter(record => record && typeof record === 'object')
+            .map(({ tier: _obsoleteTier, ...record }) => record);
+    }
+    if (!rawZoos || typeof rawZoos !== 'object') return [];
+
+    const records = [];
+    for (const [country, provinces] of Object.entries(rawZoos)) {
+        if (!provinces || typeof provinces !== 'object' || Array.isArray(provinces)) continue;
+        for (const [province, tiers] of Object.entries(provinces)) {
+            if (!tiers || typeof tiers !== 'object' || Array.isArray(tiers)) continue;
+            for (const tierRecords of Object.values(tiers)) {
+                if (!Array.isArray(tierRecords)) continue;
+                for (const rawRecord of tierRecords) {
+                    if (!rawRecord || typeof rawRecord !== 'object') continue;
+                    const { tier: _obsoleteTier, ...record } = rawRecord;
+                    records.push({
+                        ...record,
+                        country: rawRecord.country || country,
+                        province: rawRecord.province || province
+                    });
+                }
+            }
+        }
+    }
+    return records;
+}
+
 function loadRealZooDataInBackground() {
     const path = 'real_zoo_opponents.json';
     const timeoutMs = 8000;
@@ -1521,11 +1566,12 @@ function loadRealZooDataInBackground() {
 
     Promise.race([request, timeout])
         .then(data => {
-            if (!data || !Array.isArray(data.zoos)) {
-                throw new Error(`${path} does not contain a valid zoos array.`);
+            const zoos = normaliseRealZooRecords(data?.zoos);
+            if (!data || !zoos.length) {
+                throw new Error(`${path} does not contain any valid zoo records.`);
             }
 
-            state.realZooData = data;
+            state.realZooData = { ...data, zoos };
             resetRealZooSessionHoldings();
             // Predictions made before the optional database arrived may have
             // cached an empty offer set. Recompute them against the real data.
@@ -1542,7 +1588,7 @@ function loadRealZooDataInBackground() {
             }
 
             console.log(
-                `Real zoo opponent database loaded in background (${data.zoos.length} zoos).`
+                `Real zoo opponent database loaded in background (${zoos.length} zoos).`
             );
         })
         .catch(error => {
@@ -1552,6 +1598,36 @@ function loadRealZooDataInBackground() {
             );
             state.realZooData = { zoos: [] };
             state.realZooSessionHoldings = new Map();
+        });
+}
+
+function loadProvinceConnectionsInBackground() {
+    const path = 'province_connections.json';
+    fetch(path, { cache: 'no-store' })
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            if (!data?.provinces || typeof data.provinces !== 'object') {
+                throw new Error('No provinces object found.');
+            }
+            state.provinceConnections = data;
+            state.provinceDistanceCache = new Map();
+            state.tradeOfferCache.clear();
+            console.log(
+                `Province connection database loaded (${Object.keys(data.provinces).length} provinces).`
+            );
+        })
+        .catch(error => {
+            // This enhancement is optional: country-level distance remains
+            // usable when the graph is absent or still being downloaded.
+            console.warn(
+                'Province connection database unavailable; using country-level trade distance:',
+                error
+            );
+            state.provinceConnections = { provinces: {} };
+            state.provinceDistanceCache = new Map();
         });
 }
 
@@ -2536,6 +2612,50 @@ function openCollectionMenu() {
     collectionOverlay.style.display = 'flex';
 }
 
+
+function ensureCollectionCategoryLinks() {
+    const tracker =
+        document.getElementById('categoryProgression') ||
+        document.getElementById('categoryProgressionTracker') ||
+        document.querySelector('.category-progression');
+
+    if (!tracker || tracker.dataset.collectionLinksReady === '1') return;
+    tracker.dataset.collectionLinksReady = '1';
+
+    tracker.addEventListener('click', event => {
+        // Never hijack the progression tick boxes themselves.
+        if (event.target.closest('input, .category-progress-check, .category-check, [role="checkbox"]')) {
+            return;
+        }
+
+        const nameBox = event.target.closest(
+            '.category-name, .category-label, .category-progression-name, ' +
+            '.category-progression-label, [data-category]'
+        );
+        if (!nameBox || !tracker.contains(nameBox)) return;
+
+        const row = nameBox.closest('[data-category], .category-progress-row, .category-progression-row');
+        const category =
+            nameBox.dataset.category ||
+            row?.dataset.category ||
+            String(nameBox.textContent || '').trim();
+
+        if (!CATEGORY_PROGRESSION_ORDER.includes(category)) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        openCollectionMenu();
+
+        // Scroll the requested category into view after the menu has rendered.
+        requestAnimationFrame(() => {
+            const headings = [...document.querySelectorAll('#collectionBody .collection-category h3')];
+            const heading = headings.find(item => String(item.textContent).trim() === category);
+            heading?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        });
+    });
+}
+
+
 function ensureCollectionButton() {
     let button = document.getElementById('collectionButton');
     if (!button) {
@@ -2549,18 +2669,35 @@ function ensureCollectionButton() {
     }
 
     const turnElement = document.getElementById('turnOrder');
-    if (!turnElement) return;
+    if (!turnElement || !turnElement.parentElement) return;
 
-    const parent = turnElement.parentElement;
-    if (!parent) return;
-
-    // V198: never re-parent the turn timer. Several existing HUD installers
-    // expect #turnOrder to remain a direct child of #headerLeft.
-    // Collection is simply inserted immediately before it, so it sits to the
-    // left of the timer without breaking Game Options / Save-Load insertion.
-    if (button.parentElement !== parent || button.nextElementSibling !== turnElement) {
-        parent.insertBefore(button, turnElement);
+    let prestigeElement = document.getElementById('prestigeCounter');
+    if (!prestigeElement) {
+        prestigeElement = document.createElement('span');
+        prestigeElement.id = 'prestigeCounter';
+        prestigeElement.title = 'Highest zoo prestige reached; used to determine real-zoo trading partners.';
+        prestigeElement.style.cssText =
+            'flex:0 0 auto;margin-left:0;white-space:nowrap;font-size:12px;' +
+            'font-weight:700;opacity:.78;line-height:1.2;';
     }
+
+    let row = document.getElementById('collectionTurnRow');
+    if (!row) {
+        const parent = turnElement.parentElement;
+        row = document.createElement('div');
+        row.id = 'collectionTurnRow';
+
+        // V199: setup runs only after the existing HUD installers. Therefore
+        // it is safe to replace the timer's original position with this row.
+        parent.insertBefore(row, turnElement);
+        row.append(button, turnElement, prestigeElement);
+    } else {
+        if (button.parentElement !== row) row.insertBefore(button, row.firstChild);
+        if (turnElement.parentElement !== row) row.appendChild(turnElement);
+        if (prestigeElement.parentElement !== row) row.appendChild(prestigeElement);
+    }
+
+    updatePrestigeDisplay();
 }
 
 
@@ -3830,9 +3967,6 @@ function placeAnimal(
     updateCollectionCohabitation();
 
     checkEnclosure10Unlock();
-    updateRealZooTierUnlocks();
-
-
     return true;
 
 }
@@ -4416,7 +4550,7 @@ function createStartingZoo() {
     state.collectionActiveLevel = 1;
     state.unlockedOpponentCount = 2;
     state.playerLevelsSeen = new Set([1]);
-    state.realZooUnlockedTier = 1;
+    state.highestZooPrestige = 0;
     resetRealZooSessionHoldings();
     state.tradeOfferCache = new Map();
     state.nextDrawSpec = null;
@@ -4465,7 +4599,6 @@ function createStartingZoo() {
         state.animals.push(animal);
         markPlayerLevelSeen(animal.level);
     }
-
     const startupRewardKeys = startupProgressionRewardKeys();
     state.awardedProgressMilestones = new Set(startupRewardKeys);
     state.awardedLevel2Milestones = new Set(
@@ -4686,6 +4819,7 @@ function createStartingZoo() {
     // A generated Level 4 card counts as placed now, so Enclosure 10 becomes
     // available for future rewards exactly as it would during normal play.
     checkEnclosure10Unlock();
+    updateHighestZooPrestige();
 
     updateDiscoveredCategoryLevels();
     updateTurnDisplay();
@@ -4723,6 +4857,7 @@ function createStartingZoo() {
 // ============================================================
 
 function updateTurnDisplay() {
+    updatePrestigeDisplay();
     if (state.sandboxMode) {
         turnOrder.textContent = 'Turn ∞ · SANDBOX';
         return;
@@ -4733,6 +4868,16 @@ function updateTurnDisplay() {
     }
 
     turnOrder.textContent = `Turn ${state.turn}`;
+}
+
+function updatePrestigeDisplay() {
+    const element = document.getElementById('prestigeCounter');
+    if (!element) return;
+    if (state.sandboxMode) {
+        element.textContent = 'Prestige ∞';
+        return;
+    }
+    element.textContent = `Prestige ${updateHighestZooPrestige()}`;
 }
 
 
@@ -7791,6 +7936,7 @@ const SAVE_STATE_KEYS = [
     'sandboxLooseAnimals',
     'zooName',
     'zooCountry',
+    'zooProvince',
     'zooLocation',
     'zooType',
     'opponentNames',
@@ -7829,7 +7975,7 @@ const SAVE_STATE_KEYS = [
     'awardedLevel2Milestones',
     'awardedProgressMilestones',
     'progressionGlowPinnedKeys',
-    'realZooUnlockedTier',
+    'highestZooPrestige',
     'realZooSessionHoldings'
 ];
 
@@ -8187,6 +8333,16 @@ function importGameState(saveData) {
     // compatible with newer state fields such as progressionGlowPinnedKeys.
     normaliseLoadedGameCollections();
     relinkLoadedPlayerReferences();
+    if (!Object.prototype.hasOwnProperty.call(saveData.state, 'zooProvince')) {
+        state.zooProvince = zooSetupProvinceForLocation(
+            state.zooCountry,
+            state.zooLocation
+        );
+    }
+    if (!Object.prototype.hasOwnProperty.call(saveData.state, 'highestZooPrestige')) {
+        state.highestZooPrestige = currentZooPrestige();
+    }
+    updateHighestZooPrestige();
 
     document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
     document.body.classList.remove('history-viewing');
@@ -8645,7 +8801,6 @@ function renderAll() {
     refreshDrawAvailabilityState();
 
 
-    updateRealZooTierUnlocks();
     rotateOpponentTradeStocksIfNeeded();
     updateDiscoveredCategoryLevels();
     refreshExchangeGlowSuppression();
@@ -11715,6 +11870,28 @@ function zooSetupLocations(country) {
     return flattenZooSetupLocations(state.zooNamesData?.places?.[country]);
 }
 
+function zooSetupProvinceForLocation(country, location) {
+    const root = state.zooNamesData?.places?.[country];
+    const wanted = normaliseGeographyPart(location);
+    if (!root || !wanted) return '';
+
+    function containsLocation(node) {
+        if (Array.isArray(node)) {
+            return node.some(item =>
+                typeof item === 'string' && normaliseGeographyPart(item) === wanted
+            );
+        }
+        if (!node || typeof node !== 'object') return false;
+        return Object.values(node).some(containsLocation);
+    }
+
+    if (Array.isArray(root)) return '';
+    for (const [province, contents] of Object.entries(root)) {
+        if (containsLocation(contents)) return province;
+    }
+    return '';
+}
+
 function zooSetupPrefixGroups(country, location = '') {
     const root = state.zooNamesData?.prefixes?.[country];
     if (!root || typeof root !== 'object') return [];
@@ -11757,6 +11934,7 @@ function generateZooSetupIdentity(country, keepCountry = true) {
     return {
         country: chosenCountry,
         location,
+        province: zooSetupProvinceForLocation(chosenCountry, location),
         zooName: `${choice.prefix} ${location}`.replace(/\s+/g, ' ').trim(),
         zooType: choice.zooType || 'general'
     };
@@ -11980,6 +12158,8 @@ function ensureGenerateZooUI() {
         overlay.dataset.generatedZooType = identity.zooType || 'general';
         overlay.dataset.generatedZooCountry = identity.country;
         overlay.dataset.generatedZooLocation = identity.location;
+        overlay.dataset.generatedZooProvince = identity.province ||
+            zooSetupProvinceForLocation(identity.country, identity.location);
     }
 
     function normalizeZooIdentityText(value) {
@@ -12015,26 +12195,13 @@ function ensureGenerateZooUI() {
         overlay.dataset.generatedZooCountry = country.value;
         overlay.dataset.generatedZooLocation = location.value.trim();
 
-        // Future-facing province/region inference. zoo-names.json can contain
-        // nested place groupings, so inspect the selected country's place tree
-        // and remember the deepest matching object key found in either the
-        // edited location or full zoo name. This is deliberately silent.
-        let matchedRegion = '';
-        const countryPlaces = state.zooNamesData?.places?.[country.value];
-
-        function scanRegionTree(node, depth = 0) {
-            if (!node || typeof node !== 'object' || Array.isArray(node)) return;
-            for (const [key, value] of Object.entries(node)) {
-                const normalizedKey = normalizeZooIdentityText(key);
-                if (normalizedKey &&
-                    (normalizedLocation.includes(normalizedKey) ||
-                     normalizedName.includes(normalizedKey))) {
-                    matchedRegion = key;
-                }
-                scanRegionTree(value, depth + 1);
-            }
-        }
-        scanRegionTree(countryPlaces);
+        // The place database is grouped by country -> province/region -> place.
+        // Resolve the selected place through that tree rather than expecting
+        // the province name to appear in the visible zoo name.
+        const matchedRegion = zooSetupProvinceForLocation(
+            country.value,
+            location.value.trim()
+        );
 
         overlay.dataset.generatedZooProvince = matchedRegion;
         overlay.dataset.generatedZooRegion = matchedRegion;
@@ -12062,6 +12229,8 @@ function ensureGenerateZooUI() {
         zooName.value = identity.zooName;
         zooNameDisplay.textContent = identity.zooName;
         overlay.dataset.generatedZooType = identity.zooType || 'general';
+        overlay.dataset.generatedZooProvince = identity.province ||
+            zooSetupProvinceForLocation(country.value, identity.location);
     });
     overlay.querySelector('#randomizeZooName').addEventListener('click', () => {
         // Keep the current location; only choose a fresh prefix/type.
@@ -12170,6 +12339,8 @@ function ensureGenerateZooUI() {
         // chosen zoo type can bias that collection.
         state.zooName = finalName;
         state.zooCountry = country.value;
+        state.zooProvince = overlay.dataset.generatedZooProvince ||
+            zooSetupProvinceForLocation(country.value, finalLocation);
         state.zooLocation = finalLocation;
         state.zooType = inferZooTypeFromGeneratedName(country.value, finalName);
         const selectedZooSize = Math.max(0, Math.min(100, Math.round(Number(zooSize.value))));
@@ -12455,36 +12626,310 @@ function isRealOpponentMode() {
     return state.gameOptions.opponentMode === 'real';
 }
 
-function updateRealZooTierUnlocks() {
-    if (!isRealOpponentMode()) return;
-    let unlocked = Math.max(1, state.realZooUnlockedTier || 1);
-    for (let level = 2; level <= 5; level++) {
-        const housed = state.animals.filter(animal =>
-            animal.level === level && animal.enclosureId !== null
-        ).length;
-        if (housed >= 3) unlocked = Math.max(unlocked, level);
+const ZOO_PRESTIGE_BY_LEVEL = Object.freeze({ 1: 1, 2: 4, 3: 12, 4: 36, 5: 144 });
+const REAL_ZOO_ANIMAL_LEVEL_CACHE = new Map();
+
+// same province, adjacent domestic, adjacent foreign, farther domestic,
+// farther Europe. Rows are smoothly interpolated between prestige anchors.
+const REAL_ZOO_GEOGRAPHY_PRESTIGE_CURVE = Object.freeze([
+    { prestige: 8,   weights: [70, 20, 10, 0, 0] },
+    { prestige: 25,  weights: [60, 25, 12, 8, 2] },
+    { prestige: 70,  weights: [50, 28, 16, 18, 8] },
+    { prestige: 160, weights: [40, 28, 20, 24, 14] },
+    { prestige: 350, weights: [32, 26, 22, 24, 18] },
+    { prestige: 700, weights: [22, 21, 20, 21, 20] }
+]);
+
+function currentZooPrestige() {
+    return (state.animals || []).reduce((total, animal) => {
+        if (!animal || animal.enclosureId === null) return total;
+        return total + (ZOO_PRESTIGE_BY_LEVEL[Number(animal.level)] || 0);
+    }, 0);
+}
+
+function updateHighestZooPrestige() {
+    state.highestZooPrestige = Math.max(
+        Number(state.highestZooPrestige) || 0,
+        currentZooPrestige()
+    );
+    return state.highestZooPrestige;
+}
+
+function interpolatedPrestigeWeights(curve, prestige = updateHighestZooPrestige()) {
+    if (prestige <= curve[0].prestige) return [...curve[0].weights];
+    const last = curve[curve.length - 1];
+    if (prestige >= last.prestige) return [...last.weights];
+
+    for (let i = 1; i < curve.length; i++) {
+        const upper = curve[i];
+        if (prestige > upper.prestige) continue;
+        const lower = curve[i - 1];
+        const span = upper.prestige - lower.prestige;
+        const fraction = span > 0 ? (prestige - lower.prestige) / span : 0;
+        return lower.weights.map((weight, index) =>
+            weight + (upper.weights[index] - weight) * fraction
+        );
     }
-    state.realZooUnlockedTier = unlocked;
+    return [...last.weights];
 }
 
 function realZooRecordsAvailable() {
-    updateRealZooTierUnlocks();
     return (state.realZooData?.zoos || []).filter(zoo =>
-        Number(zoo.tier) <= state.realZooUnlockedTier &&
         Array.isArray(zoo.animals) && zoo.animals.length
     );
 }
 
-function weightedRealZooPool() {
-    const records = realZooRecordsAvailable();
-    const newest = state.realZooUnlockedTier;
-    const weighted = [];
-    for (const zoo of records) {
-        const distance = Math.max(0, newest - Number(zoo.tier || 1));
-        const weight = distance === 0 ? 6 : Math.max(1, 4 - distance);
-        for (let i = 0; i < weight; i++) weighted.push(zoo);
+function normaliseGeographyPart(value) {
+    return String(value || '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function provinceGraphKey(country, province) {
+    return `${String(country || '').trim()}|${String(province || '').trim()}`;
+}
+
+function resolveProvinceGraphKey(country, province) {
+    const exact = provinceGraphKey(country, province);
+    const graph = state.provinceConnections?.provinces || {};
+    if (graph[exact]) return exact;
+
+    const aliases = state.provinceConnections?.aliases || {};
+    if (aliases[exact] && graph[aliases[exact]]) return aliases[exact];
+
+    const wantedCountry = normaliseGeographyPart(country);
+    const wantedProvince = normaliseGeographyPart(province);
+    const normalisedAlias = Object.entries(aliases).find(([alias]) => {
+        const split = String(alias).split('|');
+        return normaliseGeographyPart(split.shift()) === wantedCountry &&
+            normaliseGeographyPart(split.join('|')) === wantedProvince;
+    });
+    if (normalisedAlias && graph[normalisedAlias[1]]) return normalisedAlias[1];
+
+    return Object.keys(graph).find(key => {
+        const node = graph[key] || {};
+        return normaliseGeographyPart(node.country) === wantedCountry &&
+            normaliseGeographyPart(node.province) === wantedProvince;
+    }) || '';
+}
+
+function provinceGraphDistance(fromCountry, fromProvince, toCountry, toProvince) {
+    const from = resolveProvinceGraphKey(fromCountry, fromProvince);
+    const to = resolveProvinceGraphKey(toCountry, toProvince);
+    if (!from || !to) return Number.POSITIVE_INFINITY;
+    if (from === to) return 0;
+
+    const cacheKey = `${from}->${to}`;
+    if (state.provinceDistanceCache.has(cacheKey)) {
+        return state.provinceDistanceCache.get(cacheKey);
     }
-    return weighted;
+
+    const graph = state.provinceConnections?.provinces || {};
+    const queue = [{ key: from, distance: 0 }];
+    const visited = new Set([from]);
+    while (queue.length) {
+        const current = queue.shift();
+        for (const neighbour of graph[current.key]?.neighbours || []) {
+            if (visited.has(neighbour) || !graph[neighbour]) continue;
+            const distance = current.distance + 1;
+            if (neighbour === to) {
+                state.provinceDistanceCache.set(cacheKey, distance);
+                state.provinceDistanceCache.set(`${to}->${from}`, distance);
+                return distance;
+            }
+            visited.add(neighbour);
+            queue.push({ key: neighbour, distance });
+        }
+    }
+    state.provinceDistanceCache.set(cacheKey, Number.POSITIVE_INFINITY);
+    return Number.POSITIVE_INFINITY;
+}
+
+function realZooGeographyBand(record) {
+    const sameCountry = normaliseGeographyPart(record?.country) ===
+        normaliseGeographyPart(state.zooCountry);
+    const playerProvinceKey = resolveProvinceGraphKey(
+        state.zooCountry,
+        state.zooProvince
+    );
+    const recordProvinceKey = resolveProvinceGraphKey(
+        record?.country,
+        record?.province
+    );
+    const sameProvince = sameCountry && playerProvinceKey &&
+        playerProvinceKey === recordProvinceKey;
+    if (sameProvince) return 0;
+
+    const distance = provinceGraphDistance(
+        state.zooCountry,
+        state.zooProvince,
+        record?.country,
+        record?.province
+    );
+    if (distance === 1) return sameCountry ? 1 : 2;
+    return sameCountry ? 3 : 4;
+}
+
+function realZooRelationshipLabel(record) {
+    if (!record?.country) return '';
+    const sameCountry = normaliseGeographyPart(record.country) ===
+        normaliseGeographyPart(state.zooCountry);
+    if (!sameCountry) return 'FOREIGN';
+
+    const playerProvince = resolveProvinceGraphKey(state.zooCountry, state.zooProvince);
+    const zooProvince = resolveProvinceGraphKey(record.country, record.province);
+    const sameProvince = playerProvince && zooProvince
+        ? playerProvince === zooProvince
+        : Boolean(record.province && state.zooProvince) &&
+            normaliseGeographyPart(record.province) === normaliseGeographyPart(state.zooProvince);
+    if (sameProvince) return 'LOCAL';
+    return 'NATIONAL';
+}
+
+function realZooLocationLines(record, includeRelationship = false) {
+    if (!record) return [];
+    const relationship = includeRelationship
+        ? realZooRelationshipLabel(record)
+        : '';
+    const lines = [
+        `COUNTRY: ${record.country || 'Unknown'}`,
+        `PROVINCE: ${record.province || 'Unknown'}${relationship ? ` (${relationship})` : ''}`
+    ];
+    return lines;
+}
+
+function weightedIndex(weights, roll = Math.random()) {
+    const safe = weights.map(weight => Math.max(0, Number(weight) || 0));
+    const total = safe.reduce((sum, weight) => sum + weight, 0);
+    if (total <= 0) return -1;
+    let cursor = Math.max(0, Math.min(0.999999999, roll)) * total;
+    for (let index = 0; index < safe.length; index++) {
+        cursor -= safe[index];
+        if (cursor < 0) return index;
+    }
+    return safe.length - 1;
+}
+
+function realZooAnimalLevelByName(name) {
+    const wanted = String(name || '').replace(/\.png$/i, '').trim().toLowerCase();
+    if (!wanted) return 0;
+    if (REAL_ZOO_ANIMAL_LEVEL_CACHE.has(wanted)) {
+        return REAL_ZOO_ANIMAL_LEVEL_CACHE.get(wanted);
+    }
+    for (const category of Object.keys(FOLDERS)) {
+        for (let level = 1; level <= 5; level++) {
+            if (levelFiles(category, level).some(file =>
+                file.replace(/\.png$/i, '').trim().toLowerCase() === wanted
+            )) {
+                REAL_ZOO_ANIMAL_LEVEL_CACHE.set(wanted, level);
+                return level;
+            }
+        }
+    }
+    REAL_ZOO_ANIMAL_LEVEL_CACHE.set(wanted, 0);
+    return 0;
+}
+
+function realZooPrestige(record) {
+    return realZooSessionAnimalNames(record).reduce((total, name) => {
+        const level = realZooAnimalLevelByName(name);
+        return total + (ZOO_PRESTIGE_BY_LEVEL[level] || 0);
+    }, 0);
+}
+
+function realZooPrestigeWindow(prestige = updateHighestZooPrestige()) {
+    const centre = Math.max(0, Number(prestige) || 0);
+    const radius = Math.max(32, 20 + centre * 0.10);
+    return {
+        centre,
+        radius,
+        minimum: Math.max(0, centre - radius),
+        maximum: centre + radius
+    };
+}
+
+function realZooPrestigeSimilarityWeight(record, window) {
+    const difference = Math.abs(realZooPrestige(record) - window.centre);
+    return Math.max(0.10, 1 - difference / (window.radius + 1));
+}
+
+// Select without replacement. The prestige window is applied first. Geography
+// chooses a band independently of how many zoos that band contains, and the
+// chosen band is then weighted by prestige similarity. This keeps local zoos
+// dominant without letting a province with many records overpower the stated
+// geographical percentages.
+function selectPrestigeLocationCandidates(candidates, count, seedText = '') {
+    const selected = [];
+    const prestige = updateHighestZooPrestige();
+    const window = realZooPrestigeWindow(prestige);
+    const geographyWeights = interpolatedPrestigeWeights(
+        REAL_ZOO_GEOGRAPHY_PRESTIGE_CURVE,
+        prestige
+    );
+    const remaining = candidates.filter(item => {
+        const zooPrestige = realZooPrestige(item.record);
+        return zooPrestige >= window.minimum && zooPrestige <= window.maximum;
+    });
+
+    while (remaining.length && selected.length < count) {
+        // Above 700 prestige, locality gradually stops mattering. Below that,
+        // the geography roll is made by band rather than by individual zoo.
+        const geographyFade = Math.max(0, Math.min(1, (prestige - 700) / 300));
+        const ignoreGeography = seededRoll(
+            `${seedText}|geography-fade|${selected.length}`
+        ).roll < geographyFade;
+
+        let choicePool = remaining;
+        let chosen = null;
+        if (ignoreGeography) {
+            const weights = choicePool.map(item =>
+                realZooPrestigeSimilarityWeight(item.record, window)
+            );
+            const choiceIndex = weightedIndex(
+                weights,
+                seededRoll(`${seedText}|prestige-zoo|${selected.length}`).roll
+            );
+            chosen = choicePool[choiceIndex];
+        } else {
+            const availableBands = new Set(
+                remaining.map(item => realZooGeographyBand(item.record))
+            );
+            const rollWeights = geographyWeights.map((weight, band) =>
+                availableBands.has(band) ? weight : 0
+            );
+            let chosenBand = weightedIndex(
+                rollWeights,
+                seededRoll(`${seedText}|geography-band|${selected.length}`).roll
+            );
+
+            // A distant domestic zoo is the last normal fallback even when its
+            // starting percentage is zero. Farther Europe participates only
+            // after the geography curve has explicitly given it weight.
+            if (chosenBand < 0) {
+                const fallbackOrder = [0, 1, 2, 3];
+                if (geographyWeights[4] > 0) fallbackOrder.push(4);
+                chosenBand = fallbackOrder.find(band => availableBands.has(band));
+            }
+            if (!Number.isInteger(chosenBand)) break;
+
+            choicePool = remaining.filter(item =>
+                realZooGeographyBand(item.record) === chosenBand
+            );
+            const weights = choicePool.map(item =>
+                realZooPrestigeSimilarityWeight(item.record, window)
+            );
+            const choiceIndex = weightedIndex(
+                weights,
+                seededRoll(`${seedText}|prestige-zoo|${selected.length}`).roll
+            );
+            if (choiceIndex < 0) continue;
+            chosen = choicePool[choiceIndex];
+        }
+        if (!chosen) break;
+        selected.push(chosen);
+        remaining.splice(remaining.indexOf(chosen), 1);
+    }
+    return selected;
 }
 
 function animalFromRealZooName(name) {
@@ -12647,7 +13092,9 @@ function realZooProfile(record, index) {
     return {
         index,
         name: record.name,
-        tier: Number(record.tier || 1),
+        country: record.country || '',
+        province: record.province || '',
+        prestige: realZooPrestige(record),
         favourites: Array.isArray(record.preferred_categories)
             ? record.preferred_categories.filter(Boolean).slice(0, 3)
             : [],
@@ -12854,11 +13301,8 @@ function createRealAutonomousOpponentOffer() {
     // The same slider controls spontaneous real-zoo offers.
     if (Math.random() > tradeFrequencyFactor()) return false;
 
-    const pool = weightedRealZooPool();
-    if (!pool.length) return false;
-
-    for (let tries = 0; tries < 20; tries++) {
-        const record = randomItem(pool);
+    const candidates = [];
+    for (const record of realZooRecordsAvailable()) {
         const possible = realZooTradeAnimals(record, true).filter(incoming =>
             incoming.level <= Math.max(1, ...state.playerLevelsSeen) &&
             state.animals.some(outgoing => {
@@ -12870,26 +13314,38 @@ function createRealAutonomousOpponentOffer() {
                     tradeIncomingHasDestinationAfterOutgoing(incoming, outgoing);
             })
         );
-        if (!possible.length) continue;
-        const animal = weightedRandomItem(
-            possible,
-            candidate => animalZooTypeWeight(candidate, record.zoo_types || record.zooTypes || 'general', 'trade')
-        );
-        state.opponentProfiles = [realZooProfile(record, 0)];
-        state.opponentTradeStocks = [possible];
-        state.autonomousTradeOffer = {
-            opponentIndex: 0,
-            animal,
-            offeredTurn: state.turn,
-            expiresTurn: state.turn + 3
-        };
-        state.selectedTradeOpponent = 0;
-        state.tradeOffers = [];
-        renderTrade();
-        renderOpponentTradeState();
-        return true;
+        if (possible.length) candidates.push({ record, possible });
     }
-    return false;
+
+    const selected = selectPrestigeLocationCandidates(
+        candidates,
+        1,
+        `real-autonomous|${state.turn}`
+    )[0];
+    if (!selected) return false;
+
+    const { record, possible } = selected;
+    const animal = weightedRandomItem(
+        possible,
+        candidate => animalZooTypeWeight(
+            candidate,
+            record.zoo_types || record.zooTypes || 'general',
+            'trade'
+        )
+    );
+    state.opponentProfiles = [realZooProfile(record, 0)];
+    state.opponentTradeStocks = [possible];
+    state.autonomousTradeOffer = {
+        opponentIndex: 0,
+        animal,
+        offeredTurn: state.turn,
+        expiresTurn: state.turn + 3
+    };
+    state.selectedTradeOpponent = 0;
+    state.tradeOffers = [];
+    renderTrade();
+    renderOpponentTradeState();
+    return true;
 }
 
 // ============================================================
@@ -13414,6 +13870,12 @@ function fillZooTradePopup(recordOrName) {
     const title = document.createElement('strong');
     title.textContent = `${zooName} — Trade History`;
     popup.appendChild(title);
+    if (recordOrName && typeof recordOrName === 'object') {
+        const location = document.createElement('div');
+        location.textContent = realZooLocationLines(recordOrName).join('\n');
+        location.style.cssText = 'margin-top:4px;opacity:.82;white-space:pre-line;';
+        popup.appendChild(location);
+    }
 
     if (!trades.length) {
         const empty = document.createElement('div');
@@ -13471,7 +13933,11 @@ function fillZooCollectionPopup(record) {
     popup.innerHTML = '';
     const title = document.createElement('strong');
     title.textContent = record.name || 'Zoo';
-    popup.append(title, document.createElement('br'), document.createElement('br'));
+    popup.append(title, document.createElement('br'));
+    const location = document.createElement('div');
+    location.textContent = realZooLocationLines(record).join('\n');
+    location.style.cssText = 'margin-top:4px;opacity:.82;white-space:pre-line;';
+    popup.append(location, document.createElement('br'));
     const label = document.createElement('strong');
     label.textContent = 'Animals by category:';
     popup.append(label, document.createElement('br'));
@@ -13576,6 +14042,7 @@ function showRealZooDirectoryCollection(record, anchor) {
 
     popup.textContent =
         `${record.name || 'Zoo'}\n\n` +
+        `${realZooLocationLines(record).join('\n')}\n\n` +
         `Animals by category:\n${opponentAnimalsGroupedByCategory(currentAnimals) || 'none'}`;
 
     popup.style.display = 'block';
@@ -13613,17 +14080,13 @@ function openRealZooDirectory() {
     if (!overlay || !list) return;
 
     list.innerHTML = '';
-    // V137: directory mirrors actual progression. Only zoos whose tier has
-    // been unlocked for the current zoo are visible.
-    updateRealZooTierUnlocks();
     const zoos = Array.isArray(state.realZooData?.zoos)
-        ? state.realZooData.zoos.filter(record =>
-            Number(record?.tier || 1) <= Number(state.realZooUnlockedTier || 1)
-        )
+        ? [...state.realZooData.zoos]
         : [];
 
     zoos.sort((a, b) =>
-        Number(a?.tier || 1) - Number(b?.tier || 1) ||
+        String(a?.country || '').localeCompare(String(b?.country || '')) ||
+        String(a?.province || '').localeCompare(String(b?.province || '')) ||
         String(a?.name || '').localeCompare(String(b?.name || ''))
     );
 
@@ -13633,17 +14096,17 @@ function openRealZooDirectory() {
         empty.style.cssText = 'padding:10px 0;opacity:.72;';
         list.appendChild(empty);
     } else {
-        let lastTier = null;
+        let lastLocation = '';
         for (const record of zoos) {
-            const tier = Number(record?.tier || 1);
-            if (tier !== lastTier) {
+            const locationKey = `${record.country || 'Unknown'}|${record.province || 'Unknown'}`;
+            if (locationKey !== lastLocation) {
                 const heading = document.createElement('div');
-                heading.textContent = `Tier ${tier}`;
+                heading.textContent = `${record.country || 'Unknown'} — ${record.province || 'Unknown'}`;
                 heading.style.cssText =
                     'margin:13px 0 4px;font-size:11px;font-weight:800;opacity:.55;' +
                     'text-transform:uppercase;letter-spacing:.06em;';
                 list.appendChild(heading);
-                lastTier = tier;
+                lastLocation = locationKey;
             }
 
             const row = document.createElement('div');
@@ -13695,8 +14158,13 @@ function showOpponentInfoPopup(index, anchor) {
 
     const favourites = profile.favourites || [];
     const stock = state.opponentTradeStocks[index] || [];
+    const record = profile.realZooRecord || null;
+    const locationText = record
+        ? `${realZooLocationLines(record, true).join('\n')}\n\n`
+        : '';
     popup.textContent =
         `${profile.name || `Zoo ${index + 1}`}\n\n` +
+        locationText +
         `Favours: ${favourites.length ? favourites.join(', ') : 'none'}\n\n` +
         `Animals by category:\n${opponentAnimalsGroupedByCategory(stock) || 'none'}`;
 
@@ -14088,7 +14556,6 @@ function assignOpponentProfiles() {
         state.tradeOffers = [];
         state.selectedTradeOpponent = null;
         state.autonomousTradeOffer = null;
-        state.realZooUnlockedTier = 1;
         scheduleNextAutonomousOpponentOffer();
         renderOpponentTradeState();
         return;
@@ -15620,6 +16087,7 @@ function loadNonEssentialGameData() {
     state.realZooData = { zoos: [] };
     state.realZooSessionHoldings = new Map();
     loadRealZooDataInBackground();
+    loadProvinceConnectionsInBackground();
 }
 
 async function startGame() {
@@ -15667,6 +16135,7 @@ async function startGame() {
         ensureSaveLoadUI();
         ensureTurnHistoryUI();
         ensureCollectionButton();
+        ensureCollectionCategoryLinks();
         setupOpponentTradeClicks();
 
         const resumedPreviousZoo = restoreAutoResumeSnapshot();

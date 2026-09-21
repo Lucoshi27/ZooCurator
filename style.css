@@ -1,7 +1,4 @@
-/*
- * ZOO CURATOR V76 Ã¢â‚¬â€ DRAG + COMPATIBILITY HOVER FIXES
- * Known-good GitHub baseline. Future builds must descend from this version.
- */
+/* ZOO CURATOR V220 */
 
 :root {
     --zoo-zoom: 1;
@@ -895,6 +892,12 @@ body {
     pointer-events: none;
     transform-origin: left bottom;
     transition: width 0.16s ease, height 0.16s ease, opacity 1s ease, visibility 0s linear 1s;
+}
+
+#hoverPreview[aria-hidden="true"] {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 #hoverPreview.visible {
@@ -3172,11 +3175,10 @@ body.history-viewing #zooCanvas .animal-card {
     z-index: 4;
 }
 
-
 /* ============================================================
-   V220.22 — NEW ZOO STARTING-SIZE CONTROL ALIGNMENT
-   Keep the reset button in the same right-hand control column as the
-   Country randomizer. It must sit after the range track, never below it.
+   V220 — NEW ZOO STARTING-SIZE CONTROL ALIGNMENT
+   Keep the reset button directly after the range track, in the same
+   right-hand control column as the Country randomizer.
    ============================================================ */
 .new-zoo-modal .new-zoo-size-option {
     display: grid !important;
@@ -3203,3 +3205,4 @@ body.history-viewing #zooCanvas .animal-card {
         column-gap: 8px !important;
     }
 }
+

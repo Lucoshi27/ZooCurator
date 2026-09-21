@@ -3171,3 +3171,35 @@ body.history-viewing #zooCanvas .animal-card {
 .collection-locked::after {
     z-index: 4;
 }
+
+
+/* ============================================================
+   V220.22 — NEW ZOO STARTING-SIZE CONTROL ALIGNMENT
+   Keep the reset button in the same right-hand control column as the
+   Country randomizer. It must sit after the range track, never below it.
+   ============================================================ */
+.new-zoo-modal .new-zoo-size-option {
+    display: grid !important;
+    grid-template-columns: 126px minmax(0, 1fr) 30px !important;
+    align-items: center !important;
+    column-gap: 14px !important;
+}
+.new-zoo-modal .new-zoo-size-option #newZooSize {
+    grid-column: 2 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+.new-zoo-modal .new-zoo-size-option .new-zoo-size-reset {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    align-self: center !important;
+    justify-self: center !important;
+    margin: 0 !important;
+}
+@media (max-width: 700px) {
+    .new-zoo-modal .new-zoo-size-option {
+        grid-template-columns: 100px minmax(0, 1fr) 30px !important;
+        column-gap: 8px !important;
+    }
+}

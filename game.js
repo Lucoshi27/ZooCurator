@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V220.27";
+const ZOO_CURATOR_VERSION = "V220.29";
 
 
 // ============================================================
@@ -3982,6 +3982,16 @@ function nextLevelOneHasEligibleDestination() {
     // the large-combination-exhibit safety rule (an unknown Level 1 draw only
     // gets access to a genuinely empty logical exhibit).
     if (!hasSafeLevelOneDrawSpace()) return false;
+
+    // If preparation has already established that the Level 1 pool is empty,
+    // physical enclosure space must not keep Draw enabled.
+    if (
+        state.nextDrawSpec == null &&
+        state.nextDrawReadyPromise &&
+        chooseNextLevelOneSpec() == null
+    ) {
+        return false;
+    }
 
     // If the exact next card is known, it must additionally have a destination
     // that is genuinely unreserved. canPlace() is intentionally physical-only
@@ -8569,7 +8579,7 @@ function importGameState(saveData, { deferRender = false } = {}) {
     exitHistoryView(false);
     state.suppressHistoryCapture = true;
 
-    // V220.27 removes the old Hand subsystem. Older saves may still contain
+    // V220.29 removes the old Hand subsystem. Older saves may still contain
     // one or more pending hand-card references; remember their ids solely for
     // one-time migration after the normal zoo state has been restored.
     const legacyHandIds = new Set(
@@ -8603,7 +8613,7 @@ function importGameState(saveData, { deferRender = false } = {}) {
     normaliseLoadedGameCollections();
     relinkLoadedPlayerReferences();
 
-    // One-time compatibility migration for pre-V220.27 saves. Modern gameplay
+    // One-time compatibility migration for pre-V220.29 saves. Modern gameplay
     // never creates an unplaced owned animal: draw, upgrade and incoming-trade
     // actions commit only after a legal destination is known.
     for (const id of legacyHandIds) {
@@ -11356,6 +11366,138 @@ zooBoard.addEventListener(
 
 
 // ============================================================
+// LEVEL 1 DRAW COMMIT — V220.29
+// ============================================================
+//
+// The draw UI already called drawLevelOne()/createLevelOneForDraw(), but those
+// commit functions had disappeared from the current lineage. That meant the
+// drag image could be removed on pointer-up and then JavaScript stopped before
+// the animal was committed. Keep the prepared card transactional: validate its
+// exact destination first, consume it only when placement can succeed.
+
+function isDrawSafeDestinationForAnimal(animal, enclosure, slotIndex) {
+    if (!animal || !enclosure || slotIndex == null) return false;
+    if (!state.sandboxMode && enclosure.number === 10 && !state.enclosure10Unlocked) return false;
+
+    const group = enclosureGroupForSlot(enclosure, slotIndex);
+    if (!group) return false;
+
+    // Reservations are logical occupancy and may never become capacity for a
+    // newly drawn animal.
+    const hasReservation = state.animals.some(existing =>
+        existing?.reservedEnclosureId === enclosure.id &&
+        group.includes(existing.reservedSlotIndex)
+    );
+    if (hasReservation) return false;
+
+    // Draws may use a single empty exhibit, or a completely empty large
+    // exhibit. Existing mixed-exhibit occupants do not count as safe capacity
+    // for an unknown/new Level 1 card.
+    if (group.length > 1) {
+        if (animalsInEnclosureGroup(enclosure, group, null, true).length > 0) return false;
+    } else if (animalAtSlot(enclosure.id, slotIndex, null, true)) {
+        return false;
+    }
+
+    return canPlace(animal, enclosure, slotIndex);
+}
+
+function drawSafeDestinationsForAnimal(animal) {
+    const result = [];
+    for (const enclosure of state.enclosures) {
+        for (const slotIndex of getAllSlots(enclosure)) {
+            if (isDrawSafeDestinationForAnimal(animal, enclosure, slotIndex)) {
+                result.push({ enclosure, slotIndex });
+            }
+        }
+    }
+    return result;
+}
+
+async function createLevelOneForDraw(destination) {
+    if (!destination?.enclosure || destination.slotIndex == null) return false;
+    if (hasPendingPlayerAction()) return false;
+
+    await prepareNextDrawAsset();
+    const spec = state.nextDrawSpec;
+    if (!spec) {
+        refreshDrawAvailabilityState();
+        return false;
+    }
+
+    // IMPORTANT: do not consume nextDrawSpec before this check. A failed drop
+    // must leave the exact same card available rather than making it vanish.
+    if (!isDrawSafeDestinationForAnimal(
+        spec,
+        destination.enclosure,
+        destination.slotIndex
+    )) {
+        refreshDrawAvailabilityState();
+        return false;
+    }
+
+    const committedSpec = await consumePreparedDrawSpec();
+    if (!committedSpec) {
+        refreshDrawAvailabilityState();
+        return false;
+    }
+
+    const animal = createAnimal(
+        committedSpec.category,
+        1,
+        committedSpec.filename
+    );
+
+    // The exact same destination was validated immediately above. If some
+    // future code changes that assumption, fail loudly rather than silently
+    // consuming a draw.
+    if (!placeAnimal(animal, destination.enclosure, destination.slotIndex)) {
+        console.error('Validated Level 1 draw destination unexpectedly rejected placement.', {
+            animal, destination
+        });
+        // Restore the prepared card so the player never loses it.
+        state.nextDrawSpec = committedSpec;
+        state.nextDrawReadyPromise = preloadAnimalAsset(committedSpec);
+        refreshDrawAvailabilityState();
+        return false;
+    }
+
+    state.animals.push(animal);
+    markPlayerLevelSeen(animal.level);
+    markNewPlacementGlow(animal);
+    checkEnclosureReward(animal);
+    updateCollectionCohabitation();
+
+    state.turn++;
+    updateAutonomousOpponentOffer();
+    renderAll();
+
+    // Prepare the following card after the successful turn. This also makes
+    // Draw immediately reflect "no cards left" / exact-card compatibility.
+    prepareNextDrawAsset();
+    return true;
+}
+
+async function drawLevelOne() {
+    if (hasPendingPlayerAction()) return false;
+
+    await prepareNextDrawAsset();
+    const spec = state.nextDrawSpec;
+    if (!spec) {
+        refreshDrawAvailabilityState();
+        return false;
+    }
+
+    const destinations = drawSafeDestinationsForAnimal(spec);
+    if (!destinations.length) {
+        refreshDrawAvailabilityState();
+        return false;
+    }
+
+    return createLevelOneForDraw(randomItem(destinations));
+}
+
+// ============================================================
 // DRAW LEVEL 1 — CLICK OR DRAG THE DECK CARD
 // ============================================================
 
@@ -11404,9 +11546,6 @@ async function finishDrawDrag(event) {
     const destination = levelOneDrawDropDestination(event, dragRect);
 
     if (!destination) {
-        setMessage?.(
-            uiText('That Level 1 card was not dropped on an empty single exhibit or completely empty large exhibit. No card was drawn.')
-        );
         renderAll?.();
         return;
     }
@@ -11416,9 +11555,6 @@ async function finishDrawDrag(event) {
     const placed = await createLevelOneForDraw(destination);
 
     if (!placed) {
-        setMessage?.(
-            uiText('The Level 1 card could not be placed in that exhibit. No turn was used.')
-        );
         renderAll?.();
     }
 }
@@ -11966,7 +12102,6 @@ drawCard?.addEventListener('pointerdown', event => {
     if (hasPendingPlayerAction()) {
         event.preventDefault();
         event.stopPropagation();
-        setMessage?.('Finish or return the current exchange/trade card before drawing a new card.');
         renderAll?.();
         return;
     }
@@ -11974,9 +12109,6 @@ drawCard?.addEventListener('pointerdown', event => {
     if (!nextLevelOneHasEligibleDestination()) {
         event.preventDefault();
         event.stopPropagation();
-        setMessage?.(
-            'No eligible enclosure space is available for the next Level 1 card.'
-        );
         renderAll?.();
         return;
     }
@@ -16526,6 +16658,35 @@ function loadNonEssentialGameData() {
     loadProvinceConnectionsInBackground();
 }
 
+function auditCriticalRuntimeFunctions() {
+    const required = {
+        drawLevelOne,
+        createLevelOneForDraw,
+        prepareNextDrawAsset,
+        consumePreparedDrawSpec,
+        renderAll,
+        renderZoo,
+        renderExchange,
+        renderTrade,
+        refreshDrawAvailabilityState,
+        startEnclosureDrag,
+        startAnimalDrag,
+        placeAnimal,
+        canPlace,
+        importGameState,
+        exportGameState,
+        openSaveLoadMenu,
+        openTradeHistoryMenu,
+        requestNewGame
+    };
+    const missing = Object.entries(required)
+        .filter(([, value]) => typeof value !== 'function')
+        .map(([name]) => name);
+    if (missing.length) {
+        throw new Error(`Zoo Curator startup audit: missing runtime function(s): ${missing.join(', ')}`);
+    }
+}
+
 async function startGame() {
     if (incomingOfferBox) incomingOfferBox.innerHTML =
         state.gameOptions.animalLanguage === 'nl'
@@ -16533,6 +16694,8 @@ async function startGame() {
             : '<span>INCOMING<br>OFFER</span>';
 
     try {
+        auditCriticalRuntimeFunctions();
+
         // Validate the critical DOM inside the guarded startup path. If Safari
         // executes this build against stale/incomplete HTML, report the actual
         // missing element instead of aborting JavaScript at top level.

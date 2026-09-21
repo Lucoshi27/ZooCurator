@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V214";
+const ZOO_CURATOR_VERSION = "V220.23";
 
 
 // ============================================================
@@ -513,6 +513,14 @@ const state = {
 };
 
 
+// Older/embedded WebKit builds may lack queueMicrotask. Several UI paths use
+// it before/around startup, so provide a Promise-based equivalent rather than
+// allowing a ReferenceError to abort the script.
+const enqueueMicrotask =
+    typeof queueMicrotask === 'function'
+        ? queueMicrotask.bind(globalThis)
+        : callback => Promise.resolve().then(callback);
+
 // ============================================================
 // DOM
 // ============================================================
@@ -576,10 +584,9 @@ function requireElement(element, id) {
 }
 
 
-requireElement(drawCard, 'drawCard');
-requireElement(zooBoard, 'zooBoard');
-requireElement(zooCanvas, 'zooCanvas');
-requireElement(handElement, 'hand');
+// Required-element validation belongs inside startGame()'s try/catch.
+// Keeping it at top level could abort the whole script before showFatal()
+// had any chance to replace the mobile loading screen with a useful error.
 
 // ============================================================
 // TRADE-ELIGIBLE CARD HIGHLIGHT
@@ -1496,21 +1503,37 @@ async function loadJson(
 ) {
     updateBootLoadingStatus('Loading Zoo Curator...', description);
 
+    // Use both AbortController and Promise.race. Some Safari versions can leave
+    // a fetch promise pending even after abort(), so the timeout promise is the
+    // authoritative escape hatch. The controller is still useful for cancelling
+    // network work on browsers that honour it immediately.
     const controller =
         typeof AbortController !== 'undefined' ? new AbortController() : null;
     let timeoutId = null;
 
-    if (controller && timeoutMs > 0) {
-        timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-    }
+    const request = fetch(
+        path,
+        controller
+            ? { signal: controller.signal, cache: 'no-store' }
+            : { cache: 'no-store' }
+    );
+
+    const timedRequest = timeoutMs > 0
+        ? Promise.race([
+            request,
+            new Promise((_, reject) => {
+                timeoutId = setTimeout(() => {
+                    if (controller) controller.abort();
+                    reject(new Error(
+                        `${path} did not finish loading within ${Math.round(timeoutMs / 1000)} seconds.`
+                    ));
+                }, timeoutMs);
+            })
+        ])
+        : request;
 
     try {
-        const response = await fetch(
-            path,
-            controller
-                ? { signal: controller.signal, cache: 'no-store' }
-                : { cache: 'no-store' }
-        );
+        const response = await timedRequest;
 
         if (!response.ok) {
             throw new Error(`Could not load ${path}. HTTP ${response.status}.`);
@@ -1524,10 +1547,7 @@ async function loadJson(
             );
         }
     } catch (error) {
-        if (
-            timeoutMs > 0 &&
-            (error?.name === 'AbortError' || controller?.signal?.aborted)
-        ) {
+        if (error?.name === 'AbortError') {
             throw new Error(
                 `${path} did not finish loading within ${Math.round(timeoutMs / 1000)} seconds.`
             );
@@ -1536,6 +1556,39 @@ async function loadJson(
     } finally {
         if (timeoutId !== null) clearTimeout(timeoutId);
     }
+}
+
+
+function loadOptionalJsonInBackground(path, timeoutMs = 8000) {
+    const controller =
+        typeof AbortController !== 'undefined' ? new AbortController() : null;
+    let timeoutId = null;
+
+    const fullRequest = (async () => {
+        const response = await fetch(
+            path,
+            controller
+                ? { signal: controller.signal, cache: 'no-store' }
+                : { cache: 'no-store' }
+        );
+        if (!response.ok) {
+            throw new Error(`Could not load ${path}. HTTP ${response.status}.`);
+        }
+        return await response.json();
+    })();
+
+    const timeout = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+            controller?.abort();
+            reject(new Error(
+                `${path} did not finish loading within ${Math.round(timeoutMs / 1000)} seconds.`
+            ));
+        }, timeoutMs);
+    });
+
+    return Promise.race([fullRequest, timeout]).finally(() => {
+        if (timeoutId !== null) clearTimeout(timeoutId);
+    });
 }
 
 
@@ -1604,8 +1657,9 @@ function loadRealZooDataInBackground() {
             return response.json();
         });
 
+    let timeoutId = null;
     const timeout = new Promise((_, reject) => {
-        setTimeout(
+        timeoutId = setTimeout(
             () => reject(
                 new Error(
                     `${path} did not finish loading within ${Math.round(timeoutMs / 1000)} seconds.`
@@ -1617,6 +1671,7 @@ function loadRealZooDataInBackground() {
 
     Promise.race([request, timeout])
         .then(data => {
+            if (timeoutId !== null) clearTimeout(timeoutId);
             const zoos = normaliseRealZooRecords(data?.zoos);
             if (!data || !zoos.length) {
                 throw new Error(`${path} does not contain any valid zoo records.`);
@@ -1635,7 +1690,7 @@ function loadRealZooDataInBackground() {
             // cached an empty offer set. Recompute them against the real data.
             state.tradeOfferCache.clear();
             if (tradeEligibleGlowActive || state.outgoingOfferTradeHoverActive) {
-                queueMicrotask(applyTradeEligibleGlow);
+                enqueueMicrotask(applyTradeEligibleGlow);
             }
 
             // If the player chose real opponents, refresh the passive opponent
@@ -1650,6 +1705,7 @@ function loadRealZooDataInBackground() {
             );
         })
         .catch(error => {
+            if (timeoutId !== null) clearTimeout(timeoutId);
             console.warn(
                 'Real zoo opponent database unavailable; game continues without it:',
                 error
@@ -2072,6 +2128,18 @@ function preloadImageUrl(url) {
             clearTimeout(timeoutId);
             image.onload = null;
             image.onerror = null;
+
+            // A timeout/network failure is transient. Do not permanently cache
+            // a failed preload promise for the rest of the session; a later
+            // request should be allowed to try this asset again.
+            if (!ok) {
+                enqueueMicrotask(() => {
+                    if (state.assetPreloadPromises.get(url) === promise) {
+                        state.assetPreloadPromises.delete(url);
+                    }
+                });
+            }
+
             resolve(ok);
         };
 
@@ -2117,34 +2185,6 @@ function preloadAnimals(animals) {
         (animals || [])
             .filter(Boolean)
             .map(preloadAnimalAsset)
-    );
-}
-
-// Startup-only progress counter for the images already present in the zoo.
-// A completed count advances whether an image loaded successfully or hit the
-// existing fail-safe, so a bad asset cannot leave the counter frozen forever.
-async function preloadAnimalsWithProgress(animals) {
-    const items = (animals || []).filter(Boolean);
-    const total = items.length;
-
-    updateBootLoadingStatus('Loading Zoo Curator...', `Loading image data 0/${total}`);
-
-    if (total === 0) return [];
-
-    let completed = 0;
-
-    return Promise.all(
-        items.map(animal =>
-            preloadAnimalAsset(animal).finally(() => {
-                completed += 1;
-                if (completed < total) {
-                    updateBootLoadingStatus(
-                        'Loading Zoo Curator...',
-                        `Loading image data ${completed}/${total}`
-                    );
-                }
-            })
-        )
     );
 }
 
@@ -2196,7 +2236,7 @@ function prepareNextDrawAsset() {
     // asynchronous preparation finishes, refresh the deck's disabled state.
     // Previously the UI could remain visually enabled until the next click/render.
     state.nextDrawReadyPromise.finally(() => {
-        queueMicrotask(() => refreshDrawAvailabilityState());
+        enqueueMicrotask(() => refreshDrawAvailabilityState());
     });
 
     return state.nextDrawReadyPromise;
@@ -3859,7 +3899,13 @@ function canPlaceStartingAnimal(animal, enclosure, slotIndex) {
 
 function hasSafeLevelOneDrawSpace() {
     return state.enclosures.some(enclosure => {
-        const groups = GROUPS[enclosure.filename] || [];
+        // GROUPS is keyed by enclosure NUMBER. Using enclosure.filename here
+        // silently missed the logical exhibit map and made Draw availability
+        // disagree with the actual enclosure rules.
+        if (!state.sandboxMode && enclosure.number === 10 && !state.enclosure10Unlocked) {
+            return false;
+        }
+        const groups = GROUPS[enclosure.number] || [];
 
         // GROUPS defines logical exhibits. A single-slot group is a normal
         // enclosure; a multi-slot group is one large shared enclosure.
@@ -4816,6 +4862,29 @@ function createStartingZoo() {
     }
 
     let placed = false;
+
+    // During the critical startup path compatibility JSON is deliberately
+    // loaded later in the background. Until it arrives, mixed exhibits cannot
+    // be proven compatible, so the recursive solver would only spend thousands
+    // of checks discovering that occupied groups are unavailable. Place into
+    // distinct empty exhibits directly when enough exist.
+    const compatibilityPairsReady =
+        Array.isArray(state.compatibilityData?.compatible_pairs) &&
+        state.compatibilityData.compatible_pairs.length > 0;
+
+    if (!compatibilityPairsReady && startupEnclosures.length >= state.animals.length) {
+        clearStartupPlacements();
+        const emptyDestinations = shuffle([...startupEnclosures]);
+
+        for (let i = 0; i < state.animals.length; i++) {
+            const entry = emptyDestinations[i];
+            const slotIndex = entry.group[0];
+            state.animals[i].enclosureId = entry.enclosure.id;
+            state.animals[i].slotIndex = slotIndex;
+        }
+        placed = true;
+    }
+
     const maxCollectionRepairs = Math.min(12, Math.max(4, startupRules.species));
 
     for (let attempt = 0; attempt <= maxCollectionRepairs && !placed; attempt++) {
@@ -5037,41 +5106,6 @@ function updatePrestigeDisplay() {
     Moving cards, moving enclosures, panning and zooming do
     NOT end a turn.
 */
-
-function endTurn() {
-    // Sandbox has no turn progression.
-    if (state.sandboxMode) {
-        updateTurnDisplay();
-        writeAutoResumeSnapshot();
-        return;
-    }
-
-    /*
-        First remove glow from enclosure rewards earned during
-        the previous turn-ending action.
-    */
-
-    state.glowingEnclosureIds.clear();
-
-    // Collection cohabitation journals mature on turn boundaries.
-    updateCollectionCohabitation();
-
-    state.turn++;
-    updateCollectionCohabitation();
-
-
-    updateTurnDisplay();
-
-    updateAutonomousOpponentOffer();
-
-    renderZoo();
-
-    // endTurn() bypasses renderAll(), so 's renderAll autosave hook
-    // missed ordinary turns that ended through this path.
-    writeAutoResumeSnapshot();
-
-}
-
 
 // ============================================================
 // EXCHANGE ELIGIBILITY
@@ -5560,11 +5594,18 @@ function localizeDocument() {
     }
 }
 
-const uiLocalisationObserver=new MutationObserver(()=>{
-    if(state?.gameOptions?.animalLanguage==='nl')queueMicrotask(localizeDocument);
-});
-window.addEventListener('DOMContentLoaded',()=>{
-    uiLocalisationObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
+const uiLocalisationObserver =
+    typeof MutationObserver !== 'undefined'
+        ? new MutationObserver(() => {
+            if (state?.gameOptions?.animalLanguage === 'nl') enqueueMicrotask(localizeDocument);
+        })
+        : null;
+window.addEventListener('DOMContentLoaded', () => {
+    uiLocalisationObserver?.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: true
+    });
 });
 
 function setupAnimalCard(
@@ -5572,6 +5613,10 @@ function setupAnimalCard(
     animal,
     location
 ) {
+
+    // All animation/glow decisions for this card belong to one DOM-build
+    // moment. Reuse one timestamp instead of repeatedly querying the clock.
+    const renderNow = Date.now();
 
     image.classList.add(
         'animal-card'
@@ -5600,7 +5645,7 @@ function setupAnimalCard(
     // DOM cards are recreated by renderZoo/renderHand. Reapply any active
     // compatibility-hover highlight from the shared timestamped state.
     if (state.compatibilityAnimalHoverIds?.has(animal.id)) {
-        const now = Date.now();
+        const now = renderNow;
 
         if (now < state.compatibilityAnimalHoverHoldUntil) {
             image.classList.add('compatibility-animal-match');
@@ -5680,7 +5725,7 @@ function setupAnimalCard(
         );
 
         const glowStarted = Number(state.newPlacementGlowStartedAt[animal.id] || 0);
-        const glowElapsed = glowStarted ? Date.now() - glowStarted : Infinity;
+        const glowElapsed = glowStarted ? renderNow - glowStarted : Infinity;
         if (glowElapsed >= 0 && glowElapsed < 4000) {
             image.classList.add('new-placement-glow');
             // renderZoo() rebuilds DOM nodes; resume instead of restarting.
@@ -5712,7 +5757,7 @@ function setupAnimalCard(
         );
 
         // After an animal drag ends, eligible glows fade smoothly back in.
-        if (Date.now() < state.exchangeGlowReturnUntil && state.exchangeGlowReturnIds?.has(animal.id)) {
+        if (renderNow < state.exchangeGlowReturnUntil && state.exchangeGlowReturnIds?.has(animal.id)) {
             image.classList.add('exchange-glow-return');
         }
 
@@ -5732,15 +5777,15 @@ function setupAnimalCard(
         // original drag-start timestamp instead of restarting it on every render.
         const elapsed = Math.max(
             0,
-            Date.now() - state.exchangeGlowDragStartedAt
+            renderNow - state.exchangeGlowDragStartedAt
         );
         image.style.animationDelay = `${-Math.min(elapsed, 2000)}ms`;
     } else if (
-        Date.now() < state.exchangeGlowContinueUntil &&
+        renderNow < state.exchangeGlowContinueUntil &&
         state.exchangeGlowContinueIds?.has(animal.id)
     ) {
         image.classList.add('exchange-drag-glow');
-        const elapsed = Math.max(0, Date.now() - state.exchangeGlowContinueStartedAt);
+        const elapsed = Math.max(0, renderNow - state.exchangeGlowContinueStartedAt);
         image.style.animationDelay = `${-elapsed}ms`;
     }
 
@@ -6976,13 +7021,20 @@ function renderZoo() {
         WORKSPACE_H + 'px';
 
 
+    // Compatibility legality can inspect enclosure groups and the full animal
+    // collection. Calculate the currently glowing destinations once per zoo
+    // render instead of repeating that work independently for every slot.
+    const compatibilityGlowKeys = currentCompatibilityGlowKeys();
+
+
     for (
         const enclosure
         of state.enclosures
     ) {
 
         renderEnclosure(
-            enclosure
+            enclosure,
+            compatibilityGlowKeys
         );
 
     }
@@ -7032,8 +7084,14 @@ function ensureSandboxConflictStyles() {
 // ============================================================
 
 function renderEnclosure(
-    enclosure
+    enclosure,
+    compatibilityGlowKeys = null
 ) {
+
+    // All compatibility-fade decisions in this enclosure belong to the same
+    // render frame. Reading the clock once avoids repeated renderNow calls
+    // for every slot and guarantees a consistent fade boundary across slots.
+    const renderNow = Date.now();
 
     const element =
         document.createElement(
@@ -7108,6 +7166,21 @@ function renderEnclosure(
     );
 
 
+    // Build the visible occupancy lookup once for this enclosure. Previously
+    // animalAtSlot(..., includeReserved=false) scanned the entire animal array
+    // separately for every slot during every zoo render.
+    const visibleAnimalsBySlot = new Map();
+    for (const animal of state.animals) {
+        if (
+            animal &&
+            animal.enclosureId === enclosure.id &&
+            animal.slotIndex !== null &&
+            animal.slotIndex !== undefined
+        ) {
+            visibleAnimalsBySlot.set(animal.slotIndex, animal);
+        }
+    }
+
     for (
         const slotIndex
         of getAllSlots(
@@ -7134,30 +7207,29 @@ function renderEnclosure(
         const compatibilityKey =
             slotCompatibilityGlowKey(enclosure.id, slotIndex);
 
-        if (slotIsCompatibilityMatch(enclosure, slotIndex)) {
-            slot.classList.add('compatibility-match-glow');
-        }
-        else if (
-            state.compatibilityGlowFadeKeys.has(compatibilityKey) &&
-            Date.now() < state.compatibilityGlowHoldUntil
+        if (
+            compatibilityGlowKeys
+                ? compatibilityGlowKeys.has(compatibilityKey)
+                : slotIsCompatibilityMatch(enclosure, slotIndex)
         ) {
             slot.classList.add('compatibility-match-glow');
         }
         else if (
             state.compatibilityGlowFadeKeys.has(compatibilityKey) &&
-            Date.now() < state.compatibilityGlowFadeUntil
+            renderNow < state.compatibilityGlowHoldUntil
+        ) {
+            slot.classList.add('compatibility-match-glow');
+        }
+        else if (
+            state.compatibilityGlowFadeKeys.has(compatibilityKey) &&
+            renderNow < state.compatibilityGlowFadeUntil
         ) {
             slot.classList.add('compatibility-match-glow-fading');
         }
 
 
         const animal =
-            animalAtSlot(
-                enclosure.id,
-                slotIndex,
-                null,
-                false
-            );
+            visibleAnimalsBySlot.get(slotIndex) || null;
 
 
         if (animal) {
@@ -7405,7 +7477,7 @@ function renderExchange() {
 
     // keep the alternating yellow action hint synchronized with the
     // same eligibility calculation that produces the three yellow card glows.
-    queueMicrotask(refreshYellowExchangeHintState);
+    enqueueMicrotask(refreshYellowExchangeHintState);
 
 
     const ready =
@@ -7622,8 +7694,6 @@ async function completeExchange(destination = null, autoPlace = false) {
     checkEnclosureReward(newAnimal);
     updateCollectionCohabitation();
     state.turn++;
-    updateCollectionCohabitation();
-    updateTurnDisplay();
     updateAutonomousOpponentOffer();
     renderAll();
     return true;
@@ -8001,9 +8071,11 @@ function applyProgressionHighlightClasses() {
 function renderProgressTracker() {
     let tracker = document.getElementById('progressTracker');
     if (!tracker) {
+        const actionMenu = document.getElementById('actionMenu');
+        if (!actionMenu) return;
         tracker = document.createElement('div');
         tracker.id = 'progressTracker';
-        document.getElementById('actionMenu').appendChild(tracker);
+        actionMenu.appendChild(tracker);
     }
 
     updateDiscoveredCategoryLevels();
@@ -8078,7 +8150,7 @@ function renderProgressTracker() {
 
     // The tracker is rebuilt as progression changes, so re-check the live
     // desktop header after the browser has laid out the new table.
-    queueMicrotask(() => {
+    enqueueMicrotask(() => {
         fitProgressTrackerAroundActions();
         positionOpponentTradeArea();
     });
@@ -8391,7 +8463,7 @@ function restoreAutoResumeSnapshot() {
 
     try {
         autoResumeWriteSuppressed = true;
-        importGameState(record.game);
+        importGameState(record.game, { deferRender: true });
 
         // zoocurator.nl has its own localStorage, separate from localhost.
         // An older production auto-resume snapshot can therefore contain the
@@ -8500,7 +8572,7 @@ function relinkLoadedPlayerReferences() {
     }
 }
 
-function importGameState(saveData) {
+function importGameState(saveData, { deferRender = false } = {}) {
     if (!saveData || !saveData.state) {
         throw new Error(uiText('This save file does not contain a valid Zoo Curator game.'));
     }
@@ -8545,6 +8617,20 @@ function importGameState(saveData) {
 
     document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
     document.body.classList.remove('history-viewing');
+
+    if (deferRender) {
+        // Startup will perform the first render once, after restoration is
+        // complete. Avoid rebuilding the entire zoo invisibly and scheduling a
+        // second history capture before the loading screen is removed.
+        state.suppressHistoryCapture = false;
+        if (saveData.view) {
+            state.pendingRestoredView = {
+                scrollLeft: Number(saveData.view.scrollLeft) || 0,
+                scrollTop: Number(saveData.view.scrollTop) || 0
+            };
+        }
+        return;
+    }
 
     renderAll();
 
@@ -8721,7 +8807,7 @@ function renderSaveSlots() {
 
         list.appendChild(row);
     }
-    queueMicrotask(localizeDocument);
+    enqueueMicrotask(localizeDocument);
 }
 
 function openSaveLoadMenu() {
@@ -8860,7 +8946,7 @@ function updateHistoryControls() {
             `Viewing Turn ${state.historyViewTurn} — READ ONLY`;
         if (returnButton) returnButton.disabled = false;
     }
-    queueMicrotask(localizeDocument);
+    enqueueMicrotask(localizeDocument);
 }
 
 function viewHistoricalTurn(turn) {
@@ -8992,23 +9078,30 @@ function refreshDrawAvailabilityState() {
         ? 'No eligible enclosure space is available for the next Level 1 card.'
         : (actionPending ? 'Finish the current exchange or trade first.' : '');
 
+    // A disabled action may never keep an already-running discovery glow.
+    if (
+        drawUnavailable &&
+        actionHintOverlay?.dataset?.hintTarget === 'drawCard'
+    ) {
+        removeActionHintOverlay();
+    }
+
     return !drawUnavailable;
 }
 
-function renderAll() {
+function renderAll(persist = true) {
 
     refreshDrawAvailabilityState();
 
 
     rotateOpponentTradeStocksIfNeeded();
-    updateDiscoveredCategoryLevels();
     refreshExchangeGlowSuppression();
     renderZoo();
     // renderZoo() recreates card nodes. Repaint whenever the hint is active,
     // including incoming-box hints and cases where layout/rendering happened
     // without a fresh mouseenter event.
     if ((tradeEligibleGlowActive || state.outgoingOfferTradeHoverActive) && !state.outgoingOffer) {
-        queueMicrotask(() => {
+        enqueueMicrotask(() => {
             if (tradeEligibleGlowActive || state.outgoingOfferTradeHoverActive) {
                 applyTradeEligibleGlow();
             }
@@ -9019,13 +9112,15 @@ function renderAll() {
     renderTrade();
     renderProgressTracker();
     updateTurnDisplay();
-    captureTurnSnapshot();
-    writeAutoResumeSnapshot();
+    if (persist) {
+        captureTurnSnapshot();
+        writeAutoResumeSnapshot();
+    }
 
     // render functions rebuild a number of menu/status nodes. Re-run
     // localisation after every full render so Dutch mode cannot leave freshly
     // rendered English labels behind, and English mode restores originals.
-    queueMicrotask(localizeDocument);
+    enqueueMicrotask(localizeDocument);
     if (state.loaded && !idleGuideSetupWasComplete) {
         idleGuideSetupWasComplete = true;
         armActionHint(blueHintInitialDelay());
@@ -10318,8 +10413,10 @@ function checkEnclosureReward(animal) {
 
     // The incoming/new animal has already been placed before this is called,
     // so reward eligibility can be determined entirely from current zoo state.
+    // Its callers finish by running renderAll(), which rebuilds the progression
+    // tracker. Rendering it here only built the same tracker twice per committed
+    // exchange/trade.
     checkCurrentProgressionRewards();
-    renderProgressTracker();
 }
 
 
@@ -10359,6 +10456,17 @@ function prepareExchangeGlowAfterAnimalDrag(drag) {
 // FINISH ANIMAL DRAG
 // ============================================================
 
+function renderAfterTransientAnimalDrag() {
+    // A cancelled drag/tap can temporarily remove a card from zoo/hand/
+    // exchange/trade DOM, so restore those visual components only. Do NOT
+    // capture turn history or autosave: no gameplay action was committed.
+    renderZoo();
+    renderHand();
+    renderExchange();
+    renderTrade();
+    enqueueMicrotask(localizeDocument);
+}
+
 function finishAnimalDrag(event) {
     const drag = state.drag;
     if (!drag || drag.type !== 'animal') return;
@@ -10383,7 +10491,11 @@ function finishAnimalDrag(event) {
             state.exchangeGlowFocusKey = exchangeGroupKey(animal);
         }
 
-        prepareExchangeGlowAfterAnimalDrag(drag); drag.image?.remove(); state.drag=null; renderAll(); return;
+        prepareExchangeGlowAfterAnimalDrag(drag);
+        drag.image?.remove();
+        state.drag = null;
+        renderAfterTransientAnimalDrag();
+        return;
     }
 
     let placed = tryDropOnOutgoingOffer(event, animal);
@@ -10392,18 +10504,27 @@ function finishAnimalDrag(event) {
     if (!placed) placed = tryDropOnEnclosure(event, animal);
     if (!placed) {
         restoreDraggedAnimal();
-    } else {
-        beginCompatibilityGlowFade(drag.compatibilityGlowKeys);
+
+        // A failed drop commits nothing. Restore the temporary drag visuals,
+        // but skip enclosure unlock/progression work, history capture and
+        // autosave that belong to real state changes.
+        clearExchangeGlowFocusIfIdle();
+        prepareExchangeGlowAfterAnimalDrag(drag);
+        drag.image?.remove();
+        state.drag = null;
+        renderAfterTransientAnimalDrag();
+        return;
     }
 
-    // If the selected exchange card was returned to the zoo and no exchange
-    // remains pending, restore all otherwise eligible yellow glows.
-    clearExchangeGlowFocusIfIdle();
+    beginCompatibilityGlowFade(drag.compatibilityGlowKeys);
 
+    // A successful drop is a real state change and keeps the existing commit
+    // path intact.
+    clearExchangeGlowFocusIfIdle();
     prepareExchangeGlowAfterAnimalDrag(drag);
-    drag.image?.remove(); state.drag=null;
+    drag.image?.remove();
+    state.drag = null;
     checkEnclosure10Unlock();
-    updateDiscoveredCategoryLevels();
     renderAll();
 }
 
@@ -10690,6 +10811,30 @@ function finishPan() {
 // ZOO POINTER DOWN
 // ============================================================
 
+// Native scrollbars belong to the browser, not to zoo panning. Because the
+// scrollbar is part of #zooBoard itself, event.target cannot distinguish a
+// click on the scrollbar from a click on empty board space. Detect the native
+// scrollbar gutters geometrically and let the browser handle them untouched.
+function pointerIsOnZooScrollbar(event) {
+    if (event.pointerType === 'touch') return false;
+
+    const rect = zooBoard.getBoundingClientRect();
+    const verticalScrollbarWidth = Math.max(0, zooBoard.offsetWidth - zooBoard.clientWidth);
+    const horizontalScrollbarHeight = Math.max(0, zooBoard.offsetHeight - zooBoard.clientHeight);
+
+    const onVerticalScrollbar =
+        verticalScrollbarWidth > 0 &&
+        event.clientX >= rect.right - verticalScrollbarWidth &&
+        event.clientX <= rect.right;
+
+    const onHorizontalScrollbar =
+        horizontalScrollbarHeight > 0 &&
+        event.clientY >= rect.bottom - horizontalScrollbarHeight &&
+        event.clientY <= rect.bottom;
+
+    return onVerticalScrollbar || onHorizontalScrollbar;
+}
+
 zooBoard.addEventListener(
     'pointerdown',
     event => {
@@ -10698,6 +10843,13 @@ zooBoard.addEventListener(
             event.button !== 0 &&
             event.button !== 1
         ) {
+            return;
+        }
+
+
+        if (pointerIsOnZooScrollbar(event)) {
+            // Do not preventDefault and do not start a pan. This gives native
+            // scrollbar dragging/clicking absolute priority over zoo panning.
             return;
         }
 
@@ -10868,8 +11020,7 @@ document.addEventListener(
             prepareExchangeGlowAfterAnimalDrag(cancelledDrag);
             state.drag = null;
 
-
-            renderAll();
+            renderAfterTransientAnimalDrag();
 
         }
         else if (
@@ -11016,10 +11167,12 @@ function zooPinchMidpoint(a, b) {
 
 function cancelAnimalDragForPinch() {
     if (state.drag?.type !== 'animal') return;
+    const cancelledDrag = state.drag;
     restoreDraggedAnimal();
+    prepareExchangeGlowAfterAnimalDrag(cancelledDrag);
     state.drag.image?.remove();
     state.drag = null;
-    renderAll();
+    renderAfterTransientAnimalDrag();
 }
 
 function beginZooPinchIfReady() {
@@ -11551,6 +11704,42 @@ function resumeHintGlowsAfterMenu() {
     refreshYellowExchangeHintState();
 }
 
+function anyOutgoingTradeAvailableForHint() {
+    if (
+        state.sandboxMode ||
+        state.historyViewTurn !== null ||
+        state.outgoingOffer ||
+        hasPendingPlayerAction()
+    ) {
+        return false;
+    }
+
+    // IMPORTANT: idle hints are display-only. Never run trade prediction,
+    // eligibility ranking, zoo-stock scans or materialisation from here.
+    //
+    // A spontaneous/autonomous offer is already live trade-system state, so
+    // checking whether one of our placed animals fits it is cheap and does not
+    // generate/predict an offer.
+    if (state.autonomousTradeOffer) {
+        return state.animals.some(animal =>
+            animal?.enclosureId != null &&
+            outgoingFitsAutonomousOffer(animal)
+        );
+    }
+
+    // Otherwise inspect ONLY results the normal trade system has already
+    // calculated for this exact animal/current three-turn offer window.
+    // cachedPlayerTradeOffers() is a Map lookup + clone; it does not calculate
+    // candidates, inspect zoo inventories, roll percentages or create offers.
+    for (const animal of state.animals) {
+        if (animal?.enclosureId == null) continue;
+        const cached = cachedPlayerTradeOffers(animal);
+        if (Array.isArray(cached) && cached.length > 0) return true;
+    }
+
+    return false;
+}
+
 function actionHintTarget() {
     if (!state.loaded) return null;
 
@@ -11562,7 +11751,8 @@ function actionHintTarget() {
         drawCard.getAttribute('aria-disabled') !== 'true' &&
         !drawCard.classList.contains('draw-no-space');
 
-    return drawEnabled ? drawCard : outgoingOfferBox;
+    if (drawEnabled) return drawCard;
+    return anyOutgoingTradeAvailableForHint() ? outgoingOfferBox : null;
 }
 
 function showActionHintNow() {
@@ -11594,6 +11784,7 @@ function showActionHintNow() {
 
     const ring = document.createElement('div');
     ring.setAttribute('data-zoo-action-hint', 'true');
+    ring.dataset.hintTarget = target.id || '';
     Object.assign(ring.style, {
         position: 'fixed',
         left: `${rect.left - 8}px`,
@@ -11708,7 +11899,7 @@ for (const target of exchangeEligibilityHoverTargets) {
     });
 }
 
-drawCard.addEventListener('pointerdown', event => {
+drawCard?.addEventListener('pointerdown', event => {
     if (event.button !== 0) return;
 
     // immediate visual feedback as soon as this draw is committed.
@@ -12550,6 +12741,14 @@ function ensureGenerateZooUI() {
     });
 
     overlay._applyZooIdentity = applyIdentity;
+    overlay._refreshZooCountries = () => {
+        const countries = zooSetupCountries();
+        if (!countries.length) return;
+        const preferred = countries.includes(country.value)
+            ? country.value
+            : (countries.includes('Netherlands') ? 'Netherlands' : countries[0]);
+        applyIdentity(generateZooSetupIdentity(preferred, true));
+    };
     overlay._syncZooSize = () => {
         // New Zoo always opens at the standard 20% preset. The user's previous
         // zoo size is deliberately not carried into the next New Zoo dialog.
@@ -13530,7 +13729,6 @@ function generateRealZooTradeOffers(outgoing, pendingEmergencyTrade = null) {
         }];
         state.selectedTradeOpponent = 0;
         renderTrade();
-        renderOpponentTradeState();
         return;
     }
 
@@ -13552,10 +13750,10 @@ function generateRealZooTradeOffers(outgoing, pendingEmergencyTrade = null) {
     }));
     state.selectedTradeOpponent = state.tradeOffers.length ? 0 : null;
 
-    preloadAnimals(state.tradeOffers.map(offer => offer.animal)).then(() => {
-        renderTrade();
-        renderOpponentTradeState();
-    });
+    renderTrade();
+    // Offer state is complete now. The rendered <img> elements load normally;
+    // preloading is only a background cache warm-up and must never delay the UI.
+    preloadAnimals(state.tradeOffers.map(offer => offer.animal));
 }
 
 function createRealAutonomousOpponentOffer() {
@@ -13610,7 +13808,6 @@ function createRealAutonomousOpponentOffer() {
     state.selectedTradeOpponent = 0;
     state.tradeOffers = [];
     renderTrade();
-    renderOpponentTradeState();
     return true;
 }
 
@@ -14393,7 +14590,7 @@ function openRealZooDirectory() {
     }
 
     overlay.style.display = 'flex';
-    queueMicrotask(localizeDocument);
+    enqueueMicrotask(localizeDocument);
 }
 
 function showOpponentInfoPopup(index, anchor) {
@@ -14522,7 +14719,7 @@ function openTradeHistoryMenu() {
 
     overlay.style.display = 'flex';
     refreshTradeAnimalHighlights();
-    queueMicrotask(localizeDocument);
+    enqueueMicrotask(localizeDocument);
 }
 
 function closeTradeHistoryMenu(resumeHints = true) {
@@ -14831,7 +15028,6 @@ function clearAutonomousOpponentOffer(resetTimer = true) {
     state.autonomousTradeOffer = null;
     if (resetTimer) scheduleNextAutonomousOpponentOffer();
     renderTrade();
-    renderOpponentTradeState();
 }
 
 function createAutonomousOpponentOffer() {
@@ -14873,7 +15069,6 @@ function createAutonomousOpponentOffer() {
     state.selectedTradeOpponent = opponentIndex;
     state.tradeOffers = [];
     renderTrade();
-    renderOpponentTradeState();
     return true;
 }
 
@@ -15012,7 +15207,6 @@ function generateOpponentTradeOffers(outgoing, pendingEmergencyTrade = null) {
         // Do not cache emergency rescue offers: the rescue condition is
         // state-dependent and should disappear as soon as the deadlock does.
         renderTrade();
-        renderOpponentTradeState();
         return;
     }
 
@@ -15025,10 +15219,10 @@ function generateOpponentTradeOffers(outgoing, pendingEmergencyTrade = null) {
         ? state.tradeOffers.map(o => o.opponentIndex).sort((a, b) => a - b)[0]
         : null;
 
-    preloadAnimals(state.tradeOffers.map(offer => offer.animal)).then(() => {
-        renderTrade();
-        renderOpponentTradeState();
-    });
+    renderTrade();
+    // Offer state is complete now. The rendered <img> elements load normally;
+    // preloading is only a background cache warm-up and must never delay the UI.
+    preloadAnimals(state.tradeOffers.map(offer => offer.animal));
 }
 
 function selectedTradeOffer() {
@@ -15161,17 +15355,16 @@ function autoSelectOutgoingOfferAnimal() {
     // immediately. Preloading only improves the image and can no longer decide
     // whether the trade exists.
     renderTrade();
-    renderOpponentTradeState();
-    preloadAnimals(state.tradeOffers.map(offer => offer.animal)).then(() => {
-        renderTrade();
-        renderOpponentTradeState();
-    });
+    // The existing <img> elements load their src asynchronously on their own.
+    // Warm the same assets in the background, but do not rebuild the complete
+    // trade UI merely because the preload promise finished.
+    preloadAnimals(state.tradeOffers.map(offer => offer.animal));
     return true;
 }
 
 // Clicking/tapping the empty Outgoing Offer box is a shortcut for choosing a
 // random zoo animal that is already known to have at least one valid offer.
-outgoingOfferBox.addEventListener('click', event => {
+outgoingOfferBox?.addEventListener('click', event => {
     if (state.drag || state.pan) return;
     if (state.outgoingOffer) return;
 
@@ -15194,7 +15387,7 @@ function releaseHoverPreviewForTradeControls() {
     scheduleHoverPreviewHide();
 }
 
-outgoingOfferBox.addEventListener('mouseenter', () => {
+outgoingOfferBox?.addEventListener('mouseenter', () => {
     releaseHoverPreviewForTradeControls();
 
     if (state.sandboxMode) return;
@@ -15208,7 +15401,7 @@ outgoingOfferBox.addEventListener('mouseenter', () => {
     }
 });
 
-outgoingOfferBox.addEventListener('mouseleave', () => {
+outgoingOfferBox?.addEventListener('mouseleave', () => {
     if (state.sandboxMode) return;
 
     state.outgoingOfferTradeHoverActive = false;
@@ -15222,7 +15415,7 @@ outgoingOfferBox.addEventListener('mouseleave', () => {
 
 // Keep Incoming Offer consistent with Outgoing Offer. It does not need the
 // outgoing blue-glow state, but it must release any preview hide cancellation.
-incomingOfferBox.addEventListener('mouseenter', () => {
+incomingOfferBox?.addEventListener('mouseenter', () => {
     releaseHoverPreviewForTradeControls();
 });
 
@@ -15310,7 +15503,9 @@ function startTradeResultDrag(event) {
         offsetY:event.clientY-rect.top
     };
     moveTradeResultDragImage(event);
-    renderAll();
+    // No render here. Releasing the outgoing slot reservation is deliberately
+    // temporary drag state and has no visible DOM effect. In particular, do
+    // not let renderAll() snapshot/autosave this mid-drag state.
 }
 function moveTradeResultDragImage(event){if(state.drag?.type!=='trade-result')return;state.drag.image.style.left=`${event.clientX-state.drag.offsetX}px`;state.drag.image.style.top=`${event.clientY-state.drag.offsetY}px`;}
 function acceptSelectedTrade(destination=null, autoPlace=false) {
@@ -15414,7 +15609,6 @@ function acceptSelectedTrade(destination=null, autoPlace=false) {
 
     updateCollectionCohabitation();
     state.turn++;
-    updateCollectionCohabitation();
     updateAutonomousOpponentOffer();
     renderAll();
     return true;
@@ -15434,7 +15628,6 @@ function finishTradeResultDrag(event) {
                 drag.releasedOutgoingReservation.enclosureId,
                 drag.releasedOutgoingReservation.slotIndex
             );
-            renderAll();
         }
         return;
     }
@@ -15456,7 +15649,6 @@ function finishTradeResultDrag(event) {
                 drag.releasedOutgoingReservation.enclosureId,
                 drag.releasedOutgoingReservation.slotIndex
             );
-            renderAll();
         }
     } else {
         // Cancelled/invalid drop: the trade has not happened, so put the
@@ -15468,7 +15660,7 @@ function finishTradeResultDrag(event) {
                 drag.releasedOutgoingReservation.slotIndex
             );
         }
-        renderAll();
+        // Invalid/cancelled drop changed no visible state, so no render/save.
     }
 }
 function setupOpponentTradeClicks() {
@@ -15933,6 +16125,7 @@ function assignZooNames() {
 
         state.zooName =
             'Wildlife Park';
+        state.zooNameWasStartupFallback = true;
 
 
         state.opponentNames = [
@@ -15944,6 +16137,7 @@ function assignZooNames() {
     }
     else {
 
+        state.zooNameWasStartupFallback = false;
         state.zooName =
             pool[0];
 
@@ -16026,19 +16220,19 @@ function centerInitialView() {
 }
 
 
-hoverPreview.addEventListener('mouseenter', () => {
+hoverPreview?.addEventListener('mouseenter', () => {
     if (window.matchMedia('(max-width: 700px)').matches) return;
     cancelHoverPreviewHide();
     setHoverPreviewSuperZoom(true);
 });
 
-hoverPreview.addEventListener('mouseleave', () => {
+hoverPreview?.addEventListener('mouseleave', () => {
     if (window.matchMedia('(max-width: 700px)').matches) return;
     setHoverPreviewSuperZoom(false);
     scheduleHoverPreviewHide();
 });
 
-hoverPreview.addEventListener('click', event => {
+hoverPreview?.addEventListener('click', event => {
     if (event.target.closest('#wikiPreviewLink, #ztlPreviewLink, #animalInformationZtlLink, .animal-info-tab, .ztl-record')) return;
 
     // normal click still flips the card, but a click-drag text selection
@@ -16164,27 +16358,42 @@ document.addEventListener('pointerdown', event => {
 
 // renderTrade/renderOpponentTradeState change these nodes whenever a player
 // places/removes a trade card or an opponent creates/cancels an offer.
-const mobileTradeObserver = new MutationObserver(() => {
-    refreshMobileTradeAreaVisibility();
-});
+let mobileTradeMutationFrame = 0;
+const mobileTradeObserver =
+    typeof MutationObserver !== 'undefined'
+        ? new MutationObserver(() => {
+            if (mobileTradeMutationFrame) return;
+            mobileTradeMutationFrame = requestAnimationFrame(() => {
+                mobileTradeMutationFrame = 0;
+                refreshMobileTradeAreaVisibility();
+            });
+        })
+        : null;
 
-if (outgoingOfferBox) {
+if (outgoingOfferBox && mobileTradeObserver) {
     mobileTradeObserver.observe(outgoingOfferBox, { childList: true, subtree: true });
 }
-if (incomingOfferBox) {
+if (incomingOfferBox && mobileTradeObserver) {
     mobileTradeObserver.observe(incomingOfferBox, { childList: true, subtree: true });
 }
 const mobileOpponentZoos = document.getElementById('opponentZoos');
-if (mobileOpponentZoos) {
+if (mobileOpponentZoos && mobileTradeObserver) {
     mobileTradeObserver.observe(mobileOpponentZoos, {
         childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['style', 'class']
+        subtree: true
     });
 }
 
-window.addEventListener('resize', refreshMobileTradeAreaVisibility);
+// Resize/orientation changes can fire in bursts on iOS Safari. Coalesce them
+// into one visibility check per animation frame.
+let mobileTradeResizeFrame = 0;
+window.addEventListener('resize', () => {
+    if (mobileTradeResizeFrame) return;
+    mobileTradeResizeFrame = requestAnimationFrame(() => {
+        mobileTradeResizeFrame = 0;
+        refreshMobileTradeAreaVisibility();
+    });
+});
 setTimeout(refreshMobileTradeAreaVisibility, 0);
 
 
@@ -16211,7 +16420,9 @@ function loadNonEssentialGameData() {
             rebuildCompatibilityGraphs();
             rebuildCompatibilityEvidenceIndex();
             ensureCompatibilityGlowStyles();
-            renderAll();
+            // Compatibility is consulted live by placement/hover code.
+            // Rebuilding the entire zoo here was redundant and could cause a
+            // visible hitch just after startup on mobile Safari.
         })
         .catch(error => console.warn('Compatibility rules unavailable:', error));
 
@@ -16231,9 +16442,27 @@ function loadNonEssentialGameData() {
             // The expanded European database can provide country, location,
             // prefix and zoo-type information for New Zoo.
             state.zooNamesData = data;
-            if (repairLoadedZooName()) {
+
+            const repairFreshFallback = Boolean(state.zooNameWasStartupFallback);
+            if (repairFreshFallback) {
+                const pool = buildZooNamePool(state.zooNamesData);
+                if (pool.length) {
+                    state.zooName = randomItem(pool);
+                    state.zooNameWasStartupFallback = false;
+                    createZooNameEditor();
+                    writeAutoResumeSnapshot(true);
+                }
+            } else if (repairLoadedZooName()) {
                 createZooNameEditor();
                 writeAutoResumeSnapshot(true);
+            }
+
+            // If New Zoo was opened before this background file arrived, its
+            // country picker was built from the Netherlands-only fallback.
+            // Refresh it immediately from the now-complete country database.
+            const newZooOverlay = document.getElementById('generateZooOverlay');
+            if (newZooOverlay?._refreshZooCountries) {
+                newZooOverlay._refreshZooCountries();
             }
         })
         .catch(error => console.warn('Zoo names unavailable; using built-in fallbacks:', error));
@@ -16255,14 +16484,30 @@ async function startGame() {
             : '<span>INCOMING<br>OFFER</span>';
 
     try {
+        // Validate the critical DOM inside the guarded startup path. If Safari
+        // executes this build against stale/incomplete HTML, report the actual
+        // missing element instead of aborting JavaScript at top level.
+        requireElement(gameApp, 'gameApp');
+        requireElement(drawCard, 'drawCard');
+        requireElement(zooBoard, 'zooBoard');
+        requireElement(zooCanvas, 'zooCanvas');
+        requireElement(handElement, 'hand');
+        requireElement(turnOrder, 'turnOrder');
+        requireElement(exchange1, 'exchange1');
+        requireElement(exchange2, 'exchange2');
+        requireElement(resultBox, 'result');
+        requireElement(outgoingOfferBox, 'outgoingOffer');
+        requireElement(incomingOfferBox, 'ingoingOffer');
+        requireElement(document.getElementById('actionMenu'), 'actionMenu');
+
         // asset-inventory.json is the one external data file required to build
         // an actual playable zoo. Everything else starts in the background.
-        updateBootLoadingStatus('Starting Zoo Curator...', 'Loading animal cards...');
+        updateBootLoadingStatus('Loading Zoo Curator...', 'Loading animal inventory...');
 
         state.inventory = await loadJson(
-            'asset-inventory.json',
-            'Loading animal cards...',
-            10000
+            `asset-inventory.json?v=${encodeURIComponent(ZOO_CURATOR_VERSION)}`,
+            'Loading animal inventory...',
+            12000
         );
 
         const availableCategories = Object.keys(FOLDERS).filter(
@@ -16312,12 +16557,13 @@ async function startGame() {
             createZooNameEditor();
         }
 
-        // Make startup progress visible on mobile instead of showing only a
-        // generic image-loading message.
-        await preloadAnimalsWithProgress(state.animals);
-
+        // Animal images are an optimisation, not a startup dependency.
+        // Render the playable zoo immediately; individual cards already have
+        // their Back.png/loading fallback while their real image arrives.
+        // This removes up to several seconds from cold-start time on mobile
+        // Safari and prevents one slow image from holding the whole app open.
         document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
-        renderAll();
+        renderAll(false);
         state.loaded = true;
 
         // the game is now genuinely playable. The old hint code waited
@@ -16327,10 +16573,7 @@ async function startGame() {
         idleGuideSetupWasComplete = true;
         armActionHint(blueHintInitialDelay());
 
-        // Tell the independent HTML startup watchdog that JavaScript has
-        // successfully reached the playable state. Without this flag the
-        // 20-second watchdog overlays the already-running game and makes it
-        // appear frozen.
+        // Expose the ready state for lightweight deployment diagnostics.
         window.__zooGameReady = true;
 
         if (!resumedPreviousZoo) {
@@ -16338,7 +16581,17 @@ async function startGame() {
         }
 
         gameApp.classList.add('visible');
-        centerInitialView();
+
+        if (resumedPreviousZoo && state.pendingRestoredView) {
+            const restoredView = state.pendingRestoredView;
+            state.pendingRestoredView = null;
+            requestAnimationFrame(() => {
+                zooBoard.scrollLeft = restoredView.scrollLeft;
+                zooBoard.scrollTop = restoredView.scrollTop;
+            });
+        } else {
+            centerInitialView();
+        }
 
         // once the playable zoo is visible, remove the loading overlay
         // immediately. Do not paint a transient "Zoo Curator ready!" frame on
@@ -16349,7 +16602,19 @@ async function startGame() {
         }
 
         // Nothing below this line is allowed to delay the visible/playable zoo.
+        // Warm the starting animal images only after first paint. The cards'
+        // normal image loader remains authoritative, so this is safe to skip
+        // or time out and does not alter game state.
         setTimeout(() => {
+            // Persist only after the first playable frame. localStorage writes
+            // and snapshot cloning are synchronous and can be noticeable on
+            // mobile Safari with a developed zoo.
+            captureTurnSnapshot();
+            writeAutoResumeSnapshot();
+
+            preloadAnimals(state.animals).catch(error => {
+                console.warn('Background starting-image preload failed:', error);
+            });
             loadNonEssentialGameData();
             prepareNextDrawAsset();
         }, 0);

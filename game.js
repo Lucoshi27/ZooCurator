@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V220.29";
+const ZOO_CURATOR_VERSION = "V220.31";
 
 
 // ============================================================
@@ -1495,24 +1495,39 @@ async function loadJson(
 ) {
     updateBootLoadingStatus('Loading Zoo Curator...', description);
 
-    // Use both AbortController and Promise.race. Some Safari versions can leave
-    // a fetch promise pending even after abort(), so the timeout promise is the
-    // authoritative escape hatch. The controller is still useful for cancelling
-    // network work on browsers that honour it immediately.
+    // The timeout must cover the ENTIRE operation, including reading and
+    // parsing the response body. Racing fetch() alone only protects the wait
+    // for response headers; Safari can otherwise hang indefinitely in
+    // response.json() after the timeout has effectively been disarmed.
     const controller =
         typeof AbortController !== 'undefined' ? new AbortController() : null;
     let timeoutId = null;
 
-    const request = fetch(
-        path,
-        controller
-            ? { signal: controller.signal, cache: 'no-store' }
-            : { cache: 'no-store' }
-    );
+    const fullRequest = (async () => {
+        const response = await fetch(
+            path,
+            controller
+                ? { signal: controller.signal, cache: 'no-store' }
+                : { cache: 'no-store' }
+        );
+
+        if (!response.ok) {
+            throw new Error(`Could not load ${path}. HTTP ${response.status}.`);
+        }
+
+        try {
+            return await response.json();
+        } catch (error) {
+            if (error?.name === 'AbortError') throw error;
+            throw new Error(
+                `${path} was found but could not be read as JSON: ${error.message}`
+            );
+        }
+    })();
 
     const timedRequest = timeoutMs > 0
         ? Promise.race([
-            request,
+            fullRequest,
             new Promise((_, reject) => {
                 timeoutId = setTimeout(() => {
                     if (controller) controller.abort();
@@ -1522,22 +1537,10 @@ async function loadJson(
                 }, timeoutMs);
             })
         ])
-        : request;
+        : fullRequest;
 
     try {
-        const response = await timedRequest;
-
-        if (!response.ok) {
-            throw new Error(`Could not load ${path}. HTTP ${response.status}.`);
-        }
-
-        try {
-            return await response.json();
-        } catch (error) {
-            throw new Error(
-                `${path} was found but could not be read as JSON: ${error.message}`
-            );
-        }
+        return await timedRequest;
     } catch (error) {
         if (error?.name === 'AbortError') {
             throw new Error(
@@ -8579,7 +8582,7 @@ function importGameState(saveData, { deferRender = false } = {}) {
     exitHistoryView(false);
     state.suppressHistoryCapture = true;
 
-    // V220.29 removes the old Hand subsystem. Older saves may still contain
+    // V220.31 removes the old Hand subsystem. Older saves may still contain
     // one or more pending hand-card references; remember their ids solely for
     // one-time migration after the normal zoo state has been restored.
     const legacyHandIds = new Set(
@@ -8613,7 +8616,7 @@ function importGameState(saveData, { deferRender = false } = {}) {
     normaliseLoadedGameCollections();
     relinkLoadedPlayerReferences();
 
-    // One-time compatibility migration for pre-V220.29 saves. Modern gameplay
+    // One-time compatibility migration for pre-V220.31 saves. Modern gameplay
     // never creates an unplaced owned animal: draw, upgrade and incoming-trade
     // actions commit only after a legal destination is known.
     for (const id of legacyHandIds) {
@@ -11366,7 +11369,7 @@ zooBoard.addEventListener(
 
 
 // ============================================================
-// LEVEL 1 DRAW COMMIT — V220.29
+// LEVEL 1 DRAW COMMIT — V220.31
 // ============================================================
 //
 // The draw UI already called drawLevelOne()/createLevelOneForDraw(), but those
@@ -16659,33 +16662,33 @@ function loadNonEssentialGameData() {
 }
 
 function auditCriticalRuntimeFunctions() {
-    const required = {
-        drawLevelOne,
-        createLevelOneForDraw,
-        prepareNextDrawAsset,
-        consumePreparedDrawSpec,
-        renderAll,
-        renderZoo,
-        renderExchange,
-        renderTrade,
-        refreshDrawAvailabilityState,
-        startEnclosureDrag,
-        startAnimalDrag,
-        placeAnimal,
-        canPlace,
-        importGameState,
-        exportGameState,
-        openSaveLoadMenu,
-        openTradeHistoryMenu,
-        requestNewGame
-    };
-    const missing = Object.entries(required)
-        .filter(([, value]) => typeof value !== 'function')
-        .map(([name]) => name);
+    const requiredNames = [
+        'drawLevelOne',
+        'createLevelOneForDraw',
+        'prepareNextDrawAsset',
+        'consumePreparedDrawSpec',
+        'renderAll',
+        'renderZoo',
+        'renderExchange',
+        'renderTrade',
+        'refreshDrawAvailabilityState',
+        'startEnclosureDrag',
+        'startAnimalDrag',
+        'placeAnimal',
+        'canPlace',
+        'importGameState',
+        'openSaveLoadMenu',
+        'openTradeHistoryMenu',
+        'requestNewGame'
+    ];
+
+    const missing = requiredNames.filter(name => typeof globalThis[name] !== 'function');
+
     if (missing.length) {
         throw new Error(`Zoo Curator startup audit: missing runtime function(s): ${missing.join(', ')}`);
     }
 }
+
 
 async function startGame() {
     if (incomingOfferBox) incomingOfferBox.innerHTML =

@@ -1,5 +1,5 @@
 
-<!-- ZOO CURATOR V220.27 -->
+<!-- ZOO CURATOR V220.86 -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +22,7 @@
         // One deployment key for the complete app shell. Change only when a
         // new build is deployed, so Safari cannot mix files from two builds.
         (function () {
-            var version = 'V220.27';
+            var version = 'V220.86';
             window.__zooBuildVersion = version;
             var stylesheet = document.createElement('link');
             stylesheet.rel = 'stylesheet';
@@ -253,24 +253,34 @@
          ===================================================== -->
     <script>
         (function () {
-            var version = String(window.__zooBuildVersion || 'V220.27');
+            var version = String(window.__zooBuildVersion || 'V220.86');
+
+            function loadGame() {
+                var game = document.createElement('script');
+                game.src = './game.js?v=' + encodeURIComponent(version);
+                game.async = false;
+                game.onerror = function () {
+                    var status = document.getElementById('bootStatus');
+                    var detail = document.getElementById('bootDetail');
+                    if (status) status.textContent = 'Zoo Curator could not load game.js.';
+                    if (detail) detail.textContent = 'Reload the page. If this remains, check that game.js is deployed beside index.html.';
+                };
+                document.body.appendChild(game);
+            }
 
             var translations = document.createElement('script');
-            translations.src = './translations-nl.js?v=' + version;
+            translations.src = './translations-nl.js?v=' + encodeURIComponent(version);
+            translations.async = false;
+            translations.onload = function () {
+                window.__zooTranslationBuildVersion = version;
+                loadGame();
+            };
             translations.onerror = function () {
                 console.warn('Dutch translations unavailable; continuing in English.');
+                window.__zooTranslationBuildVersion = 'unavailable';
+                loadGame();
             };
             document.body.appendChild(translations);
-
-            var game = document.createElement('script');
-            game.src = './game.js?v=' + version;
-            game.onerror = function () {
-                var status = document.getElementById('bootStatus');
-                var detail = document.getElementById('bootDetail');
-                if (status) status.textContent = 'Zoo Curator could not load game.js.';
-                if (detail) detail.textContent = 'Reload the page. If this remains, check that game.js is deployed beside index.html.';
-            };
-            document.body.appendChild(game);
         }());
     </script>
 

@@ -2986,10 +2986,8 @@
             "name": "Dolfinarium Harderwijk",
             "tier": 4,
             "preferred_categories": [
-              "Marine Mania",
-              "Other Mammals",
-              "Carnivora"
-            ],
+              "Marine Mania"
+],
             "animals": [
               "Bottlenose Dolphin",
               "Grey Seal",

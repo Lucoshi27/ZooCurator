@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V220.37";
+const ZOO_CURATOR_VERSION = "V220.88";
 
 
 // ============================================================
@@ -28,6 +28,13 @@ const STARTUP_CENTER_X = WORKSPACE_W / 2;
 const STARTUP_CENTER_Y = 1700;
 
 const ZOOM_MIN = 0.30;
+const MOBILE_ZOOM_MIN = 0.22;
+
+function currentZoomMin() {
+    return window.matchMedia('(max-width: 700px)').matches
+        ? MOBILE_ZOOM_MIN
+        : ZOOM_MIN;
+}
 const ZOOM_MAX = 2;
 const ZOOM_STEP = 0.1;
 
@@ -366,6 +373,7 @@ const state = {
     compatibilityHoveredSlotTimer: null,
     zooNamesData: null,
     realZooData: { zoos: [] },
+    realZooDataLoadState: 'loading',
     // trade shortlist is embedded inside real_zoo_opponents.json, so the
     // browser needs only one real-zoo request and never builds the index at runtime.
     realZooTradeIndex: null,
@@ -383,6 +391,10 @@ const state = {
     zooProvince: '',
     zooLocation: '',
     zooType: 'general',
+    // A manual main-screen rename keeps the chosen text while the zoo remains
+    // in the same identity territory. The latch is cleared only after the
+    // collection genuinely crosses into another specialist/general territory.
+    manualZooNameOverrideType: null,
     opponentNames: [],
     activeCategories: new Set(Object.keys(FOLDERS)),
     opponentProfiles: [],
@@ -614,9 +626,42 @@ function opponentHasCategoryPrerequisite(holdings, wantedAnimal) {
 }
 
 function realZooCanTradeFor(record, wantedAnimal) {
+    if (!record || !wantedAnimal) return false;
+
+    // True specialist rule: if a real zoo has exactly one favoured category,
+    // it will only accept animals from that category. Zoos with zero or two+
+    // favourites keep the existing broader trade behaviour.
+    const favourites = Array.isArray(record.preferred_categories)
+        ? record.preferred_categories.filter(Boolean)
+        : [];
+
+    if (favourites.length === 1 && wantedAnimal.category !== favourites[0]) {
+        return false;
+    }
+
     return opponentHasCategoryPrerequisite(
         realZooTradeSpecs(record),
         wantedAnimal
+    );
+}
+
+
+// Hard acceptance rule used by the last real-zoo rescue pass. A true
+// specialist never breaks its sole-category identity, but a generalist zoo may
+// become unusually accommodating when the player would otherwise have no real
+// zoo offer. This deliberately ignores the normal category-progression
+// reluctance; it does NOT relax duplicate-species, same-level, actual-holdings
+// or destination-space rules.
+function realZooCanHelpfullyTradeFor(record, wantedAnimal) {
+    if (!record || !wantedAnimal) return false;
+
+    const favourites = Array.isArray(record.preferred_categories)
+        ? record.preferred_categories.filter(Boolean)
+        : [];
+
+    return !(
+        favourites.length === 1 &&
+        wantedAnimal.category !== favourites[0]
     );
 }
 
@@ -628,28 +673,12 @@ function fictionalZooCanTradeFor(opponentIndex, wantedAnimal) {
 }
 
 // ============================================================
-// DEADLOCK-SAFETY TRADE
+// GUARANTEED TRADE AVAILABILITY
 // ============================================================
 
 // "Full" follows the same physical-enclosure logic as startup: every separate
 // enclosure group must contain at least one animal. A large enclosure therefore
 // counts as occupied as soon as one of its slots is occupied.
-function everyPhysicalEnclosureOccupied() {
-    if (!state.enclosures.length) return false;
-
-    return state.enclosures.every(enclosure => {
-        const groups = GROUPS[enclosure.number] || [[0]];
-
-        return groups.every(group =>
-            group.some(slotIndex =>
-                state.animals.some(animal =>
-                    animalOccupiesZooSlot(animal, enclosure.id, slotIndex)
-                )
-            )
-        );
-    });
-}
-
 function hasNextLevelInventory(category, level) {
     const nextLevel = Number(level) + 1;
 
@@ -665,35 +694,23 @@ function hasNextLevelInventory(category, level) {
     return levelFiles(category, nextLevel).length > 0;
 }
 
-function playerHasAnyUpgradeAvailable() {
-    return [...exchangeGroupCounts().entries()]
-        .some(([key, count]) => {
-            if (count < 3) return false;
-
-            const parts = String(key).split('|');
-            const level = Number(parts.pop());
-            const category = parts.join('|');
-
-            return (
-                level < 5 &&
-                hasNextLevelInventory(category, level)
-            );
-        });
-}
-
 function emergencyTradeNeeded() {
+    // The guaranteed-offer path is no longer a deadlock-only rescue.
+    // Whenever the player is in the live zoo with no trade already in progress,
+    // at least one legal trade option should exist if the current holdings and
+    // opponent pools make any legal trade possible. Draw/upgrade availability
+    // does not suppress this guarantee.
     return (
         state.historyViewTurn === null &&
+        !state.sandboxMode &&
         !state.result &&
         !state.outgoingOffer &&
-        !state.autonomousTradeOffer &&
-        everyPhysicalEnclosureOccupied() &&
-        !playerHasAnyUpgradeAvailable()
+        !state.autonomousTradeOffer
     );
 }
 
-// Find ONE deterministic legal rescue trade. This bypasses only trade
-// reluctance/frequency. Same-level trading, ownership restrictions and the
+// Find ONE deterministic legal guaranteed trade. This bypasses only trade
+// reluctance/frequency when ordinary rolls would otherwise leave zero options. Same-level trading, ownership restrictions and the
 // opponent category-progression prerequisite remain in force.
 function emergencyTradeSelection(writeState = true) {
     if (!emergencyTradeNeeded()) return null;
@@ -712,7 +729,7 @@ function emergencyTradeSelection(writeState = true) {
     // --------------------------------------------------------
     // 1. NORMAL CURRENTLY AVAILABLE OPPONENTS
     // --------------------------------------------------------
-    // During a deadlock, bypass reluctance/frequency but keep the same
+    // For the guaranteed option, bypass reluctance/frequency but keep the same
     // prestige-window and geographical partner rules as normal trading.
     if (isRealOpponentMode()) {
         for (const outgoing of shuffledPlayers) {
@@ -785,11 +802,78 @@ function emergencyTradeSelection(writeState = true) {
     }
 
     // --------------------------------------------------------
-    // 2. EASTER EGG — PRIVATE PET TRADE
+    // 2. HELPFUL REAL-ZOO MODE BEFORE PRIVATE PET TRADE
     // --------------------------------------------------------
-    // If no currently unlocked/available opponent can make a legal rescue
-    // trade, offer a random unused Level 1 animal from "Private Pet Trade".
-    // The player therefore needs a Level 1 animal to exchange in this fallback.
+    // If normal partner rules still produce no guaranteed offer, ask every real
+    // zoo whether it can HELP the player. At this point soft reluctance is gone:
+    // prestige/geography, random offer chance, preferred-category weighting and
+    // the normal category-progression prerequisite no longer veto a generalist.
+    // Hard rules remain untouched: no duplicate species for the player, the zoo
+    // must genuinely own the offered animal, the trade stays same-level, there
+    // must be a legal destination, and one-category specialists remain strict.
+    if (isRealOpponentMode()) {
+        const allRealZoos = realZooRecordsAvailable();
+        const tradePrestige = playerTradeAccessPrestige(updateHighestZooPrestige());
+
+        for (const outgoing of shuffledPlayers) {
+            const candidates = allRealZoos
+                .filter(record => realZooCanHelpfullyTradeFor(record, outgoing))
+                .map(record => {
+                    const matching = realZooTradeAnimals(record, true)
+                        .filter(candidate =>
+                            candidate.level === outgoing.level &&
+                            tradeIncomingHasDestinationAfterOutgoing(candidate, outgoing)
+                        );
+                    return { record, matching };
+                })
+                .filter(item => item.matching.length)
+                .sort((a, b) => {
+                    // Keep the forced partner as sensible as possible: prefer a
+                    // zoo closest to the player's trade-access prestige, then
+                    // nearer geography, then a stable name order.
+                    const prestigeDifference =
+                        Math.abs(realZooPrestige(a.record) - tradePrestige) -
+                        Math.abs(realZooPrestige(b.record) - tradePrestige);
+                    if (prestigeDifference) return prestigeDifference;
+
+                    const geographyDifference =
+                        realZooGeographyBand(a.record) - realZooGeographyBand(b.record);
+                    if (geographyDifference) return geographyDifference;
+
+                    return String(a.record.name || '').localeCompare(
+                        String(b.record.name || '')
+                    );
+                });
+
+            if (candidates.length) {
+                const chosenZoo = candidates[0];
+                const { seed } = seededRoll(
+                    `forced-real-animal|${outgoing.id}|${chosenZoo.record.name}|${state.turn}`
+                );
+                return {
+                    outgoingId: outgoing.id,
+                    record: chosenZoo.record,
+                    animal: chosenZoo.matching[seed % chosenZoo.matching.length],
+                    forcedRealZooTrade: true,
+                    helpfulRealZooTrade: true
+                };
+            }
+        }
+    }
+
+    // --------------------------------------------------------
+    // 3. LAST RESORT — PRIVATE PET TRADE
+    // --------------------------------------------------------
+    // Never interpret "the real-zoo database has not loaded" as "no real zoo
+    // can trade". That race was the reason Private Pet Trade could dominate
+    // immediately after startup (and also masked malformed real-zoo JSON).
+    // In real-opponent mode, Private Pet Trade is permitted only after the
+    // database has successfully loaded and the exhaustive helpful-zoo pass
+    // above genuinely found zero legal real-zoo trades.
+    if (isRealOpponentMode() && state.realZooDataLoadState !== 'ready') {
+        return null;
+    }
+
     const levelOnePlayers = shuffledPlayers.filter(animal => animal.level === 1);
     if (!levelOnePlayers.length) return null;
 
@@ -889,7 +973,7 @@ function normalTradeInterestAllowed(animal) {
 function predictedPlayerTradeOffers(animal, writeCache = true) {
     if (!animal) return [];
 
-    // Deadlock rescue remains state-dependent and is deliberately not cached.
+    // Guaranteed fallback remains state-dependent and is deliberately not cached.
     const emergency = emergencyTradeForAnimal(animal, writeCache);
     if (emergency) return [emergency];
 
@@ -900,7 +984,7 @@ function predictedPlayerTradeOffers(animal, writeCache = true) {
     const cached = cachedPlayerTradeOffers(animal);
     if (cached) return cached;
 
-    // Emergency deadlock rescue bypasses the rarity cap. Ordinary offers do not.
+    // The guaranteed fallback bypasses the ordinary interest cap. Ordinary offers do not.
     if (!normalTradeInterestAllowed(animal)) {
         if (writeCache) storePlayerTradeOffers(animal, []);
         return [];
@@ -1245,17 +1329,6 @@ document.addEventListener('pointerdown', event => {
 window.__zooScriptStarted = true;
 
 
-requireElement(exchange1, 'exchange1');
-requireElement(exchange2, 'exchange2');
-requireElement(resultBox, 'result');
-requireElement(outgoingOfferBox, 'outgoingOffer');
-requireElement(incomingOfferBox, 'ingoingOffer');
-
-requireElement(hoverPreview, 'hoverPreview');
-requireElement(hoverPreviewImage, 'hoverPreviewImage');
-
-requireElement(playerZooName, 'playerZooName');
-requireElement(turnOrder, 'turnOrder');
 
 
 // ============================================================
@@ -1677,6 +1750,7 @@ function loadRealZooDataInBackground() {
             }
 
             state.realZooData = { ...data, zoos };
+            state.realZooDataLoadState = 'ready';
             const embeddedTradeIndex = data?.trade_index;
             state.realZooTradeIndex = (
                 embeddedTradeIndex?.schema_version === 1 &&
@@ -1699,9 +1773,6 @@ function loadRealZooDataInBackground() {
                 renderOpponentTradeState();
             }
 
-            console.log(
-                `Real zoo opponent database loaded in background (${zoos.length} zoos).`
-            );
         })
         .catch(error => {
             if (timeoutId !== null) clearTimeout(timeoutId);
@@ -1710,6 +1781,7 @@ function loadRealZooDataInBackground() {
                 error
             );
             state.realZooData = { zoos: [] };
+            state.realZooDataLoadState = 'failed';
             state.realZooTradeIndex = null;
             state.realZooRecordByStaticId = new Map();
             state.realZooSessionHoldings = new Map();
@@ -1730,9 +1802,6 @@ function loadProvinceConnectionsInBackground() {
             state.provinceConnections = data;
             state.provinceDistanceCache = new Map();
             state.tradeOfferCache.clear();
-            console.log(
-                `Province connection database loaded (${Object.keys(data.provinces).length} provinces).`
-            );
         })
         .catch(error => {
             // This enhancement is optional: country-level distance remains
@@ -2188,33 +2257,35 @@ function preloadAnimals(animals) {
 }
 
 function chooseNextLevelOneSpec() {
-    const availableCategories = Object.keys(FOLDERS).filter(category => {
-        if (!state.activeCategories.has(category)) return false;
-
-        const files = levelFiles(category, 1);
-        return files.some(file => !state.animals.some(animal =>
-            animal.category === category &&
-            animal.level === 1 &&
-            animal.filename.toLowerCase() === file.toLowerCase()
-        ));
-    });
-
-    if (!availableCategories.length) return null;
-
-    const category = randomItem(availableCategories);
     const used = playerOwnedCardKeys();
+    const candidates = [];
 
-    const files = levelFiles(category, 1).filter(file =>
-        !used.has(animalCardKey(category, 1, file))
+    for (const category of Object.keys(FOLDERS)) {
+        if (!state.activeCategories.has(category)) continue;
+
+        for (const filename of levelFiles(category, 1)) {
+            if (used.has(animalCardKey(category, 1, filename))) continue;
+            candidates.push({ category, level: 1, filename });
+        }
+    }
+
+    if (!candidates.length) return null;
+
+    // Ordinary draws now respect the same zoo-type identity used by starting
+    // collection generation, but deliberately at reduced strength. Starting
+    // specialists still feel strongly curated; later draws only lean toward
+    // that identity and can comfortably produce off-type animals.
+    return weightedRandomItem(
+        candidates,
+        candidate => {
+            // Ordinary Level 1 draws get a simple, deliberately modest identity
+            // bias: cards from categories associated with the current zoo type
+            // are 1.5x as likely as otherwise-equivalent cards. Starting-zoo
+            // generation remains much more strongly curated.
+            const matchingCategories = specialistStartingCategories(state.zooType);
+            return matchingCategories.includes(candidate.category) ? 1.5 : 1;
+        }
     );
-
-    if (!files.length) return null;
-
-    return {
-        category,
-        level: 1,
-        filename: randomItem(files)
-    };
 }
 
 function prepareNextDrawAsset() {
@@ -2394,6 +2465,7 @@ function ensureCollectionRecord(animal) {
             level: Number(animal.level) || 0,
             filename: cleanFilename(animal.filename || ''),
             firstZooTurn: null,
+            acquisitions: [],
             shownBy: [],
             cohabitations: [],
             departures: []
@@ -2423,6 +2495,26 @@ function collectionMarkEnteredZoo(animal) {
     if (!animal || state.sandboxMode) return;
     const record = ensureCollectionRecord(animal);
     if (!record) return;
+
+    if (!Array.isArray(record.acquisitions)) record.acquisitions = [];
+
+    // Track physical arrivals, not placements. Moving an animal between
+    // enclosures calls this function again, so animalId prevents those moves
+    // from becoming fake acquisitions.
+    const animalId = Number(animal.id);
+    if (!record.acquisitions.some(item => Number(item.animalId) === animalId)) {
+        const lineage = animalLineageRecord(animal.id);
+        const source = lineage?.originalFrom && lineage.originalFrom !== (state.zooName || 'Your Zoo')
+            ? lineage.originalFrom
+            : null;
+        record.acquisitions.push({
+            turn: Number(state.turn) || 0,
+            animalId,
+            from: source
+        });
+        record.acquisitions.sort((a, b) => Number(a.turn) - Number(b.turn));
+    }
+
     if (record.firstZooTurn == null) record.firstZooTurn = state.turn;
 }
 
@@ -2575,6 +2667,23 @@ function collectionHoverText(record) {
 
     const lines = [`First arrived at the zoo: Turn ${record.firstZooTurn}`];
 
+    const acquisitions = Array.isArray(record.acquisitions)
+        ? [...record.acquisitions].sort((a, b) => Number(a.turn) - Number(b.turn))
+        : [];
+    // Backwards compatibility for saves made before acquisition history existed.
+    if (!acquisitions.length && record.firstZooTurn != null) {
+        acquisitions.push({ turn: record.firstZooTurn, from: null });
+    }
+    if (acquisitions.length) {
+        lines.push('', 'Acquisitions:');
+        for (const item of acquisitions) {
+            lines.push(
+                `Turn ${item.turn}: acquired` +
+                (item.from ? ` from ${item.from}` : '')
+            );
+        }
+    }
+
     if ((record.cohabitations || []).length) {
         lines.push('', 'Shared exhibits:');
         for (const item of record.cohabitations) {
@@ -2584,7 +2693,7 @@ function collectionHoverText(record) {
 
     if ((record.departures || []).length) {
         lines.push('', 'Departures:');
-        for (const item of record.departures) {
+        for (const item of [...record.departures].sort((a, b) => Number(a.turn) - Number(b.turn))) {
             if (item.type === 'upgrade') {
                 lines.push(
                     `Turn ${item.turn}: exchanged for ${item.forName || 'upgrade animal'}` +
@@ -2705,9 +2814,10 @@ function renderCollectionMenu() {
 
             const img = document.createElement('img');
             img.src = animalPath(entry.category, entry.level, entry.filename);
+            if (acquired || offered) applyLocalizedAnimalImage(img, entry);
             img.alt = acquired || offered
                 ? String(entry.filename).replace(/\.png$/i, '')
-                : 'Undiscovered animal';
+                : uiText('Undiscovered animal');
             img.draggable = false;
             card.appendChild(img);
 
@@ -2746,48 +2856,281 @@ function openCollectionMenu() {
 }
 
 
-function ensureCollectionCategoryLinks() {
-    const tracker =
-        document.getElementById('categoryProgression') ||
-        document.getElementById('categoryProgressionTracker') ||
-        document.querySelector('.category-progression');
+let categoryProgressHoverTimer = null;
 
-    if (!tracker || tracker.dataset.collectionLinksReady === '1') return;
-    tracker.dataset.collectionLinksReady = '1';
+function bindProgressCategoryInteraction(box, category) {
+    // Bind directly to the freshly-created category node. This avoids relying on
+    // delegated listeners surviving/rebinding correctly while the progression
+    // tracker is repeatedly rebuilt.
+    if (!box || box.dataset.zooCategoryPopupBound === '1') return;
+    box.dataset.zooCategoryPopupBound = '1';
+    box.style.pointerEvents = 'auto';
+    box.style.cursor = 'pointer';
 
-    tracker.addEventListener('click', event => {
-        // Never hijack the progression tick boxes themselves.
-        if (event.target.closest('input, .category-progress-check, .category-check, [role="checkbox"]')) {
-            return;
-        }
-
-        const nameBox = event.target.closest(
-            '.category-name, .category-label, .category-progression-name, ' +
-            '.category-progression-label, [data-category]'
-        );
-        if (!nameBox || !tracker.contains(nameBox)) return;
-
-        const row = nameBox.closest('[data-category], .category-progress-row, .category-progression-row');
-        const category =
-            nameBox.dataset.category ||
-            row?.dataset.category ||
-            String(nameBox.textContent || '').trim();
-
-        if (!CATEGORY_PROGRESSION_ORDER.includes(category)) return;
-
+    box.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
-        openCollectionMenu();
+        clearTimeout(categoryProgressHoverTimer);
+        categoryProgressHoverTimer = null;
+        if (categoryZooPopup?.style.display !== 'none' && categoryZooPopupCategory === category) {
+            closeCategoryZooPopup();
+        } else {
+            openCategoryZooPopup(category, box);
+        }
+    });
 
-        // Scroll the requested category into view after the menu has rendered.
-        requestAnimationFrame(() => {
-            const headings = [...document.querySelectorAll('#collectionBody .collection-category h3')];
-            const heading = headings.find(item => String(item.textContent).trim() === category);
-            heading?.scrollIntoView({ block: 'start', behavior: 'smooth' });
-        });
+    box.addEventListener('mouseenter', () => {
+        clearTimeout(categoryProgressHoverTimer);
+        categoryProgressHoverTimer = setTimeout(() => {
+            categoryProgressHoverTimer = null;
+            if (box.isConnected) openCategoryZooPopup(category, box);
+        }, 2000);
+    });
+
+    box.addEventListener('mouseleave', () => {
+        clearTimeout(categoryProgressHoverTimer);
+        categoryProgressHoverTimer = null;
     });
 }
 
+function ensureCollectionCategoryLinks() {
+    // V220.62: category names no longer open the Collection Book.
+    // They now open a live list of animals of that category in the current zoo.
+    const tracker = document.getElementById('progressTracker');
+    if (!tracker || tracker.dataset.categoryZooPopupReady === '1') return;
+    tracker.dataset.categoryZooPopupReady = '1';
+
+    ensureCategoryZooPopup();
+
+    let hoverTimer = null;
+    let hoverCategory = null;
+
+    const categoryFromTarget = target => {
+        const box = target?.closest?.('.progress-category');
+        if (!box || !tracker.contains(box)) return null;
+        const category = String(box.dataset.category || box.textContent || '').trim();
+        return CATEGORY_PROGRESSION_ORDER.includes(category) ? category : null;
+    };
+
+    tracker.addEventListener('click', event => {
+        const category = categoryFromTarget(event.target);
+        if (!category) return;
+        event.preventDefault();
+        event.stopPropagation();
+        clearTimeout(hoverTimer);
+        hoverTimer = null;
+        if (categoryZooPopup?.style.display !== 'none' && categoryZooPopupCategory === category) {
+            closeCategoryZooPopup();
+        } else {
+            openCategoryZooPopup(category, event.target.closest('.progress-category'));
+        }
+    });
+
+    tracker.addEventListener('pointerover', event => {
+        const category = categoryFromTarget(event.target);
+        if (!category || category === hoverCategory) return;
+        clearTimeout(hoverTimer);
+        hoverCategory = category;
+        const anchor = event.target.closest('.progress-category');
+        hoverTimer = setTimeout(() => {
+            hoverTimer = null;
+            openCategoryZooPopup(category, anchor);
+        }, 2000);
+    });
+
+    tracker.addEventListener('pointerout', event => {
+        const box = event.target?.closest?.('.progress-category');
+        if (!box) return;
+        if (box.contains(event.relatedTarget)) return;
+        clearTimeout(hoverTimer);
+        hoverTimer = null;
+        hoverCategory = null;
+    });
+}
+
+let categoryZooPopup = null;
+let categoryZooPopupGlowId = null;
+let categoryZooPopupCategory = null;
+
+function ensureCategoryZooPopup() {
+    if (categoryZooPopup) return;
+
+    const style = document.createElement('style');
+    style.id = 'category-zoo-popup-styles';
+    style.textContent = `
+        #categoryZooPopup {
+            position: fixed; z-index: 10040; display: none;
+            min-width: 250px; max-width: 360px; max-height: min(70vh, 620px);
+            overflow: auto; padding: 10px; border: 2px solid rgba(0,0,0,.45);
+            border-radius: 9px; background: rgba(250,248,242,.98);
+            box-shadow: 0 5px 18px rgba(0,0,0,.28); color: #222;
+        }
+        #categoryZooPopup .category-zoo-title { font-weight: 800; margin: 0 0 8px; font-size: 15px; }
+        #categoryZooPopup .category-zoo-empty { padding: 6px 4px; opacity: .7; }
+        #categoryZooPopup .category-zoo-level { font-weight: 800; font-size: 12px; margin: 8px 2px 3px; opacity: .72; }
+        #categoryZooPopup .category-zoo-animal {
+            display: block; width: 100%; text-align: left; border: 1px solid rgba(0,0,0,.16);
+            border-radius: 5px; background: #fff; padding: 6px 8px; margin: 3px 0;
+            cursor: pointer; font: inherit;
+        }
+        #categoryZooPopup .category-zoo-animal:hover { background: #fff4b5; }
+        .animal-card.category-zoo-name-glow {
+            box-shadow: 0 0 0 4px #ffd400, 0 0 18px 8px #ffd400 !important;
+            filter: drop-shadow(0 0 7px #ffd400) !important;
+            transition: none !important; animation: none !important;
+        }
+    `;
+    document.head.appendChild(style);
+
+    categoryZooPopup = document.createElement('div');
+    categoryZooPopup.id = 'categoryZooPopup';
+    categoryZooPopup.addEventListener('pointerdown', event => event.stopPropagation());
+    categoryZooPopup.addEventListener('click', event => event.stopPropagation());
+    document.body.appendChild(categoryZooPopup);
+
+    document.addEventListener('pointerdown', event => {
+        if (categoryZooPopup?.style.display !== 'none' &&
+            !categoryZooPopup.contains(event.target) &&
+            !event.target.closest?.('.progress-category')) {
+            closeCategoryZooPopup();
+        }
+    });
+}
+
+function clearCategoryZooAnimalGlow() {
+    if (categoryZooPopupGlowId != null) {
+        document.querySelectorAll(`.animal-card[data-animal-id="${categoryZooPopupGlowId}"]`)
+            .forEach(card => card.classList.remove('category-zoo-name-glow'));
+    }
+    categoryZooPopupGlowId = null;
+}
+
+function setCategoryZooAnimalGlow(animalId) {
+    clearCategoryZooAnimalGlow();
+    categoryZooPopupGlowId = Number(animalId);
+    document.querySelectorAll(`.animal-card[data-animal-id="${categoryZooPopupGlowId}"]`)
+        .forEach(card => card.classList.add('category-zoo-name-glow'));
+}
+
+function closeCategoryZooPopup() {
+    clearCategoryZooAnimalGlow();
+    categoryZooPopupCategory = null;
+    if (categoryZooPopup) categoryZooPopup.style.display = 'none';
+}
+
+function categoryZooAnimalName(animal) {
+    // Do not call an optional helper by identifier here: an undeclared identifier
+    // still throws before optional chaining can help. The card filename is the
+    // reliable species-name fallback in Zoo Curator.
+    const filenameName = String(animal?.filename || '')
+        .replace(/\.[^.]+$/, '')
+        .replace(/_+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    return animal?.name || animal?.displayName || animal?.commonName || filenameName || 'Animal';
+}
+
+function openCategoryZooPopup(category, anchor) {
+    ensureCategoryZooPopup();
+    clearCategoryZooAnimalGlow();
+    categoryZooPopupCategory = category;
+
+    const animals = state.animals
+        .filter(animal => animal && animal.enclosureId != null && animal.category === category)
+        .sort((a, b) => Number(a.level || 0) - Number(b.level || 0) ||
+            categoryZooAnimalName(a).localeCompare(categoryZooAnimalName(b)));
+
+    categoryZooPopup.innerHTML = '';
+    const title = document.createElement('div');
+    title.className = 'category-zoo-title';
+    title.textContent = `${category} in your zoo`;
+    categoryZooPopup.appendChild(title);
+
+    if (!animals.length) {
+        const empty = document.createElement('div');
+        empty.className = 'category-zoo-empty';
+        empty.textContent = 'No animals of this category are currently in the zoo.';
+        categoryZooPopup.appendChild(empty);
+    } else {
+        let lastLevel = null;
+        for (const animal of animals) {
+            if (animal.level !== lastLevel) {
+                lastLevel = animal.level;
+                const level = document.createElement('div');
+                level.className = 'category-zoo-level';
+                level.textContent = `Level ${animal.level}`;
+                categoryZooPopup.appendChild(level);
+            }
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'category-zoo-animal';
+            button.textContent = categoryZooAnimalName(animal);
+            button.addEventListener('mouseenter', () => setCategoryZooAnimalGlow(animal.id));
+            button.addEventListener('mouseleave', clearCategoryZooAnimalGlow);
+            button.addEventListener('focus', () => setCategoryZooAnimalGlow(animal.id));
+            button.addEventListener('blur', clearCategoryZooAnimalGlow);
+            button.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                clearCategoryZooAnimalGlow();
+                focusZooAnimalAnimated(animal.id);
+            });
+            categoryZooPopup.appendChild(button);
+        }
+    }
+
+    categoryZooPopup.style.display = 'block';
+    const rect = anchor?.getBoundingClientRect?.() || { left: 12, bottom: 12, right: 12 };
+    const popupRect = categoryZooPopup.getBoundingClientRect();
+    let left = rect.left;
+    let top = rect.bottom + 6;
+    if (left + popupRect.width > innerWidth - 8) left = innerWidth - popupRect.width - 8;
+    if (top + popupRect.height > innerHeight - 8) top = Math.max(8, rect.top - popupRect.height - 6);
+    categoryZooPopup.style.left = `${Math.max(8, left)}px`;
+    categoryZooPopup.style.top = `${Math.max(8, top)}px`;
+}
+
+function focusZooAnimalAnimated(animalId) {
+    const card = document.querySelector(`.animal-card[data-animal-id="${Number(animalId)}"]`);
+    if (!card || !zooBoard) return;
+
+    const startZoom = Number(state.zoom) || 1;
+    const boardRect = zooBoard.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const worldCenterX = (zooBoard.scrollLeft + cardRect.left - boardRect.left + cardRect.width / 2) / startZoom;
+    const worldCenterY = (zooBoard.scrollTop + cardRect.top - boardRect.top + cardRect.height / 2) / startZoom;
+    const targetZoom = clamp(0.9, currentZoomMin(), ZOOM_MAX);
+    const startLeft = zooBoard.scrollLeft;
+    const startTop = zooBoard.scrollTop;
+    const duration = 650;
+    const started = performance.now();
+
+    // Keep the category popup open while the camera travels to the animal.
+    // It closes only when its category is clicked again or the user clicks
+    // somewhere outside the popup/category control.
+    const ease = t => 1 - Math.pow(1 - t, 3);
+    const frame = now => {
+        const t = Math.min(1, (now - started) / duration);
+        const k = ease(t);
+        const zoom = startZoom + (targetZoom - startZoom) * k;
+        state.zoom = Math.round(zoom * 1000) / 1000;
+        document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
+
+        const targetLeft = worldCenterX * state.zoom - zooBoard.clientWidth / 2;
+        const targetTop = worldCenterY * state.zoom - zooBoard.clientHeight / 2;
+        zooBoard.scrollLeft = startLeft + (targetLeft - startLeft) * k;
+        zooBoard.scrollTop = startTop + (targetTop - startTop) * k;
+
+        if (t < 1) requestAnimationFrame(frame);
+        else {
+            state.zoom = targetZoom;
+            document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
+            zooBoard.scrollLeft = worldCenterX * state.zoom - zooBoard.clientWidth / 2;
+            zooBoard.scrollTop = worldCenterY * state.zoom - zooBoard.clientHeight / 2;
+        }
+    };
+    requestAnimationFrame(frame);
+}
 
 function ensureCollectionButton() {
     let button = document.getElementById('collectionButton');
@@ -2797,7 +3140,14 @@ function ensureCollectionButton() {
         button.type = 'button';
         button.title = 'Collection';
         button.setAttribute('aria-label', 'Open animal collection');
-        button.textContent = '📖';
+        // Use a small drawn book instead of the platform emoji so its colour is consistent.
+        button.innerHTML = `<svg aria-hidden="true" viewBox="0 0 28 24" width="24" height="21" style="display:block">
+            <path d="M2.5 3.2c4.2-.9 7.8-.2 11.5 2.1v16c-3.7-2.3-7.3-3-11.5-2.1z" fill="#7a4b2a" stroke="#4d2d18" stroke-width="1.4" stroke-linejoin="round"/>
+            <path d="M25.5 3.2c-4.2-.9-7.8-.2-11.5 2.1v16c3.7-2.3 7.3-3 11.5-2.1z" fill="#8b5a32" stroke="#4d2d18" stroke-width="1.4" stroke-linejoin="round"/>
+            <path d="M4.5 5.1c3.2-.4 5.7.1 8.1 1.5v11.8c-2.5-1.3-5-1.8-8.1-1.4z" fill="#e7d5ad" opacity=".95"/>
+            <path d="M23.5 5.1c-3.2-.4-5.7.1-8.1 1.5v11.8c2.5-1.3 5-1.8 8.1-1.4z" fill="#e7d5ad" opacity=".95"/>
+            <path d="M14 5.3v16" stroke="#4d2d18" stroke-width="1.2"/>
+        </svg>`;
         button.onclick = openCollectionMenu;
     }
 
@@ -2992,47 +3342,14 @@ function rebuildCompatibilityGraphs() {
     }
 
     const proxy = state.compatibilityData?.proxy_compatibility;
-    if (proxy?.enabled && proxy.groups && typeof proxy.groups === 'object') {
-        for (const membersRaw of Object.values(proxy.groups)) {
-            const members = (Array.isArray(membersRaw) ? membersRaw : [])
-                .map(compatibilityName)
-                .filter(Boolean);
 
-            const memberSet = new Set(members);
-            const visited = new Set();
-
-            // Find connected components using DIRECT evidence only.
-            for (const start of members) {
-                if (visited.has(start)) continue;
-
-                const component = [];
-                const stack = [start];
-                visited.add(start);
-
-                while (stack.length) {
-                    const current = stack.pop();
-                    component.push(current);
-
-                    for (const next of direct.get(current) || []) {
-                        if (!memberSet.has(next) || visited.has(next)) continue;
-                        visited.add(next);
-                        stack.push(next);
-                    }
-                }
-
-                // Every animal in the same evidence-connected component becomes
-                // mutually compatible for gameplay, without adding fake evidence
-                // pairs to the JSON.
-                if (component.length > 1) {
-                    for (let i = 0; i < component.length; i++) {
-                        for (let j = i + 1; j < component.length; j++) {
-                            graphAddEdge(effective, component[i], component[j]);
-                        }
-                    }
-                }
-            }
-        }
-    }
+    // IMPORTANT: merely appearing together in proxy.groups does NOT make
+    // species interchangeable. Some named groups are partner pools used only
+    // as one side of a group_link (for example hystrix_shared_partner_pool).
+    // Treating every group as an evidence-connected equivalence class caused
+    // Plains Zebra to inherit unrelated Aardwolf/Caracal/etc. combinations.
+    // Compatibility expansion is therefore performed ONLY by the explicit
+    // complete_groups and group_links rules below.
 
     // honour explicit gameplay structures in newer compatibility JSON.
     // complete_groups makes every member of a named group mutually compatible.
@@ -3060,6 +3377,31 @@ function rebuildCompatibilityGraphs() {
         if (!link || typeof link !== 'object') continue;
         const fromMembers = normalisedGroupMembers(link.from);
         const toMembers = normalisedGroupMembers(link.to);
+
+        // A *_shared_partner_pool is a list of partners that have been
+        // documented with AT LEAST ONE member of the source husbandry group.
+        // It is not a proxy group of interchangeable partner species.
+        // Therefore Cape Porcupine may inherit Indian Crested Porcupine's
+        // documented Plains Zebra compatibility, but Plains Zebra may never
+        // inherit an unrelated Caracal edge merely because both occur in the
+        // same partner pool.
+        const exactPartnerInheritance =
+            String(link.to || '').endsWith('_shared_partner_pool') ||
+            link.mode === 'shared_partner_inheritance';
+
+        if (exactPartnerInheritance) {
+            for (const partner of toMembers) {
+                const hasDocumentedAnchor = fromMembers.some(sourceMember =>
+                    direct.get(sourceMember)?.has(partner)
+                );
+                if (!hasDocumentedAnchor) continue;
+                for (const sourceMember of fromMembers) {
+                    graphAddEdge(effective, sourceMember, partner);
+                }
+            }
+            continue;
+        }
+
         for (const fromName of fromMembers) {
             for (const toName of toMembers) {
                 graphAddEdge(effective, fromName, toName);
@@ -3129,12 +3471,26 @@ function animalsAreCompatible(a, b) {
         const to = String(link.to || '');
         if (!from || !to) continue;
 
-        if (
-            (aGroups.has(from) && bGroups.has(to)) ||
-            (aGroups.has(to) && bGroups.has(from))
-        ) {
-            return true;
+        const forward = aGroups.has(from) && bGroups.has(to);
+        const reverse = aGroups.has(to) && bGroups.has(from);
+        if (!forward && !reverse) continue;
+
+        const exactPartnerInheritance =
+            to.endsWith('_shared_partner_pool') ||
+            link.mode === 'shared_partner_inheritance';
+
+        if (exactPartnerInheritance) {
+            const sourceMembers = (proxy.groups[from] || []).map(compatibilityName);
+            const exactPartner = forward ? bName : aName;
+            if (sourceMembers.some(sourceMember =>
+                state.compatibilityDirectGraph.get(sourceMember)?.has(exactPartner)
+            )) {
+                return true;
+            }
+            continue;
         }
+
+        return true;
     }
 
     return false;
@@ -3879,6 +4235,130 @@ function ensureDrawSpaceGuardStyles() {
 }
 
 
+function ensureMobilePhoneLayout() {
+    if (!window.matchMedia('(max-width: 700px)').matches) return;
+
+    if (!document.getElementById('mobile-phone-layout-styles')) {
+        const style = document.createElement('style');
+        style.id = 'mobile-phone-layout-styles';
+        style.textContent = `
+            @media (max-width:700px) {
+                /* Compact phone HUD: one slim information row plus six action cards. */
+                #headerLeft { gap:4px !important; padding:3px 5px !important; min-height:0 !important; }
+                #mobileTopHudRow {
+                    width:100%; display:grid; grid-template-columns:auto auto minmax(0,1fr) auto auto;
+                    align-items:center; gap:5px; min-height:30px; padding:0; margin:0;
+                    box-sizing:border-box;
+                }
+                #mobileTopHudRow #collectionButton,
+                #mobileTopHudRow #mobileSettingsButton {
+                    width:30px !important; height:30px !important; min-width:30px !important;
+                    min-height:30px !important; padding:3px !important; margin:0 !important;
+                    display:flex !important; align-items:center; justify-content:center;
+                }
+                #mobileTopHudRow #prestigeCounter,
+                #mobileTopHudRow #turnOrder { margin:0 !important; font-size:10px !important; line-height:1.05 !important; white-space:nowrap; }
+                #mobileTopHudRow #playerZooName { min-width:0 !important; margin:0 !important; padding:0 !important; text-align:center; }
+                #mobileTopHudRow .zoo-name-editor { display:flex; align-items:center; justify-content:center; gap:2px; min-width:0; }
+                #mobileTopHudRow .zoo-name-text { font-size:12px !important; line-height:1.05 !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+                #mobileTopHudRow .zoo-name-edit-button { width:22px !important; height:22px !important; min-width:22px !important; padding:0 !important; margin:0 !important; font-size:13px !important; }
+                #collectionTurnRow { display:contents !important; }
+                #saveLoadButton, #newGameButton, #gameOptionsButton { display:none !important; }
+                #tradeHistoryButton { display:none !important; }
+
+                #actionMenu {
+                    display:grid !important; grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+                    gap:4px !important; align-items:end !important; width:100% !important;
+                    padding:0 5px 10px !important; margin:0 !important; box-sizing:border-box !important;
+                    min-height:0 !important;
+                }
+                #actionMenu > * { min-width:0 !important; margin:0 !important; }
+                #drawCard { grid-column:1; }
+                #exchange1 { grid-column:2; }
+                #exchange2 { grid-column:3; }
+                #result { grid-column:4; }
+                #outgoingOffer { grid-column:5; }
+                #ingoingOffer { grid-column:6; }
+                #drawCard, #exchange1, #exchange2, #result, #outgoingOffer, #ingoingOffer {
+                    width:100% !important; max-width:none !important; height:auto !important;
+                    aspect-ratio:1000/1440 !important; box-sizing:border-box !important;
+                }
+                #drawCard img, #exchange1 img, #exchange2 img, #result img, #outgoingOffer img, #ingoingOffer img,
+                #drawCard .animal-card, #exchange1 .animal-card, #exchange2 .animal-card, #result .animal-card,
+                #outgoingOffer .animal-card, #ingoingOffer .animal-card {
+                    width:100% !important; height:100% !important; object-fit:contain !important;
+                }
+                #drawCard::before { top:-11px !important; font-size:7px !important; letter-spacing:.2px !important; }
+
+                /* The options dialog must fit a phone viewport without page/modal scrolling. */
+                #gameOptionsOverlay { padding:4px !important; box-sizing:border-box !important; }
+                #gameOptionsOverlay .game-options-modal {
+                    width:calc(100vw - 8px) !important; max-width:none !important;
+                    height:auto !important; max-height:calc(100dvh - 8px) !important;
+                    overflow:hidden !important; padding:7px !important; gap:3px !important;
+                    box-sizing:border-box !important; font-size:10px !important;
+                }
+                #gameOptionsOverlay .game-options-modal h2 { margin:0 0 2px !important; font-size:16px !important; line-height:1 !important; }
+                #gameOptionsOverlay .game-options-modal > p,
+                #gameOptionsOverlay .advanced-options-note { display:none !important; }
+                #gameOptionsOverlay .advanced-game-rules { display:grid !important; grid-template-columns:1fr 1fr !important; gap:3px 7px !important; margin:0 !important; }
+                #gameOptionsOverlay .advanced-game-rules > label { min-height:24px !important; margin:0 !important; gap:3px !important; font-size:9px !important; }
+                #gameOptionsOverlay .advanced-game-rules input,
+                #gameOptionsOverlay .advanced-game-rules select { height:23px !important; font-size:9px !important; padding:1px 3px !important; }
+                #gameOptionsOverlay .advanced-options-title { margin:3px 0 1px !important; font-size:10px !important; }
+                #gameOptionsOverlay .category-option-list { display:grid !important; grid-template-columns:repeat(3,1fr) !important; gap:2px 4px !important; margin:0 !important; }
+                #gameOptionsOverlay .category-option { min-height:19px !important; margin:0 !important; font-size:8.5px !important; gap:2px !important; }
+                #gameOptionsOverlay .category-option input { width:12px !important; height:12px !important; margin:0 !important; }
+                #gameOptionsOverlay .options-actions { margin-top:4px !important; gap:4px !important; }
+                #gameOptionsOverlay .options-actions button { min-height:25px !important; padding:3px 6px !important; font-size:9px !important; }
+
+                /* One centred full-size card on phone; no bottom-corner intermediate stage. */
+                #hoverPreview.visible {
+                    position:fixed !important; left:50% !important; top:50% !important; right:auto !important; bottom:auto !important;
+                    transform:translate(-50%,-50%) !important; margin:0 !important; z-index:40000 !important;
+                }
+                #hoverPreview.super-zoom { left:50% !important; top:50% !important; transform:translate(-50%,-50%) !important; }
+                #hoverPreview .animal-info-tabs { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:2px !important; padding:3px !important; }
+                #hoverPreview .animal-info-tab { min-width:0 !important; padding:4px 2px !important; font-size:9px !important; line-height:1.05 !important; white-space:nowrap !important; }
+                #animalInformationTitle, #wikiPreviewTitle, #ztlPreviewTitle { font-size:11px !important; line-height:1.2 !important; }
+                #wikiPreviewStatus, #wikiPreviewText, #ztlPreviewStatus, #ztlPreviewText, #animalInformationText { font-size:10px !important; line-height:1.3 !important; }
+
+                .enclosure-card, .enclosure { -webkit-user-select:none !important; user-select:none !important; -webkit-touch-callout:none !important; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // Put the five requested phone-header items into one row. References to
+    // these elements remain valid after moving them; desktop never enters here.
+    const headerLeft = document.getElementById('headerLeft');
+    const collection = document.getElementById('collectionButton');
+    const prestige = document.getElementById('prestigeCounter');
+    const zooName = document.getElementById('playerZooName');
+    const turn = document.getElementById('turnOrder');
+    const settings = document.getElementById('mobileSettingsButton');
+    if (headerLeft && collection && prestige && zooName && turn && settings) {
+        let row = document.getElementById('mobileTopHudRow');
+        if (!row) {
+            row = document.createElement('div');
+            row.id = 'mobileTopHudRow';
+            headerLeft.insertBefore(row, headerLeft.firstChild);
+        }
+        row.append(collection, prestige, zooName, turn, settings);
+    }
+
+    // Keep the six gameplay cards in a single deterministic phone row even if
+    // older HTML grouped trade/exchange controls in nested wrappers.
+    const actionMenu = document.getElementById('actionMenu');
+    if (actionMenu) {
+        for (const id of ['drawCard','exchange1','exchange2','result','outgoingOffer','ingoingOffer']) {
+            const node = document.getElementById(id);
+            if (node && node.parentElement !== actionMenu) actionMenu.appendChild(node);
+        }
+    }
+}
+
+
 function canPlaceStartingAnimal(animal, enclosure, slotIndex) {
     if (!canPlace(animal, enclosure, slotIndex)) return false;
 
@@ -4174,9 +4654,6 @@ function checkEnclosure10Unlock() {
     state.enclosure10Unlocked =
         true;
 
-    console.log(
-        'Enclosure 10 unlocked.'
-    );
 
 }
 
@@ -4290,6 +4767,29 @@ function chooseStartupEnclosures(rewardCount = 0) {
     const best = capacityMatches.filter(item => item.totalCards === fewestCards);
 
     numbers.push(...randomItem(best).extra);
+
+    // Large starting collections used to depend on the mixed-exhibit
+    // backtracking solver. At 24-52 animals that can create a very large search
+    // tree and make the browser appear to crash. For large starts, guarantee
+    // one independent logical exhibit per animal. This may add enclosure cards
+    // beyond the slider's nominal space target, which is already an allowed
+    // startup rule when the collection needs more physical exhibits.
+    if (requiredAnimals >= 24) {
+        let physical = startupLayoutStats(numbers).physical;
+        const byPhysicalYield = [...available].sort((a, b) =>
+            (GROUPS[b] || [[0]]).length - (GROUPS[a] || [[0]]).length
+        );
+        while (physical < requiredAnimals) {
+            const maxYield = (GROUPS[byPhysicalYield[0]] || [[0]]).length;
+            const choices = byPhysicalYield.filter(number =>
+                (GROUPS[number] || [[0]]).length === maxYield
+            );
+            const number = randomItem(choices);
+            numbers.push(number);
+            physical += (GROUPS[number] || [[0]]).length;
+        }
+    }
+
     return shuffle(numbers);
 }
 
@@ -5035,29 +5535,6 @@ function createStartingZoo() {
     updateTurnDisplay();
 
 
-    const totalSpots =
-        state.enclosures.reduce(
-            (
-                total,
-                enclosure
-            ) =>
-                total +
-                enclosureSlotCapacity(
-                    enclosure.number
-                ),
-            0
-        );
-
-
-    console.log(
-        'Startup zoo:',
-        state.enclosures.length,
-        'enclosure cards,',
-        totalSpots,
-        'animal spots,',
-        state.animals.length,
-        'starting animals.'
-    );
 
 }
 
@@ -5084,7 +5561,9 @@ function updatePrestigeDisplay() {
     const element = document.getElementById('prestigeCounter');
     if (!element) return;
     if (state.sandboxMode) {
-        element.textContent = 'Prestige ∞';
+        // Sandbox prestige is a live score of animals actually placed in
+        // enclosures. Loose cards on the board do not count.
+        element.textContent = `Prestige ${currentZooPrestige()}`;
         return;
     }
     element.textContent = `Prestige ${updateHighestZooPrestige()}`;
@@ -5379,7 +5858,6 @@ function translationLookup(table, value) {
 }
 
 function dutchAnimalName(animal) {
-    if (![1,2].includes(Number(animal?.level))) return null;
     return translationLookup(
         window.ZOO_TRANSLATIONS?.nl?.animals,
         animalDisplayName(animal)
@@ -5527,6 +6005,11 @@ function translateUiString(text) {
     let core=text.trim();
     if(!core)return text;
 
+    // Menu and popup copy is frequently written across several source lines.
+    // Collapse layout whitespace before translation lookup so those strings
+    // match the single-line keys in translations-nl.js.
+    core=core.replace(/\s+/g, ' ');
+
     if(table[core]) core=table[core];
     else if(categories[core]) core=categories[core];
     else {
@@ -5551,7 +6034,30 @@ function translateUiString(text) {
             .replace(/Starting zoo size:/g, 'Grootte startdierentuin:')
             .replace(/Trade offer frequency:/g, 'Frequentie ruilaanbiedingen:')
             .replace(/Exchange 2 → Level (\d+)/g, 'Ruil 2 → niveau $1')
-            .replace(/Level (\d+) Animals/g, 'Niveau $1-dieren');
+            .replace(/Level (\d+) Animals/g, 'Niveau $1-dieren')
+            .replace(/^Country:\s*/i, 'Land: ')
+            .replace(/^Province:\s*/i, 'Provincie: ')
+            .replace(/^Location:\s*/i, 'Plaats: ')
+            .replace(/^Zoo type:\s*/i, 'Type dierentuin: ')
+            .replace(/^Prestige (\d+(?:\.\d+)?)$/i, 'Prestige $1')
+            .replace(/^New Zoo:\s*/i, 'Nieuwe dierentuin: ')
+            .replace(/^Originally from (.+)\.$/, 'Oorspronkelijk uit $1.')
+            .replace(/^Exchanged by (.+) for$/, 'Ingeruild door $1 voor')
+            .replace(/^(.+) — Trade History$/, '$1 — Ruilgeschiedenis')
+            .replace(/^No trades with this zoo yet\.$/, 'Nog geen ruiltransacties met deze dierentuin.')
+            .replace(/^No trades completed yet\.$/, 'Nog geen ruiltransacties voltooid.')
+            .replace(/^COUNTRY:\s*/gmi, 'LAND: ')
+            .replace(/^PROVINCE:\s*/gmi, 'PROVINCIE: ')
+            .replace(/^LOCATION:\s*/gmi, 'PLAATS: ')
+            .replace(/^Shown by:$/gmi, 'Getoond door:')
+            .replace(/^First arrived at the zoo: Turn (\d+)$/gmi, 'Voor het eerst in de dierentuin: beurt $1')
+            .replace(/^Acquisitions:$/gmi, 'Verkregen:')
+            .replace(/^Shared exhibits:$/gmi, 'Gedeelde verblijven:')
+            .replace(/^Departures:$/gmi, 'Vertrokken:')
+            .replace(/^Turn (\d+): acquired$/gmi, 'Beurt $1: verkregen')
+            .replace(/^Turn (\d+): acquired from (.+)$/gmi, 'Beurt $1: verkregen van $2')
+            .replace(/^(.+) — from Turn (\d+)$/gmi, '$1 — vanaf beurt $2')
+            .replace(/^Would you like to save (.+) before opening the New Zoo menu\?$/i, 'Wil je $1 opslaan voordat je het menu Nieuwe dierentuin opent?');
     }
     return leading+core+trailing;
 }
@@ -5737,7 +6243,7 @@ function setupAnimalCard(
         state.progressionGlowHoverKey === trackerKey ||
         state.progressionGlowPinnedKeys.has(trackerKey)
     ) {
-        image.classList.add('progression-highlight');
+        image.classList.add('progression-highlight-instant', 'progression-highlight');
         if (state.progressionGlowPinnedKeys.has(trackerKey)) {
             image.classList.add('progression-highlight-pinned');
         }
@@ -6022,9 +6528,11 @@ function hideHoverPreviewIfAllowed(animal) {
 // ============================================================
 
 function animalDisplayName(animal) {
+    // Card filenames are the canonical player-facing animal names.
+    // Underscores are filename separators; hyphens are part of the name.
     return String(animal?.filename || '')
         .replace(/\.[^.]+$/, '')
-        .replace(/[_-]+/g, ' ')
+        .replace(/_+/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
 }
@@ -6369,9 +6877,15 @@ function proxyExplanationForPair(a, b) {
         const aMembers = (groups[aGroup] || []).map(compatibilityName);
         const bMembers = (groups[bGroup] || []).map(compatibilityName);
         const candidates = [];
+        const exactPartnerInheritance =
+            String(link.to || '').endsWith('_shared_partner_pool') ||
+            link.mode === 'shared_partner_inheritance';
 
         for (const left of aMembers) {
             for (const right of bMembers) {
+                // Shared partner pools inherit evidence for the EXACT selected
+                // partner only. Never explain Zebra using Caracal/Meerkat/etc.
+                if (exactPartnerInheritance && right !== bName) continue;
                 const sources = evidenceFor(left, right);
                 if (!sources.length) continue;
                 const substitutions =
@@ -6439,7 +6953,12 @@ function proxyExplanationForPair(a, b) {
     // Complete/shared groups: find a directly documented member that can stand
     // in for one of the displayed animals.
     const complete = new Set(proxy?.complete_groups || []);
-    const sharedGroups = aGroups.filter(group => bGroups.includes(group));
+    // Only explicitly complete groups are equivalence/proxy groups. Merely
+    // sharing membership in a partner-pool group must never create or explain
+    // compatibility between the two members.
+    const sharedGroups = aGroups.filter(group =>
+        bGroups.includes(group) && complete.has(group)
+    );
 
     for (const groupName of sharedGroups) {
         const members = (groups[groupName] || []).map(compatibilityName);
@@ -6629,7 +7148,7 @@ function inventoryDisplayNameForCompatibilityName(value) {
             for (const file of levelFiles(category, level)) {
                 const display = String(file || '')
                     .replace(/\.[^.]+$/, '')
-                    .replace(/[_-]+/g, ' ')
+                    .replace(/_+/g, ' ')
                     .replace(/\s+/g, ' ')
                     .trim();
                 if (compatibilityName(display) === wanted) return display;
@@ -6854,7 +7373,10 @@ function renderAnimalInformation(animal) {
 
         const hideSource = () => {
             const popup = document.getElementById('combinationSourceTooltip');
-            if (popup) popup.style.display = 'none';
+            if (popup) {
+            popup.style.display = 'none';
+            popup.style.pointerEvents = 'none';
+        }
         };
 
         row.addEventListener('mouseenter', showSource);
@@ -6868,7 +7390,10 @@ function renderAnimalInformation(animal) {
             event.stopPropagation();
             showSource(event);
             const popup = document.getElementById('combinationSourceTooltip');
-            if (popup) popup.dataset.mobilePinned = '1';
+            if (popup) {
+                popup.dataset.mobilePinned = '1';
+                popup.style.pointerEvents = 'auto';
+            }
         });
 
         list.appendChild(row);
@@ -7014,6 +7539,45 @@ async function flipPreviewToWikipedia() {
 // ============================================================
 // RENDER ZOO
 // ============================================================
+// Keep exactly the same amount of empty pannable space around the enclosure
+// bounding box. Coordinates are normalized when the outer edge changes, so the
+// visual zoo does not drift toward one side of a giant fixed canvas.
+const ZOO_WORKSPACE_MARGIN = 3800;
+
+function normalizeZooWorkspace() {
+    if (!state.enclosures.length) {
+        return { dx: 0, dy: 0, width: ZOO_WORKSPACE_MARGIN * 2, height: ZOO_WORKSPACE_MARGIN * 2 };
+    }
+
+    const minX = Math.min(...state.enclosures.map(enclosure => enclosure.x));
+    const minY = Math.min(...state.enclosures.map(enclosure => enclosure.y));
+    const maxX = Math.max(...state.enclosures.map(enclosure => enclosure.x + ENCLOSURE_W));
+    const maxY = Math.max(...state.enclosures.map(enclosure => enclosure.y + ENCLOSURE_H));
+
+    const dx = ZOO_WORKSPACE_MARGIN - minX;
+    const dy = ZOO_WORKSPACE_MARGIN - minY;
+
+    if (dx || dy) {
+        for (const enclosure of state.enclosures) {
+            enclosure.x += dx;
+            enclosure.y += dy;
+        }
+        // Loose sandbox cards use board coordinates too and must remain in the
+        // same visual place relative to the enclosure layout.
+        for (const animal of state.sandboxLooseAnimals || []) {
+            if (Number.isFinite(animal.x)) animal.x += dx;
+            if (Number.isFinite(animal.y)) animal.y += dy;
+        }
+    }
+
+    return {
+        dx,
+        dy,
+        width: Math.max(1, (maxX - minX) + ZOO_WORKSPACE_MARGIN * 2),
+        height: Math.max(1, (maxY - minY) + ZOO_WORKSPACE_MARGIN * 2)
+    };
+}
+
 
 function renderZoo() {
 
@@ -7023,16 +7587,18 @@ function renderZoo() {
     const scrollTop =
         zooBoard.scrollTop;
 
+    const workspace = normalizeZooWorkspace();
 
     zooCanvas.innerHTML =
         '';
 
-
+    // The scrollable world now follows the actual zoo instead of remaining a
+    // fixed 6000×5000 rectangle. Empty space is symmetrical on every side.
     zooCanvas.style.width =
-        WORKSPACE_W + 'px';
+        `${workspace.width}px`;
 
     zooCanvas.style.height =
-        WORKSPACE_H + 'px';
+        `${workspace.height}px`;
 
 
     // Compatibility legality can inspect enclosure groups and the full animal
@@ -7057,11 +7623,14 @@ function renderZoo() {
     // into an enclosure. They are deliberately outside normal-game state.
     if (state.sandboxMode) renderSandboxLooseAnimals();
 
+    // If normalization shifted world coordinates, compensate the scroll
+    // position by the same rendered distance. Existing enclosures therefore
+    // stay visually stationary while the pannable world grows around them.
     zooBoard.scrollLeft =
-        scrollLeft;
+        Math.max(0, scrollLeft + workspace.dx * state.zoom);
 
     zooBoard.scrollTop =
-        scrollTop;
+        Math.max(0, scrollTop + workspace.dy * state.zoom);
 
     refreshAnimalGlowPrecedence(zooCanvas);
 
@@ -7338,6 +7907,12 @@ function renderEnclosure(
                 // The board's capture listener has already seen this pointer,
                 // so ordinary touch movement continues to pan the zoo.
                 event.preventDefault();
+                // Suppress iOS/Android long-press text selection/callout while
+                // the two-second enclosure-drag hold is being measured.
+                document.getSelection?.()?.removeAllRanges?.();
+                element.style.webkitUserSelect = 'none';
+                element.style.userSelect = 'none';
+                element.style.webkitTouchCallout = 'none';
 
                 const pointerId = event.pointerId;
                 const startX = event.clientX;
@@ -8078,6 +8653,7 @@ function hasCategoryLevel(category, level) {
 function applyProgressionHighlightClasses() {
     document.querySelectorAll('.animal-card[data-animal-id]').forEach(card => {
         const animal = state.animals.find(item => item.id === Number(card.dataset.animalId));
+        card.classList.add('progression-highlight-instant');
         card.classList.remove('progression-highlight', 'progression-highlight-pinned');
         if (!animal) return;
 
@@ -8131,8 +8707,11 @@ function renderProgressTracker() {
 
         const c = document.createElement('div');
         c.className = 'progress-category';
+        c.dataset.category = category;
+        // V220.63: no native title tooltip; click / 2-second hover opens the live zoo list.
         c.textContent = category;
         c.style.background = colour;
+        bindProgressCategoryInteraction(c, category);
         table.appendChild(c);
 
         for (let level = 1; level <= 5; level++) {
@@ -8174,6 +8753,11 @@ function renderProgressTracker() {
 
     tracker.appendChild(table);
 
+    // V220.63: the tracker does not exist yet when the early UI bootstrap calls
+    // ensureCollectionCategoryLinks(). Bind the delegated category handlers here,
+    // after the tracker is guaranteed to exist. The dataset guard prevents duplicates.
+    ensureCollectionCategoryLinks();
+
     // The tracker is rebuilt as progression changes, so re-check the live
     // desktop header after the browser has laid out the new table.
     enqueueMicrotask(() => {
@@ -8211,7 +8795,7 @@ function ensureProgressionGlowStyles() {
 ensureProgressionGlowStyles();
 
 // ============================================================
-// V220.37 — ANIMAL GLOW PRECEDENCE / DE-CLUTTER
+// V220.51 — ANIMAL GLOW PRECEDENCE / DE-CLUTTER
 // ============================================================
 // Animal cards can qualify for several visual hints at once. CSS filter and
 // animation properties do not compose reliably, so make the precedence
@@ -8338,6 +8922,7 @@ const SAVE_STATE_KEYS = [
     'zooProvince',
     'zooLocation',
     'zooType',
+    'manualZooNameOverrideType',
     'opponentNames',
     'activeCategories',
     'opponentProfiles',
@@ -8707,7 +9292,7 @@ function importGameState(saveData, { deferRender = false } = {}) {
     exitHistoryView(false);
     state.suppressHistoryCapture = true;
 
-    // V220.37 removes the old Hand subsystem. Older saves may still contain
+    // V220.51 removes the old Hand subsystem. Older saves may still contain
     // one or more pending hand-card references; remember their ids solely for
     // one-time migration after the normal zoo state has been restored.
     const legacyHandIds = new Set(
@@ -8741,7 +9326,7 @@ function importGameState(saveData, { deferRender = false } = {}) {
     normaliseLoadedGameCollections();
     relinkLoadedPlayerReferences();
 
-    // One-time compatibility migration for pre-V220.37 saves. Modern gameplay
+    // One-time compatibility migration for pre-V220.51 saves. Modern gameplay
     // never creates an unplaced owned animal: draw, upgrade and incoming-trade
     // actions commit only after a legal destination is known.
     for (const id of legacyHandIds) {
@@ -8999,7 +9584,6 @@ function ensureSaveLoadUI() {
             <p>Saved games are stored in this browser. Each save also keeps its turn-history viewer.</p>
             <div id="saveSlotList" class="save-slot-list"></div>
             <div class="save-load-footer">
-                <button type="button" id="startNewGameFromSaveMenu">Start New Game</button>
                 <span style="flex:1 1 auto;"></span>
                 <button type="button" id="saveCurrentGame">Save Current Game</button>
                 <button type="button" id="closeSaveLoad">Close</button>
@@ -9009,12 +9593,6 @@ function ensureSaveLoadUI() {
     document.body.appendChild(overlay);
 
     button.addEventListener('click', openSaveLoadMenu);
-    overlay.querySelector('#startNewGameFromSaveMenu').addEventListener(
-        'click', () => {
-            closeSaveLoadMenu();
-            startFreshZooFromCurrentOptions();
-        }
-    );
     overlay.querySelector('#saveCurrentGame').addEventListener(
         'click', () => saveCurrentGame()
     );
@@ -9041,7 +9619,7 @@ function ensureMobileSettingsHub() {
     button.id = 'mobileSettingsButton';
     button.type = 'button';
     button.className = 'mobile-settings-button';
-    button.textContent = '⚙';
+    button.innerHTML = `<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19.14 12.94a7.8 7.8 0 0 0 .05-.94 7.8 7.8 0 0 0-.05-.94l2.03-1.58-1.92-3.32-2.39.96a7.3 7.3 0 0 0-1.63-.95L14.87 3h-3.84l-.36 3.17c-.58.24-1.12.56-1.63.95l-2.39-.96-1.92 3.32 2.03 1.58a7.8 7.8 0 0 0-.05.94c0 .32.02.63.05.94l-2.03 1.58 1.92 3.32 2.39-.96c.5.39 1.05.71 1.63.95l.36 3.17h3.84l.36-3.17c.58-.24 1.12-.56 1.63-.95l2.39.96 1.92-3.32-2.03-1.58ZM12.95 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/></svg>`;
     button.title = 'Settings';
     button.setAttribute('aria-label', 'Settings');
     headerLeft.appendChild(button);
@@ -9322,6 +9900,10 @@ function refreshDrawAvailabilityState() {
 
 function renderAll(persist = true) {
 
+    // Collection identity is evaluated at render boundaries after ownership
+    // changes. The 60%/45% hysteresis prevents names oscillating around a
+    // threshold as individual animals enter or leave the zoo.
+    updateZooIdentityFromLivingCollection();
     refreshDrawAvailabilityState();
 
 
@@ -9578,6 +10160,19 @@ function startAnimalDrag(
             ? emergencyTradeForAnimal(animal)
             : null;
 
+    // Capture the exact verified NORMAL offers before the card leaves its zoo
+    // slot. The blue glow is based on this same live state. Dropping the card
+    // into Outgoing Offer must consume this snapshot rather than re-evaluating
+    // after the drag has changed enclosure/slot state.
+    let liveTradeOffersAtDragStart = [];
+    if (location === 'enclosure' && !emergencyTradeAtDragStart) {
+        const lockedAtDragStart = predictedPlayerTradeOffers(animal);
+        liveTradeOffersAtDragStart = materializeLockedPlayerTradeOffers(
+            animal,
+            lockedAtDragStart
+        );
+    }
+
     const compatibilityGlowKeysAtDragStart =
         currentCompatibilityGlowKeys([animal]);
 
@@ -9594,6 +10189,7 @@ function startAnimalDrag(
 
         exchangeGlowIds: exchangeGlowIdsAtDragStart,
         emergencyTradeAtDragStart,
+        liveTradeOffersAtDragStart,
         compatibilityGlowKeys: compatibilityGlowKeysAtDragStart,
 
         animal,
@@ -9616,6 +10212,21 @@ function startAnimalDrag(
 
         originalWasOutgoing:
             state.outgoingOffer?.id === animal.id,
+
+        // Preserve the exact active negotiation while an outgoing card is
+        // being dragged. removeAnimalFromLocations() temporarily clears the
+        // outgoing slot and its offers; dropping the same card back into the
+        // slot must restore that negotiation rather than recalculating it from
+        // the transient drag state.
+        originalTradeOffers:
+            state.outgoingOffer?.id === animal.id
+                ? (state.tradeOffers || []).map(offer => ({ ...offer }))
+                : null,
+
+        originalSelectedTradeOpponent:
+            state.outgoingOffer?.id === animal.id
+                ? state.selectedTradeOpponent
+                : null,
 
         offsetX:
             relativeX *
@@ -10708,6 +11319,7 @@ function finishAnimalDrag(event) {
             // A tap on mobile deliberately does NOT suppress the yellow
             // exchange-eligibility glow.
             showHoverPreview(animal);
+            ensureWikipediaBack();
             setHoverPreviewSuperZoom(true);
         } else if (isExchangeEligible(animal)) {
             // selecting an exchange-ready animal focuses the eligibility
@@ -10840,12 +11452,26 @@ function moveEnclosureDrag(
         state.zoom;
 
 
+    // The zoo canvas is dynamic (renderZoo/normalizeZooWorkspace), so do not
+    // clamp enclosure dragging to the old fixed 6000x5000 workspace constants.
+    // Those legacy limits created an invisible wall around y=4533, which could
+    // sit roughly halfway down a large zoo. Use the currently rendered world
+    // size instead. The large symmetric workspace margin gives plenty of room,
+    // and the next render will normalize the zoo again if its outer edge moved.
+    const renderedWorldWidth = Math.max(
+        ENCLOSURE_W,
+        parseFloat(zooCanvas.style.width) || (zooCanvas.scrollWidth / Math.max(state.zoom, 0.0001))
+    );
+    const renderedWorldHeight = Math.max(
+        ENCLOSURE_H,
+        parseFloat(zooCanvas.style.height) || (zooCanvas.scrollHeight / Math.max(state.zoom, 0.0001))
+    );
+
     drag.enclosure.x =
         clamp(
             drag.startX + dx,
             0,
-            WORKSPACE_W -
-                ENCLOSURE_W
+            renderedWorldWidth - ENCLOSURE_W
         );
 
 
@@ -10853,8 +11479,7 @@ function moveEnclosureDrag(
         clamp(
             drag.startY + dy,
             0,
-            WORKSPACE_H -
-                ENCLOSURE_H
+            renderedWorldHeight - ENCLOSURE_H
         );
 
 
@@ -10895,10 +11520,12 @@ function nearestValidEnclosureSnap(enclosure) {
         );
     }
 
+    // Do not validate against the obsolete fixed WORKSPACE_W/WORKSPACE_H.
+    // Enclosures now live on the dynamically sized zoo canvas. Requiring only
+    // non-negative coordinates here prevents a valid lower/right-hand drop
+    // from snapping back merely because it crossed the former 6000x5000 edge.
     const valid = candidates.filter(pos =>
         pos.x >= 0 && pos.y >= 0 &&
-        pos.x + ENCLOSURE_W <= WORKSPACE_W &&
-        pos.y + ENCLOSURE_H <= WORKSPACE_H &&
         enclosurePlacementIsValid(enclosure, pos.x, pos.y)
     );
 
@@ -11273,107 +11900,45 @@ function setZoom(
     clientX = null,
     clientY = null
 ) {
+    const oldZoom = state.zoom;
+    const nextZoom = clamp(
+        Math.round(newZoom * 100) / 100,
+        currentZoomMin(),
+        ZOOM_MAX
+    );
+    if (nextZoom === oldZoom) return;
 
-    const oldZoom =
-        state.zoom;
+    const boardRect = zooBoard.getBoundingClientRect();
+    const pointerX = clientX !== null ? clientX - boardRect.left : zooBoard.clientWidth / 2;
+    const pointerY = clientY !== null ? clientY - boardRect.top : zooBoard.clientHeight / 2;
 
+    // Capture the exact WORLD coordinate currently beneath the mouse.
+    const anchorWorldX = (zooBoard.scrollLeft + pointerX) / oldZoom;
+    const anchorWorldY = (zooBoard.scrollTop + pointerY) / oldZoom;
 
-    const nextZoom =
-        clamp(
-            Math.round(
-                newZoom * 100
-            ) / 100,
-            ZOOM_MIN,
-            ZOOM_MAX
+    state.zoom = nextZoom;
+    document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
+
+    const restoreMouseAnchor = () => {
+        const maxLeft = Math.max(0, zooBoard.scrollWidth - zooBoard.clientWidth);
+        const maxTop = Math.max(0, zooBoard.scrollHeight - zooBoard.clientHeight);
+
+        zooBoard.scrollLeft = Math.max(
+            0,
+            Math.min(maxLeft, anchorWorldX * state.zoom - pointerX)
         );
-
-
-    if (
-        nextZoom ===
-        oldZoom
-    ) {
-        return;
-    }
-
-
-    let worldX = null;
-    let worldY = null;
-
-
-    if (
-        clientX !== null &&
-        clientY !== null
-    ) {
-
-        const boardRect =
-            zooBoard
-                .getBoundingClientRect();
-
-
-        worldX =
-            (
-                zooBoard.scrollLeft +
-                clientX -
-                boardRect.left
-            ) /
-            oldZoom;
-
-
-        worldY =
-            (
-                zooBoard.scrollTop +
-                clientY -
-                boardRect.top
-            ) /
-            oldZoom;
-
-    }
-
-
-    state.zoom =
-        nextZoom;
-
-
-    document
-        .documentElement
-        .style
-        .setProperty(
-            '--zoo-zoom',
-            state.zoom
+        zooBoard.scrollTop = Math.max(
+            0,
+            Math.min(maxTop, anchorWorldY * state.zoom - pointerY)
         );
+    };
 
-
-    if (
-        worldX !== null &&
-        worldY !== null
-    ) {
-
-        const boardRect =
-            zooBoard
-                .getBoundingClientRect();
-
-
-        zooBoard.scrollLeft =
-            worldX *
-                state.zoom -
-            (
-                clientX -
-                boardRect.left
-            );
-
-
-        zooBoard.scrollTop =
-            worldY *
-                state.zoom -
-            (
-                clientY -
-                boardRect.top
-            );
-
-    }
-
+    // CSS `zoom` can update the painted scale before Firefox has finalized its
+    // scroll extents. Apply once immediately and once after layout/paint. The
+    // second correction removes the low-zoom cursor drift.
+    restoreMouseAnchor();
+    requestAnimationFrame(restoreMouseAnchor);
 }
-
 
 // ============================================================
 // MOBILE PINCH ZOOM
@@ -11441,7 +12006,7 @@ zooBoard.addEventListener('pointermove', event => {
 
     const nextZoom = clamp(
         zooPinch.startZoom * (distance / zooPinch.startDistance),
-        ZOOM_MIN,
+        currentZoomMin(),
         ZOOM_MAX
     );
     state.zoom = Math.round(nextZoom * 1000) / 1000;
@@ -11530,7 +12095,7 @@ zooBoard.addEventListener(
 
 
 // ============================================================
-// LEVEL 1 DRAW COMMIT — V220.37
+// LEVEL 1 DRAW COMMIT — V220.51
 // ============================================================
 //
 // The draw UI already called drawLevelOne()/createLevelOneForDraw(), but those
@@ -12370,10 +12935,44 @@ window.addEventListener('keydown', event => {
         event.stopPropagation();
     }
 });
-function startSandboxMode() {
-    if (!confirm('Start a new Sandbox game? Your current unsaved game will be replaced.')) return;
+function clearTransientZooUIForSandbox() {
+    // Sandbox replaces the active zoo, so no hover/zoom UI from the previous
+    // zoo is allowed to survive the mode switch.
+    cancelHoverPreviewIntent();
+    cancelHoverPreviewHide();
+    state.previewHoveredAnimalId = null;
+    state.previewIntentAnimalId = null;
+    hoverPreview?.classList.remove('visible', 'preview-fading');
+    if (hoverPreview) {
+        hoverPreview.style.setProperty('display', 'none', 'important');
+        hoverPreview.style.setProperty('visibility', 'hidden', 'important');
+        hoverPreview.setAttribute('aria-hidden', 'true');
+    }
+    setHoverPreviewSuperZoom(false);
+
+    // Remove every visual remnant of the old trade before sandbox render.
+    // State is cleared separately below; this handles DOM that renderTrade()
+    // intentionally hides rather than destroys.
+    const decline = document.getElementById('declineOpponentOffer');
+    if (decline) {
+        decline.style.display = 'none';
+        decline.remove();
+    }
+    document.querySelectorAll('#opponentZoos .opponent-name').forEach(element => {
+        element.classList.remove('wants-trade', 'selected-trade');
+    });
+    const opponentPopup = document.getElementById('opponentInfoPopup');
+    const tradePopup = document.getElementById('zooTradePopup');
+    if (opponentPopup) opponentPopup.style.display = 'none';
+    if (tradePopup) tradePopup.style.display = 'none';
+}
+
+function startSandboxMode(options = {}) {
+    const { skipConfirm = false, preserveIdentity = false } = options || {};
+    if (!skipConfirm && !confirm('Start a new Sandbox game? Your current unsaved game will be replaced.')) return;
     clearAutoResumeSnapshot();
     exitHistoryView(false);
+    clearTransientZooUIForSandbox();
     state.sandboxMode = true;
     state.sandboxLooseAnimals = [];
     state.enclosures = [];
@@ -12403,7 +13002,7 @@ function startSandboxMode() {
     state.tradeOffers = [];
     state.autonomousTradeOffer = null;
     state.selectedTradeOpponent = null;
-    assignZooNames();
+    if (!preserveIdentity) assignZooNames();
     closeSaveLoadMenu();
     document.getElementById('generateZooOverlay')?.classList.remove('visible');
     removeActionHintOverlay();
@@ -12423,27 +13022,42 @@ function sandboxOccupiedRects() {
 
 function sandboxFindLoosePosition(w = ANIMAL_W, h = ANIMAL_H) {
     const occupied = sandboxOccupiedRects();
-    const centerX = STARTUP_CENTER_X - w / 2;
-    const centerY = STARTUP_CENTER_Y + 160;
-    for (let ring=0; ring<80; ring++) {
-        for (let dx=-ring; dx<=ring; dx++) {
-            for (const dy of [-ring, ring]) {
-                const x=centerX + dx*(w+20), y=centerY + dy*(h+20);
-                const r={x,y,w,h};
-                if (x<20||y<20||x+w>WORKSPACE_W-20||y+h>WORKSPACE_H-20) continue;
-                if (!occupied.some(o=>rectanglesOverlap(r,o,20))) return {x,y};
+    const zoom = Math.max(0.01, Number(state.zoom) || 1);
+
+    // Spawn into the centre of whatever part of the zoo the player is
+    // currently looking at. The picker itself is an overlay, so its screen
+    // position is deliberately irrelevant: closing/keeping it open never
+    // changes the world-space target.
+    const viewCenterX = (zooBoard.scrollLeft + zooBoard.clientWidth / 2) / zoom;
+    const viewCenterY = (zooBoard.scrollTop + zooBoard.clientHeight / 2) / zoom;
+    const centerX = viewCenterX - w / 2;
+    const centerY = viewCenterY - h / 2;
+
+    // Search outward from the visible centre for the nearest free position.
+    const stepX = w + 20;
+    const stepY = h + 20;
+    for (let ring = 0; ring < 40; ring++) {
+        for (let dx = -ring; dx <= ring; dx++) {
+            for (const dy of ring === 0 ? [0] : [-ring, ring]) {
+                const x = centerX + dx * stepX;
+                const y = centerY + dy * stepY;
+                const r = {x, y, w, h};
+                if (x < 20 || y < 20) continue;
+                if (!occupied.some(o => rectanglesOverlap(r, o, 20))) return {x, y};
             }
         }
-        for (let dy=-ring+1; dy<ring; dy++) {
+        for (let dy = -ring + 1; dy < ring; dy++) {
             for (const dx of [-ring, ring]) {
-                const x=centerX + dx*(w+20), y=centerY + dy*(h+20);
-                const r={x,y,w,h};
-                if (x<20||y<20||x+w>WORKSPACE_W-20||y+h>WORKSPACE_H-20) continue;
-                if (!occupied.some(o=>rectanglesOverlap(r,o,20))) return {x,y};
+                const x = centerX + dx * stepX;
+                const y = centerY + dy * stepY;
+                const r = {x, y, w, h};
+                if (x < 20 || y < 20) continue;
+                if (!occupied.some(o => rectanglesOverlap(r, o, 20))) return {x, y};
             }
         }
     }
-    return {x:centerX,y:centerY};
+
+    return {x: Math.max(20, centerX), y: Math.max(20, centerY)};
 }
 
 function sandboxSpawnAnimal(category, level, filename) {
@@ -12489,48 +13103,132 @@ function ensureSandboxPicker() {
     sandboxPickerOverlay.style.cssText='position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.58);z-index:10035;padding:18px;box-sizing:border-box;';
     sandboxPickerOverlay.innerHTML=`<div style="width:min(900px,96vw);max-height:88vh;overflow:auto;background:#f4efe2;color:#222;border-radius:10px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.45);">
       <div style="display:flex;gap:10px;align-items:center"><h2 id="sandboxPickerTitle" style="flex:1;margin:0">Sandbox</h2><button id="sandboxPickerClose" type="button">Close</button></div>
-      <input id="sandboxPickerSearch" type="search" placeholder="Search cards..." style="width:100%;box-sizing:border-box;margin:14px 0 10px;padding:9px">
+      <div id="sandboxPickerAnimalTools" class="sandbox-picker-animal-tools">
+        <div id="sandboxPickerLevelTabs" class="sandbox-picker-level-tabs" role="tablist" aria-label="Animal card level"></div>
+        <input id="sandboxPickerSearch" type="search" placeholder="Search animals..." style="width:100%;box-sizing:border-box;margin:10px 0;padding:9px">
+      </div>
       <div id="sandboxPickerCards"></div></div>`;
     document.body.appendChild(sandboxPickerOverlay);
     sandboxPickerOverlay.querySelector('#sandboxPickerClose').onclick=()=>sandboxPickerOverlay.style.display='none';
     sandboxPickerOverlay.addEventListener('pointerdown',e=>{if(e.target===sandboxPickerOverlay)sandboxPickerOverlay.style.display='none';});
 }
 
-function openSandboxAnimalPicker(level) {
+function openSandboxAnimalPicker(initialLevel = 1) {
     ensureSandboxPicker();
-    const title=sandboxPickerOverlay.querySelector('#sandboxPickerTitle');
-    const search=sandboxPickerOverlay.querySelector('#sandboxPickerSearch');
-    const body=sandboxPickerOverlay.querySelector('#sandboxPickerCards');
-    title.textContent=`Draw Level ${level}`;
-    search.style.display='';
-    search.value='';
-    const draw=()=>{
-        const q=search.value.trim().toLowerCase();
-        body.innerHTML='';
-        for (const category of CATEGORY_PROGRESSION_ORDER) {
-            const files=levelFiles(category,level).filter(f=>!q||String(f).replace(/\.png$/i,'').toLowerCase().includes(q));
-            if(!files.length) continue;
-            const h=document.createElement('h3'); h.textContent=category; body.appendChild(h);
-            const grid=document.createElement('div');
-            grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-bottom:18px;';
-            for(const filename of files){
-                const b=document.createElement('button'); b.type='button'; b.title=String(filename).replace(/\.png$/i,'');
-                b.style.cssText='padding:5px;background:#fff;border:1px solid #999;border-radius:6px;cursor:pointer;';
-                const img=document.createElement('img'); img.src=animalPath(category,level,filename); img.style.cssText='width:100%;height:auto;display:block;';
-                b.appendChild(img);
-                b.onclick=()=>{sandboxSpawnAnimal(category,level,filename); sandboxPickerOverlay.style.display='none';};
-                grid.appendChild(b);
-            }
-            body.appendChild(grid);
+    const title = sandboxPickerOverlay.querySelector('#sandboxPickerTitle');
+    const tabs = sandboxPickerOverlay.querySelector('#sandboxPickerLevelTabs');
+    const search = sandboxPickerOverlay.querySelector('#sandboxPickerSearch');
+    const body = sandboxPickerOverlay.querySelector('#sandboxPickerCards');
+    let activeLevel = Math.max(1, Math.min(5, Number(initialLevel) || 1));
+
+    title.textContent = 'Draw Animal Card';
+    const tools = sandboxPickerOverlay.querySelector('#sandboxPickerAnimalTools');
+    tools.style.display = 'block';
+    tabs.style.display = 'flex';
+    search.style.display = '';
+    search.value = '';
+
+    const syncTabs = () => {
+        const searching = Boolean(search.value.trim());
+        for (const item of tabs.querySelectorAll('.sandbox-picker-level-tab')) {
+            const selected = Number(item.dataset.level) === activeLevel && !searching;
+            item.classList.toggle('active', selected);
+            item.setAttribute('aria-selected', selected ? 'true' : 'false');
         }
     };
-    search.oninput=draw; draw();
-    sandboxPickerOverlay.style.display='flex';
-}
 
+    const draw = () => {
+        const q = search.value.trim().toLowerCase();
+        body.innerHTML = '';
+
+        // Tabs filter browsing. As soon as there is a search query, search the
+        // complete five-level inventory instead of hiding matches on other tabs.
+        const levels = q ? [1, 2, 3, 4, 5] : [activeLevel];
+
+        for (const level of levels) {
+            const levelResults = [];
+
+            for (const category of CATEGORY_PROGRESSION_ORDER) {
+                const files = levelFiles(category, level).filter(filename => {
+                    if (!q) return true;
+                    const animalName = String(filename).replace(/\.png$/i, '').toLowerCase();
+                    return animalName.includes(q) || String(category).toLowerCase().includes(q);
+                });
+                if (files.length) levelResults.push({ category, files });
+            }
+
+            if (!levelResults.length) continue;
+
+            if (q) {
+                const levelHeading = document.createElement('h2');
+                levelHeading.className = 'sandbox-search-level-heading';
+                levelHeading.textContent = `Level ${level}`;
+                body.appendChild(levelHeading);
+            }
+
+            for (const { category, files } of levelResults) {
+                const h = document.createElement('h3');
+                h.textContent = category;
+                body.appendChild(h);
+
+                const grid = document.createElement('div');
+                grid.style.cssText =
+                    'display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));' +
+                    'gap:10px;margin-bottom:18px;';
+
+                for (const filename of files) {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.title = `${String(filename).replace(/\.png$/i, '')} — Level ${level}\nCtrl+click to keep this menu open`;
+                    b.style.cssText =
+                        'padding:5px;background:#fff;border:1px solid #999;border-radius:6px;cursor:pointer;';
+
+                    const img = document.createElement('img');
+                    img.src = animalPath(category, level, filename);
+                    img.style.cssText = 'width:100%;height:auto;display:block;';
+                    b.appendChild(img);
+
+                    b.onclick = event => {
+                        sandboxSpawnAnimal(category, level, filename);
+                        // Ctrl+click is the rapid sandbox workflow: add the
+                        // animal, keep the current tab/search/results untouched.
+                        if (!event.ctrlKey) sandboxPickerOverlay.style.display = 'none';
+                    };
+                    grid.appendChild(b);
+                }
+                body.appendChild(grid);
+            }
+        }
+
+        syncTabs();
+    };
+
+    tabs.innerHTML = '';
+    for (let level = 1; level <= 5; level++) {
+        const tab = document.createElement('button');
+        tab.type = 'button';
+        tab.className = 'sandbox-picker-level-tab';
+        tab.textContent = `Level ${level}`;
+        tab.setAttribute('role', 'tab');
+        tab.dataset.level = String(level);
+        tab.onclick = () => {
+            activeLevel = level;
+            // Clicking a tab deliberately returns to normal tab browsing.
+            search.value = '';
+            draw();
+        };
+        tabs.appendChild(tab);
+    }
+
+    search.oninput = draw;
+    draw();
+    sandboxPickerOverlay.style.display = 'flex';
+}
 function openSandboxEnclosurePicker() {
     ensureSandboxPicker();
     sandboxPickerOverlay.querySelector('#sandboxPickerTitle').textContent='Draw Enclosure Card';
+    sandboxPickerOverlay.querySelector('#sandboxPickerAnimalTools').style.display='none';
+    sandboxPickerOverlay.querySelector('#sandboxPickerLevelTabs').style.display='none';
     const search=sandboxPickerOverlay.querySelector('#sandboxPickerSearch');
     search.style.display='none';
     const body=sandboxPickerOverlay.querySelector('#sandboxPickerCards');
@@ -12552,11 +13250,19 @@ function renderSandboxToolbar() {
             const bar=document.createElement('div');
             bar.id='sandboxToolbar';
             bar.style.cssText='display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;';
-            for(let level=1;level<=5;level++){
-                const b=document.createElement('button'); b.type='button'; b.textContent=`Draw Level ${level}`;
-                b.onclick=()=>openSandboxAnimalPicker(level); bar.appendChild(b);
-            }
-            const e=document.createElement('button'); e.type='button'; e.textContent='Draw Enclosure Card'; e.onclick=openSandboxEnclosurePicker; bar.appendChild(e);
+            const animalButton=document.createElement('button');
+            animalButton.type='button';
+            animalButton.className='save-load-button sandbox-draw-button';
+            animalButton.textContent='Draw Animal Card';
+            animalButton.onclick=()=>openSandboxAnimalPicker(1);
+            bar.appendChild(animalButton);
+
+            const enclosureButton=document.createElement('button');
+            enclosureButton.type='button';
+            enclosureButton.className='save-load-button sandbox-draw-button';
+            enclosureButton.textContent='Draw Enclosure Card';
+            enclosureButton.onclick=openSandboxEnclosurePicker;
+            bar.appendChild(enclosureButton);
             parent.insertBefore(bar,exchange1);
         }
         sandboxToolbarInstalled=true;
@@ -12565,6 +13271,13 @@ function renderSandboxToolbar() {
     if(bar) bar.style.display='flex';
     exchange1.style.display='none'; exchange2.style.display='none'; resultBox.style.display='none';
     if(drawCard) drawCard.style.display='none';
+
+    // Sandbox has no collection journal or meaningful turn counter.
+    const collectionButton=document.getElementById('collectionButton');
+    if(collectionButton) collectionButton.style.display='none';
+    if(turnOrder) turnOrder.style.display='none';
+    const prestige=document.getElementById('prestigeCounter');
+    if(prestige) prestige.style.display='';
 }
 
 function restoreNormalActionBoxesIfNeeded() {
@@ -12572,23 +13285,17 @@ function restoreNormalActionBoxesIfNeeded() {
     if(bar) bar.style.display='none';
     exchange1.style.display=''; exchange2.style.display=''; resultBox.style.display='';
     if(drawCard) drawCard.style.display='';
+
+    const collectionButton=document.getElementById('collectionButton');
+    if(collectionButton) collectionButton.style.display='';
+    if(turnOrder) turnOrder.style.display='';
+    const prestige=document.getElementById('prestigeCounter');
+    if(prestige) prestige.style.display='';
 }
 
 // ============================================================
 // GAME OPTIONS — CATEGORY FILTERS
 // ============================================================
-function startFreshZooFromCurrentOptions() {
-    // New Game deliberately keeps the options currently selected in this
-    // session. It only replaces the zoo itself. The previous automatic resume
-    // point must not bring the old zoo back after a refresh.
-    clearAutoResumeSnapshot();
-    assignZooNames();
-    createStartingZoo();
-    assignOpponentProfiles();
-    renderAll();
-    centerInitialView();
-}
-
 // ============================================================
 // GENERATE ZOO / NEW GAME SETUP
 // ============================================================
@@ -12634,6 +13341,43 @@ function zooSetupProvinceForLocation(country, location) {
         if (containsLocation(contents)) return province;
     }
     return '';
+}
+
+
+// Resolve a place written anywhere in a zoo name against the complete place
+// database. Longest place-name wins; the current country only breaks exact
+// ties. This lets a manual rename such as "Zoo Berlin" immediately move the
+// zoo's trade geography to Berlin/Germany without requiring a separate edit.
+function recognisedZooPlaceInName(zooName, preferredCountry = '') {
+    const normalizePlaceText = value => String(value || '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const normalizedName = normalizePlaceText(zooName);
+    if (!normalizedName) return null;
+
+    const paddedName = ` ${normalizedName} `;
+    const matches = [];
+    for (const country of zooSetupCountries()) {
+        for (const location of zooSetupLocations(country)) {
+            const normalizedLocation = normalizePlaceText(location);
+            if (!normalizedLocation) continue;
+            if (!paddedName.includes(` ${normalizedLocation} `)) continue;
+            matches.push({
+                country,
+                location,
+                province: zooSetupProvinceForLocation(country, location),
+                matchLength: normalizedLocation.length,
+                preferred: country === preferredCountry ? 1 : 0
+            });
+        }
+    }
+    matches.sort((a, b) =>
+        b.matchLength - a.matchLength ||
+        b.preferred - a.preferred ||
+        a.country.localeCompare(b.country) ||
+        a.location.localeCompare(b.location)
+    );
+    return matches[0] || null;
 }
 
 function zooSetupPrefixGroups(country, location = '') {
@@ -12705,6 +13449,85 @@ function inferZooTypeFromAnyGeneratedName(zooName) {
     return matches[0]?.zooType || 'general';
 }
 
+// ============================================================
+// LIVING COLLECTION -> EVOLVING ZOO IDENTITY
+// ============================================================
+const ZOO_TYPE_ADOPT_THRESHOLD = 0.60;
+const ZOO_TYPE_RELEASE_THRESHOLD = 0.45;
+const ZOO_TYPE_RENAME_MIN_ANIMALS = 10;
+
+function zooIdentitySpecialistTypes() {
+    return Object.keys(SPECIALIST_STARTING_CATEGORIES);
+}
+
+function livingCollectionZooTypeShares() {
+    // Ownership, rather than physical placement, defines the institution.
+    // Cards temporarily sitting in Exchange/Outgoing Offer therefore still
+    // count until an exchange/trade actually removes them from state.animals.
+    const animals = (state.animals || []).filter(Boolean);
+    const total = animals.length;
+    const shares = new Map();
+    if (!total) return { total, shares };
+
+    for (const type of zooIdentitySpecialistTypes()) {
+        const categories = SPECIALIST_STARTING_CATEGORIES[type] || [];
+        const matching = animals.filter(animal => categories.includes(animal.category)).length;
+        shares.set(type, matching / total);
+    }
+    return { total, shares };
+}
+
+function chooseZooPrefixForType(type) {
+    const groups = zooSetupPrefixGroups(state.zooCountry, state.zooLocation)
+        .filter(item => item.zooType === type && item.prefix);
+    if (!groups.length) return type === 'general' ? 'Zoo' : null;
+    return randomItem(groups)?.prefix || groups[0].prefix;
+}
+
+function applyAutomaticZooTypeName(type) {
+    const prefix = chooseZooPrefixForType(type);
+    if (!prefix) return false;
+    const location = String(state.zooLocation || '').trim();
+    if (!location) return false;
+    const nextName = `${prefix} ${location}`.replace(/\s+/g, ' ').trim();
+    const changed = nextName !== state.zooName || state.zooType !== type;
+    state.zooType = type;
+    if (!changed) return false;
+    state.zooName = nextName;
+    const nameText = document.querySelector('.zoo-name-text');
+    if (nameText) renderPlayerZooNameText(nameText);
+    return true;
+}
+
+function updateZooIdentityFromLivingCollection() {
+    if (!state.loaded || state.sandboxMode) return false;
+    const { total, shares } = livingCollectionZooTypeShares();
+    if (total < ZOO_TYPE_RENAME_MIN_ANIMALS) return false;
+
+    const current = normaliseZooTypes(state.zooType)[0] || 'general';
+    const ranked = [...shares.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    const [leaderType, leaderShare] = ranked[0] || ['general', 0];
+    const currentShare = shares.get(current) || 0;
+
+    // Work out whether the collection has actually crossed an identity boundary.
+    // A player-edited name is protected while it remains inside the SAME territory;
+    // merely rendering another turn can never overwrite the manual name.
+    let nextType = current;
+    if (leaderType !== current && leaderShare >= ZOO_TYPE_ADOPT_THRESHOLD) {
+        nextType = leaderType;
+    } else if (current !== 'general' && currentShare < ZOO_TYPE_RELEASE_THRESHOLD) {
+        nextType = 'general';
+    }
+
+    if (nextType === current) return false;
+
+    // Crossing into a different territory re-arms automatic naming. This covers
+    // specialist -> different specialist and specialist -> general; if the zoo
+    // later crosses back, that later crossing may rename it again as normal.
+    state.manualZooNameOverrideType = null;
+    return applyAutomaticZooTypeName(nextType);
+}
+
 function ensureGenerateZooUI() {
     let overlay = document.getElementById('generateZooOverlay');
     if (overlay) return overlay;
@@ -12741,10 +13564,18 @@ function ensureGenerateZooUI() {
                         <strong id="generateZooLocationDisplay"></strong>
                         <button type="button" class="new-zoo-edit-location" id="editZooLocation" title="Edit location" aria-label="Edit location">✎</button>
                         <button type="button" class="new-zoo-randomize" id="randomizeZooLocation" title="Randomize location" aria-label="Randomize location">↻</button>
+                        <span id="generateZooLocationKnown" class="new-zoo-location-known" title="This location is present in the game files" aria-label="Location found in game files">✓</span>
                     </span>
                 </label>
                 <input id="generateZooLocation" class="new-zoo-hidden-editor" type="text" autocomplete="off">
                 <input id="generateZooName" class="new-zoo-hidden-editor" type="text" autocomplete="off">
+                <label class="trade-frequency-option new-zoo-mode-option">
+                    <span>Gamemode</span>
+                    <select id="newZooGameMode">
+                        <option value="classic">Classic</option>
+                        <option value="sandbox">Sandbox</option>
+                    </select>
+                </label>
                 <label class="trade-frequency-option new-zoo-size-option">
                     <span>Starting Size</span>
                     <input id="newZooSize" type="range" min="0" max="100" step="1" value="20">
@@ -12765,8 +13596,11 @@ function ensureGenerateZooUI() {
                 </div>
             </div>
 
+            <div id="newZooGenerationLoading" class="new-zoo-generation-loading" aria-live="polite" aria-hidden="true">
+                <div class="new-zoo-generation-label">Generating zoo…</div>
+                <div class="new-zoo-generation-track"><div class="new-zoo-generation-bar"></div></div>
+            </div>
             <div class="options-actions new-zoo-actions" style="flex-wrap:wrap">
-                <button type="button" id="newZooSandbox" style="margin-right:auto">Sandbox Mode</button>
                 <button type="button" id="generateZooCancel">Cancel</button>
                 <button type="button" id="generateZooStart">Open New Zoo</button>
             </div>
@@ -12780,6 +13614,8 @@ function ensureGenerateZooUI() {
     const zooName = overlay.querySelector('#generateZooName');
     const zooNameDisplay = overlay.querySelector('#generateZooNameDisplay');
     const locationDisplay = overlay.querySelector('#generateZooLocationDisplay');
+    const locationKnown = overlay.querySelector('#generateZooLocationKnown');
+    const gameMode = overlay.querySelector('#newZooGameMode');
     const zooSize = overlay.querySelector('#newZooSize');
     const zooSizeValue = overlay.querySelector('#newZooSizeValue');
     const zooSizeNote = overlay.querySelector('#newZooSizeNote');
@@ -12892,6 +13728,15 @@ function ensureGenerateZooUI() {
         countryTrigger.textContent = `${countryFlagEmoji(country.value)} ${country.value}`;
     }
 
+    function refreshLocationKnownIndicator() {
+        const wanted = normaliseGeographyPart(location.value);
+        const known = wanted && zooSetupLocations(country.value).some(
+            item => normaliseGeographyPart(item) === wanted
+        );
+        locationKnown.classList.toggle('visible', Boolean(known));
+        locationKnown.setAttribute('aria-hidden', known ? 'false' : 'true');
+    }
+
     function applyIdentity(identity) {
         refreshCountries(identity.country);
         country.value = identity.country;
@@ -12899,6 +13744,7 @@ function ensureGenerateZooUI() {
         zooName.value = identity.zooName;
         locationDisplay.textContent = identity.location;
         zooNameDisplay.textContent = identity.zooName;
+        refreshLocationKnownIndicator();
         overlay.dataset.generatedZooType = identity.zooType || 'general';
         overlay.dataset.generatedZooCountry = identity.country;
         overlay.dataset.generatedZooLocation = identity.location;
@@ -12910,6 +13756,24 @@ function ensureGenerateZooUI() {
         return String(value || '')
             .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
             .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    }
+
+    function syncRecognisedPlaceFromName() {
+        const match = recognisedZooPlaceInName(zooName.value, country.value);
+        if (!match) return false;
+        if (country.value !== match.country) {
+            refreshCountries(match.country);
+            country.value = match.country;
+            countryTrigger.textContent = `${countryFlagEmoji(match.country)} ${match.country}`;
+        }
+        location.value = match.location;
+        locationDisplay.textContent = match.location;
+        overlay.dataset.generatedZooCountry = match.country;
+        overlay.dataset.generatedZooLocation = match.location;
+        overlay.dataset.generatedZooProvince = match.province || '';
+        overlay.dataset.generatedZooRegion = match.province || '';
+        refreshLocationKnownIndicator();
+        return true;
     }
 
     function updateInferredType() {
@@ -12949,12 +13813,21 @@ function ensureGenerateZooUI() {
 
         overlay.dataset.generatedZooProvince = matchedRegion;
         overlay.dataset.generatedZooRegion = matchedRegion;
+        refreshLocationKnownIndicator();
     }
 
+    countryTrigger.addEventListener('pointerdown', event => event.stopPropagation());
     countryTrigger.addEventListener('click', event => {
         event.stopPropagation();
         setCountryMenuOpen(!countryMenu.classList.contains('visible'));
     });
+
+    // IMPORTANT: the outside-dismiss listener below runs on pointerdown.
+    // Previously we stopped only the later `click` event, so pressing any
+    // country option first bubbled to document, hid the menu, and removed the
+    // button from hit-testing before its click handler could select it.
+    // Stop the SAME event type inside the picker. This also fixes touch input.
+    countryMenu.addEventListener('pointerdown', event => event.stopPropagation());
     countryMenu.addEventListener('click', event => event.stopPropagation());
     document.addEventListener('pointerdown', () => setCountryMenuOpen(false));
     zooName.addEventListener('input', updateInferredType);
@@ -12970,6 +13843,7 @@ function ensureGenerateZooUI() {
         const identity = generateZooSetupIdentity(country.value, true);
         location.value = identity.location;
         locationDisplay.textContent = identity.location;
+        refreshLocationKnownIndicator();
         zooName.value = identity.zooName;
         zooNameDisplay.textContent = identity.zooName;
         overlay.dataset.generatedZooType = identity.zooType || 'general';
@@ -13024,6 +13898,7 @@ function ensureGenerateZooUI() {
         if (inlineEditorTarget === 'name') {
             zooName.value = clean;
             zooNameDisplay.textContent = clean;
+            syncRecognisedPlaceFromName();
             updateInferredType();
         } else {
             location.value = clean;
@@ -13049,9 +13924,6 @@ function ensureGenerateZooUI() {
         zooSize.value = '20';
         updateZooSizePreview();
     });
-    overlay.querySelector('#newZooSandbox').addEventListener('click', () => {
-        startSandboxMode();
-    });
     overlay.querySelector('#generateZooCancel').addEventListener('click', () => {
         overlay.classList.remove('visible');
         resumeHintGlowsAfterMenu();
@@ -13063,7 +13935,19 @@ function ensureGenerateZooUI() {
         }
     });
 
-    overlay.querySelector('#generateZooStart').addEventListener('click', () => {
+    async function allowGenerationIndicatorToPaint() {
+        // requestAnimationFrame can be throttled/suspended on mobile browsers.
+        // Race it with a short timer so Open New Zoo can never be blocked
+        // waiting for two animation frames that do not arrive.
+        await Promise.race([
+            new Promise(resolve => requestAnimationFrame(() => resolve())),
+            new Promise(resolve => setTimeout(resolve, 60))
+        ]);
+    }
+
+    overlay.querySelector('#generateZooStart').addEventListener('click', async () => {
+        const startButton = overlay.querySelector('#generateZooStart');
+        const loading = overlay.querySelector('#newZooGenerationLoading');
         const finalName = zooName.value.trim();
         const finalLocation = location.value.trim();
         if (!finalName) {
@@ -13077,30 +13961,62 @@ function ensureGenerateZooUI() {
             return;
         }
 
-        clearAutoResumeSnapshot();
-
-        // Install the identity before startup animals are selected so the
-        // chosen zoo type can bias that collection.
-        state.zooName = finalName;
-        state.zooCountry = country.value;
-        state.zooProvince = overlay.dataset.generatedZooProvince ||
-            zooSetupProvinceForLocation(country.value, finalLocation);
-        state.zooLocation = finalLocation;
-        state.zooType = inferZooTypeFromGeneratedName(country.value, finalName);
+        // A recognised place embedded in the final zoo name is authoritative
+        // for geography, even if the player never opened the Location editor.
+        syncRecognisedPlaceFromName();
+        const resolvedLocation = location.value.trim();
+        const selectedGameMode = gameMode.value === 'sandbox' ? 'sandbox' : 'classic';
         const selectedZooSize = Math.max(0, Math.min(100, Math.round(Number(zooSize.value))));
-        state.gameOptions.startingCollectionSize = selectedZooSize;
-        state.gameOptions.startingZooSize = selectedZooSize;
-        saveGameOptions();
-        createStartingZoo();
+        const startupRules = startingCollectionSizeRules(selectedZooSize);
 
-        assignOpponentProfiles();
-        createZooNameEditor();
-        renderAll();
-        centerInitialView();
-        writeAutoResumeSnapshot(true);
+        // 20% zoos normally open immediately, so do not flash a loading bar.
+        // Larger collections get one painted frame before synchronous layout
+        // generation begins, preventing the modal from looking frozen.
+        const showGenerationLoading = startupRules.species >= 14;
+        startButton.disabled = true;
+        if (showGenerationLoading) {
+            loading.classList.add('visible');
+            loading.setAttribute('aria-hidden', 'false');
+            await allowGenerationIndicatorToPaint();
+        }
 
-        overlay.classList.remove('visible');
-        resumeHintGlowsAfterMenu();
+        try {
+            clearAutoResumeSnapshot();
+
+            // Install the identity before startup animals are selected so the
+            // chosen zoo type can bias that collection.
+            state.zooName = finalName;
+            state.zooCountry = country.value;
+            state.zooProvince = overlay.dataset.generatedZooProvince ||
+                zooSetupProvinceForLocation(country.value, resolvedLocation);
+            state.zooLocation = resolvedLocation;
+            state.zooType = inferZooTypeFromGeneratedName(country.value, finalName);
+            state.gameOptions.startingCollectionSize = selectedZooSize;
+            state.gameOptions.startingZooSize = selectedZooSize;
+            saveGameOptions();
+
+            if (selectedGameMode === 'sandbox') {
+                startSandboxMode({ skipConfirm: true, preserveIdentity: true });
+            } else {
+                state.sandboxMode = false;
+                createStartingZoo();
+                assignOpponentProfiles();
+                createZooNameEditor();
+                renderAll();
+                centerInitialView();
+                writeAutoResumeSnapshot(true);
+            }
+
+            overlay.classList.remove('visible');
+            resumeHintGlowsAfterMenu();
+        } catch (error) {
+            console.error('New zoo generation failed:', error);
+            alert(`Zoo generation failed: ${error?.message || error}`);
+        } finally {
+            loading.classList.remove('visible');
+            loading.setAttribute('aria-hidden', 'true');
+            startButton.disabled = false;
+        }
     });
 
     overlay._applyZooIdentity = applyIdentity;
@@ -13115,6 +14031,7 @@ function ensureGenerateZooUI() {
     overlay._syncZooSize = () => {
         // New Zoo always opens at the standard 20% preset. The user's previous
         // zoo size is deliberately not carried into the next New Zoo dialog.
+        gameMode.value = 'classic';
         zooSize.value = 20;
         updateZooSizePreview();
     };
@@ -13136,13 +14053,44 @@ function openGenerateZooMenu() {
     overlay.classList.add('visible');
 }
 
-function requestNewGame() {
-    if (state.historyViewTurn !== null) {
-        exitHistoryView(true);
+function openNewZooSavePrompt() {
+    let overlay = document.getElementById('newZooSavePromptOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'newZooSavePromptOverlay';
+        overlay.className = 'save-load-overlay';
+        overlay.innerHTML = `
+            <div class="save-load-modal" style="max-width:460px;">
+                <h2>Start a New Zoo?</h2>
+                <p id="newZooSavePromptText"></p>
+                <div class="save-load-footer">
+                    <button type="button" id="newZooContinueWithoutSave">Continue Without Saving</button>
+                    <span style="flex:1 1 auto;"></span>
+                    <button type="button" id="newZooSaveFirst">Save Current Game</button>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
     }
+    const zooName = state.zooName || 'your current zoo';
+    overlay.querySelector('#newZooSavePromptText').textContent =
+        `Would you like to save ${zooName} before opening the New Zoo menu?`;
+    const finish = saveFirst => {
+        overlay.classList.remove('visible');
+        if (saveFirst) saveCurrentGame();
+        openGenerateZooMenu();
+    };
+    overlay.querySelector('#newZooSaveFirst').onclick = () => finish(true);
+    overlay.querySelector('#newZooContinueWithoutSave').onclick = () => finish(false);
+    overlay.classList.add('visible');
+    localizeDocument();
+}
 
-    // New Game opens the dedicated New Zoo setup instead of
-    // immediately replacing the zoo or routing through Save / Load.
+function requestNewGame() {
+    if (state.historyViewTurn !== null) exitHistoryView(true);
+    if (Number(state.turn) > 1) {
+        openNewZooSavePrompt();
+        return;
+    }
     openGenerateZooMenu();
 }
 
@@ -13180,13 +14128,21 @@ function ensureGameOptionsUI() {
             <p>Choose gameplay preferences and which animal categories may appear.</p>
 
             <div class="advanced-game-rules" id="advancedGameRules">
+                <label>
+                    <span>Gamemode</span>
+                    <select id="optGameMode">
+                        <option value="classic">Classic</option>
+                        <option value="sandbox">Sandbox</option>
+                    </select>
+                </label>
+                <div class="advanced-options-note">Classic uses the normal turn, draw, exchange and trade rules. Sandbox gives unrestricted building tools.</div>
                 <label class="glow-option">
                     <span>Eligibility glows</span>
                     <input id="optEligibilityGlows" type="checkbox" checked>
                 </label>
                 <div class="advanced-options-note">Shows yellow upgrade-ready glows and blue trade-interest glows.</div>
                 <label><span>Language</span><select id="optAnimalLanguage"><option value="en">English</option><option value="nl">Nederlands</option></select></label>
-                <div class="advanced-options-note">Dutch translation covers all Level 1 and Level 2 animal cards, card categories, menus and on-screen interface text.</div>
+                <div class="advanced-options-note">Dutch translation covers all animal cards, card categories, menus and on-screen interface text.</div>
                 <label class="reward-milestones-option">
                     <span>New enclosure reward milestones</span>
                     <input id="optRewardMilestones" type="text" placeholder="1, 2, 3, 4, 6, 9">
@@ -13225,6 +14181,7 @@ function ensureGameOptionsUI() {
     document.body.appendChild(overlay);
 
     const list = overlay.querySelector('#categoryOptionList');
+    const gameModeInput = overlay.querySelector('#optGameMode');
     const eligibilityGlowsInput = overlay.querySelector('#optEligibilityGlows');
     const animalLanguageInput = overlay.querySelector('#optAnimalLanguage');
     const milestonesInput = overlay.querySelector('#optRewardMilestones');
@@ -13245,6 +14202,7 @@ function ensureGameOptionsUI() {
     }
 
     function syncInputs() {
+        gameModeInput.value = state.sandboxMode ? 'sandbox' : 'classic';
         eligibilityGlowsInput.checked = state.gameOptions.showEligibilityGlows !== false;
         animalLanguageInput.value = state.gameOptions.animalLanguage === 'nl' ? 'nl' : 'en';
         milestonesInput.value = state.gameOptions.enclosureRewardMilestones.join(', ');
@@ -13273,6 +14231,7 @@ function ensureGameOptionsUI() {
     overlay.querySelector('#resetGameOptionsChanges').addEventListener('click', () => {
         // Restore the standard/default option values in the menu only.
         // The player can still Cancel, or press Apply to commit them.
+        gameModeInput.value = 'classic';
         eligibilityGlowsInput.checked = true;
         animalLanguageInput.value = 'en';
         milestonesInput.value = '1, 2, 3, 4, 6, 9';
@@ -13299,6 +14258,7 @@ function ensureGameOptionsUI() {
             return;
         }
 
+        const requestedGameMode = gameModeInput.value === 'sandbox' ? 'sandbox' : 'classic';
         const showEligibilityGlows = eligibilityGlowsInput.checked;
         const animalLanguage = animalLanguageInput.value === 'nl' ? 'nl' : 'en';
         const milestones = normalizeRewardMilestones(milestonesInput.value);
@@ -13311,7 +14271,9 @@ function ensureGameOptionsUI() {
         const categoriesSame =
             selected.length === state.activeCategories.size &&
             selected.every(category => state.activeCategories.has(category));
+        const modeSame = requestedGameMode === (state.sandboxMode ? 'sandbox' : 'classic');
         const rulesSame =
+            modeSame &&
             showEligibilityGlows === (state.gameOptions.showEligibilityGlows !== false) &&
             animalLanguage === (state.gameOptions.animalLanguage === 'nl' ? 'nl' : 'en') &&
             milestones.join(',') === state.gameOptions.enclosureRewardMilestones.join(',') &&
@@ -13363,7 +14325,19 @@ function ensureGameOptionsUI() {
         state.gameOptions.tradeOfferFrequency = tradeOfferFrequency;
         saveGameOptions();
 
-        // Game Options now contains only live, non-size preferences.
+        // Gamemode is a live property of the current zoo rather than a hidden
+        // New Zoo shortcut. Switching into Sandbox deliberately starts a fresh
+        // sandbox; switching back to Classic opens the normal New Zoo setup.
+        if (!modeSame) {
+            close();
+            if (requestedGameMode === 'sandbox') {
+                startSandboxMode();
+            } else {
+                openGenerateZooMenu();
+            }
+            return;
+        }
+
         assignOpponentProfiles();
         renderAll();
 
@@ -13408,6 +14382,23 @@ function updateHighestZooPrestige() {
         currentZooPrestige()
     );
     return state.highestZooPrestige;
+}
+
+// Trading gets a temporary early-game prestige head start so a new zoo has a
+// useful pool of potential partners immediately. The boost starts at 150 and
+// is gradually replaced by earned prestige, disappearing completely at 500.
+// This value is ONLY for real-zoo trade matching; displayed/actual prestige
+// and every other prestige-dependent system continue to use the real value.
+function playerTradeAccessPrestige(actualPrestige = updateHighestZooPrestige()) {
+    const actual = Math.max(0, Number(actualPrestige) || 0);
+    const STARTING_TRADE_PRESTIGE = 150;
+    const FULL_CONVERGENCE_PRESTIGE = 500;
+
+    if (actual >= FULL_CONVERGENCE_PRESTIGE) return actual;
+
+    const remainingStarterBoost = STARTING_TRADE_PRESTIGE *
+        (1 - actual / FULL_CONVERGENCE_PRESTIGE);
+    return actual + remainingStarterBoost;
 }
 
 function interpolatedPrestigeWeights(curve, prestige = updateHighestZooPrestige()) {
@@ -13564,7 +14555,7 @@ function realZooRelationshipLabel(record) {
     if (!record?.country) return '';
     const sameCountry = normaliseGeographyPart(record.country) ===
         normaliseGeographyPart(state.zooCountry);
-    if (!sameCountry) return 'FOREIGN';
+    if (!sameCountry) return 'Foreign';
 
     const playerProvince = resolveProvinceGraphKey(state.zooCountry, state.zooProvince);
     const zooProvince = resolveProvinceGraphKey(record.country, record.province);
@@ -13572,8 +14563,8 @@ function realZooRelationshipLabel(record) {
         ? playerProvince === zooProvince
         : Boolean(record.province && state.zooProvince) &&
             normaliseGeographyPart(record.province) === normaliseGeographyPart(state.zooProvince);
-    if (sameProvince) return 'LOCAL';
-    return 'NATIONAL';
+    if (sameProvince) return 'Local';
+    return 'National';
 }
 
 function realZooLocationLines(record, includeRelationship = false) {
@@ -13582,8 +14573,8 @@ function realZooLocationLines(record, includeRelationship = false) {
         ? realZooRelationshipLabel(record)
         : '';
     const lines = [
-        `COUNTRY: ${record.country || 'Unknown'}`,
-        `PROVINCE: ${record.province || 'Unknown'}${relationship ? ` (${relationship})` : ''}`
+        `Country: ${record.country || 'Unknown'}`,
+        `Province: ${record.province || 'Unknown'}${relationship ? ` (${relationship})` : ''}`
     ];
     return lines;
 }
@@ -13643,20 +14634,41 @@ function realZooPrestige(record) {
     return prestige;
 }
 
-function realZooPrestigeWindow(prestige = updateHighestZooPrestige()) {
-    const centre = Math.max(0, Number(prestige) || 0);
-    const radius = Math.max(32, 20 + centre * 0.10);
+function realZooPrestigeWindow(
+    actualPrestige = updateHighestZooPrestige(),
+    accessPrestige = playerTradeAccessPrestige(actualPrestige)
+) {
+    const actual = Math.max(0, Number(actualPrestige) || 0);
+    const access = Math.max(actual, Number(accessPrestige) || 0);
+
+    // The early-game trade boost expands the TOP of the normal prestige range;
+    // it must not shift the entire range upward. The lower edge therefore stays
+    // anchored to the player's real prestige, while the upper edge benefits
+    // from the temporary access boost. Once actual prestige reaches 500 the
+    // boost is gone and this naturally becomes the old symmetric window again.
+    const lowerRadius = Math.max(32, 20 + actual * 0.10);
+    const upperRadius = Math.max(32, 20 + access * 0.10);
+
     return {
-        centre,
-        radius,
-        minimum: Math.max(0, centre - radius),
-        maximum: centre + radius
+        centre: actual,
+        accessPrestige: access,
+        minimum: Math.max(0, actual - lowerRadius),
+        maximum: access + upperRadius,
+        lowerRadius,
+        upperRadius
     };
 }
 
 function realZooPrestigeSimilarityWeight(record, window) {
     const difference = Math.abs(realZooPrestige(record) - window.centre);
-    return Math.max(0.10, 1 - difference / (window.radius + 1));
+    // V220.58 split the prestige window into lowerRadius/upperRadius but this
+    // helper still read the removed `window.radius`, turning every similarity
+    // weight into NaN. Use the appropriate side of the asymmetric window.
+    const zooPrestige = realZooPrestige(record);
+    const radius = zooPrestige < window.centre
+        ? window.lowerRadius
+        : Math.max(1, window.maximum - window.centre);
+    return Math.max(0.10, 1 - difference / (radius + 1));
 }
 
 // Select without replacement. The prestige window is applied first. Geography
@@ -13666,8 +14678,9 @@ function realZooPrestigeSimilarityWeight(record, window) {
 // geographical percentages.
 function selectPrestigeLocationCandidates(candidates, count, seedText = '') {
     const selected = [];
-    const prestige = updateHighestZooPrestige();
-    const window = realZooPrestigeWindow(prestige);
+    const actualPrestige = updateHighestZooPrestige();
+    const prestige = playerTradeAccessPrestige(actualPrestige);
+    const window = realZooPrestigeWindow(actualPrestige, prestige);
     const geographyWeights = interpolatedPrestigeWeights(
         REAL_ZOO_GEOGRAPHY_PRESTIGE_CURVE,
         prestige
@@ -14341,8 +15354,8 @@ function ensureOtherZoosUI() {
                     <h2 style="margin:0;flex:1;">All Zoos</h2>
                     <button type="button" id="closeRealZooDirectory">Close</button>
                 </div>
-                <div style="font-size:12px;opacity:.72;margin-bottom:12px;">
-                    Hover over a zoo to view its current collection and trade history.
+                <div id="realZooDirectoryHint" style="font-size:12px;opacity:.72;margin-bottom:12px;">
+                    Hover over a zoo to view its current collection and trade history. Press Ctrl or Shift to toggle the worldwide prestige ranking.
                 </div>
                 <div id="realZooDirectoryList"></div>
             </div>`;
@@ -14352,6 +15365,24 @@ function ensureOtherZoosUI() {
         overlay.addEventListener('pointerdown', event => {
             if (event.target === overlay) closeRealZooDirectory();
         });
+
+        // Ctrl or Shift is a simple view toggle while All Zoos is open.
+        // Use keydown rather than modifier+wheel, so browser zoom/scroll
+        // shortcuts remain untouched. Ignore key-repeat so holding a modifier
+        // does not rapidly flip the directory back and forth.
+        if (!document.documentElement.dataset.realZooDirectoryModifierToggleBound) {
+            document.documentElement.dataset.realZooDirectoryModifierToggleBound = '1';
+            document.addEventListener('keydown', event => {
+                const liveOverlay = document.getElementById('realZooDirectoryOverlay');
+                if (!liveOverlay || liveOverlay.style.display === 'none') return;
+                if (event.repeat) return;
+                if (event.key !== 'Control' && event.key !== 'Shift') return;
+
+                liveOverlay.dataset.directoryMode =
+                    liveOverlay.dataset.directoryMode === 'prestige' ? 'country' : 'prestige';
+                renderRealZooDirectory();
+            });
+        }
     }
 
     if (!document.getElementById('zooTradePopup')) {
@@ -14646,10 +15677,11 @@ function beginTradeAnimalHover(node, allowLocation = false) {
     }
 }
 
-function makeTradeAnimalSpan(name, level, allowLocation = false, inTradeHistoryMiddle = false, animalId = null) {
+function makeTradeAnimalSpan(name, level, allowLocation = false, inTradeHistoryMiddle = false, animalId = null, displayName = null) {
     const span = document.createElement('span');
     span.className = 'trade-animal-name' + (inTradeHistoryMiddle ? ' trade-history-animal-name' : '');
-    span.textContent = name;
+    span.textContent = displayName || name;
+    // Keep the canonical English game name for provenance/location lookups.
     span.dataset.animalName = name;
     span.dataset.animalLevel = String(level ?? '');
     if (animalId != null) span.dataset.animalId = String(animalId);
@@ -14842,18 +15874,146 @@ function fillZooCollectionPopup(record) {
         const cat = document.createElement('div');
         cat.style.marginTop = '8px';
         const catName = document.createElement('strong');
-        catName.textContent = `${category}:`;
+        catName.textContent = `${state.gameOptions.animalLanguage === 'nl' ? dutchCategoryName(category) : category}:`;
         cat.appendChild(catName);
         for (const animal of [...grouped.get(category)].sort((a,b)=>a.level-b.level || String(a.filename).localeCompare(String(b.filename)))) {
             const line = document.createElement('div');
             line.style.paddingLeft = '10px';
             const name = String(animal.filename || '').replace(/\.png$/i,'');
-            line.append(makeTradeAnimalSpan(name, animal.level, false), document.createTextNode(` (L${animal.level})`));
+            line.append(makeTradeAnimalSpan(name, animal.level, false, false, null, dutchAnimalName(animal) || name), document.createTextNode(` (L${animal.level})`));
             cat.appendChild(line);
         }
         popup.appendChild(cat);
     }
     refreshTradeAnimalHighlights();
+}
+
+function fillPlayerZooCollectionPopup() {
+    const popup = document.getElementById('opponentInfoPopup');
+    if (!popup) return;
+
+    const currentAnimals = (state.animals || []).filter(animal => animal && animal.enclosureId != null);
+    popup.innerHTML = '';
+
+    const title = document.createElement('strong');
+    title.textContent = state.zooName || 'Your Zoo';
+    popup.appendChild(title);
+
+    const metadata = document.createElement('div');
+    metadata.textContent =
+        `PRESTIGE: ${updateHighestZooPrestige()}\n` +
+        `COUNTRY: ${state.zooCountry || 'Unknown'}\n` +
+        `PROVINCE: ${state.zooProvince || 'Unknown'}`;
+    metadata.style.cssText = 'margin-top:4px;opacity:.82;white-space:pre-line;';
+    popup.appendChild(metadata);
+
+    popup.appendChild(document.createElement('br'));
+    const label = document.createElement('strong');
+    label.textContent = 'Animals by category:';
+    popup.append(label, document.createElement('br'));
+
+    const grouped = new Map();
+    for (const animal of currentAnimals) {
+        if (!grouped.has(animal.category)) grouped.set(animal.category, []);
+        grouped.get(animal.category).push(animal);
+    }
+    const order = [
+        ...CATEGORY_PROGRESSION_ORDER,
+        ...[...grouped.keys()].filter(category => !CATEGORY_PROGRESSION_ORDER.includes(category)).sort()
+    ];
+    for (const category of order.filter(category => grouped.get(category)?.length)) {
+        const cat = document.createElement('div');
+        cat.style.marginTop = '8px';
+        const catName = document.createElement('strong');
+        catName.textContent = `${state.gameOptions.animalLanguage === 'nl' ? dutchCategoryName(category) : category}:`;
+        cat.appendChild(catName);
+        for (const animal of [...grouped.get(category)].sort((a, b) =>
+            a.level - b.level || String(a.filename || '').localeCompare(String(b.filename || ''))
+        )) {
+            const line = document.createElement('div');
+            line.style.paddingLeft = '10px';
+            const animalName = String(animal.filename || '').replace(/\.png$/i, '');
+            line.append(
+                makeTradeAnimalSpan(animalName, animal.level, false, false, animal.id ?? null, dutchAnimalName(animal) || animalName),
+                document.createTextNode(` (L${animal.level})`)
+            );
+            cat.appendChild(line);
+        }
+        popup.appendChild(cat);
+    }
+
+    if (!currentAnimals.length) {
+        const empty = document.createElement('div');
+        empty.textContent = 'none';
+        empty.style.paddingLeft = '10px';
+        popup.appendChild(empty);
+    }
+    refreshTradeAnimalHighlights();
+}
+
+function fillPlayerZooTradePopup() {
+    const popup = document.getElementById('zooTradePopup');
+    if (!popup) return;
+    const trades = state.tradeHistory || [];
+
+    popup.innerHTML = '';
+    const title = document.createElement('strong');
+    title.textContent = `${state.zooName || 'Your Zoo'} — Trade History`;
+    popup.appendChild(title);
+
+    const metadata = document.createElement('div');
+    metadata.textContent =
+        `PRESTIGE: ${updateHighestZooPrestige()}\n` +
+        `COUNTRY: ${state.zooCountry || 'Unknown'}\n` +
+        `PROVINCE: ${state.zooProvince || 'Unknown'}`;
+    metadata.style.cssText = 'margin-top:4px;opacity:.82;white-space:pre-line;';
+    popup.appendChild(metadata);
+
+    if (!trades.length) {
+        const empty = document.createElement('div');
+        empty.textContent = 'No trades completed yet.';
+        empty.style.marginTop = '10px';
+        popup.appendChild(empty);
+        return;
+    }
+
+    for (const trade of [...trades].reverse()) {
+        const row = document.createElement('div');
+        row.style.cssText = 'padding:9px 0;border-top:1px solid rgba(255,255,255,.18);';
+        const turn = document.createElement('div');
+        turn.innerHTML = `<strong>Turn ${trade.turn} — ${trade.zooName || 'Zoo'}</strong>`;
+        const line = document.createElement('div');
+        line.append(
+            makeTradeAnimalSpan(trade.outgoingName, trade.outgoingLevel, true, false, trade.outgoingId),
+            document.createTextNode(` (L${trade.outgoingLevel}) ↔ `),
+            makeTradeAnimalSpan(trade.incomingName, trade.incomingLevel, true, false, trade.incomingId),
+            document.createTextNode(` (L${trade.incomingLevel})`)
+        );
+        row.append(turn, line);
+        popup.appendChild(row);
+    }
+    refreshTradeAnimalHighlights();
+}
+
+function showPlayerZooDualPopups(panel) {
+    const collection = document.getElementById('opponentInfoPopup');
+    const trades = document.getElementById('zooTradePopup');
+    if (!collection || !trades) return;
+
+    clearTimeout(opponentInfoHideTimer);
+    clearTimeout(opponentInfoFadeTimer);
+    clearTimeout(opponentInfoShowTimer);
+    opponentInfoFadeStarted = false;
+    activeZooMenuRecord = null;
+
+    fillPlayerZooCollectionPopup();
+    fillPlayerZooTradePopup();
+    for (const popup of [collection, trades]) {
+        popup.style.display = 'block';
+        popup.style.opacity = '1';
+    }
+    pinnedZooPopupName = null;
+    positionZooSidePopups(panel);
 }
 
 function showZooDualPopups(record, panel, pinned = false) {
@@ -14962,83 +16122,156 @@ function showRealZooDirectoryCollection(record, anchor) {
     });
 }
 
-function openRealZooDirectory() {
-    pauseAllHintGlowsForMenu();
-    ensureOtherZoosUI();
-    const overlay = document.getElementById('realZooDirectoryOverlay');
-    const list = document.getElementById('realZooDirectoryList');
-    if (!overlay || !list) return;
-
-    list.innerHTML = '';
+function realZooDirectoryRows() {
     const zoos = Array.isArray(state.realZooData?.zoos)
         ? [...state.realZooData.zoos]
         : [];
 
-    // Compute prestige once per zoo for this opening. realZooPrestige() itself
-    // is cached, but keeping the value beside the record also avoids repeated
-    // comparator calls while sorting a large directory.
-    const directoryRows = zoos.map(record => ({
+    const rows = zoos.map(record => ({
         record,
         country: String(record?.country || 'Unknown'),
-        prestige: realZooPrestige(record)
+        prestige: realZooPrestige(record),
+        isPlayer: false,
+        name: record?.name || 'Zoo'
     }));
 
-    const playerCountry = normaliseGeographyPart(state.zooCountry || '');
-    directoryRows.sort((a, b) => {
-        const aHome = playerCountry &&
-            normaliseGeographyPart(a.country) === playerCountry;
-        const bHome = playerCountry &&
-            normaliseGeographyPart(b.country) === playerCountry;
+    if (state.zooName) {
+        rows.push({
+            record: null,
+            country: String(state.zooCountry || 'Unknown'),
+            prestige: updateHighestZooPrestige(),
+            isPlayer: true,
+            name: state.zooName
+        });
+    }
+    return rows;
+}
 
-        // Player's own country is always the first section.
-        if (aHome !== bHome) return aHome ? -1 : 1;
+function renderRealZooDirectory() {
+    const overlay = document.getElementById('realZooDirectoryOverlay');
+    const list = document.getElementById('realZooDirectoryList');
+    const hint = document.getElementById('realZooDirectoryHint');
+    if (!overlay || !list) return;
 
-        // All remaining country sections are alphabetical.
-        const countryOrder = a.country.localeCompare(b.country);
-        if (countryOrder) return countryOrder;
+    list.innerHTML = '';
+    const directoryRows = realZooDirectoryRows();
+    const prestigeMode = overlay.dataset.directoryMode === 'prestige';
 
-        // Within a country: lowest current prestige first, highest last.
-        return (
-            a.prestige - b.prestige ||
-            String(a.record?.name || '').localeCompare(String(b.record?.name || ''))
+    if (hint) {
+        hint.textContent = prestigeMode
+            ? 'All zoos ranked together by prestige. Close and reopen this menu to return to country sections.'
+            : 'Hover over a zoo to view its current collection and trade history. Press Ctrl or Shift to toggle the worldwide prestige ranking.';
+    }
+
+    if (prestigeMode) {
+        // Global ranking: highest prestige first. Country headings disappear,
+        // and explicit rank numbers make the player's relative position clear.
+        directoryRows.sort((a, b) =>
+            b.prestige - a.prestige ||
+            String(a.name || '').localeCompare(String(b.name || ''))
         );
-    });
+    } else {
+        const playerCountry = normaliseGeographyPart(state.zooCountry || '');
+        directoryRows.sort((a, b) => {
+            const aHome = playerCountry && normaliseGeographyPart(a.country) === playerCountry;
+            const bHome = playerCountry && normaliseGeographyPart(b.country) === playerCountry;
+            if (aHome !== bHome) return aHome ? -1 : 1;
+            const countryOrder = a.country.localeCompare(b.country);
+            if (countryOrder) return countryOrder;
+            return (
+                a.prestige - b.prestige ||
+                String(a.name || '').localeCompare(String(b.name || ''))
+            );
+        });
+    }
 
     if (!directoryRows.length) {
         const empty = document.createElement('div');
         empty.textContent = 'Real zoo database is still loading.';
         empty.style.cssText = 'padding:10px 0;opacity:.72;';
         list.appendChild(empty);
-    } else {
-        let lastCountry = '';
-        for (const item of directoryRows) {
-            const record = item.record;
-            if (item.country !== lastCountry) {
-                const heading = document.createElement('div');
-                heading.textContent = item.country;
-                heading.style.cssText =
-                    'margin:13px 0 4px;font-size:11px;font-weight:800;opacity:.55;' +
-                    'text-transform:uppercase;letter-spacing:.06em;';
-                list.appendChild(heading);
-                lastCountry = item.country;
-            }
+        return;
+    }
 
-            const row = document.createElement('div');
-            row.className = 'real-zoo-directory-row';
-            row.textContent = record.name || 'Zoo';
-            row.style.cssText =
-                'padding:5px 2px;border-top:1px solid rgba(0,0,0,.10);' +
-                'font-size:13px;line-height:1.35;cursor:default;';
+    let lastCountry = '';
+    for (let index = 0; index < directoryRows.length; index += 1) {
+        const item = directoryRows[index];
+        const record = item.record;
 
+        if (!prestigeMode && item.country !== lastCountry) {
+            const heading = document.createElement('div');
+            heading.textContent = item.country;
+            heading.style.cssText =
+                'margin:13px 0 4px;font-size:11px;font-weight:800;opacity:.55;' +
+                'text-transform:uppercase;letter-spacing:.06em;';
+            list.appendChild(heading);
+            lastCountry = item.country;
+        }
+
+        const row = document.createElement('div');
+        row.className = 'real-zoo-directory-row';
+        row.style.cssText =
+            'padding:5px 2px;border-top:1px solid rgba(0,0,0,.10);' +
+            'font-size:13px;line-height:1.35;cursor:default;display:flex;' +
+            'align-items:baseline;gap:10px;';
+
+        if (prestigeMode) {
+            const rank = document.createElement('span');
+            rank.textContent = `#${index + 1}`;
+            rank.style.cssText =
+                `flex:0 0 34px;font-size:11px;opacity:.55;text-align:right;` +
+                (item.isPlayer ? 'font-weight:800;opacity:.9;' : '');
+            row.appendChild(rank);
+        }
+
+        const name = document.createElement('span');
+        name.textContent = item.name || 'Zoo';
+        name.style.cssText = `flex:1;min-width:0;${item.isPlayer ? 'font-weight:800;' : ''}`;
+        row.appendChild(name);
+
+        if (prestigeMode) {
+            const country = document.createElement('span');
+            country.textContent = item.country;
+            country.style.cssText =
+                'flex:0 1 120px;min-width:0;font-size:11px;opacity:.50;' +
+                'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+            row.appendChild(country);
+        }
+
+        // Keep the ordinary country directory clean. Prestige values are
+        // shown only in the worldwide ranking view (and in zoo info popups).
+        if (prestigeMode) {
+            const prestige = document.createElement('span');
+            prestige.textContent = `Prestige ${Math.round(Number(item.prestige) || 0)}`;
+            prestige.style.cssText =
+                `flex:0 0 auto;font-size:11px;opacity:.58;white-space:nowrap;` +
+                (item.isPlayer ? 'font-weight:800;' : '');
+            row.appendChild(prestige);
+        }
+
+        if (item.isPlayer) {
+            const rankText = prestigeMode ? `, rank ${index + 1}` : '';
+            row.setAttribute('aria-label', `${item.name}, your zoo${rankText}, Prestige ${Math.round(Number(item.prestige) || 0)}`);
+            row.addEventListener('mouseenter', () =>
+                showPlayerZooDualPopups(document.getElementById('realZooDirectoryPanel'))
+            );
+            row.addEventListener('mouseleave', () => {
+                if (!pinnedZooPopupName) scheduleOpponentInfoHide();
+            });
+            row.addEventListener('pointerdown', event => {
+                if (event.pointerType === 'touch') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    showPlayerZooDualPopups(document.getElementById('realZooDirectoryPanel'));
+                }
+            });
+        } else {
             row.addEventListener('mouseenter', () =>
                 showZooDualPopups(record, document.getElementById('realZooDirectoryPanel'), false)
             );
             row.addEventListener('mouseleave', () => {
                 if (!pinnedZooPopupName) scheduleOpponentInfoHide();
             });
-
-            // Touch devices have no hover: tapping a zoo name shows the same
-            // current-collection popup without turning the row into a button.
             row.addEventListener('pointerdown', event => {
                 if (event.pointerType === 'touch') {
                     event.preventDefault();
@@ -15046,11 +16279,21 @@ function openRealZooDirectory() {
                     showRealZooDirectoryCollection(record, row);
                 }
             });
-
-            list.appendChild(row);
         }
-    }
 
+        list.appendChild(row);
+    }
+}
+
+function openRealZooDirectory() {
+    pauseAllHintGlowsForMenu();
+    ensureOtherZoosUI();
+    const overlay = document.getElementById('realZooDirectoryOverlay');
+    if (!overlay) return;
+
+    // Every fresh opening starts in the familiar country-grouped view.
+    overlay.dataset.directoryMode = 'country';
+    renderRealZooDirectory();
     overlay.style.display = 'flex';
     enqueueMicrotask(localizeDocument);
 }
@@ -15074,12 +16317,12 @@ function showOpponentInfoPopup(index, anchor) {
     const stock = state.opponentTradeStocks[index] || [];
     const record = profile.realZooRecord || null;
     const locationText = record
-        ? `PRESTIGE: ${realZooPrestige(record)}\n` +
-          `COUNTRY: ${record.country || 'Unknown'}\n` +
-          `PROVINCE: ${record.province || 'Unknown'}\n\n`
-        : `PRESTIGE: ${Number(profile.prestige) || 0}\n` +
-          `COUNTRY: ${profile.country || 'Unknown'}\n` +
-          `PROVINCE: ${profile.province || 'Unknown'}\n\n`;
+        ? `Prestige: ${realZooPrestige(record)}\n` +
+          `Country: ${record.country || 'Unknown'}\n` +
+          `Province: ${record.province || 'Unknown'}${realZooRelationshipLabel(record) ? ` (${realZooRelationshipLabel(record)})` : ''}\n\n`
+        : `Prestige: ${Number(profile.prestige) || 0}\n` +
+          `Country: ${profile.country || 'Unknown'}\n` +
+          `Province: ${profile.province || 'Unknown'}\n\n`;
     popup.textContent =
         `${profile.name || `Zoo ${index + 1}`}\n` +
         locationText +
@@ -15371,11 +16614,13 @@ function ensureTradeAreaLayout() {
         area.className = 'opponent-trade-area';
     }
 
-    // IMPORTANT: #headerActions is transformed with translateX(-50%). A
-    // position:fixed child of a transformed element is positioned relative to
-    // that element rather than the viewport. That was why v22 could make the
-    // trade boxes disappear. Keep this fixed overlay directly under <body>.
-    if (area.parentElement !== document.body) document.body.appendChild(area);
+    const mobile = window.matchMedia('(max-width: 700px)').matches;
+    const exchangeControls = document.getElementById('exchangeControls');
+
+    // Phone: the two offer cards are genuine header actions immediately after
+    // Upgrade. Desktop keeps the established fixed overlay next to Other Zoos.
+    const desiredParent = mobile && exchangeControls ? exchangeControls : document.body;
+    if (area.parentElement !== desiredParent) desiredParent.appendChild(area);
     if (outgoingOfferBox.parentElement !== area) area.appendChild(outgoingOfferBox);
     if (incomingOfferBox.parentElement !== area) area.appendChild(incomingOfferBox);
 
@@ -15483,7 +16728,11 @@ function assignOpponentProfiles() {
 }
 
 function randomAutonomousOfferDelay() {
-    return 3 + Math.floor(Math.random() * 6); // 3 through 8 turns, inclusive
+    // V220.69: incoming offers were averaging about one every 14 turns at the
+    // default 50% setting when legal trades were available. A 1-3 turn retry
+    // window brings that to about one every 7 turns while preserving the
+    // frequency slider, offer lifetime and all trade-legality rules.
+    return 1 + Math.floor(Math.random() * 3); // 1 through 3 turns, inclusive
 }
 
 function scheduleNextAutonomousOpponentOffer() {
@@ -15738,11 +16987,68 @@ function tryDropOnOutgoingOffer(event, animal) {
     state.outgoingOffer = animal;
     if (state.drag?.type === 'animal' && state.drag.animal?.id === animal.id) {
         reserveAnimalZooSlot(animal, state.drag.originalEnclosureId, state.drag.originalSlotIndex);
-    } 
+    }
     animal.enclosureId = null;
     animal.slotIndex = null;
 
     noteNewCardAction();
+
+    // If this card started this same drag in Outgoing Offer, putting it back
+    // is not a new trade attempt. Restore the exact offers that were visible
+    // before pickup. Re-running offer generation here can invalidate the
+    // negotiation because the card is temporarily outside its original zoo
+    // location during the drag.
+    if (
+        state.drag?.type === 'animal' &&
+        state.drag.animal?.id === animal.id &&
+        state.drag.originalWasOutgoing &&
+        Array.isArray(state.drag.originalTradeOffers)
+    ) {
+        state.tradeOffers = state.drag.originalTradeOffers.map(offer => ({ ...offer }));
+        state.selectedTradeOpponent = state.drag.originalSelectedTradeOpponent;
+        renderTrade();
+        preloadAnimals(state.tradeOffers.map(offer => offer.animal));
+        return true;
+    }
+
+    // For an ordinary blue-glowing card, use the exact live offers captured
+    // at pointer-down. This closes the old gap where the glow was valid while
+    // the card was in its enclosure, but the offer disappeared because the
+    // trade was recalculated after the card had been removed from that slot.
+    const capturedLiveOffers =
+        state.drag?.type === 'animal' &&
+        state.drag.animal?.id === animal.id &&
+        Array.isArray(state.drag.liveTradeOffersAtDragStart)
+            ? state.drag.liveTradeOffersAtDragStart
+            : [];
+
+    if (!pendingEmergencyTrade && capturedLiveOffers.length) {
+        if (isRealOpponentMode()) {
+            state.opponentProfiles = capturedLiveOffers.map((item, index) =>
+                realZooProfile(item.record, index)
+            );
+            state.opponentTradeStocks = capturedLiveOffers.map(item =>
+                realZooTradeAnimals(item.record, true)
+            );
+            state.tradeOffers = capturedLiveOffers.map((item, index) => ({
+                opponentIndex: index,
+                animal: item.animal
+            }));
+            state.selectedTradeOpponent = state.tradeOffers.length ? 0 : null;
+        } else {
+            state.tradeOffers = capturedLiveOffers.map(item => ({
+                opponentIndex: item.opponentIndex,
+                animal: item.animal
+            }));
+            state.selectedTradeOpponent = state.tradeOffers.length
+                ? state.tradeOffers.map(o => o.opponentIndex).sort((a, b) => a - b)[0]
+                : null;
+        }
+        renderTrade();
+        preloadAnimals(state.tradeOffers.map(offer => offer.animal));
+        return true;
+    }
+
     generateOpponentTradeOffers(animal, pendingEmergencyTrade);
     return true;
 }
@@ -16160,32 +17466,178 @@ function setupOpponentTradeClicks() {
 // ZOO NAME EDITING
 // ============================================================
 
-function ensureZooNameRandomButtonStyles() {
-    if (document.getElementById('zoo-name-random-button-styles')) return;
-
-    const style = document.createElement('style');
-    style.id = 'zoo-name-random-button-styles';
-    style.textContent = `
-        .zoo-name-random-button {
-            margin-left: 4px;
-            width: 26px;
-            height: 26px;
-            padding: 0;
-            line-height: 24px;
-            text-align: center;
-            cursor: pointer;
-        }
-        .zoo-name-random-button[hidden] {
-            display: none !important;
-        }
-    `;
-    document.head.appendChild(style);
+function ensurePlayerZooNameHoverUI() {
+    if (!document.getElementById('player-zoo-name-hover-styles')) {
+        const style = document.createElement('style');
+        style.id = 'player-zoo-name-hover-styles';
+        style.textContent = `
+            /* The header previously used pointer-events:none in some layouts so
+               the zoo title could not interfere with map/header controls. The
+               type/location spans are deliberately interactive hover targets. */
+            #playerZooName,
+            #playerZooName .zoo-name-editor,
+            #playerZooName .zoo-name-text,
+            #playerZooName .zoo-name-hover-part {
+                pointer-events: auto !important;
+            }
+            .zoo-name-hover-part { cursor: help; }
+            #playerZooNameHoverPopup {
+                position: fixed;
+                z-index: 10050;
+                pointer-events: none;
+                display: none;
+                max-width: min(320px, calc(100vw - 24px));
+                padding: 8px 10px;
+                border-radius: 7px;
+                background: rgba(20, 24, 28, .96);
+                color: #fff;
+                box-shadow: 0 4px 18px rgba(0,0,0,.28);
+                font-size: 13px;
+                line-height: 1.35;
+                white-space: normal;
+            }
+            #playerZooNameHoverPopup strong { font-weight: 700; }
+        `;
+        document.head.appendChild(style);
+    }
+    let popup = document.getElementById('playerZooNameHoverPopup');
+    if (!popup) {
+        popup = document.createElement('div');
+        popup.id = 'playerZooNameHoverPopup';
+        document.body.appendChild(popup);
+    }
+    return popup;
 }
 
+function readableZooType(type) {
+    const labels = {
+        general: 'General Zoo',
+        aquarium: 'Aquarium',
+        tropical: 'Tropical Zoo',
+        safari: 'Safari Park',
+        forest: 'Forest Zoo',
+        farm: 'Farm Zoo',
+        bird: 'Bird Park',
+        raptor: 'Bird of Prey Park',
+        reptile: 'Reptile Park',
+        alpine: 'Alpine Zoo'
+    };
+    const key = normaliseZooTypes(type)[0] || 'general';
+    return labels[key] || key.replace(/(^|[-_\\s])([a-z])/g, (_, gap, letter) => `${gap}${letter.toUpperCase()}`);
+}
+
+function positionPlayerZooNameHoverPopup(anchor, popup) {
+    if (!anchor || !popup) return;
+    const rect = anchor.getBoundingClientRect();
+    popup.style.display = 'block';
+    const popupRect = popup.getBoundingClientRect();
+    let left = rect.left + rect.width / 2 - popupRect.width / 2;
+    left = Math.max(8, Math.min(left, window.innerWidth - popupRect.width - 8));
+    let top = rect.bottom + 7;
+    if (top + popupRect.height > window.innerHeight - 8) {
+        top = Math.max(8, rect.top - popupRect.height - 7);
+    }
+    popup.style.left = `${Math.round(left)}px`;
+    popup.style.top = `${Math.round(top)}px`;
+}
+
+function escapePlayerZooNameHoverHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function bindPlayerZooNameHoverPart(node, htmlProvider) {
+    if (!node) return;
+    node.classList.add('zoo-name-hover-part');
+
+    const show = () => {
+        const popup = ensurePlayerZooNameHoverUI();
+        popup.innerHTML = htmlProvider();
+        positionPlayerZooNameHoverPopup(node, popup);
+    };
+    const hide = () => {
+        const popup = document.getElementById('playerZooNameHoverPopup');
+        if (popup) popup.style.display = 'none';
+    };
+
+    // Pointer events cover mouse and pen without double-firing duplicate mouse handlers.
+    node.addEventListener('pointerenter', show);
+    node.addEventListener('pointermove', () => {
+        const popup = document.getElementById('playerZooNameHoverPopup');
+        if (popup?.style.display === 'block') positionPlayerZooNameHoverPopup(node, popup);
+    });
+    node.addEventListener('pointerleave', hide);
+
+    // Native tooltip fallback also makes the information discoverable if a
+    // browser suppresses scripted hover events for any reason.
+    node.title = String(htmlProvider())
+        .replace(/<br\s*\/?\s*>/gi, '\n')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
+}
+
+function renderPlayerZooNameText(textNode) {
+    if (!textNode) return;
+    const fullName = String(state.zooName || '').trim();
+    const location = String(state.zooLocation || '').trim();
+    let prefix = fullName;
+    let place = '';
+
+    if (location) {
+        const lowerName = fullName.toLocaleLowerCase();
+        const lowerLocation = location.toLocaleLowerCase();
+        const index = lowerName.lastIndexOf(lowerLocation);
+        if (index >= 0) {
+            prefix = fullName.slice(0, index).trim();
+            place = fullName.slice(index).trim();
+        }
+    }
+    if (!place) {
+        const recognised = recognisedZooPlaceInName(fullName, state.zooCountry);
+        if (recognised?.location) {
+            const lowerName = fullName.toLocaleLowerCase();
+            const lowerLocation = recognised.location.toLocaleLowerCase();
+            const index = lowerName.lastIndexOf(lowerLocation);
+            if (index >= 0) {
+                prefix = fullName.slice(0, index).trim();
+                place = fullName.slice(index).trim();
+            }
+        }
+    }
+
+    textNode.innerHTML = '';
+    const prefixNode = document.createElement('span');
+    prefixNode.className = 'zoo-name-prefix';
+    prefixNode.textContent = prefix || fullName;
+    bindPlayerZooNameHoverPart(prefixNode, () =>
+        `<strong>Zoo type:</strong> ${escapePlayerZooNameHoverHtml(readableZooType(state.zooType))}`
+    );
+    textNode.appendChild(prefixNode);
+
+    if (place) {
+        textNode.appendChild(document.createTextNode(prefix ? ' ' : ''));
+        const placeNode = document.createElement('span');
+        placeNode.className = 'zoo-name-place';
+        placeNode.textContent = place;
+        bindPlayerZooNameHoverPart(placeNode, () => {
+            const lines = [
+                `<strong>Location:</strong> ${escapePlayerZooNameHoverHtml(state.zooLocation || place)}`,
+                `<strong>Country:</strong> ${escapePlayerZooNameHoverHtml(state.zooCountry || 'Unknown')}`
+            ];
+            if (state.zooProvince) lines.push(`<strong>Province:</strong> ${escapePlayerZooNameHoverHtml(state.zooProvince)}`);
+            return lines.join('<br>');
+        });
+        textNode.appendChild(placeNode);
+    }
+}
 
 function createZooNameEditor() {
-
-    ensureZooNameRandomButtonStyles();
 
     const wrapper =
         document.createElement(
@@ -16207,8 +17659,7 @@ function createZooNameEditor() {
         'zoo-name-text';
 
 
-    text.textContent =
-        state.zooName;
+    renderPlayerZooNameText(text);
 
 
     const button =
@@ -16244,30 +17695,6 @@ function createZooNameEditor() {
         '✎';
 
 
-    const randomButton =
-        document.createElement(
-            'button'
-        );
-
-    randomButton.type =
-        'button';
-
-    randomButton.className =
-        'zoo-name-random-button';
-
-    randomButton.title =
-        'Generate a new random zoo name';
-
-    randomButton.setAttribute(
-        'aria-label',
-        'Generate a new random zoo name'
-    );
-
-    randomButton.textContent =
-        '↻';
-
-    randomButton.hidden =
-        true;
 
 
     let editing =
@@ -16315,9 +17742,6 @@ function createZooNameEditor() {
                     'editing'
                 );
 
-                randomButton.hidden =
-                    false;
-
 
                 input.focus();
                 input.select();
@@ -16359,11 +17783,27 @@ function createZooNameEditor() {
                     state.zooName =
                         newName;
 
+                    // A recognised place in the manually entered name changes
+                    // the zoo's real geography immediately. Trade proximity and
+                    // LOCAL/NATIONAL/FOREIGN behaviour therefore follow the name.
+                    const recognisedPlace = recognisedZooPlaceInName(newName, state.zooCountry);
+                    if (recognisedPlace) {
+                        state.zooCountry = recognisedPlace.country;
+                        state.zooProvince = recognisedPlace.province || '';
+                        state.zooLocation = recognisedPlace.location;
+                        state.tradeOfferCache.clear();
+                        state.provinceDistanceCache.clear();
+                    }
+
+                    // Main-screen edits are authoritative until the living
+                    // collection crosses a genuine zoo-type threshold.
+                    state.manualZooNameOverrideType =
+                        normaliseZooTypes(state.zooType)[0] || 'general';
+
                 }
 
 
-                text.textContent =
-                    state.zooName;
+                renderPlayerZooNameText(text);
 
 
                 wrapper.replaceChild(
@@ -16379,47 +17819,12 @@ function createZooNameEditor() {
                     'editing'
                 );
 
-                randomButton.hidden =
-                    true;
-
             }
 
         }
     );
 
 
-    randomButton.addEventListener(
-        'click',
-        event => {
-            event.preventDefault();
-            event.stopPropagation();
-
-            const pool = buildZooNamePool(state.zooNamesData)
-                .filter(name => name && name !== state.zooName);
-
-            const nextName = pool.length
-                ? randomItem(pool)
-                : randomItem([
-                    'Riverside Zoo',
-                    'Forest Wildlife Park',
-                    'Lakeside Zoo',
-                    'Highland Wildlife Park',
-                    'Meadowlands Zoo',
-                    'Coastal Animal Park'
-                ]);
-
-            const input = wrapper.querySelector('.zoo-name-input');
-
-            if (input) {
-                input.value = nextName;
-                input.focus();
-                input.select();
-            } else {
-                state.zooName = nextName;
-                text.textContent = state.zooName;
-            }
-        }
-    );
 
 
     wrapper.appendChild(
@@ -16429,10 +17834,6 @@ function createZooNameEditor() {
 
     wrapper.appendChild(
         button
-    );
-
-    wrapper.appendChild(
-        randomButton
     );
 
 
@@ -16676,19 +18077,35 @@ function centerInitialView() {
         const zooWidth = maxX - minX;
         const zooHeight = maxY - minY;
 
-        // Fit every starting enclosure inside the visible zoo board with a generous margin.
-        // Because zooBoard begins below the header, nothing can start hidden underneath it.
         const padding = 70;
         const availableWidth = Math.max(200, zooBoard.clientWidth - padding * 2);
         const availableHeight = Math.max(200, zooBoard.clientHeight - padding * 2);
         const fitZoom = Math.min(1, availableWidth / zooWidth, availableHeight / zooHeight);
-        state.zoom = clamp(fitZoom, ZOOM_MIN, ZOOM_MAX);
+        state.zoom = clamp(fitZoom, currentZoomMin(), ZOOM_MAX);
         document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
 
         const centerX = (minX + maxX) / 2;
         const centerY = (minY + maxY) / 2;
-        zooBoard.scrollLeft = Math.max(0, centerX * state.zoom - zooBoard.clientWidth / 2);
-        zooBoard.scrollTop = Math.max(0, centerY * state.zoom - zooBoard.clientHeight / 2);
+
+        // Wait one more paint after changing zoom. This is important on mobile:
+        // otherwise scroll extents may still describe the previous scale and the
+        // starting zoo can land visibly off-centre.
+        requestAnimationFrame(() => {
+            zooBoard.scrollLeft = Math.max(
+                0,
+                Math.min(
+                    zooBoard.scrollWidth - zooBoard.clientWidth,
+                    centerX * state.zoom - zooBoard.clientWidth / 2
+                )
+            );
+            zooBoard.scrollTop = Math.max(
+                0,
+                Math.min(
+                    zooBoard.scrollHeight - zooBoard.clientHeight,
+                    centerY * state.zoom - zooBoard.clientHeight / 2
+                )
+            );
+        });
     });
 }
 
@@ -16751,6 +18168,7 @@ document.addEventListener('pointerdown', event => {
         event.target !== evidencePopup
     ) {
         evidencePopup.style.display = 'none';
+        evidencePopup.style.pointerEvents = 'none';
         delete evidencePopup.dataset.mobilePinned;
     }
 
@@ -16771,59 +18189,14 @@ document.addEventListener('pointerdown', event => {
 // MOBILE TRADE HUD VISIBILITY
 // ============================================================
 
-let mobileTradeFadeTimer = null;
-
-function mobileTradeIsActive() {
-    return Boolean(
-        state.outgoingOffer ||
-        state.autonomousTradeOffer ||
-        state.tradeOffers.length
-    );
-}
-
 function wakeMobileTradeArea() {
-    if (!window.matchMedia('(max-width: 700px)').matches) return;
-
-    const area = document.getElementById('opponentTradeArea');
-    const zoos = document.getElementById('opponentZoos');
-    if (!area) return;
-
-    clearTimeout(mobileTradeFadeTimer);
-    area.classList.remove('trade-hud-idle');
-    zoos?.classList.remove('trade-hud-idle');
-
-    // An active negotiation stays fully visible until completed/cancelled.
-    if (mobileTradeIsActive()) return;
-
-    mobileTradeFadeTimer = setTimeout(() => {
-        if (mobileTradeIsActive()) return;
-        area.classList.add('trade-hud-idle');
-        zoos?.classList.add('trade-hud-idle');
-    }, 2000);
+    // Offer cards are permanent header controls on mobile. They never fade.
+    document.getElementById('opponentTradeArea')?.classList.remove('trade-hud-idle');
 }
 
 function refreshMobileTradeAreaVisibility() {
-    if (!window.matchMedia('(max-width: 700px)').matches) return;
-
-    const area = document.getElementById('opponentTradeArea');
-    const zoos = document.getElementById('opponentZoos');
-    if (!area) return;
-
-    clearTimeout(mobileTradeFadeTimer);
-
-    if (mobileTradeIsActive()) {
-        area.classList.remove('trade-hud-idle');
-        zoos?.classList.remove('trade-hud-idle');
-        return;
-    }
-
-    area.classList.remove('trade-hud-idle');
-    zoos?.classList.remove('trade-hud-idle');
-    mobileTradeFadeTimer = setTimeout(() => {
-        if (mobileTradeIsActive()) return;
-        area.classList.add('trade-hud-idle');
-        zoos?.classList.add('trade-hud-idle');
-    }, 2000);
+    // Deliberately no transparency/idle state for the offer buttons.
+    document.getElementById('opponentTradeArea')?.classList.remove('trade-hud-idle');
 }
 
 document.addEventListener('pointerdown', event => {
@@ -17014,6 +18387,9 @@ async function startGame() {
         requireElement(resultBox, 'result');
         requireElement(outgoingOfferBox, 'outgoingOffer');
         requireElement(incomingOfferBox, 'ingoingOffer');
+        requireElement(hoverPreview, 'hoverPreview');
+        requireElement(hoverPreviewImage, 'hoverPreviewImage');
+        requireElement(playerZooName, 'playerZooName');
         requireElement(document.getElementById('actionMenu'), 'actionMenu');
 
         // asset-inventory.json is the one external data file required to build
@@ -17057,6 +18433,7 @@ async function startGame() {
         ensureCollectionCategoryLinks();
         setupOpponentTradeClicks();
         ensureMobileSettingsHub();
+        ensureMobilePhoneLayout();
 
         const resumedPreviousZoo = restoreAutoResumeSnapshot();
 

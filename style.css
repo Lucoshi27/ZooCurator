@@ -3722,3 +3722,304 @@ body.history-viewing #zooCanvas .animal-card {
         display: flex !important;
     }
 }
+
+
+/* ============================================================
+   V220.40 — SANDBOX DRAW TOOLBAR / LEVEL TABS
+   ============================================================ */
+#sandboxToolbar .sandbox-draw-button {
+    /* Intentionally inherits .save-load-button exactly, matching Trade History. */
+    white-space: nowrap;
+}
+
+.sandbox-picker-level-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+.sandbox-picker-level-tab {
+    flex: 1 1 90px;
+    min-width: 72px;
+    padding: 7px 10px;
+    border: 1px solid rgba(70, 58, 39, .45);
+    border-radius: 6px;
+    background: #ebe8df;
+    color: #30291f;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.sandbox-picker-level-tab:hover,
+.sandbox-picker-level-tab.active {
+    background: #fffdf6;
+}
+
+.sandbox-picker-level-tab.active {
+    box-shadow: inset 0 -2px 0 rgba(70, 58, 39, .55);
+}
+
+
+/* ============================================================
+   V220.41 — NEW ZOO GENERATION FEEDBACK
+   ============================================================ */
+.new-zoo-generation-loading {
+    display: none;
+    margin: 12px 16px 2px;
+}
+
+.new-zoo-generation-loading.visible {
+    display: block;
+}
+
+.new-zoo-generation-label {
+    margin-bottom: 5px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.new-zoo-generation-track {
+    position: relative;
+    height: 7px;
+    overflow: hidden;
+    border: 1px solid rgba(70, 60, 45, .34);
+    border-radius: 999px;
+    background: rgba(70, 60, 45, .08);
+}
+
+.new-zoo-generation-bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 34%;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: .55;
+    animation: new-zoo-generation-slide 1s ease-in-out infinite;
+}
+
+@keyframes new-zoo-generation-slide {
+    from { left: -34%; }
+    to { left: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .new-zoo-generation-bar {
+        left: 0;
+        width: 100%;
+        animation: none;
+    }
+}
+
+
+/* ============================================================
+   V220.42 — DYNAMIC ZOO WORLD + MOBILE HEADER / TRADE HUD
+   ============================================================ */
+@media (max-width: 700px) {
+    :root {
+        /* Header bottom moves down by exactly 10px. */
+        --mobile-header-height: calc(var(--mobile-safe-top) + var(--mobile-top-row) + var(--mobile-action-h) + 20px);
+    }
+
+    /* Four top-row controls are distributed across the full header. The zoo
+       name remains independently centred between the left/right controls. */
+    #headerLeft {
+        position: absolute !important;
+        display: block !important;
+        left: max(5px, var(--mobile-safe-left)) !important;
+        right: max(5px, var(--mobile-safe-right)) !important;
+        top: var(--mobile-safe-top) !important;
+        height: var(--mobile-top-row) !important;
+    }
+    #collectionButton,
+    #prestigeCounter,
+    #turnOrder,
+    #mobileSettingsButton {
+        position: absolute !important;
+        top: 1px !important;
+        margin: 0 !important;
+    }
+    #collectionButton { left: 0 !important; }
+    #prestigeCounter {
+        left: 25% !important;
+        transform: translateX(-50%);
+        width: 58px !important;
+        max-width: 58px !important;
+        text-align: center;
+    }
+    #turnOrder {
+        left: 75% !important;
+        transform: translateX(-50%);
+    }
+    #mobileSettingsButton { right: 0 !important; }
+
+    /* Draw, Exchange 1, Exchange 2, Upgrade, Outgoing, Incoming are now one
+       six-card header row. */
+    #exchangeControls {
+        justify-content: space-between !important;
+        gap: 3px !important;
+    }
+    #opponentTradeArea {
+        position: static !important;
+        inset: auto !important;
+        transform: none !important;
+        display: flex !important;
+        width: auto !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        height: var(--mobile-action-h) !important;
+        flex: 0 0 auto !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        gap: 3px !important;
+        opacity: 1 !important;
+        transition: none !important;
+        --trade-card-width: var(--mobile-action-w) !important;
+        --trade-card-height: var(--mobile-action-h) !important;
+        --trade-card-gap: 3px !important;
+        z-index: auto !important;
+    }
+    #opponentTradeArea.trade-hud-idle {
+        opacity: 1 !important;
+    }
+    #opponentTradeArea .trade-offer,
+    #opponentTradeArea .trade-card {
+        width: var(--mobile-action-w) !important;
+        min-width: var(--mobile-action-w) !important;
+        height: var(--mobile-action-h) !important;
+        flex: 0 0 var(--mobile-action-w) !important;
+        opacity: 1 !important;
+    }
+
+    /* The offer controls no longer use disabled/idle transparency. A locked
+       incoming card may still be desaturated to communicate legality. */
+    #opponentTradeArea .trade-offer {
+        background-color: #fff !important;
+    }
+
+    #opponentTradeArea .decline-opponent-offer {
+        top: calc(var(--mobile-action-h) + 4px) !important;
+        left: calc(var(--mobile-action-w) + 3px) !important;
+        width: var(--mobile-action-w) !important;
+    }
+}
+
+
+/* ============================================================
+   V220.43 — SANDBOX SEARCH / DESKTOP HUD / INSTANT TRACKER GLOW
+   ============================================================ */
+.sandbox-search-level-heading {
+    margin: 18px 0 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(70,58,39,.28);
+}
+
+/* Progression hover/tick highlighting is a direct state indicator, not an
+   ambient hint. It appears and disappears immediately. */
+.animal-card.progression-highlight-instant,
+.animal-card.progression-highlight {
+    transition: none !important;
+}
+.animal-card.progression-highlight {
+    animation: none !important;
+}
+
+/* On narrower desktop/laptop headers the tracker is the tallest left-side
+   object. Use the full vacant rectangle to its left instead of leaving the
+   Save/New/Options column at its old compact width. */
+@media (min-width: 701px) and (max-width: 1450px) {
+    #headerLeft {
+        left: 8px !important;
+        top: 10px !important;
+        width: 220px !important;
+        height: 178px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: space-between !important;
+        gap: 5px !important;
+    }
+
+    #headerLeft > .save-load-button,
+    #headerLeft > .game-options-button,
+    #headerLeft > #newGameButton {
+        width: 100% !important;
+        min-height: 32px !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+    }
+
+    #headerLeft #collectionTurnRow {
+        width: 100% !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 6px !important;
+    }
+}
+
+
+/* ============================================================
+   V220.47 — STICKY SANDBOX ANIMAL PICKER CONTROLS
+   ============================================================ */
+.sandbox-picker-animal-tools {
+    position: sticky;
+    top: -18px;
+    z-index: 20;
+    margin: 0 -18px;
+    padding: 1px 18px 2px;
+    background: #f4efe2;
+    border-bottom: 1px solid rgba(70,58,39,.20);
+    box-shadow: 0 5px 8px rgba(0,0,0,.06);
+}
+
+.sandbox-picker-animal-tools .sandbox-picker-level-tabs {
+    margin-top: 14px;
+}
+
+
+/* ============================================================
+   V220.51 — NEW ZOO LOCATION VALIDATION + COUNTRY MENU LAYER
+   ============================================================ */
+
+/* The country list is intentionally allowed to project beyond the setup card.
+   The generic options modal uses overflow:auto, which clipped this absolute
+   dropdown to the modal's own rectangle. */
+.game-options-modal.new-zoo-modal {
+    overflow: visible !important;
+}
+
+.new-zoo-country-picker {
+    z-index: 40;
+}
+
+.new-zoo-country-menu {
+    z-index: 40000 !important;
+}
+
+.new-zoo-location-known {
+    display: none;
+    flex: 0 0 auto;
+    margin-left: 1px;
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 900;
+    color: #2f7a3f;
+    user-select: none;
+}
+
+.new-zoo-location-known.visible {
+    display: inline-block;
+}
+
+/* On short screens retain a scrollable setup card; the dropdown itself gets
+   its own scrolling and remains above the surrounding controls. */
+@media (max-height: 650px) {
+    .game-options-modal.new-zoo-modal {
+        overflow-y: auto !important;
+        overflow-x: visible !important;
+    }
+}

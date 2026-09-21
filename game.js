@@ -1,8 +1,9 @@
 /*
- * ZOO CURATOR V172 — COMPACT NEW ZOO + COUNTRY SHORTCUTS
- * Known-good GitHub baseline. Future builds must descend from this version.
+ * ZOO CURATOR 
+ * Current consolidated build. Historical patch-version labels were removed
+ * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V172";
+const ZOO_CURATOR_VERSION = "V214";
 
 
 // ============================================================
@@ -163,7 +164,7 @@ const GROUPS = {
 // ============================================================
 
 const DEFAULT_GAME_OPTIONS = {
-    // V94: collection size controls starting animals + starting level curve.
+    // collection size controls starting animals + starting level curve.
     // Zoo size independently controls starting enclosure-space target.
     startingCollectionSize: 20,
     startingZooSize: 20,
@@ -250,7 +251,7 @@ function startingCollectionSizeRules(value = 20) {
 function startingZooSizeRules(value = 20) {
     const size = Math.max(0, Math.min(100, Math.round(Number(value) || 0)));
 
-    // V94 — independent enclosure-space curve.
+    // independent enclosure-space curve.
     // 20% is the new standard: 12 spaces. The remaining anchors preserve
     // approximately the same proportional growth/shrinkage as the old curve.
     const maxSpaces = Math.round(interpolateStartingZooValue(size, [
@@ -339,7 +340,7 @@ function saveGameOptions() {
 const state = {
     gameOptions: loadGameOptions(),
 
-    // V145 secret sandbox mode is saved with the game but isolated from normal rules.
+    // secret sandbox mode is saved with the game but isolated from normal rules.
     sandboxMode: false,
     sandboxLooseAnimals: [],
 
@@ -365,9 +366,14 @@ const state = {
     compatibilityHoveredSlotTimer: null,
     zooNamesData: null,
     realZooData: { zoos: [] },
+    // trade shortlist is embedded inside real_zoo_opponents.json, so the
+    // browser needs only one real-zoo request and never builds the index at runtime.
+    realZooTradeIndex: null,
+    realZooRecordByStaticId: new Map(),
     // Mutable copy of real-zoo holdings for THIS game only.
     // real_zoo_opponents.json remains untouched.
     realZooSessionHoldings: new Map(),
+    realZooTradeDirtyZoos: new Set(),
     provinceConnections: { provinces: {} },
     provinceDistanceCache: new Map(),
     highestZooPrestige: 0,
@@ -388,11 +394,11 @@ const state = {
     autonomousTradeOffer: null,
     nextAutonomousOfferTurn: null,
     tradeHistory: [],
-    // V161: permanent identity-based provenance for every physical animal card
+    // permanent identity-based provenance for every physical animal card
     // encountered by the player. Never infer location from species/name.
     animalLineage: new Map(),
 
-    // V194 — permanent species collection / discovery journal.
+    // permanent species collection / discovery journal.
     // collectionRecords is keyed by category|level|filename.
     collectionRecords: new Map(),
     collectionCohabitationActive: new Map(),
@@ -463,13 +469,16 @@ const state = {
 
     // Eligible cards whose yellow glow the player manually hid.
     suppressedExchangeGlowIds: new Set(),
-    // V157: once the player selects an exchange-eligible card, only that
+    // once the player selects an exchange-eligible card, only that
     // category+level group keeps its yellow eligibility glow.
     exchangeGlowFocusKey: null,
-    // V158: hovering the Outgoing Offer temporarily suppresses every yellow
+    // hovering the Outgoing Offer temporarily suppresses every yellow
     // exchange glow so the blue trade-interest glow is visually isolated.
     outgoingOfferHoverSuppressesExchangeGlow: false,
     outgoingOfferTradeHoverActive: false,
+    // Yellow exchange-eligibility card glows are contextual only: they are
+    // visible while the player is inspecting an Exchange or Upgrade box.
+    exchangeEligibilityHoverActive: false,
     lastExchangeGroupCounts: new Map(),
     exchangeGlowReturnUntil: 0,
     exchangeGlowReturnIds: new Set(),
@@ -478,7 +487,7 @@ const state = {
     exchangeGlowContinueStartedAt: 0,
     exchangeGlowContinueUntil: 0,
 
-    // V101: cards placed by a simple click glow yellow for 3 seconds,
+    // cards placed by a simple click glow yellow for 3 seconds,
     // then fade for 1 second so the player can immediately find them.
     newPlacementGlowStartedAt: {},
 
@@ -539,6 +548,16 @@ const handElement = $('hand');
 const hoverPreview = $('hoverPreview');
 const hoverPreviewImage = $('hoverPreviewImage');
 
+// keep the bottom-left card preview out of the very first paint.
+// Its artwork/source may already exist while the page is booting, so relying
+// only on the later `.visible` class can briefly expose the white card box.
+// The preview is explicitly released only by showHoverPreview().
+if (hoverPreview) {
+    hoverPreview.style.setProperty('display', 'none', 'important');
+    hoverPreview.style.setProperty('visibility', 'hidden', 'important');
+    hoverPreview.setAttribute('aria-hidden', 'true');
+}
+
 
 // ============================================================
 // REQUIRED ELEMENT CHECK
@@ -563,14 +582,17 @@ requireElement(zooCanvas, 'zooCanvas');
 requireElement(handElement, 'hand');
 
 // ============================================================
-// V40 — TRADE-ELIGIBLE CARD HIGHLIGHT
+// TRADE-ELIGIBLE CARD HIGHLIGHT
 // ============================================================
 
 let tradeEligibleGlowHideTimer = null;
 let tradeEligibleGlowActive = false;
+// trade-hover work is chunked across animation frames so hovering the
+// trade area never performs every zoo/animal calculation in one blocking task.
+let tradeEligibleGlowWorkToken = 0;
 
 // ============================================================
-// V46 — OPPONENT CATEGORY PROGRESSION TRADE RULE
+// OPPONENT CATEGORY PROGRESSION TRADE RULE
 // ============================================================
 
 // To trade FOR a player's level N animal (N > 1), the receiving zoo must
@@ -589,7 +611,7 @@ function opponentHasCategoryPrerequisite(holdings, wantedAnimal) {
 
 function realZooCanTradeFor(record, wantedAnimal) {
     return opponentHasCategoryPrerequisite(
-        realZooTradeAnimals(record, false),
+        realZooTradeSpecs(record),
         wantedAnimal
     );
 }
@@ -602,7 +624,7 @@ function fictionalZooCanTradeFor(opponentIndex, wantedAnimal) {
 }
 
 // ============================================================
-// V53 — DEADLOCK-SAFETY TRADE
+// DEADLOCK-SAFETY TRADE
 // ============================================================
 
 // "Full" follows the same physical-enclosure logic as startup: every separate
@@ -670,7 +692,7 @@ function emergencyTradeNeeded() {
 // Find ONE deterministic legal rescue trade. This bypasses only trade
 // reluctance/frequency. Same-level trading, ownership restrictions and the
 // opponent category-progression prerequisite remain in force.
-function emergencyTradeSelection() {
+function emergencyTradeSelection(writeState = true) {
     if (!emergencyTradeNeeded()) return null;
 
     const playerAnimals = state.animals.filter(animal =>
@@ -691,8 +713,14 @@ function emergencyTradeSelection() {
     // prestige-window and geographical partner rules as normal trading.
     if (isRealOpponentMode()) {
         for (const outgoing of shuffledPlayers) {
-            const candidates = [];
-            for (const record of realZooRecordsAvailable()) {
+            const records = realZooRecordsAvailableForTrade(outgoing);
+            const orderedRecords = selectPrestigeLocationCandidates(
+                records.map(record => ({ record })),
+                records.length,
+                `emergency-real-record-order|${outgoing.id}|${state.turn}|${tradeOfferWindow()}`
+            ).map(item => item.record);
+
+            for (const record of orderedRecords) {
                 if (!realZooCanTradeFor(record, outgoing)) continue;
 
                 const matching = realZooTradeAnimals(record, true)
@@ -705,22 +733,10 @@ function emergencyTradeSelection() {
                 const { seed } = seededRoll(
                     `emergency-real-animal|${outgoing.id}|${record.name}|${state.turn}`
                 );
-                candidates.push({
-                    record,
-                    animal: matching[seed % matching.length]
-                });
-            }
-
-            const selected = selectPrestigeLocationCandidates(
-                candidates,
-                1,
-                `emergency-real-zoos|${outgoing.id}|${state.turn}|${tradeOfferWindow()}`
-            )[0];
-            if (selected) {
                 return {
                     outgoingId: outgoing.id,
-                    record: selected.record,
-                    animal: selected.animal
+                    record,
+                    animal: matching[seed % matching.length]
                 };
             }
         }
@@ -732,7 +748,7 @@ function emergencyTradeSelection() {
             index < Math.min(state.unlockedOpponentCount, state.opponentProfiles.length);
             index++
         ) {
-            fillOpponentTradeStock(index);
+            if (writeState) fillOpponentTradeStock(index);
             opponentIndexes.push(index);
         }
 
@@ -814,7 +830,7 @@ function emergencyTradeSelection() {
             preferred_categories: []
         },
         animal: {
-            id: state.nextId++,
+            id: writeState ? state.nextId++ : -1,
             category: chosen.category,
             level: 1,
             filename: cleanFilename(chosen.filename),
@@ -825,9 +841,9 @@ function emergencyTradeSelection() {
     };
 }
 
-function emergencyTradeForAnimal(outgoing) {
+function emergencyTradeForAnimal(outgoing, writeState = true) {
     if (!outgoing) return null;
-    const rescue = emergencyTradeSelection();
+    const rescue = emergencyTradeSelection(writeState);
     return rescue && rescue.outgoingId === outgoing.id ? rescue : null;
 }
 
@@ -869,14 +885,14 @@ function normalTradeInterestAllowed(animal) {
 }
 
 
-function predictedPlayerTradeOffers(animal) {
+function predictedPlayerTradeOffers(animal, writeCache = true) {
     if (!animal) return [];
 
     // Deadlock rescue remains state-dependent and is deliberately not cached.
-    const emergency = emergencyTradeForAnimal(animal);
+    const emergency = emergencyTradeForAnimal(animal, writeCache);
     if (emergency) return [emergency];
 
-    // V133: honour an already-promised offer BEFORE recalculating the interest
+    // honour an already-promised offer BEFORE recalculating the interest
     // cap. Once this animal is moved into state.outgoingOffer,
     // normalTradeInterestAllowed() excludes it from the zoo ranking by design.
     // Checking the cap first could therefore overwrite its locked offer with [].
@@ -885,7 +901,7 @@ function predictedPlayerTradeOffers(animal) {
 
     // Emergency deadlock rescue bypasses the rarity cap. Ordinary offers do not.
     if (!normalTradeInterestAllowed(animal)) {
-        storePlayerTradeOffers(animal, []);
+        if (writeCache) storePlayerTradeOffers(animal, []);
         return [];
     }
 
@@ -895,7 +911,7 @@ function predictedPlayerTradeOffers(animal) {
     const frequency = tradeFrequencyFactor();
 
     if (frequency <= 0) {
-        storePlayerTradeOffers(animal, []);
+        if (writeCache) storePlayerTradeOffers(animal, []);
         return [];
     }
 
@@ -905,14 +921,22 @@ function predictedPlayerTradeOffers(animal) {
         ).roll;
 
         if (overallRoll > frequency) {
-            storePlayerTradeOffers(animal, []);
+            if (writeCache) storePlayerTradeOffers(animal, []);
             return [];
         }
 
-        const records = realZooRecordsAvailable();
+        const records = realZooRecordsAvailableForTrade(animal);
+        const orderedRecords = selectPrestigeLocationCandidates(
+            records.map(record => ({ record })),
+            records.length,
+            `real-record-order|${animal.id}|${tradeOfferWindow()}`
+        ).map(item => item.record);
         const candidates = [];
 
-        for (const record of records) {
+        // Prestige and geography are resolved before any zoo collection is
+        // inspected. Walk that ordered shortlist until the offer slots are
+        // full instead of materialising every animal held by every zoo.
+        for (const record of orderedRecords) {
             if (!realZooCanTradeFor(record, animal)) continue;
 
             const matching = realZooTradeAnimals(record, true)
@@ -941,21 +965,16 @@ function predictedPlayerTradeOffers(animal) {
                 ((seed >>> 8) % 1000000) / 1000000
             );
             candidates.push({ record, animal: offeredAnimal });
+            if (candidates.length >= 3) break;
         }
 
-        const selected = selectPrestigeLocationCandidates(
-            candidates,
-            3,
-            `real-select|${animal.id}|${tradeOfferWindow()}`
-        );
-
-        const locked = selected.map(item => ({
+        const locked = candidates.map(item => ({
             recordName: item.record.name,
             animalName: String(item.animal.filename || '').replace(/\.png$/i, ''),
             animalSpec: cachedTradeAnimalSpec(item.animal)
         }));
 
-        storePlayerTradeOffers(animal, locked);
+        if (writeCache) storePlayerTradeOffers(animal, locked);
         return locked;
     }
 
@@ -964,7 +983,7 @@ function predictedPlayerTradeOffers(animal) {
     ).roll;
 
     if (overallRoll > frequency) {
-        storePlayerTradeOffers(animal, []);
+        if (writeCache) storePlayerTradeOffers(animal, []);
         return [];
     }
 
@@ -1010,12 +1029,12 @@ function predictedPlayerTradeOffers(animal) {
         animalSpec: cachedTradeAnimalSpec(item.animal)
     }));
 
-    storePlayerTradeOffers(animal, locked);
+    if (writeCache) storePlayerTradeOffers(animal, locked);
     return locked;
 }
 
 function animalCouldReceiveTradeInterest(animal) {
-    // V163: this is specifically the BLUE trade-interest hint. Do not couple
+    // this is specifically the BLUE trade-interest hint. Do not couple
     // it to the yellow exchange-eligibility preference.
     if (!animal || animal.level < 1 || animal.level > 5) return false;
     if (animal === state.outgoingOffer) return false;
@@ -1026,12 +1045,12 @@ function animalCouldReceiveTradeInterest(animal) {
 
     // This uses exactly the same seeded rolls, frequency gate, zoo-specific
     // willingness and three-offer cap as actually placing the card.
-    const predicted = predictedPlayerTradeOffers(animal);
+    const predicted = predictedPlayerTradeOffers(animal, false);
 
     // Emergency offers are already live objects and bypass the normal cache.
     if (predicted.some(item => item?.animal)) return true;
 
-    // V83: use the SAME full validation as the actual outgoing-offer drop.
+    // use the SAME full validation as the actual outgoing-offer drop.
     // Merely reconstructing an animal card is not enough: the zoo must still
     // exist/unlocked, still be eligible, still hold that exact card, and the
     // player must not already own the incoming species/card.
@@ -1039,6 +1058,7 @@ function animalCouldReceiveTradeInterest(animal) {
 }
 
 function clearTradeEligibleGlow(immediate = true) {
+    ++tradeEligibleGlowWorkToken;
     clearTimeout(tradeEligibleGlowHideTimer);
     tradeEligibleGlowHideTimer = null;
     tradeEligibleGlowActive = false;
@@ -1100,17 +1120,40 @@ function applyTradeEligibleGlow() {
 
     tradeEligibleGlowActive = true;
 
-    document.querySelectorAll('.animal-card[data-animal-id]')
-        .forEach(card => {
-            const id = Number(card.dataset.animalId);
-            const animal = state.animals.find(item => item.id === id)
-                || state.hand.find(item => item.id === id);
+    // performance fix: do NOT synchronously calculate trade interest for
+    // every visible animal on pointer-enter. That used to make the browser
+    // inspect many real-zoo collections in one frame and caused the visible
+    // one-second freeze. Process a tiny batch per animation frame instead.
+    // predictedPlayerTradeOffers() still locks/caches the exact same result,
+    // so trade rules and percentages are unchanged.
+    const workToken = ++tradeEligibleGlowWorkToken;
+    const animalById = new Map();
+    for (const animal of state.animals) animalById.set(animal.id, animal);
+    for (const animal of state.hand) animalById.set(animal.id, animal);
 
+    const cards = [...document.querySelectorAll('.animal-card[data-animal-id]')];
+    let cursor = 0;
+
+    const processTradeGlowBatch = () => {
+        if (workToken !== tradeEligibleGlowWorkToken || !tradeEligibleGlowActive) return;
+
+        // One exact calculation per frame keeps pointer/drag/animation input
+        // responsive even with a large real-zoo database. Cached cards become
+        // effectively free on later hovers in the same trade window.
+        const end = Math.min(cards.length, cursor + 1);
+        for (; cursor < end; cursor++) {
+            const card = cards[cursor];
+            const animal = animalById.get(Number(card.dataset.animalId));
             card.classList.toggle(
                 'trade-eligible-glow',
                 Boolean(animal && animalCouldReceiveTradeInterest(animal))
             );
-        });
+        }
+
+        if (cursor < cards.length) requestAnimationFrame(processTradeGlowBatch);
+    };
+
+    requestAnimationFrame(processTradeGlowBatch);
 }
 
 function scheduleTradeEligibleGlowFade() {
@@ -1358,7 +1401,7 @@ function enclosurePath(number) {
 // LOADING
 // ============================================================
 
-function setLoading(
+function updateBootLoadingStatus(
     status,
     detail = ''
 ) {
@@ -1451,7 +1494,7 @@ async function loadJson(
     description,
     timeoutMs = 0
 ) {
-    setLoading('Loading Zoo Curator...', description);
+    updateBootLoadingStatus('Loading Zoo Curator...', description);
 
     const controller =
         typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -1539,6 +1582,14 @@ function normaliseRealZooRecords(rawZoos) {
     return records;
 }
 
+function rebuildRealZooStaticIdMap() {
+    state.realZooRecordByStaticId = new Map();
+    for (const record of state.realZooData?.zoos || []) {
+        const id = Number(record?.trade_id);
+        if (Number.isFinite(id)) state.realZooRecordByStaticId.set(id, record);
+    }
+}
+
 function loadRealZooDataInBackground() {
     const path = 'real_zoo_opponents.json';
     const timeoutMs = 8000;
@@ -1572,7 +1623,14 @@ function loadRealZooDataInBackground() {
             }
 
             state.realZooData = { ...data, zoos };
+            const embeddedTradeIndex = data?.trade_index;
+            state.realZooTradeIndex = (
+                embeddedTradeIndex?.schema_version === 1 &&
+                embeddedTradeIndex?.candidates_by_outgoing &&
+                typeof embeddedTradeIndex.candidates_by_outgoing === 'object'
+            ) ? embeddedTradeIndex : null;
             resetRealZooSessionHoldings();
+            rebuildRealZooStaticIdMap();
             // Predictions made before the optional database arrived may have
             // cached an empty offer set. Recompute them against the real data.
             state.tradeOfferCache.clear();
@@ -1597,6 +1655,8 @@ function loadRealZooDataInBackground() {
                 error
             );
             state.realZooData = { zoos: [] };
+            state.realZooTradeIndex = null;
+            state.realZooRecordByStaticId = new Map();
             state.realZooSessionHoldings = new Map();
         });
 }
@@ -1737,7 +1797,7 @@ function levelFiles(
             of possible
         ) {
 
-            // V167: tagged zoo-type inventories store a level as an
+            // tagged zoo-type inventories store a level as an
             // object whose keys are filenames and values are tag arrays.
             // Treat those keys exactly like the old filename arrays.
             if (
@@ -1902,6 +1962,38 @@ function normaliseZooTypes(value) {
     return result.length ? result : ['general'];
 }
 
+// Specialist zoo names establish a real collection identity instead of merely
+// nudging random weights. The quota is applied only to starting generation;
+// ordinary draws and trades retain the existing weighted preference system.
+const SPECIALIST_STARTING_CATEGORIES = Object.freeze({
+    aquarium: ['Marine Mania'],
+    bird: ['Other Birds', 'Tropical Birds'],
+    raptor: ['Birds of Prey'],
+    reptile: ['Reptiles'],
+    farm: ['Ungulates'],
+    tropical: ['Tropical Birds', 'Primates', 'Reptiles'],
+    safari: ['Ungulates', 'Carnivora'],
+    forest: ['Other Mammals', 'Other Birds', 'Carnivora'],
+    alpine: ['Ungulates', 'Carnivora', 'Birds of Prey']
+});
+
+function specialistStartingCategories(zooType = state.zooType) {
+    const categories = [];
+    for (const type of normaliseZooTypes(zooType)) {
+        for (const category of SPECIALIST_STARTING_CATEGORIES[type] || []) {
+            if (!categories.includes(category) && levelFiles(category, 1).length) categories.push(category);
+        }
+    }
+    return categories;
+}
+
+function specialistStartingQuota(total, zooType = state.zooType) {
+    if (!specialistStartingCategories(zooType).length) return 0;
+    // About two thirds of a specialist zoo's opening collection should express
+    // its advertised identity. 8 animals -> 6 specialist animals.
+    return Math.min(total, Math.max(1, Math.ceil(total * 0.65)));
+}
+
 function zooTypeWeightSettings() {
     const root = state.inventory?.zooTypeWeights || state.inventory?.zoo_type_weights || {};
     const generation = root.generation || root;
@@ -2035,7 +2127,7 @@ async function preloadAnimalsWithProgress(animals) {
     const items = (animals || []).filter(Boolean);
     const total = items.length;
 
-    setLoading('Loading Zoo Curator...', `Loading image data 0/${total}`);
+    updateBootLoadingStatus('Loading Zoo Curator...', `Loading image data 0/${total}`);
 
     if (total === 0) return [];
 
@@ -2045,10 +2137,12 @@ async function preloadAnimalsWithProgress(animals) {
         items.map(animal =>
             preloadAnimalAsset(animal).finally(() => {
                 completed += 1;
-                setLoading(
-                    'Loading Zoo Curator...',
-                    `Loading image data ${completed}/${total}`
-                );
+                if (completed < total) {
+                    updateBootLoadingStatus(
+                        'Loading Zoo Curator...',
+                        `Loading image data ${completed}/${total}`
+                    );
+                }
             })
         )
     );
@@ -2098,7 +2192,7 @@ function prepareNextDrawAsset() {
 
     state.nextDrawReadyPromise = preloadAnimalAsset(state.nextDrawSpec);
 
-    // V124: availability depends on the exact prepared card. As soon as that
+    // availability depends on the exact prepared card. As soon as that
     // asynchronous preparation finishes, refresh the deck's disabled state.
     // Previously the UI could remain visually enabled until the next click/render.
     state.nextDrawReadyPromise.finally(() => {
@@ -2235,7 +2329,7 @@ function markAnimalExchangedFor(animal, resultAnimal, turn) {
 
 
 // ============================================================
-// V194 — COLLECTION
+// COLLECTION
 // ============================================================
 
 function collectionAnimalKey(animalOrCategory, level = null, filename = null) {
@@ -2578,7 +2672,7 @@ function renderCollectionMenu() {
             img.draggable = false;
             card.appendChild(img);
 
-            // V196: undiscovered cards keep the artwork hidden and also mask
+            // undiscovered cards keep the artwork hidden and also mask
             // the species-name strip printed directly on the card artwork.
             // The mask disappears as soon as a trade offer semi-reveals the
             // species, just like the translated-name rectangle system.
@@ -2687,7 +2781,7 @@ function ensureCollectionButton() {
         row = document.createElement('div');
         row.id = 'collectionTurnRow';
 
-        // V199: setup runs only after the existing HUD installers. Therefore
+        // setup runs only after the existing HUD installers. Therefore
         // it is safe to replace the timer's original position with this row.
         parent.insertBefore(row, turnElement);
         row.append(button, turnElement, prestigeElement);
@@ -2901,7 +2995,7 @@ function rebuildCompatibilityGraphs() {
         }
     }
 
-    // V89 — honour explicit gameplay structures in newer compatibility JSON.
+    // honour explicit gameplay structures in newer compatibility JSON.
     // complete_groups makes every member of a named group mutually compatible.
     // group_links makes every member of one named group compatible with every
     // member of the linked group. Direct evidence pairs remain unchanged.
@@ -2952,7 +3046,7 @@ function animalsAreCompatible(a, b) {
     // compatible_pairs plus complete_groups and group_links.
     if (state.compatibilityEffectiveGraph.get(aName)?.has(bName)) return true;
 
-    // V90 — defensive live evaluation of named gameplay groups.
+    // defensive live evaluation of named gameplay groups.
     // This deliberately duplicates the group part of rebuildCompatibilityGraphs().
     // It prevents a stale/partially rebuilt graph from silently disabling valid
     // combinations such as Great White Pelican + Dalmatian Pelican or
@@ -3032,7 +3126,7 @@ function animalsFormCompatibilityChain(animals) {
     if (animals.length <= 1) return true;
 
     /*
-        V93 — STRICT MULTI-SPECIES COMPATIBILITY
+        STRICT MULTI-SPECIES COMPATIBILITY
 
         Every animal sharing one logical enclosure must be compatible with
         EVERY other animal in that enclosure.
@@ -3123,7 +3217,7 @@ function slotIsCompatibilityMatch(enclosure, slotIndex, candidateAnimals = compa
     if (occupants.length === 0) return false; // not "available due to a match"
 
     return candidateAnimals.some(animal => {
-        // V191: when passively hovering an animal that is already sharing a
+        // when passively hovering an animal that is already sharing a
         // mixed-species combination exhibit, it is satisfied: do not advertise
         // alternative combination spaces elsewhere. A solo animal still does.
         // Dragging remains deliberate and continues to show legal destinations.
@@ -3135,7 +3229,7 @@ function slotIsCompatibilityMatch(enclosure, slotIndex, candidateAnimals = compa
             return false;
         }
 
-        // V106: once an animal is already in a combination enclosure, that
+        // once an animal is already in a combination enclosure, that
         // enclosure is its current home. Do not advertise another empty slot
         // in the same enclosure as a destination. Other compatible enclosures
         // may still glow normally.
@@ -3172,6 +3266,37 @@ function currentCompatibilityGlowKeys(candidateAnimals = compatibilityHintAnimal
     return keys;
 }
 
+function applyCompatibilityDestinationGlowClasses() {
+    const now = Date.now();
+    const activeKeys = currentCompatibilityGlowKeys();
+
+    document.querySelectorAll('.slot[data-enclosure-id][data-slot-index]').forEach(slot => {
+        const key = slotCompatibilityGlowKey(
+            Number(slot.dataset.enclosureId),
+            Number(slot.dataset.slotIndex)
+        );
+
+        slot.classList.remove(
+            'compatibility-match-glow',
+            'compatibility-match-glow-fading'
+        );
+
+        if (activeKeys.has(key)) {
+            slot.classList.add('compatibility-match-glow');
+        } else if (
+            state.compatibilityGlowFadeKeys.has(key) &&
+            now < state.compatibilityGlowHoldUntil
+        ) {
+            slot.classList.add('compatibility-match-glow');
+        } else if (
+            state.compatibilityGlowFadeKeys.has(key) &&
+            now < state.compatibilityGlowFadeUntil
+        ) {
+            slot.classList.add('compatibility-match-glow-fading');
+        }
+    });
+}
+
 function beginCompatibilityGlowFade(keys) {
     state.compatibilityGlowFadeKeys = new Set(keys || []);
 
@@ -3183,20 +3308,20 @@ function beginCompatibilityGlowFade(keys) {
 
     const now = Date.now();
 
-    // V191: animal-hover destination glows begin fading the instant the
+    // animal-hover destination glows begin fading the instant the
     // pointer leaves the animal. No full-strength hold remains.
     state.compatibilityGlowHoldUntil = now;
     state.compatibilityGlowFadeUntil = now + 1000;
 
-    // Render immediately so the one-second fade animation starts now.
-    renderZoo();
+    // glow-only updates must not rebuild the zoo DOM.
+    applyCompatibilityDestinationGlowClasses();
 
     setTimeout(() => {
         if (Date.now() >= state.compatibilityGlowFadeUntil) {
             state.compatibilityGlowFadeKeys.clear();
             state.compatibilityGlowHoldUntil = 0;
             state.compatibilityGlowFadeUntil = 0;
-            renderZoo();
+            applyCompatibilityDestinationGlowClasses();
         }
     }, 1020);
 }
@@ -3204,7 +3329,7 @@ function beginCompatibilityGlowFade(keys) {
 function compatibilityCandidatesForHoveredSlot(enclosure, slotIndex) {
     if (!enclosure || animalAtSlot(enclosure.id, slotIndex)) return [];
 
-    // V190: reverse lookup is intentionally destination-based. An animal may
+    // reverse lookup is intentionally destination-based. An animal may
     // be "satisfied" in a full combination exhibit and therefore show no
     // outgoing destination hints when IT is hovered, but hovering another open
     // combination slot may still highlight that animal if it can legally move
@@ -3322,7 +3447,7 @@ function clearCompatibilityHoverImmediately() {
 function startCompatibilityAnimalHover(enclosure, slotIndex) {
     if (document.body.classList.contains('history-viewing')) return;
 
-    // V185: an active animal drag already has a specific compatibility
+    // an active animal drag already has a specific compatibility
     // candidate. Do not activate the reverse "what could go here?" glow for
     // an unrelated enclosure under the cursor.
     if (state.drag?.type === 'animal') {
@@ -3374,7 +3499,7 @@ function finishCompatibilityAnimalHover() {
 
     const now = Date.now();
 
-    // V190: reverse compatibility hints from hovering an EMPTY combination
+    // reverse compatibility hints from hovering an EMPTY combination
     // slot begin fading immediately when the cursor leaves. There is no
     // one-second full-strength hold. The fade itself still lasts one second.
     state.compatibilityAnimalHoverHoldUntil = now;
@@ -3550,7 +3675,7 @@ function canPlace(
     }
 
 
-    // V155: a reservation keeps this slot logically occupied for draw/full-zoo
+    // a reservation keeps this slot logically occupied for draw/full-zoo
     // capacity, but it must not block another EXISTING zoo animal from moving
     // into the visually empty slot. Only a physically present card blocks a move.
     if (
@@ -3611,7 +3736,7 @@ function ensureDrawSpaceGuardStyles() {
             cursor: not-allowed !important;
         }
 
-        /* V114: grey the actual card artwork. The deck image can have its own
+        /* grey the actual card artwork. The deck image can have its own
            rendering/compositing, so filtering only #drawCard was not reliably visible. */
         #drawCard.draw-no-space img {
             opacity: .38 !important;
@@ -3649,7 +3774,7 @@ function ensureDrawSpaceGuardStyles() {
             animation: idleActionGuidePulse 4s ease-in-out 1 !important;
             overflow: visible !important;
         }
-        /* V122: drawCard's visible artwork is a child image, while the wrapper
+        /* drawCard's visible artwork is a child image, while the wrapper
            can be visually tiny/covered. Give the image itself an unmistakable
            blue ring as well. This also remains visible over the grey disabled
            treatment and older cached style.css rules. */
@@ -3663,7 +3788,7 @@ function ensureDrawSpaceGuardStyles() {
             outline: 3px solid rgba(105,175,255,.95) !important;
             outline-offset: 2px !important;
         }
-        /* V112: preserve the original menu width. Controls extend leftward
+        /* preserve the original menu width. Controls extend leftward
            toward their labels instead of widening the Game Options panel. */
         .game-options-modal label > input,
         .game-options-modal label > select,
@@ -3814,7 +3939,7 @@ function tradeIncomingHasDestinationAfterOutgoing(incoming, outgoing) {
 }
 
 function nextLevelOneHasEligibleDestination() {
-    // V156: DRAW availability uses LOGICAL zoo occupancy, including reserved
+    // DRAW availability uses LOGICAL zoo occupancy, including reserved
     // slots. Reserved vacancies may be used to rearrange animals already owned,
     // but they are NOT new capacity and must never re-enable Draw Card.
     //
@@ -3860,7 +3985,11 @@ function markNewPlacementGlow(animal) {
         const started = Number(state.newPlacementGlowStartedAt[animal.id] || 0);
         if (started && Date.now() - started >= 4000) {
             delete state.newPlacementGlowStartedAt[animal.id];
-            renderZoo();
+            document.querySelectorAll(`.animal-card[data-animal-id="${animal.id}"]`)
+                .forEach(card => {
+                    card.classList.remove('new-placement-glow');
+                    card.style.removeProperty('animation-delay');
+                });
         }
     }, 4050);
 }
@@ -3915,7 +4044,7 @@ function placeAnimal(
     slotIndex
 ) {
 
-    // V155 reservation hand-off:
+    // reservation hand-off:
     // If this animal is moving from a real zoo slot into a slot currently
     // reserved by a card in Exchange/Outgoing Offer, move that reservation
     // to THIS animal's old slot. The zoo therefore remains logically full
@@ -4013,77 +4142,6 @@ function checkEnclosure10Unlock() {
 
 // ============================================================
 // COMBINATIONS
-// ============================================================
-
-function getCombinations(
-    array,
-    count
-) {
-
-    const results = [];
-
-
-    function walk(
-        start,
-        current
-    ) {
-
-        if (
-            current.length ===
-            count
-        ) {
-
-            results.push(
-                [...current]
-            );
-
-            return;
-
-        }
-
-
-        for (
-            let i = start;
-            i < array.length;
-            i++
-        ) {
-
-            current.push(
-                array[i]
-            );
-
-            walk(
-                i + 1,
-                current
-            );
-
-            current.pop();
-
-        }
-
-    }
-
-
-    walk(
-        0,
-        []
-    );
-
-
-    return results;
-
-}
-
-
-// ============================================================
-// STARTUP ENCLOSURE SELECTION
-//
-// RULE:
-//
-// - hit the configured enclosure-space target as closely as possible
-// - starting animals may share a physical exhibit when compatibility allows
-// - higher zoo-size settings deliberately generate fairly full zoos
-// - Enclosure 10 prohibited
 // ============================================================
 
 function startupProgressionRewardKeys() {
@@ -4480,7 +4538,7 @@ function availableStartingCardsAtLevel(level) {
     return candidates;
 }
 
-function randomAvailableStartingAnimal(levelChances) {
+function randomAvailableStartingAnimal(levelChances, preferredCategories = null) {
     const roll = Math.random();
     let cumulative = 0;
     let rolledLevel = 1;
@@ -4493,9 +4551,25 @@ function randomAvailableStartingAnimal(levelChances) {
         }
     }
 
-    // First try the rolled level. If its progression prerequisite is not yet
-    // available, fall back one level at a time rather than ignoring the rule.
-    // This lets early L1 cards create the foundation for later L2/L3/L4 rolls.
+    const preferredSet = new Set(Array.isArray(preferredCategories) ? preferredCategories : []);
+
+    // For specialist quota picks, search downward for a legal specialist card
+    // before falling back to the ordinary pool. This preserves level/progression
+    // rules without allowing an unavailable high-level specialist to dilute the
+    // zoo's identity with an unrelated animal.
+    if (preferredSet.size) {
+        for (let level = rolledLevel; level >= 1; level--) {
+            const preferred = availableStartingCardsAtLevel(level)
+                .filter(candidate => preferredSet.has(candidate.category));
+            if (preferred.length) {
+                return weightedRandomItem(
+                    preferred,
+                    candidate => animalZooTypeWeight(candidate, state.zooType, 'generation')
+                );
+            }
+        }
+    }
+
     for (let level = rolledLevel; level >= 1; level--) {
         const candidates = availableStartingCardsAtLevel(level);
         if (candidates.length) {
@@ -4589,14 +4663,29 @@ function createStartingZoo() {
     // Generate the complete starting animal collection FIRST. This lets the
     // starting enclosure count reflect the category progression the zoo has
     // already achieved before the player takes control.
+    const specialistCategories = specialistStartingCategories();
+    const specialistQuota = specialistStartingQuota(startupRules.species);
+    let specialistCount = 0;
+
     for (let i = 0; i < startupRules.species; i++) {
-        const startingCard = randomAvailableStartingAnimal(startupRules.levelChances);
+        const stillNeeded = Math.max(0, specialistQuota - specialistCount);
+        const slotsRemaining = startupRules.species - i;
+        // Fill the specialist quota early. If a requested level has no legal
+        // specialist card, randomAvailableStartingAnimal safely falls back to
+        // the normal pool rather than making startup fail.
+        const preferSpecialist = specialistCategories.length && stillNeeded > 0 &&
+            (specialistCount < specialistQuota || slotsRemaining <= stillNeeded);
+        const startingCard = randomAvailableStartingAnimal(
+            startupRules.levelChances,
+            preferSpecialist ? specialistCategories : null
+        );
         const animal = createAnimal(
             startingCard.category,
             startingCard.level,
             startingCard.filename
         );
         state.animals.push(animal);
+        if (specialistCategories.includes(animal.category)) specialistCount += 1;
         markPlayerLevelSeen(animal.level);
     }
     const startupRewardKeys = startupProgressionRewardKeys();
@@ -4647,7 +4736,7 @@ function createStartingZoo() {
 
 
     /*
-        V171 startup placement:
+        startup placement:
         - a physical exhibit may contain multiple starting animals when the
           compatibility rules permit it;
         - placement uses backtracking instead of a greedy random choice, so an
@@ -4666,7 +4755,7 @@ function createStartingZoo() {
     }
 
     /*
-        V179 startup solver:
+        startup solver:
         The previous recursive search could explore an enormous compatibility
         tree and repeatedly call canPlace()/getAllSlots(), eventually triggering
         Firefox's long-running-script timeout during startup.
@@ -4806,10 +4895,68 @@ function createStartingZoo() {
         }
 
         if (fallbackFailed) {
-            throw new Error(
-                `Could not find a compatible starting layout for ${startupRules.species} animals ` +
-                `inside ${startingZooSizeRules(state.gameOptions.startingZooSize).maxSpaces} starting spaces.`
-            );
+            // startup failsafe: an 8-animal opening is preferred, but a
+            // rare compatibility dead-end must never abort the whole game.
+            // Retry the cheap greedy placement with 7 animals, then 6.
+            const originalCount = state.animals.length;
+            const fallbackCounts = [7, 6].filter(count => count < originalCount);
+
+            for (const targetCount of fallbackCounts) {
+                while (state.animals.length > targetCount) {
+                    state.animals.pop();
+                }
+                clearStartupPlacements();
+                fallbackFailed = false;
+
+                for (const animal of state.animals) {
+                    let destination = null;
+
+                    for (const entry of startupEnclosures) {
+                        if (animalsInEnclosureGroup(entry.enclosure, entry.group).length) continue;
+                        const slotIndex = entry.group.find(slot =>
+                            !animalAtSlot(entry.enclosure.id, slot) &&
+                            canPlaceStartingAnimal(animal, entry.enclosure, slot)
+                        );
+                        if (slotIndex !== undefined) {
+                            destination = { enclosure: entry.enclosure, slotIndex };
+                            break;
+                        }
+                    }
+
+                    if (!destination) {
+                        outerFallback:
+                        for (const entry of startupEnclosures) {
+                            for (const slotIndex of entry.group) {
+                                if (canPlaceStartingAnimal(animal, entry.enclosure, slotIndex)) {
+                                    destination = { enclosure: entry.enclosure, slotIndex };
+                                    break outerFallback;
+                                }
+                            }
+                        }
+                    }
+
+                    if (!destination) {
+                        fallbackFailed = true;
+                        break;
+                    }
+
+                    animal.enclosureId = destination.enclosure.id;
+                    animal.slotIndex = destination.slotIndex;
+                }
+
+                if (!fallbackFailed) {
+                    placed = true;
+                    console.warn(`Startup reduced from ${originalCount} to ${targetCount} animals after compatibility placement failed.`);
+                    break;
+                }
+            }
+
+            if (fallbackFailed) {
+                throw new Error(
+                    `Could not find a compatible starting layout even after reducing the opening collection to ${state.animals.length} animals ` +
+                    `inside ${startingZooSizeRules(state.gameOptions.startingZooSize).maxSpaces} starting spaces.`
+                );
+            }
         }
 
         placed = true;
@@ -4919,7 +5066,7 @@ function endTurn() {
 
     renderZoo();
 
-    // V89 — endTurn() bypasses renderAll(), so V88's renderAll autosave hook
+    // endTurn() bypasses renderAll(), so 's renderAll autosave hook
     // missed ordinary turns that ended through this path.
     writeAutoResumeSnapshot();
 
@@ -5019,6 +5166,7 @@ function activeExchangeGlowFocusKey() {
 }
 
 function shouldGlowForExchange(animal) {
+    if (!state.exchangeEligibilityHoverActive) return false;
     if (state.outgoingOfferHoverSuppressesExchangeGlow) return false;
 
     if (
@@ -5051,6 +5199,37 @@ function ensureTradeHoverExchangeGlowStyles() {
     document.head.appendChild(style);
 }
 
+function refreshContextualExchangeEligibilityGlows() {
+    const active =
+        state.exchangeEligibilityHoverActive &&
+        !state.outgoingOfferHoverSuppressesExchangeGlow &&
+        state.gameOptions.showEligibilityGlows !== false;
+
+    const focusKey = activeExchangeGlowFocusKey();
+
+    document.querySelectorAll('.animal-card[data-animal-id]').forEach(card => {
+        const animalId = Number(card.dataset.animalId);
+        const animal = state.animals.find(item => item.id === animalId);
+        const eligible = Boolean(
+            active &&
+            animal &&
+            isExchangeEligible(animal) &&
+            !state.suppressedExchangeGlowIds.has(animal.id) &&
+            (!focusKey || exchangeGroupKey(animal) === focusKey)
+        );
+
+        card.classList.toggle('exchange-eligible', eligible);
+        if (!eligible) card.classList.remove('exchange-glow-return');
+    });
+}
+
+function setExchangeEligibilityHover(active) {
+    active = Boolean(active) && !state.sandboxMode;
+    if (state.exchangeEligibilityHoverActive === active) return;
+    state.exchangeEligibilityHoverActive = active;
+    refreshContextualExchangeEligibilityGlows();
+}
+
 function setOutgoingOfferExchangeGlowSuppression(active) {
     active = Boolean(active) && !state.sandboxMode;
     if (state.outgoingOfferHoverSuppressesExchangeGlow === active) return;
@@ -5059,7 +5238,7 @@ function setOutgoingOfferExchangeGlowSuppression(active) {
     document.body.classList.toggle('trade-hover-suppress-exchange', active);
 
     if (active) {
-        // V163: NEVER rebuild the zoo here. renderZoo() replaces every animal
+        // NEVER rebuild the zoo here. renderZoo() replaces every animal
         // DOM node, which destroys a blue trade-eligible class that may have
         // been applied by the other mouseenter listener a moment earlier.
         // shouldGlowForExchange() already suppresses yellow for any later
@@ -5071,30 +5250,12 @@ function setOutgoingOfferExchangeGlowSuppression(active) {
         return;
     }
 
-    // Restore currently eligible yellow glows with the existing fade-in class.
-    const ids = new Set(
-        state.animals
-            .filter(animal => isExchangeEligible(animal))
-            .filter(animal => {
-                const focusKey = activeExchangeGlowFocusKey();
-                return !focusKey || exchangeGroupKey(animal) === focusKey;
-            })
-            .map(animal => animal.id)
-    );
-    state.exchangeGlowReturnIds = ids;
-    state.exchangeGlowReturnUntil = ids.size ? Date.now() + 1000 : 0;
     document.body.classList.remove('trade-hover-suppress-exchange');
 
-    // Restore yellow on the existing nodes so an active/fading blue trade glow
-    // is not erased by a full zoo rerender.
-    document.querySelectorAll('.animal-card[data-animal-id]')
-        .forEach(card => {
-            const animal = state.animals.find(item =>
-                item.id === Number(card.dataset.animalId)
-            );
-            if (!animal || !ids.has(animal.id)) return;
-            card.classList.add('exchange-eligible', 'exchange-glow-return');
-        });
+    // Yellow eligibility is contextual now. Leaving Outgoing Offer must not
+    // resurrect the old persistent glow; only an active Exchange/Upgrade hover
+    // is allowed to paint it.
+    refreshContextualExchangeEligibilityGlows();
 }
 
 ensureTradeHoverExchangeGlowStyles();
@@ -5153,7 +5314,7 @@ function attachImageError(
 // ============================================================
 
 // ============================================================
-// DUTCH CARD + UI LOCALISATION (V105)
+// DUTCH CARD + UI LOCALISATION ()
 // ============================================================
 
 const translatedCardImageCache = new Map();
@@ -5260,7 +5421,7 @@ function paintDutchCardCategory(ctx,name) {
     ctx.fillStyle=sampledCategoryColour(ctx);
     // Deliberately starts at x=220: the level numeral and its cream field remain untouched.
     ctx.fillRect(p.x,p.y,p.width,p.height);
-    // V106: a second shallow strip removes descenders from the original
+    // a second shallow strip removes descenders from the original
     // category text (the old 'p' in Reptiles was just below the main mask).
     // It stays well above the curved divider and never enters the level-number area.
     ctx.fillRect(p.x, p.y + p.height - 2, p.width, 22);
@@ -5652,7 +5813,7 @@ function cancelCompatibilityIntent(animal = null) {
 }
 
 function requestCompatibilityIntent(animal) {
-    // V185: while a card is selected/being dragged, its own legal destinations
+    // while a card is selected/being dragged, its own legal destinations
     // are the only compatibility hint that may glow. Merely crossing another
     // animal must not replace that with the hovered animal's compatibility.
     if (state.drag?.type === 'animal') {
@@ -5674,7 +5835,7 @@ function requestCompatibilityIntent(animal) {
         state.compatibilityGlowFadeKeys.clear();
         state.compatibilityGlowHoldUntil = 0;
         state.compatibilityGlowFadeUntil = 0;
-        renderZoo();
+        applyCompatibilityDestinationGlowClasses();
     }, COMPATIBILITY_INTENT_DELAY);
 }
 
@@ -5686,7 +5847,6 @@ function finishCompatibilityIntent(animal) {
     const oldKeys = currentCompatibilityGlowKeys([animal]);
     state.compatibilityIntentActiveAnimal = null;
     beginCompatibilityGlowFade(oldKeys);
-    renderZoo();
 }
 
 
@@ -5748,6 +5908,10 @@ function showHoverPreview(animal) {
     hoverPreview.classList.remove('wiki-open');
     hoverPreview.classList.remove('preview-fading');
     applyLocalizedAnimalImage(hoverPreviewImage, animal);
+    // Only an intentional card hover is allowed to reveal the preview.
+    hoverPreview.style.removeProperty('display');
+    hoverPreview.style.removeProperty('visibility');
+    hoverPreview.setAttribute('aria-hidden', 'false');
     hoverPreview.classList.add('visible');
 }
 
@@ -5780,6 +5944,9 @@ function scheduleHoverPreviewHide(animal = null) {
             state.previewHoveredAnimalId = null;
             hoverPreview.classList.remove('preview-fading');
             hoverPreview.classList.remove('visible');
+            hoverPreview.style.setProperty('display', 'none', 'important');
+            hoverPreview.style.setProperty('visibility', 'hidden', 'important');
+            hoverPreview.setAttribute('aria-hidden', 'true');
             setHoverPreviewSuperZoom(false);
             state.previewHideTimer = null;
         }, PREVIEW_FADE_DURATION);
@@ -5948,7 +6115,7 @@ function selectAnimalInfoTab(tab) {
     wikiToolbar.hidden = !wikipedia;
     ztlPane.hidden = !ztl;
 
-    // V187: some existing .wiki-preview-toolbar CSS forces display:flex,
+    // some existing .wiki-preview-toolbar CSS forces display:flex,
     // which can override the HTML hidden attribute. Set display explicitly so
     // the Wikipedia footer/toolbar can never leak into Information.
     if (wikiToolbar) wikiToolbar.style.display = wikipedia ? '' : 'none';
@@ -5994,7 +6161,7 @@ function rebuildCompatibilityEvidenceIndex() {
         }
 
         if (typeof source === 'object') {
-            // V176: current eligible-combinations.json direct evidence records
+            // current eligible-combinations.json direct evidence records
             // are commonly { zoo, country, date }. Format those cleanly while
             // retaining support for older evidence/source structures.
             const primary = [
@@ -6058,7 +6225,7 @@ function rebuildCompatibilityEvidenceIndex() {
                 else add(pair, source);
             }
 
-            // V174: a lot of the compatibility research is stored as a batch:
+            // a lot of the compatibility research is stored as a batch:
             // { direct_pairs: [[A,B], [C,D]], evidence: "..." } rather than as
             // { pair:[A,B], source:"..." } objects. Index that batch evidence too.
             const batchSource = value.source || value.evidence || value.citation ||
@@ -6136,7 +6303,7 @@ function proxyExplanationForPair(a, b) {
                 });
             });
         } else {
-            lines.push('', 'No direct supporting pair is stored for this proxy in the current database.');
+            lines.push('', 'Evidence not yet available in the compatibility file for this proxy combination.');
         }
         return lines.join('\n');
     };
@@ -6170,7 +6337,7 @@ function proxyExplanationForPair(a, b) {
                 return x.substitutions - y.substitutions;
             }
 
-            // V187 proxy logic gate:
+            // proxy logic gate:
             // For a requested A + B combination, prefer evidence where B is
             // still exactly B and only A is replaced by a close proxy.
             // Example: Cotton-Top Tamarin + Common Trumpeter should prefer
@@ -6296,17 +6463,28 @@ function proxyExplanationForPair(a, b) {
         }
     }
 
-    return '**Compatible by proxy**\nThis combination is supported by another documented animal combination, but the specific proxy animal is not stored in the current database.';
+    return '**Compatible by proxy**\nEvidence not yet available in the compatibility file for this proxy combination.';
 }
 
 function sourceTextForCombination(a, b) {
     const sources = state.compatibilityEvidenceIndex?.get(compatibilityPairKey(a, b)) || [];
     if (sources.length) return sources.join('\n\n\n');
+
+    // A pair may be explicitly allowed while its research citation has not yet
+    // been entered. Do not mislabel that situation as proxy evidence.
+    const aName = compatibilityName(a);
+    const bName = compatibilityName(b);
+    if (state.compatibilityDirectGraph?.get(aName)?.has(bName)) {
+        return '**Evidence:**\nEvidence not yet available in the compatibility file for this direct combination.';
+    }
+
+    // Only after direct evidence has been exhausted do we reconstruct proxy
+    // provenance through group links / group members / graph paths.
     return proxyExplanationForPair(a, b);
 }
 
 function renderCombinationSourceTooltip(popup, text) {
-    // V186: allow only our two known heading tokens to become bold. Everything
+    // allow only our two known heading tokens to become bold. Everything
     // else remains literal text, so evidence strings/URLs cannot inject HTML.
     popup.replaceChildren();
 
@@ -6441,7 +6619,7 @@ function renderAnimalInformation(animal) {
         ''
     ).trim();
 
-    // V187: Information always uses English name followed by Latin name.
+    // Information always uses English name followed by Latin name.
     title.textContent = scientificName ? `${name} (${scientificName})` : (name || 'Information');
 
     const scientificFooter = document.getElementById('animalInformationScientificName');
@@ -6456,7 +6634,7 @@ function renderAnimalInformation(animal) {
         ztlLink.textContent = 'Open on Zootierliste ↗';
     }
 
-    // V183: geography lives in asset-inventory.json. The Information tab
+    // geography lives in asset-inventory.json. The Information tab
     // should use the continent tags we audited there rather than expecting
     // animals.json to duplicate them.
     const inventoryContinent = continentFromInventoryTags(animal);
@@ -6465,7 +6643,7 @@ function renderAnimalInformation(animal) {
 
     const animalName = compatibilityName(name);
 
-    // V182: species currently sharing this animal's logical exhibit are shown
+    // species currently sharing this animal's logical exhibit are shown
     // first. Multiple current partners remain alphabetical.
     const currentExhibitPartnerNames = new Set();
     if (animal.enclosureId !== null && animal.enclosureId !== undefined) {
@@ -6481,7 +6659,7 @@ function renderAnimalInformation(animal) {
         }
     }
 
-    // V188: split compatible species into animals currently represented in
+    // split compatible species into animals currently represented in
     // the player's zoo and all remaining combinations. Both groups are
     // alphabetical. The current-zoo group is always shown first.
     const zooAnimalNames = new Set(
@@ -6501,7 +6679,7 @@ function renderAnimalInformation(animal) {
         inventoryDisplayNameForCompatibilityName(a)
             .localeCompare(inventoryDisplayNameForCompatibilityName(b));
 
-    // V189 ordering:
+    // ordering:
     // 1. Animals sharing this animal's current exhibit (yellow), alphabetically.
     // 2. Other compatible animals currently elsewhere in the player's zoo.
     // 3. Divider.
@@ -6559,7 +6737,7 @@ function renderAnimalInformation(animal) {
         }
         row.textContent = inventoryDisplayNameForCompatibilityName(partner);
 
-        // V174: use a body-level tooltip instead of nesting it inside the
+        // use a body-level tooltip instead of nesting it inside the
         // fixed/zoom preview. The old nested popup could be trapped by the
         // preview's stacking/positioning context; the cursor changed to the
         // browser's help '?' cursor but no source box became visible.
@@ -6823,7 +7001,7 @@ function renderZoo() {
 
 
 // ============================================================
-// V149 SANDBOX COMPATIBILITY WARNINGS
+// SANDBOX COMPATIBILITY WARNINGS
 // ============================================================
 function sandboxAnimalHasCompatibilityConflict(animal) {
     if (!state.sandboxMode || !animal || animal.enclosureId == null) return false;
@@ -7017,7 +7195,7 @@ function renderEnclosure(
             // Reverse compatibility hint:
             // hover an empty position in an OCCUPIED large exhibit to reveal
             // every animal elsewhere in the zoo that can legally join it.
-            // V192: empty combination slots are hints only. Hovering them
+            // empty combination slots are hints only. Hovering them
             // still reveals compatible animals with the blue glow, but clicking
             // the slot never auto-moves/teleports an animal into it.
             slot.addEventListener('mouseenter', () => {
@@ -7225,7 +7403,7 @@ function renderExchange() {
     const categories =
         eligibleExchangeCategories();
 
-    // V130: keep the alternating yellow action hint synchronized with the
+    // keep the alternating yellow action hint synchronized with the
     // same eligibility calculation that produces the three yellow card glows.
     queueMicrotask(refreshYellowExchangeHintState);
 
@@ -7452,7 +7630,7 @@ async function completeExchange(destination = null, autoPlace = false) {
 }
 
 function levelOneDrawDropDestinationAtPoint(clientX, clientY) {
-    // V84: baseline-style Level 1 draw targeting.
+    // baseline-style Level 1 draw targeting.
     // A Level 1 draw may target an empty single exhibit or a completely empty
     // large exhibit. It does NOT need the preselected nextDrawSpec in order to
     // resolve the drop target.
@@ -7657,7 +7835,7 @@ function resultDropDestinationFromDrag(event, prospectiveAnimal, dragRect = null
 
 function resultDropDestination(event, prospectiveAnimal = null) {
     /*
-        V81: result drags use a floating image that follows the pointer.
+        result drags use a floating image that follows the pointer.
         document.elementFromPoint() can therefore return that drag image instead
         of the enclosure underneath it. Search the full element stack and take
         the first actual slot/enclosure target.
@@ -7738,7 +7916,7 @@ function finishResultDrag(event) {
     drag.image?.remove();
     state.drag = null;
 
-    // V101: clicking the upgrade card auto-places it in a random eligible
+    // clicking the upgrade card auto-places it in a random eligible
     // enclosure. Dragging the card to a chosen enclosure remains unchanged.
     if (distance < 6) {
         completeExchange(null, true);
@@ -7801,6 +7979,25 @@ function hasCategoryLevel(category, level) {
     return state.discoveredCategoryLevels.has(progressionKey(category, level));
 }
 
+function applyProgressionHighlightClasses() {
+    document.querySelectorAll('.animal-card[data-animal-id]').forEach(card => {
+        const animal = state.animals.find(item => item.id === Number(card.dataset.animalId));
+        card.classList.remove('progression-highlight', 'progression-highlight-pinned');
+        if (!animal) return;
+
+        const key = progressionKey(animal.category, animal.level);
+        if (
+            state.progressionGlowHoverKey === key ||
+            state.progressionGlowPinnedKeys.has(key)
+        ) {
+            card.classList.add('progression-highlight');
+            if (state.progressionGlowPinnedKeys.has(key)) {
+                card.classList.add('progression-highlight-pinned');
+            }
+        }
+    });
+}
+
 function renderProgressTracker() {
     let tracker = document.getElementById('progressTracker');
     if (!tracker) {
@@ -7855,11 +8052,11 @@ function renderProgressTracker() {
                 box.title = `Highlight ${category} Level ${level} animals`;
                 box.addEventListener('mouseenter', () => {
                     state.progressionGlowHoverKey = key;
-                    renderZoo();
+                    applyProgressionHighlightClasses();
                 });
                 box.addEventListener('mouseleave', () => {
                     if (state.progressionGlowHoverKey === key) state.progressionGlowHoverKey = null;
-                    renderZoo();
+                    applyProgressionHighlightClasses();
                 });
                 box.addEventListener('click', event => {
                     event.preventDefault();
@@ -7867,7 +8064,7 @@ function renderProgressTracker() {
                     if (state.progressionGlowPinnedKeys.has(key)) state.progressionGlowPinnedKeys.delete(key);
                     else state.progressionGlowPinnedKeys.add(key);
                     renderProgressTracker();
-                    renderZoo();
+                    applyProgressionHighlightClasses();
                 });
                 if (state.progressionGlowPinnedKeys.has(key)) box.classList.add('pinned');
             }
@@ -7888,7 +8085,7 @@ function renderProgressTracker() {
 }
 
 
-// V154 — progression tracker highlight polish.
+// progression tracker highlight polish.
 // Pinned/ticked tracker highlights remain at full strength until explicitly
 // unticked. The glow is also intentionally broader than the old highlight.
 function ensureProgressionGlowStyles() {
@@ -7916,14 +8113,14 @@ function ensureProgressionGlowStyles() {
 ensureProgressionGlowStyles();
 
 // ============================================================
-// V45 — SAVE / LOAD + READ-ONLY TURN HISTORY
+// SAVE / LOAD + READ-ONLY TURN HISTORY
 // ============================================================
 
 const SAVE_STORAGE_KEY = 'zooCuratorSavedGamesV1';
 const SAVE_FORMAT_VERSION = 1;
 const MAX_SAVE_SLOTS = 8;
 
-// V88 — one silent browser-local resume snapshot, separate from named saves.
+// one silent browser-local resume snapshot, separate from named saves.
 // It is intentionally updated only when a NEW turn has been reached.
 const AUTO_RESUME_STORAGE_KEY = 'zooCuratorAutoResumeV1';
 const AUTO_RESUME_FORMAT_VERSION = 1;
@@ -7976,7 +8173,8 @@ const SAVE_STATE_KEYS = [
     'awardedProgressMilestones',
     'progressionGlowPinnedKeys',
     'highestZooPrestige',
-    'realZooSessionHoldings'
+    'realZooSessionHoldings',
+    'realZooTradeDirtyZoos'
 ];
 
 function serialiseSpecial(value) {
@@ -8259,7 +8457,8 @@ function normaliseLoadedGameCollections() {
         'acquiredLevel2Categories',
         'awardedLevel2Milestones',
         'awardedProgressMilestones',
-        'progressionGlowPinnedKeys'
+        'progressionGlowPinnedKeys',
+        'realZooTradeDirtyZoos'
     ];
 
     for (const key of setKeys) {
@@ -8328,7 +8527,7 @@ function importGameState(saveData) {
     state.drag = null;
     state.pan = null;
 
-    // V85: repair collection types before any render/update function can call
+    // repair collection types before any render/update function can call
     // .has(), .add(), spread syntax, .entries(), etc. This keeps older saves
     // compatible with newer state fields such as progressionGlowPinnedKeys.
     normaliseLoadedGameCollections();
@@ -8823,7 +9022,7 @@ function renderAll() {
     captureTurnSnapshot();
     writeAutoResumeSnapshot();
 
-    // V106: render functions rebuild a number of menu/status nodes. Re-run
+    // render functions rebuild a number of menu/status nodes. Re-run
     // localisation after every full render so Dutch mode cannot leave freshly
     // rendered English labels behind, and English mode restores originals.
     queueMicrotask(localizeDocument);
@@ -8846,7 +9045,7 @@ function startAnimalDrag(
     location
 ) {
 
-    // V149: in sandbox, an animal already snapped into an enclosure may be
+    // in sandbox, an animal already snapped into an enclosure may be
     // pulled back out and freely parked around the zoo. The ordinary game drag
     // system remains untouched.
     if (state.sandboxMode && location === 'enclosure') {
@@ -9022,7 +9221,7 @@ function startAnimalDrag(
     );
 
 
-    // V160: the moment an exchange-eligible zoo card is picked up, focus the
+    // the moment an exchange-eligible zoo card is picked up, focus the
     // yellow glow on that exact category+level group. Unrelated yellow glows
     // cut off immediately; matching cards keep their CURRENT glow state.
     //
@@ -9061,7 +9260,7 @@ function startAnimalDrag(
     const compatibilityGlowKeysAtDragStart =
         currentCompatibilityGlowKeys([animal]);
 
-    // V185: the drag owns compatibility guidance from this point onward.
+    // the drag owns compatibility guidance from this point onward.
     // Remove hover-derived blue hints before creating the drag state.
     clearCompatibilityHoverImmediately();
     cancelCompatibilityIntent();
@@ -9120,7 +9319,7 @@ function startAnimalDrag(
     };
 
 
-    // V126: an animal dragged out of an enclosure is still considered to
+    // an animal dragged out of an enclosure is still considered to
     // occupy that slot until a legal destination/action is committed.
     // This keeps draw availability, full-zoo checks and placement logic stable
     // while the card is merely following the cursor.
@@ -10128,11 +10327,6 @@ function checkEnclosureReward(animal) {
 // REVEAL EXCHANGE RESULT
 // ============================================================
 
-function revealExchangeResult() {
-    completeExchange(null);
-}
-
-
 function prepareExchangeGlowAfterAnimalDrag(drag) {
     const before = drag?.exchangeGlowIds || new Set();
     const nowEligible = new Set(
@@ -10141,7 +10335,7 @@ function prepareExchangeGlowAfterAnimalDrag(drag) {
             .map(animal => animal.id)
     );
 
-    // V162:
+    // 
     // A card that was already glowing before this drag and is still eligible
     // afterwards must simply KEEP glowing. Rebuilding the zoo DOM must not
     // reinterpret it as a newly appearing glow and must not restart a fade-in.
@@ -10183,7 +10377,7 @@ function finishAnimalDrag(event) {
             // exchange-eligibility glow.
             showHoverPreview(animal);
         } else if (isExchangeEligible(animal)) {
-            // V157: selecting an exchange-ready animal focuses the eligibility
+            // selecting an exchange-ready animal focuses the eligibility
             // glow on this exact category+level group. Other eligible groups
             // fade away until the exchange is completed or cancelled.
             state.exchangeGlowFocusKey = exchangeGroupKey(animal);
@@ -10961,95 +11155,6 @@ zooBoard.addEventListener(
 // DRAW LEVEL 1 — CLICK OR DRAG THE DECK CARD
 // ============================================================
 
-function randomAvailableLevelOneCategory() {
-    const candidates = [];
-
-    for (const category of Object.keys(FOLDERS)) {
-        if (!state.activeCategories.has(category)) continue;
-
-        const available = levelFiles(category, 1).filter(file =>
-            !state.animals.some(animal =>
-                animal.category === category &&
-                animal.level === 1 &&
-                animal.filename.toLowerCase() === file.toLowerCase()
-            )
-        );
-
-        // Weight categories by the number of unused cards they still contain,
-        // so every unused Level 1 card has an equal chance of being reached.
-        for (let i = 0; i < available.length; i++) {
-            candidates.push(category);
-        }
-    }
-
-    if (!candidates.length) {
-        throw new Error(
-            'No unused Level 1 animal cards remain in the enabled categories.'
-        );
-    }
-
-    return randomItem(candidates);
-}
-
-async function createLevelOneForDraw(destination = null, autoPlace = false) {
-
-    if (!nextLevelOneHasEligibleDestination()) {
-        setMessage?.(
-            'No eligible enclosure space is available for the next Level 1 card.'
-        );
-        renderAll?.();
-        return false;
-    }
-
-
-    state.glowingEnclosureIds.clear();
-
-    // The exact next card was selected and preloaded ahead of time.
-    const spec = await consumePreparedDrawSpec();
-    if (!spec) {
-        console.error('No unused Level 1 animal cards remain.');
-        return false;
-    }
-
-    const animal = createAnimal(spec.category, 1, spec.filename);
-    state.animals.push(animal);
-    markPlayerLevelSeen(animal.level);
-
-    if (autoPlace && !destination) {
-        destination = randomEligibleDestinationForAnimal(animal);
-    }
-
-    if (destination) {
-        if (!placeAnimal(animal, destination.enclosure, destination.slotIndex)) {
-            state.animals = state.animals.filter(item => item.id !== animal.id);
-            return false;
-        }
-        if (autoPlace) markNewPlacementGlow(animal);
-    } else {
-        // Dragging behaviour still uses the hand fallback where appropriate.
-        // A click, however, must never create a hand card.
-        if (autoPlace) {
-            state.animals = state.animals.filter(item => item.id !== animal.id);
-            return false;
-        }
-        animal.hand = true;
-        state.hand.push(animal);
-    }
-    state.turn++;
-    updateTurnDisplay();
-    updateAutonomousOpponentOffer();
-    renderAll();
-    noteNewCardAction();
-
-    // Immediately choose and preload the following draw while the player
-    // continues playing this turn.
-    prepareNextDrawAsset();
-
-    return true;
-}
-
-async function drawLevelOne() { return createLevelOneForDraw(null, true); }
-
 function startDrawDrag(event) {
     if (state.drag || state.pan) return;
     const rect = drawCard.getBoundingClientRect();
@@ -11083,14 +11188,14 @@ async function finishDrawDrag(event) {
     drag.image?.remove?.();
     state.drag = null;
 
-    // V101: a simple click auto-places the prepared Level 1 card in a
+    // a simple click auto-places the prepared Level 1 card in a
     // random eligible enclosure. Dragging remains unchanged.
     if (distance < 6) {
         await drawLevelOne();
         return;
     }
 
-    // V84: resolve the EMPTY EXHIBIT first, exactly as the known-good V74
+    // resolve the EMPTY EXHIBIT first, exactly as the known-good 
     // architecture did. Do not make drag success depend on nextDrawSpec.
     const destination = levelOneDrawDropDestination(event, dragRect);
 
@@ -11118,11 +11223,11 @@ if (drawCard) drawCard.dataset.label = state.gameOptions.animalLanguage === 'nl'
 
 
 
-// V143: hint rings belong to the game layer, below every modal/menu layer.
+// hint rings belong to the game layer, below every modal/menu layer.
 const MENU_SAFE_HINT_Z = 9000;
 
 // ============================================================
-// V141 TURN-AWARE HINT POLICY
+// TURN-AWARE HINT POLICY
 //
 // Turns 1-10: keep the existing beginner hint timing.
 // Turn 11+: hints are true inactivity hints. Any visible user interaction
@@ -11147,6 +11252,55 @@ function yellowHintQuietDelay() {
 }
 
 let lateTurnHintActivityScheduled = false;
+
+// Hint rings are discovery aids. Hovering an action control means the player
+// is already inspecting that action, so no discovery hint should appear on
+// that control (or on the paired Exchange/Upgrade controls) at that time.
+const hoveredHintControls = new Set();
+
+function hintControlIsBeingInspected() {
+    return hoveredHintControls.size > 0;
+}
+
+function cancelHintGlowsForInspectedControl() {
+    actionHintGeneration++;
+    if (actionHintTimer) clearTimeout(actionHintTimer);
+    if (actionHintRepeatTimer) clearTimeout(actionHintRepeatTimer);
+    actionHintTimer = null;
+    actionHintRepeatTimer = null;
+    removeActionHintOverlay();
+
+    if (yellowExchangeHintTimer) clearTimeout(yellowExchangeHintTimer);
+    yellowExchangeHintTimer = null;
+    yellowExchangeHintPhase = 'waiting';
+    clearYellowExchangeHintOverlays();
+}
+
+function resumeHintsAfterInspectedControl() {
+    if (hintControlIsBeingInspected() || !state.loaded || state.historyViewTurn !== null) return;
+
+    // Leaving a control starts a fresh quiet period. Do not immediately flash
+    // a hint simply because an older timer happened to expire while hovered.
+    armActionHint(blueHintInitialDelay());
+    yellowExchangeHintWasPossible = yellowExchangePossible();
+    if (yellowExchangeHintWasPossible) {
+        scheduleYellowExchangeHint(yellowHintQuietDelay());
+    }
+}
+
+function bindHintInspectionGuard(target) {
+    if (!target) return;
+
+    target.addEventListener('mouseenter', () => {
+        hoveredHintControls.add(target);
+        cancelHintGlowsForInspectedControl();
+    });
+
+    target.addEventListener('mouseleave', () => {
+        hoveredHintControls.delete(target);
+        resumeHintsAfterInspectedControl();
+    });
+}
 
 function noteLateTurnScreenActivity() {
     if (isBeginnerHintTurn() || !state.loaded || state.historyViewTurn !== null) return;
@@ -11190,7 +11344,7 @@ for (const eventName of ['pointermove', 'pointerdown', 'wheel', 'keydown']) {
 
 
 // ============================================================
-// V130 ALTERNATING YELLOW EXCHANGE HINT
+// ALTERNATING YELLOW EXCHANGE HINT
 //
 // When 3+ matching cards make an upgrade possible:
 //   4s wait -> both EXCHANGE boxes glow yellow for 2s
@@ -11212,7 +11366,7 @@ function yellowExchangePossible() {
         state.loaded &&
         state.historyViewTurn === null &&
         eligibleExchangeCategories().length > 0 &&
-        // V136: this is an idle discovery hint, not guidance while the player
+        // this is an idle discovery hint, not guidance while the player
         // is already performing the exchange. As soon as either exchange box
         // contains a selected animal, suppress the entire yellow hint cycle.
         !state.exchange.some(Boolean) &&
@@ -11293,7 +11447,13 @@ function scheduleYellowExchangeHint(delay = 4000) {
             return;
         }
 
-        // V148: blue Draw/Outgoing and yellow Exchange hints are mutually
+        if (hintControlIsBeingInspected()) {
+            clearYellowExchangeHintOverlays();
+            scheduleYellowExchangeHint(yellowHintQuietDelay());
+            return;
+        }
+
+        // blue Draw/Outgoing and yellow Exchange hints are mutually
         // exclusive. If the blue hint is currently visible, wait until its
         // four-second animation has cleared before starting yellow.
         if (actionHintOverlay) {
@@ -11350,11 +11510,7 @@ function refreshYellowExchangeHintState() {
     }
 }
 
-// renderAll does not run for every drag/drop path in this game, so poll the
-// exchange eligibility state as a safety net. This does not reset the cycle.
-setInterval(refreshYellowExchangeHintState, 250);
-
-// V125 TURN-ACTION BLUE HINT
+// TURN-ACTION BLUE HINT
 // A hint is scheduled whenever the player reaches a stable playable state.
 // It is cancelled ONLY by an action that acquires/commits a new card.
 // Ordinary zoo interaction never cancels it.
@@ -11398,22 +11554,32 @@ function resumeHintGlowsAfterMenu() {
 function actionHintTarget() {
     if (!state.loaded) return null;
 
-    // Use the same availability result that now correctly greys the deck.
+    // The blue hint is display-only. It must NEVER recalculate or alter
+    // Draw Card availability. In particular, pointerdown can intentionally
+    // grey the deck immediately before the draw state has finished committing;
+    // a hint firing in that tiny window must not be able to re-enable it.
     const drawEnabled = drawCard &&
         drawCard.getAttribute('aria-disabled') !== 'true' &&
-        nextLevelOneHasEligibleDestination();
+        !drawCard.classList.contains('draw-no-space');
 
     return drawEnabled ? drawCard : outgoingOfferBox;
 }
 
 function showActionHintNow() {
-    // V148: never display the blue Draw/Outgoing hint at the same time as the
+    if (hintControlIsBeingInspected()) {
+        return false;
+    }
+
+    // never display the blue Draw/Outgoing hint at the same time as the
     // yellow Exchange/Upgrade hint. The blue scheduler will retry later.
     if (yellowExchangeHintPhase !== 'waiting' || yellowExchangeHintOverlays.length) {
         return false;
     }
 
-    refreshDrawAvailabilityState();
+    // do not call refreshDrawAvailabilityState() from the hint system.
+    // Availability is owned by the normal game-state/render paths; hints only
+    // read the already-rendered state. This prevents a blue hint from undoing
+    // the deck's greyed/disabled state during a draw commit.
     const target = actionHintTarget();
     if (!target) {
         return false;
@@ -11514,10 +11680,38 @@ function noteNewCardAction() {
 }
 
 
+// Inspecting these controls is itself evidence that the player knows where
+// the action is. Suppress both blue and yellow discovery hints until the
+// pointer leaves, then require a fresh quiet period.
+for (const hintControl of [exchange1, exchange2, resultBox, outgoingOfferBox]) {
+    bindHintInspectionGuard(hintControl);
+}
+
+// Exchange eligibility is a contextual inspection aid, not a persistent
+// status indicator. Hovering either Exchange slot or Upgrade reveals every
+// currently eligible matching zoo card; leaving all three hides the glow.
+const exchangeEligibilityHoverTargets = [exchange1, exchange2, resultBox].filter(Boolean);
+const hoveredExchangeEligibilityTargets = new Set();
+
+for (const target of exchangeEligibilityHoverTargets) {
+    target.addEventListener('mouseenter', () => {
+        if (window.matchMedia('(max-width: 700px)').matches) return;
+        hoveredExchangeEligibilityTargets.add(target);
+        setExchangeEligibilityHover(true);
+    });
+
+    target.addEventListener('mouseleave', () => {
+        hoveredExchangeEligibilityTargets.delete(target);
+        if (!hoveredExchangeEligibilityTargets.size) {
+            setExchangeEligibilityHover(false);
+        }
+    });
+}
+
 drawCard.addEventListener('pointerdown', event => {
     if (event.button !== 0) return;
 
-    // V116: immediate visual feedback as soon as this draw is committed.
+    // immediate visual feedback as soon as this draw is committed.
     // renderAll() will subsequently decide whether it remains disabled.
     drawCard.classList.add('draw-no-space');
     drawCard.setAttribute('aria-disabled', 'true');
@@ -11552,7 +11746,7 @@ drawCard.addEventListener('pointerdown', event => {
 
 
 // ============================================================
-// V145 SECRET SANDBOX MODE
+// SECRET SANDBOX MODE
 // ============================================================
 let sandboxPickerOverlay = null;
 let sandboxToolbarInstalled = false;
@@ -11662,10 +11856,6 @@ function startSandboxMode() {
     renderAll();
     centerInitialView();
     writeAutoResumeSnapshot(true);
-}
-
-function sandboxCardKey(category, level, filename) {
-    return `${category}|${level}|${cleanFilename(filename)}`;
 }
 
 function sandboxOccupiedRects() {
@@ -11846,7 +12036,7 @@ function startFreshZooFromCurrentOptions() {
 }
 
 // ============================================================
-// V166 — GENERATE ZOO / NEW GAME SETUP
+// GENERATE ZOO / NEW GAME SETUP
 // ============================================================
 function zooSetupCountries() {
     const places = state.zooNamesData?.places;
@@ -12627,7 +12817,10 @@ function isRealOpponentMode() {
 }
 
 const ZOO_PRESTIGE_BY_LEVEL = Object.freeze({ 1: 1, 2: 4, 3: 12, 4: 36, 5: 144 });
-const REAL_ZOO_ANIMAL_LEVEL_CACHE = new Map();
+const REAL_ZOO_ANIMAL_SPEC_CACHE = new Map();
+const REAL_ZOO_PRESTIGE_CACHE = new WeakMap();
+const REAL_ZOO_TRADE_SPEC_CACHE = new WeakMap();
+let realZooAnimalSpecCacheReady = false;
 
 // same province, adjacent domestic, adjacent foreign, farther domestic,
 // farther Europe. Rows are smoothly interpolated between prestige anchors.
@@ -12677,6 +12870,41 @@ function realZooRecordsAvailable() {
     return (state.realZooData?.zoos || []).filter(zoo =>
         Array.isArray(zoo.animals) && zoo.animals.length
     );
+}
+
+// return only real zoos that can possibly participate in a trade for
+// this outgoing card. The expensive holdings/category/level scan was done
+// offline and embedded in real_zoo_opponents.json. Dynamic rules are still checked later.
+function realZooRecordsAvailableForTrade(wantedAnimal) {
+    const index = state.realZooTradeIndex;
+    if (!wantedAnimal || !index || !state.realZooRecordByStaticId?.size) {
+        return realZooRecordsAvailable();
+    }
+
+    // the embedded index contains only the Turn-0 shortlist for this outgoing
+    // category/level. It never replaces current zoo holdings. Any zoo whose
+    // holdings changed during this game is merged back into the shortlist and
+    // is then checked against its live session holdings by realZooCanTradeFor()
+    // and realZooTradeAnimals(). This keeps Trade History/current-collection
+    // popups fully dynamic while preserving the fast static starting index.
+    const key = `${wantedAnimal.category}|${Number(wantedAnimal.level) || 0}`;
+    const ids = index.candidates_by_outgoing?.[key] || [];
+    const records = ids
+        .map(id => state.realZooRecordByStaticId.get(Number(id)))
+        .filter(record => record && Array.isArray(record.animals) && record.animals.length);
+
+    const seen = new Set(records.map(record => realZooHoldingKey(record)));
+    for (const dirtyName of state.realZooTradeDirtyZoos || []) {
+        if (seen.has(dirtyName)) continue;
+        const record = (state.realZooData?.zoos || []).find(item =>
+            realZooHoldingKey(item) === dirtyName
+        );
+        if (record) {
+            records.push(record);
+            seen.add(dirtyName);
+        }
+    }
+    return records;
 }
 
 function normaliseGeographyPart(value) {
@@ -12810,31 +13038,47 @@ function weightedIndex(weights, roll = Math.random()) {
     return safe.length - 1;
 }
 
-function realZooAnimalLevelByName(name) {
-    const wanted = String(name || '').replace(/\.png$/i, '').trim().toLowerCase();
-    if (!wanted) return 0;
-    if (REAL_ZOO_ANIMAL_LEVEL_CACHE.has(wanted)) {
-        return REAL_ZOO_ANIMAL_LEVEL_CACHE.get(wanted);
-    }
+function ensureRealZooAnimalSpecCache() {
+    if (realZooAnimalSpecCacheReady) return;
+    REAL_ZOO_ANIMAL_SPEC_CACHE.clear();
     for (const category of Object.keys(FOLDERS)) {
         for (let level = 1; level <= 5; level++) {
-            if (levelFiles(category, level).some(file =>
-                file.replace(/\.png$/i, '').trim().toLowerCase() === wanted
-            )) {
-                REAL_ZOO_ANIMAL_LEVEL_CACHE.set(wanted, level);
-                return level;
+            for (const filename of levelFiles(category, level)) {
+                const key = String(filename || '')
+                    .replace(/\.png$/i, '')
+                    .trim()
+                    .toLowerCase();
+                if (!key || REAL_ZOO_ANIMAL_SPEC_CACHE.has(key)) continue;
+                REAL_ZOO_ANIMAL_SPEC_CACHE.set(key, { category, level, filename });
             }
         }
     }
-    REAL_ZOO_ANIMAL_LEVEL_CACHE.set(wanted, 0);
-    return 0;
+    realZooAnimalSpecCacheReady = true;
+}
+
+function realZooAnimalSpecByName(name) {
+    ensureRealZooAnimalSpecCache();
+    const wanted = String(name || '').replace(/\.png$/i, '').trim().toLowerCase();
+    return wanted ? REAL_ZOO_ANIMAL_SPEC_CACHE.get(wanted) || null : null;
+}
+
+function realZooAnimalLevelByName(name) {
+    return Number(realZooAnimalSpecByName(name)?.level) || 0;
 }
 
 function realZooPrestige(record) {
-    return realZooSessionAnimalNames(record).reduce((total, name) => {
+    if (!record || typeof record !== 'object') return 0;
+    if (REAL_ZOO_PRESTIGE_CACHE.has(record)) {
+        return REAL_ZOO_PRESTIGE_CACHE.get(record);
+    }
+    const prestige = realZooSessionAnimalNames(record).reduce((total, name) => {
         const level = realZooAnimalLevelByName(name);
         return total + (ZOO_PRESTIGE_BY_LEVEL[level] || 0);
     }, 0);
+    // Real-zoo trades exchange animals at the same level, so the zoo's total
+    // prestige cannot change during a session. Cache it for every hover pass.
+    REAL_ZOO_PRESTIGE_CACHE.set(record, prestige);
+    return prestige;
 }
 
 function realZooPrestigeWindow(prestige = updateHighestZooPrestige()) {
@@ -12933,20 +13177,16 @@ function selectPrestigeLocationCandidates(candidates, count, seedText = '') {
 }
 
 function animalFromRealZooName(name) {
-    const wanted = String(name || '').trim().toLowerCase();
-    if (!wanted) return null;
-    for (const category of Object.keys(FOLDERS)) {
-        for (let level = 1; level <= 5; level++) {
-            const filename = levelFiles(category, level).find(file =>
-                file.replace(/\.png$/i, '').trim().toLowerCase() === wanted
-            );
-            if (filename) return {
-                id: state.nextId++, category, level, filename,
-                enclosureId: null, slotIndex: null, hand: false
-            };
-        }
-    }
-    return null;
+    const spec = realZooAnimalSpecByName(name);
+    return spec ? {
+        id: state.nextId++,
+        category: spec.category,
+        level: spec.level,
+        filename: spec.filename,
+        enclosureId: null,
+        slotIndex: null,
+        hand: false
+    } : null;
 }
 
 function realZooHoldingKey(recordOrName) {
@@ -12959,9 +13199,12 @@ function realZooHoldingKey(recordOrName) {
 
 function resetRealZooSessionHoldings() {
     state.realZooSessionHoldings = new Map();
+    state.realZooTradeDirtyZoos = new Set();
 
     for (const record of state.realZooData?.zoos || []) {
         if (!record?.name) continue;
+        REAL_ZOO_TRADE_SPEC_CACHE.delete(record);
+        REAL_ZOO_PRESTIGE_CACHE.delete(record);
         state.realZooSessionHoldings.set(
             realZooHoldingKey(record),
             Array.isArray(record.animals)
@@ -13003,23 +13246,43 @@ function playerOwnedTradeKeys() {
     return keys;
 }
 
-function realZooTradeAnimals(record, excludePlayerOwned = false) {
+function realZooTradeSpecs(record) {
+    if (!record || typeof record !== 'object') return [];
+    if (REAL_ZOO_TRADE_SPEC_CACHE.has(record)) {
+        return REAL_ZOO_TRADE_SPEC_CACHE.get(record);
+    }
+
     const result = [];
     const seen = new Set();
-    const playerKeys = excludePlayerOwned
-        ? playerOwnedTradeKeys()
-        : null;
-
     for (const name of realZooSessionAnimalNames(record)) {
-        const animal = animalFromRealZooName(name);
-        if (!animal) continue;
+        const spec = realZooAnimalSpecByName(name);
+        if (!spec) continue;
 
-        const key = animalCardKey(animal);
+        const key = animalCardKey(spec);
         if (seen.has(key)) continue;
-        if (playerKeys?.has(key)) continue;
-
         seen.add(key);
-        result.push(animal);
+        result.push(spec);
+    }
+
+    REAL_ZOO_TRADE_SPEC_CACHE.set(record, result);
+    return result;
+}
+
+function realZooTradeAnimals(record, excludePlayerOwned = false) {
+    const playerKeys = excludePlayerOwned ? playerOwnedTradeKeys() : null;
+    const result = [];
+
+    for (const spec of realZooTradeSpecs(record)) {
+        if (playerKeys?.has(animalCardKey(spec))) continue;
+        result.push({
+            id: state.nextId++,
+            category: spec.category,
+            level: spec.level,
+            filename: spec.filename,
+            enclosureId: null,
+            slotIndex: null,
+            hand: false
+        });
     }
 
     return result;
@@ -13028,10 +13291,7 @@ function realZooTradeAnimals(record, excludePlayerOwned = false) {
 function realZooHasAnimal(record, animal) {
     if (!record || !animal) return false;
     const wanted = animalCardKey(animal);
-    return realZooSessionAnimalNames(record).some(name => {
-        const held = animalFromRealZooName(name);
-        return held && animalCardKey(held) === wanted;
-    });
+    return realZooTradeSpecs(record).some(spec => animalCardKey(spec) === wanted);
 }
 
 function fictionalOpponentHasAnimal(index, animal) {
@@ -13063,15 +13323,15 @@ function updateRealZooSessionAfterTrade(record, incoming, outgoing) {
     // The animal received by the player leaves this zoo for the remainder
     // of the current game session.
     const kept = names.filter(name => {
-        const animal = animalFromRealZooName(name);
-        return !animal || animalCardKey(animal) !== incomingKey;
+        const spec = realZooAnimalSpecByName(name);
+        return !spec || animalCardKey(spec) !== incomingKey;
     });
 
     // The player's traded-away animal now belongs to that real zoo and may
     // appear in its future offers. Do not create duplicate holdings.
     const alreadyHasOutgoing = kept.some(name => {
-        const animal = animalFromRealZooName(name);
-        return animal && animalCardKey(animal) === outgoingKey;
+        const spec = realZooAnimalSpecByName(name);
+        return spec && animalCardKey(spec) === outgoingKey;
     });
 
     if (!alreadyHasOutgoing) {
@@ -13086,6 +13346,9 @@ function updateRealZooSessionAfterTrade(record, incoming, outgoing) {
         realZooHoldingKey(record),
         kept
     );
+    state.realZooTradeDirtyZoos.add(realZooHoldingKey(record));
+    REAL_ZOO_TRADE_SPEC_CACHE.delete(record);
+    REAL_ZOO_PRESTIGE_CACHE.delete(record);
 }
 
 function realZooProfile(record, index) {
@@ -13178,7 +13441,7 @@ function materializeLockedPlayerTradeOffers(outgoing, cached) {
             if (!animal) return null;
             if (playerAlreadyHasAnimal(animal)) return null;
             if (!realZooHasAnimal(record, animal)) return null;
-            // V132: the outgoing animal's old slot is deliberately reserved
+            // the outgoing animal's old slot is deliberately reserved
             // while it sits in Outgoing Offer. Test the incoming animal against
             // the post-trade zoo, not against the currently reserved zoo.
             if (!tradeIncomingHasDestinationAfterOutgoing(animal, outgoing)) return null;
@@ -13271,7 +13534,7 @@ function generateRealZooTradeOffers(outgoing, pendingEmergencyTrade = null) {
         return;
     }
 
-    // V115: use the exact same prediction/materialisation path as the blue
+    // use the exact same prediction/materialisation path as the blue
     // trade-interest glow. If a card glows, dropping that card is therefore
     // guaranteed to expose the same currently-valid offers.
     const locked = predictedPlayerTradeOffers(outgoing);
@@ -13301,8 +13564,15 @@ function createRealAutonomousOpponentOffer() {
     // The same slider controls spontaneous real-zoo offers.
     if (Math.random() > tradeFrequencyFactor()) return false;
 
-    const candidates = [];
-    for (const record of realZooRecordsAvailable()) {
+    const records = realZooRecordsAvailable();
+    const orderedRecords = selectPrestigeLocationCandidates(
+        records.map(record => ({ record })),
+        records.length,
+        `real-autonomous-record-order|${state.turn}`
+    ).map(item => item.record);
+
+    let selected = null;
+    for (const record of orderedRecords) {
         const possible = realZooTradeAnimals(record, true).filter(incoming =>
             incoming.level <= Math.max(1, ...state.playerLevelsSeen) &&
             state.animals.some(outgoing => {
@@ -13314,14 +13584,10 @@ function createRealAutonomousOpponentOffer() {
                     tradeIncomingHasDestinationAfterOutgoing(incoming, outgoing);
             })
         );
-        if (possible.length) candidates.push({ record, possible });
+        if (!possible.length) continue;
+        selected = { record, possible };
+        break;
     }
-
-    const selected = selectPrestigeLocationCandidates(
-        candidates,
-        1,
-        `real-autonomous|${state.turn}`
-    )[0];
     if (!selected) return false;
 
     const { record, possible } = selected;
@@ -13389,7 +13655,7 @@ function ensureOtherZoosUI() {
         header.appendChild(title);
     }
     if (title) {
-        // V135: hidden-button behaviour. Keep this looking exactly like the
+        // hidden-button behaviour. Keep this looking exactly like the
         // ordinary "Other Zoos" heading: no underline, button chrome or
         // pointer cursor. It is nevertheless clickable/tappable.
         title.style.cssText =
@@ -13599,7 +13865,7 @@ function refreshTradeAnimalHighlights() {
         const locked = key === tradeAnimalLockedKey;
         const inTradeHistoryMiddle = node.classList.contains('trade-history-animal-name');
 
-        // V142: the middle Trade History menu keeps its normal text colour.
+        // the middle Trade History menu keeps its normal text colour.
         // Its animal name becomes bold only once selected/locked. The two
         // side popups continue to use yellow for hover and locked selection.
         node.classList.toggle('trade-animal-yellow', active && !inTradeHistoryMiddle);
@@ -13638,17 +13904,6 @@ function playerCurrentlyHasTradeAnimal(name, level = null) {
     );
 }
 
-function activeZooCurrentlyHasTradeAnimal(name, level = null) {
-    if (!activeZooMenuRecord) return false;
-    const wantedName = String(name || '').replace(/\.png$/i, '').trim().toLowerCase();
-    return realZooSessionAnimalNames(activeZooMenuRecord).some(raw => {
-        const animal = animalFromRealZooName(raw);
-        if (!animal) return false;
-        return String(animal.filename || '').replace(/\.png$/i, '').trim().toLowerCase() === wantedName &&
-            (level == null || Number(animal.level) === Number(level));
-    });
-}
-
 function hideTradeAnimalLocationPopup() {
     const popup = document.getElementById('tradeAnimalLocationPopup');
     if (popup) popup.style.display = 'none';
@@ -13660,7 +13915,7 @@ function showTradeAnimalLocationPopup(node, name, level, animalId = null) {
 
     popup.innerHTML = '';
 
-    // V161: current trade-history rows carry the exact physical animal ID.
+    // current trade-history rows carry the exact physical animal ID.
     // Older saved histories do not, so they retain the old best-effort fallback.
     const hasPhysicalAnimalId = animalId != null && String(animalId).trim() !== '';
     const lineage = hasPhysicalAnimalId ? animalLineageRecord(animalId) : null;
@@ -13710,7 +13965,7 @@ function showTradeAnimalLocationPopup(node, name, level, animalId = null) {
 
         popup.appendChild(second);
     } else if (hasPhysicalAnimalId) {
-        // V164: an ID-bearing history entry represents one exact physical card.
+        // an ID-bearing history entry represents one exact physical card.
         // If its lineage record is unavailable, NEVER guess by species/name,
         // because another zoo may own a different card of the same species.
         const first = document.createElement('div');
@@ -13784,7 +14039,7 @@ function makeTradeAnimalSpan(name, level, allowLocation = false, inTradeHistoryM
         : tradeAnimalKey(name, level);
     span.addEventListener('mouseenter', () => {
         if (inTradeHistoryMiddle) {
-            // V146: middle Trade History names may show transient hover/location
+            // middle Trade History names may show transient hover/location
             // feedback, but hovering there can never create or replace a lock.
             const key = span.dataset.animalKey;
             tradeAnimalHoverKey = key;
@@ -13817,7 +14072,7 @@ function makeTradeAnimalSpan(name, level, allowLocation = false, inTradeHistoryM
 
         const key = span.dataset.animalKey;
 
-        // V144: clicking the animal that is already locked toggles it off.
+        // clicking the animal that is already locked toggles it off.
         // Clicking a different animal still switches the lock immediately.
         if (tradeAnimalLockedKey === key) {
             tradeAnimalLockedKey = null;
@@ -14274,23 +14529,11 @@ function closeTradeHistoryMenu(resumeHints = true) {
     resetTradeAnimalHighlightUI(true);
     const overlay = document.getElementById('tradeHistoryOverlay');
     if (overlay) overlay.style.display = 'none';
-    // V142: Trade History itself vanishes instantly, so its side popups do too.
+    // Trade History itself vanishes instantly, so its side popups do too.
     hideZooDualPopups(true);
     if (resumeHints) resumeHintGlowsAfterMenu();
 }
 
-function escapeHtml(value) {
-    return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
-// ============================================================
-// OPPONENT TRADING
-// ============================================================
 function ensureOpponentZooElements() {
     const container = $('opponentZoos');
     if (!container) return;
@@ -14306,7 +14549,7 @@ function ensureOpponentZooElements() {
     }
 }
 
-// V165 — preserve the established desktop composition on laptop viewports.
+// preserve the established desktop composition on laptop viewports.
 //
 // The normal stylesheet remains the source of truth for position. On a narrower
 // desktop/MacBook viewport we ONLY scale the progression tracker if its natural
@@ -14420,7 +14663,7 @@ function positionOpponentTradeArea() {
     const header = document.getElementById('actionMenu');
     const headerRect = header ? header.getBoundingClientRect() : { top: 0, height: 200 };
 
-    // Restore the established V65–V76 trade-card dimensions and positioning.
+    // Restore the established trade-card dimensions and positioning.
     // Crucially, do not shrink the cards according to whatever horizontal gap
     // happens to remain on a MacBook; that changed both their scale and their
     // perceived position compared with the older desktop layout.
@@ -14535,7 +14778,7 @@ function rotateOpponentTradeStocksIfNeeded() {
             fillOpponentTradeStock(i); // replaces three of five when five were present
         }
     }
-    // V83: cached blue-glow predictions are promises about exact stock cards.
+    // cached blue-glow predictions are promises about exact stock cards.
     // Once fictional stocks rotate, those promises are stale.
     state.tradeOfferCache.clear();
 
@@ -14773,7 +15016,7 @@ function generateOpponentTradeOffers(outgoing, pendingEmergencyTrade = null) {
         return;
     }
 
-    // V115: materialise exactly the same locked offer set used by the blue
+    // materialise exactly the same locked offer set used by the blue
     // eligibility glow. This removes the old second calculation that could
     // make a non-glowing animal unexpectedly receive offers.
     const locked = predictedPlayerTradeOffers(outgoing);
@@ -14786,38 +15029,6 @@ function generateOpponentTradeOffers(outgoing, pendingEmergencyTrade = null) {
         renderTrade();
         renderOpponentTradeState();
     });
-}
-
-function materializeCapturedPlayerTradeOffers(outgoing, locked) {
-    if (!outgoing || !Array.isArray(locked) || !locked.length) return false;
-
-    if (isRealOpponentMode()) {
-        const restored = materializeLockedPlayerTradeOffers(outgoing, locked);
-
-        state.opponentProfiles = restored.map((item, index) =>
-            realZooProfile(item.record, index)
-        );
-        state.opponentTradeStocks = restored.map(item =>
-            realZooTradeAnimals(item.record, true)
-        );
-        state.tradeOffers = restored.map((item, index) => ({
-            opponentIndex: index,
-            animal: item.animal
-        }));
-        state.selectedTradeOpponent = state.tradeOffers.length ? 0 : null;
-    } else {
-        state.tradeOffers = materializeLockedPlayerTradeOffers(outgoing, locked);
-        state.selectedTradeOpponent = state.tradeOffers.length
-            ? state.tradeOffers.map(o => o.opponentIndex).sort((a, b) => a - b)[0]
-            : null;
-    }
-
-    preloadAnimals(state.tradeOffers.map(offer => offer.animal)).then(() => {
-        renderTrade();
-        renderOpponentTradeState();
-    });
-
-    return state.tradeOffers.length > 0;
 }
 
 function selectedTradeOffer() {
@@ -14888,7 +15099,7 @@ function autoSelectOutgoingOfferAnimal() {
         if (animal.hand) return [];
         if (animal.enclosureId === null || animal.enclosureId === undefined) return [];
 
-        // V134: "predicted" is not enough. The blue trade-interest glow only
+        // "predicted" is not enough. The blue trade-interest glow only
         // promises an offer after materializeLockedPlayerTradeOffers() has
         // verified that the opponent still exists/holds the card and that the
         // incoming animal is genuinely placeable after this outgoing animal.
@@ -14921,7 +15132,7 @@ function autoSelectOutgoingOfferAnimal() {
     refreshDrawAvailabilityState();
     renderZoo();
 
-    // V134: install the exact VERIFIED live offers captured above. Do not call
+    // install the exact VERIFIED live offers captured above. Do not call
     // predictedPlayerTradeOffers() or materializeLockedPlayerTradeOffers()
     // again after the animal has moved into Outgoing Offer.
     if (isRealOpponentMode()) {
@@ -14969,10 +15180,10 @@ outgoingOfferBox.addEventListener('click', event => {
     autoSelectOutgoingOfferAnimal();
 });
 
-// V163: one authoritative Outgoing Offer hover path.
+// one authoritative Outgoing Offer hover path.
 // Order matters: suppress yellow first WITHOUT rebuilding DOM, then calculate
 // and paint the blue trade glow onto those same card nodes.
-// V173: entering either trade-offer box must hand the hover preview back to
+// entering either trade-offer box must hand the hover preview back to
 // its normal hide lifecycle. The preview itself cancels its hide timer while
 // hovered; without this reset, moving from the enlarged preview into the trade
 // controls could leave the bottom-left card stuck on screen indefinitely.
@@ -15056,7 +15267,7 @@ function renderTrade() {
             decline.type='button';
             decline.className='decline-opponent-offer';
         }
-        // V101: never attach this button to whichever parent the incoming box
+        // never attach this button to whichever parent the incoming box
         // happens to have during a render. During layout changes that could be
         // #exchangeControls, leaving the decline prompt under EXCHANGE after
         // the incoming box was moved into the fixed trade overlay.
@@ -15074,7 +15285,7 @@ function startTradeResultDrag(event) {
     const offer=selectedTradeOffer(); if(!offer||!incomingOfferCanBeAccepted()||state.drag||state.pan)return;
     const rect=event.currentTarget.getBoundingClientRect(), image=document.createElement('img'); image.className='dragging-animal'; applyLocalizedAnimalImage(image,offer.animal); image.style.width=`${rect.width}px`; image.style.height=`${rect.height}px`; image.style.pointerEvents='none'; document.body.appendChild(image);
 
-    // V117: until the player actually picks up the incoming animal, the
+    // until the player actually picks up the incoming animal, the
     // outgoing animal's former zoo slot stays logically occupied. The instant
     // the incoming card is dragged, release that reservation so the incoming
     // card can be dropped into precisely that newly-vacated slot.
@@ -15157,7 +15368,7 @@ function acceptSelectedTrade(destination=null, autoPlace=false) {
 
     fillOpponentTradeStock(offer.opponentIndex);
 
-    // V161: update the exact physical cards' provenance before ownership moves.
+    // update the exact physical cards' provenance before ownership moves.
     markAnimalTradedTo(outgoingForHistory, tradeZooName);
     markAnimalTradedFrom(incoming, tradeZooName);
     collectionMarkDeparture(outgoingForHistory, {
@@ -15228,7 +15439,7 @@ function finishTradeResultDrag(event) {
         return;
     }
 
-    // V87: validate the destination against the ACTUAL incoming trade card.
+    // validate the destination against the ACTUAL incoming trade card.
     // The outgoing card has already been removed from its enclosure when it
     // entered OUTGOING OFFER, so its former slot is immediately eligible here.
     // Use the same geometry-aware targeting as other result-card drags, with
@@ -15274,7 +15485,7 @@ function setupOpponentTradeClicks() {
             renderTrade();
         });
 
-        // V152: opponent names on the main game screen no longer open
+        // opponent names on the main game screen no longer open
         // collection popups. All Zoos and Trade History retain their popups.
     }
 }
@@ -15706,24 +15917,6 @@ function buildZooNamePool(data) {
 // ASSIGN ZOO NAMES
 // ============================================================
 
-function generateNewPlayerZooName() {
-    const pool = buildZooNamePool(state.zooNamesData)
-        .filter(name => name && name !== state.zooName);
-
-    state.zooName = pool.length
-        ? randomItem(pool)
-        : randomItem([
-            'Riverside Zoo',
-            'Forest Wildlife Park',
-            'Lakeside Zoo',
-            'Highland Wildlife Park',
-            'Meadowlands Zoo',
-            'Coastal Animal Park'
-        ]);
-
-    createZooNameEditor();
-}
-
 function assignZooNames() {
 
     const pool =
@@ -15848,7 +16041,7 @@ hoverPreview.addEventListener('mouseleave', () => {
 hoverPreview.addEventListener('click', event => {
     if (event.target.closest('#wikiPreviewLink, #ztlPreviewLink, #animalInformationZtlLink, .animal-info-tab, .ztl-record')) return;
 
-    // V181: normal click still flips the card, but a click-drag text selection
+    // normal click still flips the card, but a click-drag text selection
     // inside the information face must remain a normal browser selection.
     const selection = window.getSelection?.();
     if (selection && !selection.isCollapsed && String(selection).trim()) {
@@ -16004,45 +16197,6 @@ setTimeout(refreshMobileTradeAreaVisibility, 0);
 // themselves instead of relying on guessed CSS colours.
 // ============================================================
 
-function loadImageForColourSample(src) {
-    return new Promise((resolve, reject) => {
-        const image = new Image();
-        image.onload = () => resolve(image);
-        image.onerror = () => reject(new Error(`Could not sample colour from ${src}`));
-        image.src = src;
-    });
-}
-
-// ============================================================
-// START
-// ============================================================
-
-async function loadOptionalJsonInBackground(path, timeoutMs = 8000) {
-    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    let timeoutId = null;
-
-    try {
-        if (controller) {
-            timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-        }
-
-        const response = await fetch(
-            path,
-            controller
-                ? { signal: controller.signal, cache: 'default' }
-                : { cache: 'default' }
-        );
-
-        if (!response.ok) {
-            throw new Error(`Could not load ${path}. HTTP ${response.status}.`);
-        }
-
-        return await response.json();
-    } finally {
-        if (timeoutId !== null) clearTimeout(timeoutId);
-    }
-}
-
 function loadNonEssentialGameData() {
     // These resources improve the game, but none of them is allowed to hold
     // the boot screen open. Mobile Safari can leave individual fetches pending
@@ -16085,7 +16239,11 @@ function loadNonEssentialGameData() {
         .catch(error => console.warn('Zoo names unavailable; using built-in fallbacks:', error));
 
     state.realZooData = { zoos: [] };
+    state.realZooTradeIndex = null;
+    state.realZooRecordByStaticId = new Map();
     state.realZooSessionHoldings = new Map();
+    state.realZooTradeDirtyZoos = new Set();
+    
     loadRealZooDataInBackground();
     loadProvinceConnectionsInBackground();
 }
@@ -16099,7 +16257,7 @@ async function startGame() {
     try {
         // asset-inventory.json is the one external data file required to build
         // an actual playable zoo. Everything else starts in the background.
-        setLoading('Starting Zoo Curator...', 'Loading animal cards...');
+        updateBootLoadingStatus('Starting Zoo Curator...', 'Loading animal cards...');
 
         state.inventory = await loadJson(
             'asset-inventory.json',
@@ -16162,7 +16320,7 @@ async function startGame() {
         renderAll();
         state.loaded = true;
 
-        // V128: the game is now genuinely playable. The old hint code waited
+        // the game is now genuinely playable. The old hint code waited
         // for state.setupComplete, a legacy property that is no longer set in
         // the current auto-generated-starting-zoo flow, so its timer never
         // armed. Start the decision hint from the real ready-state instead.
@@ -16182,7 +16340,7 @@ async function startGame() {
         gameApp.classList.add('visible');
         centerInitialView();
 
-        // V175: once the playable zoo is visible, remove the loading overlay
+        // once the playable zoo is visible, remove the loading overlay
         // immediately. Do not paint a transient "Zoo Curator ready!" frame on
         // reload; that produced an unnecessary ZOO CURATOR / READY flash.
         if (bootScreen) {

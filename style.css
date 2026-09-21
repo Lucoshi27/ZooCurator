@@ -3642,3 +3642,83 @@ body.history-viewing #zooCanvas .animal-card {
         width: min(620px, 114vw) !important;
     }
 }
+
+
+/* ============================================================
+   V220.35 — SHORT NEW-ENCLOSURE GLOW
+   Overrides the historical infinite pulse without changing enclosure layout.
+   ============================================================ */
+.enclosure.new-enclosure .enclosure-image {
+    animation: newEnclosureArrivalV22035 1s ease-out both !important;
+}
+
+.enclosure.new-enclosure.new-enclosure-fading .enclosure-image {
+    animation: newEnclosureFadeV22035 .5s ease-out forwards !important;
+}
+
+@keyframes newEnclosureArrivalV22035 {
+    0% {
+        box-shadow:
+            0 0 0 4px rgba(255, 211, 35, .82),
+            0 0 15px 7px rgba(255, 211, 35, .60),
+            0 4px 11px rgba(0,0,0,.20);
+    }
+    35%, 100% {
+        box-shadow:
+            0 0 0 5px rgba(255, 211, 35, .95),
+            0 0 24px 12px rgba(255, 211, 35, .78),
+            0 4px 11px rgba(0,0,0,.20);
+    }
+}
+
+@keyframes newEnclosureFadeV22035 {
+    from {
+        box-shadow:
+            0 0 0 5px rgba(255, 211, 35, .95),
+            0 0 24px 12px rgba(255, 211, 35, .78),
+            0 4px 11px rgba(0,0,0,.20);
+    }
+    to {
+        box-shadow:
+            0 0 0 0 rgba(255, 211, 35, 0),
+            0 0 0 0 rgba(255, 211, 35, 0),
+            0 4px 11px rgba(0,0,0,.20);
+    }
+}
+
+
+/* ============================================================
+   V220.37 — DESKTOP HUD ORDER / MOBILE SETTINGS VISIBILITY
+   ============================================================ */
+
+/* Collection + Prestige + Turn belong underneath Game Options on desktop.
+   The row previously had the default flex order (0), which put it above
+   Save / Load regardless of its DOM insertion point. */
+@media (min-width: 701px) {
+    #headerLeft #collectionTurnRow {
+        order: 3 !important;
+        margin-top: 0 !important;
+    }
+
+    /* The settings cog and its compact overlay are phone-only. */
+    #mobileSettingsButton,
+    #mobileSettingsOverlay {
+        display: none !important;
+    }
+}
+
+/* Explicitly restore the phone settings control. Its menu already has the
+   click handlers for Save/Load, New Game, Game Options and Trade History. */
+@media (max-width: 700px) {
+    #mobileSettingsButton {
+        display: block !important;
+    }
+
+    #mobileSettingsOverlay {
+        display: none;
+    }
+
+    #mobileSettingsOverlay.visible {
+        display: flex !important;
+    }
+}

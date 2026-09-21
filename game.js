@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V220.36";
+const ZOO_CURATOR_VERSION = "V220.37";
 
 
 // ============================================================
@@ -8211,7 +8211,7 @@ function ensureProgressionGlowStyles() {
 ensureProgressionGlowStyles();
 
 // ============================================================
-// V220.36 — ANIMAL GLOW PRECEDENCE / DE-CLUTTER
+// V220.37 — ANIMAL GLOW PRECEDENCE / DE-CLUTTER
 // ============================================================
 // Animal cards can qualify for several visual hints at once. CSS filter and
 // animation properties do not compose reliably, so make the precedence
@@ -8707,7 +8707,7 @@ function importGameState(saveData, { deferRender = false } = {}) {
     exitHistoryView(false);
     state.suppressHistoryCapture = true;
 
-    // V220.36 removes the old Hand subsystem. Older saves may still contain
+    // V220.37 removes the old Hand subsystem. Older saves may still contain
     // one or more pending hand-card references; remember their ids solely for
     // one-time migration after the normal zoo state has been restored.
     const legacyHandIds = new Set(
@@ -8741,7 +8741,7 @@ function importGameState(saveData, { deferRender = false } = {}) {
     normaliseLoadedGameCollections();
     relinkLoadedPlayerReferences();
 
-    // One-time compatibility migration for pre-V220.36 saves. Modern gameplay
+    // One-time compatibility migration for pre-V220.37 saves. Modern gameplay
     // never creates an unplaced owned animal: draw, upgrade and incoming-trade
     // actions commit only after a legal destination is known.
     for (const id of legacyHandIds) {
@@ -9030,6 +9030,10 @@ function ensureSaveLoadUI() {
 function ensureMobileSettingsHub() {
     if (document.getElementById('mobileSettingsButton')) return;
 
+    // This control is phone-only. Desktop keeps the full Save / Load,
+    // New Game and Game Options buttons and must never show the cog.
+    if (!window.matchMedia('(max-width: 700px)').matches) return;
+
     const headerLeft = document.getElementById('headerLeft');
     if (!headerLeft) return;
 
@@ -9096,6 +9100,11 @@ function ensureMobileSettingsHub() {
     });
 }
 
+
+const mobileSettingsMediaQuery = window.matchMedia('(max-width: 700px)');
+mobileSettingsMediaQuery.addEventListener?.('change', event => {
+    if (event.matches) ensureMobileSettingsHub();
+});
 
 function ensureTurnHistoryUI() {
     if (document.getElementById('turnHistoryPanel')) return;
@@ -10176,6 +10185,14 @@ function tryDropOnExchange(
     state.exchange[index] =
         animal;
     state.exchangeGlowFocusKey = exchangeGroupKey(animal);
+
+    // Dropping the first card into Exchange is itself an explicit request for
+    // exchange guidance. Keep the yellow glow active on the remaining eligible
+    // cards in this exact category+level group, even if the drag prevented a
+    // fresh mouseenter event on the exchange controls.
+    state.exchangeEligibilityHoverActive =
+        !state.sandboxMode &&
+        state.gameOptions.showEligibilityGlows !== false;
 
     if (state.drag?.type === 'animal' && state.drag.animal?.id === animal.id) {
         reserveAnimalZooSlot(animal, state.drag.originalEnclosureId, state.drag.originalSlotIndex);
@@ -11513,7 +11530,7 @@ zooBoard.addEventListener(
 
 
 // ============================================================
-// LEVEL 1 DRAW COMMIT — V220.36
+// LEVEL 1 DRAW COMMIT — V220.37
 // ============================================================
 //
 // The draw UI already called drawLevelOne()/createLevelOneForDraw(), but those

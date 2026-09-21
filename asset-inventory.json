@@ -5,14 +5,15 @@
         "Arctic Fox.png": [
           "boreal",
           "arctic",
-          "europe",
           "asia",
+          "europe",
           "north-america"
         ],
         "Asian Small-Clawed Otter.png": [
           "semi-aquatic",
-          "asia",
-          "tropical"
+          "wetland",
+          "tropical",
+          "asia"
         ],
         "Banded Mongoose.png": [
           "savanna",
@@ -24,29 +25,33 @@
           "north-america"
         ],
         "Dwarf Mongoose.png": [
-          "savanna"
-        ],
-        "Eurasian Lynx.png": [
-          "forest",
-          "temperate",
-          "asia",
-          "europe"
+          "savanna",
+          "africa"
         ],
         "Eurasian Otter.png": [
           "semi-aquatic",
+          "wetland",
           "temperate",
+          "africa",
           "asia",
           "europe"
         ],
         "European Badger.png": [
           "forest",
           "temperate",
+          "nocturnal",
           "europe"
         ],
         "European Wild Cat.png": [
           "forest",
           "temperate",
+          "nocturnal",
           "europe"
+        ],
+        "Fennec Fox.png": [
+          "desert",
+          "nocturnal",
+          "africa"
         ],
         "Meerkat.png": [
           "savanna",
@@ -55,11 +60,9 @@
         "Red Fox.png": [
           "forest",
           "temperate",
-          "europe"
-        ],
-        "Serval.png": [
-          "savanna",
-          "africa"
+          "asia",
+          "europe",
+          "north-america"
         ],
         "South American Coati.png": [
           "south-america"
@@ -75,8 +78,8 @@
           "asia"
         ],
         "Binturong.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "nocturnal",
           "asia"
         ],
@@ -84,27 +87,36 @@
           "asia"
         ],
         "Common Genet.png": [
-          "nocturnal"
+          "nocturnal",
+          "africa",
+          "europe"
         ],
         "Corsac Fox.png": [
           "asia"
         ],
-        "Fennec Fox.png": [
-          "desert",
-          "nocturnal"
+        "Eurasian Lynx.png": [
+          "forest",
+          "temperate",
+          "mountain",
+          "asia",
+          "europe"
         ],
         "Golden Jackal.png": [
           "asia"
         ],
         "Kinkajou.png": [
-          "nocturnal"
+          "nocturnal",
+          "north-america",
+          "south-america"
         ],
         "Leopard Cat.png": [
           "nocturnal",
           "asia"
         ],
         "Ocelot.png": [
-          "nocturnal"
+          "nocturnal",
+          "north-america",
+          "south-america"
         ],
         "Pallas's Cat.png": [
           "mountain",
@@ -113,12 +125,17 @@
         ],
         "Raccoon Dog.png": [
           "forest",
+          "temperate",
           "nocturnal",
           "asia"
         ],
+        "Serval.png": [
+          "savanna",
+          "africa"
+        ],
         "Tayra.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "White-Nosed Coati.png": [
@@ -130,6 +147,7 @@
         ],
         "Yellow-Throated Marten.png": [
           "forest",
+          "nocturnal",
           "asia"
         ]
       },
@@ -146,17 +164,19 @@
           "north-america"
         ],
         "Bat-Eared Fox.png": [
-          "forest",
           "temperate",
+          "savanna",
           "nocturnal",
-          "europe"
+          "africa"
         ],
         "Bobcat.png": [
           "north-america"
         ],
         "Brown Bear.png": [
           "forest",
-          "europe"
+          "asia",
+          "europe",
+          "north-america"
         ],
         "Bush Dog.png": [
           "south-america"
@@ -166,50 +186,62 @@
           "africa"
         ],
         "Cheetah.png": [
-          "savanna"
+          "savanna",
+          "africa",
+          "asia"
         ],
         "Cougar.png": [
           "north-america"
         ],
         "Fishing Cat.png": [
           "semi-aquatic",
-          "nocturnal"
+          "wetland",
+          "nocturnal",
+          "asia"
         ],
         "Fossa.png": [
+          "rainforest",
           "tropical",
           "nocturnal",
           "africa"
         ],
         "Geoffroy's Cat.png": [
+          "nocturnal",
           "south-america"
         ],
         "Giant Otter.png": [
           "semi-aquatic",
-          "south-america",
+          "wetland",
+          "rainforest",
           "tropical",
-          "rainforest"
+          "south-america"
         ],
         "Grey Wolf.png": [
           "forest",
-          "europe"
+          "asia",
+          "europe",
+          "north-america"
         ],
         "Jungle Cat.png": [
           "wetland",
           "asia"
         ],
         "Margay.png": [
-          "nocturnal"
+          "nocturnal",
+          "north-america",
+          "south-america"
         ],
         "Nepalese Red Panda.png": [
-          "forest"
+          "forest",
+          "asia"
         ],
         "Spotted Hyena.png": [
           "savanna",
           "africa"
         ],
         "Wolverine.png": [
-          "forest",
           "boreal",
+          "nocturnal",
           "europe"
         ]
       },
@@ -219,21 +251,22 @@
           "africa"
         ],
         "Amur Leopard.png": [
-          "forest",
           "boreal",
           "asia"
         ],
         "Clouded Leopard.png": [
-          "rainforest"
+          "rainforest",
+          "tropical",
+          "nocturnal",
+          "asia"
         ],
         "Common Kusimanse.png": [
           "tropical",
-          "forest",
           "africa"
         ],
         "Crab-Eating Raccoon.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "south-america"
         ],
         "Dhole.png": [
           "forest",
@@ -244,17 +277,20 @@
           "africa"
         ],
         "Honey Badger.png": [
-          "forest"
+          "savanna",
+          "nocturnal",
+          "africa",
+          "asia"
         ],
         "Jaguar.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "nocturnal",
           "south-america"
         ],
         "Jaguarundi.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "nocturnal",
           "south-america"
         ],
@@ -265,21 +301,20 @@
           "south-america"
         ],
         "Oncilla.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "nocturnal",
           "south-america"
         ],
         "Polar Bear.png": [
-          "arctic",
           "aquatic",
-          "europe",
+          "arctic",
           "asia",
+          "europe",
           "north-america"
         ],
         "Ring-Tailed Vontsira.png": [
           "tropical",
-          "forest",
           "africa"
         ],
         "Ringtail.png": [
@@ -288,48 +323,52 @@
           "north-america"
         ],
         "Rusty-Spotted Cat.png": [
+          "nocturnal",
           "asia"
         ],
         "Rüppell's Sand Fox.png": [
           "desert",
+          "nocturnal",
           "africa"
         ],
         "Sand Cat.png": [
           "desert",
-          "nocturnal"
+          "nocturnal",
+          "africa",
+          "asia"
         ],
         "Siberian Tiger.png": [
           "boreal",
-          "europe"
+          "asia"
         ],
         "Sloth Bear.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "nocturnal",
-          "asia",
-          "south-america"
+          "asia"
         ],
         "Snow Leopard.png": [
-          "mountain"
+          "mountain",
+          "asia"
         ],
         "Spectacled Bear.png": [
           "south-america"
         ],
         "Striped Hyena.png": [
-          "desert",
           "savanna",
+          "desert",
           "nocturnal",
           "africa",
           "asia"
         ],
         "Sumatran Tiger.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Sun Bear.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "nocturnal",
           "asia"
         ]
@@ -337,13 +376,16 @@
       "5": {
         "Aardwolf.png": [
           "savanna",
+          "nocturnal",
           "africa"
         ],
         "Andean Mountain Cat.png": [
           "mountain",
+          "nocturnal",
           "south-america"
         ],
         "Asian Golden Cat.png": [
+          "nocturnal",
           "asia"
         ],
         "Black-Footed Cat.png": [
@@ -353,31 +395,33 @@
           "africa"
         ],
         "Brown Hyena.png": [
+          "nocturnal",
           "africa"
         ],
         "Canadian Lynx.png": [
-          "forest",
           "boreal",
           "north-america"
         ],
         "Chinese Mountain Cat.png": [
-          "mountain"
+          "mountain",
+          "nocturnal",
+          "asia"
         ],
         "Fanaloka.png": [
+          "rainforest",
           "tropical",
-          "forest",
           "nocturnal",
           "africa"
         ],
         "Flat-Headed Cat.png": [
           "wetland",
           "tropical",
-          "forest",
+          "nocturnal",
           "asia"
         ],
         "Giant Panda.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Iberian Lynx.png": [
@@ -385,12 +429,15 @@
           "europe"
         ],
         "Kodkod.png": [
+          "nocturnal",
           "south-america"
         ],
         "Marbled Cat.png": [
+          "nocturnal",
           "asia"
         ],
         "Pampas Cat.png": [
+          "nocturnal",
           "south-america"
         ]
       }
@@ -398,9 +445,6 @@
     "Ungulates": {
       "1": {
         "Alpaca.png": [
-          "tropical",
-          "rainforest",
-          "nocturnal",
           "domestic",
           "south-america"
         ],
@@ -411,6 +455,7 @@
         ],
         "Bactrian Camel.png": [
           "desert",
+          "domestic",
           "asia"
         ],
         "Cameroon Sheep.png": [
@@ -418,7 +463,8 @@
           "africa"
         ],
         "Domestic Donkey.png": [
-          "domestic"
+          "domestic",
+          "africa"
         ],
         "European Roe Deer.png": [
           "forest",
@@ -431,10 +477,12 @@
           "europe"
         ],
         "Highland Cattle.png": [
-          "domestic"
+          "domestic",
+          "europe"
         ],
         "Llama.png": [
-          "domestic"
+          "domestic",
+          "south-america"
         ],
         "Mouflon.png": [
           "europe"
@@ -449,11 +497,16 @@
           "africa"
         ],
         "Wild Boar.png": [
+          "forest",
           "tropical",
-          "temperate"
+          "temperate",
+          "africa",
+          "asia",
+          "europe"
         ],
         "Zebu.png": [
-          "domestic"
+          "domestic",
+          "asia"
         ]
       },
       "2": {
@@ -468,7 +521,6 @@
           "asia"
         ],
         "Collared Peccary.png": [
-          "forest",
           "savanna",
           "north-america",
           "south-america"
@@ -478,7 +530,9 @@
           "asia"
         ],
         "Dromedary Camel.png": [
-          "desert"
+          "desert",
+          "africa",
+          "asia"
         ],
         "Elk.png": [
           "north-america"
@@ -491,14 +545,17 @@
           "africa"
         ],
         "Lechwe.png": [
-          "wetland"
+          "semi-aquatic",
+          "wetland",
+          "savanna",
+          "africa"
         ],
         "Plains Zebra.png": [
-          "savanna"
+          "savanna",
+          "africa"
         ],
         "Red River Hog.png": [
           "tropical",
-          "forest",
           "africa"
         ],
         "Reeve's Muntjac.png": [
@@ -508,13 +565,16 @@
         "Reindeer.png": [
           "boreal",
           "arctic",
-          "europe"
+          "asia",
+          "europe",
+          "north-america"
         ],
         "Sika Deer.png": [
           "forest",
           "asia"
         ],
         "Vicuña.png": [
+          "mountain",
           "south-america"
         ],
         "Wisent.png": [
@@ -536,7 +596,8 @@
           "africa"
         ],
         "Blue Sheep.png": [
-          "mountain"
+          "mountain",
+          "asia"
         ],
         "Blue Wildebeest.png": [
           "savanna",
@@ -567,7 +628,8 @@
           "africa"
         ],
         "Grévy's Zebra.png": [
-          "savanna"
+          "savanna",
+          "africa"
         ],
         "Himalayan Tahr.png": [
           "mountain",
@@ -585,10 +647,14 @@
           "asia"
         ],
         "Moose.png": [
-          "forest",
-          "boreal"
+          "wetland",
+          "boreal",
+          "asia",
+          "europe",
+          "north-america"
         ],
         "Nile Lechwe.png": [
+          "semi-aquatic",
           "wetland",
           "africa"
         ],
@@ -597,8 +663,8 @@
         ],
         "Pygmy Hippopotamus.png": [
           "semi-aquatic",
+          "wetland",
           "tropical",
-          "forest",
           "africa"
         ],
         "Père David's Deer.png": [
@@ -611,15 +677,18 @@
           "africa"
         ],
         "Sitatunga.png": [
-          "wetland"
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "africa"
         ],
         "Somali Wild Ass.png": [
           "desert",
           "africa"
         ],
         "South American Tapir.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Springbok.png": [
@@ -628,21 +697,22 @@
         ],
         "Visayan Warty Pig.png": [
           "tropical",
-          "forest",
           "asia"
         ],
         "White-Lipped Peccary.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ]
       },
       "4": {
         "Arabian Oryx.png": [
-          "desert"
+          "desert",
+          "asia"
         ],
         "Arabian Sand Gazelle.png": [
-          "desert"
+          "desert",
+          "asia"
         ],
         "Black Sable Antelope.png": [
           "savanna",
@@ -661,7 +731,9 @@
           "asia"
         ],
         "Gemsbok.png": [
-          "desert"
+          "savanna",
+          "desert",
+          "africa"
         ],
         "Golden Takin.png": [
           "mountain",
@@ -673,11 +745,12 @@
         ],
         "Hippopotamus.png": [
           "semi-aquatic",
+          "wetland",
           "savanna",
           "africa"
         ],
         "Indian Muntjac.png": [
-          "forest",
+          "rainforest",
           "asia"
         ],
         "Indian Rhinoceros.png": [
@@ -687,6 +760,7 @@
           "asia"
         ],
         "Javan Chevrotain.png": [
+          "nocturnal",
           "asia"
         ],
         "Kordofan Giraffe.png": [
@@ -694,14 +768,13 @@
           "africa"
         ],
         "Lowland Anoa.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "asia"
         ],
         "Malayan Tapir.png": [
-          "tropical",
           "rainforest",
-          "asia",
-          "south-america"
+          "tropical",
+          "asia"
         ],
         "Markhor.png": [
           "mountain",
@@ -709,10 +782,16 @@
         ],
         "Musk Ox.png": [
           "boreal",
-          "arctic"
+          "arctic",
+          "north-america"
         ],
         "Nyala.png": [
           "savanna",
+          "africa"
+        ],
+        "Okapi.png": [
+          "rainforest",
+          "tropical",
           "africa"
         ],
         "Onager.png": [
@@ -723,7 +802,6 @@
         ],
         "Red Buffalo.png": [
           "tropical",
-          "forest",
           "africa"
         ],
         "Red Duiker.png": [
@@ -745,7 +823,7 @@
         "Southern Pudu.png": [
           "south-america"
         ],
-        "Thompson's Gazelle.png": [
+        "Thomson's Gazelle.png": [
           "savanna",
           "africa"
         ],
@@ -755,7 +833,6 @@
         ],
         "Visayan Spotted Deer.png": [
           "tropical",
-          "forest",
           "asia"
         ],
         "White Rhinoceros.png": [
@@ -764,11 +841,6 @@
         ],
         "White-Tailed Deer.png": [
           "north-america"
-        ],
-        "Okapi.png": [
-          "tropical",
-          "rainforest",
-          "africa"
         ]
       },
       "5": {
@@ -777,8 +849,8 @@
           "africa"
         ],
         "Baird's Tapir.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Black Rhinoceros.png": [
@@ -823,21 +895,25 @@
         ],
         "Nubian Ibex.png": [
           "desert",
-          "mountain"
+          "mountain",
+          "africa",
+          "asia"
         ],
-        "Phillipine Mouse-Deer.png": [
+        "Philippine Mouse-Deer.png": [
+          "nocturnal",
           "asia"
         ],
         "Sambar.png": [
-          "forest"
+          "rainforest",
+          "asia"
         ],
         "Siberian Musk Deer.png": [
           "boreal",
-          "europe"
+          "asia"
         ],
         "Sulawesi Babirusa.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Yellow-Backed Duiker.png": [
@@ -852,10 +928,12 @@
           "africa",
           "asia"
         ],
-        "Black-and-White Ruffed Lemur.png": [
-          "oceania"
-        ],
         "Bolivian Squirrel Monkey.png": [
+          "tropical",
+          "south-america"
+        ],
+        "Common Marmoset.png": [
+          "rainforest",
           "tropical",
           "south-america"
         ],
@@ -864,69 +942,71 @@
           "south-america"
         ],
         "Cotton-Top Tamarin.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Goeldi's Monkey.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Golden-Handed Tamarin.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Pygmy Marmoset.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
-        ],
-        "Red Ruffed Lemur.png": [
-          "oceania"
         ],
         "Rhesus Macaque.png": [
           "asia"
         ],
         "Ring-Tailed Lemur.png": [
-          "oceania"
+          "rainforest",
+          "africa"
         ],
         "Tufted Capuchin.png": [
           "tropical",
           "south-america"
         ],
-        "Common Marmoset.png": [
-          "tropical",
+        "White-Headed Marmoset.png": [
           "rainforest",
+          "tropical",
           "south-america"
         ]
       },
       "2": {
         "Black Lemur.png": [
-          "oceania"
+          "africa"
+        ],
+        "Black-and-White Ruffed Lemur.png": [
+          "rainforest",
+          "tropical",
+          "africa"
         ],
         "Crab-Eating Macaque.png": [
           "asia"
         ],
         "De Brazza's Monkey.png": [
           "tropical",
-          "forest",
           "africa"
         ],
         "Emperor Tamarin.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Golden Lion Tamarin.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Golden-Headed Lion Tamarin.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Green Monkey.png": [
@@ -939,52 +1019,50 @@
           "africa",
           "asia"
         ],
+        "Red Ruffed Lemur.png": [
+          "rainforest",
+          "tropical",
+          "africa"
+        ],
         "Red-Bellied Lemur.png": [
-          "oceania"
+          "africa"
         ],
         "Red-Bellied Tamarin.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "White-Faced Saki.png": [
           "south-america"
         ],
         "White-Handed Gibbon.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
-        ],
-        "White-Headed Marmoset.png": [
-          "tropical",
-          "rainforest",
-          "south-america"
         ]
       },
       "3": {
         "Black Howler Monkey.png": [
-          "tropical",
           "rainforest",
-          "forest",
+          "tropical",
           "nocturnal",
           "south-america"
         ],
         "Black-Headed Spider Monkey.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Collared Mangabey.png": [
           "tropical",
-          "forest",
           "africa"
         ],
         "Crowned Lemur.png": [
-          "oceania"
+          "africa"
         ],
         "Diana Monkey.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "africa"
         ],
         "Gelada Baboon.png": [
@@ -1004,8 +1082,8 @@
           "africa"
         ],
         "Pied Tamarin.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Red Titi.png": [
@@ -1016,18 +1094,18 @@
           "africa"
         ],
         "Siamang.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Silvery Marmoset.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "White-Cheeked Gibbon.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "White-Faced Capuchin.png": [
@@ -1035,31 +1113,29 @@
           "south-america"
         ],
         "White-Fronted Lemur.png": [
-          "oceania"
+          "africa"
         ]
       },
       "4": {
         "Alaotran Bamboo Lemur.png": [
-          "oceania"
+          "africa"
         ],
         "Black Crested Mangabey.png": [
           "tropical",
-          "forest",
           "africa"
         ],
         "Brown-Mantled Tamarin.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Capped Gibbon.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Chimpanzee.png": [
           "tropical",
-          "forest",
           "africa"
         ],
         "Drill.png": [
@@ -1069,8 +1145,8 @@
           "asia"
         ],
         "Golden-Cheeked Gibbon.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Grey Langur.png": [
@@ -1081,7 +1157,8 @@
           "asia"
         ],
         "Grey-Handed Night Monkey.png": [
-          "nocturnal"
+          "nocturnal",
+          "south-america"
         ],
         "Guaian Bearded Saki.png": [
           "south-america"
@@ -1091,97 +1168,104 @@
           "africa"
         ],
         "Owl-Faced Monkey.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "africa"
         ],
         "Pygmy Slow Loris.png": [
           "nocturnal",
           "asia"
         ],
         "Red Howler Monkey.png": [
-          "tropical",
           "rainforest",
-          "forest",
+          "tropical",
           "nocturnal",
           "south-america"
         ],
         "Red-Faced Spider Monkey.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Red-Fronted Lemur.png": [
-          "oceania"
+          "africa"
         ],
         "Vervet Monkey.png": [
           "africa"
         ],
         "Western Lowland Gorilla.png": [
-          "forest",
-          "nocturnal"
+          "rainforest",
+          "tropical",
+          "nocturnal",
+          "africa"
         ]
       },
       "5": {
         "Agile Gibbon.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Aye-Aye.png": [
-          "nocturnal"
+          "rainforest",
+          "tropical",
+          "nocturnal",
+          "africa"
         ],
         "Blue-Eyed Black Lemur.png": [
-          "oceania"
+          "africa"
         ],
         "Bonobo.png": [
+          "rainforest",
           "tropical",
-          "rainforest"
+          "africa"
         ],
         "Bornean Orangutan.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Coquerel's Sifaka.png": [
+          "rainforest",
           "tropical",
-          "forest",
           "africa"
         ],
         "Crowned Sifaka.png": [
+          "rainforest",
           "tropical",
-          "forest",
           "africa"
         ],
         "Dusky Langur.png": [
           "asia"
         ],
         "Golden Snub-Nosed Monkey.png": [
-          "mountain"
+          "mountain",
+          "asia"
         ],
         "Grey Gibbon.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Mountain Gorilla.png": [
-          "mountain"
+          "mountain",
+          "africa"
         ],
         "Red-Shanked Douc.png": [
           "asia"
         ],
         "Silvery Gibbon.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Sumatran Orangutan.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Woolly Monkey.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ]
       }
@@ -1189,34 +1273,39 @@
     "Other Mammals": {
       "1": {
         "Azara's Agouti.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Cape Porcupine.png": [
+          "savanna",
           "desert",
           "nocturnal",
           "africa"
         ],
         "Coypu.png": [
-          "semi-aquatic"
+          "semi-aquatic",
+          "south-america"
         ],
         "Eurasian Beaver.png": [
           "semi-aquatic",
+          "wetland",
           "forest",
           "temperate",
           "asia",
           "europe"
         ],
         "Four-Toed Hedgehog.png": [
-          "nocturnal"
+          "nocturnal",
+          "africa"
         ],
         "Indian Crested Porcupine.png": [
           "nocturnal",
           "asia"
         ],
         "Lesser Hedgehog Tenrec.png": [
-          "nocturnal"
+          "nocturnal",
+          "africa"
         ],
         "Patagonian Mara.png": [
           "south-america"
@@ -1225,14 +1314,16 @@
           "asia"
         ],
         "Red Squirrel.png": [
-          "forest"
+          "forest",
+          "asia",
+          "europe"
         ],
         "Red-Necked Wallaby.png": [
           "oceania"
         ],
         "Red-Rumped Agouti.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Southern Three-Banded Armadillo.png": [
@@ -1240,7 +1331,6 @@
           "south-america"
         ],
         "Sugar Glider.png": [
-          "forest",
           "nocturnal",
           "oceania"
         ]
@@ -1248,12 +1338,13 @@
       "2": {
         "American Beaver.png": [
           "semi-aquatic",
+          "wetland",
           "forest",
           "north-america"
         ],
         "Black-Rumped Agouti.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Black-Tailed Prairie Dog.png": [
@@ -1261,34 +1352,41 @@
         ],
         "Capybara.png": [
           "semi-aquatic",
+          "wetland",
           "south-america"
         ],
         "Chacoan Mara.png": [
           "south-america"
         ],
         "Egyptian Fruit Bat.png": [
-          "nocturnal"
+          "nocturnal",
+          "africa",
+          "asia",
+          "europe"
         ],
         "Large Hairy Armadillo.png": [
           "nocturnal",
           "south-america"
         ],
         "Linnaeus's Two-Toed Sloth.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "nocturnal",
           "south-america"
         ],
         "Long-Eared Hedgehog.png": [
-          "nocturnal"
+          "nocturnal",
+          "africa",
+          "asia",
+          "europe"
         ],
         "North American Porcupine.png": [
+          "forest",
           "nocturnal",
           "north-america"
         ],
         "Northern Treeshrew.png": [
           "tropical",
-          "forest",
           "asia"
         ],
         "Parma Wallaby.png": [
@@ -1315,11 +1413,12 @@
         ],
         "Black-and-Rufous Elephant Shrew.png": [
           "tropical",
-          "forest",
           "africa"
         ],
         "Brazilian Porcupine.png": [
-          "nocturnal"
+          "tropical",
+          "nocturnal",
+          "south-america"
         ],
         "Brushtail Possum.png": [
           "oceania"
@@ -1334,6 +1433,7 @@
           "oceania"
         ],
         "Indian Flying Fox.png": [
+          "tropical",
           "nocturnal",
           "asia"
         ],
@@ -1345,13 +1445,13 @@
           "oceania"
         ],
         "Lowland Paca.png": [
-          "tropical",
           "rainforest",
-          "forest",
+          "tropical",
           "nocturnal",
           "south-america"
         ],
         "Lyle's Flying Fox.png": [
+          "tropical",
           "nocturnal",
           "asia"
         ],
@@ -1360,8 +1460,9 @@
           "asia"
         ],
         "Southern Tamandua.png": [
-          "tropical",
           "rainforest",
+          "tropical",
+          "nocturnal",
           "south-america"
         ],
         "Western Woylie.png": [
@@ -1385,26 +1486,28 @@
           "oceania"
         ],
         "Common Wombat.png": [
+          "temperate",
           "nocturnal",
           "oceania"
         ],
         "Dusky Pademelon.png": [
           "tropical",
-          "forest",
           "oceania"
         ],
         "Goodfellow's Tree-Kangaroo.png": [
-          "tropical",
           "rainforest",
+          "tropical",
+          "nocturnal",
           "oceania"
         ],
         "Hoffmann's Two-Toed Sloth.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "nocturnal",
           "south-america"
         ],
         "Koala.png": [
+          "nocturnal",
           "oceania"
         ],
         "Nine-Banded Armadillo.png": [
@@ -1440,17 +1543,18 @@
           "oceania"
         ],
         "Brown-Throated Sloth.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "nocturnal",
           "south-america"
         ],
         "Chinese Pangolin.png": [
+          "nocturnal",
           "asia"
         ],
         "Matschie's Tree-Kangaroo.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "oceania"
         ],
         "Platypus.png": [
@@ -1458,6 +1562,8 @@
           "oceania"
         ],
         "Tasmanian Devil.png": [
+          "temperate",
+          "nocturnal",
           "oceania"
         ]
       }
@@ -1474,7 +1580,10 @@
           "europe"
         ],
         "Demoiselle Crane.png": [
-          "wetland"
+          "wetland",
+          "africa",
+          "asia",
+          "europe"
         ],
         "Emu.png": [
           "oceania"
@@ -1483,13 +1592,15 @@
           "south-america"
         ],
         "Grey Crowned Crane.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ],
         "Laughing Kookaburra.png": [
           "oceania"
         ],
         "Red-Crowned Crane.png": [
-          "wetland"
+          "wetland",
+          "asia"
         ],
         "Scarlet Ibis.png": [
           "wetland",
@@ -1503,19 +1614,29 @@
       },
       "2": {
         "Abdim's Stork.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ],
         "Black Crowned Crane.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ],
         "Blue Crane.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ],
         "Common Ostrich.png": [
-          "savanna"
+          "savanna",
+          "africa"
         ],
         "Glossy Ibis.png": [
-          "wetland"
+          "wetland",
+          "africa",
+          "asia",
+          "europe",
+          "north-america",
+          "south-america",
+          "oceania"
         ],
         "Hamerkop.png": [
           "africa"
@@ -1529,82 +1650,101 @@
           "south-america"
         ],
         "Northern Bald Ibis.png": [
-          "wetland"
+          "wetland",
+          "africa",
+          "asia"
         ],
         "Red-Legged Seriema.png": [
           "savanna",
           "south-america"
         ],
         "Sarus Crane.png": [
-          "wetland"
+          "wetland",
+          "asia",
+          "oceania"
         ],
         "Southern Ground Hornbill.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Von Der Decken's Hornbill.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "White-Naped Crane.png": [
-          "wetland"
+          "wetland",
+          "asia"
         ],
         "Yellow-Billed Stork.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ]
       },
       "3": {
         "Abyssian Ground Hornbill.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "asia"
         ],
         "Allen's Gallinule.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ],
         "American White Ibis.png": [
-          "wetland"
+          "wetland",
+          "north-america",
+          "south-america"
         ],
         "Black Crake.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ],
         "Black-Faced Ibis.png": [
-          "wetland"
+          "wetland",
+          "south-america"
         ],
         "Blue-Winged Kookaburra.png": [
           "oceania"
         ],
         "Common Trumpeter.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Giant Wood-Rail.png": [
-          "wetland"
+          "wetland",
+          "south-america"
         ],
         "Hadada Ibis.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ],
         "Madagascar Ibis.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ],
         "Saddle-Billed Stork.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ],
         "Southern Cassowary.png": [
           "tropical",
           "oceania"
         ],
         "Straw-Necked Ibis.png": [
-          "wetland"
+          "wetland",
+          "oceania"
         ],
         "Sunbittern.png": [
-          "wetland"
+          "wetland",
+          "north-america",
+          "south-america"
         ],
         "Tawny Frogmouth.png": [
-          "nocturnal"
+          "nocturnal",
+          "oceania"
         ]
       },
       "4": {
@@ -1616,32 +1756,43 @@
           "asia"
         ],
         "Australian Ibis.png": [
-          "wetland"
+          "wetland",
+          "oceania"
         ],
         "Black-Headed Ibis.png": [
-          "wetland"
+          "wetland",
+          "asia"
         ],
         "Little Grebe.png": [
-          "wetland"
+          "wetland",
+          "africa",
+          "asia",
+          "europe"
         ],
         "Madagascar Sacred Ibis.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ],
         "Oriental Stork.png": [
-          "wetland"
+          "wetland",
+          "asia"
         ],
         "Sandhill Crane.png": [
-          "wetland"
+          "wetland",
+          "asia",
+          "north-america"
         ],
         "Siberian Crane.png": [
           "wetland",
           "europe"
         ],
         "Southern Bald Ibis.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ],
         "Wattled Crane.png": [
-          "wetland"
+          "wetland",
+          "africa"
         ]
       },
       "5": {
@@ -1649,26 +1800,31 @@
           "asia"
         ],
         "Black-Necked Crane.png": [
-          "wetland"
+          "wetland",
+          "asia"
         ],
         "Brolga.png": [
           "oceania"
         ],
         "Corncrake.png": [
-          "wetland"
+          "wetland",
+          "africa",
+          "asia",
+          "europe"
         ],
         "Great Bustard.png": [
           "temperate",
-          "europe",
-          "asia"
+          "asia",
+          "europe"
         ],
         "Kori Bustard.png": [
-          "savanna"
+          "savanna",
+          "africa"
         ],
         "Little Bustard.png": [
           "temperate",
-          "europe",
-          "asia"
+          "asia",
+          "europe"
         ],
         "Northern Cassowary.png": [
           "tropical",
@@ -1692,6 +1848,7 @@
         ],
         "Dalmatian Pelican.png": [
           "wetland",
+          "asia",
           "europe"
         ],
         "Eurasian Spoonbill.png": [
@@ -1701,17 +1858,21 @@
           "europe"
         ],
         "Great White Pelican.png": [
-          "wetland"
+          "wetland",
+          "africa",
+          "asia",
+          "europe"
         ],
         "Greater Flamingo.png": [
           "wetland",
           "africa",
+          "asia",
           "europe"
         ],
         "Harbour Seal.png": [
           "aquatic",
-          "north-america",
-          "europe"
+          "europe",
+          "north-america"
         ],
         "Humboldt Penguin.png": [
           "aquatic",
@@ -1725,60 +1886,83 @@
       "2": {
         "American Flamingo.png": [
           "wetland",
+          "north-america",
           "south-america"
         ],
         "Blacktip Reef Shark.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "asia",
+          "oceania"
         ],
         "Bluespotted Ribbontail Ray.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "asia",
+          "oceania"
         ],
         "Brown-Banded Bambooshark.png": [
-          "aquatic"
+          "aquatic",
+          "asia",
+          "oceania"
         ],
         "California Sea Lion.png": [
           "aquatic",
           "north-america"
         ],
         "Cownose Ray.png": [
-          "aquatic"
+          "aquatic",
+          "north-america",
+          "south-america"
         ],
         "Epaulette Shark.png": [
-          "aquatic"
+          "aquatic",
+          "oceania"
         ],
         "Grey Seal.png": [
           "aquatic",
-          "north-america",
-          "europe"
+          "europe",
+          "north-america"
         ],
         "Nurse Shark.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "north-america",
+          "south-america"
         ],
         "Nursehound.png": [
           "aquatic",
-          "europe",
-          "africa"
+          "africa",
+          "europe"
         ],
         "Peacock-Eye Stingray.png": [
-          "aquatic"
+          "aquatic",
+          "south-america"
         ],
         "Pink-Backed Pelican.png": [
-          "wetland"
+          "wetland",
+          "africa",
+          "asia"
         ],
         "Small-Spotted Catshark.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "europe"
         ],
         "Starry Smooth-Hound.png": [
           "aquatic",
-          "europe",
-          "africa"
+          "africa",
+          "europe"
         ],
         "Xingu River Ray.png": [
-          "aquatic"
+          "aquatic",
+          "south-america"
         ],
         "Zebra Shark.png": [
           "aquatic",
-          "savanna"
+          "africa",
+          "asia",
+          "oceania"
         ]
       },
       "3": {
@@ -1790,17 +1974,29 @@
           "africa"
         ],
         "Common Eagle Ray.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "asia",
+          "europe"
         ],
         "Gentoo Penguin.png": [
           "aquatic",
           "antarctica"
         ],
         "Green Sea Turtle.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "asia",
+          "europe",
+          "north-america",
+          "south-america",
+          "oceania"
         ],
         "Grey Reef Shark.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "asia",
+          "oceania"
         ],
         "King Penguin.png": [
           "aquatic",
@@ -1811,14 +2007,20 @@
           "africa"
         ],
         "Magellanic Penguin.png": [
-          "aquatic"
+          "aquatic",
+          "south-america"
         ],
         "Rockhopper Penguin.png": [
           "aquatic",
           "antarctica"
         ],
         "Sand Tiger Shark.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "asia",
+          "north-america",
+          "south-america",
+          "oceania"
         ],
         "Sandbar Shark.png": [
           "aquatic"
@@ -1832,7 +2034,10 @@
           "south-america"
         ],
         "Whitetip Reef Shark.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "asia",
+          "oceania"
         ]
       },
       "4": {
@@ -1846,90 +2051,139 @@
           "north-america"
         ],
         "Baltic Seal.png": [
-          "aquatic"
+          "aquatic",
+          "europe"
         ],
         "Beluga.png": [
-          "arctic"
+          "aquatic",
+          "arctic",
+          "asia",
+          "europe",
+          "north-america"
         ],
         "Bonnethead Shark.png": [
-          "aquatic"
+          "aquatic",
+          "north-america",
+          "south-america"
         ],
         "Chinstrap Penguin.png": [
           "aquatic",
           "antarctica"
         ],
         "Green Sawfish.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "asia",
+          "oceania"
         ],
         "Harbour Porpoise.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "asia",
+          "europe",
+          "north-america"
         ],
         "Hawksbill Turtle.png": [
-          "aquatic"
+          "aquatic",
+          "tropical",
+          "africa",
+          "asia",
+          "north-america",
+          "south-america",
+          "oceania"
         ],
         "James's Flamingo.png": [
-          "wetland"
+          "wetland",
+          "south-america"
         ],
         "Macaroni Penguin.png": [
           "aquatic",
           "antarctica"
         ],
         "Northern Fur Seal.png": [
-          "aquatic"
+          "aquatic",
+          "asia",
+          "north-america"
         ],
-        "Ocellated Eagly Ray.png": [
-          "aquatic"
+        "Ocellated Eagle Ray.png": [
+          "aquatic",
+          "africa",
+          "asia",
+          "oceania"
         ],
         "Sea Otter.png": [
-          "semi-aquatic",
           "aquatic",
-          "north-america",
-          "asia"
+          "semi-aquatic",
+          "asia",
+          "north-america"
         ],
         "Steller Sea Lion.png": [
-          "aquatic"
+          "aquatic",
+          "asia",
+          "north-america"
         ],
         "Walrus.png": [
           "aquatic",
-          "arctic"
+          "arctic",
+          "asia",
+          "europe",
+          "north-america"
         ]
       },
       "5": {
         "Adelie Penguin.png": [
           "aquatic",
-          "arctic",
+          "antarctic",
           "antarctica"
         ],
         "Atlantic Manta Ray.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "europe",
+          "north-america",
+          "south-america"
         ],
         "Atlantic Ridley Turtle.png": [
-          "aquatic"
+          "aquatic",
+          "north-america"
         ],
         "Atlantic Spotted Dolphin.png": [
-          "aquatic"
+          "aquatic",
+          "africa",
+          "europe",
+          "north-america",
+          "south-america"
         ],
         "Commerson's Dolphin.png": [
-          "aquatic"
+          "aquatic",
+          "south-america"
         ],
         "Dugong.png": [
-          "aquatic"
+          "aquatic",
+          "tropical",
+          "africa",
+          "asia",
+          "oceania"
         ],
         "Emperor Penguin.png": [
           "aquatic",
-          "arctic",
+          "antarctic",
           "antarctica"
         ],
         "Harp Seal.png": [
           "aquatic",
-          "arctic"
+          "arctic",
+          "europe",
+          "north-america"
         ],
         "Indian Ocean Humpback Dolphin.png": [
           "aquatic",
           "asia"
         ],
         "Lesser Devil Ray.png": [
-          "aquatic"
+          "aquatic",
+          "north-america",
+          "south-america"
         ],
         "Little Penguin.png": [
           "aquatic",
@@ -1939,29 +2193,26 @@
           "aquatic"
         ],
         "Northern Elephant Seal.png": [
-          "aquatic"
+          "aquatic",
+          "north-america"
         ],
         "Orca.png": [
-          "aquatic",
-          "europe",
-          "asia",
-          "north-america",
-          "south-america",
-          "oceania",
-          "antarctica"
+          "aquatic"
         ],
         "Orinoco Dolphin.png": [
-          "aquatic"
+          "aquatic",
+          "south-america"
         ],
         "Pacific White-Sided Dolphin.png": [
-          "aquatic"
+          "aquatic",
+          "asia",
+          "north-america"
         ],
         "Risso's Dolphin.png": [
           "aquatic"
         ],
         "Scalloped Hammerhead Shark.png": [
-          "aquatic",
-          "south-america"
+          "aquatic"
         ],
         "Short-Finned Pilot Whale.png": [
           "aquatic"
@@ -1979,7 +2230,8 @@
           "aquatic"
         ],
         "Yangtze Finless Porpoise.png": [
-          "aquatic"
+          "aquatic",
+          "asia"
         ]
       }
     },
@@ -1987,9 +2239,9 @@
       "1": {
         "Black Kite.png": [
           "savanna",
-          "europe",
+          "africa",
           "asia",
-          "africa"
+          "europe"
         ],
         "Common Buzzard.png": [
           "temperate",
@@ -2008,7 +2260,10 @@
         "Great Grey Owl.png": [
           "forest",
           "boreal",
-          "nocturnal"
+          "nocturnal",
+          "asia",
+          "europe",
+          "north-america"
         ],
         "Harris's Hawk.png": [
           "savanna",
@@ -2017,30 +2272,42 @@
         ],
         "Little Owl.png": [
           "forest",
-          "nocturnal"
+          "nocturnal",
+          "africa",
+          "asia",
+          "europe"
         ],
         "Snowy Owl.png": [
-          "forest",
           "arctic",
-          "nocturnal"
+          "nocturnal",
+          "asia",
+          "europe",
+          "north-america"
         ],
         "Tawny Owl.png": [
           "forest",
-          "nocturnal"
+          "nocturnal",
+          "africa",
+          "asia",
+          "europe"
         ],
         "Ural Owl.png": [
-          "forest",
           "boreal",
-          "nocturnal"
+          "nocturnal",
+          "asia",
+          "europe"
         ],
         "Western Barn Owl.png": [
           "forest",
-          "nocturnal"
+          "nocturnal",
+          "africa",
+          "asia",
+          "europe"
         ],
         "White-Tailed Eagle.png": [
           "wetland",
-          "europe",
-          "asia"
+          "asia",
+          "europe"
         ]
       },
       "2": {
@@ -2048,7 +2315,6 @@
           "north-america"
         ],
         "Black Vulture.png": [
-          "forest",
           "north-america",
           "south-america"
         ],
@@ -2058,10 +2324,10 @@
         ],
         "Brown Wood Owl.png": [
           "forest",
-          "nocturnal"
+          "nocturnal",
+          "asia"
         ],
         "Burrowing Owl.png": [
-          "forest",
           "nocturnal",
           "north-america"
         ],
@@ -2072,9 +2338,9 @@
         ],
         "Egyptian Vulture.png": [
           "savanna",
-          "europe",
+          "africa",
           "asia",
-          "africa"
+          "europe"
         ],
         "Eurasian Goshawk.png": [
           "forest",
@@ -2101,44 +2367,53 @@
           "africa"
         ],
         "Indian Eagle-Owl.png": [
-          "forest",
           "nocturnal",
           "asia"
         ],
         "Lanner Falcon.png": [
           "savanna",
-          "europe",
+          "africa",
           "asia",
-          "africa"
+          "europe"
         ],
         "Long-Eared Owl.png": [
           "forest",
-          "nocturnal"
+          "nocturnal",
+          "africa",
+          "asia",
+          "europe",
+          "north-america"
         ],
         "Monk Vulture.png": [
           "temperate",
-          "europe",
-          "asia"
+          "asia",
+          "europe"
         ],
         "Peregrine Falcon.png": [
           "temperate",
-          "europe"
+          "africa",
+          "asia",
+          "europe",
+          "north-america",
+          "south-america",
+          "oceania"
         ],
         "Red Kite.png": [
           "europe"
         ],
         "Saker Falcon.png": [
           "temperate",
-          "europe",
-          "asia"
+          "asia",
+          "europe"
         ],
         "Spectacled Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "north-america",
+          "south-america"
         ],
         "Spotted Eagle-Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "africa"
         ],
         "Steller's Sea Eagle.png": [
           "wetland",
@@ -2147,16 +2422,15 @@
         ],
         "Steppe Eagle.png": [
           "savanna",
-          "europe",
+          "africa",
           "asia",
-          "africa"
+          "europe"
         ],
         "Striated Caracara.png": [
           "temperate",
           "south-america"
         ],
         "Turkey Vulture.png": [
-          "forest",
           "north-america",
           "south-america"
         ]
@@ -2166,7 +2440,6 @@
           "africa"
         ],
         "African Wood Owl.png": [
-          "forest",
           "nocturnal",
           "africa"
         ],
@@ -2178,11 +2451,10 @@
           "south-america"
         ],
         "Ashy-Faced Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "north-america"
         ],
         "Australian Boobook.png": [
-          "forest",
           "nocturnal",
           "oceania"
         ],
@@ -2192,45 +2464,54 @@
           "africa"
         ],
         "Bearded Vulture.png": [
-          "mountain"
+          "mountain",
+          "africa",
+          "asia",
+          "europe"
         ],
         "Boreal Owl.png": [
           "forest",
           "boreal",
-          "nocturnal"
+          "nocturnal",
+          "asia",
+          "europe",
+          "north-america"
         ],
         "Cape Eagle-Owl.png": [
-          "forest",
           "nocturnal",
           "africa"
         ],
         "Chaco Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "south-america"
         ],
         "Ferruginous Hawk.png": [
           "temperate",
           "north-america"
         ],
         "Ferruginous Pygmy Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "north-america",
+          "south-america"
         ],
         "Greyish Eagle-Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "africa"
         ],
         "Gyrfalcon.png": [
-          "boreal"
+          "boreal",
+          "arctic",
+          "asia",
+          "europe",
+          "north-america"
         ],
         "Indian Scops Owl.png": [
-          "forest",
           "nocturnal",
           "asia"
         ],
         "King Vulture.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Laggar Falcon.png": [
@@ -2239,25 +2520,28 @@
         ],
         "Long-Legged Buzzard.png": [
           "savanna",
-          "europe",
+          "africa",
           "asia",
-          "africa"
+          "europe"
         ],
         "Mottled Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "north-america",
+          "south-america"
         ],
         "Northern Hawk-Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "asia",
+          "europe",
+          "north-america"
         ],
         "Northern White-Faced Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "africa"
         ],
         "Palm-Nut Vulture.png": [
-          "tropical",
           "wetland",
+          "tropical",
           "africa"
         ],
         "Red-Tailed Hawk.png": [
@@ -2271,12 +2555,17 @@
           "africa"
         ],
         "Short-Eared Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "africa",
+          "asia",
+          "europe",
+          "north-america",
+          "south-america",
+          "oceania"
         ],
         "Southern White-Faced Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "africa"
         ],
         "Tawny Eagle.png": [
           "savanna",
@@ -2284,12 +2573,13 @@
           "asia"
         ],
         "Tropical Screech Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "north-america",
+          "south-america"
         ],
         "Verreaux's Eagle-Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "africa"
         ],
         "White-Backed Vulture.png": [
           "savanna",
@@ -2301,8 +2591,9 @@
           "africa"
         ],
         "American Barn Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "north-america",
+          "south-america"
         ],
         "Aplomado Falcon.png": [
           "savanna",
@@ -2310,27 +2601,28 @@
           "south-america"
         ],
         "Band-Bellied Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "south-america"
         ],
         "Barbary Falcon.png": [
           "africa"
         ],
         "Barred Owl.png": [
           "forest",
-          "nocturnal"
+          "nocturnal",
+          "north-america"
         ],
         "Bonelli's Eagle.png": [
           "mountain",
-          "europe",
+          "africa",
           "asia",
-          "africa"
+          "europe"
         ],
         "Booted Eagle.png": [
           "forest",
-          "europe",
+          "africa",
           "asia",
-          "africa"
+          "europe"
         ],
         "Brahminy Kite.png": [
           "wetland",
@@ -2340,8 +2632,8 @@
         ],
         "Eastern Imperial Eagle.png": [
           "temperate",
-          "europe",
-          "asia"
+          "asia",
+          "europe"
         ],
         "Eurasian Hobby.png": [
           "temperate",
@@ -2370,16 +2662,16 @@
         ],
         "Lesser Kestrel.png": [
           "savanna",
-          "europe",
+          "africa",
           "asia",
-          "africa"
+          "europe"
         ],
         "Lesser Spotted Eagle.png": [
-          "forest",
           "wetland",
-          "europe",
+          "forest",
+          "africa",
           "asia",
-          "africa"
+          "europe"
         ],
         "Lesser Yellow-Headed Vulture.png": [
           "wetland",
@@ -2391,38 +2683,39 @@
           "africa"
         ],
         "Merlin.png": [
-          "temperate",
           "boreal",
-          "europe",
+          "temperate",
           "asia",
+          "europe",
           "north-america"
         ],
         "Mountain Caracara.png": [
-          "mountain"
+          "mountain",
+          "south-america"
         ],
         "Philippine Scops Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "asia"
         ],
         "Red-Backed Hawk.png": [
-          "forest",
           "south-america"
         ],
         "Red-Footed Falcon.png": [
           "temperate",
-          "europe",
+          "africa",
           "asia",
-          "africa"
+          "europe"
         ],
         "Short-Toed Snake Eagle.png": [
           "savanna",
-          "europe",
+          "africa",
           "asia",
-          "africa"
+          "europe"
         ],
         "Striped Owl.png": [
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "north-america",
+          "south-america"
         ],
         "Verreaux's Eagle.png": [
           "mountain",
@@ -2430,16 +2723,20 @@
         ],
         "Western Honey Buzzard.png": [
           "forest",
-          "europe",
+          "africa",
           "asia",
-          "africa"
+          "europe"
         ],
         "Western Marsh-Harrier.png": [
-          "wetland"
+          "wetland",
+          "africa",
+          "asia",
+          "europe"
         ],
         "Western Screech Owl.png": [
           "forest",
-          "nocturnal"
+          "nocturnal",
+          "north-america"
         ],
         "White-Headed Vulture.png": [
           "savanna",
@@ -2460,17 +2757,16 @@
         ],
         "Crested Serpent Eagle.png": [
           "tropical",
-          "forest",
           "asia"
         ],
         "Greater Yellow-Headed Vulture.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Harpy Eagle.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Nubian Vulture.png": [
@@ -2478,11 +2774,11 @@
           "africa"
         ],
         "Osprey.png": [
-          "wetland",
           "aquatic",
-          "europe",
-          "asia",
+          "wetland",
           "africa",
+          "asia",
+          "europe",
           "north-america",
           "south-america",
           "oceania"
@@ -2492,8 +2788,8 @@
           "asia"
         ],
         "White-Bellied Sea Eagle.png": [
-          "wetland",
           "aquatic",
+          "wetland",
           "asia",
           "oceania"
         ]
@@ -2505,37 +2801,37 @@
           "tropical",
           "africa"
         ],
-        "Blue-And-Yellow Macaw.png": [
-          "tropical",
+        "Blue-Fronted Amazon.png": [
           "rainforest",
+          "tropical",
           "south-america"
         ],
-        "Blue-Fronted Amazon.png": [
-          "tropical",
+        "Blue-and-Yellow Macaw.png": [
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Galah.png": [
           "oceania"
         ],
         "Orange-Winged Amazon.png": [
-          "tropical",
           "rainforest",
-          "south-america"
-        ],
-        "Red-And-Green Macaw.png": [
           "tropical",
-          "rainforest",
           "south-america"
         ],
         "Red-Crested Turaco.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "africa"
         ],
-        "Scarlet Macaw.png": [
-          "tropical",
+        "Red-and-Green Macaw.png": [
           "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Scarlet Macaw.png": [
+          "rainforest",
+          "tropical",
           "south-america"
         ],
         "Senegal Parrot.png": [
@@ -2543,536 +2839,548 @@
           "africa"
         ],
         "Umbrella Cockatoo.png": [
-          "oceania"
+          "asia"
         ],
         "Violet Turaco.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "africa"
         ],
         "White-Cheeked Turaco.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "africa"
         ],
         "Yellow-Crested Cockatoo.png": [
+          "asia",
           "oceania"
         ],
         "Yellow-Crowned Amazon.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ]
       },
       "2": {
-        "Military Macaw.png": [
+        "Black-Headed Parrot.png": [
           "tropical",
-          "rainforest",
-          "south-america"
-        ],
-        "Hyacinth Macaw.png": [
-          "tropical",
-          "rainforest",
           "south-america"
         ],
         "Blue-Throated Macaw.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Blue-Winged Macaw.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
-        "Red-Shouldered Macaw.png": [
-          "tropical",
+        "Cuban Amazon.png": [
           "rainforest",
+          "tropical",
           "south-america"
         ],
         "Great Green Macaw.png": [
-          "tropical",
           "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Green Aracari.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Green Turaco.png": [
+          "rainforest",
+          "tropical",
+          "africa"
+        ],
+        "Hyacinth Macaw.png": [
+          "rainforest",
+          "tropical",
           "south-america"
         ],
         "Kea.png": [
           "mountain",
-          "asia",
           "oceania"
         ],
-        "Black-Headed Parrot.png": [
-          "tropical"
-        ],
-        "White-Bellied Parrot.png": [
-          "tropical"
-        ],
-        "Timneh Parrot.png": [
-          "tropical"
-        ],
-        "Toco Toucan.png": [
-          "tropical",
+        "Lilacine Amazon.png": [
           "rainforest",
+          "tropical",
           "south-america"
         ],
-        "Green Aracari.png": [
-          "tropical",
-          "rainforest",
-          "south-america"
+        "Little Corella.png": [
+          "oceania"
         ],
-        "Green Turaco.png": [
-          "tropical",
+        "Livingstone's Turaco.png": [
           "rainforest",
+          "tropical",
           "africa"
         ],
         "Mealy Amazon.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
-        "Cuban Amazon.png": [
-          "tropical",
+        "Military Macaw.png": [
           "rainforest",
-          "south-america"
-        ],
-        "Lilacine Amazon.png": [
           "tropical",
-          "rainforest",
-          "south-america"
-        ],
-        "Vinaceous-Breasted Amazon.png": [
-          "tropical",
-          "rainforest",
           "south-america"
         ],
         "Pink Cockatoo.png": [
           "oceania"
         ],
-        "Little Corella.png": [
-          "oceania"
+        "Purple-Crested Turaco.png": [
+          "rainforest",
+          "tropical",
+          "africa"
+        ],
+        "Red-Shouldered Macaw.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
         ],
         "Solomons Corella.png": [
           "oceania"
         ],
-        "Purple-Crested Turaco.png": [
+        "Timneh Parrot.png": [
           "tropical",
-          "rainforest",
           "africa"
         ],
-        "Livingstone's Turaco.png": [
-          "tropical",
+        "Toco Toucan.png": [
           "rainforest",
-          "africa"
+          "tropical",
+          "south-america"
+        ],
+        "Vinaceous-Breasted Amazon.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "White-Bellied Parrot.png": [
+          "tropical",
+          "south-america"
         ]
       },
       "3": {
-        "Red-Crowned Amazon.png": [
-          "tropical",
-          "rainforest",
-          "south-america"
-        ],
-        "Bearded Barbet.png": [
-          "tropical",
-          "forest",
-          "africa"
-        ],
-        "Palm Cockatoo.png": [
-          "oceania"
-        ],
-        "Red-Tailed Black Cockatoo.png": [
-          "oceania"
-        ],
-        "Papuan Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Tarictic Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Red-Billed Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
         "African Grey Hornbill.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "africa",
           "asia"
         ],
-        "Rhinoceros Hornbill.png": [
+        "Bearded Barbet.png": [
           "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Red-Fronted Macaw.png": [
-          "tropical",
-          "rainforest",
-          "south-america"
-        ],
-        "Chestnut-Fronted Macaw.png": [
-          "tropical",
-          "rainforest",
-          "south-america"
-        ],
-        "White-Throated Toucan.png": [
-          "tropical",
-          "rainforest",
-          "south-america"
+          "africa"
         ],
         "Black-Necked Aracari.png": [
-          "tropical",
           "rainforest",
-          "south-america"
-        ],
-        "Channel-Billed Toucan.png": [
           "tropical",
-          "rainforest",
-          "south-america"
-        ],
-        "White-Crested Turaco.png": [
-          "tropical",
-          "rainforest",
-          "africa"
-        ],
-        "Fischer's Turaco.png": [
-          "tropical",
-          "rainforest",
-          "africa"
-        ],
-        "White-Fronted Amazon.png": [
-          "tropical",
-          "rainforest",
-          "south-america"
-        ],
-        "Yellow-Shouldered Amazon.png": [
-          "tropical",
-          "rainforest",
           "south-america"
         ],
         "Blue-Cheeked Amazon.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
-        "Lilac-Crowned Amazon.png": [
+        "Blue-Eyed Cockatoo.png": [
+          "oceania"
+        ],
+        "Blue-Headed Parrot.png": [
           "tropical",
+          "south-america"
+        ],
+        "Channel-Billed Toucan.png": [
           "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Chestnut-Fronted Macaw.png": [
+          "rainforest",
+          "tropical",
           "south-america"
         ],
         "Festive Amazon.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
-        "Red-Tailed Amazon.png": [
-          "tropical",
+        "Fischer's Turaco.png": [
           "rainforest",
+          "tropical",
+          "africa"
+        ],
+        "Lilac-Crowned Amazon.png": [
+          "rainforest",
+          "tropical",
           "south-america"
         ],
         "Long-Billed Corella.png": [
           "oceania"
         ],
-        "Blue-Eyed Cockatoo.png": [
+        "Meyer's Parrot.png": [
+          "tropical",
+          "africa"
+        ],
+        "Palm Cockatoo.png": [
           "oceania"
+        ],
+        "Papuan Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
         ],
         "Philippine Cockatoo.png": [
-          "oceania"
+          "asia"
         ],
-        "Blue-Headed Parrot.png": [
-          "tropical"
+        "Red-Billed Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
         ],
-        "Meyer's Parrot.png": [
-          "tropical"
+        "Red-Crowned Amazon.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Red-Fronted Macaw.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
         ],
         "Red-Fronted Parrot.png": [
-          "tropical"
+          "tropical",
+          "africa"
+        ],
+        "Red-Tailed Amazon.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Red-Tailed Black Cockatoo.png": [
+          "oceania"
+        ],
+        "Rhinoceros Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
+        ],
+        "Tarictic Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
+        ],
+        "White-Crested Turaco.png": [
+          "rainforest",
+          "tropical",
+          "africa"
+        ],
+        "White-Fronted Amazon.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "White-Throated Toucan.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Yellow-Shouldered Amazon.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
         ]
       },
       "4": {
-        "Red-And-Yellow Barbet.png": [
-          "savanna",
-          "africa"
+        "Black Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
         ],
         "Black-Casqued Hornbill.png": [
-          "tropical",
           "rainforest",
-          "asia"
-        ],
-        "Wreathed Hornbill.png": [
           "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Grey-Cheeked Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Great Indian Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Wrinkled Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Black Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Northern Rufous Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Crowned Hornbill.png": [
-          "tropical",
-          "rainforest",
           "asia"
         ],
         "Blue-Headed Macaw.png": [
-          "tropical",
           "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Bronze-Winged Parrot.png": [
+          "tropical",
+          "south-america"
+        ],
+        "Chestnut-Eared Aracari.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Crowned Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
+        ],
+        "Diademed Amazon.png": [
+          "rainforest",
+          "tropical",
           "south-america"
         ],
         "Golden-Collared Macaw.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
-        "Scaly-Headed Parrot.png": [
-          "tropical"
-        ],
-        "Red-Fan Parrot.png": [
-          "tropical"
-        ],
-        "Pacific Parrotlet.png": [
-          "tropical"
-        ],
-        "Bronze-Winged Parrot.png": [
-          "tropical"
-        ],
-        "White-Crowned Parrot.png": [
-          "tropical"
-        ],
-        "Chestnut-Eared Aracari.png": [
-          "tropical",
+        "Great Indian Hornbill.png": [
           "rainforest",
-          "south-america"
-        ],
-        "Schalow's Turaco.png": [
           "tropical",
+          "asia"
+        ],
+        "Grey-Cheeked Hornbill.png": [
           "rainforest",
-          "africa"
+          "tropical",
+          "asia"
         ],
         "Hartlaub's Turaco.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "africa"
+        ],
+        "Northern Rufous Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
+        ],
+        "Pacific Parrotlet.png": [
+          "tropical",
+          "south-america"
         ],
         "Red-Billed Woodhoopoe.png": [
           "savanna",
           "africa"
         ],
-        "Yellow-Billed Amazon.png": [
+        "Red-Fan Parrot.png": [
           "tropical",
-          "rainforest",
           "south-america"
         ],
-        "Diademed Amazon.png": [
+        "Red-and-Yellow Barbet.png": [
+          "savanna",
+          "africa"
+        ],
+        "Scaly-Headed Parrot.png": [
           "tropical",
+          "south-america"
+        ],
+        "Schalow's Turaco.png": [
           "rainforest",
+          "tropical",
+          "africa"
+        ],
+        "White-Crowned Parrot.png": [
+          "tropical",
+          "north-america",
+          "south-america"
+        ],
+        "Wreathed Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
+        ],
+        "Wrinkled Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
+        ],
+        "Yellow-Billed Amazon.png": [
+          "rainforest",
+          "tropical",
           "south-america"
         ],
         "Yellow-Faced Parrot.png": [
-          "tropical"
+          "tropical",
+          "south-america"
         ],
         "Yucatan Amazon.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ]
       },
       "5": {
-        "Yellow-Tailed Black Cockatoo.png": [
-          "oceania"
+        "African Pied Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "africa",
+          "asia"
+        ],
+        "Crimson-Rumped Toucanet.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Curl-Crested Aracari.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Eastern Yellow-Billed Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
+        ],
+        "Emerald Toucanet.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
         ],
         "Gang-Gang Cockatoo.png": [
           "oceania"
         ],
-        "Palawan Hornbill.png": [
-          "tropical",
+        "Great Blue Turaco.png": [
           "rainforest",
-          "asia"
+          "tropical",
+          "africa"
         ],
-        "Southern Rufous Hornbill.png": [
-          "tropical",
+        "Guyana Toucanet.png": [
           "rainforest",
-          "asia"
+          "tropical",
+          "south-america"
         ],
-        "Oriental Pied Hornbill.png": [
-          "tropical",
+        "Ivory-Billed Aracari.png": [
           "rainforest",
-          "asia"
+          "tropical",
+          "south-america"
+        ],
+        "Keel-Billed Toucan.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
         ],
         "Knobbed Hornbill.png": [
-          "tropical",
           "rainforest",
-          "asia"
-        ],
-        "Luzon Hornbill.png": [
           "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Eastern Yellow-Billed Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Western Piping Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "White-Crowned Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "African Pied Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "africa",
-          "asia"
-        ],
-        "Writhed Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Piping Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Western Long-Tailed Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "Mindanao Hornbill.png": [
-          "tropical",
-          "rainforest",
-          "asia"
-        ],
-        "White-Thighed Hornbill.png": [
-          "tropical",
-          "rainforest",
           "asia"
         ],
         "Lear's Macaw.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
-        "Red-Bellied Macaw.png": [
-          "tropical",
+        "Luzon Hornbill.png": [
           "rainforest",
-          "south-america"
-        ],
-        "Spix's Macaw.png": [
           "tropical",
-          "rainforest",
-          "south-america"
+          "asia"
         ],
-        "Spectacled Parrotlet.png": [
-          "tropical"
+        "Mindanao Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
         ],
         "Northern Kaka.png": [
           "oceania"
         ],
-        "Curl-Crested Aracari.png": [
-          "tropical",
+        "Oriental Pied Hornbill.png": [
           "rainforest",
-          "south-america"
+          "tropical",
+          "asia"
         ],
-        "Red-Breasted Toucan.png": [
-          "tropical",
+        "Palawan Hornbill.png": [
           "rainforest",
-          "south-america"
-        ],
-        "Keel-Billed Toucan.png": [
           "tropical",
-          "rainforest",
-          "south-america"
-        ],
-        "Ivory-Billed Aracari.png": [
-          "tropical",
-          "rainforest",
-          "south-america"
-        ],
-        "Crimson-Rumped Toucanet.png": [
-          "tropical",
-          "rainforest",
-          "south-america"
-        ],
-        "Guyana Toucanet.png": [
-          "tropical",
-          "rainforest",
-          "south-america"
-        ],
-        "Red-Billed Toucan.png": [
-          "tropical",
-          "rainforest",
-          "south-america"
+          "asia"
         ],
         "Pale-Billed Aracari.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
         ],
-        "Emerald Toucanet.png": [
-          "tropical",
+        "Piping Hornbill.png": [
           "rainforest",
-          "south-america"
+          "tropical",
+          "asia"
         ],
         "Plate-Billed Mountain Toucan.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "mountain",
           "south-america"
         ],
-        "Saffron Toucanet.png": [
-          "tropical",
+        "Red-Bellied Macaw.png": [
           "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Red-Billed Toucan.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Red-Breasted Toucan.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Ross's Turaco.png": [
+          "rainforest",
+          "tropical",
+          "africa"
+        ],
+        "Saffron Toucanet.png": [
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Southern Rufous Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
+        ],
+        "Spectacled Parrotlet.png": [
+          "tropical",
+          "south-america"
+        ],
+        "Spix's Macaw.png": [
+          "rainforest",
+          "tropical",
           "south-america"
         ],
         "Spot-Billed Toucanet.png": [
-          "tropical",
           "rainforest",
+          "tropical",
           "south-america"
+        ],
+        "Western Long-Tailed Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
+        ],
+        "Western Piping Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
         ],
         "Western Plantain-Eater.png": [
           "tropical",
-          "forest",
           "africa"
         ],
-        "Ross's Turaco.png": [
-          "tropical",
+        "White-Crowned Hornbill.png": [
           "rainforest",
-          "africa"
+          "tropical",
+          "asia"
         ],
-        "Great Blue Turaco.png": [
-          "tropical",
+        "White-Thighed Hornbill.png": [
           "rainforest",
-          "africa"
+          "tropical",
+          "asia"
+        ],
+        "Writhed Hornbill.png": [
+          "rainforest",
+          "tropical",
+          "asia"
+        ],
+        "Yellow-Tailed Black Cockatoo.png": [
+          "oceania"
         ]
       }
     },
@@ -3091,10 +3399,13 @@
           "asia"
         ],
         "Carpet Python.png": [
-          "tropical"
+          "tropical",
+          "nocturnal",
+          "oceania"
         ],
         "Central Bearded Dragon.png": [
-          "desert"
+          "desert",
+          "oceania"
         ],
         "Chinese Water Dragon.png": [
           "asia"
@@ -3104,11 +3415,16 @@
           "europe"
         ],
         "Green Iguana.png": [
-          "tropical"
+          "tropical",
+          "nocturnal",
+          "north-america",
+          "south-america"
         ],
         "Green Tree Python.png": [
+          "rainforest",
           "tropical",
-          "rainforest"
+          "nocturnal",
+          "oceania"
         ],
         "Hermann's Tortoise.png": [
           "temperate",
@@ -3121,7 +3437,7 @@
         ],
         "Red-Footed Tortoise.png": [
           "tropical",
-          "forest",
+          "savanna",
           "south-america"
         ],
         "Reticulated Python.png": [
@@ -3133,256 +3449,220 @@
         ]
       },
       "2": {
-        "American Alligator.png": [
-          "semi-aquatic",
-          "north-america",
-          "wetland"
-        ],
-        "Cuvier's Dwarf Caiman.png": [
-          "semi-aquatic",
-          "tropical",
-          "south-america"
-        ],
-        "Dwarf Crocodile.png": [
-          "semi-aquatic",
-          "tropical",
-          "forest",
-          "africa"
-        ],
-        "Leopard Tortoise.png": [
-          "desert"
-        ],
-        "Nile Crocodile.png": [
-          "semi-aquatic",
-          "africa",
-          "wetland"
-        ],
-        "Spectacled Caiman.png": [
-          "semi-aquatic",
-          "tropical",
-          "south-america"
-        ],
-        "Common Snapping Turtle.png": [
-          "semi-aquatic",
-          "wetland"
-        ],
-        "Yellow Anaconda.png": [
-          "tropical",
-          "nocturnal"
-        ],
-        "Rainbow Boa.png": [
-          "nocturnal"
-        ],
-        "Radiated Tortoise.png": [
-          "tropical"
-        ],
-        "Frill-Necked Lizard.png": [
-          "tropical"
-        ],
-        "Marginated Tortoise.png": [
-          "tropical"
-        ],
-        "Pancake Tortoise.png": [
-          "tropical"
-        ],
         "Aldabra Giant Tortoise.png": [
-          "tropical"
+          "tropical",
+          "africa"
         ],
         "Alligator Snapping Turtle.png": [
           "semi-aquatic",
-          "wetland"
-        ],
-        "Argentine Black And White Tegu.png": [
-          "tropical",
-          "south-america"
-        ],
-        "Mexican Beaded Lizard.png": [
+          "wetland",
           "north-america"
         ],
-        "Common Anaconda.png": [
-          "tropical",
-          "nocturnal"
-        ],
-        "Dumeril's Boa.png": [
-          "nocturnal"
-        ],
-        "Chinese Softshelled Turtle.png": [
+        "American Alligator.png": [
           "semi-aquatic",
           "wetland",
-          "asia"
-        ],
-        "Rhinoceros Iguana.png": [
-          "tropical"
-        ],
-        "Pig-Nosed Turtle.png": [
-          "semi-aquatic",
-          "wetland"
-        ],
-        "Mata-Mata.png": [
-          "semi-aquatic",
-          "wetland"
-        ],
-        "Savanna Monitor.png": [
-          "tropical"
-        ],
-        "Gila Monster.png": [
-          "desert",
           "north-america"
         ],
-        "Yellow-Footed Tortoise.png": [
-          "tropical"
-        ],
-        "Spiny-Tailed Monitor.png": [
-          "desert"
-        ],
-        "Indian Star Tortoise.png": [
-          "asia"
+        "Argentine Black and White Tegu.png": [
+          "tropical",
+          "south-america"
         ],
         "Asian Water Monitor.png": [
           "semi-aquatic",
           "tropical",
           "asia"
         ],
-        "Garden Tree Boa.png": [
-          "tropical",
-          "forest",
-          "nocturnal"
-        ],
-        "European Legless Lizard.png": [
-          "europe"
-        ],
-        "Egyptian Tortoise.png": [
-          "desert",
-          "africa"
-        ],
-        "Common Musk Turtle.png": [
+        "Chinese Softshelled Turtle.png": [
           "semi-aquatic",
-          "wetland"
+          "wetland",
+          "asia"
+        ],
+        "Chinese Stripe-Necked Turtle.png": [
+          "asia"
         ],
         "Chinese Three-Keeled Pond Turtle.png": [
           "semi-aquatic",
           "wetland",
           "asia"
         ],
+        "Common Anaconda.png": [
+          "tropical",
+          "nocturnal",
+          "south-america"
+        ],
+        "Common Musk Turtle.png": [
+          "semi-aquatic",
+          "wetland",
+          "north-america"
+        ],
+        "Common Snapping Turtle.png": [
+          "semi-aquatic",
+          "wetland",
+          "north-america"
+        ],
+        "Cuvier's Dwarf Caiman.png": [
+          "semi-aquatic",
+          "tropical",
+          "south-america"
+        ],
+        "Dumeril's Boa.png": [
+          "nocturnal",
+          "africa"
+        ],
+        "Dwarf Crocodile.png": [
+          "semi-aquatic",
+          "tropical",
+          "africa"
+        ],
+        "Egyptian Tortoise.png": [
+          "desert",
+          "africa"
+        ],
+        "European Legless Lizard.png": [
+          "europe"
+        ],
+        "Frill-Necked Lizard.png": [
+          "tropical",
+          "oceania"
+        ],
+        "Garden Tree Boa.png": [
+          "tropical",
+          "nocturnal",
+          "south-america"
+        ],
+        "Gila Monster.png": [
+          "desert",
+          "north-america"
+        ],
+        "Indian Star Tortoise.png": [
+          "asia"
+        ],
+        "Leopard Tortoise.png": [
+          "desert",
+          "africa"
+        ],
         "Malagasy Tree Boa.png": [
           "tropical",
-          "forest",
-          "nocturnal"
+          "nocturnal",
+          "africa"
+        ],
+        "Marginated Tortoise.png": [
+          "tropical",
+          "europe"
+        ],
+        "Mata-Mata.png": [
+          "semi-aquatic",
+          "wetland",
+          "south-america"
+        ],
+        "Mexican Beaded Lizard.png": [
+          "north-america"
+        ],
+        "Nile Crocodile.png": [
+          "semi-aquatic",
+          "wetland",
+          "africa"
+        ],
+        "Pancake Tortoise.png": [
+          "tropical",
+          "africa"
+        ],
+        "Pig-Nosed Turtle.png": [
+          "semi-aquatic",
+          "wetland",
+          "oceania"
+        ],
+        "Radiated Tortoise.png": [
+          "tropical",
+          "africa"
+        ],
+        "Rainbow Boa.png": [
+          "nocturnal",
+          "south-america"
         ],
         "Red-Bellied Short-Necked Turtle.png": [
-          "tropical"
+          "tropical",
+          "oceania"
+        ],
+        "Rhinoceros Iguana.png": [
+          "tropical",
+          "north-america"
+        ],
+        "Savanna Monitor.png": [
+          "tropical",
+          "africa"
+        ],
+        "Spectacled Caiman.png": [
+          "semi-aquatic",
+          "tropical",
+          "south-america"
+        ],
+        "Spiny-Tailed Monitor.png": [
+          "desert",
+          "oceania"
         ],
         "Western Diamondback Rattlesnake.png": [
-          "north-america",
-          "nocturnal"
+          "nocturnal",
+          "north-america"
         ],
-        "Chinese Stripe-Necked Turtle.png": [
-          "asia"
+        "Yellow Anaconda.png": [
+          "tropical",
+          "nocturnal",
+          "south-america"
+        ],
+        "Yellow-Footed Tortoise.png": [
+          "tropical",
+          "south-america"
         ]
       },
       "3": {
-        "Komodo Dragon.png": [
-          "tropical",
-          "asia"
-        ],
-        "Caiman Lizard.png": [
-          "semi-aquatic",
-          "tropical",
-          "south-america",
-          "rainforest"
-        ],
-        "Western Gabook Viper.png": [
-          "tropical",
-          "forest",
-          "africa"
-        ],
-        "Emerald Tree Boa.png": [
-          "tropical",
-          "forest",
-          "nocturnal"
-        ],
-        "Painted Turtle.png": [
-          "semi-aquatic",
-          "wetland"
-        ],
-        "Monocled Cobra.png": [
-          "tropical"
-        ],
-        "McCord's Snake-Necked Turtle.png": [
-          "semi-aquatic",
-          "wetland"
-        ],
-        "Florida Redbelly Turtle.png": [
-          "north-america"
-        ],
-        "Common Viper.png": [
-          "nocturnal"
-        ],
-        "Elongated Tortoise.png": [
-          "tropical"
-        ],
-        "Malagasy Ground Boa.png": [
-          "tropical",
-          "nocturnal"
-        ],
-        "Green Tree Monitor.png": [
-          "tropical",
-          "forest"
-        ],
-        "Puff Adder.png": [
-          "tropical"
-        ],
-        "Helmeted Turtle.png": [
-          "tropical"
-        ],
-        "Nile Monitor.png": [
-          "africa"
-        ],
-        "Eyelash Viper.png": [
-          "nocturnal"
-        ],
         "Asian Giant Tortoise.png": [
           "tropical",
           "asia"
         ],
-        "Malagasy Spider Tortoise.png": [
-          "tropical"
+        "Broad-Snouted Caiman.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "south-america"
+        ],
+        "Caiman Lizard.png": [
+          "semi-aquatic",
+          "rainforest",
+          "tropical",
+          "south-america"
+        ],
+        "Common Viper.png": [
+          "nocturnal",
+          "asia",
+          "europe"
         ],
         "Cuban Crocodile.png": [
           "semi-aquatic",
           "wetland",
-          "tropical"
+          "tropical",
+          "north-america"
         ],
-        "Nose-Horned Viper.png": [
-          "nocturnal"
-        ],
-        "Red Tegu.png": [
-          "tropical"
-        ],
-        "Spectacled Cobra.png": [
-          "tropical"
-        ],
-        "Broad-Snouted Caiman.png": [
-          "semi-aquatic",
-          "wetland",
-          "tropical"
-        ],
-        "Mindanao Water Monitor.png": [
-          "semi-aquatic",
+        "Elongated Tortoise.png": [
+          "tropical",
           "asia"
         ],
-        "Yellow-Spotted Amazon River Turtle.png": [
-          "semi-aquatic",
-          "wetland",
+        "Emerald Tree Boa.png": [
           "tropical",
-          "forest",
+          "nocturnal",
           "south-america"
         ],
-        "Galapagos Giant Tortoise.png": [
-          "tropical"
+        "Eyelash Viper.png": [
+          "nocturnal",
+          "north-america",
+          "south-america"
         ],
-        "Utila Spinytail Iguana.png": [
-          "tropical"
+        "Florida Redbelly Turtle.png": [
+          "north-america"
+        ],
+        "Galapagos Giant Tortoise.png": [
+          "tropical",
+          "south-america"
         ],
         "Giant Asian Pond Turtle.png": [
           "semi-aquatic",
@@ -3390,48 +3670,196 @@
           "tropical",
           "asia"
         ],
+        "Green Tree Monitor.png": [
+          "tropical",
+          "oceania"
+        ],
+        "Helmeted Turtle.png": [
+          "tropical",
+          "africa"
+        ],
+        "Komodo Dragon.png": [
+          "tropical",
+          "asia"
+        ],
+        "Malagasy Ground Boa.png": [
+          "tropical",
+          "nocturnal",
+          "africa"
+        ],
+        "Malagasy Spider Tortoise.png": [
+          "tropical",
+          "africa"
+        ],
         "Malaysian Giant Pond Turtle.png": [
           "semi-aquatic",
           "wetland",
           "asia"
         ],
+        "McCord's Snake-Necked Turtle.png": [
+          "semi-aquatic",
+          "wetland",
+          "asia"
+        ],
+        "Mindanao Water Monitor.png": [
+          "semi-aquatic",
+          "asia"
+        ],
+        "Monocled Cobra.png": [
+          "tropical",
+          "asia"
+        ],
+        "Nile Monitor.png": [
+          "africa"
+        ],
+        "Nose-Horned Viper.png": [
+          "nocturnal",
+          "europe"
+        ],
+        "Painted Turtle.png": [
+          "semi-aquatic",
+          "wetland",
+          "north-america"
+        ],
+        "Puff Adder.png": [
+          "tropical",
+          "africa",
+          "asia"
+        ],
+        "Red Tegu.png": [
+          "tropical",
+          "south-america"
+        ],
         "Smooth-Fronted Caiman.png": [
           "semi-aquatic",
           "wetland",
-          "tropical"
+          "tropical",
+          "south-america"
+        ],
+        "Spectacled Cobra.png": [
+          "tropical",
+          "asia"
+        ],
+        "Utila Spinytail Iguana.png": [
+          "tropical",
+          "north-america"
+        ],
+        "Western Gabook Viper.png": [
+          "tropical",
+          "africa"
+        ],
+        "Yellow-Spotted Amazon River Turtle.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "south-america"
         ]
       },
       "4": {
-        "Copperhead.png": [
-          "north-america",
-          "nocturnal"
-        ],
-        "King Cobra.png": [
-          "tropical"
-        ],
         "Black Mamba.png": [
           "tropical",
-          "nocturnal"
+          "nocturnal",
+          "africa"
         ],
-        "Eastern Diamongback Rattlesnake.png": [
-          "nocturnal"
+        "Black-Headed Python.png": [
+          "nocturnal",
+          "oceania"
+        ],
+        "Blindworm.png": [
+          "tropical",
+          "asia",
+          "europe"
+        ],
+        "Borneo Earless Monitor.png": [
+          "asia"
+        ],
+        "Burmese Star Tortoise.png": [
+          "tropical",
+          "asia"
+        ],
+        "Central American Wood Turtle.png": [
+          "tropical",
+          "north-america"
+        ],
+        "Chinese Alligator.png": [
+          "semi-aquatic",
+          "wetland",
+          "asia"
+        ],
+        "Copperhead.png": [
+          "nocturnal",
+          "north-america"
+        ],
+        "Crocodile Monitor.png": [
+          "tropical",
+          "oceania"
         ],
         "Desert Horned Viper.png": [
           "desert",
-          "nocturnal"
+          "nocturnal",
+          "africa",
+          "asia"
+        ],
+        "Eastern Diamondback Rattlesnake.png": [
+          "nocturnal",
+          "north-america"
         ],
         "Eastern Green Mamba.png": [
           "tropical",
-          "nocturnal"
+          "nocturnal",
+          "africa"
         ],
-        "Crocodile Monitor.png": [
-          "tropical"
+        "False Gharial.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "asia"
+        ],
+        "Freshwater Crocodile.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "oceania"
+        ],
+        "Jackson's Chameleon.png": [
+          "tropical",
+          "africa"
+        ],
+        "Kenyan Sand Boa.png": [
+          "desert",
+          "nocturnal",
+          "africa"
+        ],
+        "King Cobra.png": [
+          "tropical",
+          "asia"
+        ],
+        "Lace Monitor.png": [
+          "tropical",
+          "oceania"
+        ],
+        "Morelet's Crocodile.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "north-america"
+        ],
+        "Philippine Crocodile.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "asia"
         ],
         "Rosy Boa.png": [
-          "nocturnal"
+          "nocturnal",
+          "north-america"
         ],
-        "Central American Wood Turtle.png": [
-          "tropical"
+        "Saltwater Crocodile.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "asia",
+          "oceania"
         ],
         "Siamese Crocodile.png": [
           "semi-aquatic",
@@ -3439,68 +3867,24 @@
           "tropical",
           "asia"
         ],
-        "Morelet's Crocodile.png": [
-          "semi-aquatic",
-          "wetland",
-          "tropical"
-        ],
         "Slender-Snouted Crocodile.png": [
           "semi-aquatic",
           "wetland",
-          "tropical"
-        ],
-        "Borneo Earless Monitor.png": [
-          "asia"
-        ],
-        "Jackson's Chameleon.png": [
-          "tropical"
+          "tropical",
+          "africa"
         ],
         "Spiny Hill Turtle.png": [
-          "tropical"
-        ],
-        "Lace Monitor.png": [
-          "tropical"
-        ],
-        "Chinese Alligator.png": [
-          "semi-aquatic",
-          "wetland",
+          "tropical",
           "asia"
         ],
-        "Yacare Caiman.png": [
-          "semi-aquatic",
-          "wetland",
+        "Spiny Softshell Turtle.png": [
           "tropical",
-          "south-america"
+          "north-america"
         ],
         "Sumatran Short-Tailed Python.png": [
           "tropical",
-          "asia",
-          "nocturnal"
-        ],
-        "Black-Headed Python.png": [
-          "nocturnal"
-        ],
-        "Spiny Softhselled Turtle.png": [
-          "tropical"
-        ],
-        "False Gharial.png": [
-          "semi-aquatic",
-          "wetland",
-          "tropical"
-        ],
-        "Burmese Star Tortoise.png": [
-          "tropical",
+          "nocturnal",
           "asia"
-        ],
-        "Saltwater Crocodile.png": [
-          "semi-aquatic",
-          "wetland",
-          "tropical"
-        ],
-        "Kenyan Sand Boa.png": [
-          "desert",
-          "africa",
-          "nocturnal"
         ],
         "West African Crocodile.png": [
           "semi-aquatic",
@@ -3508,58 +3892,50 @@
           "tropical",
           "africa"
         ],
-        "Freshwater Crocodile.png": [
-          "semi-aquatic",
-          "wetland",
-          "tropical"
-        ],
-        "Blindworm.png": [
-          "tropical"
-        ],
-        "Philippine Crocodile.png": [
+        "Yacare Caiman.png": [
           "semi-aquatic",
           "wetland",
           "tropical",
-          "asia"
+          "south-america"
         ]
       },
       "5": {
-        "Indian Gharial.png": [
+        "American Crocodile.png": [
           "semi-aquatic",
           "wetland",
           "tropical",
+          "north-america",
+          "south-america"
+        ],
+        "Angulate Tortoise.png": [
+          "tropical",
+          "africa"
+        ],
+        "Arrau River Turtle.png": [
+          "semi-aquatic",
+          "wetland",
+          "south-america"
+        ],
+        "Big-Headed Amazon River Turtle.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "south-america"
+        ],
+        "Big-Headed Turtle.png": [
+          "tropical",
+          "nocturnal",
           "asia"
         ],
         "Black Caiman.png": [
           "semi-aquatic",
           "wetland",
-          "tropical"
+          "tropical",
+          "south-america"
         ],
         "Common Toadheaded Turtle.png": [
-          "desert"
-        ],
-        "Spotted Turtle.png": [
-          "tropical"
-        ],
-        "Big-Headed Turtle.png": [
-          "tropical"
-        ],
-        "Arrau River Turtle.png": [
-          "semi-aquatic",
-          "wetland"
-        ],
-        "West African Black Forest Turtle.png": [
-          "tropical",
-          "forest",
-          "africa"
-        ],
-        "Spectacled Cape Tortoise.png": [
-          "tropical"
-        ],
-        "Madagascan Big-Headed Side-Necked Turtle.png": [
-          "semi-aquatic",
-          "wetland",
-          "tropical"
+          "desert",
+          "south-america"
         ],
         "East African Black Mud Turtle.png": [
           "semi-aquatic",
@@ -3567,56 +3943,34 @@
           "tropical",
           "africa"
         ],
-        "Three-Keeled Land Tortoise.png": [
-          "tropical"
+        "Four-Eyed Turtle.png": [
+          "semi-aquatic",
+          "wetland",
+          "asia"
+        ],
+        "Indian Gharial.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "asia"
+        ],
+        "Madagascan Big-Headed Side-Necked Turtle.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "africa"
+        ],
+        "Mugger Crocodile.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "asia"
         ],
         "New Guinea Crocodile.png": [
           "semi-aquatic",
           "wetland",
           "tropical",
           "oceania"
-        ],
-        "Angulate Tortoise.png": [
-          "tropical"
-        ],
-        "Four-Eyed Turtle.png": [
-          "semi-aquatic",
-          "wetland"
-        ],
-        "American Crocodile.png": [
-          "semi-aquatic",
-          "wetland",
-          "tropical"
-        ],
-        "Texas Gopher Tortoise.png": [
-          "north-america"
-        ],
-        "Mugger Crocodile.png": [
-          "semi-aquatic",
-          "wetland",
-          "tropical"
-        ],
-        "South American Snapping Turtle.png": [
-          "semi-aquatic",
-          "wetland",
-          "south-america"
-        ],
-        "West African Helmeted Turtle.png": [
-          "tropical",
-          "africa"
-        ],
-        "South-American Snake-Headed Turtle.png": [
-          "south-america"
-        ],
-        "Sulawesi Forest Turtle.png": [
-          "forest"
-        ],
-        "Tuatara.png": [
-          "oceania"
-        ],
-        "Smooth Softshelled Turtle.png": [
-          "semi-aquatic",
-          "wetland"
         ],
         "Orinoco Crocodile.png": [
           "semi-aquatic",
@@ -3628,15 +3982,49 @@
           "semi-aquatic",
           "wetland",
           "tropical",
-          "forest",
           "south-america"
         ],
-        "Big-Headed Amazon River Turtle.png": [
+        "Smooth Softshelled Turtle.png": [
           "semi-aquatic",
           "wetland",
-          "tropical",
-          "forest",
+          "north-america"
+        ],
+        "South American Snapping Turtle.png": [
+          "semi-aquatic",
+          "wetland",
           "south-america"
+        ],
+        "South-American Snake-Headed Turtle.png": [
+          "south-america"
+        ],
+        "Spectacled Cape Tortoise.png": [
+          "tropical",
+          "africa"
+        ],
+        "Spotted Turtle.png": [
+          "tropical",
+          "north-america"
+        ],
+        "Sulawesi Forest Turtle.png": [
+          "asia"
+        ],
+        "Texas Gopher Tortoise.png": [
+          "north-america"
+        ],
+        "Three-Keeled Land Tortoise.png": [
+          "tropical",
+          "asia"
+        ],
+        "Tuatara.png": [
+          "oceania"
+        ],
+        "West African Black Forest Turtle.png": [
+          "tropical",
+          "africa"
+        ],
+        "West African Helmeted Turtle.png": [
+          "tropical",
+          "africa"
         ]
       }
     }

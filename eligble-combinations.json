@@ -1602,13 +1602,7 @@
         "African Spoonbill",
         "Blue Duiker"
       ],
-      "evidence": [
-        {
-          "zoo": "The Maryland Zoo in Baltimore",
-          "country": "United States",
-          "date": "2018"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -1781,11 +1775,6 @@
         {
           "zoo": "Brookfield Zoo",
           "country": "United States",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoo du Bassin d'Arcachon",
-          "country": "France",
           "date": "2022-06-15"
         }
       ]
@@ -2186,13 +2175,7 @@
         "Aldabra Giant Tortoise",
         "Sulawesi Babirusa"
       ],
-      "evidence": [
-        {
-          "zoo": "Fővárosi Állat- és Növénykert",
-          "country": "Hungary",
-          "date": "2021-05-09"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -4774,13 +4757,7 @@
         "Barbary Macaque",
         "Barbary Sheep"
       ],
-      "evidence": [
-        {
-          "zoo": "Zoo Praha",
-          "country": "Czech Republic",
-          "date": "2008-09"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -4836,13 +4813,7 @@
         "Barbary Sheep",
         "Common Warthog"
       ],
-      "evidence": [
-        {
-          "zoo": "Xantus János Állatkert",
-          "country": "Hungary",
-          "date": "2021-05-09"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -4891,13 +4862,7 @@
         "Barbary Sheep",
         "Pygmy Hippopotamus"
       ],
-      "evidence": [
-        {
-          "zoo": "Nyíregyházi Állatpark",
-          "country": "Hungary",
-          "date": "2022-06-15"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -5175,13 +5140,7 @@
         "Bearded Barbet",
         "Pygmy Hippopotamus"
       ],
-      "evidence": [
-        {
-          "zoo": "Zoo Zürich",
-          "country": "Switzerland",
-          "date": "2022"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -6954,26 +6913,14 @@
         "Blue Duiker",
         "Hadada Ibis"
       ],
-      "evidence": [
-        {
-          "zoo": "The Maryland Zoo in Baltimore",
-          "country": "United States",
-          "date": "2018"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
         "Blue Duiker",
         "Hamerkop"
       ],
-      "evidence": [
-        {
-          "zoo": "The Maryland Zoo in Baltimore",
-          "country": "United States",
-          "date": "2018"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -6998,13 +6945,7 @@
         "Blue Duiker",
         "Von Der Decken's Hornbill"
       ],
-      "evidence": [
-        {
-          "zoo": "The Maryland Zoo in Baltimore",
-          "country": "United States",
-          "date": "2018"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -8117,13 +8058,7 @@
         "Boa Constrictor",
         "Emerald Tree Boa"
       ],
-      "evidence": [
-        {
-          "zoo": "Singapore Zoo",
-          "country": "Singapore",
-          "date": "2024"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -13194,13 +13129,7 @@
         "Common Warthog",
         "Hamadryas Baboon"
       ],
-      "evidence": [
-        {
-          "zoo": "Xantus János Állatkert",
-          "country": "Hungary",
-          "date": "2021-05-09"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -14336,13 +14265,7 @@
         "Crimson-Rumped Toucanet",
         "Keel-Billed Toucan"
       ],
-      "evidence": [
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2013"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -14356,13 +14279,7 @@
         "Crimson-Rumped Toucanet",
         "Toco Toucan"
       ],
-      "evidence": [
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2013"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -15561,13 +15478,7 @@
         "Fischer's Turaco",
         "Hamerkop"
       ],
-      "evidence": [
-        {
-          "zoo": "Pairi Daiza",
-          "country": "Belgium",
-          "date": "2025"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -19869,13 +19780,7 @@
         "Hoffmann's Two-Toed Sloth",
         "Spot-Billed Toucanet"
       ],
-      "evidence": [
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2013"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -19907,13 +19812,7 @@
         "Humboldt Penguin",
         "Brown Pelican"
       ],
-      "evidence": [
-        {
-          "zoo": "Vogelpark Marlow",
-          "country": "Germany",
-          "date": "2024"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -20699,13 +20598,7 @@
         "Keel-Billed Toucan",
         "Toco Toucan"
       ],
-      "evidence": [
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2013"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -21525,18 +21418,7 @@
         "Lowland Anoa",
         "Sulawesi Babirusa"
       ],
-      "evidence": [
-        {
-          "zoo": "San Diego Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
-        },
-        {
-          "zoo": "Los Angeles Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -22079,21 +21961,6 @@
           "zoo": "Montgomery Zoo and Mann Wildlife Learning Museum",
           "country": "United States",
           "date": "2022"
-        },
-        {
-          "zoo": "Zoo du Bassin d'Arcachon",
-          "country": "France",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Givskud Zoo – Zootopia",
-          "country": "Denmark",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Xantus János Állatkert",
-          "country": "Hungary",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -22845,13 +22712,7 @@
         "Military Macaw",
         "Scarlet Macaw"
       ],
-      "evidence": [
-        {
-          "zoo": "Zoológico La Aurora",
-          "country": "Guatemala",
-          "date": "2026-03"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -22865,13 +22726,7 @@
         "Military Macaw",
         "Yellow-Naped Amazon"
       ],
-      "evidence": [
-        {
-          "zoo": "Zoológico La Aurora",
-          "country": "Guatemala",
-          "date": "2026-03"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -23456,13 +23311,7 @@
         "Pale-Billed Aracari",
         "Toco Toucan"
       ],
-      "evidence": [
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2013"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -23729,39 +23578,21 @@
         "Philippine Cockatoo",
         "Pink Cockatoo"
       ],
-      "evidence": [
-        {
-          "zoo": "Weltvogelpark Walsrode",
-          "country": "Germany",
-          "date": "2019"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
         "Philippine Cockatoo",
         "Umbrella Cockatoo"
       ],
-      "evidence": [
-        {
-          "zoo": "Loro Parque",
-          "country": "Spain",
-          "date": "2022"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
         "Pink Cockatoo",
         "Galah"
       ],
-      "evidence": [
-        {
-          "zoo": "Weltvogelpark Walsrode",
-          "country": "Germany",
-          "date": "2019"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -24160,13 +23991,7 @@
         "Prevost's Squirrel",
         "Elongated Tortoise"
       ],
-      "evidence": [
-        {
-          "zoo": "Diergaarde Blijdorp",
-          "country": "Netherlands",
-          "date": "2009"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -24180,13 +24005,7 @@
         "Purple-Crested Turaco",
         "Red-Billed Woodhoopoe"
       ],
-      "evidence": [
-        {
-          "zoo": "ZOO Antwerpen",
-          "country": "Belgium",
-          "date": "2025"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -24196,11 +24015,6 @@
       "evidence": [
         {
           "zoo": "San Diego Zoo",
-          "country": "United States",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Houston Zoo",
           "country": "United States",
           "date": "2022-06-15"
         }
@@ -24228,11 +24042,6 @@
         {
           "zoo": "Brookfield Zoo",
           "country": "United States",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Aalborg Zoo",
-          "country": "Denmark",
           "date": "2022-06-15"
         }
       ]
@@ -24288,11 +24097,6 @@
           "zoo": "Safari World",
           "country": "Thailand",
           "date": "2020-05-18"
-        },
-        {
-          "zoo": "Bioparc Fuengirola",
-          "country": "Spain",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -24306,11 +24110,6 @@
           "zoo": "Zoologischer Garten Halle – Bergzoo",
           "country": "Germany",
           "date": "2022"
-        },
-        {
-          "zoo": "Bergzoo Halle",
-          "country": "Germany",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -24329,16 +24128,6 @@
           "zoo": "San Diego Zoo Safari Park",
           "country": "United States",
           "date": "2022"
-        },
-        {
-          "zoo": "Réserve Zoologique de Calviac",
-          "country": "France",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Batu Secret Zoo",
-          "country": "Indonesia",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -24365,11 +24154,6 @@
           "zoo": "Taman Safari Indonesia",
           "country": "Indonesia",
           "date": "2022"
-        },
-        {
-          "zoo": "Taman Safari Indonesia",
-          "country": "Indonesia",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -24409,11 +24193,6 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoo Zürich",
-          "country": "Switzerland",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -24427,11 +24206,6 @@
           "zoo": "Louisville Zoo",
           "country": "United States",
           "date": "2022"
-        },
-        {
-          "zoo": "Louisville Zoo",
-          "country": "United States",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -24636,11 +24410,6 @@
         {
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
-          "date": "2021-05-09"
-        },
-        {
-          "zoo": "Wild Place Project",
-          "country": "United Kingdom",
           "date": "2021-05-09"
         }
       ]
@@ -24857,13 +24626,7 @@
         "Red-Breasted Toucan",
         "White-Faced Saki"
       ],
-      "evidence": [
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2013"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -25705,13 +25468,7 @@
         "Scarlet Macaw",
         "Yellow-Naped Amazon"
       ],
-      "evidence": [
-        {
-          "zoo": "Zoológico La Aurora",
-          "country": "Guatemala",
-          "date": "2026-03"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -25883,26 +25640,14 @@
         "Snowy Owl",
         "Ural Owl"
       ],
-      "evidence": [
-        {
-          "zoo": "Tierpark Nordhorn",
-          "country": "Germany",
-          "date": "2025"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
         "Solomons Corella",
         "Umbrella Cockatoo"
       ],
-      "evidence": [
-        {
-          "zoo": "Loro Parque",
-          "country": "Spain",
-          "date": "2022"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -26636,13 +26381,7 @@
         "Sugar Glider",
         "Four-Toed Hedgehog"
       ],
-      "evidence": [
-        {
-          "zoo": "Taman Safari Bogor",
-          "country": "Indonesia",
-          "date": "2024"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -26732,13 +26471,7 @@
         "Tanimbar Corella",
         "Umbrella Cockatoo"
       ],
-      "evidence": [
-        {
-          "zoo": "Loro Parque",
-          "country": "Spain",
-          "date": "2022"
-        }
-      ]
+      "evidence": []
     },
     {
       "animals": [
@@ -29393,18 +29126,12 @@
     ]
   },
   "evidence_status": {
-    "pairs_with_evidence": 1062,
-    "pairs_awaiting_evidence": 887,
+    "pairs_with_evidence": 1030,
+    "pairs_awaiting_evidence": 919,
     "total_direct_pairs": 1949,
-    "last_batch_new_evidence_entries": 14,
-    "last_batch_pairs_newly_evidenced": 1,
+    "last_batch_new_evidence_entries": 54,
+    "last_batch_pairs_newly_evidenced": 0,
     "last_batch_new_direct_pairs": 0,
-    "note": "v11.20 old-master free-text Hippopotamidae crossmatch, verified against ZooRoPE's 15 June 2022 review. Unknown-institution records excluded; problematic Brookfield bird-primate inferences not used."
-  },
-  "metadata": {
-    "v11_19_old_master_structured_audit": {
-      "structured_old_master_unsupported_records_remaining": 0,
-      "result": "All structured new_direct_pairs records from the old v9.99 master that still exist in the current direct-pair graph already have evidence. Further old-master recovery must come from free-text research notes/findings rather than new_direct_pairs blocks."
-    }
+    "note": "v11.16 deep old-master recovery. Curated exact named-institution/date records from v9.99 metadata; generic review-only records and Russia-only evidence were skipped."
   }
 }

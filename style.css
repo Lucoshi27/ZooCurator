@@ -2387,122 +2387,787 @@ body.history-viewing #zooCanvas .animal-card {
 
 
 
+
+/* V172 */
+.game-options-modal #advancedGameRules label{grid-template-columns:minmax(170px,1fr) 210px}
+.game-options-modal #optAnimalLanguage,.game-options-modal #optOpponentMode,.game-options-modal #optRewardMilestones,.game-options-modal #optTradeFrequency{width:210px;min-width:210px}
+.game-options-modal #optAnimalLanguage,.game-options-modal #optOpponentMode{justify-self:end}
+.game-options-modal .glow-option #optEligibilityGlows{width:auto;min-width:0;justify-self:start}
+.new-zoo-modal{width:min(350px,calc(100vw - 24px));max-width:350px;padding:18px;font-size:16px}
+.new-zoo-modal h2{margin:0 0 12px;font-size:26px}
+.new-zoo-modal .advanced-game-rules label{grid-template-columns:92px minmax(0,1fr);gap:7px;align-items:center;margin-bottom:9px}
+.new-zoo-modal .advanced-game-rules label>span:first-child{min-width:0;font-size:15px;font-weight:800;white-space:nowrap}
+.new-zoo-modal .new-zoo-field-with-random{display:grid;grid-template-columns:minmax(0,1fr) 26px;gap:6px;align-items:center;width:100%;min-width:0}
+.new-zoo-modal button.new-zoo-randomize{width:26px;min-width:26px;height:26px;padding:0;line-height:24px;text-align:center;font-size:16px;font-weight:800;cursor:pointer}
+.new-zoo-modal #generateZooCountry,.new-zoo-modal #generateZooLocation,.new-zoo-modal #generateZooName{width:100%;min-width:0;height:33px;font-size:14px}
+.new-zoo-modal label:has(#newZooSize)>span:first-child{min-width:92px;white-space:nowrap}
+.new-zoo-modal #newZooSize{width:100%;min-width:0}
+.new-zoo-modal #newZooSizeNote{display:inline;white-space:nowrap;min-width:4ch}
+.new-zoo-modal .country-picker-stack{display:flex;flex-direction:column;gap:4px;width:100%;min-width:0}
+.new-zoo-modal .country-quick-picks{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.new-zoo-modal .country-quick-picks button{min-width:0;padding:3px 2px;border:1px solid #bbb6aa;border-radius:4px;background:#ebe8df;font-size:10px;font-weight:800;cursor:pointer}
+.new-zoo-modal .country-quick-picks button:hover{background:#fff}
+.new-zoo-modal .options-actions{margin-top:11px}.new-zoo-modal .options-actions button{padding:7px 9px;font-size:13px}.new-zoo-actions #generateZooStart{min-width:112px}
+
 /* ============================================================
-   V171 — GAME OPTIONS + COMPACT NEW ZOO MENU
+   V173 — COMPACT CATEGORY / LEVEL TRACKER
+   Make the progression tracker occupy a tighter header footprint and sit
+   slightly lower so its top edge aligns more naturally with the other HUD
+   controls. Desktop only; mobile behaviour is unchanged.
    ============================================================ */
-
-/* Game Options alignment retained from V170. */
-.game-options-modal #advancedGameRules label {
-    grid-template-columns: minmax(170px, 1fr) 210px;
-}
-.game-options-modal #optAnimalLanguage,
-.game-options-modal #optOpponentMode,
-.game-options-modal #optRewardMilestones,
-.game-options-modal #optTradeFrequency {
-    width: 210px;
-    min-width: 210px;
-}
-.game-options-modal #optAnimalLanguage,
-.game-options-modal #optOpponentMode {
-    justify-self: end;
-}
-.game-options-modal .glow-option #optEligibilityGlows {
-    width: auto;
-    min-width: 0;
-    justify-self: start;
+@media (min-width: 701px) {
+    #progressTracker {
+        top: 12px;
+    }
 }
 
-/* The New Zoo dialog no longer wastes a large empty right-hand area. */
+@media (min-width: 701px) and (max-width: 1450px) {
+    #progressTracker {
+        width: 290px;
+        top: 12px;
+        transform: none;
+    }
+
+    #progressTracker .progress-table {
+        width: 290px;
+        grid-template-columns: 84px repeat(5, 40px);
+        gap: 1px;
+    }
+
+    #progressTracker .progress-heading {
+        height: 16px;
+        font-size: 8px;
+    }
+
+    #progressTracker .progress-category,
+    #progressTracker .progress-check-cell {
+        height: 15px;
+    }
+
+    #progressTracker .progress-category {
+        padding: 0 4px;
+        font-size: 8px;
+    }
+
+    #progressTracker .progress-checkbox {
+        width: 11px;
+        height: 11px;
+        font-size: 9px;
+    }
+}
+
+
+
+/* ============================================================
+   V177 — NEW ZOO MENU: MOCKUP LAYOUT
+   ============================================================ */
 .new-zoo-modal {
-    width: min(470px, calc(100vw - 32px));
-    max-width: 470px;
-    padding: 24px 26px;
-    font-size: 16px;
-}
-.new-zoo-modal h2 {
-    font-size: 28px;
-    margin-bottom: 10px;
-}
-.new-zoo-modal > p {
-    margin: 0 0 18px;
-    font-size: 15px;
-    line-height: 1.4;
-}
-.new-zoo-modal .advanced-game-rules {
-    font-size: 16px;
-}
-.new-zoo-modal .advanced-game-rules label {
-    grid-template-columns: 112px minmax(0, 1fr);
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 11px;
-}
-.new-zoo-modal .advanced-game-rules label > span:first-child {
-    font-size: 16px;
-    font-weight: 800;
+    width: min(760px, calc(100vw - 32px)) !important;
+    max-width: 760px !important;
+    padding: 18px 20px 16px !important;
 }
 
-/* Randomizer is a separate 26x26 control on the LEFT, exactly like the
-   ↻ button that appears beside the editable main-screen zoo name. */
-.new-zoo-modal .new-zoo-field-with-random {
-    display: grid;
-    grid-template-columns: 26px minmax(0, 1fr);
-    gap: 8px;
+.new-zoo-modal .new-zoo-heading-row {
+    display: flex;
     align-items: center;
-    width: 100%;
+    gap: 28px;
+    min-height: 48px;
+    padding: 0 16px 10px;
+    border-bottom: 1px solid rgba(70, 60, 45, .18);
+}
+
+.new-zoo-modal .new-zoo-heading-row h2 {
+    margin: 0;
+    flex: 0 0 auto;
+    font-size: 26px;
+    line-height: 1;
+}
+
+.new-zoo-name-display,
+.new-zoo-location-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     min-width: 0;
 }
-.new-zoo-modal button.new-zoo-randomize {
-    width: 26px;
-    min-width: 26px;
-    height: 26px;
+
+.new-zoo-name-display strong {
+    font-size: 30px;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.new-zoo-location-display strong {
+    font-size: 27px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.new-zoo-modal .advanced-game-rules {
+    display: grid !important;
+    gap: 13px !important;
+    padding: 12px 16px 0 !important;
+}
+
+.new-zoo-modal .advanced-game-rules > label {
+    display: grid !important;
+    grid-template-columns: 126px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 14px !important;
+    margin: 0 !important;
+}
+
+.new-zoo-modal .advanced-game-rules > label > span:first-child,
+.new-zoo-modal .new-zoo-size-option > span:first-child {
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    white-space: nowrap;
+}
+
+.new-zoo-modal .new-zoo-field-with-random {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.new-zoo-modal #generateZooCountry {
+    width: 280px !important;
+    max-width: calc(100% - 48px);
+    height: 34px;
+    font-size: 14px;
+}
+
+.new-zoo-modal .new-zoo-randomize,
+.new-zoo-modal .new-zoo-edit-name,
+.new-zoo-modal .new-zoo-edit-location {
+    width: 30px !important;
+    min-width: 30px !important;
+    height: 30px !important;
+    padding: 0 !important;
+    display: inline-grid !important;
+    place-items: center;
+    font-size: 15px !important;
+    line-height: 1 !important;
+}
+
+.new-zoo-modal .new-zoo-hidden-editor {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.new-zoo-modal .new-zoo-size-option {
+    grid-template-columns: 126px 280px auto !important;
+    gap: 14px !important;
+}
+
+.new-zoo-modal #newZooSize {
+    width: 280px !important;
+    margin: 0 !important;
+}
+
+.new-zoo-modal .new-zoo-size-value {
+    font-size: 13px;
+    min-width: 34px;
+}
+
+.new-zoo-modal #newZooSizeNote {
+    margin: -5px 0 0 !important;
+    padding-left: 0 !important;
+    font-size: 10px !important;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.new-zoo-modal .new-zoo-actions {
+    margin-top: 12px !important;
+    padding-top: 0 !important;
+}
+
+@media (max-width: 700px) {
+    .new-zoo-modal {
+        width: min(94vw, 760px) !important;
+        padding: 14px !important;
+    }
+
+    .new-zoo-modal .new-zoo-heading-row {
+        gap: 14px;
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    .new-zoo-name-display strong {
+        font-size: 22px;
+    }
+
+    .new-zoo-modal .advanced-game-rules {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+    }
+
+    .new-zoo-modal .advanced-game-rules > label {
+        grid-template-columns: 100px minmax(0, 1fr) !important;
+        gap: 8px !important;
+    }
+
+    .new-zoo-modal .advanced-game-rules > label > span:first-child,
+    .new-zoo-modal .new-zoo-size-option > span:first-child {
+        font-size: 17px !important;
+    }
+
+    .new-zoo-location-display strong {
+        font-size: 21px;
+    }
+
+    .new-zoo-modal .new-zoo-size-option {
+        grid-template-columns: 100px minmax(0, 1fr) auto !important;
+    }
+
+    .new-zoo-modal #generateZooCountry,
+    .new-zoo-modal #newZooSize {
+        width: 100% !important;
+    }
+
+    .new-zoo-modal #newZooSizeNote {
+        white-space: normal;
+    }
+}
+
+
+/* ============================================================
+   V178 — NEW ZOO MENU INTERACTION POLISH
+   ============================================================ */
+.new-zoo-modal .new-zoo-size-value {
+    display: none !important;
+}
+
+.new-zoo-modal .new-zoo-size-option {
+    grid-template-columns: 126px 280px 30px !important;
+}
+
+.new-zoo-size-reset {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
     padding: 0;
-    line-height: 24px;
-    text-align: center;
+    display: inline-grid;
+    place-items: center;
     font-size: 16px;
-    font-weight: 800;
+    line-height: 1;
+}
+
+.new-zoo-location-display strong {
+    font-weight: 400 !important;
+    font-family: inherit !important;
+}
+
+/* Custom country picker: native selects cannot keep options visually sticky
+   while their popup scrolls, so this mirrors a select while allowing a real
+   sticky favourites strip inside the menu. */
+.new-zoo-hidden-select {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.new-zoo-country-picker {
+    position: relative;
+    width: 280px;
+    max-width: calc(100% - 48px);
+}
+
+.new-zoo-country-trigger {
+    width: 100%;
+    height: 34px;
+    padding: 0 30px 0 9px;
+    text-align: left;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.new-zoo-country-trigger::after {
+    content: "▾";
+    position: absolute;
+    right: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.new-zoo-country-menu {
+    display: none;
+    position: absolute;
+    z-index: 10020;
+    left: 0;
+    top: calc(100% + 3px);
+    width: 100%;
+    max-height: 270px;
+    overflow-y: auto;
+    background: #f7f4ec;
+    border: 1px solid rgba(70,60,45,.38);
+    border-radius: 5px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.22);
+}
+
+.new-zoo-country-menu.visible {
+    display: block;
+}
+
+.new-zoo-country-sticky {
+    position: sticky;
+    z-index: 2;
+    top: 0;
+    display: block;
+    background: #eee9dd;
+    border-bottom: 1px solid rgba(70,60,45,.28);
+    box-shadow: 0 2px 4px rgba(0,0,0,.08);
+}
+
+.new-zoo-country-scroll-list {
+    display: block;
+}
+
+.new-zoo-country-option {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 6px 9px;
+    text-align: left;
+    font: inherit;
     cursor: pointer;
 }
-.new-zoo-modal #generateZooCountry,
-.new-zoo-modal #generateZooLocation,
-.new-zoo-modal #generateZooName {
-    width: 100%;
-    min-width: 0;
-    height: 34px;
-    font-size: 15px;
-}
-.new-zoo-modal #newZooSize {
-    width: 100%;
-    min-width: 0;
-}
-.new-zoo-modal #newZooSizeNote {
-    font-size: 14px;
-    line-height: 1.35;
-}
-.new-zoo-modal .options-actions button {
-    font-size: 15px;
-    padding: 9px 13px;
-}
-.new-zoo-actions #generateZooStart {
-    min-width: 128px;
+
+.new-zoo-country-option:hover {
+    background: rgba(80,100,55,.13);
 }
 
-@media (max-width: 600px) {
-    .game-options-modal #advancedGameRules label {
-        grid-template-columns: minmax(90px, 1fr) minmax(0, 1.7fr);
+.new-zoo-country-sticky .new-zoo-country-option {
+    font-weight: 600;
+}
+
+/* In-game edit prompt */
+.new-zoo-inline-editor {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 10030;
+    align-items: center;
+    justify-content: center;
+    background: rgba(40,38,32,.22);
+    border-radius: inherit;
+}
+
+.new-zoo-inline-editor.visible {
+    display: flex;
+}
+
+.new-zoo-inline-editor-card {
+    width: min(360px, calc(100% - 48px));
+    padding: 16px;
+    background: #f7f4ec;
+    border: 1px solid rgba(70,60,45,.38);
+    border-radius: 8px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.28);
+}
+
+.new-zoo-inline-editor-card label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.new-zoo-inline-editor-card input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 34px;
+    padding: 4px 8px;
+    font: inherit;
+}
+
+.new-zoo-inline-editor-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+@media (max-width: 700px) {
+    .new-zoo-modal .new-zoo-size-option {
+        grid-template-columns: 100px minmax(0, 1fr) 30px !important;
     }
-    .game-options-modal #optAnimalLanguage,
-    .game-options-modal #optOpponentMode,
-    .game-options-modal #optRewardMilestones,
-    .game-options-modal #optTradeFrequency {
+
+    .new-zoo-country-picker {
         width: 100%;
-        min-width: 0;
+        max-width: calc(100% - 40px);
     }
-    .new-zoo-modal {
-        width: calc(100vw - 24px);
-        padding: 18px;
+}
+
+
+/* ============================================================
+   V180 — NEW ZOO MENU POLISH
+   ============================================================ */
+.new-zoo-modal .new-zoo-heading-row {
+    border-bottom: 1px solid rgba(70, 60, 45, .18) !important;
+}
+.new-zoo-modal .new-zoo-heading-row + .advanced-game-rules {
+    border-top: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Twice the previous edit-dialog width. */
+.new-zoo-inline-editor-card {
+    width: min(720px, calc(100% - 40px)) !important;
+}
+.new-zoo-inline-editor-card input {
+    width: 100% !important;
+}
+
+/* Reset/randomize control shares the Country randomizer's right-hand column
+   and is vertically centered on the range track. */
+.new-zoo-modal .new-zoo-size-option {
+    grid-template-columns: 126px 280px 30px !important;
+    align-items: center !important;
+}
+.new-zoo-modal .new-zoo-size-reset {
+    align-self: center !important;
+    justify-self: center !important;
+    margin: 0 !important;
+}
+
+@media (max-width: 700px) {
+    .new-zoo-modal .new-zoo-size-option {
+        grid-template-columns: 100px minmax(0, 1fr) 30px !important;
     }
-    .new-zoo-modal .advanced-game-rules label {
-        grid-template-columns: 92px minmax(0, 1fr);
+    .new-zoo-inline-editor-card {
+        width: calc(100% - 24px) !important;
     }
+}
+
+
+/* ============================================================
+   V181 — INFORMATION CARD NAMES / ZOOTIERLISTE / TEXT SELECTION
+   ============================================================ */
+#animalInformationTitle,
+#animalInformationScientificName,
+#animalInformationText,
+#animalCombinationList {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+}
+
+.animal-information-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 8px;
+    padding: 7px 2px 0;
+    border-top: 1px solid rgba(255,255,255,.35);
+}
+
+#animalInformationScientificName {
+    min-width: 0;
+    font-size: 12px;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#animalInformationZtlLink {
+    flex: 0 0 auto;
+    color: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+#animalInformationZtlLink:hover {
+    text-decoration: underline;
+}
+
+
+/* ============================================================
+   V182 — CURRENT MIXED-EXHIBIT COMBINATIONS
+   ============================================================ */
+#animalCombinationList .animal-combination-row.current-exhibit-combination {
+    background: #fff1a8 !important;
+    border-color: #d8b83f !important;
+    box-shadow: inset 3px 0 0 #d2aa18;
+}
+#animalCombinationList .animal-combination-row.current-exhibit-combination:hover {
+    background: #ffe982 !important;
+}
+
+
+/* ============================================================
+   V184 — DRAW CARD SIZE CORRECTION
+   The draw wrapper is 100x144 including its border. The Back.png fills the
+   inner box, preventing the reload-flicker fix from making it oversized.
+   ============================================================ */
+#drawCard.action-card {
+    box-sizing: border-box !important;
+    width: 100px !important;
+    height: 144px !important;
+}
+#drawCard.action-card > img {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: fill !important;
+}
+
+@media (max-width: 700px) {
+    #drawCard.action-card {
+        width: 64px !important;
+        height: 92.16px !important;
+    }
+}
+
+
+/* ============================================================
+   V188 — INFORMATION COMBINATION SECTION DIVIDER
+   ============================================================ */
+#animalCombinationList .animal-combination-zoo-divider {
+    height: 0;
+    margin: 8px 3px;
+    border-top: 2px solid rgba(255, 255, 255, .62);
+}
+
+
+/* ============================================================
+   V194 — COLLECTION
+   ============================================================ */
+#collectionButton {
+    margin-left: 7px;
+    width: 30px;
+    height: 28px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 17px;
+    line-height: 1;
+}
+
+#collectionOverlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    box-sizing: border-box;
+    background: rgba(0,0,0,.62);
+    z-index: 10045;
+}
+
+.collection-window {
+    width: min(1120px, 96vw);
+    max-height: 91vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #f4efe2;
+    color: #222;
+    border-radius: 12px;
+    box-shadow: 0 14px 46px rgba(0,0,0,.5);
+}
+
+.collection-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px 9px;
+}
+.collection-header h2 { flex: 1; margin: 0; }
+
+.collection-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 0 16px 12px;
+    border-bottom: 1px solid rgba(0,0,0,.18);
+}
+.collection-tabs button {
+    flex: 1;
+    min-width: 70px;
+    padding: 8px;
+    cursor: pointer;
+}
+.collection-tabs button.active {
+    font-weight: 800;
+    box-shadow: inset 0 -3px 0 currentColor;
+}
+
+.collection-body {
+    overflow: auto;
+    padding: 14px 16px 24px;
+}
+
+.collection-category h3 {
+    margin: 8px 0 8px;
+}
+.collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+    gap: 10px;
+    margin-bottom: 22px;
+}
+.collection-card {
+    position: relative;
+    min-width: 0;
+    padding: 5px;
+    border: 1px solid rgba(0,0,0,.22);
+    border-radius: 7px;
+    background: rgba(255,255,255,.62);
+}
+.collection-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1000 / 1440;
+    object-fit: fill;
+}
+.collection-card-name {
+    margin-top: 4px;
+    font-size: 10px;
+    line-height: 1.15;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+.collection-offered img {
+    filter: grayscale(1);
+}
+.collection-locked {
+    background: #b9b9b9;
+}
+.collection-locked img {
+    filter: grayscale(1) brightness(.45);
+    opacity: .16;
+}
+.collection-locked::after {
+    content: "?";
+    position: absolute;
+    inset: 5px 5px auto;
+    aspect-ratio: 1000 / 1440;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(24px, 4vw, 52px);
+    font-weight: 800;
+    color: rgba(255,255,255,.7);
+}
+
+#collectionTooltip {
+    position: fixed;
+    display: none;
+    z-index: 10060;
+    max-width: min(340px, 80vw);
+    padding: 9px 11px;
+    border-radius: 7px;
+    background: rgba(24,24,24,.96);
+    color: #fff;
+    box-shadow: 0 5px 18px rgba(0,0,0,.4);
+    white-space: pre-wrap;
+    font-size: 12px;
+    line-height: 1.4;
+    pointer-events: none;
+}
+
+@media (max-width: 700px) {
+    #collectionOverlay { padding: 8px; }
+    .collection-window { width: 98vw; max-height: 94vh; }
+    .collection-tabs { overflow-x: auto; }
+    .collection-tabs button { flex: 0 0 76px; }
+    .collection-grid {
+        grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+        gap: 7px;
+    }
+}
+
+
+/* ============================================================
+   V195 — COLLECTION / TURN HUD POSITION
+   ============================================================ */
+#collectionTurnRow {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 7px !important;
+    width: max-content !important;
+    margin-top: 5px !important;
+}
+
+#collectionTurnRow #collectionButton {
+    flex: 0 0 30px !important;
+    margin: 0 !important;
+}
+
+#collectionTurnRow #turnOrder,
+#collectionTurnRow #turnCounter {
+    flex: 0 0 auto !important;
+    margin-left: 0 !important;
+}
+
+
+/* ============================================================
+   V196 — COLLECTION CARD CLEANUP / UNDISCOVERED NAME MASK
+   ============================================================ */
+.collection-card {
+    padding: 0 !important;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, .42) !important;
+    border-radius: 5px !important;
+    background: transparent !important;
+}
+
+.collection-card img {
+    width: 100% !important;
+    display: block !important;
+}
+
+.collection-card-name {
+    display: none !important;
+}
+
+.collection-locked {
+    position: relative;
+    background: #8f8f8f !important;
+}
+
+/* The printed animal name sits in the lower strip of the 1000x1440 artwork.
+   Keep this as a simple opaque rectangle, matching the existing translation
+   treatment rather than adding replacement text. */
+.collection-undiscovered-name-mask {
+    position: absolute;
+    left: 5.5%;
+    right: 5.5%;
+    bottom: 3.2%;
+    height: 8.8%;
+    z-index: 3;
+    border-radius: 2px;
+    background: #777;
+    pointer-events: none;
+}
+
+/* Keep the existing undiscovered ? above the mask. */
+.collection-locked::after {
+    z-index: 4;
 }

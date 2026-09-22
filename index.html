@@ -1,5 +1,5 @@
 
-<!-- ZOO CURATOR V220.89 -->
+<!-- ZOO CURATOR HTML BUILD V222 — interface 1 -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,19 +14,23 @@
     <title>Zoo Curator</title>
 
     <!--
-        Use a fixed deployment version instead of Date.now(). Phones can now
-        reuse the cached stylesheet between visits. Change this value only
-        when style.css is actually updated.
+        Stable cross-file compatibility contract. Build numbers are intentionally
+        independent: updating game.js or style.css does not require editing this file
+        unless the shared interface itself changes.
     -->
     <script>
-        // One deployment key for the complete app shell. Change only when a
-        // new build is deployed, so Safari cannot mix files from two builds.
         (function () {
-            var version = 'V220.89';
-            window.__zooBuildVersion = version;
+            window.ZOO_INTERFACES = Object.assign({}, window.ZOO_INTERFACES, { html: 1 });
+            window.__zooHtmlBuildVersion = 'V222';
+            window.__zooAssetRequestVersion = String(Date.now());
+
             var stylesheet = document.createElement('link');
             stylesheet.rel = 'stylesheet';
-            stylesheet.href = './style.css?v=' + encodeURIComponent(version);
+            stylesheet.href = './style.css?v=' + encodeURIComponent(window.__zooAssetRequestVersion);
+            window.__zooStylesheetReady = new Promise(function (resolve) {
+                stylesheet.onload = function () { resolve(true); };
+                stylesheet.onerror = function () { resolve(false); };
+            });
             document.head.appendChild(stylesheet);
         }());
     </script>
@@ -253,11 +257,9 @@
          ===================================================== -->
     <script>
         (function () {
-            var version = String(window.__zooBuildVersion || 'V220.89');
-
             function loadGame() {
                 var game = document.createElement('script');
-                game.src = './game.js?v=' + encodeURIComponent(version);
+                game.src = './game.js?v=' + encodeURIComponent(window.__zooAssetRequestVersion);
                 game.async = false;
                 game.onerror = function () {
                     var status = document.getElementById('bootStatus');
@@ -269,10 +271,10 @@
             }
 
             var translations = document.createElement('script');
-            translations.src = './translations-nl.js?v=' + encodeURIComponent(version);
+            translations.src = './translations-nl.js?v=' + encodeURIComponent(window.__zooAssetRequestVersion);
             translations.async = false;
             translations.onload = function () {
-                window.__zooTranslationBuildVersion = version;
+                window.__zooTranslationBuildVersion = 'independent';
                 loadGame();
             };
             translations.onerror = function () {
@@ -280,7 +282,9 @@
                 window.__zooTranslationBuildVersion = 'unavailable';
                 loadGame();
             };
-            document.body.appendChild(translations);
+            Promise.resolve(window.__zooStylesheetReady).then(function () {
+                document.body.appendChild(translations);
+            });
         }());
     </script>
 

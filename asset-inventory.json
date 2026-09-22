@@ -741,7 +741,7 @@
           ]
         },
         "Sumatran Tiger.png": {
-          "scientific_name": "Panthera tigris sumatrae",
+          "scientific_name": "Panthera sumatrae",
           "tags": [
             "rainforest",
             "tropical",
@@ -1303,11 +1303,12 @@
             "southeast-asia"
           ]
         },
-        "Mishmi Takin.png": {
-          "scientific_name": "Budorcas taxicolor taxicolor",
+        "Takin.png": {
+          "scientific_name": "Budorcas taxicolor",
           "tags": [
             "mountain",
             "asia",
+            "china",
             "himalayas"
           ]
         },
@@ -1456,7 +1457,7 @@
           ]
         },
         "Cape Buffalo.png": {
-          "scientific_name": "Syncerus caffer caffer",
+          "scientific_name": "Syncerus caffer",
           "tags": [
             "africa",
             "cape"
@@ -1479,14 +1480,6 @@
             "africa",
             "cape",
             "southern-africa"
-          ]
-        },
-        "Golden Takin.png": {
-          "scientific_name": "Budorcas taxicolor bedfordi",
-          "tags": [
-            "mountain",
-            "asia",
-            "china"
           ]
         },
         "Greater Kudu.png": {
@@ -1540,7 +1533,7 @@
           ]
         },
         "Kordofan Giraffe.png": {
-          "scientific_name": "Giraffa camelopardalis antiquorum",
+          "scientific_name": "Giraffa antiquorum",
           "tags": [
             "savanna",
             "africa",
@@ -1616,7 +1609,7 @@
           ]
         },
         "Red Buffalo.png": {
-          "scientific_name": "Syncerus caffer nanus",
+          "scientific_name": "Syncerus nanus",
           "tags": [
             "tropical",
             "africa",
@@ -1640,19 +1633,11 @@
           ]
         },
         "Rothschild's Giraffe.png": {
-          "scientific_name": "Giraffa camelopardalis rothschildi",
+          "scientific_name": "Giraffa rothschildi",
           "tags": [
             "savanna",
             "africa",
             "east-africa"
-          ]
-        },
-        "Sichuan Takin.png": {
-          "scientific_name": "Budorcas taxicolor tibetana",
-          "tags": [
-            "mountain",
-            "asia",
-            "china"
           ]
         },
         "Southern Pudu.png": {
@@ -2493,7 +2478,7 @@
             "southeast-asia"
           ]
         },
-        "Mountain Gorilla.png": {
+        "Eastern Gorilla.png": {
           "scientific_name": "Gorilla beringei",
           "tags": [
             "mountain",

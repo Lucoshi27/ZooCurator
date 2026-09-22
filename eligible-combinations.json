@@ -532,6 +532,11 @@
           "zoo": "ZooParc de Beauval",
           "country": "France",
           "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -545,6 +550,11 @@
           "zoo": "Antwerp Zoo",
           "country": "Belgium",
           "date": "2020-10-17"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -556,6 +566,11 @@
       "evidence": [
         {
           "zoo": "ZOO Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
           "country": "Belgium",
           "date": "2020-10-17"
         }
@@ -584,6 +599,11 @@
           "zoo": "ZooParc de Beauval",
           "country": "France",
           "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -602,6 +622,11 @@
           "zoo": "ZooParc de Beauval",
           "country": "France",
           "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -672,6 +697,11 @@
           "zoo": "Antwerp Zoo",
           "country": "Belgium",
           "date": "2020-10-17"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -683,6 +713,11 @@
       "evidence": [
         {
           "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
           "country": "Belgium",
           "date": "2020-10-17"
         }
@@ -698,6 +733,11 @@
           "zoo": "Antwerp Zoo",
           "country": "Belgium",
           "date": "2020-10-17"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -709,6 +749,11 @@
       "evidence": [
         {
           "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
           "country": "Belgium",
           "date": "2020-10-17"
         }
@@ -2022,6 +2067,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -2035,6 +2085,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -2097,6 +2152,11 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -2120,6 +2180,11 @@
           "zoo": "ZooParc de Beauval",
           "country": "France",
           "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -2252,6 +2317,11 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -2270,6 +2340,11 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -2283,6 +2358,11 @@
           "zoo": "The Maryland Zoo in Baltimore",
           "country": "United States",
           "date": "2018"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -2296,6 +2376,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -8208,21 +8293,39 @@
         "Blue Wildebeest",
         "Blesbok"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Copenhagen Zoo",
+          "country": "Denmark",
+          "date": "2009"
+        }
+      ]
     },
     {
       "animals": [
         "Blesbok",
         "Common Eland"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Copenhagen Zoo",
+          "country": "Denmark",
+          "date": "2009"
+        }
+      ]
     },
     {
       "animals": [
         "Blesbok",
         "Common Ostrich"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Copenhagen Zoo",
+          "country": "Denmark",
+          "date": "2009"
+        }
+      ]
     },
     {
       "animals": [
@@ -8242,7 +8345,13 @@
         "Common Waterbuck",
         "Blesbok"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Bioparc Valencia",
+          "country": "Spain",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -8256,14 +8365,26 @@
         "Impala",
         "Blesbok"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Copenhagen Zoo",
+          "country": "Denmark",
+          "date": "2009"
+        }
+      ]
     },
     {
       "animals": [
         "Blesbok",
         "Nile Lechwe"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "North Carolina Zoo",
+          "country": "United States",
+          "date": "2014-06-18"
+        }
+      ]
     },
     {
       "animals": [
@@ -8283,7 +8404,13 @@
         "Blesbok",
         "Rothschild's Giraffe"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Prague Zoo",
+          "country": "Czech Republic",
+          "date": "2013-02-02"
+        }
+      ]
     },
     {
       "animals": [
@@ -8297,7 +8424,13 @@
         "Blesbok",
         "White Rhinoceros"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "North Carolina Zoo",
+          "country": "United States",
+          "date": "2014-06-18"
+        }
+      ]
     },
     {
       "animals": [
@@ -10732,6 +10865,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -10789,6 +10927,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -10802,6 +10945,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -10998,6 +11146,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -11024,6 +11177,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -11032,7 +11190,13 @@
         "Cape Buffalo",
         "Von Der Decken's Hornbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
     },
     {
       "animals": [
@@ -11062,6 +11226,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -15371,7 +15540,13 @@
         "Common Warthog",
         "Reticulated Giraffe"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Oklahoma City Zoo",
+          "country": "United States",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
@@ -18496,6 +18671,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -18509,6 +18689,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -18620,6 +18805,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -18633,6 +18823,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -18644,6 +18839,11 @@
       "evidence": [
         {
           "zoo": "ZOO Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
           "country": "Belgium",
           "date": "2020-10-17"
         }
@@ -18708,6 +18908,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -20932,7 +21137,13 @@
         "Grey Crowned Crane",
         "Reticulated Giraffe"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Blank Park Zoo",
+          "country": "United States",
+          "date": "2020-07-10"
+        }
+      ]
     },
     {
       "animals": [
@@ -21578,6 +21789,11 @@
           "zoo": "ZooParc de Beauval",
           "country": "France",
           "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -21687,6 +21903,11 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -21705,6 +21926,11 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -21718,6 +21944,11 @@
           "zoo": "The Maryland Zoo in Baltimore",
           "country": "United States",
           "date": "2018"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -21731,6 +21962,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -21904,6 +22140,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -21917,6 +22158,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -21930,6 +22176,11 @@
           "zoo": "The Maryland Zoo in Baltimore",
           "country": "United States",
           "date": "2018"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -21956,6 +22207,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -29220,6 +29476,11 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2022-06-15"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -29231,6 +29492,11 @@
       "evidence": [
         {
           "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
           "country": "Belgium",
           "date": "2020-10-17"
         }
@@ -29246,6 +29512,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -29272,6 +29543,11 @@
           "zoo": "Antwerp Zoo",
           "country": "Belgium",
           "date": "2020-10-17"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -29292,6 +29568,11 @@
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2019"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     },
@@ -29303,6 +29584,11 @@
       "evidence": [
         {
           "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        },
+        {
+          "zoo": "Zoo Antwerpen",
           "country": "Belgium",
           "date": "2020-10-17"
         }
@@ -30481,6 +30767,487 @@
           "zoo": "Birmingham Zoo",
           "country": "United States",
           "date": "2010-08-08"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Blesbok",
+        "Thomson's Gazelle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bioparc Valencia",
+          "country": "Spain",
+          "date": "2019"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Blesbok",
+        "Gemsbok"
+      ],
+      "evidence": [
+        {
+          "zoo": "North Carolina Zoo",
+          "country": "United States",
+          "date": "2014-06-18"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Blesbok",
+        "Greater Kudu"
+      ],
+      "evidence": [
+        {
+          "zoo": "North Carolina Zoo",
+          "country": "United States",
+          "date": "2014-06-18"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Scarlet Ibis",
+        "African Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Banham Zoo",
+          "country": "United Kingdom",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Cape Buffalo",
+        "Rüppell's Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Cape Buffalo",
+        "Hooded Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Cape Buffalo",
+        "White-Faced Whistling Duck"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Hooded Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "White-Faced Whistling Duck"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Trumpeter Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Von Der Decken's Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Abdim's Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Violet Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "White-Crested Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Hadada Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "African Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "White-Faced Whistling Duck"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "Trumpeter Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "Von Der Decken's Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "Abdim's Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "Violet Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "White-Crested Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "Hadada Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "African Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Faced Whistling Duck",
+        "Trumpeter Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Faced Whistling Duck",
+        "Von Der Decken's Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Faced Whistling Duck",
+        "Abdim's Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Faced Whistling Duck",
+        "Violet Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Faced Whistling Duck",
+        "White-Crested Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Faced Whistling Duck",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Faced Whistling Duck",
+        "Hadada Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Faced Whistling Duck",
+        "African Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Faced Whistling Duck",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2020-10-17"
         }
       ]
     }

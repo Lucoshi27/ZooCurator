@@ -3986,10 +3986,6 @@
           "north-america",
           "south-america"
         ],
-        "Angulate Tortoise.png": [
-          "tropical",
-          "africa"
-        ],
         "Arrau River Turtle.png": [
           "semi-aquatic",
           "wetland",
@@ -4016,12 +4012,6 @@
           "desert",
           "south-america"
         ],
-        "East African Black Mud Turtle.png": [
-          "semi-aquatic",
-          "wetland",
-          "tropical",
-          "africa"
-        ],
         "Four-Eyed Turtle.png": [
           "semi-aquatic",
           "wetland",
@@ -4032,12 +4022,6 @@
           "wetland",
           "tropical",
           "asia"
-        ],
-        "Madagascan Big-Headed Side-Necked Turtle.png": [
-          "semi-aquatic",
-          "wetland",
-          "tropical",
-          "africa"
         ],
         "Mugger Crocodile.png": [
           "semi-aquatic",
@@ -4057,7 +4041,7 @@
           "tropical",
           "south-america"
         ],
-        "Red-Headed Amazon Side-Necked Turtle.png": [
+        "Red-Headed River Turtle.png": [
           "semi-aquatic",
           "wetland",
           "tropical",
@@ -4068,15 +4052,7 @@
           "wetland",
           "north-america"
         ],
-        "South American Snapping Turtle.png": [
-          "semi-aquatic",
-          "wetland",
-          "south-america"
-        ],
-        "South-American Snake-Headed Turtle.png": [
-          "south-america"
-        ],
-        "Spectacled Cape Tortoise.png": [
+        "Speckled Tortoise.png": [
           "tropical",
           "africa"
         ],
@@ -4085,25 +4061,11 @@
           "north-america"
         ],
         "Sulawesi Forest Turtle.png": [
-          "asia"
-        ],
-        "Texas Gopher Tortoise.png": [
-          "north-america"
-        ],
-        "Three-Keeled Land Tortoise.png": [
-          "tropical",
+		  "wetlands",
           "asia"
         ],
         "Tuatara.png": [
           "oceania"
-        ],
-        "West African Black Forest Turtle.png": [
-          "tropical",
-          "africa"
-        ],
-        "West African Helmeted Turtle.png": [
-          "tropical",
-          "africa"
         ]
       }
     }

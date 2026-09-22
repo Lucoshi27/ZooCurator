@@ -30078,6 +30078,370 @@
           "date": "current"
         }
       ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Burmese Python"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological institution documented by Mo & Mo (2021)",
+          "country": "United States",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Hermann's Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "De Zonnegloed Wild Animal Sanctuary",
+          "country": "Belgium",
+          "date": "documented 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Pig-Nosed Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Aquarium/terrarium documented by Mo & Mo (2021)",
+          "country": "United States",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Red-Bellied Short-Necked Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Walk-through aviary documented by Mo & Mo (2021)",
+          "country": "Singapore",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Mata-Mata"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological institution documented by Mo & Mo (2021)",
+          "country": "Italy",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Yellow-Footed Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Multiple zoological institutions documented by Mo & Mo (2021)",
+          "country": "Multiple",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Aldabra Giant Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological institution documented by Mo & Mo (2021)",
+          "country": "France",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Cuvier's Dwarf Caiman"
+      ],
+      "evidence": [
+        {
+          "zoo": "Multiple zoological institutions documented by Mo & Mo (2021)",
+          "country": "Multiple",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "American Alligator"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "documented 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Spectacled Caiman"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological institution documented by Mo & Mo (2021)",
+          "country": "Belgium",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Argentine Black And White Tegu"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological institution documented by Mo & Mo (2021)",
+          "country": "United Kingdom",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Common Musk Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "TerraZoo Rheinberg",
+          "country": "Germany",
+          "date": "documented 2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hermann's Tortoise",
+        "Marginated Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Ohrada",
+          "country": "Czech Republic",
+          "date": "2025-10-19"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hermann's Tortoise",
+        "Red-Footed Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "TerraZoo Rheinberg",
+          "country": "Germany",
+          "date": "documented 2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "European Pond Turtle",
+        "Marginated Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "documented Reptile Walk"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "European Pond Turtle",
+        "European Legless Lizard"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "documented Reptile Walk"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Spurred Tortoise",
+        "Common Ostrich"
+      ],
+      "evidence": [
+        {
+          "zoo": "Nahariya Zoo-Botanical Garden",
+          "country": "Israel",
+          "date": "documented mixed African exhibit; Masai Ostrich represented at species level"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pond Slider",
+        "Scarlet Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Parco Faunistico le Cornelle",
+          "country": "Italy",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pond Slider",
+        "Blue-And-Yellow Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Parco Faunistico le Cornelle",
+          "country": "Italy",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pond Slider",
+        "Chinese Softshelled Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Israeli Sea Turtle Rescue Center",
+          "country": "Israel",
+          "date": "documented mixed turtle exhibit"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Boa Constrictor",
+        "Yellow Anaconda"
+      ],
+      "evidence": [
+        {
+          "zoo": "Lake District Wildlife Park (formerly Trotters)",
+          "country": "United Kingdom",
+          "date": "2013"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Boa Constrictor",
+        "Common Anaconda"
+      ],
+      "evidence": [
+        {
+          "zoo": "Singapore Zoo",
+          "country": "Singapore",
+          "date": "2015"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Anaconda",
+        "Emerald Tree Boa"
+      ],
+      "evidence": [
+        {
+          "zoo": "Singapore Zoo",
+          "country": "Singapore",
+          "date": "2015"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pond Slider",
+        "Chinese Water Dragon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Chilean zoological collection(s), eyewitness mixed-exhibit record",
+          "country": "Chile",
+          "date": "documented 2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Central Bearded Dragon",
+        "Frilled Lizard"
+      ],
+      "evidence": [
+        {
+          "zoo": "National Aquarium / multiple Australian-reptile zoo exhibits",
+          "country": "United States / Australia",
+          "date": "documented"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Carpet Python",
+        "Water Python"
+      ],
+      "evidence": [
+        {
+          "zoo": "National Aquarium, Australia: Wild Extremes",
+          "country": "United States",
+          "date": "documented"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Anaconda",
+        "Reticulated Python"
+      ],
+      "evidence": [
+        {
+          "zoo": "Heythrop Zoological Gardens",
+          "country": "United Kingdom",
+          "date": "documented"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Burmese Python",
+        "Common Anaconda"
+      ],
+      "evidence": [
+        {
+          "zoo": "Heythrop Zoological Gardens",
+          "country": "United Kingdom",
+          "date": "documented"
+        }
+      ]
     }
   ],
   "proxy_compatibility": {
@@ -36400,7 +36764,7 @@
         "For conservation-oriented breeding exhibits, Chinese Three-Keeled and Chinese Stripe-Necked turtles should be separated because hybridization is documented. Zoo Curator compatibility here means they can physically share a managed exhibit, not that breeding them together is recommended."
       ]
     },
-    "validation_pass": 214,
-    "validation_pass_note": "Correction to the Scimitar Oryx evidence-only pool. Restored Kori Bustard after a broader source pass found an explicit Safaripark Beekse Bergen mixed-exhibit record listing Scimitar-horned Oryx and Kori Bustard in the same multispecies enclosure. This is stronger than the previous search result and meets the project's whole-exhibit evidence standard. Restores one proxy relationship; direct compatible_pairs remain untouched."
+    "validation_pass": 218,
+    "validation_pass_note": "Fourth low-level reptile discovery pass. Added Central Bearded Dragon + Frilled Lizard, supported by mixed Australian reptile exhibits including National Aquarium records and repeated zoo examples; Carpet Python + Water Python from National Aquarium's Australia: Wild Extremes mixed snake/fish exhibit; and Common Anaconda with Reticulated Python and Burmese Python from the documented Heythrop mixed giant-constrictor exhibit. Existing direct records and proxy rules remain untouched."
   }
 }

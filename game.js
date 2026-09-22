@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V222";
+const ZOO_CURATOR_VERSION = "V222.2";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 1;
 
@@ -1675,8 +1675,8 @@ async function loadJson(
         const response = await fetch(
             path,
             controller
-                ? { signal: controller.signal, cache: 'no-store' }
-                : { cache: 'no-store' }
+                ? { signal: controller.signal, cache: 'default' }
+                : { cache: 'default' }
         );
 
         if (!response.ok) {
@@ -1731,8 +1731,8 @@ function loadOptionalJsonInBackground(path, timeoutMs = 8000) {
         const response = await fetch(
             path,
             controller
-                ? { signal: controller.signal, cache: 'no-store' }
-                : { cache: 'no-store' }
+                ? { signal: controller.signal, cache: 'default' }
+                : { cache: 'default' }
         );
         if (!response.ok) {
             throw new Error(`Could not load ${path}. HTTP ${response.status}.`);
@@ -1810,7 +1810,7 @@ function loadRealZooDataInBackground() {
     const path = 'real_zoo_opponents.json';
     const timeoutMs = 8000;
 
-    const request = fetch(path, { cache: 'no-store' })
+    const request = fetch(path, { cache: 'default' })
         .then(response => {
             if (!response.ok) {
                 throw new Error(
@@ -1881,7 +1881,7 @@ function loadRealZooDataInBackground() {
 
 function loadProvinceConnectionsInBackground() {
     const path = 'province_connections.json';
-    fetch(path, { cache: 'no-store' })
+    fetch(path, { cache: 'default' })
         .then(response => {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return response.json();
@@ -2317,87 +2317,110 @@ function allInventoryAnimalAssetSpecs() {
     return specs;
 }
 
-async function auditAnimalAssetAvailability() {
-    // Always start from the complete JSON inventory. This makes a card return
-    // automatically on the next page load as soon as its PNG is added.
-    state.missingAnimalAssetPaths.clear();
 
-    const specs = allInventoryAnimalAssetSpecs();
-    if (!specs.length) return;
+const MISSING_ANIMAL_ASSET_CACHE_KEY = 'zooCuratorKnownMissingAnimalAssets';
 
-    let nextIndex = 0;
-    let completed = 0;
-    let closed = false;
-    const controllers = new Set();
-
-    const reportProgress = () => {
-        updateBootLoadingStatus(
-            'Loading Zoo Curator...',
-            `Checking animal card files... ${completed}/${specs.length}`
+function restoreKnownMissingAnimalAssets() {
+    try {
+        const cached = JSON.parse(
+            localStorage.getItem(MISSING_ANIMAL_ASSET_CACHE_KEY) || 'null'
         );
-    };
+        if (!cached || !Array.isArray(cached.paths)) return;
+        state.missingAnimalAssetPaths = new Set(cached.paths);
+        if (cached.paths.length) {
+            console.debug(
+                `Restored ${cached.paths.length} known missing animal asset(s).`
+            );
+        }
+    } catch (error) {
+        console.warn('Could not restore known missing animal assets:', error);
+    }
+}
 
-    reportProgress();
+function saveKnownMissingAnimalAssets() {
+    try {
+        localStorage.setItem(
+            MISSING_ANIMAL_ASSET_CACHE_KEY,
+            JSON.stringify({
+                paths: [...state.missingAnimalAssetPaths],
+                updatedAt: Date.now()
+            })
+        );
+    } catch (error) {
+        console.warn('Could not save known missing animal assets:', error);
+    }
+}
 
+function markAnimalAssetMissing(path) {
+    if (!path || state.missingAnimalAssetPaths.has(path)) return false;
+    state.missingAnimalAssetPaths.add(path);
+    saveKnownMissingAnimalAssets();
+    console.info('Temporarily excluding missing animal card:', path);
+    return true;
+}
+
+function markAnimalAssetAvailable(path) {
+    if (!path || !state.missingAnimalAssetPaths.delete(path)) return false;
+    saveKnownMissingAnimalAssets();
+    console.info('Previously missing animal card is available again:', path);
+    return true;
+}
+
+async function verifyAnimalAssetAfterLoadFailure(path) {
+    // Image.onerror cannot distinguish a genuine 404 from a temporary network,
+    // decode or browser problem. Only blacklist after the server explicitly
+    // confirms that the requested PNG does not exist.
+    if (!path) return false;
+    try {
+        const response = await fetch(path, {
+            method: 'HEAD',
+            cache: 'no-cache'
+        });
+        if (response.status === 404 || response.status === 410) {
+            const changed = markAnimalAssetMissing(path);
+            if (changed) {
+                refreshDrawAvailabilityState();
+                renderExchange();
+            }
+            return true;
+        }
+        if (response.ok) {
+            markAnimalAssetAvailable(path);
+        }
+    } catch (error) {
+        // Unknown availability stays playable. Never remove a card merely
+        // because the connection is slow/offline or HEAD is unsupported.
+    }
+    return false;
+}
+
+async function recheckKnownMissingAnimalAssets() {
+    // This replaces the old full-library audit. Normally this is zero requests.
+    // If previous play found a real 404, recheck only that tiny known-missing
+    // set so uploading the PNG to GitHub automatically restores the card.
+    const paths = [...state.missingAnimalAssetPaths];
+    if (!paths.length) return;
+
+    const queue = [...paths];
     const worker = async () => {
-        while (!closed) {
-            const index = nextIndex++;
-            if (index >= specs.length) return;
-            const spec = specs[index];
-            const controller = new AbortController();
-            controllers.add(controller);
-
+        while (queue.length) {
+            const path = queue.shift();
             try {
-                const response = await fetch(spec.path, {
+                const response = await fetch(path, {
                     method: 'HEAD',
-                    cache: 'no-cache',
-                    signal: controller.signal
+                    cache: 'no-cache'
                 });
-
-                // Only an explicit "this file does not exist" response removes
-                // a card.  Slow loading, offline mode, 5xx responses, blocked
-                // HEAD requests, and timeouts all leave the animal playable.
-                if (!closed && (response.status === 404 || response.status === 410)) {
-                    state.missingAnimalAssetPaths.add(spec.path);
-                }
+                if (response.ok) markAnimalAssetAvailable(path);
             } catch (error) {
-                // Unknown availability is deliberately treated as available.
-                // The normal image Back.png fallback still covers slow assets.
-            } finally {
-                controllers.delete(controller);
-                completed++;
-                if (!closed && (completed === specs.length || completed % 10 === 0)) {
-                    reportProgress();
-                }
+                // Keep the previous known-missing result until the server can
+                // positively demonstrate that the file exists again.
             }
         }
     };
 
-    const workers = Array.from(
-        { length: Math.min(12, specs.length) },
-        () => worker()
+    await Promise.all(
+        Array.from({ length: Math.min(3, queue.length) }, () => worker())
     );
-
-    let timeoutId;
-    await Promise.race([
-        Promise.all(workers),
-        new Promise(resolve => {
-            timeoutId = setTimeout(resolve, 10000);
-        })
-    ]);
-    clearTimeout(timeoutId);
-
-    // Do not let late network responses change the inventory after gameplay
-    // has started. Anything not conclusively checked in this startup window is
-    // left available rather than risking a false removal.
-    closed = true;
-    for (const controller of controllers) controller.abort();
-
-    if (state.missingAnimalAssetPaths.size) {
-        console.info(
-            `Zoo Curator temporarily excluded ${state.missingAnimalAssetPaths.size} animal card(s) whose PNG returned 404/410.`
-        );
-    }
 }
 
 // ============================================================
@@ -2447,6 +2470,10 @@ function preloadImageUrl(url) {
         image.onload = () => finish(true);
         image.onerror = () => {
             console.warn('Could not preload animal asset:', url);
+            // Do not blacklist on image.onerror itself: it may be transient.
+            // A single targeted HEAD request determines whether this exact
+            // requested card is genuinely absent.
+            verifyAnimalAssetAfterLoadFailure(url);
             finish(false);
         };
 
@@ -18717,11 +18744,9 @@ async function startGame() {
             12000
         );
 
-        // The JSON describes the intended card pool, but GitHub may receive
-        // the PNGs separately. Exclude only files the server definitively says
-        // are absent; never mistake an image that is merely slow for a missing
-        // animal. The animal definitions themselves remain untouched.
-        await auditAnimalAssetAvailability();
+        // Known genuine 404s are tiny persistent metadata, not a reason to
+        // rescan the complete card library. Restore them before building decks.
+        restoreKnownMissingAnimalAssets();
 
         const availableCategories = Object.keys(FOLDERS).filter(
             category => levelFiles(category, 1).length > 0
@@ -18786,10 +18811,8 @@ state.animalDatabase = { animals: [] };
         // Expose the ready state for lightweight deployment diagnostics.
         window.__zooGameReady = true;
 
-        if (!resumedPreviousZoo) {
-            writeAutoResumeSnapshot(true);
-        }
-
+        // Do not synchronously clone/write a fresh zoo before first paint.
+        // The deferred post-paint startup work below persists it instead.
         gameApp.classList.add('visible');
 
         if (resumedPreviousZoo && state.pendingRestoredView) {
@@ -18815,19 +18838,46 @@ state.animalDatabase = { animals: [] };
         // Warm the starting animal images only after first paint. The cards'
         // normal image loader remains authoritative, so this is safe to skip
         // or time out and does not alter game state.
-        setTimeout(() => {
-            // Persist only after the first playable frame. localStorage writes
-            // and snapshot cloning are synchronous and can be noticeable on
-            // mobile Safari with a developed zoo.
+        const scheduleIdleStartupJob = (job, timeout = 1000, fallbackDelay = 250) => {
+            if ('requestIdleCallback' in window) {
+                window.requestIdleCallback(job, { timeout });
+            } else {
+                setTimeout(job, fallbackDelay);
+            }
+        };
+
+        // Small jobs that improve the first turn may start at the first idle
+        // opportunity. Keep them separate from the large optional databases
+        // and full-library asset audit so one expensive job cannot monopolise
+        // the first post-startup task.
+        scheduleIdleStartupJob(() => {
             captureTurnSnapshot();
             writeAutoResumeSnapshot();
 
             preloadAnimals(state.animals).catch(error => {
                 console.warn('Background starting-image preload failed:', error);
             });
-            loadNonEssentialGameData();
             prepareNextDrawAsset();
-        }, 0);
+        }, 650, 160);
+
+        // Optional gameplay databases are static deployment assets. They may
+        // arrive shortly after the first interactive frame and now use normal
+        // HTTP caching rather than being forcibly downloaded every launch.
+        scheduleIdleStartupJob(() => {
+            loadNonEssentialGameData();
+        }, 1600, 550);
+
+        // Recheck only assets that a previous real image failure proved were
+        // 404/410. In the normal case this performs zero requests, regardless
+        // of whether the inventory contains 500 or 5,000 cards.
+        scheduleIdleStartupJob(() => {
+            recheckKnownMissingAnimalAssets().then(() => {
+                refreshDrawAvailabilityState();
+                renderExchange();
+            }).catch(error => {
+                console.warn('Known-missing animal asset recheck failed:', error);
+            });
+        }, 3500, 1800);
     }
     catch (error) {
         showFatal(error);

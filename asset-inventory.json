@@ -3807,6 +3807,11 @@
           "tropical",
           "asia"
         ],
+		"Central African Rock Python.png": [
+          "forest",
+		  "desert",
+          "africa"	
+		],
         "Central American Wood Turtle.png": [
           "tropical",
           "north-america"
@@ -3816,6 +3821,10 @@
           "wetland",
           "asia"
         ],
+		"Chinese Box Turtle.png": [
+          "tropical",
+          "asia"
+        ],		
         "Copperhead.png": [
           "nocturnal",
           "north-america"
@@ -3855,6 +3864,10 @@
           "tropical",
           "africa"
         ],
+		"Indonesian Pit Viper.png": [
+          "tropical",
+          "asia"
+        ],		
         "Jackson's Chameleon.png": [
           "tropical",
           "africa"
@@ -3872,6 +3885,12 @@
           "tropical",
           "oceania"
         ],
+		"Mitchell's Water Monitor.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "oceania"
+        ],		
         "Morelet's Crocodile.png": [
           "semi-aquatic",
           "wetland",
@@ -3881,6 +3900,10 @@
         "Philippine Crocodile.png": [
           "semi-aquatic",
           "wetland",
+          "tropical",
+          "asia"
+        ],
+		"Red Blood Python.png": [
           "tropical",
           "asia"
         ],
@@ -3921,10 +3944,20 @@
           "tropical",
           "north-america"
         ],
+		"Spotted Pond Turtle.png": [
+		  "semi-aquatic",
+          "wetland",
+          "tropical",
+          "asia"
+        ],
         "Sumatran Short-Tailed Python.png": [
           "tropical",
           "nocturnal",
           "asia"
+        ],
+		"Uracoan Rattlesnake.png": [
+          "savanna",
+          "south-america"
         ],
         "West African Crocodile.png": [
           "semi-aquatic",
@@ -3932,6 +3965,12 @@
           "tropical",
           "africa"
         ],
+        "West African Mud Turtle.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "africa"
+        ],		
         "Yacare Caiman.png": [
           "semi-aquatic",
           "wetland",

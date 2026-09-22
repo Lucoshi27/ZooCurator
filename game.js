@@ -4244,12 +4244,24 @@ function ensureMobilePhoneLayout() {
         style.textContent = `
             @media (max-width:700px) {
                 /* Compact phone HUD: one slim information row plus six action cards. */
-                #headerLeft { gap:4px !important; padding:3px 5px !important; min-height:0 !important; }
-                #mobileTopHudRow {
-                    width:100%; display:grid; grid-template-columns:auto auto minmax(0,1fr) auto auto;
-                    align-items:center; gap:5px; min-height:30px; padding:0; margin:0;
-                    box-sizing:border-box;
+                #headerLeft {
+                    gap:4px !important; padding:4px max(7px, env(safe-area-inset-right)) 3px max(7px, env(safe-area-inset-left)) !important;
+                    min-height:0 !important; width:100% !important; max-width:100% !important;
+                    box-sizing:border-box !important; overflow:visible !important;
                 }
+                #mobileTopHudRow {
+                    width:100% !important; max-width:100% !important;
+                    display:grid !important;
+                    grid-template-columns:30px max-content max-content minmax(72px,1fr) 30px !important;
+                    grid-template-areas:"collection turn prestige zoo settings";
+                    align-items:center; gap:7px; min-height:32px; padding:0; margin:0;
+                    box-sizing:border-box; overflow:visible;
+                }
+                #mobileTopHudRow #collectionButton { grid-area:collection; }
+                #mobileTopHudRow #turnOrder { grid-area:turn; }
+                #mobileTopHudRow #prestigeCounter { grid-area:prestige; }
+                #mobileTopHudRow #playerZooName { grid-area:zoo; }
+                #mobileTopHudRow #mobileSettingsButton { grid-area:settings; }
                 #mobileTopHudRow #collectionButton,
                 #mobileTopHudRow #mobileSettingsButton {
                     width:30px !important; height:30px !important; min-width:30px !important;
@@ -4257,7 +4269,10 @@ function ensureMobilePhoneLayout() {
                     display:flex !important; align-items:center; justify-content:center;
                 }
                 #mobileTopHudRow #prestigeCounter,
-                #mobileTopHudRow #turnOrder { margin:0 !important; font-size:10px !important; line-height:1.05 !important; white-space:nowrap; }
+                #mobileTopHudRow #turnOrder {
+                    margin:0 !important; font-size:10px !important; line-height:1.05 !important;
+                    white-space:nowrap; min-width:max-content !important;
+                }
                 #mobileTopHudRow #playerZooName { min-width:0 !important; margin:0 !important; padding:0 !important; text-align:center; }
                 #mobileTopHudRow .zoo-name-editor { display:flex; align-items:center; justify-content:center; gap:2px; min-width:0; }
                 #mobileTopHudRow .zoo-name-text { font-size:12px !important; line-height:1.05 !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
@@ -4267,18 +4282,17 @@ function ensureMobilePhoneLayout() {
                 #tradeHistoryButton { display:none !important; }
 
                 #actionMenu {
-                    display:grid !important; grid-template-columns:repeat(6,minmax(0,1fr)) !important;
-                    gap:4px !important; align-items:end !important; width:100% !important;
-                    padding:0 5px 10px !important; margin:0 !important; box-sizing:border-box !important;
-                    min-height:0 !important;
+                    display:grid !important;
+                    grid-template-columns:repeat(var(--mobile-visible-actions,4),minmax(0,1fr)) !important;
+                    grid-auto-flow:column !important;
+                    gap:6px !important; align-items:end !important;
+                    width:100% !important; max-width:100% !important;
+                    padding:12px max(8px, env(safe-area-inset-right)) 10px max(8px, env(safe-area-inset-left)) !important;
+                    margin:0 !important; box-sizing:border-box !important;
+                    min-height:0 !important; overflow:visible !important;
                 }
-                #actionMenu > * { min-width:0 !important; margin:0 !important; }
-                #drawCard { grid-column:1; }
-                #exchange1 { grid-column:2; }
-                #exchange2 { grid-column:3; }
-                #result { grid-column:4; }
-                #outgoingOffer { grid-column:5; }
-                #ingoingOffer { grid-column:6; }
+                #actionMenu > * { min-width:0 !important; margin:0 !important; grid-column:auto !important; }
+                #actionMenu #progressTracker { display:none !important; }
                 #drawCard, #exchange1, #exchange2, #result, #outgoingOffer, #ingoingOffer {
                     width:100% !important; max-width:none !important; height:auto !important;
                     aspect-ratio:1000/1440 !important; box-sizing:border-box !important;
@@ -4288,7 +4302,14 @@ function ensureMobilePhoneLayout() {
                 #outgoingOffer .animal-card, #ingoingOffer .animal-card {
                     width:100% !important; height:100% !important; object-fit:contain !important;
                 }
-                #drawCard::before { top:-11px !important; font-size:7px !important; letter-spacing:.2px !important; }
+                #drawCard::before { top:-12px !important; left:0 !important; right:0 !important; text-align:center !important; font-size:7px !important; letter-spacing:.15px !important; white-space:nowrap !important; }
+                #actionMenu [data-label]::before,
+                #actionMenu .exchange-slot::before,
+                #actionMenu .result-box::before,
+                #actionMenu .trade-offer-box::before {
+                    max-width:100% !important; overflow:hidden !important; text-overflow:ellipsis !important;
+                    white-space:nowrap !important;
+                }
 
                 /* The options dialog must fit a phone viewport without page/modal scrolling. */
                 #gameOptionsOverlay { padding:4px !important; box-sizing:border-box !important; }
@@ -4344,16 +4365,42 @@ function ensureMobilePhoneLayout() {
             row.id = 'mobileTopHudRow';
             headerLeft.insertBefore(row, headerLeft.firstChild);
         }
-        row.append(collection, prestige, zooName, turn, settings);
+        row.append(collection, turn, prestige, zooName, settings);
     }
 
-    // Keep the six gameplay cards in a single deterministic phone row even if
-    // older HTML grouped trade/exchange controls in nested wrappers.
+    // Keep the gameplay cards in one phone row. Crucially, size the grid from
+    // the cards that are actually visible: early turns often have only the four
+    // core actions, while trade cards appear later. A fixed six-column grid
+    // left two empty columns and made the whole HUD look shoved to the left.
     const actionMenu = document.getElementById('actionMenu');
     if (actionMenu) {
-        for (const id of ['drawCard','exchange1','exchange2','result','outgoingOffer','ingoingOffer']) {
+        const actionIds = ['drawCard','exchange1','exchange2','result','outgoingOffer','ingoingOffer'];
+        for (const id of actionIds) {
             const node = document.getElementById(id);
             if (node && node.parentElement !== actionMenu) actionMenu.appendChild(node);
+        }
+        const updateMobileActionCount = () => {
+            const visible = actionIds
+                .map(id => document.getElementById(id))
+                .filter(node => node && getComputedStyle(node).display !== 'none');
+            actionMenu.style.setProperty('--mobile-visible-actions', String(Math.max(1, visible.length)));
+        };
+        updateMobileActionCount();
+        requestAnimationFrame(updateMobileActionCount);
+        setTimeout(updateMobileActionCount, 120);
+
+        // Trade/action availability changes after startup. Watch those cards so
+        // a four-card opening row can become five/six columns without overflow.
+        if (!actionMenu._mobileActionObserver) {
+            const observer = new MutationObserver(updateMobileActionCount);
+            for (const id of actionIds) {
+                const node = document.getElementById(id);
+                if (node) observer.observe(node, {
+                    attributes:true,
+                    attributeFilter:['class','style','hidden']
+                });
+            }
+            actionMenu._mobileActionObserver = observer;
         }
     }
 }

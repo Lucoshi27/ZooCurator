@@ -2217,6 +2217,29 @@ function animalsInWholeEnclosure(enclosure) {
     );
 }
 
+// A themed House/Area only becomes active once every logical exhibit on the
+// enclosure card is occupied. Multi-slot groups are one large enclosure, so a
+// single animal anywhere in that group is enough; unused capacity beside that
+// animal is allowed. This prevents half-empty enclosure cards from already
+// presenting themselves as completed themed areas.
+function enclosureCardIsFullyOccupiedForTheme(enclosure) {
+    if (!enclosure) return false;
+
+    const groups = GROUPS[enclosure.number] || [];
+    if (groups.length) {
+        return groups.every(group =>
+            group.some(slotIndex => Boolean(animalAtSlot(enclosure.id, slotIndex, null, true)))
+        );
+    }
+
+    // Defensive fallback for any enclosure card without a GROUPS definition:
+    // each physical slot is treated as its own enclosure.
+    const slots = getAllSlots(enclosure);
+    return slots.length > 0 && slots.every(slotIndex =>
+        Boolean(animalAtSlot(enclosure.id, slotIndex, null, true))
+    );
+}
+
 function commonEnclosureTags(enclosure) {
     const animals = animalsInWholeEnclosure(enclosure);
     if (!animals.length) return new Set();
@@ -2257,7 +2280,6 @@ function specialEnclosureTheme(enclosure) {
 
     // Highly specific houses/complexes take precedence over broad taxonomic houses.
     if (common.has('petting-zoo')) return special('petting-zoo', 'Petting Zoo');
-    if (allNames(/shark/) && common.has('aquatic')) return special('shark-tunnel', 'Shark Tunnel');
     if (allNames(/crocodile|alligator|caiman|gharial/)) return special('crocodile-house', 'Crocodile House');
     if (allNames(/turtle|tortoise|terrapin/)) return special('turtle-house', 'Turtle & Tortoise House');
     if (allNames(/snake|python|boa|anaconda|cobra|viper|rattlesnake|mamba|adder|krait|taipan/)) return special('snake-house', 'Snake House');
@@ -2296,6 +2318,8 @@ function specialEnclosureTheme(enclosure) {
     return null;
 }
 function enclosureThemes(enclosure) {
+    if (!enclosureCardIsFullyOccupiedForTheme(enclosure)) return [];
+
     const common = commonEnclosureTags(enclosure);
     const themes = [...common]
         .map(tag => ({ key: tag, ...ENCLOSURE_AREA_THEMES[tag] }))
@@ -2388,8 +2412,26 @@ function renderEnclosureAreaBackgrounds() {
     }
 }
 
-function applyEnclosureThemePresentation(element, enclosure) {
+function displayEnclosureThemes(enclosure) {
     const themes = enclosureThemes(enclosure);
+    if (!themes.length) return [];
+
+    // Specialist facility names (Reptile House, Crocodile House, Aquarium, etc.)
+    // may apply to one fully occupied enclosure card. Broad habitat/geography/
+    // facility areas only become visible when at least two adjacent cards share
+    // the same qualifying theme.
+    return themes.filter(theme => {
+        if (theme.layer === 'special') return true;
+        return state.enclosures.some(other =>
+            other.id !== enclosure.id &&
+            enclosuresAreAreaAdjacent(enclosure, other) &&
+            enclosureThemes(other).some(otherTheme => otherTheme.key === theme.key)
+        );
+    });
+}
+
+function applyEnclosureThemePresentation(element, enclosure) {
+    const themes = displayEnclosureThemes(enclosure);
     if (!themes.length) return;
 
     element.classList.add('themed-enclosure');

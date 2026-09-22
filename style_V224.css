@@ -3927,41 +3927,39 @@ body.history-viewing #zooCanvas .animal-card {
 }
 
 /* Card tints. Deliberately restrained so enclosure artwork stays readable. */
-.theme-africa        { --enclosure-theme-tint: rgba(202,151,73,.13); --enclosure-theme-edge: rgba(151,101,38,.48); }
-.theme-asia          { --enclosure-theme-tint: rgba(190,92,70,.10);  --enclosure-theme-edge: rgba(143,67,49,.44); }
-.theme-europe        { --enclosure-theme-tint: rgba(91,132,168,.09); --enclosure-theme-edge: rgba(65,100,130,.42); }
-.theme-north-america { --enclosure-theme-tint: rgba(91,126,83,.10);  --enclosure-theme-edge: rgba(64,98,57,.44); }
-.theme-south-america { --enclosure-theme-tint: rgba(58,151,102,.11); --enclosure-theme-edge: rgba(42,112,76,.46); }
-.theme-oceania       { --enclosure-theme-tint: rgba(212,133,76,.10); --enclosure-theme-edge: rgba(156,92,48,.44); }
-.theme-antarctica    { --enclosure-theme-tint: rgba(179,221,235,.14);--enclosure-theme-edge: rgba(93,156,180,.46); }
+.theme-africa        { --enclosure-theme-tint: rgba(202,151,73,0.208); --enclosure-theme-edge: rgba(151,101,38,.48); }
+.theme-asia          { --enclosure-theme-tint: rgba(190,92,70,0.160);  --enclosure-theme-edge: rgba(143,67,49,.44); }
+.theme-europe        { --enclosure-theme-tint: rgba(91,132,168,0.144); --enclosure-theme-edge: rgba(65,100,130,.42); }
+.theme-north-america { --enclosure-theme-tint: rgba(91,126,83,0.160);  --enclosure-theme-edge: rgba(64,98,57,.44); }
+.theme-south-america { --enclosure-theme-tint: rgba(58,151,102,0.176); --enclosure-theme-edge: rgba(42,112,76,.46); }
+.theme-oceania       { --enclosure-theme-tint: rgba(212,133,76,0.160); --enclosure-theme-edge: rgba(156,92,48,.44); }
+.theme-antarctica    { --enclosure-theme-tint: rgba(179,221,235,0.224);--enclosure-theme-edge: rgba(93,156,180,.46); }
 
-.theme-tropical, .theme-rainforest { --enclosure-theme-tint: rgba(48,151,78,.13); --enclosure-theme-edge: rgba(31,112,56,.52); }
-.theme-savanna       { --enclosure-theme-tint: rgba(220,181,67,.14); --enclosure-theme-edge: rgba(157,119,28,.50); }
-.theme-aquatic       { --enclosure-theme-tint: rgba(49,139,197,.14); --enclosure-theme-edge: rgba(35,102,151,.52); }
-.theme-semi-aquatic, .theme-wetland { --enclosure-theme-tint: rgba(58,155,143,.12); --enclosure-theme-edge: rgba(38,111,103,.50); }
-.theme-forest, .theme-boreal { --enclosure-theme-tint: rgba(68,126,62,.12); --enclosure-theme-edge: rgba(45,91,41,.50); }
-.theme-desert        { --enclosure-theme-tint: rgba(218,166,93,.13); --enclosure-theme-edge: rgba(154,106,48,.48); }
-.theme-temperate     { --enclosure-theme-tint: rgba(111,150,82,.10); --enclosure-theme-edge: rgba(75,107,54,.45); }
-.theme-arctic        { --enclosure-theme-tint: rgba(184,222,235,.14);--enclosure-theme-edge: rgba(94,155,178,.48); }
-.theme-mountain      { --enclosure-theme-tint: rgba(130,131,135,.11);--enclosure-theme-edge: rgba(86,87,92,.46); }
-.theme-domestic      { --enclosure-theme-tint: rgba(210,166,102,.12);--enclosure-theme-edge: rgba(143,98,51,.48); }
-.theme-petting-zoo   { --enclosure-theme-tint: rgba(229,184,92,.16); --enclosure-theme-edge: rgba(161,111,33,.58); }
-.theme-raptor-aviary { --enclosure-theme-tint: rgba(130,99,77,.12);  --enclosure-theme-edge: rgba(91,64,47,.55); }
-.theme-bear-forest   { --enclosure-theme-tint: rgba(76,117,64,.14);  --enclosure-theme-edge: rgba(49,80,40,.58); }
-.theme-shark-tunnel  { --enclosure-theme-tint: rgba(40,119,170,.17); --enclosure-theme-edge: rgba(24,79,120,.62); }
-.theme-african-wetland-aviary { --enclosure-theme-tint: rgba(70,148,120,.15); --enclosure-theme-edge: rgba(44,103,82,.58); }
+.theme-tropical, .theme-rainforest { --enclosure-theme-tint: rgba(48,151,78,0.208); --enclosure-theme-edge: rgba(31,112,56,.52); }
+.theme-savanna       { --enclosure-theme-tint: rgba(220,181,67,0.224); --enclosure-theme-edge: rgba(157,119,28,.50); }
+.theme-aquatic       { --enclosure-theme-tint: rgba(49,139,197,0.224); --enclosure-theme-edge: rgba(35,102,151,.52); }
+.theme-semi-aquatic, .theme-wetland { --enclosure-theme-tint: rgba(58,155,143,0.192); --enclosure-theme-edge: rgba(38,111,103,.50); }
+.theme-forest, .theme-boreal { --enclosure-theme-tint: rgba(68,126,62,0.192); --enclosure-theme-edge: rgba(45,91,41,.50); }
+.theme-desert        { --enclosure-theme-tint: rgba(218,166,93,0.208); --enclosure-theme-edge: rgba(154,106,48,.48); }
+.theme-temperate     { --enclosure-theme-tint: rgba(111,150,82,0.160); --enclosure-theme-edge: rgba(75,107,54,.45); }
+.theme-arctic        { --enclosure-theme-tint: rgba(184,222,235,0.224);--enclosure-theme-edge: rgba(94,155,178,.48); }
+.theme-mountain      { --enclosure-theme-tint: rgba(130,131,135,0.176);--enclosure-theme-edge: rgba(86,87,92,.46); }
+.theme-domestic      { --enclosure-theme-tint: rgba(210,166,102,0.192);--enclosure-theme-edge: rgba(143,98,51,.48); }
+.theme-petting-zoo   { --enclosure-theme-tint: rgba(229,184,92,0.256); --enclosure-theme-edge: rgba(161,111,33,.58); }
+.theme-raptor-aviary { --enclosure-theme-tint: rgba(130,99,77,0.192);  --enclosure-theme-edge: rgba(91,64,47,.55); }
+.theme-bear-forest   { --enclosure-theme-tint: rgba(76,117,64,0.224);  --enclosure-theme-edge: rgba(49,80,40,.58); }
+.theme-african-wetland-aviary { --enclosure-theme-tint: rgba(70,148,120,0.240); --enclosure-theme-edge: rgba(44,103,82,.58); }
 
 /* Group outlines inherit the same semantic palette through ordinary borders. */
-.zoo-theme-area.theme-africa { border-color: rgba(151,101,38,.50); background: rgba(202,151,73,.045); }
-.zoo-theme-area.theme-tropical, .zoo-theme-area.theme-rainforest { border-color: rgba(31,112,56,.52); background: rgba(48,151,78,.04); }
-.zoo-theme-area.theme-savanna { border-color: rgba(157,119,28,.52); background: rgba(220,181,67,.04); }
-.zoo-theme-area.theme-aquatic { border-color: rgba(35,102,151,.54); background: rgba(49,139,197,.04); }
-.zoo-theme-area.theme-wetland, .zoo-theme-area.theme-semi-aquatic { border-color: rgba(38,111,103,.52); background: rgba(58,155,143,.04); }
-.zoo-theme-area.theme-forest, .zoo-theme-area.theme-boreal { border-color: rgba(45,91,41,.52); background: rgba(68,126,62,.04); }
-.zoo-theme-area.theme-desert { border-color: rgba(154,106,48,.50); background: rgba(218,166,93,.04); }
-.zoo-theme-area.theme-petting-zoo { border-color: rgba(161,111,33,.60); background: rgba(229,184,92,.05); }
+.zoo-theme-area.theme-africa { border-color: rgba(151,101,38,.50); background: rgba(202,151,73,0.072); }
+.zoo-theme-area.theme-tropical, .zoo-theme-area.theme-rainforest { border-color: rgba(31,112,56,.52); background: rgba(48,151,78,0.064); }
+.zoo-theme-area.theme-savanna { border-color: rgba(157,119,28,.52); background: rgba(220,181,67,0.064); }
+.zoo-theme-area.theme-aquatic { border-color: rgba(35,102,151,.54); background: rgba(49,139,197,0.064); }
+.zoo-theme-area.theme-wetland, .zoo-theme-area.theme-semi-aquatic { border-color: rgba(38,111,103,.52); background: rgba(58,155,143,0.064); }
+.zoo-theme-area.theme-forest, .zoo-theme-area.theme-boreal { border-color: rgba(45,91,41,.52); background: rgba(68,126,62,0.064); }
+.zoo-theme-area.theme-desert { border-color: rgba(154,106,48,.50); background: rgba(218,166,93,0.064); }
+.zoo-theme-area.theme-petting-zoo { border-color: rgba(161,111,33,.60); background: rgba(229,184,92,0.080); }
 .zoo-theme-area.theme-raptor-aviary { border-color: rgba(91,64,47,.58); }
-.zoo-theme-area.theme-shark-tunnel { border-color: rgba(24,79,120,.62); }
 .zoo-theme-area.theme-bear-forest { border-color: rgba(49,80,40,.60); }
 .zoo-theme-area.theme-african-wetland-aviary { border-color: rgba(44,103,82,.60); }
 
@@ -3973,12 +3971,11 @@ body.history-viewing #zooCanvas .animal-card {
 .theme-turtle-house,
 .theme-snake-house,
 .theme-lizard-house {
-    --enclosure-theme-tint: rgba(92,132,67,.14);
+    --enclosure-theme-tint: rgba(92,132,67,0.224);
     --enclosure-theme-edge: rgba(55,92,39,.60);
 }
 .theme-aquarium,
-.theme-shark-tunnel {
-    --enclosure-theme-tint: rgba(38,126,183,.16);
+    --enclosure-theme-tint: rgba(38,126,183,0.256);
     --enclosure-theme-edge: rgba(22,82,127,.64);
 }
 .theme-tropical-aviary,
@@ -3987,18 +3984,18 @@ body.history-viewing #zooCanvas .animal-card {
 .theme-bird-house,
 .theme-raptor-aviary,
 .theme-owl-aviary {
-    --enclosure-theme-tint: rgba(79,145,92,.13);
+    --enclosure-theme-tint: rgba(79,145,92,0.208);
     --enclosure-theme-edge: rgba(49,99,61,.58);
 }
 .theme-penguin-coast,
 .theme-seal-coast,
 .theme-otter-river,
 .theme-flamingo-lagoon {
-    --enclosure-theme-tint: rgba(75,151,178,.13);
+    --enclosure-theme-tint: rgba(75,151,178,0.208);
     --enclosure-theme-edge: rgba(45,105,129,.57);
 }
 .theme-camelid-paddocks {
-    --enclosure-theme-tint: rgba(177,143,86,.12);
+    --enclosure-theme-tint: rgba(177,143,86,0.192);
     --enclosure-theme-edge: rgba(117,87,47,.56);
 }
 .theme-great-ape-house,
@@ -4007,7 +4004,7 @@ body.history-viewing #zooCanvas .animal-card {
 .theme-lemur-forest,
 .theme-bear-forest,
 .theme-australian-walkabout {
-    --enclosure-theme-tint: rgba(75,127,67,.13);
+    --enclosure-theme-tint: rgba(75,127,67,0.208);
     --enclosure-theme-edge: rgba(47,88,42,.57);
 }
 .zoo-theme-area[class*="theme-"][class*="-house"],
@@ -4025,5 +4022,5 @@ body.history-viewing #zooCanvas .animal-card {
 .zoo-theme-area.theme-australian-walkabout,
 .zoo-theme-area.theme-camelid-paddocks {
     border-color: var(--enclosure-theme-edge, rgba(70,90,65,.58));
-    background: var(--enclosure-theme-tint, rgba(80,120,80,.04));
+    background: var(--enclosure-theme-tint, rgba(80,120,80,0.064));
 }

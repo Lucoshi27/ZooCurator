@@ -3737,6 +3737,7 @@
 		"Mediterranean Pond Turtle": [
 		  "semi-aquatic",
           "europe"
+		],
         "Yellow-Headed Water Monitor.png": [
           "semi-aquatic",
           "asia"
@@ -3781,6 +3782,10 @@
         ]
       },
       "4": {
+        "Bell's Hinge-Back Tortoise.png": [
+          "savanna",
+          "africa"
+        ],
         "Black Mamba.png": [
           "tropical",
           "nocturnal",

@@ -377,8 +377,6 @@ const state = {
     sandboxLooseAnimals: [],
 
     inventory: null,
-    animalDatabase: { animals: [] },
-    animalDatabaseByName: new Map(),
     compatibilityData: {
         compatible_pairs: [],
         proxy_compatibility: { enabled: false, groups: {} }
@@ -2221,14 +2219,16 @@ function animalsInWholeEnclosure(enclosure) {
 // enclosure card is occupied. Multi-slot groups are one large enclosure, so a
 // single animal anywhere in that group is enough; unused capacity beside that
 // animal is allowed. This prevents half-empty enclosure cards from already
-// presenting themselves as completed themed areas.
+// presenting themselves as completed themed areas. Reserved origin slots used while
+// dragging/trading do NOT count here: a theme must reflect animals physically
+// present in the enclosure right now.
 function enclosureCardIsFullyOccupiedForTheme(enclosure) {
     if (!enclosure) return false;
 
     const groups = GROUPS[enclosure.number] || [];
     if (groups.length) {
         return groups.every(group =>
-            group.some(slotIndex => Boolean(animalAtSlot(enclosure.id, slotIndex, null, true)))
+            group.some(slotIndex => Boolean(animalAtSlot(enclosure.id, slotIndex, null, false)))
         );
     }
 
@@ -2236,7 +2236,7 @@ function enclosureCardIsFullyOccupiedForTheme(enclosure) {
     // each physical slot is treated as its own enclosure.
     const slots = getAllSlots(enclosure);
     return slots.length > 0 && slots.every(slotIndex =>
-        Boolean(animalAtSlot(enclosure.id, slotIndex, null, true))
+        Boolean(animalAtSlot(enclosure.id, slotIndex, null, false))
     );
 }
 
@@ -2278,31 +2278,25 @@ function specialEnclosureTheme(enclosure) {
         layer: 'special'
     });
 
+    // Unique historic-style small-cat facility. Keep this deliberately narrower
+    // than Carnivora: every occupant must be one of the game's small felids.
+    const smallCatName = /(?:wild cat|caracal|lynx|leopard cat|ocelot|pallas(?:'s)? cat|serval|bobcat|fishing cat|geoffroy(?:'s)? cat|jungle cat|margay|jaguarundi|oncilla|rusty-spotted cat|sand cat|andean mountain cat|asian golden cat|black-footed cat|chinese mountain cat|flat-headed cat|kodkod|marbled cat|pampas cat)/;
+    const allSmallCats = allCategory('Carnivora') && allNames(smallCatName);
+
     // Highly specific houses/complexes take precedence over broad taxonomic houses.
     if (common.has('petting-zoo')) return special('petting-zoo', 'Petting Zoo');
+    if (allSmallCats) return { ...special('kattenrotonde', '"Kattenrotonde"'), italicTitle: true };
     if (allNames(/crocodile|alligator|caiman|gharial/)) return special('crocodile-house', 'Crocodile House');
-    if (allNames(/turtle|tortoise|terrapin/)) return special('turtle-house', 'Turtle & Tortoise House');
-    if (allNames(/snake|python|boa|anaconda|cobra|viper|rattlesnake|mamba|adder|krait|taipan/)) return special('snake-house', 'Snake House');
-    if (allNames(/monitor|iguana|gecko|chameleon|dragon|skink|lizard|tegu/)) return special('lizard-house', 'Lizard House');
-    if (allNames(/owl/)) return special('owl-aviary', 'Owl Aviary');
-    if (allCategory('Birds of Prey')) return special('raptor-aviary', 'Raptor Aviary');
     if (allNames(/penguin/)) return special('penguin-coast', 'Penguin Coast');
     if (allNames(/flamingo/)) return special('flamingo-lagoon', 'Flamingo Lagoon');
-    if (allBirds && common.has('africa') && common.has('wetland')) return special('african-wetland-aviary', 'African Wetland Aviary');
-    if (allNames(/pelican|spoonbill|ibis|stork|heron|egret|crane/) && common.has('wetland')) return special('wetland-aviary', 'Wetland Aviary');
-    if (allBirds && common.has('tropical')) return special('tropical-aviary', 'Tropical Aviary');
     if (allNames(/bear|panda/) && common.has('forest')) return special('bear-forest', 'Bear Forest');
     if (allNames(/otter/)) return special('otter-river', 'Otter River');
     if (allNames(/seal|sea lion/)) return special('seal-coast', 'Seal Coast');
-    if (allNames(/gorilla|chimpanzee|orangutan|bonobo/)) return special('great-ape-house', 'Great Ape House');
     if (allNames(/lemur/)) return special('lemur-forest', 'Lemur Forest');
-    if (allNames(/marmoset|tamarin/)) return special('small-primate-house', 'Small Primate House');
-    if (allCategory('Primates')) return special('primate-house', 'Primate House');
     if (allNames(/kangaroo|wallaby|pademelon|quokka/)) return special('australian-walkabout', 'Australian Walkabout');
     if (allNames(/camel|alpaca|llama|guanaco|vicuña|vicuna/)) return special('camelid-paddocks', 'Camelid Paddocks');
 
     // Broad real-world zoo building types.
-    if (allCategory('Reptiles')) return special('reptile-house', 'Reptile House');
 
     // Aquarium is deliberately narrower than the generic "aquatic" habitat:
     // aquatic Marine Mania animals qualify, but seals/sea lions/penguins and
@@ -2314,7 +2308,6 @@ function specialEnclosureTheme(enclosure) {
         names.every(name => aquariumName.test(name))
     ) return special('aquarium', 'Aquarium');
 
-    if (allBirds) return special('bird-house', 'Bird House');
     return null;
 }
 function enclosureThemes(enclosure) {
@@ -2405,6 +2398,7 @@ function renderEnclosureAreaBackgrounds() {
                 const title = document.createElement('div');
                 title.className = 'zoo-theme-area-title';
                 title.textContent = group.theme.title;
+                if (group.theme.italicTitle) title.style.fontStyle = 'italic';
                 area.appendChild(title);
             }
             zooCanvas.appendChild(area);
@@ -2416,7 +2410,7 @@ function displayEnclosureThemes(enclosure) {
     const themes = enclosureThemes(enclosure);
     if (!themes.length) return [];
 
-    // Specialist facility names (Reptile House, Crocodile House, Aquarium, etc.)
+    // Specialist facility names (Crocodile House, Aquarium, "Kattenrotonde", etc.)
     // may apply to one fully occupied enclosure card. Broad habitat/geography/
     // facility areas only become visible when at least two adjacent cards share
     // the same qualifying theme.
@@ -2450,6 +2444,7 @@ function applyEnclosureThemePresentation(element, enclosure) {
     const badge = document.createElement('div');
     badge.className = 'enclosure-theme-title';
     badge.textContent = primary.title;
+    if (primary.italicTitle) badge.style.fontStyle = 'italic';
     element.appendChild(badge);
 }
 
@@ -6760,53 +6755,40 @@ function animalDatabaseKey(name) {
         .toLowerCase();
 }
 
-function indexAnimalDatabase() {
-    state.animalDatabaseByName = new Map();
-    for (const record of state.animalDatabase?.animals || []) {
-        const keys = [record.english_name, record.id, record.scientific_name]
-            .map(animalDatabaseKey).filter(Boolean);
-        for (const key of keys) state.animalDatabaseByName.set(key, record);
-    }
-}
+function inventoryEntryForAnimal(animal) {
+    if (!animal || !state.inventory?.animals) return null;
+    const categorySource = state.inventory.animals[animal.category];
+    if (!categorySource) return null;
+    const levelSource = categorySource[String(animal.level)] ?? categorySource[animal.level];
+    if (!levelSource) return null;
+    const wanted = animalDatabaseKey(animal.filename);
 
-function databaseRecordForAnimal(animal) {
-    return state.animalDatabaseByName.get(animalDatabaseKey(animalDisplayName(animal))) || null;
-}
-
-function formatLocalZootierliste(record) {
-    if (!record?.zootierliste) return '';
-    const z = record.zootierliste;
-    const c = z.combined || {};
-    const lines = [
-        `${record.english_name} (${record.scientific_name})`,
-        '',
-        `Current holdings${z.combined_complete ? '' : ' — collected subtotal'}:`,
-        `Europe*: ${c.europe_custom ?? 0}`,
-        `Netherlands: ${c.netherlands ?? 0}`,
-        `EU: ${c.eu ?? 0}`,
-        `Non-EU: ${c.non_eu ?? 0}`,
-        `North America: ${c.north_america ?? 0}`,
-        `South America: ${c.south_america ?? 0}`,
-        `Africa: ${c.africa ?? 0}`,
-        `Asia: ${c.asia ?? 0}`,
-        `Australia & Oceania: ${c.oceania ?? 0}`,
-        `Worldwide: ${c.worldwide ?? 0}`,
-        '',
-        'Listings:'
-    ];
-    for (const listing of z.listings || []) {
-        const h = listing.holdings || {};
-        lines.push(
-            '',
-            `${listing.listing_name} — ${listing.scientific_name}`,
-            `Europe*: ${h.europe_custom ?? 0} | NL: ${h.netherlands ?? 0} | EU: ${h.eu ?? 0} | Non-EU: ${h.non_eu ?? 0}`,
-            `NA: ${h.north_america ?? 0} | SA: ${h.south_america ?? 0} | Africa: ${h.africa ?? 0} | Asia: ${h.asia ?? 0} | Oceania: ${h.oceania ?? 0} | Total: ${h.worldwide ?? 0}`
-        );
-        for (const holder of listing.netherlands_holders || []) {
-            lines.push(`  NL — ${holder.location} — ${holder.institution}`);
+    if (!Array.isArray(levelSource) && typeof levelSource === 'object') {
+        for (const [filename, value] of Object.entries(levelSource)) {
+            if (animalDatabaseKey(filename) !== wanted) continue;
+            return value && typeof value === 'object' && !Array.isArray(value)
+                ? value
+                : { tags: Array.isArray(value) ? value : [] };
         }
     }
-    return lines.join('\n');
+    if (Array.isArray(levelSource)) {
+        return levelSource.find(item =>
+            item && typeof item === 'object' &&
+            animalDatabaseKey(item.file ?? item.filename ?? item.path ?? item.name ?? '') === wanted
+        ) || null;
+    }
+    return null;
+}
+
+function scientificNameForAnimal(animal) {
+    const entry = inventoryEntryForAnimal(animal);
+    return String(
+        entry?.scientific_name ||
+        entry?.scientificName ||
+        entry?.latin_name ||
+        entry?.latinName ||
+        ''
+    ).trim();
 }
 
 function ensureWikipediaBack() {
@@ -6819,7 +6801,7 @@ function ensureWikipediaBack() {
         <div class="animal-info-tabs">
             <button type="button" class="animal-info-tab active" data-info-tab="information">Information</button>
             <button type="button" class="animal-info-tab" data-info-tab="wikipedia">Wikipedia</button>
-            <button type="button" class="animal-info-tab" data-info-tab="zootierliste">Zootierliste</button>
+            <button type="button" class="animal-info-tab" data-info-tab="holdings">Holdings</button>
         </div>
         <div id="animalInformationPane">
             <div class="wiki-preview-toolbar">
@@ -6843,10 +6825,10 @@ function ensureWikipediaBack() {
         <div id="wikiPreviewText"></div>
         <div id="ztlPreviewPane" hidden>
             <div class="wiki-preview-toolbar">
-                <strong id="ztlPreviewTitle">Zootierliste</strong>
+                <strong id="ztlPreviewTitle">Holdings</strong>
                 <a id="ztlPreviewLink" target="_blank" rel="noopener noreferrer">Open Zootierliste ↗</a>
             </div>
-            <div id="ztlPreviewStatus">Zootierliste data has not been loaded yet.</div>
+            <div id="ztlPreviewStatus">Current in-game holders.</div>
             <div id="ztlPreviewText"></div>
         </div>
     `;
@@ -6876,7 +6858,7 @@ function selectAnimalInfoTab(tab) {
     );
 
     const information = tab === 'information';
-    const ztl = tab === 'zootierliste';
+    const ztl = tab === 'holdings';
     const wikipedia = !information && !ztl;
 
     infoPane.hidden = !information;
@@ -6899,7 +6881,7 @@ function selectAnimalInfoTab(tab) {
     }
 
     if (ztl && state.lastHoveredAnimal) {
-        loadZootierlisteForAnimal(state.lastHoveredAnimal, state.previewScientificName || '');
+        renderCurrentGameHoldings(state.lastHoveredAnimal);
     }
 
     // Wikipedia remains lazy: only fetch it when its tab is actually selected.
@@ -7384,21 +7366,8 @@ function renderAnimalInformation(animal) {
     const list = document.getElementById('animalCombinationList');
     if (!title || !continent || !list) return;
 
-    const record = databaseRecordForAnimal(animal);
-    const scientificName = String(
-        record?.scientific_name ||
-        record?.scientificName ||
-        record?.latin_name ||
-        record?.latinName ||
-        record?.zootierliste?.listings?.find(item =>
-            item?.scientific_name || item?.scientificName
-        )?.scientific_name ||
-        record?.zootierliste?.listings?.find(item =>
-            item?.scientific_name || item?.scientificName
-        )?.scientificName ||
-        state.previewScientificName ||
-        ''
-    ).trim();
+    const record = inventoryEntryForAnimal(animal);
+    const scientificName = scientificNameForAnimal(animal);
 
     // Information always uses English name followed by Latin name.
     title.textContent = scientificName ? `${name} (${scientificName})` : (name || 'Information');
@@ -7696,31 +7665,104 @@ async function loadWikipediaForAnimal(animal) {
 }
 
 
-async function loadZootierlisteForAnimal(animal, scientificName = '') {
+function latestCurrentHoldingAcquisition(zooName, animalName) {
+    const wantedZoo = String(zooName || '').trim().toLowerCase();
+    const wantedAnimal = String(animalName || '').replace(/\.png$/i, '').trim().toLowerCase();
+    const relevant = (state.tradeHistory || [])
+        .filter(trade =>
+            String(trade?.zooName || '').trim().toLowerCase() === wantedZoo &&
+            (
+                String(trade?.outgoingName || '').trim().toLowerCase() === wantedAnimal ||
+                String(trade?.incomingName || '').trim().toLowerCase() === wantedAnimal
+            )
+        )
+        .sort((a,b) => Number(a.turn || 0) - Number(b.turn || 0));
+
+    let acquired = null;
+    for (const trade of relevant) {
+        // outgoingName is the animal the PLAYER sent, so the named zoo acquired it.
+        if (String(trade.outgoingName || '').trim().toLowerCase() === wantedAnimal) acquired = trade;
+        // incomingName is the animal the PLAYER received, so the named zoo no longer holds it.
+        if (String(trade.incomingName || '').trim().toLowerCase() === wantedAnimal) acquired = null;
+    }
+    return acquired;
+}
+
+function renderCurrentGameHoldings(animal) {
     if (!animal) return;
     const titleEl = document.getElementById('ztlPreviewTitle');
     const linkEl = document.getElementById('ztlPreviewLink');
     const statusEl = document.getElementById('ztlPreviewStatus');
     const textEl = document.getElementById('ztlPreviewText');
-    const record = databaseRecordForAnimal(animal);
+    if (!titleEl || !linkEl || !statusEl || !textEl) return;
 
-    if (record) {
-        titleEl.textContent = `Zootierliste — ${record.english_name}`;
-        statusEl.textContent = record.zootierliste?.combined_complete
-            ? uiText('Local Zoo Curator database • current holdings')
-            : uiText('Local Zoo Curator database • current collected subtotal');
-        textEl.textContent = formatLocalZootierliste(record);
-        const firstUrl = record.zootierliste?.listings?.find(x => x.source_url)?.source_url;
-        linkEl.href = firstUrl || 'https://www.zootierliste.de/en/?action=expsuche';
-        state.previewZtlAnimalId = animal.id;
-        state.previewZtlScientificName = record.scientific_name || scientificName || '';
-        return;
+    const name = animalDisplayName(animal);
+    const scientificName = scientificNameForAnimal(animal);
+    titleEl.textContent = `Holdings — ${name}`;
+    statusEl.textContent = 'Current holders in this game';
+    textEl.innerHTML = '';
+
+    const holders = [];
+
+    // The player's zoo is part of the current game too.
+    if ((state.animals || []).some(a => animalCardKey(a) === animalCardKey(animal))) {
+        holders.push({ name: state.zooName || 'Your Zoo', player: true, trade: null });
     }
 
-    titleEl.textContent = `Zootierliste — ${animalDisplayName(animal)}`;
-    statusEl.textContent = uiText('This animal is not in assets/data/animals.json yet.');
-    textEl.textContent = uiText('Add this animal to the JSON database and reload the game. No game-code change is required.');
-    linkEl.href = 'https://www.zootierliste.de/en/?action=expsuche';
+    for (const record of state.realZooData?.zoos || []) {
+        const hasSpecies = realZooSessionAnimalNames(record).some(raw => {
+            const spec = realZooAnimalSpecByName(raw);
+            return spec && animalCardKey(spec) === animalCardKey(animal);
+        });
+        if (!hasSpecies) continue;
+        holders.push({
+            name: record.name || 'Zoo',
+            player: false,
+            trade: latestCurrentHoldingAcquisition(record.name, name)
+        });
+    }
+
+    holders.sort((a,b) => {
+        if (a.player !== b.player) return a.player ? -1 : 1;
+        return a.name.localeCompare(b.name);
+    });
+
+    if (!holders.length) {
+        textEl.textContent = 'No current holder in this game.';
+    } else {
+        for (const holder of holders) {
+            const row = document.createElement('div');
+            row.className = 'current-game-holder';
+            row.textContent = holder.name;
+
+            // Starting holdings deliberately have no hover popup.
+            if (holder.trade) {
+                row.style.cursor = 'help';
+                const show = () => {
+                    const popup = document.getElementById('tradeAnimalLocationPopup');
+                    if (!popup) return;
+                    popup.textContent =
+                        `${holder.name}\n` +
+                        `Acquired ${name} on turn ${holder.trade.turn}\n` +
+                        `Trade: ${holder.trade.outgoingName} (L${holder.trade.outgoingLevel}) ↔ ` +
+                        `${holder.trade.incomingName} (L${holder.trade.incomingLevel})`;
+                    popup.style.display = 'block';
+                    const rect = row.getBoundingClientRect();
+                    const pr = popup.getBoundingClientRect();
+                    popup.style.left = `${Math.max(8, Math.min(window.innerWidth-pr.width-8, rect.right+8))}px`;
+                    popup.style.top = `${Math.max(8, Math.min(window.innerHeight-pr.height-8, rect.top))}px`;
+                };
+                row.addEventListener('mouseenter', show);
+                row.addEventListener('mouseleave', hideTradeAnimalLocationPopup);
+            }
+            textEl.appendChild(row);
+        }
+    }
+
+    // Zootierliste remains available as an external reference link.
+    const query = scientificName || name;
+    linkEl.textContent = 'Open on Zootierliste ↗';
+    linkEl.href = `https://www.zootierliste.de/en/?action=expsuche&suchart=1&search=${encodeURIComponent(query)}`;
 }
 
 async function flipPreviewToWikipedia() {
@@ -18781,17 +18823,6 @@ function loadNonEssentialGameData() {
         })
         .catch(error => console.warn('Compatibility rules unavailable:', error));
 
-    loadOptionalJsonInBackground('assets/data/animals.json')
-        .then(data => {
-            state.animalDatabase = data || { animals: [] };
-            indexAnimalDatabase();
-        })
-        .catch(error => {
-            console.warn('Animal information database unavailable:', error);
-            state.animalDatabase = { animals: [] };
-            indexAnimalDatabase();
-        });
-
     loadOptionalJsonInBackground('zoo-names.json')
         .then(data => {
             // The expanded European database can provide country, location,
@@ -18913,8 +18944,6 @@ async function startGame() {
         };
         rebuildCompatibilityGraphs();
         rebuildCompatibilityEvidenceIndex();
-state.animalDatabase = { animals: [] };
-        indexAnimalDatabase();
         state.zooNamesData = null;
         state.categoryColours = { ...CATEGORY_COLOURS };
 

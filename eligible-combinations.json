@@ -30442,6 +30442,36 @@
           "date": "documented"
         }
       ]
+    },
+    {
+      "animals": [
+        "Malaysian Giant Turtle",
+        "Chinese Stripe-Necked Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026",
+          "source": "San Diego Zoo official Turtle and Terrapin page",
+          "note": "Official zoo page states one large pond habitat contains Malaysian giant turtle, stripe-necked turtles, Fly River turtles and narrow-headed softshell turtles. Fly River turtle maps to Zoo Curator's Pig-Nosed Turtle."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Malaysian Giant Turtle",
+        "Pig-Nosed Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026",
+          "source": "San Diego Zoo official Turtle and Terrapin page",
+          "note": "Official zoo page states one large pond habitat contains Malaysian giant turtle, stripe-necked turtles, Fly River turtles and narrow-headed softshell turtles. Fly River turtle maps to Zoo Curator's Pig-Nosed Turtle."
+        }
+      ]
     }
   ],
   "proxy_compatibility": {
@@ -31356,6 +31386,111 @@
       "lemur_tortoise_core": [
         "African Spurred Tortoise",
         "Radiated Tortoise"
+      ],
+      "small_pond_water_turtles": [
+        "European Pond Turtle",
+        "False Map Turtle",
+        "Painted Turtle",
+        "Chinese Stripe-Necked Turtle",
+        "Chinese Pond Turtle",
+        "Common Musk Turtle",
+        "Florida Redbelly Turtle",
+        "African Helmeted Turtle",
+        "McCord's Snake-Necked Turtle",
+        "Spotted Pond Turtle",
+        "West African Mud Turtle",
+        "Four-Eyed Turtle",
+        "Spotted Turtle"
+      ],
+      "south_american_water_turtle_profile": [
+        "Pond Slider",
+        "Yellow-Spotted Amazon River Turtle",
+        "Arrau River Turtle",
+        "Big-Headed Amazon River Turtle",
+        "Red-Headed River Turtle",
+        "Mata-Mata",
+        "Hilaire's Side-Necked Turtle",
+        "Geoffroy's Side-Necked Turtle",
+        "Neotropical Painted Wood Turtle"
+      ],
+      "asian_water_turtle_profile": [
+        "Chinese Stripe-Necked Turtle",
+        "Chinese Pond Turtle",
+        "Giant Asian Pond Turtle",
+        "Malaysian Giant Turtle",
+        "McCord's Snake-Necked Turtle",
+        "Spotted Pond Turtle",
+        "Four-Eyed Turtle",
+        "Annam Leaf Turtle",
+        "Chinese Three-Keeled Pond Turtle",
+        "Red-Necked Pond Turtle"
+      ],
+      "african_water_turtle_profile": [
+        "African Helmeted Turtle",
+        "West African Mud Turtle"
+      ],
+      "european_water_turtle_profile": [
+        "European Pond Turtle"
+      ],
+      "north_american_water_turtle_profile": [
+        "Pond Slider",
+        "False Map Turtle",
+        "Painted Turtle",
+        "Common Musk Turtle",
+        "Florida Redbelly Turtle",
+        "Spotted Turtle"
+      ],
+      "south_american_pond_turtle_partner_pool": [
+        "Blue-And-Yellow Macaw",
+        "Capybara",
+        "Collared Peccary",
+        "Cuvier's Dwarf Caiman",
+        "Giant Anteater",
+        "Greater Rhea",
+        "Green Iguana",
+        "Patagonian Mara",
+        "Roseate Spoonbill",
+        "Scarlet Ibis",
+        "Scarlet Macaw",
+        "Spectacled Caiman",
+        "Vicuña",
+        "Yacare Caiman",
+        "Caiman Lizard",
+        "Common Squirrel Monkey",
+        "Golden-Headed Lion Tamarin",
+        "Hoffmann's Two-Toed Sloth",
+        "White-Faced Saki",
+        "Southern Tamandua"
+      ],
+      "asian_pond_turtle_partner_pool": [
+        "Chinese Water Dragon"
+      ],
+      "african_pond_turtle_partner_pool": [
+        "Dwarf Crocodile"
+      ],
+      "european_pond_turtle_partner_pool": [
+        "European Legless Lizard",
+        "Marginated Tortoise"
+      ],
+      "north_american_pond_turtle_partner_pool": [
+        "American Alligator"
+      ],
+      "large_amazon_river_turtles": [
+        "Arrau River Turtle",
+        "Big-Headed Amazon River Turtle",
+        "Yellow-Spotted Amazon River Turtle"
+      ],
+      "giant_asian_hard_shelled_water_turtles": [
+        "Giant Asian Pond Turtle",
+        "Malaysian Giant Turtle"
+      ],
+      "giant_asian_water_turtle_partner_pool": [
+        "Chinese Stripe-Necked Turtle",
+        "Pig-Nosed Turtle",
+        "Pond Slider"
+      ],
+      "giant_asian_tropical_walkthrough_reptile_partners": [
+        "Green Iguana"
       ]
     },
     "complete_groups": [
@@ -31399,7 +31534,10 @@
       "parc_des_oiseaux_african_stork_aviary",
       "large_fruit_bats_tropical_house",
       "agouti_mara_proxy",
-      "amazon_freshwater_turtle_core"
+      "amazon_freshwater_turtle_core",
+      "small_pond_water_turtles",
+      "large_amazon_river_turtles",
+      "giant_asian_hard_shelled_water_turtles"
     ],
     "group_links": [
       {
@@ -31756,6 +31894,54 @@
         "to": "lemurs",
         "mode": "habitat_layer_proxy",
         "note": "Narrowed replacement for the former blanket tortoises-to-lemurs rule. Limited to African Spurred and Radiated Tortoises, the taxa explicitly anchoring the repeated lemur+tortoise exhibit rationale; does not transfer compatibility to unrelated Asian, Mediterranean, Galapagos or forest tortoises."
+      },
+      {
+        "from": "south_american_water_turtle_profile",
+        "to": "south_american_pond_turtle_partner_pool",
+        "mode": "regional_pond_turtle_habitat_proxy",
+        "note": "Gameplay proxy: South American freshwater turtles inherit the established Pond Slider/Amazon-water-turtle mixed-exhibit partner pattern for Amazon and other South American habitat layers. This transfers external exhibit possibilities, not identical husbandry requirements."
+      },
+      {
+        "from": "asian_water_turtle_profile",
+        "to": "asian_pond_turtle_partner_pool",
+        "mode": "regional_pond_turtle_habitat_proxy",
+        "note": "Gameplay proxy: Asian freshwater/pond turtles inherit the established Asian pond-turtle mixed-exhibit pattern. Kept geographically restricted rather than copying South American, African or North American partners."
+      },
+      {
+        "from": "african_water_turtle_profile",
+        "to": "african_pond_turtle_partner_pool",
+        "mode": "regional_pond_turtle_habitat_proxy",
+        "note": "Gameplay proxy: African freshwater turtles inherit the established African pond-turtle mixed-exhibit pattern. Kept geographically restricted."
+      },
+      {
+        "from": "european_water_turtle_profile",
+        "to": "european_pond_turtle_partner_pool",
+        "mode": "regional_pond_turtle_habitat_proxy",
+        "note": "Gameplay proxy: European pond turtles retain the established European pond-turtle partner pattern."
+      },
+      {
+        "from": "north_american_water_turtle_profile",
+        "to": "north_american_pond_turtle_partner_pool",
+        "mode": "regional_pond_turtle_habitat_proxy",
+        "note": "Gameplay proxy: small North American pond/water turtles inherit the established North American Pond Slider partner pattern."
+      },
+      {
+        "from": "large_amazon_river_turtles",
+        "to": "south_american_pond_turtle_partner_pool",
+        "mode": "large_amazon_river_turtle_habitat_proxy",
+        "note": "Evidence-strengthened gameplay proxy. Giant/Arrau and Big-Headed Amazon river turtles are documented in large mixed Amazon systems with other river turtles and Amazon fauna; large body size alone is therefore not grounds for excluding them from South American regional partner inheritance. This does not generalize to Asian giant turtles, softshells or snapping turtles."
+      },
+      {
+        "from": "giant_asian_hard_shelled_water_turtles",
+        "to": "giant_asian_water_turtle_partner_pool",
+        "mode": "giant_asian_water_turtle_proxy",
+        "note": "Evidence-backed gameplay proxy. San Diego Zoo officially keeps Malaysian Giant Turtle with stripe-necked and Fly River/Pig-Nosed turtles in one large pond. Heosemys grandis husbandry records report Giant Asian Pond Turtle kept without complications with Orlitia borneensis, Ocadia/Mauremys sinensis and Trachemys scripta elegans. This remains narrower than an all-Asian-water-turtle rule."
+      },
+      {
+        "from": "giant_asian_hard_shelled_water_turtles",
+        "to": "giant_asian_tropical_walkthrough_reptile_partners",
+        "mode": "tropical_walkthrough_proxy",
+        "note": "Conservative proxy support: published mixed-species review reports Malaysian Giant Turtle with Green Iguana in an outdoor walk-through aviary in Bali, Indonesia. Surfaced source does not name the institution, so this is retained as proxy support rather than promoted as named-zoo direct evidence."
       }
     ]
   },
@@ -36764,7 +36950,52 @@
         "For conservation-oriented breeding exhibits, Chinese Three-Keeled and Chinese Stripe-Necked turtles should be separated because hybridization is documented. Zoo Curator compatibility here means they can physically share a managed exhibit, not that breeding them together is recommended."
       ]
     },
-    "validation_pass": 218,
-    "validation_pass_note": "Fourth low-level reptile discovery pass. Added Central Bearded Dragon + Frilled Lizard, supported by mixed Australian reptile exhibits including National Aquarium records and repeated zoo examples; Carpet Python + Water Python from National Aquarium's Australia: Wild Extremes mixed snake/fish exhibit; and Common Anaconda with Reticulated Python and Burmese Python from the documented Heythrop mixed giant-constrictor exhibit. Existing direct records and proxy rules remain untouched."
+    "validation_pass": 176,
+    "validation_pass_note": "Expanded giant Asian freshwater turtle evidence. Added/strengthened direct San Diego Zoo Malaysian Giant Turtle combinations and a conservative Giant Asian Pond Turtle/Malaysian Giant Turtle proxy core; did not blanket-proxy softshells.",
+    "water_turtle_proxy_pass": {
+      "pass": 174,
+      "date": "2026-09-22",
+      "summary": "Added conservative all-small-pond-turtle proxy plus geography-specific South American, Asian, African, European and North American freshwater-turtle partner inheritance.",
+      "safety_scope": "Snapping turtles, softshells, sea turtles, tortoises and other unusually large/specialist turtles are excluded from the blanket small-turtle complete group; some remain eligible only through regional profile links where already appropriate."
+    },
+    "giant_river_turtle_check": {
+      "pass": 175,
+      "date": "2026-09-23",
+      "result": "Large Amazon river turtles retained/strengthened in South American regional proxy; Asian giant pond turtles remain regional-profile only, not a blanket complete giant-turtle group.",
+      "web_evidence": [
+        "National Aquarium Amazon River Forest: Giant South American River Turtle in multispecies Amazon exhibit with turtles, stingrays and catfish.",
+        "National Aquarium reported mixed system: Big-Headed Amazon River Turtle with Giant/Arrau and Yellow-Spotted river turtles plus Smooth-Fronted Caiman and Amazon fishes; breeding reported.",
+        "Centro de Rescate Amazónico (CREA) 2024 exhibit: Big-Headed Amazon River Turtle + Giant South American River Turtle + lowland paca + black agouti + Hoffmann's Two-Toed Sloth.",
+        "St. Augustine Alligator Farm 2026: Arrau River Turtle + Yellow-Spotted River Turtle + Cuvier's Dwarf Caiman.",
+        "Giant Asian Pond Turtle: broad zoo holdings found, but this check did not find equally strong evidence for a blanket giant-Asian-turtle mixed-species proxy."
+      ],
+      "asian_giants_checked": [
+        "Giant Asian Pond Turtle",
+        "Malaysian Giant Turtle"
+      ]
+    },
+    "giant_asian_turtle_expansion": {
+      "pass": 176,
+      "date": "2026-09-23",
+      "direct_changes": [
+        [
+          "Malaysian Giant Turtle",
+          "Chinese Stripe-Necked Turtle",
+          "added"
+        ],
+        [
+          "Malaysian Giant Turtle",
+          "Pig-Nosed Turtle",
+          "added"
+        ]
+      ],
+      "findings": [
+        "San Diego Zoo official page: Malaysian Giant Turtle shares a large pond with stripe-necked turtles, Fly River/Pig-Nosed turtles and narrow-headed softshell turtles.",
+        "Giant Asian Pond Turtle husbandry source reports uncomplicated co-housing with Malaysian Giant Turtle, Pond Slider and Ocadia/Mauremys sinensis among several other turtles.",
+        "Kadoorie Farm official 2024 page explicitly documents Giant Asian Pond Turtles sharing a spacious enclosure with Common Caiman; Common Caiman is not in the current Zoo Curator inventory, so no direct game pair was added.",
+        "Published Green Iguana mixed-species review reports Malaysian Giant Turtle + Green Iguana in a Bali walk-through aviary; retained as proxy because the surfaced text does not identify the institution.",
+        "Softshells were not generalized into the proxy despite San Diego's narrow-headed softshell mix, because Zoo Curator's softshell taxa are different species and softshell husbandry can be materially more aggressive."
+      ]
+    }
   }
 }

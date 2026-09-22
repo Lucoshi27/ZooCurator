@@ -460,11 +460,13 @@
         ],
         "Cameroon Sheep.png": [
           "domestic",
-          "africa"
+          "africa",
+          "petting-zoo"
         ],
         "Domestic Donkey.png": [
           "domestic",
-          "africa"
+          "africa",
+          "petting-zoo"
         ],
         "European Roe Deer.png": [
           "forest",
@@ -494,7 +496,8 @@
         ],
         "West African Dwarf Goat.png": [
           "domestic",
-          "africa"
+          "africa",
+          "petting-zoo"
         ],
         "Wild Boar.png": [
           "forest",
@@ -2957,10 +2960,6 @@
           "tropical",
           "south-america"
         ],
-        "Cameroon Hoopoe.png": [
-          "savanna",
-          "africa"
-        ],
         "Red-Lored Amazon.png": [
           "rainforest",
           "tropical",
@@ -3436,7 +3435,7 @@
           "temperate",
           "europe"
         ],
-		"False Map Turtle.png": [
+        "False Map Turtle.png": [
           "semi-aquatic",
           "wetland",
           "north-america"
@@ -3457,7 +3456,7 @@
           "temperate",
           "europe"
         ],
-		"Painted Turtle.png": [
+        "Painted Turtle.png": [
           "semi-aquatic",
           "wetland",
           "north-america"
@@ -3489,6 +3488,11 @@
           "semi-aquatic",
           "wetland",
           "north-america"
+        ],
+        "Amazon Tree Boa.png": [
+          "tropical",
+          "nocturnal",
+          "south-america"
         ],
         "American Alligator.png": [
           "semi-aquatic",
@@ -3532,7 +3536,7 @@
           "wetland",
           "north-america"
         ],
-		"Common Viper.png": [
+        "Common Viper.png": [
           "nocturnal",
           "asia",
           "europe"
@@ -3558,14 +3562,14 @@
         "European Legless Lizard.png": [
           "europe"
         ],
+        "Florida Redbelly Turtle.png": [
+          "north-america",
+          "semi-aquatic",
+          "wetlands"
+        ],
         "Frill-Necked Lizard.png": [
           "tropical",
           "oceania"
-        ],
-        "Amazon Tree Boa.png": [
-          "tropical",
-          "nocturnal",
-          "south-america"
         ],
         "Gila Monster.png": [
           "desert",
@@ -3689,9 +3693,6 @@
           "north-america",
           "south-america"
         ],
-        "Florida Redbelly Turtle.png": [
-          "north-america"
-        ],
         "Galapagos Giant Tortoise.png": [
           "tropical",
           "south-america"
@@ -3733,6 +3734,9 @@
           "wetland",
           "asia"
         ],
+		"Mediterranean Pond Turtle": [
+		  "semi-aquatic",
+          "europe"
         "Yellow-Headed Water Monitor.png": [
           "semi-aquatic",
           "asia"
@@ -3761,7 +3765,7 @@
           "tropical",
           "asia"
         ],
-        "Utila Spinytail Iguana.png": [
+        "Utila Spiny-Tailed Iguana.png": [
           "tropical",
           "north-america"
         ],
@@ -3842,7 +3846,7 @@
           "tropical",
           "oceania"
         ],
-		"Green Bush Viper.png": [
+        "Green Bush Viper.png": [
           "tropical",
           "africa"
         ],
@@ -3898,7 +3902,7 @@
           "tropical",
           "africa"
         ],
-		"Smooth-Fronted Caiman.png": [
+        "Smooth-Fronted Caiman.png": [
           "semi-aquatic",
           "wetland",
           "tropical",
@@ -4015,7 +4019,7 @@
           "tropical",
           "south-america"
         ],
-        "Smooth Softshelled Turtle.png": [
+        "Smooth Softshell Turtle.png": [
           "semi-aquatic",
           "wetland",
           "north-america"
@@ -4092,7 +4096,8 @@
     ],
     "lifestyle": [
       "nocturnal",
-      "domestic"
+      "domestic",
+      "petting-zoo"
     ],
     "continent": [
       "africa",
@@ -4109,7 +4114,8 @@
       "wetland": "Strong wetland association without being primarily an aquatic exhibit.",
       "categoryAndLevel": "Not duplicated as tags; they remain encoded by the existing Category -> Level hierarchy.",
       "audit": "Completed second-pass audit: all animals now have at least one zoo-preference tag; conspicuous aquatic/semi-aquatic and geographic omissions from the first pass were also corrected.",
-      "reptileExpansion": "Added missing species-level reptile entries from Zoo_Curator_animals_scientific_names_batch1.xlsm using the spreadsheet rarity levels. Existing inventory names remain canonical; obvious spreadsheet name variants already represented in inventory were not duplicated. Common Marmoset and Okapi were also added."
+      "reptileExpansion": "Added missing species-level reptile entries from Zoo_Curator_animals_scientific_names_batch1.xlsm using the spreadsheet rarity levels. Existing inventory names remain canonical; obvious spreadsheet name variants already represented in inventory were not duplicated. Common Marmoset and Okapi were also added.",
+      "petting-zoo": "Hands-on petting-zoo suitability. Kept separate from domestic so large cattle and camelids can still form Farm Areas without automatically becoming a Petting Zoo."
     }
   },
   "zooTypeWeights": {

@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V222.5";
+const ZOO_CURATOR_VERSION = "V224.1";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 1;
 
@@ -2171,6 +2171,246 @@ function animalInventoryTags(category, level, filename) {
     const tags = Array.isArray(value) ? value : (Array.isArray(value?.tags) ? value.tags : []);
     return tags.map(tag => String(tag).trim().toLowerCase()).filter(Boolean);
 }
+
+
+// ============================================================
+// DYNAMIC ZOO AREAS / HOUSES
+// ============================================================
+// Areas are derived from the animals currently inside each enclosure. Nothing
+// is persisted: moving an enclosure or changing its occupants immediately
+// splits/merges/relabels the visible areas on the next render.
+const ENCLOSURE_AREA_THEMES = Object.freeze({
+    'africa':        { title: 'African Area',        className: 'theme-africa',        layer: 'geography' },
+    'asia':          { title: 'Asian Area',          className: 'theme-asia',          layer: 'geography' },
+    'europe':        { title: 'European Area',       className: 'theme-europe',        layer: 'geography' },
+    'north-america': { title: 'North American Area', className: 'theme-north-america', layer: 'geography' },
+    'south-america': { title: 'South American Area', className: 'theme-south-america', layer: 'geography' },
+    'oceania':       { title: 'Oceanian Area',       className: 'theme-oceania',       layer: 'geography' },
+    'antarctica':    { title: 'Antarctic Area',      className: 'theme-antarctica',    layer: 'geography' },
+
+    'tropical':      { title: 'Tropical House',      className: 'theme-tropical',      layer: 'habitat' },
+    'rainforest':    { title: 'Rainforest House',    className: 'theme-rainforest',    layer: 'habitat' },
+    'savanna':       { title: 'Savanna Area',        className: 'theme-savanna',       layer: 'habitat' },
+    'aquatic':       { title: 'Aquatic Area',        className: 'theme-aquatic',       layer: 'habitat' },
+    'semi-aquatic':  { title: 'Waterside Area',      className: 'theme-semi-aquatic',  layer: 'habitat' },
+    'wetland':       { title: 'Wetland Area',        className: 'theme-wetland',       layer: 'habitat' },
+    'forest':        { title: 'Forest Area',         className: 'theme-forest',        layer: 'habitat' },
+    'desert':        { title: 'Desert Area',         className: 'theme-desert',        layer: 'habitat' },
+    'temperate':     { title: 'Temperate Area',      className: 'theme-temperate',     layer: 'habitat' },
+    'boreal':        { title: 'Boreal Area',         className: 'theme-boreal',        layer: 'habitat' },
+    'arctic':        { title: 'Arctic Area',         className: 'theme-arctic',        layer: 'habitat' },
+    'mountain':      { title: 'Mountain Area',       className: 'theme-mountain',      layer: 'habitat' },
+
+    'domestic':      { title: 'Farm Area',           className: 'theme-domestic',      layer: 'facility' },
+    'petting-zoo':   { title: 'Petting Zoo',         className: 'theme-petting-zoo',   layer: 'facility' }
+});
+
+const ENCLOSURE_AREA_TAGS = new Set(Object.keys(ENCLOSURE_AREA_THEMES));
+const ENCLOSURE_AREA_ADJACENCY_TOLERANCE = 8;
+
+function animalsInWholeEnclosure(enclosure) {
+    return state.animals.filter(animal =>
+        animal &&
+        animal.enclosureId === enclosure.id &&
+        animal.slotIndex !== null &&
+        animal.slotIndex !== undefined
+    );
+}
+
+function commonEnclosureTags(enclosure) {
+    const animals = animalsInWholeEnclosure(enclosure);
+    if (!animals.length) return new Set();
+
+    let common = new Set(animalInventoryTags(
+        animals[0].category, animals[0].level, animals[0].filename
+    ));
+    for (let i = 1; i < animals.length && common.size; i++) {
+        const tags = new Set(animalInventoryTags(
+            animals[i].category, animals[i].level, animals[i].filename
+        ));
+        common = new Set([...common].filter(tag => tags.has(tag)));
+    }
+    return new Set([...common].filter(tag => ENCLOSURE_AREA_TAGS.has(tag)));
+}
+
+function specialEnclosureTheme(enclosure) {
+    const animals = animalsInWholeEnclosure(enclosure);
+    if (!animals.length) return null;
+    const common = commonEnclosureTags(enclosure);
+    const names = animals.map(animal => animalDisplayName(animal).toLowerCase());
+
+    const allCategory = category => animals.every(animal => animal.category === category);
+    const allNames = pattern => names.every(name => pattern.test(name));
+    const marineBirdName = /penguin|flamingo|pelican|spoonbill|puffin/;
+    const allBirds = animals.every(animal =>
+        ['Other Birds', 'Tropical Birds', 'Birds of Prey'].includes(animal.category) ||
+        (animal.category === 'Marine Mania' &&
+            marineBirdName.test(animalDisplayName(animal).toLowerCase()))
+    );
+
+    const special = (key, title, className = key) => ({
+        key: `special-${key}`,
+        title,
+        className: `theme-${className}`,
+        layer: 'special'
+    });
+
+    // Highly specific houses/complexes take precedence over broad taxonomic houses.
+    if (common.has('petting-zoo')) return special('petting-zoo', 'Petting Zoo');
+    if (allNames(/shark/) && common.has('aquatic')) return special('shark-tunnel', 'Shark Tunnel');
+    if (allNames(/crocodile|alligator|caiman|gharial/)) return special('crocodile-house', 'Crocodile House');
+    if (allNames(/turtle|tortoise|terrapin/)) return special('turtle-house', 'Turtle & Tortoise House');
+    if (allNames(/snake|python|boa|anaconda|cobra|viper|rattlesnake|mamba|adder|krait|taipan/)) return special('snake-house', 'Snake House');
+    if (allNames(/monitor|iguana|gecko|chameleon|dragon|skink|lizard|tegu/)) return special('lizard-house', 'Lizard House');
+    if (allNames(/owl/)) return special('owl-aviary', 'Owl Aviary');
+    if (allCategory('Birds of Prey')) return special('raptor-aviary', 'Raptor Aviary');
+    if (allNames(/penguin/)) return special('penguin-coast', 'Penguin Coast');
+    if (allNames(/flamingo/)) return special('flamingo-lagoon', 'Flamingo Lagoon');
+    if (allBirds && common.has('africa') && common.has('wetland')) return special('african-wetland-aviary', 'African Wetland Aviary');
+    if (allNames(/pelican|spoonbill|ibis|stork|heron|egret|crane/) && common.has('wetland')) return special('wetland-aviary', 'Wetland Aviary');
+    if (allBirds && common.has('tropical')) return special('tropical-aviary', 'Tropical Aviary');
+    if (allNames(/bear|panda/) && common.has('forest')) return special('bear-forest', 'Bear Forest');
+    if (allNames(/otter/)) return special('otter-river', 'Otter River');
+    if (allNames(/seal|sea lion/)) return special('seal-coast', 'Seal Coast');
+    if (allNames(/gorilla|chimpanzee|orangutan|bonobo/)) return special('great-ape-house', 'Great Ape House');
+    if (allNames(/lemur/)) return special('lemur-forest', 'Lemur Forest');
+    if (allNames(/marmoset|tamarin/)) return special('small-primate-house', 'Small Primate House');
+    if (allCategory('Primates')) return special('primate-house', 'Primate House');
+    if (allNames(/kangaroo|wallaby|pademelon|quokka/)) return special('australian-walkabout', 'Australian Walkabout');
+    if (allNames(/camel|alpaca|llama|guanaco|vicuña|vicuna/)) return special('camelid-paddocks', 'Camelid Paddocks');
+
+    // Broad real-world zoo building types.
+    if (allCategory('Reptiles')) return special('reptile-house', 'Reptile House');
+
+    // Aquarium is deliberately narrower than the generic "aquatic" habitat:
+    // aquatic Marine Mania animals qualify, but seals/sea lions/penguins and
+    // other shore animals keep their own facility identities above.
+    const aquariumName = /shark|ray|sawfish|smooth-hound|nursehound/;
+    if (
+        allCategory('Marine Mania') &&
+        common.has('aquatic') &&
+        names.every(name => aquariumName.test(name))
+    ) return special('aquarium', 'Aquarium');
+
+    if (allBirds) return special('bird-house', 'Bird House');
+    return null;
+}
+function enclosureThemes(enclosure) {
+    const common = commonEnclosureTags(enclosure);
+    const themes = [...common]
+        .map(tag => ({ key: tag, ...ENCLOSURE_AREA_THEMES[tag] }))
+        .filter(Boolean);
+    const special = specialEnclosureTheme(enclosure);
+    if (special) themes.unshift(special);
+    return themes;
+}
+
+function enclosuresAreAreaAdjacent(a, b) {
+    const dx = Math.abs(a.x - b.x);
+    const dy = Math.abs(a.y - b.y);
+    const horizontal = Math.abs(dx - (ENCLOSURE_W + ENCLOSURE_GAP)) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE &&
+        dy <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE;
+    const vertical = Math.abs(dy - (ENCLOSURE_H + ENCLOSURE_GAP)) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE &&
+        dx <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE;
+    return horizontal || vertical;
+}
+
+function connectedEnclosureThemeGroups() {
+    const themesById = new Map(state.enclosures.map(enclosure => [
+        enclosure.id,
+        enclosureThemes(enclosure)
+    ]));
+    const themeKeys = new Set();
+    for (const themes of themesById.values()) {
+        for (const theme of themes) themeKeys.add(theme.key);
+    }
+
+    const groups = [];
+    for (const key of themeKeys) {
+        const eligible = state.enclosures.filter(enclosure =>
+            themesById.get(enclosure.id)?.some(theme => theme.key === key)
+        );
+        const unseen = new Set(eligible.map(enclosure => enclosure.id));
+        while (unseen.size) {
+            const firstId = unseen.values().next().value;
+            unseen.delete(firstId);
+            const component = [state.enclosures.find(e => e.id === firstId)];
+            for (let i = 0; i < component.length; i++) {
+                const current = component[i];
+                for (const candidate of eligible) {
+                    if (!unseen.has(candidate.id)) continue;
+                    if (!enclosuresAreAreaAdjacent(current, candidate)) continue;
+                    unseen.delete(candidate.id);
+                    component.push(candidate);
+                }
+            }
+            if (component.length < 2) continue;
+            const theme = themesById.get(component[0].id).find(item => item.key === key);
+            groups.push({ theme, enclosures: component });
+        }
+    }
+    return groups;
+}
+
+function renderEnclosureAreaBackgrounds() {
+    const groups = connectedEnclosureThemeGroups();
+    const layerOrder = { geography: 0, habitat: 1, facility: 2, special: 3 };
+    groups.sort((a, b) =>
+        (layerOrder[a.theme.layer] ?? 9) - (layerOrder[b.theme.layer] ?? 9) ||
+        b.enclosures.length - a.enclosures.length
+    );
+
+    for (const group of groups) {
+        const pad = group.theme.layer === 'geography' ? 14 : 12;
+
+        // Per-enclosure cells prevent an L-shaped group's rectangular bounding
+        // box from visually swallowing an unrelated enclosure in its empty corner.
+        const titleHost = group.enclosures
+            .slice()
+            .sort((a, b) => a.y - b.y || a.x - b.x)[0];
+
+        for (const enclosure of group.enclosures) {
+            const area = document.createElement('div');
+            area.className = `zoo-theme-area ${group.theme.className} zoo-theme-layer-${group.theme.layer}`;
+            area.style.left = `${enclosure.x - pad}px`;
+            area.style.top = `${enclosure.y - pad}px`;
+            area.style.width = `${ENCLOSURE_W + pad * 2}px`;
+            area.style.height = `${ENCLOSURE_H + pad * 2}px`;
+
+            if (enclosure.id === titleHost.id) {
+                const title = document.createElement('div');
+                title.className = 'zoo-theme-area-title';
+                title.textContent = group.theme.title;
+                area.appendChild(title);
+            }
+            zooCanvas.appendChild(area);
+        }
+    }
+}
+
+function applyEnclosureThemePresentation(element, enclosure) {
+    const themes = enclosureThemes(enclosure);
+    if (!themes.length) return;
+
+    element.classList.add('themed-enclosure');
+    for (const theme of themes) element.classList.add(theme.className);
+
+    const special = themes.find(theme => theme.layer === 'special');
+    const habitat = themes.find(theme => theme.layer === 'habitat');
+    const geography = themes.find(theme => theme.layer === 'geography');
+    const facility = themes.find(theme => theme.layer === 'facility');
+
+    // A compact card title; connected group titles are rendered independently
+    // behind the cards, so geography + habitat can overlap without hierarchy.
+    const primary = special || facility || habitat || geography;
+    if (!primary) return;
+
+    const badge = document.createElement('div');
+    badge.className = 'enclosure-theme-title';
+    badge.textContent = primary.title;
+    element.appendChild(badge);
+}
+
 
 function normaliseZooTypes(value) {
     const values = Array.isArray(value) ? value : [value];
@@ -7537,6 +7777,9 @@ function renderZoo() {
     // render instead of repeating that work independently for every slot.
     const compatibilityGlowKeys = currentCompatibilityGlowKeys();
 
+    // Draw inferred geography/habitat/facility regions first, underneath cards.
+    renderEnclosureAreaBackgrounds();
+
 
     for (
         const enclosure
@@ -7672,6 +7915,8 @@ function renderEnclosure(
     element.appendChild(
         image
     );
+
+    applyEnclosureThemePresentation(element, enclosure);
 
 
     // Build the visible occupancy lookup once for this enclosure. Previously

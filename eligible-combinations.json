@@ -30112,24 +30112,6 @@
         "Red-Fronted Lemur",
         "Blue-Eyed Black Lemur"
       ],
-      "macaws": [
-        "Blue-And-Yellow Macaw",
-        "Red-And-Green Macaw",
-        "Scarlet Macaw",
-        "Military Macaw",
-        "Hyacinth Macaw",
-        "Blue-Throated Macaw",
-        "Blue-Winged Macaw",
-        "Red-Shouldered Macaw",
-        "Great Green Macaw",
-        "Red-Fronted Macaw",
-        "Chestnut-Fronted Macaw",
-        "Blue-Headed Macaw",
-        "Golden-Collared Macaw",
-        "Lear's Macaw",
-        "Red-Bellied Macaw",
-        "Spix's Macaw"
-      ],
       "parrots": [
         "African Grey Parrot",
         "Senegal Parrot",
@@ -30171,63 +30153,6 @@
         "Blue-Fronted Amazon",
         "Orange-Winged Amazon"
       ],
-      "pond_turtles": [
-        "Pond Slider",
-        "European Pond Turtle",
-        "Chinese Three-Keeled Pond Turtle",
-        "Chinese Stripe-Necked Turtle",
-        "Painted Turtle",
-        "Florida Redbelly Turtle",
-        "Annam Leaf Turtle",
-        "Yellow-Spotted Amazon River Turtle",
-        "Giant Asian Pond Turtle",
-        "Spotted Pond Turtle",
-        "Mediterranean Turtle",
-        "Hilaire's Side-Necked Turtle",
-        "Red-Necked Pond Turtle"
-      ],
-      "tortoises": [
-        "African Spurred Tortoise",
-        "Hermann's Tortoise",
-        "Red-Footed Tortoise",
-        "Leopard Tortoise",
-        "Radiated Tortoise",
-        "Marginated Tortoise",
-        "Pancake Tortoise",
-        "Aldabra Giant Tortoise",
-        "Yellow-Footed Tortoise",
-        "Indian Star Tortoise",
-        "Egyptian Tortoise",
-        "Elongated Tortoise",
-        "Asian Giant Tortoise",
-        "Malagasy Spider Tortoise",
-        "Galapagos Giant Tortoise",
-        "Bell's Hingeback Tortoise",
-        "Burmese Star Tortoise",
-        "Forest Hingeback Tortoise",
-        "Home's Hingeback Tortoise"
-      ],
-      "island_primates": [
-        "Ring-Tailed Lemur",
-        "Black Lemur",
-        "Red-Bellied Lemur",
-        "Crowned Lemur",
-        "White-Fronted Lemur",
-        "Black-and-White Ruffed Lemur",
-        "Red Ruffed Lemur",
-        "Red-Fronted Lemur",
-        "Blue-Eyed Black Lemur",
-        "Common Squirrel Monkey",
-        "White-Faced Saki",
-        "Black Howler Monkey",
-        "Golden Lion Tamarin",
-        "Golden-Headed Lion Tamarin",
-        "Cotton-Top Tamarin",
-        "Goeldi's Monkey",
-        "Pygmy Marmoset",
-        "Common Marmoset",
-        "Emperor Tamarin"
-      ],
       "south_american_water_turtles": [
         "Yellow-Spotted Amazon River Turtle",
         "Hilaire's Side-Necked Turtle"
@@ -30239,40 +30164,10 @@
         "Linnaeus's Two-Toed Sloth",
         "Hoffmann's Two-Toed Sloth",
         "White-Faced Saki",
-        "Common Squirrel Monkey",
         "Black Howler Monkey",
-        "Golden Lion Tamarin",
-        "Golden-Headed Lion Tamarin",
-        "Cotton-Top Tamarin",
-        "Emperor Tamarin",
         "Goeldi's Monkey",
         "Pygmy Marmoset",
         "Common Marmoset"
-      ],
-      "pond_turtle_low_conflict_mammals": [
-        "Capybara",
-        "Patagonian Mara",
-        "Southern Tamandua",
-        "Linnaeus's Two-Toed Sloth",
-        "Hoffmann's Two-Toed Sloth",
-        "White-Faced Saki",
-        "Common Squirrel Monkey",
-        "Golden Lion Tamarin",
-        "Golden-Headed Lion Tamarin",
-        "Cotton-Top Tamarin",
-        "Emperor Tamarin",
-        "Goeldi's Monkey",
-        "Pygmy Marmoset",
-        "Common Marmoset",
-        "Ring-Tailed Lemur",
-        "Black Lemur",
-        "Red-Bellied Lemur",
-        "Crowned Lemur",
-        "White-Fronted Lemur",
-        "Black-and-White Ruffed Lemur",
-        "Red Ruffed Lemur",
-        "Red-Fronted Lemur",
-        "Blue-Eyed Black Lemur"
       ],
       "two_toed_sloths": [
         "Linnaeus's Two-Toed Sloth",
@@ -30301,11 +30196,8 @@
       ],
       "south_american_camelid_open_habitat_partners": [
         "Capybara",
-        "Collared Peccary",
         "Giant Anteater",
-        "Greater Rhea",
         "Lesser Rhea",
-        "Patagonian Mara",
         "South American Tapir",
         "Red-Legged Seriema"
       ],
@@ -30378,17 +30270,12 @@
         "Wisent"
       ],
       "wisent_temperate_large_paddock_partners": [
-        "Red Deer",
-        "Elk",
-        "Fallow Deer",
-        "Sika Deer",
         "Wild Boar"
       ],
       "reindeer_profile": [
         "Reindeer"
       ],
       "reindeer_cold_paddock_partners": [
-        "Musk Ox",
         "Dall Sheep",
         "Mountain Goat"
       ],
@@ -30413,11 +30300,8 @@
         "Plains Zebra"
       ],
       "plains_zebra_additional_savannah_partners": [
-        "Addax",
         "Dama Gazelle",
-        "Blesbok",
         "Gerenuk",
-        "Nile Lechwe",
         "Gemsbok"
       ],
       "flamingos": [
@@ -30459,7 +30343,7 @@
         "Bluespotted Ribbontail Ray",
         "Cownose Ray",
         "Common Eagle Ray",
-        "Ocellated Eagly Ray",
+        "Ocellated Eagle Ray",
         "Lesser Devil Ray",
         "Atlantic Manta Ray"
       ],
@@ -30493,7 +30377,6 @@
         "Koala"
       ],
       "koala_ground_macropods": [
-        "Swamp Wallaby",
         "Parma Wallaby",
         "Red-Necked Wallaby",
         "Red Kangaroo",
@@ -30504,9 +30387,7 @@
         "Common Wombat"
       ],
       "conservative_wombat_ground_macropods": [
-        "Swamp Wallaby",
         "Red-Necked Wallaby",
-        "Red Kangaroo",
         "Grey Kangaroo"
       ],
       "tree_kangaroos": [
@@ -30514,7 +30395,6 @@
         "Matschie's Tree-Kangaroo"
       ],
       "new_guinea_ground_macropods": [
-        "Dusky Pademelon",
         "Brown Dorcopsis"
       ],
       "neotropical_psittacine_profile": [
@@ -30561,18 +30441,13 @@
       ],
       "neotropical_psittacine_external_partners": [
         "Burrowing Owl",
-        "Cotton-Top Tamarin",
         "Curl-Crested Aracari",
-        "Goeldi's Monkey",
         "Green Aracari",
         "Green Iguana",
         "Hartlaub's Turaco",
-        "Linnaeus's Two-Toed Sloth",
         "Livingstone's Turaco",
-        "Pond Slider",
         "Roseate Spoonbill",
         "Scarlet Ibis",
-        "Southern Three-Banded Armadillo",
         "Sunbittern",
         "Toco Toucan",
         "Umbrella Cockatoo"
@@ -30592,31 +30467,18 @@
         "White-Headed Marmoset",
         "Emperor Tamarin",
         "Brown-Mantled Tamarin",
-        "Southern Three-Banded Armadillo",
-        "Large Hairy Armadillo",
-        "Six-Banded Armadillo",
-        "Nine-Banded Armadillo",
         "Linnaeus's Two-Toed Sloth",
         "Hoffmann's Two-Toed Sloth",
-        "Brown-Throated Sloth",
         "Azara's Agouti",
         "Black-Rumped Agouti",
         "Red-Rumped Agouti",
-        "Patagonian Mara",
-        "Chacoan Mara",
         "Capybara",
         "Lowland Paca",
-        "Brazilian Porcupine",
         "Southern Tamandua",
-        "Plains Viscacha",
         "Bolivian Squirrel Monkey",
         "Common Squirrel Monkey",
-        "Black Howler Monkey",
-        "Red Howler Monkey",
         "White-Faced Saki",
-        "Guaian Bearded Saki",
-        "Red Titi",
-        "Grey-Handed Night Monkey"
+        "Guaian Bearded Saki"
       ],
       "managed_neotropical_small_carnivorans": [
         "South American Coati",
@@ -30631,14 +30493,7 @@
         "Hoffmann's Two-Toed Sloth",
         "White-Faced Saki",
         "Common Squirrel Monkey",
-        "Black Howler Monkey",
-        "Golden Lion Tamarin",
-        "Golden-Headed Lion Tamarin",
-        "Cotton-Top Tamarin",
-        "Goeldi's Monkey",
-        "Pygmy Marmoset",
-        "Common Marmoset",
-        "Emperor Tamarin"
+        "Black Howler Monkey"
       ],
       "managed_caimans": [
         "Cuvier's Dwarf Caiman",
@@ -30646,9 +30501,6 @@
         "Spectacled Caiman",
         "Yacare Caiman",
         "Broad-Snouted Caiman"
-      ],
-      "pond_sliders": [
-        "Pond Slider"
       ],
       "green_iguanas": [
         "Green Iguana"
@@ -30683,15 +30535,6 @@
       ],
       "javan_bantengs": [
         "Javan Banteng"
-      ],
-      "hilaire_side_necked_turtles": [
-        "Hilaire's Side-Necked Turtle"
-      ],
-      "white_faced_sakis": [
-        "White-Faced Saki"
-      ],
-      "yellow_spotted_amazon_river_turtles": [
-        "Yellow-Spotted Amazon River Turtle"
       ],
       "meerkats": [
         "Meerkat"
@@ -30735,23 +30578,12 @@
         "Red-Footed Tortoise"
       ],
       "small_african_mongooses": [
-        "Dwarf Mongoose",
-        "Yellow Mongoose",
         "Banded Mongoose"
       ],
-      "african_savanna_tortoises": [
-        "African Spurred Tortoise",
-        "Leopard Tortoise"
-      ],
       "rheas": [
-        "Greater Rhea",
         "Lesser Rhea"
       ],
       "conservative_pampas_mammals": [
-        "Capybara",
-        "Patagonian Mara",
-        "Vicuña",
-        "Guanaco",
         "Southern Pudu"
       ],
       "south_american_robust_water_turtles": [
@@ -30763,7 +30595,6 @@
         "Neotropical Painted Wood Turtle"
       ],
       "african_small_antelope_proxy": [
-        "Kirk's Dik-Dik",
         "Blue Duiker",
         "Red Duiker",
         "Yellow-Backed Duiker"
@@ -30773,13 +30604,10 @@
         "Bongo"
       ],
       "asian_small_forest_deer_core": [
-        "Indian Muntjac",
-        "Reeve's Muntjac",
         "Tufted Deer"
       ],
       "asian_small_forest_deer_shared_partners": [
-        "Binturong",
-        "Nepalese Red Panda"
+        "Binturong"
       ],
       "asian_mouse_deer_chevrotains": [
         "Phillipine Mouse-Deer",
@@ -30820,13 +30648,6 @@
         "Gentoo Penguin",
         "Chinstrap Penguin",
         "Macaroni Penguin"
-      ],
-      "penguins_newport_cold_colony": [
-        "King Penguin",
-        "Gentoo Penguin",
-        "Chinstrap Penguin",
-        "Macaroni Penguin",
-        "Rockhopper Penguin"
       ],
       "penguins_jurong_historical_colony": [
         "Humboldt Penguin",
@@ -30880,15 +30701,6 @@
         "Demoiselle Crane",
         "White-Naped Crane"
       ],
-      "badoca_sharjah_crane_bridge": [
-        "Demoiselle Crane",
-        "Grey Crowned Crane"
-      ],
-      "african_crane_stork_mixed_aviary_core": [
-        "Grey Crowned Crane",
-        "Abdim's Stork",
-        "Hamerkop"
-      ],
       "dusit_asian_stork_waterfowl_2010": [
         "Milky Stork",
         "Painted Stork",
@@ -30905,24 +30717,6 @@
         "Abdim's Stork",
         "African Openbill",
         "Hamerkop"
-      ],
-      "ciconia_black_white_stork_direct": [
-        "White Stork"
-      ],
-      "lemur_eulemur_core": [
-        "Black Lemur",
-        "Blue-Eyed Black Lemur",
-        "Crowned Lemur",
-        "Red-Bellied Lemur",
-        "Red-Fronted Lemur",
-        "White-Fronted Lemur"
-      ],
-      "lemur_ruffed_core": [
-        "Black-and-White Ruffed Lemur",
-        "Red Ruffed Lemur"
-      ],
-      "lemur_ring_tailed_core": [
-        "Ring-Tailed Lemur"
       ],
       "hystrix_porcupines_shared_husbandry": [
         "Cape Porcupine",
@@ -30951,37 +30745,17 @@
         "Yellow Mongoose"
       ],
       "oryx_shared_husbandry": [
-        "Arabian Oryx",
         "Scimitar Oryx"
       ],
       "oryx_shared_partner_pool": [
-        "Addax",
         "Axis Deer",
-        "Barbary Sheep",
-        "Black Sable Antelope",
         "Blesbok",
-        "Blue Wildebeest",
-        "Cape Buffalo",
-        "Common Eland",
         "Common Hog Deer",
-        "Common Ostrich",
-        "Common Warthog",
-        "Common Waterbuck",
-        "Greater Kudu",
         "Grévy's Zebra",
-        "Hippopotamus",
-        "Impala",
         "Kori Bustard",
         "Lechwe",
-        "Marabou Stork",
-        "Meerkat",
         "Nile Lechwe",
-        "Nyala",
-        "Plains Zebra",
-        "Pygmy Hippopotamus",
-        "Rothschild's Giraffe",
-        "Springbok",
-        "White Rhinoceros"
+        "Rothschild's Giraffe"
       ],
       "lechwe_shared_husbandry": [
         "Lechwe",
@@ -31009,21 +30783,17 @@
         "Pygmy Hippopotamus",
         "Red River Hog",
         "Rothschild's Giraffe",
-        "Scimitar Oryx",
         "Sitatunga",
         "Thompson's Gazelle"
       ],
       "capuchin_shared_partner_pool": [
         "Barbary Macaque",
-        "Capybara",
         "Maned Wolf",
         "Pond Slider",
-        "Six-Banded Armadillo",
         "South American Coati"
       ],
       "squirrel_monkey_shared_partner_pool": [
         "Hilaire's Side-Necked Turtle",
-        "Six-Banded Armadillo",
         "South American Coati",
         "White-Faced Saki",
         "Yellow-Spotted Amazon River Turtle"
@@ -31036,31 +30806,21 @@
         "Pied Tamarin"
       ],
       "tamarin_external_partner_pool": [
-        "Azara's Agouti",
         "Black Howler Monkey",
         "Giant Wood-Rail",
-        "Goeldi's Monkey",
-        "Golden-Handed Tamarin",
         "Great Curassow",
         "Green Aracari",
         "Green Iguana",
         "Hilaire's Side-Necked Turtle",
         "Ivory-Billed Aracari",
-        "Large Hairy Armadillo",
-        "Linnaeus's Two-Toed Sloth",
         "Plate-Billed Mountain Toucan",
         "Pond Slider",
         "Red Titi",
-        "Red-Footed Tortoise",
         "Red-Fronted Lemur",
-        "Red-Rumped Agouti",
         "Rodriguez Flying Fox",
         "Scarlet Ibis",
-        "Six-Banded Armadillo",
         "Southern Tamandua",
-        "Southern Three-Banded Armadillo",
         "White-Faced Saki",
-        "Yellow-Shouldered Amazon",
         "Yellow-Spotted Amazon River Turtle"
       ],
       "marmoset_shared_husbandry": [
@@ -31072,105 +30832,44 @@
       "marmoset_external_partner_pool": [
         "Common Trumpeter",
         "Giant Otter",
-        "Goeldi's Monkey",
         "Green Iguana",
-        "Large Hairy Armadillo",
         "Red-Footed Tortoise",
-        "Six-Banded Armadillo",
-        "Southern Three-Banded Armadillo",
         "White-Faced Saki"
       ],
       "choloepus_shared_partner_pool": [
         "Annam Leaf Turtle",
-        "Azara's Agouti",
-        "Black-Headed Parrot",
         "Black-Necked Aracari",
-        "Black-Rumped Agouti",
-        "Blue-And-Yellow Macaw",
-        "Blue-Cheeked Amazon",
-        "Blue-Fronted Amazon",
-        "Blue-Headed Macaw",
-        "Blue-Headed Parrot",
-        "Blue-Throated Macaw",
-        "Blue-Winged Macaw",
         "Brazilian Porcupine",
-        "Bronze-Winged Parrot",
         "Brown-Mantled Tamarin",
-        "Chestnut-Fronted Macaw",
         "Chinese Stripe-Necked Turtle",
         "Chinese Three-Keeled Pond Turtle",
         "Common Marmoset",
-        "Cotton-Top Tamarin",
-        "Diademed Amazon",
-        "Emperor Tamarin",
         "European Pond Turtle",
-        "Festive Amazon",
         "Florida Redbelly Turtle",
         "Geoffroy's Tufted-Ear Marmoset",
         "Giant Anteater",
         "Giant Asian Pond Turtle",
         "Giant Wood-Rail",
         "Goeldi's Monkey",
-        "Golden Lion Tamarin",
-        "Golden-Collared Macaw",
         "Golden-Handed Tamarin",
-        "Golden-Headed Lion Tamarin",
         "Great Curassow",
-        "Great Green Macaw",
         "Green Iguana",
         "Grey-Handed Night Monkey",
-        "Hilaire's Side-Necked Turtle",
-        "Hyacinth Macaw",
         "Kinkajou",
-        "Large Hairy Armadillo",
-        "Lear's Macaw",
-        "Lilacine Amazon",
-        "Mealy Amazon",
         "Mediterranean Turtle",
-        "Military Macaw",
         "Nine-Banded Armadillo",
-        "Orange-Winged Amazon",
-        "Pacific Parrotlet",
         "Painted Turtle",
         "Pied Tamarin",
         "Pond Slider",
-        "Pygmy Marmoset",
-        "Red Titi",
-        "Red-And-Green Macaw",
-        "Red-Bellied Macaw",
         "Red-Bellied Tamarin",
-        "Red-Fan Parrot",
-        "Red-Footed Tortoise",
-        "Red-Fronted Macaw",
-        "Red-Lored Amazon",
         "Red-Necked Pond Turtle",
-        "Red-Rumped Agouti",
-        "Red-Shouldered Macaw",
-        "Red-Tailed Amazon",
-        "Rodriguez Flying Fox",
         "Saffron Toucanet",
-        "Scaly-Headed Parrot",
         "Scarlet Ibis",
-        "Scarlet Macaw",
         "Silvery Marmoset",
-        "Six-Banded Armadillo",
         "Southern Tamandua",
-        "Southern Three-Banded Armadillo",
-        "Spectacled Parrotlet",
-        "Spix's Macaw",
         "Spot-Billed Toucanet",
         "Spotted Pond Turtle",
-        "Vinaceous-Breasted Amazon",
-        "Western Woylie",
-        "White-Bellied Parrot",
-        "White-Crowned Parrot",
-        "White-Faced Saki",
-        "White-Fronted Amazon",
-        "Yellow-Crowned Amazon",
-        "Yellow-Faced Parrot",
-        "Yellow-Naped Amazon",
-        "Yellow-Shouldered Amazon",
-        "Yellow-Spotted Amazon River Turtle"
+        "Western Woylie"
       ],
       "south_american_armadillo_shared_husbandry": [
         "Large Hairy Armadillo",
@@ -31179,73 +30878,31 @@
       ],
       "south_american_armadillo_shared_partner_pool": [
         "Black Howler Monkey",
-        "Black-Headed Parrot",
-        "Blue-And-Yellow Macaw",
-        "Blue-Cheeked Amazon",
-        "Blue-Fronted Amazon",
-        "Blue-Headed Macaw",
-        "Blue-Headed Parrot",
-        "Blue-Throated Macaw",
-        "Blue-Winged Macaw",
         "Bolivian Squirrel Monkey",
-        "Bronze-Winged Parrot",
         "Brown-Mantled Tamarin",
-        "Chestnut-Fronted Macaw",
         "Common Marmoset",
         "Common Squirrel Monkey",
         "Common Trumpeter",
         "Cotton-Top Tamarin",
-        "Diademed Amazon",
         "Emperor Tamarin",
-        "Festive Amazon",
         "Geoffroy's Tufted-Ear Marmoset",
         "Goeldi's Monkey",
         "Golden Lion Tamarin",
-        "Golden-Collared Macaw",
         "Golden-Handed Tamarin",
         "Golden-Headed Lion Tamarin",
-        "Great Green Macaw",
         "Hoffmann's Two-Toed Sloth",
-        "Hyacinth Macaw",
-        "Kinkajou",
-        "Lear's Macaw",
-        "Lilacine Amazon",
-        "Linnaeus's Two-Toed Sloth",
-        "Mealy Amazon",
-        "Military Macaw",
-        "Orange-Winged Amazon",
-        "Pacific Parrotlet",
         "Pied Tamarin",
         "Pygmy Marmoset",
-        "Red-And-Green Macaw",
-        "Red-Bellied Macaw",
         "Red-Bellied Tamarin",
-        "Red-Fan Parrot",
         "Red-Footed Tortoise",
-        "Red-Fronted Macaw",
-        "Red-Lored Amazon",
-        "Red-Shouldered Macaw",
-        "Red-Tailed Amazon",
-        "Scaly-Headed Parrot",
-        "Scarlet Macaw",
         "Silvery Marmoset",
         "South American Coati",
-        "Spectacled Parrotlet",
-        "Spix's Macaw",
         "Striped Skunk",
         "Tufted Capuchin",
-        "Vinaceous-Breasted Amazon",
-        "White-Bellied Parrot",
-        "White-Crowned Parrot",
         "White-Faced Capuchin",
         "White-Faced Saki",
-        "White-Fronted Amazon",
         "White-Headed Marmoset",
-        "White-Nosed Coati",
-        "Yellow-Crowned Amazon",
-        "Yellow-Faced Parrot",
-        "Yellow-Naped Amazon",
-        "Yellow-Shouldered Amazon"
+        "White-Nosed Coati"
       ],
       "rotterdam_green_violet_turaco_shared_husbandry": [
         "Green Turaco",
@@ -31262,12 +30919,10 @@
         "Hamerkop",
         "Mandrill",
         "Mantled Guereza",
-        "Okapi",
         "Pygmy Hippopotamus",
         "Red-Billed Hornbill",
         "Trumpeter Hornbill",
-        "Von Der Decken's Hornbill",
-        "Western Plantain-Eater"
+        "Von Der Decken's Hornbill"
       ],
       "large_fruit_bats_tropical_house": [
         "Egyptian Fruit Bat",
@@ -31279,101 +30934,12 @@
       "large_fruit_bat_tropical_house_partners": [
         "Aardvark",
         "Aldabra Giant Tortoise",
-        "Black-Headed Spider Monkey",
-        "Common Marmoset",
-        "Cotton-Top Tamarin",
-        "Emperor Tamarin",
-        "Goeldi's Monkey",
-        "Golden Lion Tamarin",
-        "Golden-Headed Lion Tamarin",
         "Green Iguana",
-        "Grey Crowned Crane",
-        "Hippopotamus",
         "Hoffmann's Two-Toed Sloth",
-        "Javan Chevrotain",
-        "Kinkajou",
         "Large Hairy Armadillo",
         "Linnaeus's Two-Toed Sloth",
-        "Prevost's Squirrel",
-        "Pygmy Marmoset",
-        "Radiated Tortoise",
-        "Red Titi",
-        "Red-Faced Spider Monkey",
-        "Red-Footed Tortoise",
-        "Scarlet Ibis",
-        "Sitatunga",
-        "Six-Banded Armadillo",
         "Southern Tamandua",
-        "Southern Three-Banded Armadillo",
-        "Sunbittern",
-        "Violet Turaco",
-        "Von Der Decken's Hornbill",
-        "Wattled Crane",
-        "Western Woylie",
-        "White-Cheeked Gibbon",
-        "White-Faced Saki",
-        "White-Headed Marmoset"
-      ],
-      "large_fruit_bat_free_flight_birds": [
-        "Grey Crowned Crane",
-        "Scarlet Ibis",
-        "Sunbittern",
-        "Violet Turaco",
-        "Von Der Decken's Hornbill",
-        "Wattled Crane"
-      ],
-      "large_fruit_bat_mammal_layer": [
-        "Aardvark",
-        "Kinkajou",
-        "Hippopotamus",
-        "Sitatunga",
-        "Western Woylie",
-        "Linnaeus's Two-Toed Sloth",
-        "Goeldi's Monkey",
-        "White-Faced Saki"
-      ],
-      "large_fruit_bat_ground_layer": [
-        "Aldabra Giant Tortoise",
-        "Javan Chevrotain",
-        "Radiated Tortoise",
-        "Red-Footed Tortoise"
-      ],
-      "large_fruit_bat_rainforest_mammals": [
-        "Linnaeus's Two-Toed Sloth",
-        "Golden Lion Tamarin",
-        "Emperor Tamarin",
-        "Red Titi",
-        "Red-Faced Spider Monkey",
-        "Cotton-Top Tamarin",
-        "Goeldi's Monkey",
-        "Southern Tamandua",
-        "Large Hairy Armadillo"
-      ],
-      "large_fruit_bat_callitrichid_layer": [
-        "Golden Lion Tamarin",
-        "Golden-Headed Lion Tamarin",
-        "Emperor Tamarin",
-        "Cotton-Top Tamarin",
-        "Goeldi's Monkey",
-        "Common Marmoset",
-        "Pygmy Marmoset",
-        "White-Headed Marmoset"
-      ],
-      "large_fruit_bat_titi_saki_layer": [
-        "Red Titi",
-        "White-Faced Saki"
-      ],
-      "large_fruit_bat_tamandua_layer": [
-        "Southern Tamandua"
-      ],
-      "large_fruit_bat_small_marsupial_layer": [
-        "Western Woylie"
-      ],
-      "large_fruit_bat_chevrotain_layer": [
-        "Javan Chevrotain"
-      ],
-      "large_fruit_bat_squirrel_layer": [
-        "Prevost's Squirrel"
+        "Von Der Decken's Hornbill"
       ],
       "agouti_mara_proxy": [
         "Azara's Agouti",
@@ -31381,10 +30947,6 @@
         "Red-Rumped Agouti",
         "Patagonian Mara",
         "Chacoan Mara"
-      ],
-      "coatis": [
-        "South American Coati",
-        "White-Nosed Coati"
       ],
       "bison_shared_husbandry": [
         "American Bison",
@@ -31401,28 +30963,10 @@
         "Capybara"
       ],
       "capybara_established_partner_pool": [
-        "Patagonian Mara",
-        "Giant Anteater",
-        "Guanaco",
-        "Llama",
         "Lowland Tapir",
-        "Greater Rhea",
-        "Crested Screamer",
-        "Black-Necked Swan",
         "Common Squirrel Monkey",
         "White-Faced Saki",
-        "Linnaeus's Two-Toed Sloth",
-        "Red-Rumped Agouti"
-      ],
-      "mixed_exhibit_wallaby_core": [
-        "Parma Wallaby",
-        "Swamp Wallaby",
-        "Red-Necked Wallaby",
-        "Yellow-Footed Rock Wallaby"
-      ],
-      "wallaby_repeated_australian_partners": [
-        "Emu",
-        "Red Kangaroo"
+        "Linnaeus's Two-Toed Sloth"
       ],
       "south_american_large_paddock_profiles": [
         "Capybara",
@@ -31444,17 +30988,18 @@
         "Arrau River Turtle",
         "Yellow-Spotted Amazon River Turtle",
         "Mata-Mata"
+      ],
+      "lemur_tortoise_core": [
+        "African Spurred Tortoise",
+        "Radiated Tortoise"
       ]
     },
     "complete_groups": [
       "tamarins",
       "lemurs",
-      "macaws",
       "parrots",
       "amazons",
       "neotropical_psittacine_profile",
-      "pond_turtles",
-      "tortoises",
       "two_toed_sloths",
       "armadillos",
       "domestic_farmyard_ungulates",
@@ -31465,8 +31010,6 @@
       "pelicans",
       "public_aquarium_sharks",
       "public_aquarium_rays",
-      "maras",
-      "agoutis",
       "wallabies_and_ground_kangaroos",
       "gibbons",
       "squirrel_monkeys",
@@ -31483,22 +31026,15 @@
       "loro_parque_white_black_cockatoo_mix_2022",
       "flamingos",
       "penguins_seaworld_cold_colony",
-      "penguins_newport_cold_colony",
       "penguins_jurong_historical_colony",
       "all_ibises",
       "mixed_vulture_core",
       "national_aquarium_amazon_river_turtles",
       "seoul_grand_park_mixed_cranes",
-      "badoca_sharjah_crane_bridge",
-      "african_crane_stork_mixed_aviary_core",
       "dusit_asian_stork_waterfowl_2010",
       "parc_des_oiseaux_african_stork_aviary",
-      "ciconia_black_white_stork_direct",
-      "lemur_eulemur_core",
-      "lemur_ruffed_core",
       "large_fruit_bats_tropical_house",
       "agouti_mara_proxy",
-      "coatis",
       "amazon_freshwater_turtle_core"
     ],
     "group_links": [
@@ -31557,28 +31093,10 @@
         "note": "Curated gameplay proxy based on large open-range Asian savanna practice, including San Diego Zoo Safari Park's Bactrian camel landscape with Asian deer, blackbuck, nilgai and banteng. It does not imply that every camel or every Asian hoofstock species is interchangeable."
       },
       {
-        "from": "pond_turtles",
-        "to": "island_primates",
-        "mode": "habitat_layer_proxy",
-        "note": "Gameplay proxy for semi-aquatic pond/river turtles occupying water/moat space around arboreal/island primates. Supported by modern mixed-exhibit examples including squirrel monkeys/sakis with Yellow-Spotted Amazon River Turtles and Omaha primate/turtle exhibits. Excludes snapping turtles and other high-risk/specialist aquatic turtles from this broad proxy."
-      },
-      {
-        "from": "tortoises",
-        "to": "lemurs",
-        "mode": "habitat_layer_proxy",
-        "note": "Gameplay proxy grounded in repeated modern lemur+tortoise exhibits, especially Ring-Tailed Lemur with Radiated/African Spurred Tortoise. This is an extrapolation for Zoo Curator, not a claim that every real-life individual/species mix is automatically safe."
-      },
-      {
         "from": "south_american_water_turtles",
         "to": "south_american_tropical_house_mammals",
         "mode": "habitat_layer_proxy",
         "note": "Strong Zoo Curator gameplay proxy based on repeated modern Amazon/tropical-house exhibits. Lincoln Park Zoo explicitly mixes Yellow-Spotted Amazon River Turtle with Hoffmann's Two-Toed Sloth, White-Faced Saki and Golden-Headed Lion Tamarin; Omaha reports the turtle with Common Squirrel Monkey and sakis; Budapest reports Hilaire's Side-Necked Turtle with tamandua and emperor/golden-headed lion tamarins."
-      },
-      {
-        "from": "pond_turtles",
-        "to": "pond_turtle_low_conflict_mammals",
-        "mode": "habitat_layer_proxy",
-        "note": "Broad gameplay proxy for non-predatory pond/river turtles using the water/moat layer of large mammal/primate exhibits. Supported by repeated zoo practice and specific modern examples, but intentionally excludes snapping turtles, softshell turtles and specialist/predatory aquatic turtles from the pond_turtles group."
       },
       {
         "from": "spoonbills",
@@ -31641,44 +31159,10 @@
         "note": "Broad tropical-house proxy: agoutis repeatedly occupy the terrestrial layer below sloths and small/medium New World primates. Supported by white-faced saki husbandry reports and modern South American walkthrough exhibits."
       },
       {
-        "from": "armadillos",
-        "to": "south_american_arboreal_low_conflict",
-        "mode": "tropical_house_layer_proxy",
-        "note": "Broad ground-vs-arboreal gameplay proxy anchored by Cleveland Metroparks Zoo's 2018 mix of Southern Three-Banded Armadillo with Linne's Two-Toed Sloth, Golden Lion Tamarin, Goeldi's Monkey and White-Faced Saki."
-      },
-      {
-        "from": "two_toed_sloths",
-        "to": "agoutis",
-        "mode": "tropical_house_layer_proxy",
-        "note": "Directly supported by modern tropical-house records, including Hoffmann's Two-Toed Sloth with a Dasyprocta agouti at CREA (2024) and Linne's Two-Toed Sloth with Dasyprocta leporina in BioParque do Rio."
-      },
-      {
-        "from": "two_toed_sloths",
-        "to": "armadillos",
-        "mode": "tropical_house_layer_proxy",
-        "note": "Supported by Cleveland Metroparks Zoo (Linne's Two-Toed Sloth + Southern Three-Banded Armadillo, 2018) and Chelyabinsk Zoo (Linne's Two-Toed Sloth + Six-Banded Armadillo, 2010)."
-      },
-      {
-        "from": "two_toed_sloths",
-        "to": "tamarins",
-        "mode": "designer_group_extrapolation",
-        "note": "Zoo Curator rule: modern Golden Lion Tamarin + two-toed sloth evidence extends to the full tamarins gameplay group. Smithsonian documents Golden Lion Tamarins and two-toed sloths as long-term exhibit mates; Cleveland Metroparks also documents Golden Lion Tamarin + Linne's Two-Toed Sloth."
-      },
-      {
-        "from": "armadillos",
-        "to": "tamarins",
-        "mode": "designer_group_extrapolation",
-        "note": "Zoo Curator rule: modern Golden Lion Tamarin + armadillo evidence extends to the full tamarins gameplay group. Cleveland Metroparks Zoo documented Golden Lion Tamarin + Southern Three-Banded Armadillo in the same 2018 mixed exhibit."
-      },
-      {
         "from": "agoutis",
         "to": "tamarins",
         "mode": "designer_group_extrapolation",
         "note": "Zoo Curator rule: Golden Lion Tamarin + agouti evidence extends to the full tamarins gameplay group. Jerusalem Biblical Zoo documented Golden Lion Tamarin + Dasyprocta leporina in 2007; Houston Zoo describes Golden Lion Tamarins sharing a mixed habitat with red-rumped agoutis."
-      },
-      {
-        "from": "pond_sliders",
-        "to": "managed_caimans"
       },
       {
         "from": "green_iguanas",
@@ -31695,18 +31179,6 @@
       {
         "from": "gibbons",
         "to": "javan_bantengs"
-      },
-      {
-        "from": "squirrel_monkeys",
-        "to": "hilaire_side_necked_turtles"
-      },
-      {
-        "from": "squirrel_monkeys",
-        "to": "white_faced_sakis"
-      },
-      {
-        "from": "squirrel_monkeys",
-        "to": "yellow_spotted_amazon_river_turtles"
       },
       {
         "from": "spider_monkeys",
@@ -31729,40 +31201,10 @@
         "to": "aardvarks"
       },
       {
-        "from": "capuchins",
-        "to": "capuchins",
-        "mode": "taxonomic_temperament_gameplay_proxy",
-        "note": "Requested Zoo Curator gameplay proxy. Capuchins share broadly similar arboreal/omnivorous ecology and mixed-primate husbandry precedents. Tufted capuchins have especially strong mixed-species evidence. This does not claim that every capuchin species pair is routinely co-housed in real zoos; introductions, sex composition and escape/refuge design still matter."
-      },
-      {
-        "from": "macaques",
-        "to": "macaques",
-        "mode": "taxonomic_husbandry_gameplay_proxy",
-        "note": "Requested Zoo Curator gameplay proxy. Mixed macaque exhibits have real institutional precedent, including a long-running National Zoological Park association involving Barbary, lion-tailed and Sulawesi macaques. Because macaques can be socially assertive and closely related species may hybridize, this is a gameplay compatibility rule rather than a blanket real-world husbandry recommendation."
-      },
-      {
         "from": "red_footed_tortoises",
         "to": "tamarins",
         "mode": "repeated_tropical_house_gameplay_proxy",
         "note": "Six distinct Zoo Curator tamarins/marmosets already have direct modern red-footed-tortoise mixed-exhibit evidence. The remaining tamarin-group members inherit this low-conflict terrestrial-versus-arboreal gameplay compatibility."
-      },
-      {
-        "from": "red_footed_tortoises",
-        "to": "armadillos",
-        "mode": "tropical_house_layer_gameplay_proxy",
-        "note": "Southern Three-Banded Armadillo is directly documented with Red-Footed Tortoise, while multiple other armadillos are independently documented with the same low-conflict tropical-house mammals. Zoo Curator extends this managed ground-layer pattern to the armadillo group."
-      },
-      {
-        "from": "red_footed_tortoises",
-        "to": "two_toed_sloths",
-        "mode": "repeated_tropical_house_gameplay_proxy",
-        "note": "Modern mixed-exhibit evidence supports Red-Footed Tortoise with both two-toed-sloth taxa represented by the Zoo Curator group; this explicit link also prevents spelling variants from fragmenting the rule."
-      },
-      {
-        "from": "small_african_mongooses",
-        "to": "african_savanna_tortoises",
-        "mode": "repeated_named_zoo_gameplay_proxy",
-        "note": "Seven of eight cross-pairs are already directly documented at named institutions. The single inferred pair is Banded Mongoose + African Spurred Tortoise. Breeding animals still require refuge and monitoring."
       },
       {
         "from": "rheas",
@@ -31832,12 +31274,6 @@
       },
       {
         "from": "neotropical_psittacine_profile",
-        "to": "pond_turtles",
-        "mode": "water_layer_tropical_house_gameplay_proxy",
-        "note": "Requested water-layer proxy for the established non-predatory pond-turtle group beneath free-flying parrots. It assumes separated dry basking/rest areas, adequate water quality and species-appropriate temperatures; snapping turtles, softshells and other predatory or specialist turtles remain excluded."
-      },
-      {
-        "from": "neotropical_psittacine_profile",
         "to": "south_american_robust_water_turtles",
         "mode": "neotropical_water_layer_gameplay_proxy",
         "note": "Adds the curated South American robust water-turtle group, including Arrau River Turtle, Mata-Mata, Geoffroy's Side-Necked Turtle and Neotropical Painted Wood Turtle, to the tropical-house bird profile. This is a habitat-layer rule; suitable water depth, feeding separation and haul-out areas remain necessary."
@@ -31859,18 +31295,6 @@
         "to": "asian_mouse_deer_nocturnal_partners",
         "mode": "genus_husbandry_proxy",
         "note": "Mouse-deer/chevrotains remain separate from the muntjac/Tufted Deer core. EAZA loris guidance reports successful Tragulus spp. with Nycticebus spp.; Grey Slender Loris direct pairs are retained and Pygmy Slow Loris is added through this narrow proxy."
-      },
-      {
-        "from": "lemur_eulemur_core",
-        "to": "lemur_ruffed_core"
-      },
-      {
-        "from": "lemur_eulemur_core",
-        "to": "lemur_ring_tailed_core"
-      },
-      {
-        "from": "lemur_ruffed_core",
-        "to": "lemur_ring_tailed_core"
       },
       {
         "from": "hystrix_porcupines_shared_husbandry",
@@ -31940,84 +31364,6 @@
         "note": "Flamingo-style Zoo Curator proxy for large Old World fruit bats/flying foxes. The five represented taxa are treated as an interchangeable aerial tropical-house guild because modern zoo evidence shows repeated cross-species fruit-bat housing (Indian Flying Fox + Egyptian Fruit Bat; Rodrigues Flying Fox + Egyptian Fruit Bat; and a reported Hagenbeck tropical-hall combination of Rodrigues, Egyptian and Large Flying Fox) and repeated mixed tropical-house use with terrestrial, aquatic and arboreal mammals, tortoises, reptiles and birds. Partner inheritance is deliberately restricted to low-conflict species already directly evidenced with at least one member of the guild, plus Kinkajou (Egyptian Fruit Bat at Poznan). This is a gameplay husbandry proxy, not a claim that geography matches or that every individual mix is risk-free."
       },
       {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "large_fruit_bat_free_flight_birds",
-        "mode": "free_flight_aviary_proxy",
-        "note": "Conservative flying-fox/free-flight-bird inheritance. Rodrigues Flying Fox has a named mixed rainforest exhibit at Central Park with Scarlet Ibis, Black-naped Fruit Dove, Nicobar Pigeon, Yellow-breasted Ground Dove, Victoria Crowned Pigeon, Sunbittern and Violet Turaco; Beauval documents/has reported Rodrigues with Von Der Decken's Hornbill and other birds. Indian Flying Foxes free-range through Sedgwick County Zoo's bird-dominated Tropics building and Topeka's tropical rainforest with free-roaming birds. Lyle's Flying Fox has also been observed mixed with a cockatiel at Castellar. This supports a cross-Pteropus aerial-layer proxy, but NOT blanket compatibility with every tropical bird, especially raptors, aggressive parrots, or small vulnerable species without a suitable spatially complex free-flight setting."
-      },
-      {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "large_fruit_bat_mammal_layer",
-        "mode": "vertical_niche_tropical_house_proxy",
-        "note": "Conservative overhead-layer proxy for the five large fruit-bat/flying-fox taxa. Repeated independent zoo precedents show guild members above terrestrial or lower-canopy mammals: Indian/Egyptian/Rodrigues with Aardvark; Egyptian with Kinkajou; Egyptian and Rodrigues independently with Hippopotamus; Rodrigues with Sitatunga; Rodrigues with bettongs/woylies; Indian with Linnaeus's Two-Toed Sloth; Egyptian in Haus des Meeres tropical hall with Goeldi's Monkey and White-Faced Saki; and Lyle's Flying Fox directly with Belly-banded Squirrel and with Ground Cuscus + Brush-tailed Rat-kangaroo. This supports interchangeability for low-conflict vertical-niche mixes, not blanket compatibility with all arboreal mammals."
-      },
-      {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "large_fruit_bat_ground_layer",
-        "mode": "low_conflict_ground_layer_proxy",
-        "note": "Conservative ground-layer inheritance for the large-fruit-bat guild. Modern/traceable records include Large Flying Fox with Red-Footed Tortoise at Aquario de Sao Paulo (2025); Rodrigues Flying Fox with Aldabra Giant Tortoise at Beauval; and a reported Columbus Asia Quest mix of Large Flying Fox with Aldabra, Radiated and Burmese mountain tortoises plus Malayan chevrotain. San Diego also mixed Rodrigues Flying Fox + Egyptian Fruit Bat + Aardvark + Tokay Gecko. This supports low-conflict terrestrial reptiles and tiny ungulates beneath the aerial bat layer, but does not justify blanket inheritance to porcupines, agoutis, tenrecs, armadillos, lemurs, or every tortoise species without a closer anchor."
-      },
-      {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "large_fruit_bat_rainforest_mammals",
-        "mode": "zsl_rainforest_vertical_niche_proxy",
-        "note": "Strong institutional anchor: the Zoological Society of London's archive describes Rainforest Life's main walk-through as jointly housing Rodrigues Flying Fox with two-toed sloths, Golden Lion Tamarins, Emperor Tamarins, Red Titi Monkeys, Red-faced Spider Monkeys, big hairy armadillos, Geoffrey's marmosets, Cotton-top Tamarins, Goeldi's marmosets and Southern Tamandua. Because independent records also show Egyptian fruit bats with Goeldi's/White-faced Saki, Indian flying fox with sloth, and Lyle's flying fox with arboreal/ground small mammals, Zoo Curator treats these low-conflict rainforest mammals as an interchangeable partner layer for the large-fruit-bat guild. This is a husbandry/gameplay proxy, not a claim of biogeographic authenticity."
-      },
-      {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "large_fruit_bat_callitrichid_layer",
-        "mode": "callitrichid_group_proxy",
-        "note": "Group-level transfer based on ZSL Rainforest Life directly housing Rodrigues Flying Fox with Golden Lion, Emperor and Cotton-top Tamarins plus Goeldi's marmoset, while other fruit-bat tropical-house records also anchor Goeldi's. Zoo Curator therefore allows closely comparable callitrichids already represented in its tamarin/marmoset compatibility logic to inherit the flying-fox aerial-layer relationship. This is proxy compatibility, not a claim that every listed callitrichid has a species-identical published bat record."
-      },
-      {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "large_fruit_bat_titi_saki_layer",
-        "mode": "restricted_new_world_primate_proxy",
-        "note": "ZSL directly anchors Red Titi with Rodrigues Flying Fox; Haus des Meeres independently reports Egyptian Fruit Bat with White-Faced Saki. With both sides of the titi/saki gameplay cluster independently anchored to fruit bats, the existing Zoo Curator titi/saki grouping is inherited conservatively."
-      },
-      {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "spider_monkeys",
-        "mode": "spider_monkey_group_proxy",
-        "note": "ZSL directly anchors Red-Faced Spider Monkey with Rodrigues Flying Fox. Propagation is restricted to the game's existing spider-monkey equivalence group rather than all atelids or all monkeys."
-      },
-      {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "south_american_armadillo_shared_husbandry",
-        "mode": "armadillo_group_proxy",
-        "note": "ZSL directly anchors Large Hairy Armadillo with Rodrigues Flying Fox. ZooRope independently records Egyptian Fruit Bat + Large Hairy Armadillo + Kinkajou at Omaha, giving a second fruit-bat/armadillo anchor. This is enough for Zoo Curator's established armadillo gameplay group, but not for unrelated digging mammals."
-      },
-      {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "two_toed_sloths",
-        "mode": "two_toed_sloth_group_proxy",
-        "note": "ZSL anchors two-toed sloth with Rodrigues Flying Fox and Topeka independently mixes Indian Flying Fox with Linnaeus's Two-Toed Sloth. This repeated cross-bat evidence supports the game's existing two-toed-sloth group."
-      },
-      {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "large_fruit_bat_tamandua_layer",
-        "mode": "tamandua_group_proxy",
-        "note": "ZSL directly anchors Southern Tamandua with Rodrigues Flying Fox. This is restricted to tamanduas; it is not generalized to giant anteaters."
-      },
-      {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "large_fruit_bat_small_marsupial_layer",
-        "mode": "small_marsupial_ground_layer_proxy",
-        "note": "Budapest directly mixes Lyle's Flying Fox with Brush-tailed rat-kangaroo and Ground Cuscus; a 2024 Gan Garoo record independently mixes Grey-headed Flying Fox with Brush-tailed rat-kangaroo; Olomouc is reported with Rodrigues Flying Fox plus bettongs/woylies/rufous rat-kangaroos. This supports close small-marsupial ground-layer transfer, not all marsupials."
-      },
-      {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "large_fruit_bat_chevrotain_layer",
-        "mode": "chevrotain_mouse_deer_proxy",
-        "note": "Tokyo Zoo's official video archive explicitly records Orii Flying Fox with Javan lesser mouse deer (2005 and 2008), while Singapore's Fragile Forest independently mixes Malayan Flying Fox with Lesser Mouse-deer. This supports the game's Javan/Lesser mouse-deer layer but not every chevrotain species."
-      },
-      {
-        "from": "large_fruit_bats_tropical_house",
-        "to": "large_fruit_bat_squirrel_layer",
-        "mode": "restricted_tropical_squirrel_proxy",
-        "note": "Restricted tropical-squirrel inheritance. Singapore Zoo's current official Fragile Forest page places Malayan flying foxes in the biodome canopy/understorey community that also includes Prevost's squirrel, while Pairi Daiza independently documents Lyle's Flying Fox with Belly-banded Squirrel. A historical named Brookfield/Lincoln Park mix also combines Island Flying Fox and Lesser Dog-faced Fruit Bat with Black Giant Squirrel. Multiple fruit-bat and squirrel taxa therefore support the same vertical-niche pattern. This does not extend to temperate/ground squirrels or tree shrews."
-      },
-      {
         "from": "small_african_mongooses",
         "to": "meerkats",
         "mode": "cross_mongoose_husbandry_proxy",
@@ -32036,16 +31382,16 @@
         "note": "Conservative external-partner proxy. The AZA Capybara Care Manual lists agouti, giant anteater, guanaco, llama, lowland tapir, Patagonian cavy/mara and other South American taxa as mixed-exhibit candidates; repeated named zoo records additionally support rhea, screamer, black-necked swan, squirrel monkey, saki and two-toed sloth. This is NOT a complete all-South-American-species proxy and does not infer compatibility among the partner-pool species themselves."
       },
       {
-        "from": "mixed_exhibit_wallaby_core",
-        "to": "wallaby_repeated_australian_partners",
-        "mode": "eaza_wallaby_mixed_exhibit_partner_proxy",
-        "note": "Narrow partner-inheritance proxy based on EAZA's Yellow-Footed Rock Wallaby Best Practice Guidelines. The EAZA mixed-exhibit table records Yellow-Footed Rock Wallaby with Red Kangaroo, Parma Wallaby, Swamp Wallaby, Red-Necked Wallaby and Emu, and Zoo Curator already contains multiple direct Emu/macropod records. The link only supplies Emu and Red Kangaroo as external partners to this four-wallaby core; it does not create all-to-all compatibility within the wallaby core. Parma Wallaby + Patagonian Mara is deliberately excluded because a peer-reviewed Dudley Zoo study found behavioural/enclosure-use signs consistent with incompatibility."
-      },
-      {
         "from": "south_american_large_paddock_profiles",
         "to": "south_american_large_paddock_repeated_partners",
         "mode": "repeated_named_south_american_paddock_proxy",
         "note": "Conservative partner-inheritance proxy built from repeated named South American mixed paddocks. Zoo Dortmund documents Collared Peccary, Giant Anteater, Capybara, Lowland Tapir and Southern Pudu together, with later configurations adding Patagonian Mara, Greater Rhea and Southern Screamer. Wilhelma Stuttgart independently documents Collared Peccary, Giant Anteater, Patagonian Mara, Capybara and Guanaco; Schwerin documents Collared Peccary, Capybara, Lowland Tapir, Guanaco, Lesser Rhea, Black-Necked Swan and Southern Screamer; Knowsley documents Capybara, Lowland Tapir and Vicuña in a mixed exhibit. This link supplies repeated external partners only and does NOT make either group internally all-to-all compatible. Young/rearing animals and feeding may require separation."
+      },
+      {
+        "from": "lemur_tortoise_core",
+        "to": "lemurs",
+        "mode": "habitat_layer_proxy",
+        "note": "Narrowed replacement for the former blanket tortoises-to-lemurs rule. Limited to African Spurred and Radiated Tortoises, the taxa explicitly anchoring the repeated lemur+tortoise exhibit rationale; does not transfer compatibility to unrelated Asian, Mediterranean, Galapagos or forest tortoises."
       }
     ]
   },
@@ -37054,7 +36400,7 @@
         "For conservation-oriented breeding exhibits, Chinese Three-Keeled and Chinese Stripe-Necked turtles should be separated because hybridization is documented. Zoo Curator compatibility here means they can physically share a managed exhibit, not that breeding them together is recommended."
       ]
     },
-    "validation_pass": 180,
-    "validation_pass_note": "Turtle proxy deduplication: removed south_american_forest_tortoises (exact duplicate of neotropical_forest_tortoises) and east_asian_hard_shelled_pond_turtle_core (fully redundant internal complete subgroup of pond_turtles with no group links). Retained amazon_freshwater_turtle_core because it creates distinct internal compatibility."
+    "validation_pass": 214,
+    "validation_pass_note": "Correction to the Scimitar Oryx evidence-only pool. Restored Kori Bustard after a broader source pass found an explicit Safaripark Beekse Bergen mixed-exhibit record listing Scimitar-horned Oryx and Kori Bustard in the same multispecies enclosure. This is stronger than the previous search result and meets the project's whole-exhibit evidence standard. Restores one proxy relationship; direct compatible_pairs remain untouched."
   }
 }

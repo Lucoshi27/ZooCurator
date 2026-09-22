@@ -3859,3 +3859,171 @@ body.history-viewing #zooCanvas .animal-card {
     box-shadow: none !important;
     animation: none !important;
 }
+
+
+/* ============================================================
+   V224.1 — DYNAMIC ZOO AREAS / HOUSES
+   Geography, habitat and special facility identities may overlap.
+   ============================================================ */
+.zoo-theme-area {
+    position: absolute;
+    box-sizing: border-box;
+    pointer-events: none;
+    border: 3px solid rgba(70, 70, 60, .38);
+    border-radius: 18px;
+    background: rgba(255,255,255,.05);
+    z-index: 0;
+}
+.zoo-theme-layer-geography { border-width: 5px; border-radius: 24px; }
+.zoo-theme-layer-habitat { border-width: 3px; border-style: dashed; border-radius: 18px; }
+.zoo-theme-layer-facility,
+.zoo-theme-layer-special { border-width: 3px; border-radius: 14px; }
+
+.zoo-theme-area-title {
+    position: absolute;
+    left: 10px;
+    top: -24px;
+    padding: 3px 8px;
+    border-radius: 7px;
+    background: rgba(250,248,240,.94);
+    border: 1px solid rgba(55,50,40,.28);
+    box-shadow: 0 2px 6px rgba(0,0,0,.13);
+    color: #29271f;
+    font: 700 13px/1.1 system-ui, sans-serif;
+    white-space: nowrap;
+}
+
+.enclosure { z-index: 2; }
+.enclosure.themed-enclosure::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: 10px;
+    background: var(--enclosure-theme-tint, rgba(255,255,255,0));
+    box-shadow: inset 0 0 0 3px var(--enclosure-theme-edge, rgba(80,80,70,.25));
+}
+.enclosure .slot { z-index: 3; }
+.enclosure-theme-title {
+    position: absolute;
+    z-index: 5;
+    left: 50%;
+    top: 8px;
+    transform: translateX(-50%);
+    max-width: calc(100% - 22px);
+    padding: 4px 9px;
+    border-radius: 8px;
+    background: rgba(250,248,240,.92);
+    border: 1px solid rgba(55,50,40,.30);
+    box-shadow: 0 2px 7px rgba(0,0,0,.16);
+    color: #29271f;
+    font: 800 13px/1.05 system-ui, sans-serif;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+}
+
+/* Card tints. Deliberately restrained so enclosure artwork stays readable. */
+.theme-africa        { --enclosure-theme-tint: rgba(202,151,73,.13); --enclosure-theme-edge: rgba(151,101,38,.48); }
+.theme-asia          { --enclosure-theme-tint: rgba(190,92,70,.10);  --enclosure-theme-edge: rgba(143,67,49,.44); }
+.theme-europe        { --enclosure-theme-tint: rgba(91,132,168,.09); --enclosure-theme-edge: rgba(65,100,130,.42); }
+.theme-north-america { --enclosure-theme-tint: rgba(91,126,83,.10);  --enclosure-theme-edge: rgba(64,98,57,.44); }
+.theme-south-america { --enclosure-theme-tint: rgba(58,151,102,.11); --enclosure-theme-edge: rgba(42,112,76,.46); }
+.theme-oceania       { --enclosure-theme-tint: rgba(212,133,76,.10); --enclosure-theme-edge: rgba(156,92,48,.44); }
+.theme-antarctica    { --enclosure-theme-tint: rgba(179,221,235,.14);--enclosure-theme-edge: rgba(93,156,180,.46); }
+
+.theme-tropical, .theme-rainforest { --enclosure-theme-tint: rgba(48,151,78,.13); --enclosure-theme-edge: rgba(31,112,56,.52); }
+.theme-savanna       { --enclosure-theme-tint: rgba(220,181,67,.14); --enclosure-theme-edge: rgba(157,119,28,.50); }
+.theme-aquatic       { --enclosure-theme-tint: rgba(49,139,197,.14); --enclosure-theme-edge: rgba(35,102,151,.52); }
+.theme-semi-aquatic, .theme-wetland { --enclosure-theme-tint: rgba(58,155,143,.12); --enclosure-theme-edge: rgba(38,111,103,.50); }
+.theme-forest, .theme-boreal { --enclosure-theme-tint: rgba(68,126,62,.12); --enclosure-theme-edge: rgba(45,91,41,.50); }
+.theme-desert        { --enclosure-theme-tint: rgba(218,166,93,.13); --enclosure-theme-edge: rgba(154,106,48,.48); }
+.theme-temperate     { --enclosure-theme-tint: rgba(111,150,82,.10); --enclosure-theme-edge: rgba(75,107,54,.45); }
+.theme-arctic        { --enclosure-theme-tint: rgba(184,222,235,.14);--enclosure-theme-edge: rgba(94,155,178,.48); }
+.theme-mountain      { --enclosure-theme-tint: rgba(130,131,135,.11);--enclosure-theme-edge: rgba(86,87,92,.46); }
+.theme-domestic      { --enclosure-theme-tint: rgba(210,166,102,.12);--enclosure-theme-edge: rgba(143,98,51,.48); }
+.theme-petting-zoo   { --enclosure-theme-tint: rgba(229,184,92,.16); --enclosure-theme-edge: rgba(161,111,33,.58); }
+.theme-raptor-aviary { --enclosure-theme-tint: rgba(130,99,77,.12);  --enclosure-theme-edge: rgba(91,64,47,.55); }
+.theme-bear-forest   { --enclosure-theme-tint: rgba(76,117,64,.14);  --enclosure-theme-edge: rgba(49,80,40,.58); }
+.theme-shark-tunnel  { --enclosure-theme-tint: rgba(40,119,170,.17); --enclosure-theme-edge: rgba(24,79,120,.62); }
+.theme-african-wetland-aviary { --enclosure-theme-tint: rgba(70,148,120,.15); --enclosure-theme-edge: rgba(44,103,82,.58); }
+
+/* Group outlines inherit the same semantic palette through ordinary borders. */
+.zoo-theme-area.theme-africa { border-color: rgba(151,101,38,.50); background: rgba(202,151,73,.045); }
+.zoo-theme-area.theme-tropical, .zoo-theme-area.theme-rainforest { border-color: rgba(31,112,56,.52); background: rgba(48,151,78,.04); }
+.zoo-theme-area.theme-savanna { border-color: rgba(157,119,28,.52); background: rgba(220,181,67,.04); }
+.zoo-theme-area.theme-aquatic { border-color: rgba(35,102,151,.54); background: rgba(49,139,197,.04); }
+.zoo-theme-area.theme-wetland, .zoo-theme-area.theme-semi-aquatic { border-color: rgba(38,111,103,.52); background: rgba(58,155,143,.04); }
+.zoo-theme-area.theme-forest, .zoo-theme-area.theme-boreal { border-color: rgba(45,91,41,.52); background: rgba(68,126,62,.04); }
+.zoo-theme-area.theme-desert { border-color: rgba(154,106,48,.50); background: rgba(218,166,93,.04); }
+.zoo-theme-area.theme-petting-zoo { border-color: rgba(161,111,33,.60); background: rgba(229,184,92,.05); }
+.zoo-theme-area.theme-raptor-aviary { border-color: rgba(91,64,47,.58); }
+.zoo-theme-area.theme-shark-tunnel { border-color: rgba(24,79,120,.62); }
+.zoo-theme-area.theme-bear-forest { border-color: rgba(49,80,40,.60); }
+.zoo-theme-area.theme-african-wetland-aviary { border-color: rgba(44,103,82,.60); }
+
+
+
+/* V224 — real-zoo-inspired specialist houses and exhibit complexes. */
+.theme-reptile-house,
+.theme-crocodile-house,
+.theme-turtle-house,
+.theme-snake-house,
+.theme-lizard-house {
+    --enclosure-theme-tint: rgba(92,132,67,.14);
+    --enclosure-theme-edge: rgba(55,92,39,.60);
+}
+.theme-aquarium,
+.theme-shark-tunnel {
+    --enclosure-theme-tint: rgba(38,126,183,.16);
+    --enclosure-theme-edge: rgba(22,82,127,.64);
+}
+.theme-tropical-aviary,
+.theme-wetland-aviary,
+.theme-african-wetland-aviary,
+.theme-bird-house,
+.theme-raptor-aviary,
+.theme-owl-aviary {
+    --enclosure-theme-tint: rgba(79,145,92,.13);
+    --enclosure-theme-edge: rgba(49,99,61,.58);
+}
+.theme-penguin-coast,
+.theme-seal-coast,
+.theme-otter-river,
+.theme-flamingo-lagoon {
+    --enclosure-theme-tint: rgba(75,151,178,.13);
+    --enclosure-theme-edge: rgba(45,105,129,.57);
+}
+.theme-camelid-paddocks {
+    --enclosure-theme-tint: rgba(177,143,86,.12);
+    --enclosure-theme-edge: rgba(117,87,47,.56);
+}
+.theme-great-ape-house,
+.theme-primate-house,
+.theme-small-primate-house,
+.theme-lemur-forest,
+.theme-bear-forest,
+.theme-australian-walkabout {
+    --enclosure-theme-tint: rgba(75,127,67,.13);
+    --enclosure-theme-edge: rgba(47,88,42,.57);
+}
+.zoo-theme-area[class*="theme-"][class*="-house"],
+.zoo-theme-area.theme-aquarium,
+.zoo-theme-area.theme-tropical-aviary,
+.zoo-theme-area.theme-wetland-aviary,
+.zoo-theme-area.theme-african-wetland-aviary,
+.zoo-theme-area.theme-raptor-aviary,
+.zoo-theme-area.theme-owl-aviary,
+.zoo-theme-area.theme-penguin-coast,
+.zoo-theme-area.theme-seal-coast,
+.zoo-theme-area.theme-otter-river,
+.zoo-theme-area.theme-flamingo-lagoon,
+.zoo-theme-area.theme-lemur-forest,
+.zoo-theme-area.theme-australian-walkabout,
+.zoo-theme-area.theme-camelid-paddocks {
+    border-color: var(--enclosure-theme-edge, rgba(70,90,65,.58));
+    background: var(--enclosure-theme-tint, rgba(80,120,80,.04));
+}

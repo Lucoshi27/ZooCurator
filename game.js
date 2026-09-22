@@ -16179,7 +16179,7 @@ function renderRealZooDirectory() {
             const countryOrder = a.country.localeCompare(b.country);
             if (countryOrder) return countryOrder;
             return (
-                a.prestige - b.prestige ||
+                b.prestige - a.prestige ||
                 String(a.name || '').localeCompare(String(b.name || ''))
             );
         });

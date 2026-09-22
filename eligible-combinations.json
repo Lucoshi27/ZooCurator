@@ -12,11 +12,6 @@
           "zoo": "Zoo Frankfurt",
           "country": "Germany",
           "date": "2022-11-12"
-        },
-        {
-          "zoo": "Zoo Frankfurt",
-          "country": "Germany",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -40,11 +35,6 @@
           "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
           "country": "United States",
           "date": "2022-11-12"
-        },
-        {
-          "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
-          "country": "United States",
-          "date": "2018"
         }
       ]
     },
@@ -166,21 +156,6 @@
           "zoo": "Sacramento Zoo",
           "country": "United States",
           "date": "2020-05-26"
-        },
-        {
-          "zoo": "Pittsburgh Zoo & PPG Aquarium",
-          "country": "United States",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Sacramento Zoo",
-          "country": "United States",
-          "date": "2018"
-        },
-        {
-          "zoo": "Pittsburgh Zoo & PPG Aquarium",
-          "country": "United States",
-          "date": "2018"
         }
       ]
     },
@@ -306,33 +281,8 @@
           "date": "2022-11-12"
         },
         {
-          "zoo": "Chester Zoo",
-          "country": "United Kingdom",
-          "date": "2018"
-        },
-        {
-          "zoo": "ZSL London Zoo",
-          "country": "United Kingdom",
-          "date": "2018"
-        },
-        {
-          "zoo": "Blackpool Zoo",
-          "country": "United Kingdom",
-          "date": "2018"
-        },
-        {
           "zoo": "Africa Alive!",
           "country": "United Kingdom",
-          "date": "2018"
-        },
-        {
-          "zoo": "Philadelphia Zoo",
-          "country": "United States",
-          "date": "2018"
-        },
-        {
-          "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
-          "country": "United States",
           "date": "2018"
         },
         {
@@ -380,16 +330,6 @@
           "zoo": "Colchester Zoo",
           "country": "United Kingdom",
           "date": "2022-11-12"
-        },
-        {
-          "zoo": "Zoo Olomouc",
-          "country": "Czech Republic",
-          "date": "2022-11-12"
-        },
-        {
-          "zoo": "Colchester Zoo",
-          "country": "United Kingdom",
-          "date": "2022"
         },
         {
           "zoo": "Pittsburgh Zoo & PPG Aquarium",
@@ -839,11 +779,6 @@
           "zoo": "Jerusalem Biblical Zoo",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -883,16 +818,6 @@
           "zoo": "Jerusalem Biblical Zoo",
           "country": "Israel",
           "date": "2019"
-        },
-        {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022"
-        },
-        {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -950,11 +875,6 @@
           "zoo": "Jerusalem Biblical Zoo",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022-06-15"
         },
         {
           "zoo": "San Diego Zoo Safari Park",
@@ -1061,11 +981,6 @@
           "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
           "country": "United States",
           "date": "2022-11-12"
-        },
-        {
-          "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
-          "country": "United States",
-          "date": "2018"
         }
       ]
     },
@@ -1383,16 +1298,6 @@
           "zoo": "Zoologischer Garten Schwerin",
           "country": "Germany",
           "date": "2018"
-        },
-        {
-          "zoo": "Colchester Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-18"
-        },
-        {
-          "zoo": "Zoologischer Garten Schwerin",
-          "country": "Germany",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -1416,21 +1321,6 @@
           "zoo": "Zoologischer Garten Schwerin",
           "country": "Germany",
           "date": "2018"
-        },
-        {
-          "zoo": "Zoo Basel",
-          "country": "Switzerland",
-          "date": "2020-05-18"
-        },
-        {
-          "zoo": "ZOO Antwerpen",
-          "country": "Belgium",
-          "date": "2020-05-18"
-        },
-        {
-          "zoo": "Zoologischer Garten Schwerin",
-          "country": "Germany",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -1746,11 +1636,6 @@
           "zoo": "Caldwell Zoo",
           "country": "United States",
           "date": "2017"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -1790,11 +1675,6 @@
           "zoo": "Caldwell Zoo",
           "country": "United States",
           "date": "2017"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -1808,11 +1688,6 @@
           "zoo": "Caldwell Zoo",
           "country": "United States",
           "date": "2017"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -1833,11 +1708,6 @@
           "zoo": "Caldwell Zoo",
           "country": "United States",
           "date": "2017"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -1866,16 +1736,6 @@
           "zoo": "Parque Zoológico Nacional",
           "country": "Cuba",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -2033,19 +1893,6 @@
     },
     {
       "animals": [
-        "Black Stork",
-        "African Spoonbill"
-      ],
-      "evidence": [
-        {
-          "zoo": "Cotswold Wildlife Park",
-          "country": "United Kingdom",
-          "date": "2024-07-19"
-        }
-      ]
-    },
-    {
-      "animals": [
         "African Spoonbill",
         "Blue Duiker"
       ],
@@ -2157,6 +2004,11 @@
           "zoo": "Zoo Antwerpen",
           "country": "Belgium",
           "date": "2020-10-17"
+        },
+        {
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "date": "2018"
         }
       ]
     },
@@ -2185,6 +2037,11 @@
           "zoo": "Zoo Antwerpen",
           "country": "Belgium",
           "date": "2020-10-17"
+        },
+        {
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "date": "2018"
         }
       ]
     },
@@ -2420,11 +2277,6 @@
           "zoo": "Caldwell Zoo",
           "country": "United States",
           "date": "2018"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -2546,11 +2398,6 @@
           "date": "2018"
         },
         {
-          "zoo": "Dierenpark Zie-ZOO",
-          "country": "Netherlands",
-          "date": "2020-05-10"
-        },
-        {
           "zoo": "Toni's Zoo",
           "country": "Switzerland",
           "date": "2018-04-11"
@@ -2572,11 +2419,6 @@
           "zoo": "Houston Zoo",
           "country": "United States",
           "date": "2018-10-23"
-        },
-        {
-          "zoo": "Houston Zoo",
-          "country": "United States",
-          "date": "2020-05-26"
         }
       ]
     },
@@ -2595,11 +2437,6 @@
           "zoo": "Dierenpark Zie-ZOO",
           "country": "Netherlands",
           "date": "2020-05-10"
-        },
-        {
-          "zoo": "Dierenpark Zie-ZOO",
-          "country": "Netherlands",
-          "date": "2018"
         },
         {
           "zoo": "Bioparc València",
@@ -2667,11 +2504,6 @@
           "zoo": "Dierenpark Zie-ZOO",
           "country": "Netherlands",
           "date": "2018"
-        },
-        {
-          "zoo": "Dierenpark Zie-ZOO",
-          "country": "Netherlands",
-          "date": "2020-05-10"
         },
         {
           "zoo": "Dierenpark Zie-Zoo",
@@ -2917,11 +2749,6 @@
           "zoo": "Nyíregyházi Állatpark",
           "country": "Hungary",
           "date": "2021"
-        },
-        {
-          "zoo": "Nyíregyházi Állatpark",
-          "country": "Hungary",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -2974,11 +2801,6 @@
           "zoo": "Nyíregyházi Állatpark",
           "country": "Hungary",
           "date": "2021"
-        },
-        {
-          "zoo": "Nyíregyházi Állatpark",
-          "country": "Hungary",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -3046,16 +2868,6 @@
           "zoo": "Zoo sauvage de Saint-Félicien",
           "country": "Canada",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Zoo sauvage de Saint-Félicien",
-          "country": "Canada",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Ree Park – Ebeltoft Safari",
-          "country": "Denmark",
-          "date": "2020-05-05"
         }
       ]
     },
@@ -3074,16 +2886,6 @@
           "zoo": "Zoo sauvage de Saint-Félicien",
           "country": "Canada",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Zoo sauvage de Saint-Félicien",
-          "country": "Canada",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Ree Park – Ebeltoft Safari",
-          "country": "Denmark",
-          "date": "2020-05-05"
         }
       ]
     },
@@ -3167,11 +2969,6 @@
           "zoo": "Dierenpark Zie-ZOO",
           "country": "Netherlands",
           "date": "2020-05-05"
-        },
-        {
-          "zoo": "Dierenpark Zie-ZOO",
-          "country": "Netherlands",
-          "date": "2020-05-26"
         }
       ]
     },
@@ -3216,11 +3013,6 @@
           "zoo": "Africam Safari",
           "country": "Mexico",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Africam Safari",
-          "country": "Mexico",
-          "date": "2020-05-05"
         }
       ]
     },
@@ -3247,16 +3039,6 @@
           "zoo": "Out of Africa Wildlife Park",
           "country": "United States",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Out of Africa Wildlife Park",
-          "country": "United States",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Out of Africa Wildlife Park",
-          "country": "United States",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -3318,21 +3100,6 @@
           "zoo": "Out of Africa Wildlife Park",
           "country": "United States",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Out of Africa Wildlife Park",
-          "country": "United States",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Zoo sauvage de Saint-Félicien",
-          "country": "Canada",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Out of Africa Wildlife Park",
-          "country": "United States",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -3359,11 +3126,6 @@
           "zoo": "Zoo sauvage de Saint-Félicien",
           "country": "Canada",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Zoo sauvage de Saint-Félicien",
-          "country": "Canada",
-          "date": "2020-05-26"
         }
       ]
     },
@@ -3397,11 +3159,6 @@
           "zoo": "Zoo sauvage de Saint-Félicien",
           "country": "Canada",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Zoo sauvage de Saint-Félicien",
-          "country": "Canada",
-          "date": "2020-05-26"
         }
       ]
     },
@@ -3496,19 +3253,6 @@
         "Meerkat"
       ],
       "evidence": []
-    },
-    {
-      "animals": [
-        "Aplomado Falcon",
-        "Roadside Hawk"
-      ],
-      "evidence": [
-        {
-          "zoo": "Volta Redonda Zoo",
-          "country": "Brazil",
-          "date": "2024"
-        }
-      ]
     },
     {
       "animals": [
@@ -3858,49 +3602,6 @@
     {
       "animals": [
         "Arctic Fox",
-        "Brown Bear"
-      ],
-      "evidence": [
-        {
-          "zoo": "Skansen",
-          "country": "Sweden",
-          "date": "2012-04-12"
-        },
-        {
-          "zoo": "Kittenberger Kálmán Növény- és Vadaspark",
-          "country": "Hungary",
-          "date": "2012-04-12"
-        },
-        {
-          "zoo": "ZOOM Erlebniswelt",
-          "country": "Germany",
-          "date": "2012-04-12"
-        },
-        {
-          "zoo": "Skansen",
-          "country": "Sweden",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Kittenberger Kálmán Növény- és Vadaspark",
-          "country": "Hungary",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "ZOOM Erlebniswelt",
-          "country": "Germany",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "ZOOM Erlebniswelt",
-          "country": "Germany",
-          "date": "2020-05-26"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Arctic Fox",
         "Grey Seal"
       ],
       "evidence": [
@@ -3926,24 +3627,6 @@
           "zoo": "Central Park Zoo",
           "country": "United States",
           "date": "2020-05-26"
-        },
-        {
-          "zoo": "Central Park Zoo",
-          "country": "United States",
-          "date": "2020-06-06"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Arctic Fox",
-        "Mountain Goat"
-      ],
-      "evidence": [
-        {
-          "zoo": "Woodland Park Zoo",
-          "country": "United States",
-          "date": "2025"
         }
       ]
     },
@@ -3959,33 +3642,6 @@
           "date": "2020-05-26"
         }
       ]
-    },
-    {
-      "animals": [
-        "Common Anaconda",
-        "Argentine Black And White Tegu"
-      ],
-      "evidence": [
-        {
-          "zoo": "Louisville Zoo",
-          "country": "United States",
-          "date": "2010"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Argentine Black And White Tegu",
-        "Western Gabook Viper"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Argentine Black And White Tegu",
-        "Yemen Chameleon"
-      ],
-      "evidence": []
     },
     {
       "animals": [
@@ -4015,16 +3671,6 @@
           "zoo": "Zoo Zürich",
           "country": "Switzerland",
           "date": "2021"
-        },
-        {
-          "zoo": "Dublin Zoo",
-          "country": "Ireland",
-          "date": "2025"
-        },
-        {
-          "zoo": "Zoo Zürich",
-          "country": "Switzerland",
-          "date": "2025"
         }
       ]
     },
@@ -4064,11 +3710,6 @@
           "zoo": "Dierenrijk",
           "country": "Netherlands",
           "date": "2021"
-        },
-        {
-          "zoo": "Dierenrijk",
-          "country": "Netherlands",
-          "date": "2025"
         }
       ]
     },
@@ -4103,11 +3744,6 @@
           "zoo": "Wild Zoological Park",
           "country": "United Kingdom",
           "date": "2018"
-        },
-        {
-          "zoo": "Wild Zoological Park",
-          "country": "United Kingdom",
-          "date": "2020-05-25"
         }
       ]
     },
@@ -4126,16 +3762,6 @@
           "zoo": "Zoo Taiping & Night Safari",
           "country": "Malaysia",
           "date": "2020-05-25"
-        },
-        {
-          "zoo": "Wild Zoological Park",
-          "country": "United Kingdom",
-          "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -4149,11 +3775,6 @@
           "zoo": "Zoo Taiping & Night Safari",
           "country": "Malaysia",
           "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -4167,11 +3788,6 @@
           "zoo": "Zoo Taiping & Night Safari",
           "country": "Malaysia",
           "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -4185,11 +3801,6 @@
           "zoo": "Zoo Taiping & Night Safari",
           "country": "Malaysia",
           "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -4242,16 +3853,6 @@
           "date": "2018-06-28"
         },
         {
-          "zoo": "Zoo Ostrava",
-          "country": "Czech Republic",
-          "date": "2018-06-28"
-        },
-        {
-          "zoo": "Hamerton Zoo Park",
-          "country": "United Kingdom",
-          "date": "2018-06-28"
-        },
-        {
           "zoo": "Colchester Zoo",
           "country": "United Kingdom",
           "date": "2018-06-28"
@@ -4287,11 +3888,6 @@
           "date": "2018-06-28"
         },
         {
-          "zoo": "Singapore Zoo",
-          "country": "Singapore",
-          "date": "2018-06-28"
-        },
-        {
           "zoo": "Night Safari Singapore",
           "country": "Singapore",
           "date": "2018-06-28"
@@ -4312,66 +3908,6 @@
           "date": "2018-06-28"
         },
         {
-          "zoo": "Brookfield Zoo",
-          "country": "United States",
-          "date": "2018-06-28"
-        },
-        {
-          "zoo": "AquaZoo Friesland",
-          "country": "Netherlands",
-          "date": "2018-06-28"
-        },
-        {
-          "zoo": "Brookfield Zoo",
-          "country": "United States",
-          "date": "2020-05-25"
-        },
-        {
-          "zoo": "AquaZoo Friesland",
-          "country": "Netherlands",
-          "date": "2020-05-25"
-        },
-        {
-          "zoo": "Wild Zoological Park",
-          "country": "United Kingdom",
-          "date": "2020-05-25"
-        },
-        {
-          "zoo": "AquaZoo Friesland",
-          "country": "Netherlands",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoo Ostrava",
-          "country": "Czech Republic",
-          "date": "2020-05-25"
-        },
-        {
-          "zoo": "Hamerton Zoo Park",
-          "country": "United Kingdom",
-          "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Heidelberg",
-          "country": "Germany",
-          "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Ostrava",
-          "country": "Czech Republic",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoo Heidelberg",
-          "country": "Germany",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Hamerton Zoo Park",
-          "country": "United Kingdom",
-          "date": "2020-06-12"
-        },
-        {
           "zoo": "Zoologická zahrada Ostrava",
           "country": "Czech Republic",
           "date": "2021-12-15"
@@ -4388,11 +3924,6 @@
           "zoo": "Jersey Zoo",
           "country": "Jersey",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Jersey Zoo",
-          "country": "Jersey",
-          "date": "2020-06-12"
         }
       ]
     },
@@ -4424,11 +3955,6 @@
           "zoo": "South Lakes Safari Zoo",
           "country": "United Kingdom",
           "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         }
       ]
     },
@@ -4442,11 +3968,6 @@
           "zoo": "Allwetterzoo Münster",
           "country": "Germany",
           "date": "2020"
-        },
-        {
-          "zoo": "Allwetterzoo Münster",
-          "country": "Germany",
-          "date": "2020-06-12"
         },
         {
           "zoo": "Bioparc Fuengirola",
@@ -4475,29 +3996,6 @@
           "zoo": "Wild Zoological Park",
           "country": "United Kingdom",
           "date": "2020-06-12"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Asian Small-Clawed Otter",
-        "Celebes Crested Macaque"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZOO Planckendael",
-          "country": "Belgium",
-          "date": "2020-06-12"
         }
       ]
     },
@@ -4524,21 +4022,6 @@
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2018"
-        },
-        {
-          "zoo": "Safaripark Beekse Bergen",
-          "country": "Netherlands",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Safaripark Beekse Bergen",
-          "country": "Netherlands",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Safaripark Beekse Bergen",
-          "country": "Netherlands",
-          "date": "2020-05-05"
         }
       ]
     },
@@ -4616,11 +4099,6 @@
           "date": "2020-06-07"
         },
         {
-          "zoo": "ZooParc Overloon",
-          "country": "Netherlands",
-          "date": "2020-06-07"
-        },
-        {
           "zoo": "AquaZoo Friesland",
           "country": "Netherlands",
           "date": "2020-06-07"
@@ -4634,31 +4112,6 @@
           "zoo": "Bioparc Fuengirola",
           "country": "Spain",
           "date": "2020-06-07"
-        },
-        {
-          "zoo": "Welsh Mountain Zoo",
-          "country": "United Kingdom",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "ZooParc Overloon",
-          "country": "Netherlands",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "AquaZoo Friesland",
-          "country": "Netherlands",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Parc Zoologique et Botanique de Mulhouse",
-          "country": "France",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Bioparc Fuengirola",
-          "country": "Spain",
-          "date": "2020-06-12"
         }
       ]
     },
@@ -4672,16 +4125,6 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2018"
-        },
-        {
-          "zoo": "Brookfield Zoo",
-          "country": "United States",
-          "date": "2018-06-28"
-        },
-        {
-          "zoo": "Brookfield Zoo",
-          "country": "United States",
-          "date": "2020-05-25"
         }
       ]
     },
@@ -4710,29 +4153,9 @@
           "date": "2018"
         },
         {
-          "zoo": "AquaZoo Friesland",
-          "country": "Netherlands",
-          "date": "2018-06-28"
-        },
-        {
-          "zoo": "AquaZoo Friesland",
-          "country": "Netherlands",
-          "date": "2020-05-25"
-        },
-        {
           "zoo": "Parc Zoologique et Botanique de Mulhouse",
           "country": "France",
           "date": "2020-06-07"
-        },
-        {
-          "zoo": "AquaZoo Friesland",
-          "country": "Netherlands",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Parc Zoologique et Botanique de Mulhouse",
-          "country": "France",
-          "date": "2020-06-12"
         },
         {
           "zoo": "Zoo Basel",
@@ -4743,11 +4166,6 @@
           "zoo": "Zoo Atlanta",
           "country": "United States",
           "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoo Basel",
-          "country": "Switzerland",
-          "date": "2014"
         },
         {
           "zoo": "San Antonio Zoo",
@@ -4779,21 +4197,6 @@
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2018"
-        },
-        {
-          "zoo": "Safaripark Beekse Bergen",
-          "country": "Netherlands",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Safaripark Beekse Bergen",
-          "country": "Netherlands",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Safaripark Beekse Bergen",
-          "country": "Netherlands",
-          "date": "2020-05-05"
         }
       ]
     },
@@ -4812,16 +4215,6 @@
           "zoo": "Wild Zoological Park",
           "country": "United Kingdom",
           "date": "2020-06-12"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         }
       ]
     },
@@ -4840,16 +4233,6 @@
           "zoo": "Bioparc Fuengirola",
           "country": "Spain",
           "date": "2020-06-07"
-        },
-        {
-          "zoo": "Bioparc Fuengirola",
-          "country": "Spain",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Bioparc Fuengirola",
-          "country": "Spain",
-          "date": "2020"
         }
       ]
     },
@@ -4870,24 +4253,9 @@
           "date": "2012-04-12"
         },
         {
-          "zoo": "Jersey Zoo",
-          "country": "Jersey",
-          "date": "2020-06-12"
-        },
-        {
           "zoo": "Wild Zoological Park",
           "country": "United Kingdom",
           "date": "2020-06-12"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         }
       ]
     },
@@ -4911,16 +4279,6 @@
           "zoo": "Chester Zoo",
           "country": "United Kingdom",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Jacksonville Zoo and Gardens",
-          "country": "United States",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Chester Zoo",
-          "country": "United Kingdom",
-          "date": "2020-06-12"
         },
         {
           "zoo": "Tierpark Berlin",
@@ -4992,11 +4350,6 @@
           "zoo": "South Lakes Safari Zoo",
           "country": "United Kingdom",
           "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         }
       ]
     },
@@ -5134,19 +4487,6 @@
     {
       "animals": [
         "Asian Woolly-Necked Stork",
-        "Black Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Asian Woolly-Necked Stork",
         "Black-Headed Ibis"
       ],
       "evidence": [
@@ -5154,109 +4494,6 @@
           "zoo": "Dusit Zoo",
           "country": "Thailand",
           "date": "2010"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Asian Woolly-Necked Stork",
-        "Lesser Adjutant"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Asian Woolly-Necked Stork",
-        "Milky Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Pairi Daiza",
-          "country": "Belgium",
-          "date": "2020"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Asian Woolly-Necked Stork",
-        "Painted Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Asiatic Black Bear",
-        "Celebes Crested Macaque"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dudley Zoological Gardens",
-          "country": "United Kingdom",
-          "date": "2020-05-05"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Asiatic Black Bear",
-        "Common Snapping Turtle"
-      ],
-      "evidence": [
-        {
-          "zoo": "Nagyerdei Kultúrpark",
-          "country": "Hungary",
-          "date": "2020-05-05"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Corsac Fox",
-        "Asiatic Black Bear"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dierenrijk",
-          "country": "Netherlands",
-          "date": "2012-04-12"
-        },
-        {
-          "zoo": "DierenPark Amersfoort",
-          "country": "Netherlands",
-          "date": "2012-04-12"
-        },
-        {
-          "zoo": "DierenPark Amersfoort",
-          "country": "Netherlands",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Dierenrijk",
-          "country": "Netherlands",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "DierenPark Amersfoort",
-          "country": "Netherlands",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Dierenrijk",
-          "country": "Netherlands",
-          "date": "2020-05-26"
         }
       ]
     },
@@ -5806,16 +5043,6 @@
           "zoo": "Zoo Leipzig",
           "country": "Germany",
           "date": "2018"
-        },
-        {
-          "zoo": "Chester Zoo",
-          "country": "United Kingdom",
-          "date": "2021-12-15"
-        },
-        {
-          "zoo": "Chester Zoo",
-          "country": "United Kingdom",
-          "date": "2018-04-11"
         }
       ]
     },
@@ -5849,11 +5076,6 @@
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2018"
-        },
-        {
-          "zoo": "Safaripark Beekse Bergen",
-          "country": "Netherlands",
-          "date": "2021"
         },
         {
           "zoo": "Zoo Leipzig",
@@ -6107,19 +5329,9 @@
           "date": "2018"
         },
         {
-          "zoo": "Zoo des Sables d'Olonne",
-          "country": "France",
-          "date": "2020-05-26"
-        },
-        {
           "zoo": "Zoo Zürich",
           "country": "Switzerland",
           "date": "2018"
-        },
-        {
-          "zoo": "Zoo des Sables d'Olonne",
-          "country": "France",
-          "date": "2018-04-11"
         }
       ]
     },
@@ -6361,11 +5573,6 @@
           "date": "2018-11-13"
         },
         {
-          "zoo": "Georgia Aquarium",
-          "country": "United States",
-          "date": "2020-06-06"
-        },
-        {
           "zoo": "Oceanogràfic València",
           "country": "Spain",
           "date": "2020-06-06"
@@ -6382,11 +5589,6 @@
           "zoo": "Zoo Taiping & Night Safari",
           "country": "Malaysia",
           "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-26"
         }
       ]
     },
@@ -6400,11 +5602,6 @@
           "zoo": "Zoo Taiping & Night Safari",
           "country": "Malaysia",
           "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-18"
         },
         {
           "zoo": "Saigon Zoo and Botanical Gardens",
@@ -6423,11 +5620,6 @@
           "zoo": "Zoo Taiping & Night Safari",
           "country": "Malaysia",
           "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -6441,11 +5633,6 @@
           "zoo": "Zoo Taiping & Night Safari",
           "country": "Malaysia",
           "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -6459,11 +5646,6 @@
           "zoo": "San Diego Zoo",
           "country": "United States",
           "date": "2018-06-28"
-        },
-        {
-          "zoo": "San Diego Zoo",
-          "country": "United States",
-          "date": "2020-05-25"
         },
         {
           "zoo": "Zoo Taiping & Night Safari",
@@ -6487,16 +5669,6 @@
           "zoo": "Bioparc Fuengirola",
           "country": "Spain",
           "date": "2018-06-28"
-        },
-        {
-          "zoo": "Minnesota Zoo",
-          "country": "United States",
-          "date": "2020-05-25"
-        },
-        {
-          "zoo": "Bioparc Fuengirola",
-          "country": "Spain",
-          "date": "2020-05-25"
         }
       ]
     },
@@ -6510,16 +5682,6 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2018"
-        },
-        {
-          "zoo": "Brookfield Zoo",
-          "country": "United States",
-          "date": "2018-06-28"
-        },
-        {
-          "zoo": "Brookfield Zoo",
-          "country": "United States",
-          "date": "2020-05-25"
         },
         {
           "zoo": "Staten Island Zoo",
@@ -6545,29 +5707,9 @@
           "date": "2018-06-28"
         },
         {
-          "zoo": "AquaZoo Friesland",
-          "country": "Netherlands",
-          "date": "2018-06-28"
-        },
-        {
-          "zoo": "AquaZoo Friesland",
-          "country": "Netherlands",
-          "date": "2020-05-25"
-        },
-        {
-          "zoo": "Bioparc Fuengirola",
-          "country": "Spain",
-          "date": "2020-05-25"
-        },
-        {
           "zoo": "Parco Faunistico La Torbiera",
           "country": "Italy",
           "date": "2020-05-25"
-        },
-        {
-          "zoo": "AquaZoo Friesland",
-          "country": "Netherlands",
-          "date": "2020-06-12"
         }
       ]
     },
@@ -6606,36 +5748,6 @@
           "date": "2012-04-12"
         },
         {
-          "zoo": "Espace Zoologique Saint-Martin la Plaine",
-          "country": "France",
-          "date": "2020-05-25"
-        },
-        {
-          "zoo": "Royal Burgers' Zoo",
-          "country": "Netherlands",
-          "date": "2020-05-25"
-        },
-        {
-          "zoo": "Chester Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-25"
-        },
-        {
-          "zoo": "Espace Zoologique Saint-Martin la Plaine",
-          "country": "France",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Royal Burgers' Zoo",
-          "country": "Netherlands",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Chester Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-05"
-        },
-        {
           "zoo": "Espace Zoologique de Saint-Martin-la-Plaine",
           "country": "France",
           "date": "2021-12-15"
@@ -6647,18 +5759,11 @@
         "Black Crested Mangabey",
         "Western Lowland Gorilla"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Black Crowned Crane",
-        "Black Stork"
-      ],
       "evidence": [
         {
-          "zoo": "Binder Park Zoo",
-          "country": "United States",
-          "date": "2019-08-17"
+          "zoo": "GaiaPark",
+          "country": "Netherlands",
+          "date": "2010"
         }
       ]
     },
@@ -6744,20 +5849,8 @@
           "zoo": "Zoo Opole",
           "country": "Poland",
           "date": "2018-10-23"
-        },
-        {
-          "zoo": "Zoo Opole",
-          "country": "Poland",
-          "date": "2020-05-26"
         }
       ]
-    },
-    {
-      "animals": [
-        "Black Howler Monkey",
-        "Nile Softshelled Turtle"
-      ],
-      "evidence": []
     },
     {
       "animals": [
@@ -6800,11 +5893,6 @@
           "zoo": "Jersey Zoo",
           "country": "Jersey",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Jersey Zoo",
-          "country": "Jersey",
-          "date": "2020-06-12"
         }
       ]
     },
@@ -6823,16 +5911,6 @@
           "zoo": "Jersey Zoo",
           "country": "Jersey",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Jersey Zoo",
-          "country": "Jersey",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoo Frankfurt",
-          "country": "Germany",
-          "date": "2020-05-05"
         }
       ]
     },
@@ -7073,7 +6151,7 @@
     {
       "animals": [
         "Black Rhinoceros",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": []
     },
@@ -7092,16 +6170,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -7140,11 +6208,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2021-04"
@@ -7166,16 +6229,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -7222,16 +6275,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -7263,11 +6306,6 @@
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -7281,11 +6319,6 @@
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -7306,19 +6339,9 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -7377,11 +6400,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2021-04"
@@ -7403,16 +6421,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -7431,11 +6439,6 @@
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -7464,72 +6467,6 @@
           "date": "2021-04"
         }
       ]
-    },
-    {
-      "animals": [
-        "Black Stork",
-        "Black-Headed Ibis"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black Stork",
-        "Lesser Adjutant"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black Stork",
-        "Milky Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black Stork",
-        "Northern Bald Ibis"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Black Stork",
-        "Painted Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black Tree Monitor",
-        "Red-Bellied Short-Necked Turtle"
-      ],
-      "evidence": []
     },
     {
       "animals": [
@@ -7607,11 +6544,6 @@
           "date": "2018"
         },
         {
-          "zoo": "ARTIS Amsterdam Royal Zoo",
-          "country": "Netherlands",
-          "date": "2018-04-11"
-        },
-        {
           "zoo": "Newquay Zoo",
           "country": "United Kingdom",
           "date": "2018"
@@ -7675,7 +6607,13 @@
         "Black-and-White Ruffed Lemur",
         "Hermann's Tortoise"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZooParc Overloon",
+          "country": "Netherlands",
+          "date": "2023"
+        }
+      ]
     },
     {
       "animals": [
@@ -7695,7 +6633,13 @@
         "Black-and-White Ruffed Lemur",
         "Radiated Tortoise"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "St. Augustine Alligator Farm Zoological Park",
+          "country": "United States",
+          "date": "2026-02-21"
+        }
+      ]
     },
     {
       "animals": [
@@ -7738,7 +6682,7 @@
     },
     {
       "animals": [
-        "Black-Capped Capuchin",
+        "Tufted Capuchin",
         "South American Coati"
       ],
       "evidence": [
@@ -7746,39 +6690,49 @@
           "zoo": "Parque de las Leyendas",
           "country": "Peru",
           "date": "2020"
+        },
+        {
+          "zoo": "Plaswijckpark",
+          "country": "Netherlands",
+          "date": "2020-06-07"
+        },
+        {
+          "zoo": "BestZOO",
+          "country": "Netherlands",
+          "date": "2020-06-07"
+        },
+        {
+          "zoo": "Landgoed Hoenderdaell",
+          "country": "Netherlands",
+          "date": "2020-06-07"
+        },
+        {
+          "zoo": "Zoo Rostock",
+          "country": "Germany",
+          "date": "2020-06-07"
+        },
+        {
+          "zoo": "Zoološki vrt grada Zagreba",
+          "country": "Croatia",
+          "date": "2020-06-07"
         }
       ]
     },
     {
       "animals": [
         "Spectacled Bear",
-        "Black-Capped Capuchin"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Black-Headed Ibis",
-        "Lesser Adjutant"
+        "Tufted Capuchin"
       ],
       "evidence": [
         {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black-Headed Ibis",
-        "Milky Stork"
-      ],
-      "evidence": [
+          "zoo": "South Lakes Safari Zoo",
+          "country": "United Kingdom",
+          "date": "2012-04-12"
+        },
         {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
+          "zoo": "Wild Zoological Park",
+          "country": "United Kingdom",
+          "date": "2020-06-12"
         }
       ]
     },
@@ -7792,19 +6746,6 @@
           "zoo": "Planckendael",
           "country": "Belgium",
           "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black-Headed Ibis",
-        "Painted Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
         }
       ]
     },
@@ -7835,21 +6776,6 @@
           "zoo": "Wild Zoological Park",
           "country": "United Kingdom",
           "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoológico da UFMT",
-          "country": "Brazil",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         },
         {
           "zoo": "Apenheul",
@@ -7891,11 +6817,6 @@
           "zoo": "South Lakes Safari Zoo",
           "country": "United Kingdom",
           "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         }
       ]
     },
@@ -7914,11 +6835,6 @@
           "zoo": "South Lakes Safari Zoo",
           "country": "United Kingdom",
           "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         }
       ]
     },
@@ -7937,11 +6853,6 @@
           "zoo": "South Lakes Safari Zoo",
           "country": "United Kingdom",
           "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         }
       ]
     },
@@ -8002,7 +6913,13 @@
         "Black-Necked Crane",
         "Nepalese Red Panda"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoologischer Garten Halle",
+          "country": "Germany",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
@@ -8266,7 +7183,13 @@
         "Blackbuck",
         "White-Naped Crane"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoo Parc Overloon",
+          "country": "Netherlands",
+          "date": "2016-04-03"
+        }
+      ]
     },
     {
       "animals": [
@@ -8583,19 +7506,9 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
         }
       ]
     },
@@ -8626,11 +7539,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -8646,11 +7554,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
           "zoo": "Cincinnati Zoo & Botanical Garden",
           "country": "United States",
           "date": "2021-04"
@@ -8659,36 +7562,6 @@
           "zoo": "North Carolina Zoo",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -8719,11 +7592,6 @@
           "date": "2021"
         },
         {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
           "zoo": "Cincinnati Zoo & Botanical Garden",
           "country": "United States",
           "date": "2021-04"
@@ -8732,21 +7600,6 @@
           "zoo": "North Carolina Zoo",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -8767,11 +7620,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -8790,21 +7638,6 @@
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
         }
       ]
     },
@@ -8886,29 +7719,9 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
           "zoo": "San Diego Zoo Safari Park",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -8942,26 +7755,6 @@
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -8998,11 +7791,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -9033,11 +7821,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -9046,11 +7829,6 @@
           "zoo": "Noorder Dierenpark",
           "country": "Netherlands",
           "date": "2021"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
         },
         {
           "zoo": "Cincinnati Zoo & Botanical Garden",
@@ -9066,21 +7844,6 @@
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -9117,16 +7880,6 @@
           "zoo": "Toledo Zoo",
           "country": "United States",
           "date": "2021"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -9178,11 +7931,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -9198,29 +7946,9 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -9262,11 +7990,6 @@
           "zoo": "San Diego Zoo Safari Park",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
         }
       ]
     },
@@ -9294,11 +8017,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -9307,16 +8025,6 @@
           "zoo": "Noorder Dierenpark",
           "country": "Netherlands",
           "date": "2021"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -9360,11 +8068,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -9404,7 +8107,7 @@
     {
       "animals": [
         "Blue Wildebeest",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": [
         {
@@ -9457,14 +8160,14 @@
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Blue-Fronted Amazon"
       ],
       "evidence": []
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Blue-Headed Parrot"
       ],
       "evidence": [
@@ -9477,7 +8180,7 @@
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Blue-Winged Macaw"
       ],
       "evidence": [
@@ -9490,7 +8193,7 @@
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Green Iguana"
       ],
       "evidence": [
@@ -9503,42 +8206,42 @@
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Linnaeus's Two-Toed Sloth"
       ],
       "evidence": []
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Livingstone's Turaco"
       ],
       "evidence": []
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Military Macaw"
       ],
       "evidence": []
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Pond Slider"
       ],
       "evidence": []
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
-        "Red-And-Green Macaw"
+        "Blue-and-Yellow Macaw",
+        "Red-and-Green Macaw"
       ],
       "evidence": []
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Red-Shouldered Macaw"
       ],
       "evidence": [
@@ -9551,14 +8254,14 @@
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Scaly-Headed Parrot"
       ],
       "evidence": []
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Scarlet Macaw"
       ],
       "evidence": [
@@ -9571,21 +8274,21 @@
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Toco Toucan"
       ],
       "evidence": []
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Vinaceous-Breasted Amazon"
       ],
       "evidence": []
     },
     {
       "animals": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Yellow-Naped Amazon"
       ],
       "evidence": []
@@ -9863,16 +8566,6 @@
           "zoo": "Bioparc de Doué-la-Fontaine",
           "country": "France",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "ZOO Antwerpen",
-          "country": "Belgium",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Bioparc de Doué-la-Fontaine",
-          "country": "France",
-          "date": "2020-05-05"
         }
       ]
     },
@@ -9983,13 +8676,6 @@
     },
     {
       "animals": [
-        "Bonnethead Shark",
-        "Loggerhead Turtle"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Bonobo",
         "Red River Hog"
       ],
@@ -10049,13 +8735,6 @@
     },
     {
       "animals": [
-        "Branderhorst's Snapping Turtle",
-        "Spectacled Caiman"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Brazilian Porcupine",
         "Green Aracari"
       ],
@@ -10078,11 +8757,6 @@
           "zoo": "Zoo Brno",
           "country": "Czech Republic",
           "date": "2019-01-30"
-        },
-        {
-          "zoo": "Zoo Brno",
-          "country": "Czech Republic",
-          "date": "2020-06-07"
         }
       ]
     },
@@ -10184,16 +8858,6 @@
           "zoo": "Zoo Salzburg Hellbrunn",
           "country": "Austria",
           "date": "2020-05-05"
-        },
-        {
-          "zoo": "Zoo Salzburg Hellbrunn",
-          "country": "Austria",
-          "date": "2020-05-18"
-        },
-        {
-          "zoo": "Zoo Salzburg Hellbrunn",
-          "country": "Austria",
-          "date": "2012"
         }
       ]
     },
@@ -10207,11 +8871,6 @@
           "zoo": "Szegedi Vadaspark",
           "country": "Hungary",
           "date": "2020-05-05"
-        },
-        {
-          "zoo": "Szegedi Vadaspark",
-          "country": "Hungary",
-          "date": "2018"
         }
       ]
     },
@@ -10282,74 +8941,9 @@
           "date": "2012-04-12"
         },
         {
-          "zoo": "Dierenrijk",
-          "country": "Netherlands",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Ouwehands Dierenpark",
-          "country": "Netherlands",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Olmense Zoo",
-          "country": "Belgium",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Pairi Daiza",
-          "country": "Belgium",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Alternativer Bärenpark Worbis",
-          "country": "Germany",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Zoologischer Garten Eberswalde",
-          "country": "Germany",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Zoologischer Garten Berlin",
-          "country": "Germany",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Zoologischer Garten Schwerin",
-          "country": "Germany",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Juraparc",
-          "country": "Switzerland",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Natur- und Tierpark Goldau",
-          "country": "Switzerland",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Kolmårdens Djurpark",
-          "country": "Sweden",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Zoo Tábor",
-          "country": "Czech Republic",
-          "date": "2020-05-26"
-        },
-        {
           "zoo": "ZOO Ljubljana",
           "country": "Slovenia",
           "date": "2020-05-26"
-        },
-        {
-          "zoo": "Juraparc",
-          "country": "Switzerland",
-          "date": "2021-12-15"
         }
       ]
     },
@@ -10395,59 +8989,9 @@
           "date": "2012-04-12"
         },
         {
-          "zoo": "Skansen",
-          "country": "Sweden",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "ZOO Ljubljana",
-          "country": "Slovenia",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Alpenzoo Innsbruck",
-          "country": "Austria",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Wildpark Bad Mergentheim",
-          "country": "Germany",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Heimat-Tierpark Olderdissen",
-          "country": "Germany",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Dartmoor Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-05"
-        },
-        {
           "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
           "country": "United States",
           "date": "2020-05-05"
-        },
-        {
-          "zoo": "Skansen",
-          "country": "Sweden",
-          "date": "2012"
-        },
-        {
-          "zoo": "ZOO Ljubljana",
-          "country": "Slovenia",
-          "date": "2012"
-        },
-        {
-          "zoo": "Alpenzoo Innsbruck",
-          "country": "Austria",
-          "date": "2012"
-        },
-        {
-          "zoo": "Wildpark Bad Mergentheim",
-          "country": "Germany",
-          "date": "2012"
         }
       ]
     },
@@ -10471,21 +9015,6 @@
           "zoo": "Zoo d'Amnéville",
           "country": "France",
           "date": "2020-06-12"
-        },
-        {
-          "zoo": "Tierpark Dählhölzli",
-          "country": "Switzerland",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Skansen",
-          "country": "Sweden",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "Zoo d'Amnéville",
-          "country": "France",
-          "date": "2020-05-05"
         }
       ]
     },
@@ -10495,19 +9024,6 @@
         "Dusky Pademelon"
       ],
       "evidence": []
-    },
-    {
-      "animals": [
-        "Humboldt Penguin",
-        "Brown Pelican"
-      ],
-      "evidence": [
-        {
-          "zoo": "Vogelpark Marlow",
-          "country": "Germany",
-          "date": "2024"
-        }
-      ]
     },
     {
       "animals": [
@@ -10584,6 +9100,11 @@
           "zoo": "Zoomarine Algarve",
           "country": "Portugal",
           "date": "2023"
+        },
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
         }
       ]
     },
@@ -10599,7 +9120,18 @@
         "Burrowing Owl",
         "Red-Fronted Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Bird Park Marlow",
+          "country": "Germany",
+          "date": "2024"
+        },
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2025-10"
+        }
+      ]
     },
     {
       "animals": [
@@ -10649,11 +9181,6 @@
           "zoo": "Zoo Frankfurt",
           "country": "Germany",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Zoo Frankfurt",
-          "country": "Germany",
-          "date": "2020-05-05"
         }
       ]
     },
@@ -10714,11 +9241,6 @@
           "zoo": "Singapore Zoo Reptopia",
           "country": "Singapore",
           "date": "2022"
-        },
-        {
-          "zoo": "Singapore Zoo Reptopia",
-          "country": "Singapore",
-          "date": "2017"
         }
       ]
     },
@@ -10834,11 +9356,6 @@
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2021-04"
-        },
-        {
-          "zoo": "ZooSafari de Thoiry",
-          "country": "France",
-          "date": "2022"
         }
       ]
     },
@@ -10968,11 +9485,6 @@
           "zoo": "ZooSafari de Thoiry",
           "country": "France",
           "date": "2022"
-        },
-        {
-          "zoo": "ZooSafari de Thoiry",
-          "country": "France",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -11054,11 +9566,6 @@
           "date": "2021-04"
         },
         {
-          "zoo": "ZooSafari de Thoiry",
-          "country": "France",
-          "date": "2022"
-        },
-        {
           "zoo": "Parque Zoológico Nacional",
           "country": "Cuba",
           "date": "2022-06-15"
@@ -11132,7 +9639,7 @@
     {
       "animals": [
         "Cape Buffalo",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": []
     },
@@ -11282,21 +9789,6 @@
           "date": "2021"
         },
         {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "Wilhelma Stuttgart",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "Szegedi Vadaspark",
-          "country": "Hungary",
-          "date": "2021-06-24"
-        },
-        {
           "zoo": "Audubon Zoo",
           "country": "United States",
           "date": "2021-06-24"
@@ -11337,16 +9829,6 @@
           "date": "2021"
         },
         {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "Wilhelma Stuttgart",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
           "zoo": "Tierpark Hellabrunn",
           "country": "Germany",
           "date": "2020"
@@ -11378,11 +9860,6 @@
           "date": "2021"
         },
         {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
           "zoo": "Hai Park",
           "country": "Israel",
           "date": "2020"
@@ -11411,11 +9888,6 @@
           "date": "2021"
         },
         {
-          "zoo": "Wilhelma Stuttgart",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
           "zoo": "Audubon Zoo",
           "country": "United States",
           "date": "2021-06-24"
@@ -11442,19 +9914,6 @@
           "zoo": "Jardín Zoológico de la Habana",
           "country": "Cuba",
           "date": "2022-06-15"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Capybara",
-        "Jabiru"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -11506,11 +9965,6 @@
           "zoo": "Wildlife Safari",
           "country": "United States",
           "date": "2018-10-23"
-        },
-        {
-          "zoo": "Houston Zoo",
-          "country": "United States",
-          "date": "2020-05-26"
         }
       ]
     },
@@ -11534,16 +9988,6 @@
           "zoo": "Wilhelma Stuttgart",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "Wilhelma Stuttgart",
-          "country": "Germany",
-          "date": "2021-06-24"
         },
         {
           "zoo": "Hai Park",
@@ -11694,11 +10138,6 @@
           "date": "2019"
         },
         {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
           "zoo": "Audubon Zoo",
           "country": "United States",
           "date": "2021-06-24"
@@ -11707,21 +10146,6 @@
           "zoo": "Wild Zoological Park",
           "country": "United Kingdom",
           "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoológico da UFMT",
-          "country": "Brazil",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         },
         {
           "zoo": "Copenhagen Zoo",
@@ -11740,11 +10164,6 @@
           "zoo": "Zoo Dortmund",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
         },
         {
           "zoo": "Detroit Zoo",
@@ -11768,16 +10187,6 @@
           "zoo": "Wild Zoological Park",
           "country": "United Kingdom",
           "date": "2020-06-12"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         }
       ]
     },
@@ -11801,11 +10210,6 @@
           "zoo": "South Lakes Safari Zoo",
           "country": "United Kingdom",
           "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         }
       ]
     },
@@ -12043,19 +10447,6 @@
     {
       "animals": [
         "Central Bearded Dragon",
-        "Centralian Blue-Tongued Skink"
-      ],
-      "evidence": [
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Central Bearded Dragon",
         "Frill-Necked Lizard"
       ],
       "evidence": [
@@ -12068,45 +10459,6 @@
           "zoo": "National Aquarium of Australia",
           "country": "Australia",
           "date": "2020"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Central Bearded Dragon",
-        "Frilled Dragon"
-      ],
-      "evidence": [
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Central Bearded Dragon",
-        "Kimberley Rock Monitor"
-      ],
-      "evidence": [
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Central Bearded Dragon",
-        "Shingleback Skink"
-      ],
-      "evidence": [
-        {
-          "zoo": "Wilhelma",
-          "country": "Germany",
-          "date": "2005"
         }
       ]
     },
@@ -12159,11 +10511,6 @@
           "zoo": "Sequoia Park Zoo",
           "country": "United States",
           "date": "2021"
-        },
-        {
-          "zoo": "Sequoia Park Zoo",
-          "country": "United States",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -12187,11 +10534,6 @@
           "zoo": "ZOO Planckendael",
           "country": "Belgium",
           "date": "2021-06-24"
-        },
-        {
-          "zoo": "ZOO Planckendael",
-          "country": "Belgium",
-          "date": "2020-06-07"
         }
       ]
     },
@@ -12210,21 +10552,6 @@
           "zoo": "ZOO Planckendael",
           "country": "Belgium",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoo Leipzig",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "ZOO Planckendael",
-          "country": "Belgium",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "ZOO Planckendael",
-          "country": "Belgium",
-          "date": "2020-06-07"
         }
       ]
     },
@@ -12245,11 +10572,6 @@
           "zoo": "Zoorasia – Yokohama Zoological Gardens",
           "country": "Japan",
           "date": "2018"
-        },
-        {
-          "zoo": "Zoorasia – Yokohama Zoological Gardens",
-          "country": "Japan",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -12294,16 +10616,6 @@
           "zoo": "Zoorasia – Yokohama Zoological Gardens",
           "country": "Japan",
           "date": "2018"
-        },
-        {
-          "zoo": "African Safari",
-          "country": "Japan",
-          "date": "2020-05-18"
-        },
-        {
-          "zoo": "Zoorasia – Yokohama Zoological Gardens",
-          "country": "Japan",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -12317,11 +10629,6 @@
           "zoo": "Safari World",
           "country": "Thailand",
           "date": "2018"
-        },
-        {
-          "zoo": "Safari World",
-          "country": "Thailand",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -12367,11 +10674,6 @@
           "zoo": "Parc Safari",
           "country": "Canada",
           "date": "2020-05-18"
-        },
-        {
-          "zoo": "Attica Zoological Park",
-          "country": "Greece",
-          "date": "2021-12-15"
         }
       ]
     },
@@ -12525,16 +10827,6 @@
           "zoo": "Wilhelma Stuttgart",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "Wilhelma Stuttgart",
-          "country": "Germany",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -12561,11 +10853,6 @@
           "zoo": "Zoo Dortmund",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
         },
         {
           "zoo": "Botanical and Zoological Garden Nahariya",
@@ -12601,26 +10888,8 @@
           "date": "2021"
         },
         {
-          "zoo": "Wilhelma Stuttgart",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
           "zoo": "Audubon Zoo",
           "country": "United States",
-          "date": "2021-06-24"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Collared Peccary",
-        "Jabiru"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
           "date": "2021-06-24"
         }
       ]
@@ -12671,21 +10940,6 @@
           "zoo": "Wilhelma Stuttgart",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "Wilhelma Stuttgart",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "Kecskeméti Vadaskert",
-          "country": "Hungary",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -12736,16 +10990,6 @@
           "date": "2019-01-30"
         },
         {
-          "zoo": "Miskolci Állatkert és Kultúrpark",
-          "country": "Hungary",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "Zoologischer Garten Schwerin",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
           "zoo": "Zoo Plzeň",
           "country": "Czech Republic",
           "date": "2020-06-07"
@@ -12761,11 +11005,6 @@
           "date": "2020-06-07"
         },
         {
-          "zoo": "Zoologischer Garten Schwerin",
-          "country": "Germany",
-          "date": "2020-06-07"
-        },
-        {
           "zoo": "Tier- und Freizeitpark Eichholz Gemendorf",
           "country": "Germany",
           "date": "2020-06-07"
@@ -12774,21 +11013,6 @@
           "zoo": "Spaycific Zoo",
           "country": "France",
           "date": "2020-06-07"
-        },
-        {
-          "zoo": "Miskolci Állatkert és Kultúrpark",
-          "country": "Hungary",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Zoologická zahrada Liberec",
-          "country": "Czech Republic",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Miskolci Állatkert és Kultúrpark",
-          "country": "Hungary",
-          "date": "2021-12-15"
         }
       ]
     },
@@ -12834,16 +11058,6 @@
           "date": "2021"
         },
         {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "Nyíregyházi Állatpark",
-          "country": "Hungary",
-          "date": "2021-06-24"
-        },
-        {
           "zoo": "Audubon Zoo",
           "country": "United States",
           "date": "2021-06-24"
@@ -12860,11 +11074,6 @@
           "zoo": "Zoo Dortmund",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -12938,54 +11147,6 @@
     },
     {
       "animals": [
-        "Common Crane",
-        "Demoiselle Crane"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Common Crane",
-        "Great White Pelican"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Common Crane",
-        "Red-Crowned Crane"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Common Crane",
-        "Sarus Crane"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Common Crane",
-        "White Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Warsaw Zoo",
-          "country": "Poland",
-          "date": "2014-11-23"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Common Crane",
-        "White-Naped Crane"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Common Eland",
         "Common Ostrich"
       ],
@@ -13006,11 +11167,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Taronga Western Plains Zoo",
-          "country": "Australia",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2022-06-15"
@@ -13019,21 +11175,11 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
         },
         {
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
         }
       ]
     },
@@ -13047,11 +11193,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
         },
         {
           "zoo": "Houston Zoo",
@@ -13217,11 +11358,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "ZooSafari de Thoiry",
-          "country": "France",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -13245,11 +11381,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
         },
         {
           "zoo": "Safaripark Beekse Bergen",
@@ -13331,11 +11462,6 @@
           "date": "2022"
         },
         {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2021-04"
@@ -13364,11 +11490,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Taronga Western Plains Zoo",
-          "country": "Australia",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Zoorasia – Yokohama Zoological Gardens",
           "country": "Japan",
           "date": "2018"
@@ -13384,18 +11505,8 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Houston Zoo",
           "country": "United States",
-          "date": "2021"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
           "date": "2021"
         },
         {
@@ -13404,19 +11515,9 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Zoorasia – Yokohama Zoological Gardens",
-          "country": "Japan",
-          "date": "2020-05-18"
-        },
-        {
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2021-04"
-        },
-        {
-          "zoo": "ZooSafari de Thoiry",
-          "country": "France",
-          "date": "2022"
         },
         {
           "zoo": "Parque Zoológico Nacional",
@@ -13466,11 +11567,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
         }
       ]
     },
@@ -13507,11 +11603,6 @@
           "zoo": "Safari World",
           "country": "Thailand",
           "date": "2018"
-        },
-        {
-          "zoo": "Safari World",
-          "country": "Thailand",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -13543,7 +11634,7 @@
     {
       "animals": [
         "Common Eland",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": [
         {
@@ -13682,34 +11773,6 @@
     },
     {
       "animals": [
-        "Common Hoopoe",
-        "Green Turaco"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Common Hoopoe",
-        "Okapi"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Common Hoopoe",
-        "Violet Turaco"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Common Hoopoe",
-        "Western Plantain-Eater"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Common Marmoset",
         "Goeldi's Monkey"
       ],
@@ -13744,18 +11807,13 @@
     {
       "animals": [
         "Common Marmoset",
-        "Northern Raccoon"
+        "Common Raccoon"
       ],
       "evidence": [
         {
           "zoo": "Riyadh Zoo",
           "country": "Saudi Arabia",
           "date": "2020-06-07"
-        },
-        {
-          "zoo": "Riyadh Zoo",
-          "country": "Saudi Arabia",
-          "date": "2019"
         }
       ]
     },
@@ -13832,19 +11890,9 @@
           "date": "2021"
         },
         {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2021"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
         },
         {
           "zoo": "Cincinnati Zoo & Botanical Garden",
@@ -13865,26 +11913,6 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
-        },
-        {
-          "zoo": "Brookfield Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -13910,11 +11938,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -13933,31 +11956,6 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
-        },
-        {
-          "zoo": "Taman Safari Indonesia",
-          "country": "Indonesia",
-          "date": "2022"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
-        },
-        {
-          "zoo": "Brookfield Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         },
         {
           "zoo": "Disney's Animal Kingdom Lodge",
@@ -14062,29 +12060,9 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
           "zoo": "ZOO Zlín-Lešná",
           "country": "Czech Republic",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -14118,26 +12096,6 @@
           "zoo": "Noorder Dierenpark",
           "country": "Netherlands",
           "date": "2021"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -14202,16 +12160,6 @@
           "zoo": "Parque Zoológico Nacional",
           "country": "Cuba",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Taman Safari Indonesia",
-          "country": "Indonesia",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -14247,11 +12195,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -14262,11 +12205,6 @@
           "date": "2021"
         },
         {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
           "zoo": "Cincinnati Zoo & Botanical Garden",
           "country": "United States",
           "date": "2021-04"
@@ -14275,21 +12213,6 @@
           "zoo": "North Carolina Zoo",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -14303,11 +12226,6 @@
           "zoo": "Jerusalem Biblical Zoo",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022-06-15"
         },
         {
           "zoo": "ZOO Antwerpen",
@@ -14331,16 +12249,6 @@
           "zoo": "Toledo Zoo",
           "country": "United States",
           "date": "2021"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -14397,16 +12305,6 @@
           "date": "2022"
         },
         {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Taronga Western Plains Zoo",
-          "country": "Australia",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Givskud Zoo",
           "country": "Denmark",
           "date": "2022-06-15"
@@ -14420,16 +12318,6 @@
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
         },
         {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
@@ -14447,21 +12335,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Taman Safari Indonesia",
-          "country": "Indonesia",
-          "date": "2022"
-        },
-        {
           "zoo": "Givskud Zoo – Zootopia",
           "country": "Denmark",
           "date": "2022"
@@ -14470,11 +12343,6 @@
           "zoo": "Parque Zoológico Nacional",
           "country": "Cuba",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -14511,11 +12379,6 @@
           "zoo": "Noorder Dierenpark",
           "country": "Netherlands",
           "date": "2021"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
         },
         {
           "zoo": "Disney's Animal Kingdom Lodge",
@@ -14577,19 +12440,9 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
         },
         {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
@@ -14605,16 +12458,6 @@
           "zoo": "ZOO Zlín-Lešná",
           "country": "Czech Republic",
           "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -14658,11 +12501,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -14701,7 +12539,7 @@
     {
       "animals": [
         "Common Ostrich",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": [
         {
@@ -14842,6 +12680,11 @@
           "zoo": "Zoo sauvage de Saint-Félicien",
           "country": "Canada",
           "date": "2019"
+        },
+        {
+          "zoo": "Minnesota Zoo",
+          "country": "United States",
+          "date": "2020-06-07"
         }
       ]
     },
@@ -14855,6 +12698,11 @@
           "zoo": "Wingham Wildlife Park",
           "country": "United Kingdom",
           "date": "2020"
+        },
+        {
+          "zoo": "Zoo de Maubeuge",
+          "country": "France",
+          "date": "2020-06-07"
         }
       ]
     },
@@ -14868,6 +12716,16 @@
           "zoo": "GaiaZOO",
           "country": "Netherlands",
           "date": "2015-05-02"
+        },
+        {
+          "zoo": "Zoo sauvage de Saint-Félicien",
+          "country": "Canada",
+          "date": "2020-06-12"
+        },
+        {
+          "zoo": "Zoo Braunschweig Arche Noah",
+          "country": "Germany",
+          "date": "2021-12-15"
         }
       ]
     },
@@ -14909,13 +12767,6 @@
       "animals": [
         "Common Snapping Turtle",
         "Spectacled Caiman"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Common Squirrel Monkey",
-        "Hilaire's Side-Necked Turtle"
       ],
       "evidence": []
     },
@@ -15123,11 +12974,6 @@
           "date": "2022"
         },
         {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2021"
@@ -15136,11 +12982,6 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Brookfield Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -15179,39 +13020,14 @@
           "date": "2021"
         },
         {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
-          "date": "2021-04"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
           "date": "2021-04"
         },
         {
           "zoo": "ZOO Zlín-Lešná",
           "country": "Czech Republic",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -15230,21 +13046,6 @@
           "zoo": "Caldwell Zoo",
           "country": "United States",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -15283,11 +13084,6 @@
           "date": "2021"
         },
         {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2021"
@@ -15295,11 +13091,6 @@
         {
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
-          "date": "2021-04"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
           "date": "2021-04"
         },
         {
@@ -15311,11 +13102,6 @@
           "zoo": "North Carolina Zoo",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
         }
       ]
     },
@@ -15351,19 +13137,9 @@
           "date": "2021"
         },
         {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
           "zoo": "San Diego Zoo",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -15377,11 +13153,6 @@
           "zoo": "Ouwehands Dierenpark",
           "country": "Netherlands",
           "date": "2021"
-        },
-        {
-          "zoo": "Ouwehands Dierenpark",
-          "country": "Netherlands",
-          "date": "2018"
         },
         {
           "zoo": "Zoo Basel",
@@ -15400,11 +13171,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
         },
         {
           "zoo": "Safaripark Beekse Bergen",
@@ -15476,11 +13242,6 @@
           "date": "2022"
         },
         {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Pécsi Állatkert és Akvárium-Terrárium",
           "country": "Hungary",
           "date": "2021"
@@ -15501,24 +13262,9 @@
           "date": "2021-04"
         },
         {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
           "zoo": "Zoo Leipzig",
           "country": "Germany",
           "date": "2018"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
-        },
-        {
-          "zoo": "San Diego Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -15558,11 +13304,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
         },
         {
           "zoo": "Monde Sauvage Safari Parc",
@@ -15649,18 +13390,13 @@
           "zoo": "North Carolina Zoo",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "San Diego Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
     {
       "animals": [
         "Common Warthog",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": []
     },
@@ -15753,16 +13489,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Disney's Animal Kingdom Lodge",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -15791,16 +13517,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Taman Safari Indonesia",
-          "country": "Indonesia",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -15821,11 +13537,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -15839,16 +13550,6 @@
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -15892,16 +13593,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -15920,16 +13611,6 @@
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Taman Safari Indonesia",
-          "country": "Indonesia",
-          "date": "2022"
         }
       ]
     },
@@ -15968,16 +13649,6 @@
           "date": "2021-04"
         },
         {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Disney's Animal Kingdom Lodge",
-          "country": "United States",
-          "date": "2021-05-09"
-        },
-        {
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2021-05-09"
@@ -16014,11 +13685,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -16027,16 +13693,6 @@
           "zoo": "Noorder Dierenpark",
           "country": "Netherlands",
           "date": "2021"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -16067,18 +13723,13 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
     {
       "animals": [
         "Common Waterbuck",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": [
         {
@@ -16185,21 +13836,6 @@
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2018"
-        },
-        {
-          "zoo": "Safaripark Beekse Bergen",
-          "country": "Netherlands",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Safaripark Beekse Bergen",
-          "country": "Netherlands",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Safaripark Beekse Bergen",
-          "country": "Netherlands",
-          "date": "2020-05-05"
         }
       ]
     },
@@ -16221,13 +13857,6 @@
       "animals": [
         "Golden-Headed Lion Tamarin",
         "Cotton-Top Tamarin"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Cotton-Top Tamarin",
-        "Great Curassow"
       ],
       "evidence": []
     },
@@ -16363,29 +13992,6 @@
           "zoo": "Out of Africa Wildlife Park",
           "country": "United States",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Out of Africa Wildlife Park",
-          "country": "United States",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Out of Africa Wildlife Park",
-          "country": "United States",
-          "date": "2020-05-18"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Coypu",
-        "Northern Raccoon"
-      ],
-      "evidence": [
-        {
-          "zoo": "Tierpark Hellabrunn",
-          "country": "Germany",
-          "date": "2018"
         }
       ]
     },
@@ -16449,13 +14055,6 @@
           "date": "2013"
         }
       ]
-    },
-    {
-      "animals": [
-        "Crocodile Monitor",
-        "Malaysian Painted River Turtle"
-      ],
-      "evidence": []
     },
     {
       "animals": [
@@ -16542,20 +14141,6 @@
     {
       "animals": [
         "Cuvier's Dwarf Caiman",
-        "Geoffroy's Side-Necked Turtle"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Cuvier's Dwarf Caiman",
-        "Neotropical Painted Wood Turtle"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Cuvier's Dwarf Caiman",
         "Pond Slider"
       ],
       "evidence": []
@@ -16564,13 +14149,6 @@
       "animals": [
         "Cuvier's Dwarf Caiman",
         "Red-Footed Tortoise"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Cuvier's Dwarf Caiman",
-        "South-East Asian Box Turtle"
       ],
       "evidence": []
     },
@@ -16828,16 +14406,6 @@
           "zoo": "ZooParc de Trégomeur",
           "country": "France",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "ZooParc de Trégomeur",
-          "country": "France",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "ZooParc de Trégomeur",
-          "country": "France",
-          "date": "2020-05-05"
         }
       ]
     },
@@ -17001,13 +14569,6 @@
     },
     {
       "animals": [
-        "Dwarf Crocodile",
-        "West African Mud Turtle"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Dwarf Mongoose",
         "Fennec Fox"
       ],
@@ -17021,16 +14582,6 @@
           "zoo": "Zoo de Lille",
           "country": "France",
           "date": "2018"
-        },
-        {
-          "zoo": "Zoo de Lille",
-          "country": "France",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Zoo de Lille",
-          "country": "France",
-          "date": "2018-04-11"
         }
       ]
     },
@@ -17103,11 +14654,6 @@
           "zoo": "Borth Wild Animal Kingdom",
           "country": "United Kingdom",
           "date": "2018"
-        },
-        {
-          "zoo": "Borth Wild Animal Kingdom",
-          "country": "United Kingdom",
-          "date": "2018-04-11"
         }
       ]
     },
@@ -17199,23 +14745,8 @@
           "date": "2018"
         },
         {
-          "zoo": "Tiergarten Schönbrunn",
-          "country": "Austria",
-          "date": "2021-12-15"
-        },
-        {
-          "zoo": "Tiergarten Schönbrunn",
-          "country": "Austria",
-          "date": "2018-04-11"
-        },
-        {
           "zoo": "Tiergarten Nürnberg",
           "country": "Germany",
-          "date": "2018-04-11"
-        },
-        {
-          "zoo": "Bronx Zoo",
-          "country": "United States",
           "date": "2018-04-11"
         },
         {
@@ -17529,13 +15060,6 @@
     {
       "animals": [
         "Emperor Tamarin",
-        "Hilaire's Side-Necked Turtle"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Emperor Tamarin",
         "Linnaeus's Two-Toed Sloth"
       ],
       "evidence": [
@@ -17652,13 +15176,6 @@
     {
       "animals": [
         "Eurasian Otter",
-        "Northern Raccoon"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Eurasian Otter",
         "Striped Skunk"
       ],
       "evidence": [
@@ -17684,16 +15201,6 @@
           "zoo": "Zoo am Meer Bremerhaven",
           "country": "Germany",
           "date": "2019"
-        },
-        {
-          "zoo": "Natur- und Tierpark Goldau",
-          "country": "Switzerland",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoo am Meer Bremerhaven",
-          "country": "Germany",
-          "date": "2020-06-12"
         }
       ]
     },
@@ -17777,16 +15284,6 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2020-05-26"
-        },
-        {
-          "zoo": "ZOO Dvůr Králové",
-          "country": "Czech Republic",
-          "date": "2018"
-        },
-        {
-          "zoo": "Brookfield Zoo",
-          "country": "United States",
-          "date": "2018"
         }
       ]
     },
@@ -17981,19 +15478,6 @@
     },
     {
       "animals": [
-        "Gelada",
-        "Rock Hyrax"
-      ],
-      "evidence": [
-        {
-          "zoo": "Bronx Zoo",
-          "country": "United States",
-          "date": "2005-06-11"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Gelada Baboon",
         "Nubian Ibex"
       ],
@@ -18137,11 +15621,6 @@
           "date": "2021"
         },
         {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
           "zoo": "Tierpark Hellabrunn",
           "country": "Germany",
           "date": "2020"
@@ -18165,24 +15644,6 @@
           "zoo": "Wilhelma Stuttgart",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Wilhelma Stuttgart",
-          "country": "Germany",
-          "date": "2021-06-24"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Giant Anteater",
-        "Jabiru"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -18233,17 +15694,7 @@
           "date": "2018-10-23"
         },
         {
-          "zoo": "Greensboro Science Center",
-          "country": "United States",
-          "date": "2020-05-26"
-        },
-        {
           "zoo": "Houston Zoo",
-          "country": "United States",
-          "date": "2020-05-26"
-        },
-        {
-          "zoo": "Phoenix Zoo",
           "country": "United States",
           "date": "2020-05-26"
         },
@@ -18281,16 +15732,6 @@
           "date": "2021"
         },
         {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
-          "zoo": "Wilhelma Stuttgart",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
           "zoo": "Tierpark Hellabrunn",
           "country": "Germany",
           "date": "2020"
@@ -18319,11 +15760,6 @@
           "zoo": "Yorkshire Wildlife Park",
           "country": "United Kingdom",
           "date": "2019-01-30"
-        },
-        {
-          "zoo": "Loro Parque",
-          "country": "Spain",
-          "date": "2019-01-30"
         }
       ]
     },
@@ -18337,11 +15773,6 @@
           "zoo": "Zoo Dortmund",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -18355,11 +15786,6 @@
           "zoo": "Zoo Dortmund",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -18412,11 +15838,6 @@
           "zoo": "Zoo Leipzig",
           "country": "Germany",
           "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoo Leipzig",
-          "country": "Germany",
-          "date": "2020"
         }
       ]
     },
@@ -18448,16 +15869,6 @@
           "zoo": "Zoo Leipzig",
           "country": "Germany",
           "date": "2019"
-        },
-        {
-          "zoo": "Zoo Leipzig",
-          "country": "Germany",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoo Leipzig",
-          "country": "Germany",
-          "date": "2020"
         }
       ]
     },
@@ -19299,11 +16710,6 @@
           "zoo": "NaturZoo Rheine",
           "country": "Germany",
           "date": "2020-05-05"
-        },
-        {
-          "zoo": "NaturZoo Rheine",
-          "country": "Germany",
-          "date": "2018"
         }
       ]
     },
@@ -19370,16 +16776,6 @@
           "zoo": "Smithsonian's National Zoo",
           "country": "United States",
           "date": "2020"
-        },
-        {
-          "zoo": "Smithsonian's National Zoo",
-          "country": "United States",
-          "date": "2021"
-        },
-        {
-          "zoo": "Smithsonian's National Zoo",
-          "country": "United States",
-          "date": "2015"
         }
       ]
     },
@@ -19567,13 +16963,6 @@
     {
       "animals": [
         "Golden-Headed Lion Tamarin",
-        "Hilaire's Side-Necked Turtle"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Golden-Headed Lion Tamarin",
         "Ivory-Billed Aracari"
       ],
       "evidence": []
@@ -19598,11 +16987,6 @@
           "zoo": "Colchester Zoo",
           "country": "United Kingdom",
           "date": "2026"
-        },
-        {
-          "zoo": "Colchester Zoo",
-          "country": "United Kingdom",
-          "date": "2025"
         },
         {
           "zoo": "ZSL London Zoo",
@@ -19727,27 +17111,6 @@
       "animals": [
         "Great Blue Turaco",
         "Red-Billed Hornbill"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Great Curassow",
-        "Guyana Toucanet"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Great Curassow",
-        "Linnaeus's Two-Toed Sloth"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Great Curassow",
-        "Scarlet Ibis"
       ],
       "evidence": []
     },
@@ -19919,7 +17282,7 @@
     {
       "animals": [
         "Great White Pelican",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": [
         {
@@ -20101,19 +17464,9 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
           "zoo": "Montgomery Zoo and Mann Wildlife Learning Museum",
           "country": "United States",
           "date": "2022"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -20147,16 +17500,6 @@
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
         }
       ]
     },
@@ -20195,16 +17538,6 @@
           "zoo": "Toledo Zoo",
           "country": "United States",
           "date": "2021"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -20218,11 +17551,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
         },
         {
           "zoo": "Safaripark Beekse Bergen",
@@ -20248,18 +17576,8 @@
           "date": "2022"
         },
         {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
-          "date": "2021-04"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
           "date": "2021-04"
         },
         {
@@ -20271,11 +17589,6 @@
           "zoo": "Parque Zoológico Nacional",
           "country": "Cuba",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -20392,7 +17705,7 @@
     {
       "animals": [
         "Greater Kudu",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": []
     },
@@ -20446,11 +17759,6 @@
           "date": "2021"
         },
         {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
           "zoo": "Hai Park",
           "country": "Israel",
           "date": "2020"
@@ -20497,11 +17805,6 @@
           "zoo": "Zoo Dortmund",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -20515,11 +17818,6 @@
           "zoo": "Zoo Dortmund",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -20546,6 +17844,11 @@
           "zoo": "Zoomarine Algarve",
           "country": "Portugal",
           "date": "2023"
+        },
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
         }
       ]
     },
@@ -20559,6 +17862,11 @@
           "zoo": "Zoomarine Algarve",
           "country": "Portugal",
           "date": "2023"
+        },
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
         }
       ]
     },
@@ -20572,6 +17880,11 @@
           "zoo": "Zoomarine Algarve",
           "country": "Portugal",
           "date": "2023"
+        },
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
         }
       ]
     },
@@ -20757,6 +18070,11 @@
           "zoo": "Randers Regnskov Tropical Zoo",
           "country": "Denmark",
           "date": "2021-11-25"
+        },
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
         }
       ]
     },
@@ -20928,11 +18246,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "ZooParc de Beauval",
           "country": "France",
           "date": "2022-06-15"
@@ -20941,11 +18254,6 @@
           "zoo": "Parque Zoológico Nacional",
           "country": "Cuba",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -20979,16 +18287,6 @@
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Caldwell Zoo",
-          "country": "United States",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -21062,11 +18360,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "Noorder Dierenpark",
           "country": "Netherlands",
           "date": "2021"
@@ -21111,11 +18404,6 @@
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "Disney's Animal Kingdom Lodge",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -21162,11 +18450,6 @@
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -21175,7 +18458,13 @@
         "Rüppell's Vulture",
         "Grey Crowned Crane"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
@@ -21210,11 +18499,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -21241,7 +18525,7 @@
     {
       "animals": [
         "Grey Crowned Crane",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": [
         {
@@ -21404,7 +18688,7 @@
     {
       "animals": [
         "Grey Slender Loris",
-        "Phillipine Mouse-Deer"
+        "Philippine Mouse-Deer"
       ],
       "evidence": []
     },
@@ -21418,11 +18702,6 @@
           "zoo": "Zoo sauvage de Saint-Félicien",
           "country": "Canada",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Zoo sauvage de Saint-Félicien",
-          "country": "Canada",
-          "date": "2020-05-26"
         }
       ]
     },
@@ -21686,7 +18965,7 @@
     {
       "animals": [
         "Grévy's Zebra",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": []
     },
@@ -21720,11 +18999,6 @@
           "zoo": "Wilhelma Stuttgart",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Wilhelma Stuttgart",
-          "country": "Germany",
-          "date": "2021-06-24"
         },
         {
           "zoo": "Hai Park",
@@ -21794,6 +19068,11 @@
           "zoo": "Zoo Antwerpen",
           "country": "Belgium",
           "date": "2020-10-17"
+        },
+        {
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "date": "2018"
         }
       ]
     },
@@ -22068,6 +19347,11 @@
           "zoo": "Ueno Zoo",
           "country": "Japan",
           "date": "undated"
+        },
+        {
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "date": "2018"
         }
       ]
     },
@@ -22087,7 +19371,7 @@
     {
       "animals": [
         "Hamerkop",
-        "Red-And-Yellow Barbet"
+        "Red-and-Yellow Barbet"
       ],
       "evidence": []
     },
@@ -22233,7 +19517,13 @@
         "Harbour Seal",
         "Humboldt Penguin"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Tierpark und Fossilium Bochum",
+          "country": "Germany",
+          "date": "2008"
+        }
+      ]
     },
     {
       "animals": [
@@ -22263,11 +19553,6 @@
           "zoo": "Franklin Park Zoo",
           "country": "United States",
           "date": "2020-06-12"
-        },
-        {
-          "zoo": "Franklin Park Zoo",
-          "country": "United States",
-          "date": "2020-06-06"
         }
       ]
     },
@@ -22307,11 +19592,6 @@
           "zoo": "Indianapolis Zoo",
           "country": "United States",
           "date": "2018-11-13"
-        },
-        {
-          "zoo": "Indianapolis Zoo",
-          "country": "United States",
-          "date": "2020-06-06"
         }
       ]
     },
@@ -22346,13 +19626,6 @@
       "animals": [
         "Hermann's Tortoise",
         "Ring-Tailed Lemur"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Hilaire's Side-Necked Turtle",
-        "Southern Tamandua"
       ],
       "evidence": []
     },
@@ -22396,16 +19669,6 @@
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -22419,11 +19682,6 @@
           "zoo": "Jerusalem Biblical Zoo",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022-06-15"
         },
         {
           "zoo": "Safaripark Beekse Bergen",
@@ -22456,11 +19714,6 @@
         {
           "zoo": "Zoologischer Garten Berlin",
           "country": "Germany",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
           "date": "2022-06-15"
         }
       ]
@@ -22518,16 +19771,6 @@
           "zoo": "Parque Zoológico Nacional",
           "country": "Cuba",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "ZooSafari de Thoiry",
-          "country": "France",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Taman Safari Indonesia",
-          "country": "Indonesia",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -22561,11 +19804,6 @@
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -22589,11 +19827,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -22811,7 +20044,7 @@
     },
     {
       "animals": [
-        "Hussar Monkey",
+        "Patas Monkey",
         "Western Lowland Gorilla"
       ],
       "evidence": [
@@ -22866,11 +20099,6 @@
           "zoo": "Toledo Zoo",
           "country": "United States",
           "date": "2021"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
         }
       ]
     },
@@ -22932,16 +20160,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -22957,19 +20175,9 @@
           "date": "2021-04"
         },
         {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
         },
         {
           "zoo": "Parque Zoológico Nacional",
@@ -23016,11 +20224,6 @@
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
           "date": "2021-04"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
         }
       ]
     },
@@ -23054,11 +20257,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -23067,16 +20265,6 @@
           "zoo": "Noorder Dierenpark",
           "country": "Netherlands",
           "date": "2021"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022"
         }
       ]
     },
@@ -23115,11 +20303,6 @@
           "zoo": "Monde Sauvage Safari Parc",
           "country": "Belgium",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -23156,7 +20339,7 @@
     {
       "animals": [
         "Impala",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": []
     },
@@ -23200,11 +20383,6 @@
           "zoo": "Zoo Taiping & Night Safari",
           "country": "Malaysia",
           "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -23218,11 +20396,6 @@
           "zoo": "Zoo Taiping & Night Safari",
           "country": "Malaysia",
           "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -23266,41 +20439,6 @@
           "zoo": "GaiaZOO",
           "country": "Netherlands",
           "date": "2020-05-10"
-        },
-        {
-          "zoo": "Jászberényi Állat- és Növénykert",
-          "country": "Hungary",
-          "date": "2018"
-        },
-        {
-          "zoo": "Opel-Zoo",
-          "country": "Germany",
-          "date": "2018"
-        },
-        {
-          "zoo": "Allwetterzoo Münster",
-          "country": "Germany",
-          "date": "2018"
-        },
-        {
-          "zoo": "Erlebnis-Zoo Hannover",
-          "country": "Germany",
-          "date": "2018"
-        },
-        {
-          "zoo": "GaiaZOO",
-          "country": "Netherlands",
-          "date": "2018"
-        },
-        {
-          "zoo": "Gyöngyösi Állatkert és Szabadidőpark",
-          "country": "Hungary",
-          "date": "2018"
-        },
-        {
-          "zoo": "Zoo Hoyerswerda",
-          "country": "Germany",
-          "date": "2018"
         }
       ]
     },
@@ -23351,13 +20489,6 @@
     {
       "animals": [
         "Indian Gharial",
-        "Malaysian Painted River Turtle"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Indian Gharial",
         "Pig-Nosed Turtle"
       ],
       "evidence": []
@@ -23366,13 +20497,6 @@
       "animals": [
         "Indian Gharial",
         "Red-Bellied Short-Necked Turtle"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Indian Gharial",
-        "Spotted Pond Turtle"
       ],
       "evidence": []
     },
@@ -23412,11 +20536,6 @@
           "zoo": "Zoo Taiping & Night Safari",
           "country": "Malaysia",
           "date": "2020-05-25"
-        },
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -23686,37 +20805,6 @@
     },
     {
       "animals": [
-        "South American Tapir",
-        "Jabiru"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Jabiru",
-        "Southern Pudu"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Javan Banteng",
         "Reeve's Muntjac"
       ],
@@ -23871,11 +20959,6 @@
           "zoo": "Dallas Zoo",
           "country": "United States",
           "date": "2018"
-        },
-        {
-          "zoo": "Dallas Zoo",
-          "country": "United States",
-          "date": "2020-05-10"
         }
       ]
     },
@@ -23946,11 +21029,6 @@
           "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
           "country": "United States",
           "date": "2018"
-        },
-        {
-          "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
-          "country": "United States",
-          "date": "2020-05-10"
         }
       ]
     },
@@ -23977,16 +21055,6 @@
           "zoo": "San Diego Zoo",
           "country": "United States",
           "date": "2018"
-        },
-        {
-          "zoo": "San Diego Zoo",
-          "country": "United States",
-          "date": "2018-04-11"
-        },
-        {
-          "zoo": "San Diego Zoo",
-          "country": "United States",
-          "date": "2025"
         },
         {
           "zoo": "Bioparc València",
@@ -24243,11 +21311,6 @@
           "date": "2020-05-10"
         },
         {
-          "zoo": "Dierenpark Zie-ZOO",
-          "country": "Netherlands",
-          "date": "2018"
-        },
-        {
           "zoo": "Toni's Zoo",
           "country": "Switzerland",
           "date": "2018-04-11"
@@ -24285,11 +21348,6 @@
           "date": "2018"
         },
         {
-          "zoo": "Dierenpark Zie-ZOO",
-          "country": "Netherlands",
-          "date": "2020-05-10"
-        },
-        {
           "zoo": "Dierenpark Zie-Zoo",
           "country": "Netherlands",
           "date": "2018"
@@ -24306,32 +21364,6 @@
           "zoo": "Toni's Zoo",
           "country": "Switzerland",
           "date": "2018-04-11"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Lesser Adjutant",
-        "Milky Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Lesser Adjutant",
-        "Painted Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
         }
       ]
     },
@@ -24645,7 +21677,7 @@
     {
       "animals": [
         "Livingstone's Turaco",
-        "Red-And-Green Macaw"
+        "Red-and-Green Macaw"
       ],
       "evidence": []
     },
@@ -24861,26 +21893,6 @@
           "zoo": "Brookfield Zoo",
           "country": "United States",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoologischer Garten Halle – Bergzoo",
-          "country": "Germany",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Bioparc Fuengirola",
-          "country": "Spain",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Melbourne Zoo",
-          "country": "Australia",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -25082,11 +22094,6 @@
           "date": "2022"
         },
         {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
           "zoo": "ZOO Antwerpen",
           "country": "Belgium",
           "date": "2022-06-15"
@@ -25167,7 +22174,13 @@
         "Marabou Stork",
         "Rüppell's Vulture"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
@@ -25381,16 +22394,6 @@
           "zoo": "Zoorasia – Yokohama Zoological Gardens",
           "country": "Japan",
           "date": "2020-05-18"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-04"
-        },
-        {
-          "zoo": "Toledo Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -25418,7 +22421,7 @@
     {
       "animals": [
         "Masai Giraffe",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": []
     },
@@ -25478,16 +22481,6 @@
           "zoo": "Pairi Daiza",
           "country": "Belgium",
           "date": "2018"
-        },
-        {
-          "zoo": "Pairi Daiza",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
-          "zoo": "Pairi Daiza",
-          "country": "Belgium",
-          "date": "2020-05-10"
         }
       ]
     },
@@ -25501,11 +22494,6 @@
           "zoo": "Tiergarten Schönbrunn",
           "country": "Austria",
           "date": "2018"
-        },
-        {
-          "zoo": "Tiergarten Schönbrunn",
-          "country": "Austria",
-          "date": "2020-05-10"
         }
       ]
     },
@@ -25537,11 +22525,6 @@
           "zoo": "Ouwehands Dierenpark",
           "country": "Netherlands",
           "date": "2018"
-        },
-        {
-          "zoo": "Ouwehands Dierenpark",
-          "country": "Netherlands",
-          "date": "2020-05-10"
         }
       ]
     },
@@ -25555,11 +22538,6 @@
           "zoo": "ARTIS Amsterdam Royal Zoo",
           "country": "Netherlands",
           "date": "2018"
-        },
-        {
-          "zoo": "ARTIS Amsterdam Royal Zoo",
-          "country": "Netherlands",
-          "date": "2018-04-11"
         }
       ]
     },
@@ -25580,11 +22558,6 @@
           "zoo": "Tiergarten Schönbrunn",
           "country": "Austria",
           "date": "2018"
-        },
-        {
-          "zoo": "Tiergarten Schönbrunn",
-          "country": "Austria",
-          "date": "2020-05-10"
         }
       ]
     },
@@ -25603,11 +22576,6 @@
           "zoo": "Zoo Basel",
           "country": "Switzerland",
           "date": "2018"
-        },
-        {
-          "zoo": "Zoo Dresden",
-          "country": "Germany",
-          "date": "2018-04-11"
         },
         {
           "zoo": "Rīgas Nacionālais zooloģiskais dārzs",
@@ -25630,19 +22598,9 @@
           "date": "2018-04-11"
         },
         {
-          "zoo": "Zoo Basel",
-          "country": "Switzerland",
-          "date": "2018-04-11"
-        },
-        {
           "zoo": "Dierenpark Zie-ZOO",
           "country": "Netherlands",
           "date": "2020-05-10"
-        },
-        {
-          "zoo": "Dierenpark Zie-ZOO",
-          "country": "Netherlands",
-          "date": "2018"
         },
         {
           "zoo": "Dierenpark Zie-Zoo",
@@ -25714,26 +22672,6 @@
           "zoo": "Ouwehands Dierenpark",
           "country": "Netherlands",
           "date": "2018"
-        },
-        {
-          "zoo": "Ouwehands Dierenpark",
-          "country": "Netherlands",
-          "date": "2020-05-10"
-        },
-        {
-          "zoo": "Zoo d'Amnéville",
-          "country": "France",
-          "date": "2018-04-11"
-        },
-        {
-          "zoo": "Zoo Opole",
-          "country": "Poland",
-          "date": "2018-04-11"
-        },
-        {
-          "zoo": "ARTIS Amsterdam Royal Zoo",
-          "country": "Netherlands",
-          "date": "2018-04-11"
         }
       ]
     },
@@ -25794,63 +22732,13 @@
           "date": "2020-05-10"
         },
         {
-          "zoo": "Zoologischer Garten Schwerin",
-          "country": "Germany",
-          "date": "2020-05-18"
-        },
-        {
-          "zoo": "Tierpark Nordhorn",
-          "country": "Germany",
-          "date": "2021-12-15"
-        },
-        {
-          "zoo": "ZOO Antwerpen",
-          "country": "Belgium",
-          "date": "2018-04-11"
-        },
-        {
-          "zoo": "De Zonnegloed Sanctuary",
-          "country": "Belgium",
-          "date": "2018-04-11"
-        },
-        {
-          "zoo": "Yorkshire Wildlife Park",
-          "country": "United Kingdom",
-          "date": "2018-04-11"
-        },
-        {
           "zoo": "Kirkleatham Owl Centre",
           "country": "United Kingdom",
           "date": "2018-04-11"
         },
         {
-          "zoo": "Newquay Zoo",
-          "country": "United Kingdom",
-          "date": "2018-04-11"
-        },
-        {
-          "zoo": "Toni's Zoo",
-          "country": "Switzerland",
-          "date": "2018-04-11"
-        },
-        {
           "zoo": "Knies Kinderzoo",
           "country": "Switzerland",
-          "date": "2018-04-11"
-        },
-        {
-          "zoo": "Tierpark Nordhorn",
-          "country": "Germany",
-          "date": "2018-04-11"
-        },
-        {
-          "zoo": "Tiergarten Nürnberg",
-          "country": "Germany",
-          "date": "2018-04-11"
-        },
-        {
-          "zoo": "Tierpark Hamm",
-          "country": "Germany",
           "date": "2018-04-11"
         },
         {
@@ -25864,11 +22752,6 @@
           "date": "2018-04-11"
         },
         {
-          "zoo": "GaiaZOO",
-          "country": "Netherlands",
-          "date": "2018-04-11"
-        },
-        {
           "zoo": "Five Sisters Zoo Park",
           "country": "United Kingdom",
           "date": "2018-04-11"
@@ -25876,11 +22759,6 @@
         {
           "zoo": "Woburn Safari Park",
           "country": "United Kingdom",
-          "date": "2018-04-11"
-        },
-        {
-          "zoo": "Zoologischer Garten Schwerin",
-          "country": "Germany",
           "date": "2018-04-11"
         }
       ]
@@ -25922,19 +22800,6 @@
           "zoo": "Zoológico La Aurora",
           "country": "Guatemala",
           "date": "2026-03"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Milky Stork",
-        "Painted Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dusit Zoo",
-          "country": "Thailand",
-          "date": "2010"
         }
       ]
     },
@@ -26109,13 +22974,6 @@
     },
     {
       "animals": [
-        "Neotropical Painted Wood Turtle",
-        "Pond Slider"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Nepalese Red Panda",
         "Red-Crowned Crane"
       ],
@@ -26148,34 +23006,14 @@
           "date": "2020-06-07"
         },
         {
-          "zoo": "GaiaZOO",
-          "country": "Netherlands",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Réserve zoologique de la Haute-Touche",
-          "country": "France",
-          "date": "2020-06-07"
-        },
-        {
           "zoo": "Zoologischer Garten Halle – Bergzoo",
           "country": "Germany",
           "date": "2020-06-07"
         },
         {
-          "zoo": "Parc Zoologique et Botanique de Mulhouse",
-          "country": "France",
-          "date": "2020-06-12"
-        },
-        {
           "zoo": "Zoo Aquarium de Madrid",
           "country": "Spain",
           "date": "2020-06-07"
-        },
-        {
-          "zoo": "GaiaZOO",
-          "country": "Netherlands",
-          "date": "2021-12-15"
         }
       ]
     },
@@ -26189,11 +23027,6 @@
           "zoo": "Bioparc Fuengirola",
           "country": "Spain",
           "date": "2020-06-07"
-        },
-        {
-          "zoo": "Bioparc Fuengirola",
-          "country": "Spain",
-          "date": "2020-06-12"
         }
       ]
     },
@@ -26356,75 +23189,6 @@
     },
     {
       "animals": [
-        "Northern Raccoon",
-        "Red Fox"
-      ],
-      "evidence": [
-        {
-          "zoo": "Minnesota Zoo",
-          "country": "United States",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Zoo sauvage de Saint-Félicien",
-          "country": "Canada",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Minnesota Zoo",
-          "country": "United States",
-          "date": "2019"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Northern Raccoon",
-        "South American Coati"
-      ],
-      "evidence": [
-        {
-          "zoo": "Wingham Wildlife Park",
-          "country": "United Kingdom",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Zoo de Maubeuge",
-          "country": "France",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Wingham Wildlife Park",
-          "country": "United Kingdom",
-          "date": "2019"
-        },
-        {
-          "zoo": "Zoo de Maubeuge",
-          "country": "France",
-          "date": "2019"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Northern Raccoon",
-        "Striped Skunk"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo sauvage de Saint-Félicien",
-          "country": "Canada",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "Zoo Braunschweig Arche Noah",
-          "country": "Germany",
-          "date": "2021-12-15"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Northern Treeshrew",
         "Prevost's Squirrel"
       ],
@@ -26482,11 +23246,6 @@
           "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
           "country": "Israel",
           "date": "2022"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
         },
         {
           "zoo": "Safaripark Beekse Bergen",
@@ -26583,13 +23342,6 @@
       "animals": [
         "Owl-Faced Monkey",
         "Western Lowland Gorilla"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Pacific White-Sided Dolphin",
-        "South American Fur Seal"
       ],
       "evidence": []
     },
@@ -26734,11 +23486,6 @@
           "date": "2021"
         },
         {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
-        },
-        {
           "zoo": "Copenhagen Zoo",
           "country": "Denmark",
           "date": "2020"
@@ -26872,7 +23619,7 @@
     {
       "animals": [
         "Pink-Backed Pelican",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": []
     },
@@ -26924,11 +23671,6 @@
           "date": "2021-04"
         },
         {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
-        },
-        {
           "zoo": "Zoo Leipzig",
           "country": "Germany",
           "date": "2018"
@@ -26970,21 +23712,6 @@
           "date": "2022-06-15"
         },
         {
-          "zoo": "Jerusalem Biblical Zoo",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoological Center Tel Aviv – Safari Ramat Gan",
-          "country": "Israel",
-          "date": "2022-06-15"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2021"
-        },
-        {
           "zoo": "WILDLANDS Adventure Zoo Emmen",
           "country": "Netherlands",
           "date": "2021"
@@ -26993,11 +23720,6 @@
           "zoo": "Noorder Dierenpark",
           "country": "Netherlands",
           "date": "2021"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
         }
       ]
     },
@@ -27051,18 +23773,13 @@
           "zoo": "Parque Zoológico Nacional",
           "country": "Cuba",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "San Diego Zoo",
-          "country": "United States",
-          "date": "2021-05-09"
         }
       ]
     },
     {
       "animals": [
         "Plains Zebra",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": [
         {
@@ -27329,11 +24046,6 @@
           "date": "2018"
         },
         {
-          "zoo": "Safari World",
-          "country": "Thailand",
-          "date": "2020-05-18"
-        },
-        {
           "zoo": "Bioparc Fuengirola",
           "country": "Spain",
           "date": "2022-06-15"
@@ -27409,18 +24121,13 @@
           "zoo": "Taman Safari Indonesia",
           "country": "Indonesia",
           "date": "2022"
-        },
-        {
-          "zoo": "Taman Safari Indonesia",
-          "country": "Indonesia",
-          "date": "2022-06-15"
         }
       ]
     },
     {
       "animals": [
         "Pygmy Hippopotamus",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": [
         {
@@ -27471,11 +24178,6 @@
           "zoo": "Louisville Zoo",
           "country": "United States",
           "date": "2022"
-        },
-        {
-          "zoo": "Louisville Zoo",
-          "country": "United States",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -27489,11 +24191,6 @@
           "zoo": "Zoologischer Garten Halle – Bergzoo",
           "country": "Germany",
           "date": "2022-06-15"
-        },
-        {
-          "zoo": "Zoologischer Garten Halle – Bergzoo",
-          "country": "Germany",
-          "date": "2022"
         }
       ]
     },
@@ -27618,11 +24315,6 @@
           "zoo": "Disney's Animal Kingdom Lodge",
           "country": "United States",
           "date": "2021-05-09"
-        },
-        {
-          "zoo": "Wild Place Project",
-          "country": "United Kingdom",
-          "date": "2021-05-09"
         }
       ]
     },
@@ -27641,11 +24333,6 @@
           "zoo": "Noorder Dierenpark",
           "country": "Netherlands",
           "date": "2021"
-        },
-        {
-          "zoo": "WILDLANDS Adventure Zoo Emmen",
-          "country": "Netherlands",
-          "date": "2017"
         }
       ]
     },
@@ -27670,7 +24357,7 @@
     {
       "animals": [
         "Red River Hog",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": [
         {
@@ -27708,16 +24395,6 @@
           "zoo": "Chester Zoo",
           "country": "United Kingdom",
           "date": "2018"
-        },
-        {
-          "zoo": "Chester Zoo",
-          "country": "United Kingdom",
-          "date": "2021"
-        },
-        {
-          "zoo": "Chester Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-10"
         }
       ]
     },
@@ -27854,19 +24531,6 @@
     {
       "animals": [
         "Red-Crested Turaco",
-        "Roloway Monkey"
-      ],
-      "evidence": [
-        {
-          "zoo": "Ouwehands Dierenpark",
-          "country": "Netherlands",
-          "date": "2020"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Red-Crested Turaco",
         "Sunbittern"
       ],
       "evidence": [
@@ -27887,11 +24551,6 @@
           "zoo": "Ouwehands Dierenpark",
           "country": "Netherlands",
           "date": "2020-05-10"
-        },
-        {
-          "zoo": "Ouwehands Dierenpark",
-          "country": "Netherlands",
-          "date": "2018"
         }
       ]
     },
@@ -28117,7 +24776,7 @@
     {
       "animals": [
         "Reticulated Giraffe",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": [
         {
@@ -28180,13 +24839,6 @@
     },
     {
       "animals": [
-        "Tawny Owl",
-        "Ring-Necked Pheasant"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Ring-Tailed Vontsira",
         "White-Fronted Lemur"
       ],
@@ -28202,11 +24854,6 @@
           "zoo": "Royal Burgers' Zoo",
           "country": "Netherlands",
           "date": "2020-06-07"
-        },
-        {
-          "zoo": "Royal Burgers' Zoo",
-          "country": "Netherlands",
-          "date": "2020-06-12"
         }
       ]
     },
@@ -28372,11 +25019,6 @@
           "zoo": "San Diego Zoo Safari Park",
           "country": "United States",
           "date": "2022"
-        },
-        {
-          "zoo": "Monde Sauvage Safari Parc",
-          "country": "Belgium",
-          "date": "2022-06-15"
         }
       ]
     },
@@ -28390,7 +25032,7 @@
     {
       "animals": [
         "Rothschild's Giraffe",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": []
     },
@@ -28448,12 +25090,18 @@
         "Yellow-Billed Stork",
         "Rüppell's Vulture"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
         "Saddle-Billed Stork",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": []
     },
@@ -28747,7 +25395,7 @@
     {
       "animals": [
         "Silvery-Cheeked Hornbill",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": []
     },
@@ -28761,7 +25409,7 @@
     {
       "animals": [
         "Sitatunga",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "evidence": []
     },
@@ -28904,61 +25552,6 @@
           "zoo": "Jersey Zoo",
           "country": "Jersey",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Los Angeles Zoo",
-          "country": "United States",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Racine Zoo",
-          "country": "United States",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "ZOO Antwerpen",
-          "country": "Belgium",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "ARTIS Amsterdam Royal Zoo",
-          "country": "Netherlands",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Chester Zoo",
-          "country": "United Kingdom",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Port Lympne Wild Animal Park",
-          "country": "United Kingdom",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Noah's Ark Zoo Farm",
-          "country": "United Kingdom",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Zoo Zürich",
-          "country": "Switzerland",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Zoo Aquarium de Madrid",
-          "country": "Spain",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Zoo de Pont Scorff",
-          "country": "France",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Jersey Zoo",
-          "country": "Jersey",
-          "date": "2020-06-12"
         }
       ]
     },
@@ -28985,16 +25578,6 @@
           "zoo": "Zoo Aquarium de Madrid",
           "country": "Spain",
           "date": "2012-04-12"
-        },
-        {
-          "zoo": "Zoo Aquarium de Madrid",
-          "country": "Spain",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Zoo Aquarium de Madrid",
-          "country": "Spain",
-          "date": "2020-05-05"
         }
       ]
     },
@@ -29004,49 +25587,6 @@
         "Tayra"
       ],
       "evidence": [
-        {
-          "zoo": "Parque de las Leyendas",
-          "country": "Peru",
-          "date": "2020-06-12"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "South American Coati",
-        "Tufted Capuchin"
-      ],
-      "evidence": [
-        {
-          "zoo": "Plaswijckpark",
-          "country": "Netherlands",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "BestZOO",
-          "country": "Netherlands",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Landgoed Hoenderdaell",
-          "country": "Netherlands",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Zoo Rostock",
-          "country": "Germany",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Zoološki vrt grada Zagreba",
-          "country": "Croatia",
-          "date": "2020-06-07"
-        },
-        {
-          "zoo": "Parque de las Leyendas",
-          "country": "Peru",
-          "date": "2020-06-07"
-        },
         {
           "zoo": "Parque de las Leyendas",
           "country": "Peru",
@@ -29069,11 +25609,6 @@
           "zoo": "ZOO Planckendael",
           "country": "Belgium",
           "date": "2020"
-        },
-        {
-          "zoo": "ZOO Planckendael",
-          "country": "Belgium",
-          "date": "2021"
         }
       ]
     },
@@ -29107,20 +25642,8 @@
           "zoo": "Zoo Praha",
           "country": "Czech Republic",
           "date": "2020-06-07"
-        },
-        {
-          "zoo": "ZOO Planckendael",
-          "country": "Belgium",
-          "date": "2020-06-07"
         }
       ]
-    },
-    {
-      "animals": [
-        "South American Sea Lion",
-        "Spotted Seal"
-      ],
-      "evidence": []
     },
     {
       "animals": [
@@ -29132,11 +25655,6 @@
           "zoo": "Zoo Dortmund",
           "country": "Germany",
           "date": "2021"
-        },
-        {
-          "zoo": "Zoo Dortmund",
-          "country": "Germany",
-          "date": "2021-06-24"
         }
       ]
     },
@@ -29155,16 +25673,6 @@
           "zoo": "Wild Zoological Park",
           "country": "United Kingdom",
           "date": "2020-06-12"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         }
       ]
     },
@@ -29188,16 +25696,6 @@
           "zoo": "Wild Zoological Park",
           "country": "United Kingdom",
           "date": "2020-06-12"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
         }
       ]
     },
@@ -29290,42 +25788,7 @@
     {
       "animals": [
         "Spectacled Bear",
-        "Tufted Capuchin"
-      ],
-      "evidence": [
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012-04-12"
-        },
-        {
-          "zoo": "Wild Zoological Park",
-          "country": "United Kingdom",
-          "date": "2020-06-12"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2020-05-05"
-        },
-        {
-          "zoo": "South Lakes Safari Zoo",
-          "country": "United Kingdom",
-          "date": "2012"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Spectacled Bear",
         "White-Nosed Coati"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Spotted Seal",
-        "Steller Sea Lion"
       ],
       "evidence": []
     },
@@ -29429,7 +25892,7 @@
     },
     {
       "animals": [
-        "Thompson's Gazelle",
+        "Thomson's Gazelle",
         "White Stork"
       ],
       "evidence": [
@@ -29481,6 +25944,11 @@
           "zoo": "Zoo Antwerpen",
           "country": "Belgium",
           "date": "2020-10-17"
+        },
+        {
+          "zoo": "Binder Park Zoo",
+          "country": "United States",
+          "date": "2019-08-18"
         }
       ]
     },
@@ -29499,6 +25967,11 @@
           "zoo": "Zoo Antwerpen",
           "country": "Belgium",
           "date": "2020-10-17"
+        },
+        {
+          "zoo": "Binder Park Zoo",
+          "country": "United States",
+          "date": "2019-08-18"
         }
       ]
     },
@@ -29548,6 +26021,11 @@
           "zoo": "Zoo Antwerpen",
           "country": "Belgium",
           "date": "2020-10-17"
+        },
+        {
+          "zoo": "Binder Park Zoo",
+          "country": "United States",
+          "date": "2019-08-18"
         }
       ]
     },
@@ -29974,32 +26452,6 @@
           "zoo": "Jacksonville Zoo and Gardens",
           "country": "United States",
           "date": "2026-04-01"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black Stork",
-        "White Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Warsaw Zoo",
-          "country": "Poland",
-          "date": "2014-11-23"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black Stork",
-        "Common Crane"
-      ],
-      "evidence": [
-        {
-          "zoo": "Warsaw Zoo",
-          "country": "Poland",
-          "date": "2014-11-23"
         }
       ]
     },
@@ -30585,6 +27037,11 @@
           "zoo": "San Francisco Zoo",
           "country": "United States",
           "date": "2026"
+        },
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
         }
       ]
     },
@@ -30624,6 +27081,11 @@
           "zoo": "San Francisco Zoo",
           "country": "United States",
           "date": "2026"
+        },
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
         }
       ]
     },
@@ -30746,19 +27208,6 @@
     },
     {
       "animals": [
-        "Capybara",
-        "White-Faced Whistling Duck"
-      ],
-      "evidence": [
-        {
-          "zoo": "Sedgwick County Zoo",
-          "country": "United States",
-          "date": "2024"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Blue Duiker",
         "Yellow-Billed Stork"
       ],
@@ -30850,19 +27299,6 @@
     },
     {
       "animals": [
-        "Cape Buffalo",
-        "White-Faced Whistling Duck"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2020-10-17"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Rüppell's Vulture",
         "Hooded Vulture"
       ],
@@ -30877,19 +27313,6 @@
     {
       "animals": [
         "Rüppell's Vulture",
-        "White-Faced Whistling Duck"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2020-10-17"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Rüppell's Vulture",
         "Trumpeter Hornbill"
       ],
       "evidence": [
@@ -30995,19 +27418,6 @@
       "animals": [
         "Rüppell's Vulture",
         "Glossy Ibis"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2020-10-17"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Hooded Vulture",
-        "White-Faced Whistling Duck"
       ],
       "evidence": [
         {
@@ -31136,118 +27546,383 @@
     },
     {
       "animals": [
-        "White-Faced Whistling Duck",
+        "Black Crowned Crane",
         "Trumpeter Hornbill"
       ],
       "evidence": [
         {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2020-10-17"
+          "zoo": "Binder Park Zoo",
+          "country": "United States",
+          "date": "2019-08-18"
         }
       ]
     },
     {
       "animals": [
-        "White-Faced Whistling Duck",
+        "Black Crowned Crane",
         "Von Der Decken's Hornbill"
       ],
       "evidence": [
         {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2020-10-17"
+          "zoo": "Binder Park Zoo",
+          "country": "United States",
+          "date": "2019-08-18"
         }
       ]
     },
     {
       "animals": [
-        "White-Faced Whistling Duck",
-        "Abdim's Stork"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2020-10-17"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "White-Faced Whistling Duck",
+        "Black Crowned Crane",
         "Violet Turaco"
       ],
       "evidence": [
         {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2020-10-17"
+          "zoo": "Binder Park Zoo",
+          "country": "United States",
+          "date": "2019-08-18"
         }
       ]
     },
     {
       "animals": [
-        "White-Faced Whistling Duck",
-        "White-Crested Turaco"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2020-10-17"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "White-Faced Whistling Duck",
-        "Hamerkop"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2020-10-17"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "White-Faced Whistling Duck",
-        "Hadada Ibis"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2020-10-17"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "White-Faced Whistling Duck",
+        "Northern Bald Ibis",
         "African Spoonbill"
       ],
       "evidence": [
         {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2020-10-17"
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "date": "2018"
         }
       ]
     },
     {
       "animals": [
-        "White-Faced Whistling Duck",
+        "Northern Bald Ibis",
+        "Hadada Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Northern Bald Ibis",
+        "Von Der Decken's Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Northern Bald Ibis",
+        "Blue Duiker"
+      ],
+      "evidence": [
+        {
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Scarlet Macaw",
         "Glossy Ibis"
       ],
       "evidence": [
         {
-          "zoo": "Zoo Antwerpen",
-          "country": "Belgium",
-          "date": "2020-10-17"
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Aracari",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Burrowing Owl",
+        "Roseate Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Burrowing Owl",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Burrowing Owl",
+        "Sunbittern"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Burrowing Owl",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Burrowing Owl",
+        "Green Iguana"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Roseate Spoonbill",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Roseate Spoonbill",
+        "Sunbittern"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Roseate Spoonbill",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glossy Ibis",
+        "Sunbittern"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glossy Ibis",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glossy Ibis",
+        "Green Iguana"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Sunbittern",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Sunbittern",
+        "Green Iguana"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoomarine",
+          "country": "Portugal",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Greater Flamingo",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Paphos Zoo",
+          "country": "Cyprus",
+          "date": "2025"
+        },
+        {
+          "zoo": "Haifa Educational Zoo",
+          "country": "Israel",
+          "date": "2020"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Greater Flamingo",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Haifa Educational Zoo",
+          "country": "Israel",
+          "date": "2020"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow Mongoose",
+        "Banded Mongoose"
+      ],
+      "evidence": [
+        {
+          "zoo": "South Lakes Wild Animal Park",
+          "country": "United Kingdom",
+          "date": "2012-12-29"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "South American Fur Seal",
+        "California Sea Lion"
+      ],
+      "evidence": [
+        {
+          "zoo": "WILDLANDS Adventure Zoo Emmen",
+          "country": "Netherlands",
+          "date": "2019"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "South American Fur Seal",
+        "South American Sea Lion"
+      ],
+      "evidence": [
+        {
+          "zoo": "Parc Zoologique de Paris",
+          "country": "France",
+          "date": "2024"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "South American Fur Seal",
+        "Walrus"
+      ],
+      "evidence": [
+        {
+          "zoo": "Tierpark Hagenbeck",
+          "country": "Germany",
+          "date": "2024"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "South American Fur Seal",
+        "Harbour Seal"
+      ],
+      "evidence": [
+        {
+          "zoo": "SEA LIFE Sydney Aquarium",
+          "country": "Australia",
+          "date": "2020"
         }
       ]
     }

@@ -82,13 +82,6 @@
     {
       "animals": [
         "Aardvark",
-        "Black-and-Rufous Elephant Shrew"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Aardvark",
         "Blue Duiker"
       ],
       "evidence": [
@@ -255,17 +248,16 @@
     },
     {
       "animals": [
-        "Aardvark",
-        "Lesser Hedgehog Tenrec"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Lyle's Flying Fox",
         "Aardvark"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Burgers' Zoo",
+          "country": "Netherlands",
+          "date": "2002-10-16"
+        }
+      ]
     },
     {
       "animals": [
@@ -548,7 +540,13 @@
         "Abdim's Stork",
         "Cape Buffalo"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2020-10-17"
+        }
+      ]
     },
     {
       "animals": [
@@ -765,14 +763,26 @@
         "Abyssian Ground Hornbill",
         "Secretary Bird"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zlin-Lesna Zoo",
+          "country": "Czech Republic",
+          "date": "2013"
+        }
+      ]
     },
     {
       "animals": [
         "Abyssian Ground Hornbill",
         "Sitatunga"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Bioparc Valencia",
+          "country": "Spain",
+          "date": "2009-07-20"
+        }
+      ]
     },
     {
       "animals": [
@@ -939,14 +949,26 @@
         "Adelie Penguin",
         "Emperor Penguin"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "1958"
+        }
+      ]
     },
     {
       "animals": [
         "Adelie Penguin",
         "Gentoo Penguin"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "1958"
+        }
+      ]
     },
     {
       "animals": [
@@ -971,7 +993,13 @@
         "African Brush-Tailed Porcupine",
         "Common Kusimanse"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Paignton Zoo Environmental Park",
+          "country": "United Kingdom",
+          "date": "2018"
+        }
+      ]
     },
     {
       "animals": [
@@ -1019,7 +1047,13 @@
         "Senegal Bushbaby",
         "African Brush-Tailed Porcupine"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZooParc Overloon",
+          "country": "Netherlands",
+          "date": "2025-08-03"
+        }
+      ]
     },
     {
       "animals": [
@@ -1044,7 +1078,13 @@
         "African Elephant",
         "Bat-Eared Fox"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoologischer Garten Magdeburg",
+          "country": "Germany",
+          "date": "2020-08-12"
+        }
+      ]
     },
     {
       "animals": [
@@ -1074,7 +1114,13 @@
         "African Elephant",
         "Green Monkey"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoologischer Garten Magdeburg",
+          "country": "Germany",
+          "date": "2020-08-12"
+        }
+      ]
     },
     {
       "animals": [
@@ -1203,28 +1249,52 @@
         "African Grey Parrot",
         "African Openbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026-03-03"
+        }
+      ]
     },
     {
       "animals": [
         "African Grey Parrot",
         "African Spoonbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026-03-03"
+        }
+      ]
     },
     {
       "animals": [
         "African Grey Parrot",
         "Allen's Gallinule"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026-03-03"
+        }
+      ]
     },
     {
       "animals": [
         "African Grey Parrot",
         "Black Crake"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026-03-03"
+        }
+      ]
     },
     {
       "animals": [
@@ -1245,7 +1315,13 @@
         "African Grey Parrot",
         "Southern Bald Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026-03-03"
+        }
+      ]
     },
     {
       "animals": [
@@ -1496,7 +1572,13 @@
         "African Penguin",
         "California Sea Lion"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ARTIS Amsterdam Royal Zoo",
+          "country": "Netherlands",
+          "date": "2018-05-31"
+        }
+      ]
     },
     {
       "animals": [
@@ -1883,7 +1965,13 @@
         "African Sacred Ibis",
         "White Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Haifa Educational Zoo & Botanical Garden",
+          "country": "Israel",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
@@ -1903,7 +1991,13 @@
         "Black Stork",
         "African Spoonbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Cotswold Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2024-07-19"
+        }
+      ]
     },
     {
       "animals": [
@@ -1949,7 +2043,13 @@
         "African Spoonbill",
         "Greater Flamingo"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Odense Zoo",
+          "country": "Denmark",
+          "date": "2013"
+        }
+      ]
     },
     {
       "animals": [
@@ -2217,7 +2317,13 @@
         "African Spurred Tortoise",
         "Aldabra Giant Tortoise"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Faunia Madrid",
+          "country": "Spain",
+          "date": "2025-10-26"
+        }
+      ]
     },
     {
       "animals": [
@@ -2278,7 +2384,13 @@
         "African Spurred Tortoise",
         "Emu"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Kentucky Down Under Adventure Zoo",
+          "country": "United States",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -2311,14 +2423,26 @@
         "African Spurred Tortoise",
         "Grey Crowned Crane"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Faunia Madrid",
+          "country": "Spain",
+          "date": "2025-10-26"
+        }
+      ]
     },
     {
       "animals": [
         "African Spurred Tortoise",
         "Grey Kangaroo"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Kentucky Down Under Adventure Zoo",
+          "country": "United States",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -2414,14 +2538,26 @@
         "African Spurred Tortoise",
         "Red Kangaroo"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Kentucky Down Under Adventure Zoo",
+          "country": "United States",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
         "African Spurred Tortoise",
         "Rhinoceros Iguana"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Singapore Zoo",
+          "country": "Singapore",
+          "date": "2025"
+        }
+      ]
     },
     {
       "animals": [
@@ -2482,7 +2618,13 @@
         "African Wild Dog",
         "Grey Wolf"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Shanghai Zoo",
+          "country": "China",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
@@ -2535,7 +2677,13 @@
         "Aldabra Giant Tortoise",
         "Grey Crowned Crane"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Faunia Madrid",
+          "country": "Spain",
+          "date": "2025-10-26"
+        }
+      ]
     },
     {
       "animals": [
@@ -2549,7 +2697,13 @@
         "Aldabra Giant Tortoise",
         "Patagonian Mara"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Tennoji Zoo",
+          "country": "Japan",
+          "date": "2020-12-23"
+        }
+      ]
     },
     {
       "animals": [
@@ -2569,14 +2723,26 @@
         "Aldabra Giant Tortoise",
         "Rhinoceros Iguana"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ARTIS Amsterdam Royal Zoo",
+          "country": "Netherlands",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
         "Rodriguez Flying Fox",
         "Aldabra Giant Tortoise"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZooParc de Beauval",
+          "country": "France",
+          "date": "2026"
+        }
+      ]
     },
     {
       "animals": [
@@ -2705,7 +2871,13 @@
         "Alpaca",
         "Red-Legged Seriema"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Tiergarten Schönbrunn",
+          "country": "Austria",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
@@ -2748,28 +2920,26 @@
         "American Alligator",
         "Pond Slider"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Pairi Daiza",
+          "country": "Belgium",
+          "date": "2020-09-02"
+        }
+      ]
     },
     {
       "animals": [
         "American Beaver",
         "Capybara"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "American Beaver",
-        "Common Raccoon"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "American Beaver",
-        "Musk Ox"
-      ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Drusillas Park",
+          "country": "United Kingdom",
+          "date": "2009-05-28"
+        }
+      ]
     },
     {
       "animals": [
@@ -3175,28 +3345,52 @@
         "American Flamingo",
         "Capybara"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Toronto Zoo",
+          "country": "Canada",
+          "date": "2011-02-16"
+        }
+      ]
     },
     {
       "animals": [
         "American Flamingo",
         "Roseate Spoonbill"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Tierpark Cottbus",
+          "country": "Germany",
+          "date": "2019-09-24"
+        }
+      ]
     },
     {
       "animals": [
         "American White Ibis",
         "Glossy Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Kakegawa Kachouen",
+          "country": "Japan",
+          "date": "2017-12-10"
+        }
+      ]
     },
     {
       "animals": [
         "American White Ibis",
         "Scarlet Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Kakegawa Kachouen",
+          "country": "Japan",
+          "date": "2017-12-10"
+        }
+      ]
     },
     {
       "animals": [
@@ -3622,13 +3816,6 @@
     {
       "animals": [
         "Arctic Fox",
-        "Common Raccoon"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Arctic Fox",
         "Grey Seal"
       ],
       "evidence": [
@@ -3720,14 +3907,13 @@
         "Arrau River Turtle",
         "Cuvier's Dwarf Caiman"
       ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Arrau River Turtle",
-        "West Indian Manatee"
-      ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Ponderosa Zoo",
+          "country": "United Kingdom",
+          "date": "2021-07-17"
+        }
+      ]
     },
     {
       "animals": [
@@ -4235,7 +4421,13 @@
         "Asian Small-Clawed Otter",
         "Common Raccoon"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Aachener Tierpark Euregiozoo",
+          "country": "Germany",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
@@ -4283,7 +4475,13 @@
         "Asian Small-Clawed Otter",
         "François' Langur"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2005"
+        }
+      ]
     },
     {
       "animals": [
@@ -4472,13 +4670,6 @@
           "date": "2020-06-12"
         }
       ]
-    },
-    {
-      "animals": [
-        "Asian Small-Clawed Otter",
-        "Rodriguez Flying Fox"
-      ],
-      "evidence": []
     },
     {
       "animals": [
@@ -4860,35 +5051,65 @@
         "Asian Woolly-Necked Stork",
         "Black Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
         "Asian Woolly-Necked Stork",
         "Black-Headed Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
         "Asian Woolly-Necked Stork",
         "Lesser Adjutant"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
         "Asian Woolly-Necked Stork",
         "Milky Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Pairi Daiza",
+          "country": "Belgium",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
         "Asian Woolly-Necked Stork",
         "Painted Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
@@ -5013,7 +5234,13 @@
         "Australian Ibis",
         "Straw-Necked Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2025-10"
+        }
+      ]
     },
     {
       "animals": [
@@ -5184,14 +5411,26 @@
         "Azara's Agouti",
         "Common Squirrel Monkey"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Yorkshire Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2014-10-28"
+        }
+      ]
     },
     {
       "animals": [
         "Azara's Agouti",
         "Giant Anteater"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "GaiaZOO",
+          "country": "Netherlands",
+          "date": "2019-07-21"
+        }
+      ]
     },
     {
       "animals": [
@@ -5211,28 +5450,52 @@
         "Azara's Agouti",
         "Greater Rhea"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Yorkshire Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2014-10-28"
+        }
+      ]
     },
     {
       "animals": [
         "Kinkajou",
         "Azara's Agouti"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Exotic Zoo",
+          "country": "United Kingdom",
+          "date": "2021-11-25"
+        }
+      ]
     },
     {
       "animals": [
         "Azara's Agouti",
         "Patagonian Mara"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Yorkshire Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2014-10-28"
+        }
+      ]
     },
     {
       "animals": [
         "Azara's Agouti",
         "Scarlet Ibis"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2025-05-06"
+        }
+      ]
     },
     {
       "animals": [
@@ -5481,13 +5744,6 @@
     {
       "animals": [
         "Banded Mongoose",
-        "Meerkat"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
-        "Banded Mongoose",
         "Plains Zebra"
       ],
       "evidence": [
@@ -5533,13 +5789,6 @@
           "date": "2018"
         }
       ]
-    },
-    {
-      "animals": [
-        "Banded Mongoose",
-        "Rock Hyrax"
-      ],
-      "evidence": []
     },
     {
       "animals": [
@@ -6310,13 +6559,6 @@
     },
     {
       "animals": [
-        "Binturong",
-        "Tufted Deer"
-      ],
-      "evidence": []
-    },
-    {
-      "animals": [
         "Black Crested Mangabey",
         "Western Lowland Gorilla"
       ],
@@ -6327,7 +6569,13 @@
         "Black Crowned Crane",
         "Black Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Binder Park Zoo",
+          "country": "United States",
+          "date": "2019-08-17"
+        }
+      ]
     },
     {
       "animals": [
@@ -6354,28 +6602,52 @@
         "Black Crowned Crane",
         "Okapi"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Sacramento Zoo",
+          "country": "United States",
+          "date": "2019-05-18"
+        }
+      ]
     },
     {
       "animals": [
         "Black Howler Monkey",
         "Goeldi's Monkey"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Lincoln Park Zoo",
+          "country": "United States",
+          "date": "2017-12"
+        }
+      ]
     },
     {
       "animals": [
         "Black Howler Monkey",
         "Golden Lion Tamarin"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "date": "2023-03-02"
+        }
+      ]
     },
     {
       "animals": [
         "Black Howler Monkey",
         "Golden-Headed Lion Tamarin"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Cincinnati Zoo & Botanical Garden",
+          "country": "United States",
+          "date": "2024-07-31"
+        }
+      ]
     },
     {
       "animals": [
@@ -6420,7 +6692,13 @@
         "Black Howler Monkey",
         "Six-Banded Armadillo"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Bristol Zoo Gardens",
+          "country": "United Kingdom",
+          "date": "2011"
+        }
+      ]
     },
     {
       "animals": [
@@ -7133,7 +7411,13 @@
         "Black Stork",
         "Milky Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
@@ -7147,7 +7431,13 @@
         "Black Stork",
         "Painted Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
@@ -7399,7 +7689,13 @@
         "Black-Headed Ibis",
         "Milky Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
@@ -7419,7 +7715,13 @@
         "Black-Headed Ibis",
         "Painted Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
@@ -7563,28 +7865,52 @@
         "Black-Necked Aracari",
         "Giant Anteater"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2022-01-03"
+        }
+      ]
     },
     {
       "animals": [
         "Black-Necked Aracari",
         "Linnaeus's Two-Toed Sloth"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08"
+        }
+      ]
     },
     {
       "animals": [
         "Black-Necked Aracari",
         "Southern Tamandua"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "RIO Ekzoopark",
+          "country": "Russia",
+          "date": "2016"
+        }
+      ]
     },
     {
       "animals": [
         "Black-Necked Aracari",
         "Toco Toucan"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "ZSL London Zoo",
+          "country": "United Kingdom",
+          "date": "2010-02-26"
+        }
+      ]
     },
     {
       "animals": [
@@ -12474,7 +12800,13 @@
         "Common Crane",
         "White Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Warsaw Zoo",
+          "country": "Poland",
+          "date": "2014-11-23"
+        }
+      ]
     },
     {
       "animals": [
@@ -14284,7 +14616,13 @@
         "Common Raccoon",
         "Crab-Eating Raccoon"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Zoologischer Stadtgarten Karlsruhe",
+          "country": "Germany",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
@@ -14304,14 +14642,26 @@
         "Common Raccoon",
         "North American Porcupine"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Tierpark Hirschfeld",
+          "country": "Germany",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
         "Common Raccoon",
         "Raccoon Dog"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Tierpark Bern – Dählhölzli",
+          "country": "Switzerland",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
@@ -14331,7 +14681,13 @@
         "Common Raccoon",
         "South American Coati"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Wingham Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2020"
+        }
+      ]
     },
     {
       "animals": [
@@ -15730,6 +16086,21 @@
           "zoo": "Stone Zoo",
           "country": "United States",
           "date": "2024-11"
+        },
+        {
+          "zoo": "Yekaterinburg Zoo",
+          "country": "Russia",
+          "date": "2019"
+        },
+        {
+          "zoo": "Taipei Zoo",
+          "country": "Taiwan",
+          "date": "2020"
+        },
+        {
+          "zoo": "Niabi Zoo",
+          "country": "United States",
+          "date": "2006-2007"
         }
       ]
     },
@@ -16997,6 +17368,16 @@
           "zoo": "ZSL London Zoo",
           "country": "United Kingdom",
           "date": "2014-06-24"
+        },
+        {
+          "zoo": "Smithsonian's National Zoo",
+          "country": "United States",
+          "date": "2019"
+        },
+        {
+          "zoo": "Zoo Miami",
+          "country": "United States",
+          "date": "2009"
         }
       ]
     },
@@ -17038,7 +17419,13 @@
         "Emu",
         "Grey Kangaroo"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Kentucky Down Under Adventure Zoo",
+          "country": "United States",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -17517,14 +17904,14 @@
     },
     {
       "animals": [
-        "Geoffroy's Tufted-Ear Marmoset",
+        "White-Headed Marmoset",
         "Goeldi's Monkey"
       ],
       "evidence": []
     },
     {
       "animals": [
-        "Geoffroy's Tufted-Ear Marmoset",
+        "White-Headed Marmoset",
         "Linnaeus's Two-Toed Sloth"
       ],
       "evidence": [
@@ -17532,6 +17919,21 @@
           "zoo": "Woodside Wildlife Park",
           "country": "United Kingdom",
           "date": "2024"
+        },
+        {
+          "zoo": "Zoo Miami",
+          "country": "United States",
+          "date": "2009"
+        },
+        {
+          "zoo": "Krakow Zoo",
+          "country": "Poland",
+          "date": "2026"
+        },
+        {
+          "zoo": "Heidelberg Zoo",
+          "country": "Germany",
+          "date": "2014"
         }
       ]
     },
@@ -18389,6 +18791,16 @@
           "zoo": "Collection E mixed walkthrough",
           "country": "United Kingdom",
           "date": "2023"
+        },
+        {
+          "zoo": "BIAZA collection C (published husbandry study)",
+          "country": "United Kingdom/Ireland",
+          "date": "2022"
+        },
+        {
+          "zoo": "Zoo Karlsruhe",
+          "country": "Germany",
+          "date": "2020-01-10"
         }
       ]
     },
@@ -18748,6 +19160,21 @@
           "zoo": "Roger Williams Park Zoo",
           "country": "United States",
           "date": "2025"
+        },
+        {
+          "zoo": "Smithsonian's National Zoo",
+          "country": "United States",
+          "date": "2020"
+        },
+        {
+          "zoo": "Smithsonian's National Zoo",
+          "country": "United States",
+          "date": "2021"
+        },
+        {
+          "zoo": "Smithsonian's National Zoo",
+          "country": "United States",
+          "date": "2015"
         }
       ]
     },
@@ -18956,6 +19383,26 @@
           "zoo": "Collection E mixed walkthrough",
           "country": "United Kingdom",
           "date": "2023"
+        },
+        {
+          "zoo": "Brevard Zoo",
+          "country": "United States",
+          "date": "2026"
+        },
+        {
+          "zoo": "Colchester Zoo",
+          "country": "United Kingdom",
+          "date": "2026"
+        },
+        {
+          "zoo": "Colchester Zoo",
+          "country": "United Kingdom",
+          "date": "2025"
+        },
+        {
+          "zoo": "ZSL London Zoo",
+          "country": "United Kingdom",
+          "date": "2025"
         }
       ]
     },
@@ -19827,7 +20274,13 @@
         "Greater Rhea",
         "Red-Legged Seriema"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Tiergarten Schönbrunn",
+          "country": "Austria",
+          "date": "2024"
+        }
+      ]
     },
     {
       "animals": [
@@ -20659,7 +21112,13 @@
         "Grey Kangaroo",
         "Red Kangaroo"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Kentucky Down Under Adventure Zoo",
+          "country": "United States",
+          "date": "2019"
+        }
+      ]
     },
     {
       "animals": [
@@ -23599,14 +24058,26 @@
         "Lesser Adjutant",
         "Milky Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
         "Lesser Adjutant",
         "Painted Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
@@ -23690,6 +24161,11 @@
           "zoo": "ZSL London Zoo",
           "country": "United Kingdom",
           "date": "2014-06-24"
+        },
+        {
+          "zoo": "London Zoo",
+          "country": "United Kingdom",
+          "date": "2023"
         }
       ]
     },
@@ -23748,7 +24224,13 @@
         "Linnaeus's Two-Toed Sloth",
         "Scaly-Headed Parrot"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2026"
+        }
+      ]
     },
     {
       "animals": [
@@ -23768,7 +24250,13 @@
         "Linnaeus's Two-Toed Sloth",
         "Scarlet Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2026"
+        }
+      ]
     },
     {
       "animals": [
@@ -23856,6 +24344,31 @@
           "zoo": "Cleveland Metroparks Zoo",
           "country": "United States",
           "date": "2018"
+        },
+        {
+          "zoo": "ARTIS Amsterdam Royal Zoo",
+          "country": "Netherlands",
+          "date": "2016"
+        },
+        {
+          "zoo": "Bird Park Marlow",
+          "country": "Germany",
+          "date": "2024"
+        },
+        {
+          "zoo": "Brevard Zoo",
+          "country": "United States",
+          "date": "2022"
+        },
+        {
+          "zoo": "Krefeld Zoo",
+          "country": "Germany",
+          "date": "2002"
+        },
+        {
+          "zoo": "Singapore Zoo",
+          "country": "Singapore",
+          "date": "2022"
         }
       ]
     },
@@ -25161,7 +25674,13 @@
         "Milky Stork",
         "Painted Stork"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "Dusit Zoo",
+          "country": "Thailand",
+          "date": "2010"
+        }
+      ]
     },
     {
       "animals": [
@@ -27740,7 +28259,13 @@
         "Scaly-Headed Parrot",
         "Scarlet Macaw"
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2026"
+        }
+      ]
     },
     {
       "animals": [
@@ -28828,6 +29353,1136 @@
         "Yellow-Spotted Amazon River Turtle"
       ],
       "evidence": []
+    },
+    {
+      "animals": [
+        "Cotton-Top Tamarin",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Hannover Zoo",
+          "country": "Germany",
+          "date": "2002"
+        },
+        {
+          "zoo": "Zoo Hannover",
+          "country": "Germany",
+          "date": "2002"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Golden-Headed Lion Tamarin",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Lincoln Park Zoo",
+          "country": "United States",
+          "date": "2019"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Golden-Handed Tamarin",
+        "Linnaeus's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Duisburg Zoo",
+          "country": "Germany",
+          "date": "2010"
+        },
+        {
+          "zoo": "White-faced saki husbandry survey respondent",
+          "country": "unknown",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Emperor Tamarin",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Lincoln Park Zoo",
+          "country": "United States",
+          "date": "2024"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Golden Lion Tamarin",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Palm Beach Zoo & Conservation Society",
+          "country": "United States",
+          "date": "2025"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pygmy Marmoset",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Aquarium of the Pacific",
+          "country": "United States",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Headed Marmoset",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Staten Island Zoo",
+          "country": "United States",
+          "date": "2024"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Marmoset",
+        "Linnaeus's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoologischer Garten Halle",
+          "country": "Germany",
+          "date": "2002"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pygmy Marmoset",
+        "Linnaeus's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "ARTIS Amsterdam Royal Zoo",
+          "country": "Netherlands",
+          "date": "2016"
+        },
+        {
+          "zoo": "Randers Regnskov",
+          "country": "Denmark",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Grey-Handed Night Monkey",
+        "Linnaeus's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "ARTIS Amsterdam Royal Zoo",
+          "country": "Netherlands",
+          "date": "2016"
+        },
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2018"
+        },
+        {
+          "zoo": "Apenheul Primate Park",
+          "country": "Netherlands",
+          "date": "2024-08-18"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Squirrel Monkey",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Hannover Zoo",
+          "country": "Germany",
+          "date": "2002"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red Titi",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Skansen Akvariet",
+          "country": "Sweden",
+          "date": "2011"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Silvery Marmoset",
+        "Linnaeus's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Colchester Zoo",
+          "country": "United Kingdom",
+          "date": "2014"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Faced Spider Monkey",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Brookfield Zoo",
+          "country": "United States",
+          "date": "2011"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black Howler Monkey",
+        "Linnaeus's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Jersey Zoo",
+          "country": "Jersey",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Faced Saki",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Como Park Zoo and Conservatory",
+          "country": "United States",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Openbill",
+        "Allen's Gallinule"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026-03-03"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Openbill",
+        "Black Crake"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026-03-03"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Spoonbill",
+        "Allen's Gallinule"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026-03-03"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Spoonbill",
+        "Black Crake"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026-03-03"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Allen's Gallinule",
+        "Black Crake"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026-03-03"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Allen's Gallinule",
+        "Southern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026-03-03"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black Crake",
+        "Southern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026-03-03"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Aldabra Giant Tortoise",
+        "Emu"
+      ],
+      "evidence": [
+        {
+          "zoo": "Jacksonville Zoo and Gardens",
+          "country": "United States",
+          "date": "2026-04-01"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black Stork",
+        "White Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Warsaw Zoo",
+          "country": "Poland",
+          "date": "2014-11-23"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black Stork",
+        "Common Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Warsaw Zoo",
+          "country": "Poland",
+          "date": "2014-11-23"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "American Beaver",
+        "Patagonian Mara"
+      ],
+      "evidence": [
+        {
+          "zoo": "Drusillas Park",
+          "country": "United Kingdom",
+          "date": "2009-05-28"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Grey Parrot",
+        "Abyssian Ground Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZOO Antwerpen",
+          "country": "Belgium",
+          "date": "2021-06-12"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abyssian Ground Hornbill",
+        "African Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Attica Zoological Park",
+          "country": "Greece",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abyssian Ground Hornbill",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Attica Zoological Park",
+          "country": "Greece",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Grey Wolf",
+        "American Beaver"
+      ],
+      "evidence": [
+        {
+          "zoo": "Cleveland Metroparks Zoo",
+          "country": "United States",
+          "date": "2020"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Raccoon",
+        "American Alligator"
+      ],
+      "evidence": [
+        {
+          "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
+          "country": "United States",
+          "date": "2020"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Raccoon",
+        "American Crocodile"
+      ],
+      "evidence": [
+        {
+          "zoo": "Omaha's Henry Doorly Zoo and Aquarium",
+          "country": "United States",
+          "date": "2020"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Arctic Fox",
+        "Red Fox"
+      ],
+      "evidence": [
+        {
+          "zoo": "Staten Island Zoo",
+          "country": "United States",
+          "date": "2020"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "American Beaver",
+        "Red Fox"
+      ],
+      "evidence": [
+        {
+          "zoo": "Wildpark Bad Mergentheim",
+          "country": "Germany",
+          "date": "2020"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "American Beaver",
+        "Common Raccoon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2020-08-29"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "American Beaver",
+        "Striped Skunk"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2020-08-29"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "American Beaver",
+        "Collared Peccary"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2020-08-29"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "American Beaver",
+        "South American Coati"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2020-08-29"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "American Beaver",
+        "Azara's Agouti"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2020-08-29"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Raccoon",
+        "Collared Peccary"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2020-08-29"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Raccoon",
+        "Azara's Agouti"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2020-08-29"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Striped Skunk",
+        "Collared Peccary"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2020-08-29"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Striped Skunk",
+        "Azara's Agouti"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2020-08-29"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Collared Peccary",
+        "Azara's Agouti"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2020-08-29"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "American Beaver",
+        "Painted Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Minnesota Zoo",
+          "country": "United States",
+          "date": "2022-01-06"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Capybara",
+        "Alpaca"
+      ],
+      "evidence": [
+        {
+          "zoo": "Tiergarten Schönbrunn",
+          "country": "Austria",
+          "date": "2024"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Banded Mongoose",
+        "Fennec Fox"
+      ],
+      "evidence": [
+        {
+          "zoo": "Pairi Daiza",
+          "country": "Belgium",
+          "date": "2026-03-08"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Banded Mongoose",
+        "African Spurred Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Pairi Daiza",
+          "country": "Belgium",
+          "date": "2026-03-08"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Azara's Agouti",
+        "Linnaeus's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Northumberland Zoo",
+          "country": "United Kingdom",
+          "date": "2025-12-18"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Azara's Agouti",
+        "Common Marmoset"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2025-05-06"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Azara's Agouti",
+        "Red-Legged Seriema"
+      ],
+      "evidence": [
+        {
+          "zoo": "Spaycific'Zoo",
+          "country": "France",
+          "date": "2025-05-06"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black Howler Monkey",
+        "Capybara"
+      ],
+      "evidence": [
+        {
+          "zoo": "Denver Zoo Conservation Alliance",
+          "country": "United States",
+          "date": "2026-03-18"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Azara's Agouti",
+        "Roseate Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaZOO",
+          "country": "Netherlands",
+          "date": "2020-03-10"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Azara's Agouti",
+        "Sunbittern"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaZOO",
+          "country": "Netherlands",
+          "date": "2020-03-10"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Azara's Agouti",
+        "Common Trumpeter"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaZOO",
+          "country": "Netherlands",
+          "date": "2020-03-10"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Giant Anteater",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaZOO",
+          "country": "Netherlands",
+          "date": "2020-03-10"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Giant Anteater",
+        "Roseate Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaZOO",
+          "country": "Netherlands",
+          "date": "2020-03-10"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Giant Anteater",
+        "Sunbittern"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaZOO",
+          "country": "Netherlands",
+          "date": "2020-03-10"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Giant Anteater",
+        "Common Trumpeter"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaZOO",
+          "country": "Netherlands",
+          "date": "2020-03-10"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Linnaeus's Two-Toed Sloth",
+        "Red-Legged Seriema"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Scaly-Headed Parrot"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Red-Legged Seriema"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Scarlet Macaw",
+        "Red-Legged Seriema"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Scaly-Headed Parrot",
+        "Red-Legged Seriema"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Linnaeus's Two-Toed Sloth",
+        "Hyacinth Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "National Aviary",
+          "country": "United States",
+          "date": "2023-06"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Linnaeus's Two-Toed Sloth",
+        "Southern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "National Aviary",
+          "country": "United States",
+          "date": "2023-06"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Linnaeus's Two-Toed Sloth",
+        "Hadada Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "National Aviary",
+          "country": "United States",
+          "date": "2023-06"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Linnaeus's Two-Toed Sloth",
+        "Toco Toucan"
+      ],
+      "evidence": [
+        {
+          "zoo": "Singapore Zoo",
+          "country": "Singapore",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Linnaeus's Two-Toed Sloth",
+        "Roseate Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Francisco Zoo",
+          "country": "United States",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Roseate Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Francisco Zoo",
+          "country": "United States",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Linnaeus's Two-Toed Sloth",
+        "American White Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Francisco Zoo",
+          "country": "United States",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "American White Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Francisco Zoo",
+          "country": "United States",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Francisco Zoo",
+          "country": "United States",
+          "date": "2026"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Azara's Agouti",
+        "Red-Fan Parrot"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bird Paradise",
+          "country": "Singapore",
+          "date": "2025"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Azara's Agouti",
+        "Saffron Toucanet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bird Paradise",
+          "country": "Singapore",
+          "date": "2025"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Linnaeus's Two-Toed Sloth",
+        "Red-Fan Parrot"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bird Paradise",
+          "country": "Singapore",
+          "date": "2025"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Linnaeus's Two-Toed Sloth",
+        "Saffron Toucanet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bird Paradise",
+          "country": "Singapore",
+          "date": "2025"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Linnaeus's Two-Toed Sloth",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Denver Zoo",
+          "country": "United States",
+          "date": "2016-06-08"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Necked Aracari",
+        "Red-Footed Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Giant Anteater",
+        "Scarlet Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Cleveland Metroparks Zoo",
+          "country": "United States",
+          "date": "2010-07-27"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Capybara",
+        "Scarlet Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Cleveland Metroparks Zoo",
+          "country": "United States",
+          "date": "2010-07-27"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Capybara",
+        "Roseate Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sedgwick County Zoo",
+          "country": "United States",
+          "date": "2024"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Capybara",
+        "White-Faced Whistling Duck"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sedgwick County Zoo",
+          "country": "United States",
+          "date": "2024"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Blue Duiker",
+        "Yellow-Billed Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Birmingham Zoo",
+          "country": "United States",
+          "date": "2010-08-08"
+        }
+      ]
     }
   ],
   "proxy_compatibility": {
@@ -30831,6 +32486,12 @@
         "to": "large_fruit_bat_squirrel_layer",
         "mode": "restricted_tropical_squirrel_proxy",
         "note": "Restricted tropical-squirrel inheritance. Singapore Zoo's current official Fragile Forest page places Malayan flying foxes in the biodome canopy/understorey community that also includes Prevost's squirrel, while Pairi Daiza independently documents Lyle's Flying Fox with Belly-banded Squirrel. A historical named Brookfield/Lincoln Park mix also combines Island Flying Fox and Lesser Dog-faced Fruit Bat with Black Giant Squirrel. Multiple fruit-bat and squirrel taxa therefore support the same vertical-niche pattern. This does not extend to temperate/ground squirrels or tree shrews."
+      },
+      {
+        "from": "small_african_mongooses",
+        "to": "meerkats",
+        "mode": "cross_mongoose_husbandry_proxy",
+        "note": "Evidence-cluster proxy. Meerkat + Yellow Mongoose is directly documented at many named zoos, and Meerkat + Common Dwarf Mongoose is directly documented at Borth Wild Animal Kingdom. The AZA Small Carnivore TAG care manual additionally states that Banded Mongoose has been exhibited with Meerkats, although it does not identify the institution. This proxy therefore permits Banded Mongoose + Meerkat through the established small-African-mongoose group without treating the unnamed AZA record as named-zoo direct evidence. Breeding groups require caution because mongoose species can threaten young animals."
       }
     ]
   },

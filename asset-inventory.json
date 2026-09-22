@@ -3625,7 +3625,7 @@
           "tropical",
           "north-america"
         ],
-        "Savanna Monitor.png": [
+        "Savannah Monitor.png": [
           "tropical",
           "africa"
         ],
@@ -3754,12 +3754,6 @@
           "asia"
         ],
         "Red Tegu.png": [
-          "tropical",
-          "south-america"
-        ],
-        "Smooth-Fronted Caiman.png": [
-          "semi-aquatic",
-          "wetland",
           "tropical",
           "south-america"
         ],
@@ -3903,6 +3897,12 @@
           "wetland",
           "tropical",
           "africa"
+        ],
+		"Smooth-Fronted Caiman.png": [
+          "semi-aquatic",
+          "wetland",
+          "tropical",
+          "south-america"
         ],
         "Spiny Hill Turtle.png": [
           "tropical",

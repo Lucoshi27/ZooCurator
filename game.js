@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V222.3";
+const ZOO_CURATOR_VERSION = "V222.5";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 1;
 
@@ -13763,6 +13763,65 @@ function ensureGenerateZooUI() {
     const zooNameDisplay = overlay.querySelector('#generateZooNameDisplay');
     const locationDisplay = overlay.querySelector('#generateZooLocationDisplay');
     const locationKnown = overlay.querySelector('#generateZooLocationKnown');
+
+    // Hovering the visible location name shows its province/region without
+    // adding another permanent line to the compact New Zoo menu.
+    const locationProvinceTooltip = document.createElement('div');
+    locationProvinceTooltip.className = 'new-zoo-location-province-tooltip';
+    Object.assign(locationProvinceTooltip.style, {
+        position: 'fixed',
+        zIndex: '100000',
+        display: 'none',
+        pointerEvents: 'none',
+        padding: '6px 9px',
+        borderRadius: '6px',
+        background: 'rgba(30, 27, 22, .94)',
+        color: '#fff',
+        fontSize: '12px',
+        lineHeight: '1.2',
+        whiteSpace: 'nowrap',
+        boxShadow: '0 3px 10px rgba(0,0,0,.24)'
+    });
+    document.body.appendChild(locationProvinceTooltip);
+
+    function currentSetupProvince() {
+        return zooSetupProvinceForLocation(
+            country.value,
+            location.value.trim()
+        ) || overlay.dataset.generatedZooProvince || '';
+    }
+
+    function positionLocationProvinceTooltip(event) {
+        const gap = 12;
+        const rect = locationProvinceTooltip.getBoundingClientRect();
+        let left = event.clientX + gap;
+        let top = event.clientY + gap;
+        if (left + rect.width > window.innerWidth - 8) {
+            left = Math.max(8, event.clientX - rect.width - gap);
+        }
+        if (top + rect.height > window.innerHeight - 8) {
+            top = Math.max(8, event.clientY - rect.height - gap);
+        }
+        locationProvinceTooltip.style.left = `${left}px`;
+        locationProvinceTooltip.style.top = `${top}px`;
+    }
+
+    locationDisplay.style.cursor = 'help';
+    locationDisplay.addEventListener('mouseenter', event => {
+        const province = currentSetupProvince();
+        if (!province) return;
+        locationProvinceTooltip.textContent = province;
+        locationProvinceTooltip.style.display = 'block';
+        positionLocationProvinceTooltip(event);
+    });
+    locationDisplay.addEventListener('mousemove', event => {
+        if (locationProvinceTooltip.style.display !== 'none') {
+            positionLocationProvinceTooltip(event);
+        }
+    });
+    locationDisplay.addEventListener('mouseleave', () => {
+        locationProvinceTooltip.style.display = 'none';
+    });
     const gameMode = overlay.querySelector('#newZooGameMode');
     const zooSize = overlay.querySelector('#newZooSize');
     const zooSizeValue = overlay.querySelector('#newZooSizeValue');
@@ -14276,14 +14335,6 @@ function ensureGameOptionsUI() {
             <p>Choose gameplay preferences and which animal categories may appear.</p>
 
             <div class="advanced-game-rules" id="advancedGameRules">
-                <label>
-                    <span>Gamemode</span>
-                    <select id="optGameMode">
-                        <option value="classic">Classic</option>
-                        <option value="sandbox">Sandbox</option>
-                    </select>
-                </label>
-                <div class="advanced-options-note">Classic uses the normal turn, draw, exchange and trade rules. Sandbox gives unrestricted building tools.</div>
                 <label class="glow-option">
                     <span>Eligibility glows</span>
                     <input id="optEligibilityGlows" type="checkbox" checked>
@@ -14329,7 +14380,6 @@ function ensureGameOptionsUI() {
     document.body.appendChild(overlay);
 
     const list = overlay.querySelector('#categoryOptionList');
-    const gameModeInput = overlay.querySelector('#optGameMode');
     const eligibilityGlowsInput = overlay.querySelector('#optEligibilityGlows');
     const animalLanguageInput = overlay.querySelector('#optAnimalLanguage');
     const milestonesInput = overlay.querySelector('#optRewardMilestones');
@@ -14350,7 +14400,6 @@ function ensureGameOptionsUI() {
     }
 
     function syncInputs() {
-        gameModeInput.value = state.sandboxMode ? 'sandbox' : 'classic';
         eligibilityGlowsInput.checked = state.gameOptions.showEligibilityGlows !== false;
         animalLanguageInput.value = state.gameOptions.animalLanguage === 'nl' ? 'nl' : 'en';
         milestonesInput.value = state.gameOptions.enclosureRewardMilestones.join(', ');
@@ -14379,7 +14428,6 @@ function ensureGameOptionsUI() {
     overlay.querySelector('#resetGameOptionsChanges').addEventListener('click', () => {
         // Restore the standard/default option values in the menu only.
         // The player can still Cancel, or press Apply to commit them.
-        gameModeInput.value = 'classic';
         eligibilityGlowsInput.checked = true;
         animalLanguageInput.value = 'en';
         milestonesInput.value = '1, 2, 3, 4, 6, 9';
@@ -14406,7 +14454,6 @@ function ensureGameOptionsUI() {
             return;
         }
 
-        const requestedGameMode = gameModeInput.value === 'sandbox' ? 'sandbox' : 'classic';
         const showEligibilityGlows = eligibilityGlowsInput.checked;
         const animalLanguage = animalLanguageInput.value === 'nl' ? 'nl' : 'en';
         const milestones = normalizeRewardMilestones(milestonesInput.value);
@@ -14419,9 +14466,7 @@ function ensureGameOptionsUI() {
         const categoriesSame =
             selected.length === state.activeCategories.size &&
             selected.every(category => state.activeCategories.has(category));
-        const modeSame = requestedGameMode === (state.sandboxMode ? 'sandbox' : 'classic');
         const rulesSame =
-            modeSame &&
             showEligibilityGlows === (state.gameOptions.showEligibilityGlows !== false) &&
             animalLanguage === (state.gameOptions.animalLanguage === 'nl' ? 'nl' : 'en') &&
             milestones.join(',') === state.gameOptions.enclosureRewardMilestones.join(',') &&
@@ -14472,19 +14517,6 @@ function ensureGameOptionsUI() {
         state.gameOptions.opponentMode = opponentMode;
         state.gameOptions.tradeOfferFrequency = tradeOfferFrequency;
         saveGameOptions();
-
-        // Gamemode is a live property of the current zoo rather than a hidden
-        // New Zoo shortcut. Switching into Sandbox deliberately starts a fresh
-        // sandbox; switching back to Classic opens the normal New Zoo setup.
-        if (!modeSame) {
-            close();
-            if (requestedGameMode === 'sandbox') {
-                startSandboxMode();
-            } else {
-                openGenerateZooMenu();
-            }
-            return;
-        }
 
         assignOpponentProfiles();
         renderAll();

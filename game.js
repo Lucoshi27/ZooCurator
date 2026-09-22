@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V222.2";
+const ZOO_CURATOR_VERSION = "V222.3";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 1;
 
@@ -454,10 +454,6 @@ const state = {
     // the prepared Level 1 card while the first draw is awaiting preload/commit.
     drawCommitInProgress: false,
     assetPreloadPromises: new Map(),
-    // Definitive 404/410 results from the startup asset audit. A slow image,
-    // timeout, offline connection, or other network failure NEVER puts a card
-    // in this set; only a server response proving that the file is absent does.
-    missingAnimalAssetPaths: new Set(),
 
     unlockedOpponentCount: 2,
     playerLevelsSeen: new Set([1]),
@@ -784,8 +780,7 @@ function emergencyTradeSelection(writeState = true) {
 
                 const matching = realZooTradeAnimals(record, true)
                     .filter(candidate =>
-                        animalCardAssetIsAvailable(candidate) &&
-                        candidate.level === outgoing.level &&
+                                                candidate.level === outgoing.level &&
                         tradeIncomingHasDestinationAfterOutgoing(candidate, outgoing)
                     );
                 if (!matching.length) continue;
@@ -1143,8 +1138,7 @@ function predictedPlayerTradeOffersWithoutEmergency(animal, writeCache = true, n
 
         const matching = (state.opponentTradeStocks[index] || [])
             .filter(candidate =>
-                animalCardAssetIsAvailable(candidate) &&
-                candidate.level === animal.level &&
+                                candidate.level === animal.level &&
                 tradeIncomingHasDestinationAfterOutgoing(candidate, animal)
             );
         if (!matching.length) return;
@@ -1970,24 +1964,8 @@ function getCategorySource(category) {
 // LEVEL FILES
 // ============================================================
 
-function animalAssetIsAvailable(category, level, filename) {
-    return !state.missingAnimalAssetPaths.has(
-        animalPath(category, level, filename)
-    );
-}
-
-function animalCardAssetIsAvailable(animal) {
-    return Boolean(animal) && animalAssetIsAvailable(
-        animal.category,
-        animal.level,
-        animal.filename
-    );
-}
-
-function filterMissingAnimalAssets(category, level, filenames) {
-    return (filenames || []).filter(filename =>
-        animalAssetIsAvailable(category, level, filename)
-    );
+function inventoryFilenames(filenames) {
+    return filenames || [];
 }
 
 function levelFiles(
@@ -2040,10 +2018,7 @@ function levelFiles(
                 !Array.isArray(candidate) &&
                 typeof candidate === 'object'
             ) {
-                return filterMissingAnimalAssets(
-                    category,
-                    level,
-                    Object.keys(candidate)
+                return inventoryFilenames(Object.keys(candidate)
                         .map(cleanFilename)
                         .filter(Boolean)
                         .filter(filename => !/^back\.png$/i.test(filename))
@@ -2054,10 +2029,7 @@ function levelFiles(
                 Array.isArray(candidate)
             ) {
 
-                return filterMissingAnimalAssets(
-                    category,
-                    level,
-                    candidate
+                return inventoryFilenames(candidate
 
                     .map(item => {
 
@@ -2113,10 +2085,7 @@ function levelFiles(
 
     if (Array.isArray(source)) {
 
-        return filterMissingAnimalAssets(
-            category,
-            level,
-            source
+        return inventoryFilenames(source
 
             .filter(item => {
 
@@ -2296,134 +2265,6 @@ function weightedRandomItem(items, weightFor, roll = Math.random()) {
 
 
 // ============================================================
-// ANIMAL ASSET AVAILABILITY
-// ============================================================
-
-function allInventoryAnimalAssetSpecs() {
-    const specs = [];
-    const seen = new Set();
-
-    for (const category of Object.keys(FOLDERS)) {
-        for (let level = 1; level <= 5; level++) {
-            for (const filename of levelFiles(category, level)) {
-                const path = animalPath(category, level, filename);
-                if (seen.has(path)) continue;
-                seen.add(path);
-                specs.push({ category, level, filename, path });
-            }
-        }
-    }
-
-    return specs;
-}
-
-
-const MISSING_ANIMAL_ASSET_CACHE_KEY = 'zooCuratorKnownMissingAnimalAssets';
-
-function restoreKnownMissingAnimalAssets() {
-    try {
-        const cached = JSON.parse(
-            localStorage.getItem(MISSING_ANIMAL_ASSET_CACHE_KEY) || 'null'
-        );
-        if (!cached || !Array.isArray(cached.paths)) return;
-        state.missingAnimalAssetPaths = new Set(cached.paths);
-        if (cached.paths.length) {
-            console.debug(
-                `Restored ${cached.paths.length} known missing animal asset(s).`
-            );
-        }
-    } catch (error) {
-        console.warn('Could not restore known missing animal assets:', error);
-    }
-}
-
-function saveKnownMissingAnimalAssets() {
-    try {
-        localStorage.setItem(
-            MISSING_ANIMAL_ASSET_CACHE_KEY,
-            JSON.stringify({
-                paths: [...state.missingAnimalAssetPaths],
-                updatedAt: Date.now()
-            })
-        );
-    } catch (error) {
-        console.warn('Could not save known missing animal assets:', error);
-    }
-}
-
-function markAnimalAssetMissing(path) {
-    if (!path || state.missingAnimalAssetPaths.has(path)) return false;
-    state.missingAnimalAssetPaths.add(path);
-    saveKnownMissingAnimalAssets();
-    console.info('Temporarily excluding missing animal card:', path);
-    return true;
-}
-
-function markAnimalAssetAvailable(path) {
-    if (!path || !state.missingAnimalAssetPaths.delete(path)) return false;
-    saveKnownMissingAnimalAssets();
-    console.info('Previously missing animal card is available again:', path);
-    return true;
-}
-
-async function verifyAnimalAssetAfterLoadFailure(path) {
-    // Image.onerror cannot distinguish a genuine 404 from a temporary network,
-    // decode or browser problem. Only blacklist after the server explicitly
-    // confirms that the requested PNG does not exist.
-    if (!path) return false;
-    try {
-        const response = await fetch(path, {
-            method: 'HEAD',
-            cache: 'no-cache'
-        });
-        if (response.status === 404 || response.status === 410) {
-            const changed = markAnimalAssetMissing(path);
-            if (changed) {
-                refreshDrawAvailabilityState();
-                renderExchange();
-            }
-            return true;
-        }
-        if (response.ok) {
-            markAnimalAssetAvailable(path);
-        }
-    } catch (error) {
-        // Unknown availability stays playable. Never remove a card merely
-        // because the connection is slow/offline or HEAD is unsupported.
-    }
-    return false;
-}
-
-async function recheckKnownMissingAnimalAssets() {
-    // This replaces the old full-library audit. Normally this is zero requests.
-    // If previous play found a real 404, recheck only that tiny known-missing
-    // set so uploading the PNG to GitHub automatically restores the card.
-    const paths = [...state.missingAnimalAssetPaths];
-    if (!paths.length) return;
-
-    const queue = [...paths];
-    const worker = async () => {
-        while (queue.length) {
-            const path = queue.shift();
-            try {
-                const response = await fetch(path, {
-                    method: 'HEAD',
-                    cache: 'no-cache'
-                });
-                if (response.ok) markAnimalAssetAvailable(path);
-            } catch (error) {
-                // Keep the previous known-missing result until the server can
-                // positively demonstrate that the file exists again.
-            }
-        }
-    };
-
-    await Promise.all(
-        Array.from({ length: Math.min(3, queue.length) }, () => worker())
-    );
-}
-
-// ============================================================
 // SMART ANIMAL ASSET PRELOADING
 // ============================================================
 
@@ -2470,10 +2311,6 @@ function preloadImageUrl(url) {
         image.onload = () => finish(true);
         image.onerror = () => {
             console.warn('Could not preload animal asset:', url);
-            // Do not blacklist on image.onerror itself: it may be transient.
-            // A single targeted HEAD request determines whether this exact
-            // requested card is genuinely absent.
-            verifyAnimalAssetAfterLoadFailure(url);
             finish(false);
         };
 
@@ -15163,9 +15000,8 @@ function realZooTradeAnimals(record, excludePlayerOwned = false, playerKeysOverr
 
     for (const spec of realZooTradeSpecs(record)) {
         // Keep the zoo's holding intact, but never newly transfer a card whose
-        // front PNG was definitively absent during this startup's asset audit.
-        if (!animalCardAssetIsAvailable(spec)) continue;
-        if (playerKeys?.has(animalCardKey(spec))) continue;
+        // front PNG was unavailable.
+                if (playerKeys?.has(animalCardKey(spec))) continue;
         // Real-zoo holdings are previews until a trade is actually accepted.
         // Do not allocate a permanent player-animal ID merely because trading,
         // hover hints, or offer validation inspected this card.
@@ -15368,7 +15204,7 @@ function lockedPlayerTradeOfferIsLive(outgoing, item) {
         if (!record || realZooHasAnimal(record, outgoing)) return false;
 
         const animal = cachedTradeAnimalPreview(item);
-        if (!animal || !animalCardAssetIsAvailable(animal) || playerAlreadyHasAnimal(animal)) return false;
+        if (!animal || playerAlreadyHasAnimal(animal)) return false;
         if (!realZooHasAnimal(record, animal)) return false;
         return tradeIncomingHasDestinationAfterOutgoing(animal, outgoing);
     }
@@ -15379,7 +15215,7 @@ function lockedPlayerTradeOfferIsLive(outgoing, item) {
     if (fictionalOpponentHasAnimal(item.opponentIndex, outgoing)) return false;
 
     const animal = cachedTradeAnimalPreview(item);
-    if (!animal || !animalCardAssetIsAvailable(animal) || playerAlreadyHasAnimal(animal)) return false;
+    if (!animal || playerAlreadyHasAnimal(animal)) return false;
     if (!tradeIncomingHasDestinationAfterOutgoing(animal, outgoing)) return false;
 
     return (state.opponentTradeStocks[item.opponentIndex] || [])
@@ -15406,7 +15242,7 @@ function materializeLockedPlayerTradeOffers(outgoing, cached) {
             if (realZooHasAnimal(record, outgoing)) return null;
 
             const animal = resolveCachedTradeAnimal(item);
-            if (!animal || !animalCardAssetIsAvailable(animal)) return null;
+            if (!animal || !true) return null;
             if (playerAlreadyHasAnimal(animal)) return null;
             if (!realZooHasAnimal(record, animal)) return null;
             // the outgoing animal's old slot is deliberately reserved
@@ -15425,7 +15261,7 @@ function materializeLockedPlayerTradeOffers(outgoing, cached) {
         if (fictionalOpponentHasAnimal(item.opponentIndex, outgoing)) return null;
 
         const animal = resolveCachedTradeAnimal(item);
-        if (!animal || !animalCardAssetIsAvailable(animal) || playerAlreadyHasAnimal(animal)) return null;
+        if (!animal || playerAlreadyHasAnimal(animal)) return null;
         // Same reservation rule for fictional opponents: materialise the
         // already-promised offer using the zoo state AFTER outgoing leaves.
         if (!tradeIncomingHasDestinationAfterOutgoing(animal, outgoing)) return null;
@@ -17073,8 +16909,7 @@ function createAutonomousOpponentOffer() {
     const profile = state.opponentProfiles[opponentIndex];
     const stock = (state.opponentTradeStocks[opponentIndex] || [])
         .filter(incoming =>
-            animalCardAssetIsAvailable(incoming) &&
-            !playerAlreadyHasAnimal(incoming) &&
+                        !playerAlreadyHasAnimal(incoming) &&
             state.animals.some(outgoing =>
                 outgoing.level === incoming.level &&
                 profile?.favourites?.includes(outgoing.category) &&
@@ -17264,8 +17099,7 @@ function outgoingFitsAutonomousOffer(animal = state.outgoingOffer) {
     if (!profile) return false;
     return (
         animal.level === offer.animal.level &&
-        animalCardAssetIsAvailable(offer.animal) &&
-        profile.favourites.includes(animal.category) &&
+                profile.favourites.includes(animal.category) &&
         !opponentAlreadyHasAnimal(offer.opponentIndex, animal) &&
         !playerAlreadyHasAnimal(offer.animal) &&
         tradeIncomingHasDestinationAfterOutgoing(offer.animal, animal)
@@ -17504,12 +17338,12 @@ function pruneUnavailableIncomingTradeOffers() {
     // must not survive as an active offer after a later startup audit has
     // conclusively found their card PNG absent.
     state.tradeOffers = (state.tradeOffers || []).filter(offer =>
-        offer?.animal && animalCardAssetIsAvailable(offer.animal)
+        offer?.animal
     );
 
     if (
         state.autonomousTradeOffer?.animal &&
-        !animalCardAssetIsAvailable(state.autonomousTradeOffer.animal)
+        !true
     ) {
         state.autonomousTradeOffer = null;
         scheduleNextAutonomousOpponentOffer();
@@ -18744,10 +18578,6 @@ async function startGame() {
             12000
         );
 
-        // Known genuine 404s are tiny persistent metadata, not a reason to
-        // rescan the complete card library. Restore them before building decks.
-        restoreKnownMissingAnimalAssets();
-
         const availableCategories = Object.keys(FOLDERS).filter(
             category => levelFiles(category, 1).length > 0
         );
@@ -18848,7 +18678,7 @@ state.animalDatabase = { animals: [] };
 
         // Small jobs that improve the first turn may start at the first idle
         // opportunity. Keep them separate from the large optional databases
-        // and full-library asset audit so one expensive job cannot monopolise
+        // and background work so one expensive job cannot monopolise
         // the first post-startup task.
         scheduleIdleStartupJob(() => {
             captureTurnSnapshot();
@@ -18866,18 +18696,6 @@ state.animalDatabase = { animals: [] };
         scheduleIdleStartupJob(() => {
             loadNonEssentialGameData();
         }, 1600, 550);
-
-        // Recheck only assets that a previous real image failure proved were
-        // 404/410. In the normal case this performs zero requests, regardless
-        // of whether the inventory contains 500 or 5,000 cards.
-        scheduleIdleStartupJob(() => {
-            recheckKnownMissingAnimalAssets().then(() => {
-                refreshDrawAvailabilityState();
-                renderExchange();
-            }).catch(error => {
-                console.warn('Known-missing animal asset recheck failed:', error);
-            });
-        }, 3500, 1800);
     }
     catch (error) {
         showFatal(error);

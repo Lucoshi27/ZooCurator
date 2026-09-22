@@ -2386,9 +2386,26 @@ function renderEnclosureAreaBackgrounds() {
             .slice()
             .sort((a, b) => a.y - b.y || a.x - b.x)[0];
 
+        const memberIds = new Set(group.enclosures.map(enclosure => enclosure.id));
+        const neighbourAt = (enclosure, side) => group.enclosures.some(other => {
+            if (other.id === enclosure.id || !memberIds.has(other.id)) return false;
+            const dx = other.x - enclosure.x;
+            const dy = other.y - enclosure.y;
+            const stepX = ENCLOSURE_W + ENCLOSURE_GAP;
+            const stepY = ENCLOSURE_H + ENCLOSURE_GAP;
+            if (side === 'left')  return Math.abs(dx + stepX) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE && Math.abs(dy) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE;
+            if (side === 'right') return Math.abs(dx - stepX) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE && Math.abs(dy) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE;
+            if (side === 'up')    return Math.abs(dy + stepY) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE && Math.abs(dx) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE;
+            return Math.abs(dy - stepY) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE && Math.abs(dx) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE;
+        });
+
         for (const enclosure of group.enclosures) {
             const area = document.createElement('div');
             area.className = `zoo-theme-area ${group.theme.className} zoo-theme-layer-${group.theme.layer}`;
+            if (neighbourAt(enclosure, 'left')) area.classList.add('theme-join-left');
+            if (neighbourAt(enclosure, 'right')) area.classList.add('theme-join-right');
+            if (neighbourAt(enclosure, 'up')) area.classList.add('theme-join-up');
+            if (neighbourAt(enclosure, 'down')) area.classList.add('theme-join-down');
             area.style.left = `${enclosure.x - pad}px`;
             area.style.top = `${enclosure.y - pad}px`;
             area.style.width = `${ENCLOSURE_W + pad * 2}px`;
@@ -2436,13 +2453,14 @@ function applyEnclosureThemePresentation(element, enclosure) {
     const geography = themes.find(theme => theme.layer === 'geography');
     const facility = themes.find(theme => theme.layer === 'facility');
 
-    // A compact card title; connected group titles are rendered independently
-    // behind the cards, so geography + habitat can overlap without hierarchy.
-    const primary = special || facility || habitat || geography;
+    // Broad area names are rendered once on the connected outer area border,
+    // never repeated inside every enclosure. Single-card specialist facilities
+    // still need their own label because they do not have a connected area border.
+    const primary = special;
     if (!primary) return;
 
     const badge = document.createElement('div');
-    badge.className = 'enclosure-theme-title';
+    badge.className = 'enclosure-theme-title enclosure-special-title';
     badge.textContent = primary.title;
     if (primary.italicTitle) badge.style.fontStyle = 'italic';
     element.appendChild(badge);

@@ -4,6 +4,7 @@
       "1": {
         "Arctic Fox.png": {
           "scientific_name": "Vulpes lagopus",
+          "enclosure_size": "small",
           "tags": [
             "boreal",
             "arctic",
@@ -15,6 +16,7 @@
         },
         "Asian Small-Clawed Otter.png": {
           "scientific_name": "Aonyx cinereus",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -25,6 +27,7 @@
         },
         "Banded Mongoose.png": {
           "scientific_name": "Mungos mungo",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -33,6 +36,7 @@
         },
         "Common Raccoon.png": {
           "scientific_name": "Procyon lotor",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "nocturnal",
@@ -43,6 +47,7 @@
         },
         "Dwarf Mongoose.png": {
           "scientific_name": "Helogale parvula",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -51,6 +56,7 @@
         },
         "Eurasian Otter.png": {
           "scientific_name": "Lutra lutra",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -65,6 +71,7 @@
         },
         "European Badger.png": {
           "scientific_name": "Meles meles",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -77,6 +84,7 @@
         },
         "European Wild Cat.png": {
           "scientific_name": "Felis silvestris",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -87,6 +95,7 @@
         },
         "Fennec Fox.png": {
           "scientific_name": "Vulpes zerda",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "nocturnal",
@@ -96,6 +105,7 @@
         },
         "Meerkat.png": {
           "scientific_name": "Suricata suricatta",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -105,6 +115,7 @@
         },
         "Red Fox.png": {
           "scientific_name": "Vulpes vulpes",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -120,6 +131,7 @@
         },
         "South American Coati.png": {
           "scientific_name": "Nasua nasua",
+          "enclosure_size": "small",
           "tags": [
             "south-america",
             "amazon",
@@ -128,6 +140,7 @@
         },
         "Striped Skunk.png": {
           "scientific_name": "Mephitis mephitis",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -139,6 +152,7 @@
       "2": {
         "Asian Palm Civet.png": {
           "scientific_name": "Paradoxurus hermaphroditus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -147,6 +161,7 @@
         },
         "Binturong.png": {
           "scientific_name": "Arctictis binturong",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -157,6 +172,7 @@
         },
         "Caracal.png": {
           "scientific_name": "Caracal caracal",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "sahel",
@@ -170,6 +186,7 @@
         },
         "Common Genet.png": {
           "scientific_name": "Genetta genetta",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -179,6 +196,7 @@
         },
         "Corsac Fox.png": {
           "scientific_name": "Vulpes corsac",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "china"
@@ -186,6 +204,7 @@
         },
         "Eurasian Lynx.png": {
           "scientific_name": "Lynx lynx",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -201,6 +220,7 @@
         },
         "Golden Jackal.png": {
           "scientific_name": "Canis aureus",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "sahel",
@@ -213,6 +233,7 @@
         },
         "Kinkajou.png": {
           "scientific_name": "Potos flavus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -223,6 +244,7 @@
         },
         "Leopard Cat.png": {
           "scientific_name": "Prionailurus bengalensis",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -234,6 +256,7 @@
         },
         "Ocelot.png": {
           "scientific_name": "Leopardus pardalis",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -245,6 +268,7 @@
         },
         "Pallas's Cat.png": {
           "scientific_name": "Otocolobus manul",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "nocturnal",
@@ -255,6 +279,7 @@
         },
         "Raccoon Dog.png": {
           "scientific_name": "Nyctereutes procyonoides",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -265,6 +290,7 @@
         },
         "Serval.png": {
           "scientific_name": "Leptailurus serval",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -277,6 +303,7 @@
         },
         "Tayra.png": {
           "scientific_name": "Eira barbara",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -286,6 +313,7 @@
         },
         "White-Nosed Coati.png": {
           "scientific_name": "Nasua narica",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "central-america"
@@ -293,6 +321,7 @@
         },
         "Yellow Mongoose.png": {
           "scientific_name": "Cynictis penicillata",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -301,6 +330,7 @@
         },
         "Yellow-Throated Marten.png": {
           "scientific_name": "Martes flavigula",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "nocturnal",
@@ -313,6 +343,7 @@
       "3": {
         "African Civet.png": {
           "scientific_name": "Civettictis civetta",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -322,6 +353,7 @@
         },
         "African Wild Dog.png": {
           "scientific_name": "Lycaon pictus",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -334,6 +366,7 @@
         },
         "American Black Bear.png": {
           "scientific_name": "Ursus americanus",
+          "enclosure_size": "medium",
           "tags": [
             "north-america",
             "rockies",
@@ -342,6 +375,7 @@
         },
         "Bat-Eared Fox.png": {
           "scientific_name": "Otocyon megalotis",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "savanna",
@@ -354,6 +388,7 @@
         },
         "Bobcat.png": {
           "scientific_name": "Lynx rufus",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "rockies",
@@ -362,6 +397,7 @@
         },
         "Brown Bear.png": {
           "scientific_name": "Ursus arctos",
+          "enclosure_size": "medium",
           "tags": [
             "forest",
             "asia",
@@ -373,6 +409,7 @@
         },
         "Bush Dog.png": {
           "scientific_name": "Speothos venaticus",
+          "enclosure_size": "small",
           "tags": [
             "south-america",
             "amazon"
@@ -380,6 +417,7 @@
         },
         "Cape Genet.png": {
           "scientific_name": "Genetta tigrina",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -388,6 +426,7 @@
         },
         "Cheetah.png": {
           "scientific_name": "Acinonyx jubatus",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -401,6 +440,7 @@
         },
         "Cougar.png": {
           "scientific_name": "Puma concolor",
+          "enclosure_size": "medium",
           "tags": [
             "north-america",
             "rockies"
@@ -408,6 +448,7 @@
         },
         "Fishing Cat.png": {
           "scientific_name": "Prionailurus viverrinus",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -419,6 +460,7 @@
         },
         "Fossa.png": {
           "scientific_name": "Cryptoprocta ferox",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -429,6 +471,7 @@
         },
         "Geoffroy's Cat.png": {
           "scientific_name": "Leopardus geoffroyi",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "south-america",
@@ -437,6 +480,7 @@
         },
         "Giant Otter.png": {
           "scientific_name": "Pteronura brasiliensis",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -449,6 +493,7 @@
         },
         "Grey Wolf.png": {
           "scientific_name": "Canis lupus",
+          "enclosure_size": "medium",
           "tags": [
             "forest",
             "asia",
@@ -461,6 +506,7 @@
         },
         "Jungle Cat.png": {
           "scientific_name": "Felis chaus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "asia",
@@ -469,6 +515,7 @@
         },
         "Margay.png": {
           "scientific_name": "Leopardus wiedii",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -479,6 +526,7 @@
         },
         "Nepalese Red Panda.png": {
           "scientific_name": "Ailurus fulgens",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "asia",
@@ -487,6 +535,7 @@
         },
         "Spotted Hyena.png": {
           "scientific_name": "Crocuta crocuta",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -498,6 +547,7 @@
         },
         "Wolverine.png": {
           "scientific_name": "Gulo gulo",
+          "enclosure_size": "small",
           "tags": [
             "boreal",
             "nocturnal",
@@ -509,6 +559,7 @@
       "4": {
         "African Lion.png": {
           "scientific_name": "Panthera leo",
+          "enclosure_size": "large",
           "tags": [
             "savanna",
             "africa",
@@ -520,6 +571,7 @@
         },
         "Amur Leopard.png": {
           "scientific_name": "Panthera pardus",
+          "enclosure_size": "medium",
           "tags": [
             "boreal",
             "asia",
@@ -528,6 +580,7 @@
         },
         "Clouded Leopard.png": {
           "scientific_name": "Neofelis nebulosa",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -538,6 +591,7 @@
         },
         "Common Kusimanse.png": {
           "scientific_name": "Crossarchus obscurus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -547,6 +601,7 @@
         },
         "Crab-Eating Raccoon.png": {
           "scientific_name": "Procyon cancrivorus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "south-america",
@@ -556,6 +611,7 @@
         },
         "Dhole.png": {
           "scientific_name": "Cuon alpinus",
+          "enclosure_size": "medium",
           "tags": [
             "forest",
             "asia",
@@ -566,6 +622,7 @@
         },
         "Egyptian Mongoose.png": {
           "scientific_name": "Herpestes ichneumon",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -574,6 +631,7 @@
         },
         "Honey Badger.png": {
           "scientific_name": "Mellivora capensis",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "nocturnal",
@@ -590,6 +648,7 @@
         },
         "Jaguar.png": {
           "scientific_name": "Panthera onca",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -602,6 +661,7 @@
         },
         "Jaguarundi.png": {
           "scientific_name": "Herpailurus yagouaroundi",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -614,6 +674,7 @@
         },
         "Kit Fox.png": {
           "scientific_name": "Vulpes macrotis",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "rockies"
@@ -621,6 +682,7 @@
         },
         "Maned Wolf.png": {
           "scientific_name": "Chrysocyon brachyurus",
+          "enclosure_size": "medium",
           "tags": [
             "south-america",
             "pantanal",
@@ -629,6 +691,7 @@
         },
         "Oncilla.png": {
           "scientific_name": "Leopardus tigrinus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -640,6 +703,7 @@
         },
         "Polar Bear.png": {
           "scientific_name": "Ursus maritimus",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "arctic",
@@ -651,6 +715,7 @@
         },
         "Ring-Tailed Vontsira.png": {
           "scientific_name": "Galidia elegans",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -659,6 +724,7 @@
         },
         "Ringtail.png": {
           "scientific_name": "Bassariscus astutus",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "nocturnal",
@@ -668,6 +734,7 @@
         },
         "Rusty-Spotted Cat.png": {
           "scientific_name": "Prionailurus rubiginosus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -676,6 +743,7 @@
         },
         "Rüppell's Sand Fox.png": {
           "scientific_name": "Vulpes rueppellii",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "nocturnal",
@@ -685,6 +753,7 @@
         },
         "Sand Cat.png": {
           "scientific_name": "Felis margarita",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "nocturnal",
@@ -696,6 +765,7 @@
         },
         "Siberian Tiger.png": {
           "scientific_name": "Panthera tigris altaica",
+          "enclosure_size": "large",
           "tags": [
             "boreal",
             "asia",
@@ -704,6 +774,7 @@
         },
         "Sloth Bear.png": {
           "scientific_name": "Melursus ursinus",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -714,6 +785,7 @@
         },
         "Snow Leopard.png": {
           "scientific_name": "Panthera uncia",
+          "enclosure_size": "medium",
           "tags": [
             "mountain",
             "asia",
@@ -722,6 +794,7 @@
         },
         "Spectacled Bear.png": {
           "scientific_name": "Tremarctos ornatus",
+          "enclosure_size": "medium",
           "tags": [
             "south-america",
             "andes"
@@ -729,6 +802,7 @@
         },
         "Striped Hyena.png": {
           "scientific_name": "Hyaena hyaena",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "desert",
@@ -742,6 +816,7 @@
         },
         "Sumatran Tiger.png": {
           "scientific_name": "Panthera sumatrae",
+          "enclosure_size": "large",
           "tags": [
             "rainforest",
             "tropical",
@@ -751,6 +826,7 @@
         },
         "Sun Bear.png": {
           "scientific_name": "Helarctos malayanus",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -763,6 +839,7 @@
       "5": {
         "Aardwolf.png": {
           "scientific_name": "Proteles cristata",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "nocturnal",
@@ -774,6 +851,7 @@
         },
         "Andean Mountain Cat.png": {
           "scientific_name": "Leopardus jacobita",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "nocturnal",
@@ -783,6 +861,7 @@
         },
         "Asian Golden Cat.png": {
           "scientific_name": "Catopuma temminckii",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -791,6 +870,7 @@
         },
         "Black-Footed Cat.png": {
           "scientific_name": "Felis nigripes",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "desert",
@@ -801,6 +881,7 @@
         },
         "Brown Hyena.png": {
           "scientific_name": "Parahyaena brunnea",
+          "enclosure_size": "medium",
           "tags": [
             "nocturnal",
             "africa",
@@ -810,6 +891,7 @@
         },
         "Canadian Lynx.png": {
           "scientific_name": "Lynx canadensis",
+          "enclosure_size": "small",
           "tags": [
             "boreal",
             "north-america",
@@ -818,6 +900,7 @@
         },
         "Chinese Mountain Cat.png": {
           "scientific_name": "Felis bieti",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "nocturnal",
@@ -827,6 +910,7 @@
         },
         "Fanaloka.png": {
           "scientific_name": "Fossa fossana",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -837,6 +921,7 @@
         },
         "Flat-Headed Cat.png": {
           "scientific_name": "Prionailurus planiceps",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "tropical",
@@ -847,6 +932,7 @@
         },
         "Giant Panda.png": {
           "scientific_name": "Ailuropoda melanoleuca",
+          "enclosure_size": "large",
           "tags": [
             "rainforest",
             "tropical",
@@ -856,6 +942,7 @@
         },
         "Iberian Lynx.png": {
           "scientific_name": "Lynx pardinus",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "europe",
@@ -864,6 +951,7 @@
         },
         "Kodkod.png": {
           "scientific_name": "Leopardus guigna",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "south-america",
@@ -873,6 +961,7 @@
         },
         "Marbled Cat.png": {
           "scientific_name": "Pardofelis marmorata",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -881,6 +970,7 @@
         },
         "Pampas Cat.png": {
           "scientific_name": "Leopardus colocola",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "south-america",
@@ -895,6 +985,7 @@
       "1": {
         "Alpaca.png": {
           "scientific_name": "Vicugna pacos",
+          "enclosure_size": "small",
           "tags": [
             "domestic",
             "south-america",
@@ -903,6 +994,7 @@
         },
         "Axis Deer.png": {
           "scientific_name": "Axis axis",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "tropical",
@@ -912,6 +1004,7 @@
         },
         "Bactrian Camel.png": {
           "scientific_name": "Camelus bactrianus",
+          "enclosure_size": "medium",
           "tags": [
             "desert",
             "domestic",
@@ -921,6 +1014,7 @@
         },
         "Cameroon Sheep.png": {
           "scientific_name": "Ovis aries",
+          "enclosure_size": "small",
           "tags": [
             "domestic",
             "africa",
@@ -930,6 +1024,7 @@
         },
         "Domestic Donkey.png": {
           "scientific_name": "Equus asinus",
+          "enclosure_size": "small",
           "tags": [
             "domestic",
             "africa",
@@ -938,6 +1033,7 @@
         },
         "European Roe Deer.png": {
           "scientific_name": "Capreolus capreolus",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -947,6 +1043,7 @@
         },
         "Fallow Deer.png": {
           "scientific_name": "Dama dama",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -957,6 +1054,7 @@
         },
         "Highland Cattle.png": {
           "scientific_name": "Bos taurus",
+          "enclosure_size": "small",
           "tags": [
             "domestic",
             "europe"
@@ -964,6 +1062,7 @@
         },
         "Llama.png": {
           "scientific_name": "Lama glama",
+          "enclosure_size": "small",
           "tags": [
             "domestic",
             "south-america",
@@ -972,6 +1071,7 @@
         },
         "Mouflon.png": {
           "scientific_name": "Ovis gmelini",
+          "enclosure_size": "small",
           "tags": [
             "europe",
             "mediterranean"
@@ -979,6 +1079,7 @@
         },
         "Red Deer.png": {
           "scientific_name": "Cervus elaphus",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -990,6 +1091,7 @@
         },
         "West African Dwarf Goat.png": {
           "scientific_name": "Capra hircus",
+          "enclosure_size": "small",
           "tags": [
             "domestic",
             "africa",
@@ -999,6 +1101,7 @@
         },
         "Wild Boar.png": {
           "scientific_name": "Sus scrofa",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "tropical",
@@ -1017,16 +1120,27 @@
         },
         "Zebu.png": {
           "scientific_name": "Bos indicus",
+          "enclosure_size": "small",
           "tags": [
             "domestic",
             "asia",
             "india"
+          ]
+        },
+        "Watusi.png": {
+          "scientific_name": "Bos taurus",
+          "enclosure_size": "small",
+          "tags": [
+            "domestic",
+            "africa",
+            "east-africa"
           ]
         }
       },
       "2": {
         "Alpine Ibex.png": {
           "scientific_name": "Capra ibex",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "europe",
@@ -1035,6 +1149,7 @@
         },
         "Barbary Sheep.png": {
           "scientific_name": "Ammotragus lervia",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "sahel"
@@ -1042,6 +1157,7 @@
         },
         "Blackbuck.png": {
           "scientific_name": "Antilope cervicapra",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "india"
@@ -1049,6 +1165,7 @@
         },
         "Collared Peccary.png": {
           "scientific_name": "Pecari tajacu",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "north-america",
@@ -1060,6 +1177,7 @@
         },
         "Domestic Yak.png": {
           "scientific_name": "Bos grunniens",
+          "enclosure_size": "small",
           "tags": [
             "domestic",
             "asia",
@@ -1068,6 +1186,7 @@
         },
         "Dromedary Camel.png": {
           "scientific_name": "Camelus dromedarius",
+          "enclosure_size": "medium",
           "tags": [
             "desert",
             "africa",
@@ -1078,6 +1197,7 @@
         },
         "Elk.png": {
           "scientific_name": "Cervus canadensis",
+          "enclosure_size": "medium",
           "tags": [
             "north-america",
             "rockies"
@@ -1085,6 +1205,7 @@
         },
         "Guanaco.png": {
           "scientific_name": "Lama guanicoe",
+          "enclosure_size": "small",
           "tags": [
             "south-america",
             "patagonia",
@@ -1094,6 +1215,7 @@
         },
         "Kirk's Dik-Dik.png": {
           "scientific_name": "Madoqua kirkii",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -1102,6 +1224,7 @@
         },
         "Lechwe.png": {
           "scientific_name": "Kobus leche",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -1112,6 +1235,7 @@
         },
         "Plains Zebra.png": {
           "scientific_name": "Equus quagga",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -1121,6 +1245,7 @@
         },
         "Red River Hog.png": {
           "scientific_name": "Potamochoerus porcus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -1130,6 +1255,7 @@
         },
         "Reeve's Muntjac.png": {
           "scientific_name": "Muntiacus reevesi",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "asia",
@@ -1138,6 +1264,7 @@
         },
         "Reindeer.png": {
           "scientific_name": "Rangifer tarandus",
+          "enclosure_size": "medium",
           "tags": [
             "boreal",
             "arctic",
@@ -1149,6 +1276,7 @@
         },
         "Sika Deer.png": {
           "scientific_name": "Cervus nippon",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "asia",
@@ -1158,6 +1286,7 @@
         },
         "Vicuña.png": {
           "scientific_name": "Vicugna vicugna",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "south-america",
@@ -1166,6 +1295,7 @@
         },
         "Wisent.png": {
           "scientific_name": "Bos bonasus",
+          "enclosure_size": "medium",
           "tags": [
             "forest",
             "temperate",
@@ -1177,6 +1307,7 @@
       "3": {
         "Addax.png": {
           "scientific_name": "Addax nasomaculatus",
+          "enclosure_size": "medium",
           "tags": [
             "desert",
             "africa",
@@ -1185,6 +1316,7 @@
         },
         "American Bison.png": {
           "scientific_name": "Bos bison",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "rockies"
@@ -1192,6 +1324,7 @@
         },
         "Blesbok.png": {
           "scientific_name": "Damaliscus pygargus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -1200,6 +1333,7 @@
         },
         "Blue Sheep.png": {
           "scientific_name": "Pseudois nayaur",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "asia",
@@ -1208,6 +1342,7 @@
         },
         "Blue Wildebeest.png": {
           "scientific_name": "Connochaetes taurinus",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -1218,6 +1353,7 @@
         },
         "Bongo.png": {
           "scientific_name": "Tragelaphus eurycerus",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "africa",
@@ -1226,6 +1362,7 @@
         },
         "Chacoan Peccary.png": {
           "scientific_name": "Catagonus wagneri",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "south-america",
@@ -1234,6 +1371,7 @@
         },
         "Common Eland.png": {
           "scientific_name": "Tragelaphus oryx",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -1244,6 +1382,7 @@
         },
         "Common Warthog.png": {
           "scientific_name": "Phacochoerus africanus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -1256,6 +1395,7 @@
         },
         "Common Waterbuck.png": {
           "scientific_name": "Kobus ellipsiprymnus",
+          "enclosure_size": "medium",
           "tags": [
             "wetland",
             "savanna",
@@ -1266,6 +1406,7 @@
         },
         "Dama Gazelle.png": {
           "scientific_name": "Nanger dama",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "sahel"
@@ -1273,6 +1414,7 @@
         },
         "Grévy's Zebra.png": {
           "scientific_name": "Equus grevyi",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -1281,6 +1423,7 @@
         },
         "Himalayan Tahr.png": {
           "scientific_name": "Hemitragus jemlahicus",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "asia",
@@ -1289,6 +1432,7 @@
         },
         "Impala.png": {
           "scientific_name": "Aepyceros melampus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -1298,6 +1442,7 @@
         },
         "Javan Banteng.png": {
           "scientific_name": "Bos javanicus",
+          "enclosure_size": "medium",
           "tags": [
             "asia",
             "southeast-asia"
@@ -1305,6 +1450,7 @@
         },
         "Takin.png": {
           "scientific_name": "Budorcas taxicolor",
+          "enclosure_size": "medium",
           "tags": [
             "mountain",
             "asia",
@@ -1314,6 +1460,7 @@
         },
         "Moose.png": {
           "scientific_name": "Alces alces",
+          "enclosure_size": "medium",
           "tags": [
             "wetland",
             "boreal",
@@ -1325,6 +1472,7 @@
         },
         "Nile Lechwe.png": {
           "scientific_name": "Kobus megaceros",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -1334,6 +1482,7 @@
         },
         "Nilgai.png": {
           "scientific_name": "Boselaphus tragocamelus",
+          "enclosure_size": "medium",
           "tags": [
             "asia",
             "india"
@@ -1341,6 +1490,7 @@
         },
         "Pygmy Hippopotamus.png": {
           "scientific_name": "Choeropsis liberiensis",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -1352,6 +1502,7 @@
         },
         "Père David's Deer.png": {
           "scientific_name": "Elaphurus davidianus",
+          "enclosure_size": "medium",
           "tags": [
             "wetland",
             "temperate",
@@ -1361,6 +1512,7 @@
         },
         "Scimitar Oryx.png": {
           "scientific_name": "Oryx dammah",
+          "enclosure_size": "medium",
           "tags": [
             "desert",
             "africa",
@@ -1369,6 +1521,7 @@
         },
         "Sitatunga.png": {
           "scientific_name": "Tragelaphus spekii",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -1379,6 +1532,7 @@
         },
         "Somali Wild Ass.png": {
           "scientific_name": "Equus africanus",
+          "enclosure_size": "medium",
           "tags": [
             "desert",
             "africa",
@@ -1387,6 +1541,7 @@
         },
         "South American Tapir.png": {
           "scientific_name": "Tapirus terrestris",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -1397,6 +1552,7 @@
         },
         "Springbok.png": {
           "scientific_name": "Antidorcas marsupialis",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -1406,6 +1562,7 @@
         },
         "Visayan Warty Pig.png": {
           "scientific_name": "Sus cebifrons",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -1414,6 +1571,7 @@
         },
         "White-Lipped Peccary.png": {
           "scientific_name": "Tayassu pecari",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -1426,6 +1584,7 @@
       "4": {
         "Arabian Oryx.png": {
           "scientific_name": "Oryx leucoryx",
+          "enclosure_size": "medium",
           "tags": [
             "desert",
             "asia",
@@ -1434,6 +1593,7 @@
         },
         "Arabian Sand Gazelle.png": {
           "scientific_name": "Gazella marica",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "asia",
@@ -1442,6 +1602,7 @@
         },
         "Black Sable Antelope.png": {
           "scientific_name": "Hippotragus niger",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -1450,6 +1611,7 @@
         },
         "Black Wildebeest.png": {
           "scientific_name": "Connochaetes gnou",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -1458,6 +1620,7 @@
         },
         "Cape Buffalo.png": {
           "scientific_name": "Syncerus caffer",
+          "enclosure_size": "medium",
           "tags": [
             "africa",
             "cape"
@@ -1465,6 +1628,7 @@
         },
         "Common Hog Deer.png": {
           "scientific_name": "Axis porcinus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "tropical",
@@ -1474,6 +1638,7 @@
         },
         "Gemsbok.png": {
           "scientific_name": "Oryx gazella",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "desert",
@@ -1484,6 +1649,7 @@
         },
         "Greater Kudu.png": {
           "scientific_name": "Tragelaphus strepsiceros",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -1494,6 +1660,7 @@
         },
         "Hippopotamus.png": {
           "scientific_name": "Hippopotamus amphibius",
+          "enclosure_size": "large",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -1504,6 +1671,7 @@
         },
         "Indian Muntjac.png": {
           "scientific_name": "Muntiacus muntjak",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "asia",
@@ -1512,6 +1680,7 @@
         },
         "Indian Rhinoceros.png": {
           "scientific_name": "Rhinoceros unicornis",
+          "enclosure_size": "large",
           "tags": [
             "asia",
             "india"
@@ -1519,6 +1688,7 @@
         },
         "Indian Swamp Deer.png": {
           "scientific_name": "Rucervus duvaucelii",
+          "enclosure_size": "medium",
           "tags": [
             "asia",
             "india"
@@ -1526,6 +1696,7 @@
         },
         "Javan Chevrotain.png": {
           "scientific_name": "Tragulus javanicus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -1534,6 +1705,7 @@
         },
         "Kordofan Giraffe.png": {
           "scientific_name": "Giraffa antiquorum",
+          "enclosure_size": "large",
           "tags": [
             "savanna",
             "africa",
@@ -1544,6 +1716,7 @@
         },
         "Lowland Anoa.png": {
           "scientific_name": "Bubalus depressicornis",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -1552,6 +1725,7 @@
         },
         "Malayan Tapir.png": {
           "scientific_name": "Tapirus indicus",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -1561,6 +1735,7 @@
         },
         "Markhor.png": {
           "scientific_name": "Capra falconeri",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "asia",
@@ -1569,6 +1744,7 @@
         },
         "Musk Ox.png": {
           "scientific_name": "Ovibos moschatus",
+          "enclosure_size": "medium",
           "tags": [
             "boreal",
             "arctic",
@@ -1578,6 +1754,7 @@
         },
         "Nyala.png": {
           "scientific_name": "Tragelaphus angasii",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -1587,6 +1764,7 @@
         },
         "Okapi.png": {
           "scientific_name": "Okapia johnstoni",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -1596,6 +1774,7 @@
         },
         "Onager.png": {
           "scientific_name": "Equus hemionus",
+          "enclosure_size": "medium",
           "tags": [
             "asia",
             "china"
@@ -1603,6 +1782,7 @@
         },
         "Przewalski's Horse.png": {
           "scientific_name": "Equus przewalskii",
+          "enclosure_size": "medium",
           "tags": [
             "asia",
             "china"
@@ -1610,6 +1790,7 @@
         },
         "Red Buffalo.png": {
           "scientific_name": "Syncerus nanus",
+          "enclosure_size": "medium",
           "tags": [
             "tropical",
             "africa",
@@ -1618,6 +1799,7 @@
         },
         "Red Duiker.png": {
           "scientific_name": "Cephalophus natalensis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "africa",
@@ -1626,6 +1808,7 @@
         },
         "Reticulated Giraffe.png": {
           "scientific_name": "Giraffa reticulata",
+          "enclosure_size": "large",
           "tags": [
             "savanna",
             "africa",
@@ -1634,6 +1817,7 @@
         },
         "Rothschild's Giraffe.png": {
           "scientific_name": "Giraffa rothschildi",
+          "enclosure_size": "large",
           "tags": [
             "savanna",
             "africa",
@@ -1642,6 +1826,7 @@
         },
         "Southern Pudu.png": {
           "scientific_name": "Pudu puda",
+          "enclosure_size": "small",
           "tags": [
             "south-america",
             "andes",
@@ -1650,6 +1835,7 @@
         },
         "Thomson's Gazelle.png": {
           "scientific_name": "Eudorcas thomsonii",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -1658,6 +1844,7 @@
         },
         "Tufted Deer.png": {
           "scientific_name": "Elaphodus cephalophus",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "asia",
@@ -1666,6 +1853,7 @@
         },
         "Visayan Spotted Deer.png": {
           "scientific_name": "Rusa alfredi",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -1674,6 +1862,7 @@
         },
         "White Rhinoceros.png": {
           "scientific_name": "Ceratotherium simum",
+          "enclosure_size": "large",
           "tags": [
             "savanna",
             "africa",
@@ -1684,6 +1873,7 @@
         },
         "White-Tailed Deer.png": {
           "scientific_name": "Odocoileus virginianus",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "rockies",
@@ -1694,6 +1884,7 @@
       "5": {
         "Angolan Giraffe.png": {
           "scientific_name": "Giraffa giraffa",
+          "enclosure_size": "large",
           "tags": [
             "savanna",
             "africa",
@@ -1702,6 +1893,7 @@
         },
         "Baird's Tapir.png": {
           "scientific_name": "Tapirus bairdii",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -1712,6 +1904,7 @@
         },
         "Black Rhinoceros.png": {
           "scientific_name": "Diceros bicornis",
+          "enclosure_size": "large",
           "tags": [
             "savanna",
             "africa",
@@ -1721,6 +1914,7 @@
         },
         "Blue Duiker.png": {
           "scientific_name": "Philantomba monticola",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "africa",
@@ -1729,6 +1923,7 @@
         },
         "Cuvier's Gazelle.png": {
           "scientific_name": "Gazella cuvieri",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "mountain",
@@ -1738,6 +1933,7 @@
         },
         "Dall Sheep.png": {
           "scientific_name": "Ovis dalli",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "rockies"
@@ -1745,6 +1941,7 @@
         },
         "Gerenuk.png": {
           "scientific_name": "Litocranius walleri",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -1753,6 +1950,7 @@
         },
         "Kiang.png": {
           "scientific_name": "Equus kiang",
+          "enclosure_size": "medium",
           "tags": [
             "mountain",
             "asia",
@@ -1762,6 +1960,7 @@
         },
         "Klipspringer.png": {
           "scientific_name": "Oreotragus oreotragus",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "africa",
@@ -1772,6 +1971,7 @@
         },
         "Masai Giraffe.png": {
           "scientific_name": "Giraffa tippelskirchi",
+          "enclosure_size": "large",
           "tags": [
             "savanna",
             "africa",
@@ -1780,6 +1980,7 @@
         },
         "Mountain Goat.png": {
           "scientific_name": "Oreamnos americanus",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "north-america",
@@ -1788,6 +1989,7 @@
         },
         "Mountain Reedbuck.png": {
           "scientific_name": "Redunca fulvorufula",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "africa",
@@ -1797,6 +1999,7 @@
         },
         "Nubian Ibex.png": {
           "scientific_name": "Capra nubiana",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "mountain",
@@ -1808,6 +2011,7 @@
         },
         "Philippine Mouse-Deer.png": {
           "scientific_name": "Tragulus nigricans",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -1816,6 +2020,7 @@
         },
         "Sambar.png": {
           "scientific_name": "Rusa unicolor",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "asia",
@@ -1824,6 +2029,7 @@
         },
         "Siberian Musk Deer.png": {
           "scientific_name": "Moschus moschiferus",
+          "enclosure_size": "small",
           "tags": [
             "boreal",
             "asia",
@@ -1833,6 +2039,7 @@
         },
         "Sulawesi Babirusa.png": {
           "scientific_name": "Babyrousa celebensis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -1842,6 +2049,7 @@
         },
         "Yellow-Backed Duiker.png": {
           "scientific_name": "Cephalophus silvicultor",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "africa",
@@ -1854,6 +2062,7 @@
       "1": {
         "Barbary Macaque.png": {
           "scientific_name": "Macaca sylvanus",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "asia",
@@ -1862,6 +2071,7 @@
         },
         "Bolivian Squirrel Monkey.png": {
           "scientific_name": "Saimiri boliviensis",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -1870,6 +2080,7 @@
         },
         "Common Marmoset.png": {
           "scientific_name": "Callithrix jacchus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -1879,6 +2090,7 @@
         },
         "Common Squirrel Monkey.png": {
           "scientific_name": "Saimiri sciureus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -1887,6 +2099,7 @@
         },
         "Cotton-Top Tamarin.png": {
           "scientific_name": "Saguinus oedipus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -1896,6 +2109,7 @@
         },
         "Goeldi's Monkey.png": {
           "scientific_name": "Callimico goeldii",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -1905,6 +2119,7 @@
         },
         "Golden-Handed Tamarin.png": {
           "scientific_name": "Saguinus midas",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -1914,6 +2129,7 @@
         },
         "Pygmy Marmoset.png": {
           "scientific_name": "Cebuella pygmaea",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -1923,6 +2139,7 @@
         },
         "Rhesus Macaque.png": {
           "scientific_name": "Macaca mulatta",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "china",
@@ -1932,6 +2149,7 @@
         },
         "Ring-Tailed Lemur.png": {
           "scientific_name": "Lemur catta",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "africa",
@@ -1940,6 +2158,7 @@
         },
         "Tufted Capuchin.png": {
           "scientific_name": "Sapajus apella",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -1948,6 +2167,7 @@
         },
         "White-Headed Marmoset.png": {
           "scientific_name": "Callithrix geoffroyi",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -1959,6 +2179,7 @@
       "2": {
         "Black Lemur.png": {
           "scientific_name": "Eulemur macaco",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "madagascar"
@@ -1966,6 +2187,7 @@
         },
         "Black-and-White Ruffed Lemur.png": {
           "scientific_name": "Varecia variegata",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -1975,6 +2197,7 @@
         },
         "Crab-Eating Macaque.png": {
           "scientific_name": "Macaca fascicularis",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "southeast-asia"
@@ -1982,6 +2205,7 @@
         },
         "De Brazza's Monkey.png": {
           "scientific_name": "Cercopithecus neglectus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -1990,6 +2214,7 @@
         },
         "Emperor Tamarin.png": {
           "scientific_name": "Saguinus imperator",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -1999,6 +2224,7 @@
         },
         "Golden Lion Tamarin.png": {
           "scientific_name": "Leontopithecus rosalia",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2008,6 +2234,7 @@
         },
         "Golden-Headed Lion Tamarin.png": {
           "scientific_name": "Leontopithecus chrysomelas",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2017,6 +2244,7 @@
         },
         "Green Monkey.png": {
           "scientific_name": "Chlorocebus sabaeus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -2025,6 +2253,7 @@
         },
         "Hamadryas Baboon.png": {
           "scientific_name": "Papio hamadryas",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "desert",
@@ -2037,6 +2266,7 @@
         },
         "Red Ruffed Lemur.png": {
           "scientific_name": "Varecia rubra",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2046,6 +2276,7 @@
         },
         "Red-Bellied Lemur.png": {
           "scientific_name": "Eulemur rubriventer",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "madagascar"
@@ -2053,6 +2284,7 @@
         },
         "Red-Bellied Tamarin.png": {
           "scientific_name": "Saguinus labiatus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2062,6 +2294,7 @@
         },
         "White-Faced Saki.png": {
           "scientific_name": "Pithecia pithecia",
+          "enclosure_size": "small",
           "tags": [
             "south-america",
             "amazon"
@@ -2069,6 +2302,7 @@
         },
         "White-Handed Gibbon.png": {
           "scientific_name": "Hylobates lar",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -2080,6 +2314,7 @@
       "3": {
         "Black Howler Monkey.png": {
           "scientific_name": "Alouatta caraya",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2090,6 +2325,7 @@
         },
         "Black-Headed Spider Monkey.png": {
           "scientific_name": "Ateles fusciceps",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -2099,6 +2335,7 @@
         },
         "Collared Mangabey.png": {
           "scientific_name": "Cercocebus torquatus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -2107,6 +2344,7 @@
         },
         "Crowned Lemur.png": {
           "scientific_name": "Eulemur coronatus",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "madagascar"
@@ -2114,6 +2352,7 @@
         },
         "Diana Monkey.png": {
           "scientific_name": "Cercopithecus diana",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2123,6 +2362,7 @@
         },
         "Gelada Baboon.png": {
           "scientific_name": "Theropithecus gelada",
+          "enclosure_size": "medium",
           "tags": [
             "mountain",
             "africa",
@@ -2131,6 +2371,7 @@
         },
         "Lion-Tailed Macaque.png": {
           "scientific_name": "Macaca silenus",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "india"
@@ -2138,6 +2379,7 @@
         },
         "Mandrill.png": {
           "scientific_name": "Mandrillus sphinx",
+          "enclosure_size": "medium",
           "tags": [
             "africa",
             "congo"
@@ -2145,6 +2387,7 @@
         },
         "Mantled Guereza.png": {
           "scientific_name": "Colobus guereza",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "east-africa",
@@ -2153,6 +2396,7 @@
         },
         "Patas Monkey.png": {
           "scientific_name": "Erythrocebus patas",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "sahel",
@@ -2161,6 +2405,7 @@
         },
         "Pied Tamarin.png": {
           "scientific_name": "Saguinus bicolor",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2170,6 +2415,7 @@
         },
         "Red Titi.png": {
           "scientific_name": "Plecturocebus cupreus",
+          "enclosure_size": "small",
           "tags": [
             "south-america",
             "amazon"
@@ -2177,6 +2423,7 @@
         },
         "Senegal Bushbaby.png": {
           "scientific_name": "Galago senegalensis",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -2185,6 +2432,7 @@
         },
         "Siamang.png": {
           "scientific_name": "Symphalangus syndactylus",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -2194,6 +2442,7 @@
         },
         "Silvery Marmoset.png": {
           "scientific_name": "Mico argentatus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2203,6 +2452,7 @@
         },
         "White-Cheeked Gibbon.png": {
           "scientific_name": "Nomascus leucogenys",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -2212,6 +2462,7 @@
         },
         "White-Faced Capuchin.png": {
           "scientific_name": "Cebus capucinus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -2220,6 +2471,7 @@
         },
         "White-Fronted Lemur.png": {
           "scientific_name": "Eulemur albifrons",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "madagascar"
@@ -2229,6 +2481,7 @@
       "4": {
         "Alaotran Bamboo Lemur.png": {
           "scientific_name": "Hapalemur alaotrensis",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "madagascar"
@@ -2236,6 +2489,7 @@
         },
         "Black Crested Mangabey.png": {
           "scientific_name": "Lophocebus aterrimus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -2244,6 +2498,7 @@
         },
         "Brown-Mantled Tamarin.png": {
           "scientific_name": "Leontocebus fuscicollis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2253,6 +2508,7 @@
         },
         "Capped Gibbon.png": {
           "scientific_name": "Hylobates pileatus",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -2262,6 +2518,7 @@
         },
         "Chimpanzee.png": {
           "scientific_name": "Pan troglodytes",
+          "enclosure_size": "large",
           "tags": [
             "tropical",
             "africa",
@@ -2271,6 +2528,7 @@
         },
         "Drill.png": {
           "scientific_name": "Mandrillus leucophaeus",
+          "enclosure_size": "medium",
           "tags": [
             "africa",
             "west-africa"
@@ -2278,6 +2536,7 @@
         },
         "François' Langur.png": {
           "scientific_name": "Trachypithecus francoisi",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "southeast-asia"
@@ -2285,6 +2544,7 @@
         },
         "Golden-Cheeked Gibbon.png": {
           "scientific_name": "Nomascus gabriellae",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2294,6 +2554,7 @@
         },
         "Grey Langur.png": {
           "scientific_name": "Semnopithecus entellus",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "india"
@@ -2301,6 +2562,7 @@
         },
         "Grey Slender Loris.png": {
           "scientific_name": "Loris lydekkerianus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -2309,6 +2571,7 @@
         },
         "Grey-Handed Night Monkey.png": {
           "scientific_name": "Aotus griseimembra",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "south-america",
@@ -2317,6 +2580,7 @@
         },
         "Guaian Bearded Saki.png": {
           "scientific_name": "Chiropotes sagulatus",
+          "enclosure_size": "small",
           "tags": [
             "south-america",
             "amazon"
@@ -2324,6 +2588,7 @@
         },
         "Mohol Bushbaby.png": {
           "scientific_name": "Galago moholi",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -2332,6 +2597,7 @@
         },
         "Owl-Faced Monkey.png": {
           "scientific_name": "Cercopithecus hamlyni",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -2340,6 +2606,7 @@
         },
         "Pygmy Slow Loris.png": {
           "scientific_name": "Xanthonycticebus pygmaeus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -2348,6 +2615,7 @@
         },
         "Red Howler Monkey.png": {
           "scientific_name": "Alouatta seniculus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2358,6 +2626,7 @@
         },
         "Red-Faced Spider Monkey.png": {
           "scientific_name": "Ateles paniscus",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -2367,6 +2636,7 @@
         },
         "Red-Fronted Lemur.png": {
           "scientific_name": "Eulemur rufus",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "madagascar"
@@ -2374,6 +2644,7 @@
         },
         "Vervet Monkey.png": {
           "scientific_name": "Chlorocebus pygerythrus",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "east-africa"
@@ -2381,6 +2652,7 @@
         },
         "Western Lowland Gorilla.png": {
           "scientific_name": "Gorilla gorilla",
+          "enclosure_size": "large",
           "tags": [
             "rainforest",
             "tropical",
@@ -2394,6 +2666,7 @@
       "5": {
         "Agile Gibbon.png": {
           "scientific_name": "Hylobates agilis",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -2403,6 +2676,7 @@
         },
         "Aye-Aye.png": {
           "scientific_name": "Daubentonia madagascariensis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2413,6 +2687,7 @@
         },
         "Blue-Eyed Black Lemur.png": {
           "scientific_name": "Eulemur flavifrons",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "madagascar"
@@ -2420,6 +2695,7 @@
         },
         "Bonobo.png": {
           "scientific_name": "Pan paniscus",
+          "enclosure_size": "large",
           "tags": [
             "rainforest",
             "tropical",
@@ -2429,6 +2705,7 @@
         },
         "Bornean Orangutan.png": {
           "scientific_name": "Pongo pygmaeus",
+          "enclosure_size": "large",
           "tags": [
             "rainforest",
             "tropical",
@@ -2438,6 +2715,7 @@
         },
         "Coquerel's Sifaka.png": {
           "scientific_name": "Propithecus coquereli",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2447,6 +2725,7 @@
         },
         "Crowned Sifaka.png": {
           "scientific_name": "Propithecus coronatus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2456,6 +2735,7 @@
         },
         "Dusky Langur.png": {
           "scientific_name": "Trachypithecus obscurus",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "southeast-asia"
@@ -2463,6 +2743,7 @@
         },
         "Golden Snub-Nosed Monkey.png": {
           "scientific_name": "Rhinopithecus roxellana",
+          "enclosure_size": "medium",
           "tags": [
             "mountain",
             "asia",
@@ -2471,6 +2752,7 @@
         },
         "Grey Gibbon.png": {
           "scientific_name": "Hylobates muelleri",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -2480,6 +2762,7 @@
         },
         "Eastern Gorilla.png": {
           "scientific_name": "Gorilla beringei",
+          "enclosure_size": "large",
           "tags": [
             "mountain",
             "africa",
@@ -2488,6 +2771,7 @@
         },
         "Red-Shanked Douc.png": {
           "scientific_name": "Pygathrix nemaeus",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "southeast-asia"
@@ -2495,6 +2779,7 @@
         },
         "Silvery Gibbon.png": {
           "scientific_name": "Hylobates moloch",
+          "enclosure_size": "medium",
           "tags": [
             "rainforest",
             "tropical",
@@ -2504,6 +2789,7 @@
         },
         "Sumatran Orangutan.png": {
           "scientific_name": "Pongo abelii",
+          "enclosure_size": "large",
           "tags": [
             "rainforest",
             "tropical",
@@ -2513,6 +2799,7 @@
         },
         "Woolly Monkey.png": {
           "scientific_name": "Lagothrix lagotricha",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2524,19 +2811,21 @@
     },
     "Other Mammals": {
       "1": {
-		"African Crested Porcupine.png": {
+        "African Crested Porcupine.png": {
           "scientific_name": "Hystrix cristata",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "desert",
             "nocturnal",
-			"africa",
-			"east-africa",
-			"west-africa"
+            "africa",
+            "east-africa",
+            "west-africa"
           ]
         },
         "Azara's Agouti.png": {
           "scientific_name": "Dasyprocta azarae",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2546,6 +2835,7 @@
         },
         "Coypu.png": {
           "scientific_name": "Myocastor coypus",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "south-america",
@@ -2555,6 +2845,7 @@
         },
         "Eurasian Beaver.png": {
           "scientific_name": "Castor fiber",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -2567,6 +2858,7 @@
         },
         "Four-Toed Hedgehog.png": {
           "scientific_name": "Atelerix albiventris",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -2575,6 +2867,7 @@
         },
         "Indian Crested Porcupine.png": {
           "scientific_name": "Hystrix indica",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -2583,6 +2876,7 @@
         },
         "Lesser Hedgehog Tenrec.png": {
           "scientific_name": "Echinops telfairi",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -2591,6 +2885,7 @@
         },
         "Patagonian Mara.png": {
           "scientific_name": "Dolichotis patagonum",
+          "enclosure_size": "small",
           "tags": [
             "south-america",
             "pampas",
@@ -2599,6 +2894,7 @@
         },
         "Prevost's Squirrel.png": {
           "scientific_name": "Callosciurus prevostii",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "southeast-asia"
@@ -2606,6 +2902,7 @@
         },
         "Red Squirrel.png": {
           "scientific_name": "Sciurus vulgaris",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "asia",
@@ -2615,6 +2912,7 @@
         },
         "Red-Necked Wallaby.png": {
           "scientific_name": "Notamacropus rufogriseus",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -2622,6 +2920,7 @@
         },
         "Red-Rumped Agouti.png": {
           "scientific_name": "Dasyprocta leporina",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2631,6 +2930,7 @@
         },
         "Southern Three-Banded Armadillo.png": {
           "scientific_name": "Tolypeutes matacus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "south-america",
@@ -2639,6 +2939,7 @@
         },
         "Sugar Glider.png": {
           "scientific_name": "Petaurus breviceps",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "oceania",
@@ -2649,6 +2950,7 @@
       "2": {
         "American Beaver.png": {
           "scientific_name": "Castor canadensis",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -2659,6 +2961,7 @@
         },
         "Black-Rumped Agouti.png": {
           "scientific_name": "Dasyprocta prymnolopha",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2668,13 +2971,15 @@
         },
         "Black-Tailed Prairie Dog.png": {
           "scientific_name": "Cynomys ludovicianus",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "rockies"
           ]
         },
-		"Cape Porcupine.png": {
+        "Cape Porcupine.png": {
           "scientific_name": "Hystrix africaeaustralis",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "desert",
@@ -2686,6 +2991,7 @@
         },
         "Capybara.png": {
           "scientific_name": "Hydrochoerus hydrochaeris",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -2697,6 +3003,7 @@
         },
         "Chacoan Mara.png": {
           "scientific_name": "Dolichotis salinicola",
+          "enclosure_size": "small",
           "tags": [
             "south-america",
             "pampas",
@@ -2705,6 +3012,7 @@
         },
         "Egyptian Fruit Bat.png": {
           "scientific_name": "Rousettus aegyptiacus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -2716,6 +3024,7 @@
         },
         "Large Hairy Armadillo.png": {
           "scientific_name": "Chaetophractus villosus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "south-america",
@@ -2725,6 +3034,7 @@
         },
         "Linnaeus's Two-Toed Sloth.png": {
           "scientific_name": "Choloepus didactylus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2735,6 +3045,7 @@
         },
         "Long-Eared Hedgehog.png": {
           "scientific_name": "Hemiechinus auritus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -2746,6 +3057,7 @@
         },
         "North American Porcupine.png": {
           "scientific_name": "Erethizon dorsatum",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "nocturnal",
@@ -2755,6 +3067,7 @@
         },
         "Northern Treeshrew.png": {
           "scientific_name": "Tupaia belangeri",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -2763,6 +3076,7 @@
         },
         "Parma Wallaby.png": {
           "scientific_name": "Notamacropus parma",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -2770,6 +3084,7 @@
         },
         "Red Kangaroo.png": {
           "scientific_name": "Osphranter rufus",
+          "enclosure_size": "medium",
           "tags": [
             "oceania",
             "australia"
@@ -2777,6 +3092,7 @@
         },
         "Round-Eared Elephant Shrew.png": {
           "scientific_name": "Macroscelides proboscideus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -2785,6 +3101,7 @@
         },
         "Six-Banded Armadillo.png": {
           "scientific_name": "Euphractus sexcinctus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "south-america",
@@ -2795,6 +3112,7 @@
         },
         "Swamp Wallaby.png": {
           "scientific_name": "Wallabia bicolor",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -2804,6 +3122,7 @@
       "3": {
         "Agile Wallaby.png": {
           "scientific_name": "Notamacropus agilis",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -2811,6 +3130,7 @@
         },
         "Black-and-Rufous Elephant Shrew.png": {
           "scientific_name": "Rhynchocyon petersi",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -2820,6 +3140,7 @@
         },
         "Brazilian Porcupine.png": {
           "scientific_name": "Coendou prehensilis",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -2829,6 +3150,7 @@
         },
         "Brushtail Possum.png": {
           "scientific_name": "Trichosurus vulpecula",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -2836,6 +3158,7 @@
         },
         "Eastern Wallaroo.png": {
           "scientific_name": "Osphranter robustus",
+          "enclosure_size": "medium",
           "tags": [
             "oceania",
             "australia"
@@ -2843,6 +3166,7 @@
         },
         "Giant Anteater.png": {
           "scientific_name": "Myrmecophaga tridactyla",
+          "enclosure_size": "medium",
           "tags": [
             "south-america",
             "amazon",
@@ -2852,6 +3176,7 @@
         },
         "Grey Kangaroo.png": {
           "scientific_name": "Macropus giganteus",
+          "enclosure_size": "medium",
           "tags": [
             "oceania",
             "australia"
@@ -2859,6 +3184,7 @@
         },
         "Indian Flying Fox.png": {
           "scientific_name": "Pteropus medius",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -2868,6 +3194,7 @@
         },
         "Large Flying Fox.png": {
           "scientific_name": "Pteropus vampyrus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -2876,6 +3203,7 @@
         },
         "Long-Nosed Potoroo.png": {
           "scientific_name": "Potorous tridactylus",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -2883,6 +3211,7 @@
         },
         "Lowland Paca.png": {
           "scientific_name": "Cuniculus paca",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2895,6 +3224,7 @@
         },
         "Lyle's Flying Fox.png": {
           "scientific_name": "Pteropus lylei",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -2904,6 +3234,7 @@
         },
         "Rodriguez Flying Fox.png": {
           "scientific_name": "Pteropus rodricensis",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia"
@@ -2911,6 +3242,7 @@
         },
         "Southern Tamandua.png": {
           "scientific_name": "Tamandua tetradactyla",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2922,6 +3254,7 @@
         },
         "Western Woylie.png": {
           "scientific_name": "Bettongia penicillata",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -2931,6 +3264,7 @@
       "4": {
         "Aardvark.png": {
           "scientific_name": "Orycteropus afer",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "nocturnal",
@@ -2942,6 +3276,7 @@
         },
         "African Brush-Tailed Porcupine.png": {
           "scientific_name": "Atherurus africanus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -2950,6 +3285,7 @@
         },
         "Asian Elephant.png": {
           "scientific_name": "Elephas maximus",
+          "enclosure_size": "large",
           "tags": [
             "asia",
             "southeast-asia",
@@ -2958,6 +3294,7 @@
         },
         "Brown Dorcopsis.png": {
           "scientific_name": "Dorcopsis muelleri",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "new-guinea"
@@ -2965,6 +3302,7 @@
         },
         "Common Wombat.png": {
           "scientific_name": "Vombatus ursinus",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "nocturnal",
@@ -2974,6 +3312,7 @@
         },
         "Dusky Pademelon.png": {
           "scientific_name": "Thylogale brunii",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "oceania",
@@ -2982,6 +3321,7 @@
         },
         "Goodfellow's Tree-Kangaroo.png": {
           "scientific_name": "Dendrolagus goodfellowi",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -2992,6 +3332,7 @@
         },
         "Hoffmann's Two-Toed Sloth.png": {
           "scientific_name": "Choloepus hoffmanni",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -3003,6 +3344,7 @@
         },
         "Koala.png": {
           "scientific_name": "Phascolarctos cinereus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "oceania",
@@ -3011,6 +3353,7 @@
         },
         "Nine-Banded Armadillo.png": {
           "scientific_name": "Dasypus novemcinctus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "south-america",
@@ -3023,6 +3366,7 @@
         },
         "Plains Viscacha.png": {
           "scientific_name": "Lagostomus maximus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "nocturnal",
@@ -3032,6 +3376,7 @@
         },
         "Rock Hyrax.png": {
           "scientific_name": "Procavia capensis",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "cape",
@@ -3040,6 +3385,7 @@
         },
         "Short-Beaked Echidna.png": {
           "scientific_name": "Tachyglossus aculeatus",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -3047,6 +3393,7 @@
         },
         "West Indian Manatee.png": {
           "scientific_name": "Trichechus manatus",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "tropical",
@@ -3058,6 +3405,7 @@
         },
         "Yellow-Footed Rock Wallaby.png": {
           "scientific_name": "Petrogale xanthopus",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -3067,6 +3415,7 @@
       "5": {
         "African Elephant.png": {
           "scientific_name": "Loxodonta africana",
+          "enclosure_size": "large",
           "tags": [
             "africa",
             "congo",
@@ -3078,6 +3427,7 @@
         },
         "Bear Cuscus.png": {
           "scientific_name": "Ailurops ursinus",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "new-guinea"
@@ -3085,6 +3435,7 @@
         },
         "Brown-Throated Sloth.png": {
           "scientific_name": "Bradypus variegatus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -3096,6 +3447,7 @@
         },
         "Chinese Pangolin.png": {
           "scientific_name": "Manis pentadactyla",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -3104,6 +3456,7 @@
         },
         "Matschie's Tree-Kangaroo.png": {
           "scientific_name": "Dendrolagus matschiei",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -3113,6 +3466,7 @@
         },
         "Platypus.png": {
           "scientific_name": "Ornithorhynchus anatinus",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "oceania",
@@ -3121,6 +3475,7 @@
         },
         "Tasmanian Devil.png": {
           "scientific_name": "Sarcophilus harrisii",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "nocturnal",
@@ -3134,6 +3489,7 @@
       "1": {
         "African Sacred Ibis.png": {
           "scientific_name": "Threskiornis aethiopicus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3144,6 +3500,7 @@
         },
         "Common Raven.png": {
           "scientific_name": "Corvus corax",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -3155,6 +3512,7 @@
         },
         "Demoiselle Crane.png": {
           "scientific_name": "Grus virgo",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3165,6 +3523,7 @@
         },
         "Emu.png": {
           "scientific_name": "Dromaius novaehollandiae",
+          "enclosure_size": "medium",
           "tags": [
             "oceania",
             "australia"
@@ -3172,6 +3531,7 @@
         },
         "Greater Rhea.png": {
           "scientific_name": "Rhea americana",
+          "enclosure_size": "medium",
           "tags": [
             "south-america",
             "pampas",
@@ -3181,6 +3541,7 @@
         },
         "Grey Crowned Crane.png": {
           "scientific_name": "Balearica regulorum",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3189,6 +3550,7 @@
         },
         "Laughing Kookaburra.png": {
           "scientific_name": "Dacelo novaeguineae",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -3196,6 +3558,7 @@
         },
         "Red-Crowned Crane.png": {
           "scientific_name": "Grus japonensis",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "asia",
@@ -3205,6 +3568,7 @@
         },
         "Scarlet Ibis.png": {
           "scientific_name": "Eudocimus ruber",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "south-america",
@@ -3213,6 +3577,7 @@
         },
         "White Stork.png": {
           "scientific_name": "Ciconia ciconia",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "temperate",
@@ -3224,6 +3589,7 @@
       "2": {
         "Abdim's Stork.png": {
           "scientific_name": "Ciconia abdimii",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3233,6 +3599,7 @@
         },
         "Black Crowned Crane.png": {
           "scientific_name": "Balearica pavonina",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3241,6 +3608,7 @@
         },
         "Blue Crane.png": {
           "scientific_name": "Grus paradisea",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3249,6 +3617,7 @@
         },
         "Common Ostrich.png": {
           "scientific_name": "Struthio camelus",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -3258,6 +3627,7 @@
         },
         "Glossy Ibis.png": {
           "scientific_name": "Plegadis falcinellus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3272,6 +3642,7 @@
         },
         "Hamerkop.png": {
           "scientific_name": "Scopus umbretta",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "east-africa"
@@ -3279,6 +3650,7 @@
         },
         "Lesser Rhea.png": {
           "scientific_name": "Rhea pennata",
+          "enclosure_size": "medium",
           "tags": [
             "south-america",
             "patagonia"
@@ -3286,6 +3658,7 @@
         },
         "Marabou Stork.png": {
           "scientific_name": "Leptoptilos crumenifer",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3296,6 +3669,7 @@
         },
         "Northern Bald Ibis.png": {
           "scientific_name": "Geronticus eremita",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3306,6 +3680,7 @@
         },
         "Red-Legged Seriema.png": {
           "scientific_name": "Cariama cristata",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "south-america",
@@ -3314,6 +3689,7 @@
         },
         "Sarus Crane.png": {
           "scientific_name": "Grus antigone",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "asia",
@@ -3323,6 +3699,7 @@
         },
         "Southern Ground Hornbill.png": {
           "scientific_name": "Bucorvus leadbeateri",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -3332,6 +3709,7 @@
         },
         "White-Naped Crane.png": {
           "scientific_name": "Grus vipio",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "asia",
@@ -3341,6 +3719,7 @@
         },
         "Yellow-Billed Stork.png": {
           "scientific_name": "Mycteria ibis",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3352,6 +3731,7 @@
       "3": {
         "Abyssinian Ground Hornbill.png": {
           "scientific_name": "Bucorvus abyssinicus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -3361,6 +3741,7 @@
         },
         "Allen's Gallinule.png": {
           "scientific_name": "Porphyrio alleni",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3370,6 +3751,7 @@
         },
         "American White Ibis.png": {
           "scientific_name": "Eudocimus albus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "north-america",
@@ -3380,6 +3762,7 @@
         },
         "Black Crake.png": {
           "scientific_name": "Zapornia flavirostra",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3389,6 +3772,7 @@
         },
         "Black-Faced Ibis.png": {
           "scientific_name": "Theristicus melanopis",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "south-america",
@@ -3398,6 +3782,7 @@
         },
         "Blue-Winged Kookaburra.png": {
           "scientific_name": "Dacelo leachii",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -3405,6 +3790,7 @@
         },
         "Common Trumpeter.png": {
           "scientific_name": "Psophia crepitans",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -3414,6 +3800,7 @@
         },
         "Giant Wood-Rail.png": {
           "scientific_name": "Aramides ypecaha",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "south-america",
@@ -3422,6 +3809,7 @@
         },
         "Hadada Ibis.png": {
           "scientific_name": "Bostrychia hagedash",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3432,6 +3820,7 @@
         },
         "Madagascar Ibis.png": {
           "scientific_name": "Lophotibis cristata",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3440,6 +3829,7 @@
         },
         "Saddle-Billed Stork.png": {
           "scientific_name": "Ephippiorhynchus senegalensis",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3448,6 +3838,7 @@
         },
         "Southern Cassowary.png": {
           "scientific_name": "Casuarius casuarius",
+          "enclosure_size": "medium",
           "tags": [
             "tropical",
             "oceania",
@@ -3457,6 +3848,7 @@
         },
         "Straw-Necked Ibis.png": {
           "scientific_name": "Threskiornis spinicollis",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "oceania",
@@ -3465,6 +3857,7 @@
         },
         "Sunbittern.png": {
           "scientific_name": "Eurypyga helias",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "north-america",
@@ -3475,6 +3868,7 @@
         },
         "Tawny Frogmouth.png": {
           "scientific_name": "Podargus strigoides",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "oceania",
@@ -3485,6 +3879,7 @@
       "4": {
         "African Openbill.png": {
           "scientific_name": "Anastomus lamelligerus",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "west-africa",
@@ -3495,6 +3890,7 @@
         },
         "Asian Woolly-Necked Stork.png": {
           "scientific_name": "Ciconia episcopus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "asia",
@@ -3503,6 +3899,7 @@
         },
         "Australian Ibis.png": {
           "scientific_name": "Threskiornis molucca",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "oceania",
@@ -3511,6 +3908,7 @@
         },
         "Black-Headed Ibis.png": {
           "scientific_name": "Threskiornis melanocephalus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "asia",
@@ -3519,6 +3917,7 @@
         },
         "Little Grebe.png": {
           "scientific_name": "Tachybaptus ruficollis",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3529,6 +3928,7 @@
         },
         "Madagascar Sacred Ibis.png": {
           "scientific_name": "Threskiornis bernieri",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3537,6 +3937,7 @@
         },
         "Oriental Stork.png": {
           "scientific_name": "Ciconia boyciana",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "asia",
@@ -3545,6 +3946,7 @@
         },
         "Sandhill Crane.png": {
           "scientific_name": "Antigone canadensis",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "asia",
@@ -3555,6 +3957,7 @@
         },
         "Siberian Crane.png": {
           "scientific_name": "Leucogeranus leucogeranus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "europe",
@@ -3563,6 +3966,7 @@
         },
         "Southern Bald Ibis.png": {
           "scientific_name": "Geronticus calvus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3571,6 +3975,7 @@
         },
         "Wattled Crane.png": {
           "scientific_name": "Grus carunculata",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3582,6 +3987,7 @@
       "5": {
         "Asian Houbara.png": {
           "scientific_name": "Chlamydotis macqueenii",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "arabia"
@@ -3589,6 +3995,7 @@
         },
         "Black-Necked Crane.png": {
           "scientific_name": "Grus nigricollis",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "asia",
@@ -3598,6 +4005,7 @@
         },
         "Brolga.png": {
           "scientific_name": "Antigone rubicunda",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -3605,6 +4013,7 @@
         },
         "Corncrake.png": {
           "scientific_name": "Crex crex",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3615,6 +4024,7 @@
         },
         "Great Bustard.png": {
           "scientific_name": "Otis tarda",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "asia",
@@ -3624,6 +4034,7 @@
         },
         "Kori Bustard.png": {
           "scientific_name": "Ardeotis kori",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -3633,6 +4044,7 @@
         },
         "Little Bustard.png": {
           "scientific_name": "Tetrax tetrax",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "asia",
@@ -3642,6 +4054,7 @@
         },
         "Northern Cassowary.png": {
           "scientific_name": "Casuarius unappendiculatus",
+          "enclosure_size": "medium",
           "tags": [
             "tropical",
             "oceania",
@@ -3655,6 +4068,7 @@
       "1": {
         "African Penguin.png": {
           "scientific_name": "Spheniscus demersus",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "africa",
@@ -3664,6 +4078,7 @@
         },
         "African Spoonbill.png": {
           "scientific_name": "Platalea alba",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3672,6 +4087,7 @@
         },
         "Chilean Flamingo.png": {
           "scientific_name": "Phoenicopterus chilensis",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "south-america",
@@ -3681,6 +4097,7 @@
         },
         "Dalmatian Pelican.png": {
           "scientific_name": "Pelecanus crispus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "asia",
@@ -3690,6 +4107,7 @@
         },
         "Eurasian Spoonbill.png": {
           "scientific_name": "Platalea leucorodia",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "temperate",
@@ -3700,6 +4118,7 @@
         },
         "Great White Pelican.png": {
           "scientific_name": "Pelecanus onocrotalus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3713,6 +4132,7 @@
         },
         "Greater Flamingo.png": {
           "scientific_name": "Phoenicopterus roseus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3723,6 +4143,7 @@
         },
         "Harbour Seal.png": {
           "scientific_name": "Phoca vitulina",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "europe",
@@ -3732,6 +4153,7 @@
         },
         "Humboldt Penguin.png": {
           "scientific_name": "Spheniscus humboldti",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "south-america",
@@ -3740,6 +4162,7 @@
         },
         "Roseate Spoonbill.png": {
           "scientific_name": "Platalea ajaja",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "south-america",
@@ -3753,6 +4176,7 @@
       "2": {
         "American Flamingo.png": {
           "scientific_name": "Phoenicopterus ruber",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "north-america",
@@ -3763,6 +4187,7 @@
         },
         "Blacktip Reef Shark.png": {
           "scientific_name": "Carcharhinus melanopterus",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "africa",
@@ -3775,6 +4200,7 @@
         },
         "Bluespotted Ribbontail Ray.png": {
           "scientific_name": "Taeniura lymma",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "africa",
@@ -3787,6 +4213,7 @@
         },
         "Brown-Banded Bambooshark.png": {
           "scientific_name": "Chiloscyllium punctatum",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "asia",
@@ -3796,6 +4223,7 @@
         },
         "California Sea Lion.png": {
           "scientific_name": "Zalophus californianus",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "north-america",
@@ -3804,6 +4232,7 @@
         },
         "Cownose Ray.png": {
           "scientific_name": "Rhinoptera bonasus",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "north-america",
@@ -3813,6 +4242,7 @@
         },
         "Epaulette Shark.png": {
           "scientific_name": "Hemiscyllium ocellatum",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "oceania",
@@ -3822,6 +4252,7 @@
         },
         "Grey Seal.png": {
           "scientific_name": "Halichoerus grypus",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "europe",
@@ -3832,6 +4263,7 @@
         },
         "Nurse Shark.png": {
           "scientific_name": "Ginglymostoma cirratum",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "africa",
@@ -3842,6 +4274,7 @@
         },
         "Nursehound.png": {
           "scientific_name": "Scyliorhinus stellaris",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "africa",
@@ -3851,6 +4284,7 @@
         },
         "Peacock-Eye Stingray.png": {
           "scientific_name": "Potamotrygon motoro",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "south-america",
@@ -3859,6 +4293,7 @@
         },
         "Pink-Backed Pelican.png": {
           "scientific_name": "Pelecanus rufescens",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -3870,6 +4305,7 @@
         },
         "Small-Spotted Catshark.png": {
           "scientific_name": "Scyliorhinus canicula",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "africa",
@@ -3879,6 +4315,7 @@
         },
         "Starry Smooth-Hound.png": {
           "scientific_name": "Mustelus asterias",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "africa",
@@ -3888,6 +4325,7 @@
         },
         "Xingu River Ray.png": {
           "scientific_name": "Potamotrygon leopoldi",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "south-america",
@@ -3896,6 +4334,7 @@
         },
         "Zebra Shark.png": {
           "scientific_name": "Stegostoma tigrinum",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "africa",
@@ -3910,6 +4349,7 @@
       "3": {
         "Bottlenose Dolphin.png": {
           "scientific_name": "Tursiops truncatus",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "caribbean",
@@ -3925,6 +4365,7 @@
         },
         "Cape Fur Seal.png": {
           "scientific_name": "Arctocephalus pusillus",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "africa",
@@ -3933,6 +4374,7 @@
         },
         "Common Eagle Ray.png": {
           "scientific_name": "Myliobatis aquila",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "africa",
@@ -3943,6 +4385,7 @@
         },
         "Gentoo Penguin.png": {
           "scientific_name": "Pygoscelis papua",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "antarctica",
@@ -3951,6 +4394,7 @@
         },
         "Green Sea Turtle.png": {
           "scientific_name": "Chelonia mydas",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "africa",
@@ -3970,6 +4414,7 @@
         },
         "Grey Reef Shark.png": {
           "scientific_name": "Carcharhinus amblyrhynchos",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "africa",
@@ -3982,6 +4427,7 @@
         },
         "King Penguin.png": {
           "scientific_name": "Aptenodytes patagonicus",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "antarctica",
@@ -3990,6 +4436,7 @@
         },
         "Lesser Flamingo.png": {
           "scientific_name": "Phoeniconaias minor",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -4000,6 +4447,7 @@
         },
         "Magellanic Penguin.png": {
           "scientific_name": "Spheniscus magellanicus",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "south-america",
@@ -4008,6 +4456,7 @@
         },
         "Rockhopper Penguin.png": {
           "scientific_name": "Eudyptes chrysocome",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "antarctica",
@@ -4016,6 +4465,7 @@
         },
         "Sand Tiger Shark.png": {
           "scientific_name": "Carcharias taurus",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "africa",
@@ -4031,6 +4481,7 @@
         },
         "Sandbar Shark.png": {
           "scientific_name": "Carcharhinus plumbeus",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "florida"
@@ -4038,6 +4489,7 @@
         },
         "South American Fur Seal.png": {
           "scientific_name": "Arctocephalus australis",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "south-america",
@@ -4046,6 +4498,7 @@
         },
         "South American Sea Lion.png": {
           "scientific_name": "Otaria flavescens",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "south-america",
@@ -4054,6 +4507,7 @@
         },
         "Whitetip Reef Shark.png": {
           "scientific_name": "Triaenodon obesus",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "africa",
@@ -4068,6 +4522,7 @@
       "4": {
         "Andean Flamingo.png": {
           "scientific_name": "Phoenicoparrus andinus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "south-america",
@@ -4076,6 +4531,7 @@
         },
         "Atlantic Puffin.png": {
           "scientific_name": "Fratercula arctica",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "europe",
@@ -4085,6 +4541,7 @@
         },
         "Baltic Seal.png": {
           "scientific_name": "Pusa hispida",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "europe"
@@ -4092,6 +4549,7 @@
         },
         "Beluga.png": {
           "scientific_name": "Delphinapterus leucas",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "arctic",
@@ -4103,6 +4561,7 @@
         },
         "Bonnethead Shark.png": {
           "scientific_name": "Sphyrna tiburo",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "north-america",
@@ -4112,6 +4571,7 @@
         },
         "Chinstrap Penguin.png": {
           "scientific_name": "Pygoscelis antarcticus",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "antarctica",
@@ -4120,6 +4580,7 @@
         },
         "Green Sawfish.png": {
           "scientific_name": "Pristis zijsron",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "africa",
@@ -4131,6 +4592,7 @@
         },
         "Harbour Porpoise.png": {
           "scientific_name": "Phocoena phocoena",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "africa",
@@ -4143,6 +4605,7 @@
         },
         "Hawksbill Turtle.png": {
           "scientific_name": "Eretmochelys imbricata",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "tropical",
@@ -4161,6 +4624,7 @@
         },
         "James's Flamingo.png": {
           "scientific_name": "Phoenicoparrus jamesi",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "south-america",
@@ -4169,6 +4633,7 @@
         },
         "Macaroni Penguin.png": {
           "scientific_name": "Eudyptes chrysolophus",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "antarctica",
@@ -4177,6 +4642,7 @@
         },
         "Northern Fur Seal.png": {
           "scientific_name": "Callorhinus ursinus",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "asia",
@@ -4186,6 +4652,7 @@
         },
         "Ocellated Eagle Ray.png": {
           "scientific_name": "Aetomylaeus ocellatus",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "africa",
@@ -4198,6 +4665,7 @@
         },
         "Sea Otter.png": {
           "scientific_name": "Enhydra lutris",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "semi-aquatic",
@@ -4208,6 +4676,7 @@
         },
         "Steller Sea Lion.png": {
           "scientific_name": "Eumetopias jubatus",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "asia",
@@ -4217,6 +4686,7 @@
         },
         "Walrus.png": {
           "scientific_name": "Odobenus rosmarus",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "arctic",
@@ -4230,6 +4700,7 @@
       "5": {
         "Adelie Penguin.png": {
           "scientific_name": "Pygoscelis adeliae",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "antarctica"
@@ -4237,6 +4708,7 @@
         },
         "Atlantic Manta Ray.png": {
           "scientific_name": "Mobula birostris",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "africa",
@@ -4249,6 +4721,7 @@
         },
         "Atlantic Ridley Turtle.png": {
           "scientific_name": "Lepidochelys kempii",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "north-america",
@@ -4257,6 +4730,7 @@
         },
         "Atlantic Spotted Dolphin.png": {
           "scientific_name": "Stenella frontalis",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "africa",
@@ -4269,6 +4743,7 @@
         },
         "Commerson's Dolphin.png": {
           "scientific_name": "Cephalorhynchus commersonii",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "south-america",
@@ -4277,6 +4752,7 @@
         },
         "Dugong.png": {
           "scientific_name": "Dugong dugon",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "tropical",
@@ -4289,6 +4765,7 @@
         },
         "Emperor Penguin.png": {
           "scientific_name": "Aptenodytes forsteri",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "antarctica"
@@ -4296,6 +4773,7 @@
         },
         "Harp Seal.png": {
           "scientific_name": "Pagophilus groenlandicus",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "arctic",
@@ -4306,6 +4784,7 @@
         },
         "Indian Ocean Humpback Dolphin.png": {
           "scientific_name": "Sousa plumbea",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "asia",
@@ -4314,6 +4793,7 @@
         },
         "Lesser Devil Ray.png": {
           "scientific_name": "Mobula hypostoma",
+          "enclosure_size": "medium",
           "tags": [
             "aquatic",
             "north-america",
@@ -4324,6 +4804,7 @@
         },
         "Little Penguin.png": {
           "scientific_name": "Eudyptula minor",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "oceania",
@@ -4333,6 +4814,7 @@
         },
         "Melon-Headed Whale.png": {
           "scientific_name": "Peponocephala electra",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "caribbean",
@@ -4343,6 +4825,7 @@
         },
         "Northern Elephant Seal.png": {
           "scientific_name": "Mirounga angustirostris",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "north-america",
@@ -4351,6 +4834,7 @@
         },
         "Orca.png": {
           "scientific_name": "Orcinus orca",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "japan",
@@ -4366,6 +4850,7 @@
         },
         "Orinoco Dolphin.png": {
           "scientific_name": "Inia geoffrensis",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "south-america",
@@ -4374,6 +4859,7 @@
         },
         "Pacific White-Sided Dolphin.png": {
           "scientific_name": "Lagenorhynchus obliquidens",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "asia",
@@ -4383,6 +4869,7 @@
         },
         "Risso's Dolphin.png": {
           "scientific_name": "Grampus griseus",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "caribbean",
@@ -4395,6 +4882,7 @@
         },
         "Scalloped Hammerhead Shark.png": {
           "scientific_name": "Sphyrna lewini",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "caribbean",
@@ -4410,6 +4898,7 @@
         },
         "Short-Finned Pilot Whale.png": {
           "scientific_name": "Globicephala macrorhynchus",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "caribbean",
@@ -4425,6 +4914,7 @@
         },
         "Spinner Dolphin.png": {
           "scientific_name": "Stenella longirostris",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "central-america",
@@ -4437,6 +4927,7 @@
         },
         "Striped Dolphin.png": {
           "scientific_name": "Stenella coeruleoalba",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "mediterranean"
@@ -4444,6 +4935,7 @@
         },
         "Tiger Shark.png": {
           "scientific_name": "Galeocerdo cuvier",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "caribbean",
@@ -4458,6 +4950,7 @@
         },
         "Whale Shark.png": {
           "scientific_name": "Rhincodon typus",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "caribbean",
@@ -4472,6 +4965,7 @@
         },
         "Yangtze Finless Porpoise.png": {
           "scientific_name": "Neophocaena asiaeorientalis",
+          "enclosure_size": "large",
           "tags": [
             "aquatic",
             "asia",
@@ -4484,6 +4978,7 @@
       "1": {
         "Black Kite.png": {
           "scientific_name": "Milvus migrans",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -4494,6 +4989,7 @@
         },
         "Common Buzzard.png": {
           "scientific_name": "Buteo buteo",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "europe",
@@ -4502,6 +4998,7 @@
         },
         "Eurasian Eagle-Owl.png": {
           "scientific_name": "Bubo bubo",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -4519,6 +5016,7 @@
         },
         "Golden Eagle.png": {
           "scientific_name": "Aquila chrysaetos",
+          "enclosure_size": "small",
           "tags": [
             "europe",
             "himalayas",
@@ -4533,6 +5031,7 @@
         },
         "Great Grey Owl.png": {
           "scientific_name": "Strix nebulosa",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "boreal",
@@ -4549,6 +5048,7 @@
         },
         "Harris's Hawk.png": {
           "scientific_name": "Parabuteo unicinctus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "north-america",
@@ -4559,6 +5059,7 @@
         },
         "Little Owl.png": {
           "scientific_name": "Athene noctua",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "nocturnal",
@@ -4570,6 +5071,7 @@
         },
         "Snowy Owl.png": {
           "scientific_name": "Bubo scandiacus",
+          "enclosure_size": "small",
           "tags": [
             "arctic",
             "nocturnal",
@@ -4582,6 +5084,7 @@
         },
         "Tawny Owl.png": {
           "scientific_name": "Strix aluco",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "nocturnal",
@@ -4593,6 +5096,7 @@
         },
         "Ural Owl.png": {
           "scientific_name": "Strix uralensis",
+          "enclosure_size": "small",
           "tags": [
             "boreal",
             "nocturnal",
@@ -4604,6 +5108,7 @@
         },
         "Western Barn Owl.png": {
           "scientific_name": "Tyto alba",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "nocturnal",
@@ -4615,6 +5120,7 @@
         },
         "White-Tailed Eagle.png": {
           "scientific_name": "Haliaeetus albicilla",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "asia",
@@ -4628,6 +5134,7 @@
       "2": {
         "Bald Eagle.png": {
           "scientific_name": "Haliaeetus leucocephalus",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "rockies",
@@ -4636,6 +5143,7 @@
         },
         "Black Vulture.png": {
           "scientific_name": "Coragyps atratus",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "south-america",
@@ -4645,6 +5153,7 @@
         },
         "Black-Chested Buzzard-Eagle.png": {
           "scientific_name": "Geranoaetus melanoleucus",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "south-america",
@@ -4654,6 +5163,7 @@
         },
         "Brown Wood Owl.png": {
           "scientific_name": "Strix leptogrammica",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "nocturnal",
@@ -4663,6 +5173,7 @@
         },
         "Burrowing Owl.png": {
           "scientific_name": "Athene cunicularia",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -4674,6 +5185,7 @@
         },
         "Crested Caracara.png": {
           "scientific_name": "Caracara plancus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "north-america",
@@ -4685,6 +5197,7 @@
         },
         "Egyptian Vulture.png": {
           "scientific_name": "Neophron percnopterus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -4696,6 +5209,7 @@
         },
         "Eurasian Goshawk.png": {
           "scientific_name": "Accipiter gentilis",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -4706,6 +5220,7 @@
         },
         "European Scops Owl.png": {
           "scientific_name": "Otus scops",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -4717,6 +5232,7 @@
         },
         "Great Horned Owl.png": {
           "scientific_name": "Bubo virginianus",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "nocturnal",
@@ -4727,6 +5243,7 @@
         },
         "Griffon Vulture.png": {
           "scientific_name": "Gyps fulvus",
+          "enclosure_size": "medium",
           "tags": [
             "europe",
             "mediterranean",
@@ -4737,6 +5254,7 @@
         },
         "Hooded Vulture.png": {
           "scientific_name": "Necrosyrtes monachus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -4749,6 +5267,7 @@
         },
         "Indian Eagle-Owl.png": {
           "scientific_name": "Bubo bengalensis",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -4757,6 +5276,7 @@
         },
         "Lanner Falcon.png": {
           "scientific_name": "Falco biarmicus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -4767,6 +5287,7 @@
         },
         "Long-Eared Owl.png": {
           "scientific_name": "Asio otus",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "nocturnal",
@@ -4779,6 +5300,7 @@
         },
         "Monk Vulture.png": {
           "scientific_name": "Aegypius monachus",
+          "enclosure_size": "medium",
           "tags": [
             "temperate",
             "asia",
@@ -4788,6 +5310,7 @@
         },
         "Peregrine Falcon.png": {
           "scientific_name": "Falco peregrinus",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "africa",
@@ -4820,6 +5343,7 @@
         },
         "Red Kite.png": {
           "scientific_name": "Milvus milvus",
+          "enclosure_size": "small",
           "tags": [
             "europe",
             "central-europe",
@@ -4828,6 +5352,7 @@
         },
         "Saker Falcon.png": {
           "scientific_name": "Falco cherrug",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "asia",
@@ -4841,6 +5366,7 @@
         },
         "Spectacled Owl.png": {
           "scientific_name": "Pulsatrix perspicillata",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -4851,6 +5377,7 @@
         },
         "Spotted Eagle-Owl.png": {
           "scientific_name": "Bubo africanus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -4860,6 +5387,7 @@
         },
         "Steller's Sea Eagle.png": {
           "scientific_name": "Haliaeetus pelagicus",
+          "enclosure_size": "medium",
           "tags": [
             "wetland",
             "boreal",
@@ -4870,6 +5398,7 @@
         },
         "Steppe Eagle.png": {
           "scientific_name": "Aquila nipalensis",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -4884,6 +5413,7 @@
         },
         "Striated Caracara.png": {
           "scientific_name": "Phalcoboenus australis",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "south-america",
@@ -4892,6 +5422,7 @@
         },
         "Turkey Vulture.png": {
           "scientific_name": "Cathartes aura",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "south-america",
@@ -4902,6 +5433,7 @@
       "3": {
         "African Fish Eagle.png": {
           "scientific_name": "Haliaeetus vocifer",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "east-africa",
@@ -4911,6 +5443,7 @@
         },
         "African Wood Owl.png": {
           "scientific_name": "Strix woodfordii",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -4921,6 +5454,7 @@
         },
         "American Kestrel.png": {
           "scientific_name": "Falco sparverius",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "rockies",
@@ -4933,6 +5467,7 @@
         },
         "Andean Condor.png": {
           "scientific_name": "Vultur gryphus",
+          "enclosure_size": "medium",
           "tags": [
             "mountain",
             "south-america",
@@ -4942,6 +5477,7 @@
         },
         "Ashy-Faced Owl.png": {
           "scientific_name": "Tyto glaucops",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -4950,6 +5486,7 @@
         },
         "Australian Boobook.png": {
           "scientific_name": "Ninox boobook",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "oceania",
@@ -4958,6 +5495,7 @@
         },
         "Bateleur.png": {
           "scientific_name": "Terathopius ecaudatus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "nocturnal",
@@ -4972,6 +5510,7 @@
         },
         "Bearded Vulture.png": {
           "scientific_name": "Gypaetus barbatus",
+          "enclosure_size": "medium",
           "tags": [
             "mountain",
             "africa",
@@ -4983,6 +5522,7 @@
         },
         "Boreal Owl.png": {
           "scientific_name": "Aegolius funereus",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "boreal",
@@ -4998,6 +5538,7 @@
         },
         "Cape Eagle-Owl.png": {
           "scientific_name": "Bubo capensis",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -5006,6 +5547,7 @@
         },
         "Chaco Owl.png": {
           "scientific_name": "Strix chacoensis",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "south-america",
@@ -5014,6 +5556,7 @@
         },
         "Ferruginous Hawk.png": {
           "scientific_name": "Buteo regalis",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "north-america",
@@ -5022,6 +5565,7 @@
         },
         "Ferruginous Pygmy Owl.png": {
           "scientific_name": "Glaucidium brasilianum",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -5031,6 +5575,7 @@
         },
         "Greyish Eagle-Owl.png": {
           "scientific_name": "Bubo cinerascens",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -5039,6 +5584,7 @@
         },
         "Gyrfalcon.png": {
           "scientific_name": "Falco rusticolus",
+          "enclosure_size": "small",
           "tags": [
             "boreal",
             "arctic",
@@ -5054,6 +5600,7 @@
         },
         "Indian Scops Owl.png": {
           "scientific_name": "Otus bakkamoena",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -5062,6 +5609,7 @@
         },
         "King Vulture.png": {
           "scientific_name": "Sarcoramphus papa",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5072,6 +5620,7 @@
         },
         "Laggar Falcon.png": {
           "scientific_name": "Falco jugger",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "asia",
@@ -5080,6 +5629,7 @@
         },
         "Long-Legged Buzzard.png": {
           "scientific_name": "Buteo rufinus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -5095,6 +5645,7 @@
         },
         "Mottled Owl.png": {
           "scientific_name": "Strix virgata",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -5104,6 +5655,7 @@
         },
         "Northern Hawk-Owl.png": {
           "scientific_name": "Surnia ulula",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -5115,6 +5667,7 @@
         },
         "Northern White-Faced Owl.png": {
           "scientific_name": "Ptilopsis leucotis",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -5124,6 +5677,7 @@
         },
         "Palm-Nut Vulture.png": {
           "scientific_name": "Gypohierax angolensis",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "tropical",
@@ -5133,6 +5687,7 @@
         },
         "Red-Tailed Hawk.png": {
           "scientific_name": "Buteo jamaicensis",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "rockies",
@@ -5141,6 +5696,7 @@
         },
         "Rüppell's Vulture.png": {
           "scientific_name": "Gyps rueppelli",
+          "enclosure_size": "medium",
           "tags": [
             "africa",
             "sahel",
@@ -5149,6 +5705,7 @@
         },
         "Secretary Bird.png": {
           "scientific_name": "Sagittarius serpentarius",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -5161,6 +5718,7 @@
         },
         "Short-Eared Owl.png": {
           "scientific_name": "Asio flammeus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -5179,6 +5737,7 @@
         },
         "Southern White-Faced Owl.png": {
           "scientific_name": "Ptilopsis granti",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -5187,6 +5746,7 @@
         },
         "Tawny Eagle.png": {
           "scientific_name": "Aquila rapax",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -5197,6 +5757,7 @@
         },
         "Tropical Screech Owl.png": {
           "scientific_name": "Megascops choliba",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -5206,6 +5767,7 @@
         },
         "Verreaux's Eagle-Owl.png": {
           "scientific_name": "Bubo lacteus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -5214,6 +5776,7 @@
         },
         "White-Backed Vulture.png": {
           "scientific_name": "Gyps africanus",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -5224,6 +5787,7 @@
       "4": {
         "African Pygmy Falcon.png": {
           "scientific_name": "Polihierax semitorquatus",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "east-africa",
@@ -5233,6 +5797,7 @@
         },
         "American Barn Owl.png": {
           "scientific_name": "Tyto furcata",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -5242,6 +5807,7 @@
         },
         "Aplomado Falcon.png": {
           "scientific_name": "Falco femoralis",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "north-america",
@@ -5253,6 +5819,7 @@
         },
         "Band-Bellied Owl.png": {
           "scientific_name": "Pulsatrix melanota",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "south-america",
@@ -5261,6 +5828,7 @@
         },
         "Barbary Falcon.png": {
           "scientific_name": "Falco pelegrinoides",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "sahel"
@@ -5268,6 +5836,7 @@
         },
         "Barred Owl.png": {
           "scientific_name": "Strix varia",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "nocturnal",
@@ -5277,6 +5846,7 @@
         },
         "Bonelli's Eagle.png": {
           "scientific_name": "Aquila fasciata",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "africa",
@@ -5287,6 +5857,7 @@
         },
         "Booted Eagle.png": {
           "scientific_name": "Hieraaetus pennatus",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "africa",
@@ -5298,6 +5869,7 @@
         },
         "Brahminy Kite.png": {
           "scientific_name": "Haliastur indus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "tropical",
@@ -5308,6 +5880,7 @@
         },
         "Eastern Imperial Eagle.png": {
           "scientific_name": "Aquila heliaca",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "asia",
@@ -5317,6 +5890,7 @@
         },
         "Eurasian Hobby.png": {
           "scientific_name": "Falco subbuteo",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "asia",
@@ -5326,6 +5900,7 @@
         },
         "Eurasian Pygmy-Owl.png": {
           "scientific_name": "Glaucidium passerinum",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "temperate",
@@ -5337,6 +5912,7 @@
         },
         "Eurasian Sparrowhawk.png": {
           "scientific_name": "Accipiter nisus",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "asia",
@@ -5346,6 +5922,7 @@
         },
         "Himalayan Vulture.png": {
           "scientific_name": "Gyps himalayensis",
+          "enclosure_size": "medium",
           "tags": [
             "mountain",
             "asia",
@@ -5354,6 +5931,7 @@
         },
         "Jackal Buzzard.png": {
           "scientific_name": "Buteo rufofuscus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -5362,6 +5940,7 @@
         },
         "Lesser Kestrel.png": {
           "scientific_name": "Falco naumanni",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -5372,6 +5951,7 @@
         },
         "Lesser Spotted Eagle.png": {
           "scientific_name": "Clanga pomarina",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "forest",
@@ -5383,6 +5963,7 @@
         },
         "Lesser Yellow-Headed Vulture.png": {
           "scientific_name": "Cathartes burrovianus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "savanna",
@@ -5393,6 +5974,7 @@
         },
         "Martial Eagle.png": {
           "scientific_name": "Polemaetus bellicosus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -5402,6 +5984,7 @@
         },
         "Merlin.png": {
           "scientific_name": "Falco columbarius",
+          "enclosure_size": "small",
           "tags": [
             "boreal",
             "temperate",
@@ -5414,6 +5997,7 @@
         },
         "Mountain Caracara.png": {
           "scientific_name": "Phalcoboenus megalopterus",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "south-america",
@@ -5422,6 +6006,7 @@
         },
         "Philippine Scops Owl.png": {
           "scientific_name": "Otus megalotis",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -5430,6 +6015,7 @@
         },
         "Red-Backed Hawk.png": {
           "scientific_name": "Geranoaetus polyosoma",
+          "enclosure_size": "small",
           "tags": [
             "south-america",
             "andes"
@@ -5437,6 +6023,7 @@
         },
         "Red-Footed Falcon.png": {
           "scientific_name": "Falco vespertinus",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "africa",
@@ -5447,6 +6034,7 @@
         },
         "Short-Toed Snake Eagle.png": {
           "scientific_name": "Circaetus gallicus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -5458,6 +6046,7 @@
         },
         "Striped Owl.png": {
           "scientific_name": "Asio clamator",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -5467,6 +6056,7 @@
         },
         "Verreaux's Eagle.png": {
           "scientific_name": "Aquila verreauxii",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "africa",
@@ -5476,6 +6066,7 @@
         },
         "Western Honey Buzzard.png": {
           "scientific_name": "Pernis apivorus",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "africa",
@@ -5486,6 +6077,7 @@
         },
         "Western Marsh-Harrier.png": {
           "scientific_name": "Circus aeruginosus",
+          "enclosure_size": "small",
           "tags": [
             "wetland",
             "africa",
@@ -5496,6 +6088,7 @@
         },
         "Western Screech Owl.png": {
           "scientific_name": "Megascops kennicottii",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "nocturnal",
@@ -5505,6 +6098,7 @@
         },
         "White-Headed Vulture.png": {
           "scientific_name": "Trigonoceps occipitalis",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -5517,6 +6111,7 @@
         },
         "Yellow-Billed Kite.png": {
           "scientific_name": "Milvus aegyptius",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -5527,6 +6122,7 @@
         },
         "Yellow-Headed Caracara.png": {
           "scientific_name": "Milvago chimachima",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "south-america",
@@ -5537,6 +6133,7 @@
       "5": {
         "Cape Vulture.png": {
           "scientific_name": "Gyps coprotheres",
+          "enclosure_size": "medium",
           "tags": [
             "africa",
             "cape"
@@ -5544,6 +6141,7 @@
         },
         "Crested Serpent Eagle.png": {
           "scientific_name": "Spilornis cheela",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -5553,6 +6151,7 @@
         },
         "Greater Yellow-Headed Vulture.png": {
           "scientific_name": "Cathartes melambrotus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5562,6 +6161,7 @@
         },
         "Harpy Eagle.png": {
           "scientific_name": "Harpia harpyja",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5571,6 +6171,7 @@
         },
         "Nubian Vulture.png": {
           "scientific_name": "Torgos tracheliotos",
+          "enclosure_size": "medium",
           "tags": [
             "savanna",
             "africa",
@@ -5579,6 +6180,7 @@
         },
         "Osprey.png": {
           "scientific_name": "Pandion haliaetus",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "wetland",
@@ -5599,6 +6201,7 @@
         },
         "Red-Headed Vulture.png": {
           "scientific_name": "Sarcogyps calvus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "asia",
@@ -5607,6 +6210,7 @@
         },
         "White-Bellied Sea Eagle.png": {
           "scientific_name": "Icthyophaga leucogaster",
+          "enclosure_size": "small",
           "tags": [
             "aquatic",
             "wetland",
@@ -5623,6 +6227,7 @@
       "1": {
         "African Grey Parrot.png": {
           "scientific_name": "Psittacus erithacus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -5632,6 +6237,7 @@
         },
         "Blue-and-Yellow Macaw.png": {
           "scientific_name": "Ara ararauna",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5642,6 +6248,7 @@
         },
         "Blue-Fronted Amazon.png": {
           "scientific_name": "Amazona aestiva",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5652,6 +6259,7 @@
         },
         "Galah.png": {
           "scientific_name": "Eolophus roseicapilla",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -5659,6 +6267,7 @@
         },
         "Orange-Winged Amazon.png": {
           "scientific_name": "Amazona amazonica",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5668,6 +6277,7 @@
         },
         "Red-and-Green Macaw.png": {
           "scientific_name": "Ara chloropterus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5677,6 +6287,7 @@
         },
         "Red-Crested Turaco.png": {
           "scientific_name": "Tauraco erythrolophus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5686,6 +6297,7 @@
         },
         "Scarlet Macaw.png": {
           "scientific_name": "Ara macao",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5696,6 +6308,7 @@
         },
         "Senegal Parrot.png": {
           "scientific_name": "Poicephalus senegalus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -5705,6 +6318,7 @@
         },
         "Umbrella Cockatoo.png": {
           "scientific_name": "Cacatua alba",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "southeast-asia"
@@ -5712,6 +6326,7 @@
         },
         "Violet Turaco.png": {
           "scientific_name": "Musophaga violacea",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5721,6 +6336,7 @@
         },
         "White-Cheeked Turaco.png": {
           "scientific_name": "Menelikornis leucotis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5731,6 +6347,7 @@
         },
         "Yellow-Crested Cockatoo.png": {
           "scientific_name": "Cacatua sulphurea",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "oceania",
@@ -5739,6 +6356,7 @@
         },
         "Yellow-Crowned Amazon.png": {
           "scientific_name": "Amazona ochrocephala",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5750,6 +6368,7 @@
       "2": {
         "Black-Headed Parrot.png": {
           "scientific_name": "Pionites melanocephalus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -5758,6 +6377,7 @@
         },
         "Blue-Throated Macaw.png": {
           "scientific_name": "Ara glaucogularis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5767,6 +6387,7 @@
         },
         "Blue-Winged Macaw.png": {
           "scientific_name": "Primolius maracana",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5777,6 +6398,7 @@
         },
         "Cuban Amazon.png": {
           "scientific_name": "Amazona leucocephala",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5786,6 +6408,7 @@
         },
         "Great Green Macaw.png": {
           "scientific_name": "Ara ambiguus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5795,6 +6418,7 @@
         },
         "Green Aracari.png": {
           "scientific_name": "Pteroglossus viridis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5804,6 +6428,7 @@
         },
         "Green Turaco.png": {
           "scientific_name": "Tauraco persa",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5814,6 +6439,7 @@
         },
         "Hyacinth Macaw.png": {
           "scientific_name": "Anodorhynchus hyacinthinus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5824,6 +6450,7 @@
         },
         "Kea.png": {
           "scientific_name": "Nestor notabilis",
+          "enclosure_size": "small",
           "tags": [
             "mountain",
             "oceania",
@@ -5832,6 +6459,7 @@
         },
         "Lilacine Amazon.png": {
           "scientific_name": "Amazona lilacina",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5842,6 +6470,7 @@
         },
         "Little Corella.png": {
           "scientific_name": "Cacatua sanguinea",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -5849,6 +6478,7 @@
         },
         "Livingstone's Turaco.png": {
           "scientific_name": "Tauraco livingstonii",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5859,6 +6489,7 @@
         },
         "Mealy Amazon.png": {
           "scientific_name": "Amazona farinosa",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5868,6 +6499,7 @@
         },
         "Military Macaw.png": {
           "scientific_name": "Ara militaris",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5877,6 +6509,7 @@
         },
         "Pink Cockatoo.png": {
           "scientific_name": "Lophochroa leadbeateri",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -5884,6 +6517,7 @@
         },
         "Purple-Crested Turaco.png": {
           "scientific_name": "Gallirex porphyreolophus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5894,6 +6528,7 @@
         },
         "Red-Lored Amazon.png": {
           "scientific_name": "Amazona autumnalis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5903,6 +6538,7 @@
         },
         "Red-Shouldered Macaw.png": {
           "scientific_name": "Diopsittaca nobilis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5912,6 +6548,7 @@
         },
         "Silvery-Cheeked Hornbill.png": {
           "scientific_name": "Bycanistes brevis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5921,12 +6558,14 @@
         },
         "Solomons Corella.png": {
           "scientific_name": "Cacatua ducorpsii",
+          "enclosure_size": "small",
           "tags": [
             "oceania"
           ]
         },
         "Tanimbar Corella.png": {
           "scientific_name": "Cacatua goffiniana",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -5935,6 +6574,7 @@
         },
         "Timneh Parrot.png": {
           "scientific_name": "Psittacus timneh",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -5943,6 +6583,7 @@
         },
         "Toco Toucan.png": {
           "scientific_name": "Ramphastos toco",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5953,6 +6594,7 @@
         },
         "Trumpeter Hornbill.png": {
           "scientific_name": "Bycanistes bucinator",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5963,6 +6605,7 @@
         },
         "Vinaceous-Breasted Amazon.png": {
           "scientific_name": "Amazona vinacea",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5973,6 +6616,7 @@
         },
         "Von Der Decken's Hornbill.png": {
           "scientific_name": "Tockus deckeni",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -5981,6 +6625,7 @@
         },
         "White-Bellied Parrot.png": {
           "scientific_name": "Pionites leucogaster",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -5989,6 +6634,7 @@
         },
         "Yellow-Headed Amazon.png": {
           "scientific_name": "Amazona oratrix",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -5998,6 +6644,7 @@
         },
         "Yellow-Naped Amazon.png": {
           "scientific_name": "Amazona auropalliata",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6009,6 +6656,7 @@
       "3": {
         "African Grey Hornbill.png": {
           "scientific_name": "Lophoceros nasutus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6022,6 +6670,7 @@
         },
         "Bearded Barbet.png": {
           "scientific_name": "Lybius dubius",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -6030,6 +6679,7 @@
         },
         "Black-Necked Aracari.png": {
           "scientific_name": "Pteroglossus aracari",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6039,6 +6689,7 @@
         },
         "Blue-Cheeked Amazon.png": {
           "scientific_name": "Amazona dufresniana",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6048,6 +6699,7 @@
         },
         "Blue-Eyed Cockatoo.png": {
           "scientific_name": "Cacatua ophthalmica",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "new-guinea"
@@ -6055,6 +6707,7 @@
         },
         "Blue-Headed Parrot.png": {
           "scientific_name": "Pionus menstruus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -6063,6 +6716,7 @@
         },
         "Channel-Billed Toucan.png": {
           "scientific_name": "Ramphastos vitellinus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6072,6 +6726,7 @@
         },
         "Chestnut-Fronted Macaw.png": {
           "scientific_name": "Ara severus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6081,6 +6736,7 @@
         },
         "Festive Amazon.png": {
           "scientific_name": "Amazona festiva",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6090,6 +6746,7 @@
         },
         "Fischer's Turaco.png": {
           "scientific_name": "Tauraco fischeri",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6099,6 +6756,7 @@
         },
         "Lilac-Crowned Amazon.png": {
           "scientific_name": "Amazona finschi",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6108,6 +6766,7 @@
         },
         "Long-Billed Corella.png": {
           "scientific_name": "Cacatua tenuirostris",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -6115,6 +6774,7 @@
         },
         "Meyer's Parrot.png": {
           "scientific_name": "Poicephalus meyeri",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -6125,6 +6785,7 @@
         },
         "Palm Cockatoo.png": {
           "scientific_name": "Probosciger aterrimus",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "new-guinea"
@@ -6132,6 +6793,7 @@
         },
         "Papuan Hornbill.png": {
           "scientific_name": "Rhyticeros plicatus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6141,6 +6803,7 @@
         },
         "Philippine Cockatoo.png": {
           "scientific_name": "Cacatua haematuropygia",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "southeast-asia"
@@ -6148,6 +6811,7 @@
         },
         "Red-Billed Hornbill.png": {
           "scientific_name": "Tockus erythrorhynchus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6158,6 +6822,7 @@
         },
         "Red-Crowned Amazon.png": {
           "scientific_name": "Amazona viridigenalis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6168,6 +6833,7 @@
         },
         "Red-Fronted Macaw.png": {
           "scientific_name": "Ara rubrogenys",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6177,6 +6843,7 @@
         },
         "Red-Fronted Parrot.png": {
           "scientific_name": "Poicephalus gulielmi",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -6186,6 +6853,7 @@
         },
         "Red-Tailed Amazon.png": {
           "scientific_name": "Amazona brasiliensis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6195,6 +6863,7 @@
         },
         "Red-Tailed Black Cockatoo.png": {
           "scientific_name": "Calyptorhynchus banksii",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -6202,6 +6871,7 @@
         },
         "Rhinoceros Hornbill.png": {
           "scientific_name": "Buceros rhinoceros",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6211,6 +6881,7 @@
         },
         "Tarictic Hornbill.png": {
           "scientific_name": "Penelopides panini",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6220,6 +6891,7 @@
         },
         "White-Crested Turaco.png": {
           "scientific_name": "Tauraco leucolophus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6229,6 +6901,7 @@
         },
         "White-Fronted Amazon.png": {
           "scientific_name": "Amazona albifrons",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6238,6 +6911,7 @@
         },
         "Yellow-Shouldered Amazon.png": {
           "scientific_name": "Amazona barbadensis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6249,6 +6923,7 @@
       "4": {
         "Black Hornbill.png": {
           "scientific_name": "Anthracoceros malayanus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6258,6 +6933,7 @@
         },
         "Black-Casqued Hornbill.png": {
           "scientific_name": "Ceratogymna atrata",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6268,6 +6944,7 @@
         },
         "Blue-Headed Macaw.png": {
           "scientific_name": "Primolius couloni",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6277,6 +6954,7 @@
         },
         "Bronze-Winged Parrot.png": {
           "scientific_name": "Pionus chalcopterus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -6285,6 +6963,7 @@
         },
         "Chestnut-Eared Aracari.png": {
           "scientific_name": "Pteroglossus castanotis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6294,6 +6973,7 @@
         },
         "Crowned Hornbill.png": {
           "scientific_name": "Lophoceros alboterminatus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6303,6 +6983,7 @@
         },
         "Diademed Amazon.png": {
           "scientific_name": "Amazona diadema",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6312,6 +6993,7 @@
         },
         "Golden-Collared Macaw.png": {
           "scientific_name": "Primolius auricollis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6322,6 +7004,7 @@
         },
         "Great Indian Hornbill.png": {
           "scientific_name": "Buceros bicornis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6331,6 +7014,7 @@
         },
         "Grey-Cheeked Hornbill.png": {
           "scientific_name": "Bycanistes subcylindricus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6340,6 +7024,7 @@
         },
         "Hartlaub's Turaco.png": {
           "scientific_name": "Tauraco hartlaubi",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6349,6 +7034,7 @@
         },
         "Northern Rufous Hornbill.png": {
           "scientific_name": "Buceros hydrocorax",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6358,6 +7044,7 @@
         },
         "Pacific Parrotlet.png": {
           "scientific_name": "Forpus coelestis",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -6367,6 +7054,7 @@
         },
         "Red-and-Yellow Barbet.png": {
           "scientific_name": "Trachyphonus erythrocephalus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -6375,6 +7063,7 @@
         },
         "Red-Billed Woodhoopoe.png": {
           "scientific_name": "Phoeniculus purpureus",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -6385,6 +7074,7 @@
         },
         "Red-Fan Parrot.png": {
           "scientific_name": "Deroptyus accipitrinus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -6393,6 +7083,7 @@
         },
         "Scaly-Headed Parrot.png": {
           "scientific_name": "Pionus maximiliani",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -6401,6 +7092,7 @@
         },
         "Schalow's Turaco.png": {
           "scientific_name": "Tauraco schalowi",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6410,6 +7102,7 @@
         },
         "White-Crowned Parrot.png": {
           "scientific_name": "Pionus senilis",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "north-america",
@@ -6420,6 +7113,7 @@
         },
         "White-Throated Toucan.png": {
           "scientific_name": "Ramphastos tucanus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6429,6 +7123,7 @@
         },
         "Wreathed Hornbill.png": {
           "scientific_name": "Rhyticeros undulatus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6438,6 +7133,7 @@
         },
         "Wrinkled Hornbill.png": {
           "scientific_name": "Rhabdotorrhinus corrugatus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6447,6 +7143,7 @@
         },
         "Yellow-Billed Amazon.png": {
           "scientific_name": "Amazona collaria",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6456,6 +7153,7 @@
         },
         "Yellow-Faced Parrot.png": {
           "scientific_name": "Alipiopsitta xanthops",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -6464,6 +7162,7 @@
         },
         "Yucatan Amazon.png": {
           "scientific_name": "Amazona xantholora",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6475,6 +7174,7 @@
       "5": {
         "African Pied Hornbill.png": {
           "scientific_name": "Lophoceros fasciatus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6486,6 +7186,7 @@
         },
         "Crimson-Rumped Toucanet.png": {
           "scientific_name": "Aulacorhynchus haematopygus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6495,6 +7196,7 @@
         },
         "Curl-Crested Aracari.png": {
           "scientific_name": "Pteroglossus beauharnaisii",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6504,6 +7206,7 @@
         },
         "Eastern Yellow-Billed Hornbill.png": {
           "scientific_name": "Tockus flavirostris",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6514,6 +7217,7 @@
         },
         "Emerald Toucanet.png": {
           "scientific_name": "Aulacorhynchus prasinus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6523,6 +7227,7 @@
         },
         "Gang-Gang Cockatoo.png": {
           "scientific_name": "Callocephalon fimbriatum",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -6530,6 +7235,7 @@
         },
         "Great Blue Turaco.png": {
           "scientific_name": "Corythaeola cristata",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6540,6 +7246,7 @@
         },
         "Guyana Toucanet.png": {
           "scientific_name": "Selenidera piperivora",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6549,6 +7256,7 @@
         },
         "Ivory-Billed Aracari.png": {
           "scientific_name": "Pteroglossus azara",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6558,6 +7266,7 @@
         },
         "Keel-Billed Toucan.png": {
           "scientific_name": "Ramphastos sulfuratus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6567,6 +7276,7 @@
         },
         "Knobbed Hornbill.png": {
           "scientific_name": "Rhyticeros cassidix",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6576,6 +7286,7 @@
         },
         "Lear's Macaw.png": {
           "scientific_name": "Anodorhynchus leari",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6584,6 +7295,7 @@
         },
         "Northern Kaka.png": {
           "scientific_name": "Nestor meridionalis",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "new-zealand"
@@ -6591,6 +7303,7 @@
         },
         "Oriental Pied Hornbill.png": {
           "scientific_name": "Anthracoceros albirostris",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6600,6 +7313,7 @@
         },
         "Palawan Hornbill.png": {
           "scientific_name": "Anthracoceros marchei",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6609,6 +7323,7 @@
         },
         "Pale-Billed Aracari.png": {
           "scientific_name": "Pteroglossus erythropygius",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6618,6 +7333,7 @@
         },
         "Piping Hornbill.png": {
           "scientific_name": "Bycanistes fistulator",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6627,6 +7343,7 @@
         },
         "Plate-Billed Mountain Toucan.png": {
           "scientific_name": "Andigena laminirostris",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6637,6 +7354,7 @@
         },
         "Red-Bellied Macaw.png": {
           "scientific_name": "Orthopsittaca manilatus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6646,6 +7364,7 @@
         },
         "Red-Breasted Toucan.png": {
           "scientific_name": "Ramphastos dicolorus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6655,6 +7374,7 @@
         },
         "Ross's Turaco.png": {
           "scientific_name": "Musophaga rossae",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6664,6 +7384,7 @@
         },
         "Saffron Toucanet.png": {
           "scientific_name": "Pteroglossus bailloni",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6673,6 +7394,7 @@
         },
         "Southern Rufous Hornbill.png": {
           "scientific_name": "Buceros mindanensis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6682,6 +7404,7 @@
         },
         "Spectacled Parrotlet.png": {
           "scientific_name": "Forpus conspicillatus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -6690,6 +7413,7 @@
         },
         "Spix's Macaw.png": {
           "scientific_name": "Cyanopsitta spixii",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6699,6 +7423,7 @@
         },
         "Spot-Billed Toucanet.png": {
           "scientific_name": "Selenidera maculirostris",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6708,6 +7433,7 @@
         },
         "Western Long-Tailed Hornbill.png": {
           "scientific_name": "Horizocerus albocristatus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6717,6 +7443,7 @@
         },
         "Western Plantain-Eater.png": {
           "scientific_name": "Crinifer piscator",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -6725,6 +7452,7 @@
         },
         "White-Crowned Hornbill.png": {
           "scientific_name": "Berenicornis comatus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6734,6 +7462,7 @@
         },
         "White-Thighed Hornbill.png": {
           "scientific_name": "Bycanistes albotibialis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6743,6 +7472,7 @@
         },
         "Writhed Hornbill.png": {
           "scientific_name": "Rhabdotorrhinus leucocephalus",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6752,6 +7482,7 @@
         },
         "Yellow-Tailed Black Cockatoo.png": {
           "scientific_name": "Zanda funerea",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "australia"
@@ -6763,6 +7494,7 @@
       "1": {
         "African Spurred Tortoise.png": {
           "scientific_name": "Centrochelys sulcata",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "africa",
@@ -6771,6 +7503,7 @@
         },
         "Boa Constrictor.png": {
           "scientific_name": "Boa constrictor",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -6781,6 +7514,7 @@
         },
         "Burmese Python.png": {
           "scientific_name": "Python bivittatus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -6789,6 +7523,7 @@
         },
         "Carpet Python.png": {
           "scientific_name": "Morelia spilota",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -6798,6 +7533,7 @@
         },
         "Central Bearded Dragon.png": {
           "scientific_name": "Pogona vitticeps",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "oceania",
@@ -6806,6 +7542,7 @@
         },
         "Chinese Water Dragon.png": {
           "scientific_name": "Physignathus cocincinus",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "china"
@@ -6813,6 +7550,7 @@
         },
         "European Pond Turtle.png": {
           "scientific_name": "Emys orbicularis",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "europe",
@@ -6822,6 +7560,7 @@
         },
         "False Map Turtle.png": {
           "scientific_name": "Graptemys pseudogeographica",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -6832,6 +7571,7 @@
         },
         "Green Iguana.png": {
           "scientific_name": "Iguana iguana",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -6843,6 +7583,7 @@
         },
         "Green Tree Python.png": {
           "scientific_name": "Morelia viridis",
+          "enclosure_size": "small",
           "tags": [
             "rainforest",
             "tropical",
@@ -6853,6 +7594,7 @@
         },
         "Hermann's Tortoise.png": {
           "scientific_name": "Testudo hermanni",
+          "enclosure_size": "small",
           "tags": [
             "temperate",
             "europe",
@@ -6861,6 +7603,7 @@
         },
         "Painted Turtle.png": {
           "scientific_name": "Chrysemys picta",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -6871,6 +7614,7 @@
         },
         "Pond Slider.png": {
           "scientific_name": "Trachemys scripta",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -6880,6 +7624,7 @@
         },
         "Red-Footed Tortoise.png": {
           "scientific_name": "Chelonoidis carbonarius",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "savanna",
@@ -6890,6 +7635,7 @@
         },
         "Reticulated Python.png": {
           "scientific_name": "Malayopython reticulatus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -6899,6 +7645,7 @@
         },
         "Yemen Chameleon.png": {
           "scientific_name": "Chamaeleo calyptratus",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "arabia"
@@ -6908,6 +7655,7 @@
       "2": {
         "Aldabra Giant Tortoise.png": {
           "scientific_name": "Aldabrachelys gigantea",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa"
@@ -6915,6 +7663,7 @@
         },
         "Alligator Snapping Turtle.png": {
           "scientific_name": "Macrochelys temminckii",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -6924,6 +7673,7 @@
         },
         "Amazon Tree Boa.png": {
           "scientific_name": "Corallus hortulana",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -6933,6 +7683,7 @@
         },
         "American Alligator.png": {
           "scientific_name": "Alligator mississippiensis",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -6942,6 +7693,7 @@
         },
         "Argentine Black and White Tegu.png": {
           "scientific_name": "Salvator merianae",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -6950,6 +7702,7 @@
         },
         "Asian Water Monitor.png": {
           "scientific_name": "Varanus salvator",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "tropical",
@@ -6959,6 +7712,7 @@
         },
         "Chinese Pond Turtle.png": {
           "scientific_name": "Mauremys reevesii",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -6968,6 +7722,7 @@
         },
         "Chinese Softshell Turtle.png": {
           "scientific_name": "Pelodiscus sinensis",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -6977,6 +7732,7 @@
         },
         "Chinese Stripe-Necked Turtle.png": {
           "scientific_name": "Mauremys sinensis",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "china"
@@ -6984,6 +7740,7 @@
         },
         "Common Anaconda.png": {
           "scientific_name": "Eunectes murinus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -6993,6 +7750,7 @@
         },
         "Common Musk Turtle.png": {
           "scientific_name": "Sternotherus odoratus",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7002,6 +7760,7 @@
         },
         "Common Snapping Turtle.png": {
           "scientific_name": "Chelydra serpentina",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7012,6 +7771,7 @@
         },
         "Common Viper.png": {
           "scientific_name": "Vipera berus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "asia",
@@ -7022,6 +7782,7 @@
         },
         "Cuvier's Dwarf Caiman.png": {
           "scientific_name": "Paleosuchus palpebrosus",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "tropical",
@@ -7031,6 +7792,7 @@
         },
         "Dumeril's Boa.png": {
           "scientific_name": "Acrantophis dumerili",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "africa",
@@ -7039,6 +7801,7 @@
         },
         "Dwarf Crocodile.png": {
           "scientific_name": "Osteolaemus tetraspis",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "tropical",
@@ -7049,6 +7812,7 @@
         },
         "Egyptian Tortoise.png": {
           "scientific_name": "Testudo kleinmanni",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "africa",
@@ -7057,6 +7821,7 @@
         },
         "European Legless Lizard.png": {
           "scientific_name": "Pseudopus apodus",
+          "enclosure_size": "small",
           "tags": [
             "europe",
             "mediterranean"
@@ -7064,6 +7829,7 @@
         },
         "Florida Redbelly Turtle.png": {
           "scientific_name": "Pseudemys nelsoni",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "semi-aquatic",
@@ -7073,6 +7839,7 @@
         },
         "Frill-Necked Lizard.png": {
           "scientific_name": "Chlamydosaurus kingii",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "oceania",
@@ -7081,6 +7848,7 @@
         },
         "Gila Monster.png": {
           "scientific_name": "Heloderma suspectum",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "north-america",
@@ -7089,6 +7857,7 @@
         },
         "Indian Star Tortoise.png": {
           "scientific_name": "Geochelone elegans",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "india"
@@ -7096,6 +7865,7 @@
         },
         "Leopard Tortoise.png": {
           "scientific_name": "Stigmochelys pardalis",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "africa",
@@ -7106,6 +7876,7 @@
         },
         "Malagasy Tree Boa.png": {
           "scientific_name": "Sanzinia madagascariensis",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -7115,6 +7886,7 @@
         },
         "Marginated Tortoise.png": {
           "scientific_name": "Testudo marginata",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "europe",
@@ -7123,6 +7895,7 @@
         },
         "Mata-Mata.png": {
           "scientific_name": "Chelus fimbriata",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7132,6 +7905,7 @@
         },
         "Mexican Beaded Lizard.png": {
           "scientific_name": "Heloderma horridum",
+          "enclosure_size": "small",
           "tags": [
             "north-america",
             "central-america"
@@ -7139,6 +7913,7 @@
         },
         "Pancake Tortoise.png": {
           "scientific_name": "Malacochersus tornieri",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -7147,6 +7922,7 @@
         },
         "Pig-Nosed Turtle.png": {
           "scientific_name": "Carettochelys insculpta",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7156,6 +7932,7 @@
         },
         "Radiated Tortoise.png": {
           "scientific_name": "Astrochelys radiata",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -7164,6 +7941,7 @@
         },
         "Rainbow Boa.png": {
           "scientific_name": "Epicrates cenchria",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "south-america",
@@ -7172,6 +7950,7 @@
         },
         "Red-Bellied Short-Necked Turtle.png": {
           "scientific_name": "Emydura subglobosa",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "oceania",
@@ -7180,6 +7959,7 @@
         },
         "Rhinoceros Iguana.png": {
           "scientific_name": "Cyclura cornuta",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "north-america",
@@ -7188,6 +7968,7 @@
         },
         "Savannah Monitor.png": {
           "scientific_name": "Varanus exanthematicus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -7200,6 +7981,7 @@
         },
         "Spectacled Caiman.png": {
           "scientific_name": "Caiman crocodilus",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "tropical",
@@ -7211,6 +7993,7 @@
         },
         "Spiny-Tailed Monitor.png": {
           "scientific_name": "Varanus acanthurus",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "oceania",
@@ -7219,6 +8002,7 @@
         },
         "Western Diamondback Rattlesnake.png": {
           "scientific_name": "Crotalus atrox",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -7227,6 +8011,7 @@
         },
         "Yellow Anaconda.png": {
           "scientific_name": "Eunectes notaeus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -7236,6 +8021,7 @@
         },
         "Yellow-Footed Tortoise.png": {
           "scientific_name": "Chelonoidis denticulatus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -7246,6 +8032,7 @@
       "3": {
         "African Helmeted Turtle.png": {
           "scientific_name": "Pelomedusa subrufa",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -7257,6 +8044,7 @@
         },
         "Asian Forest Tortoise.png": {
           "scientific_name": "Manouria emys",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -7265,6 +8053,7 @@
         },
         "Broad-Snouted Caiman.png": {
           "scientific_name": "Caiman latirostris",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7276,6 +8065,7 @@
         },
         "Caiman Lizard.png": {
           "scientific_name": "Dracaena guianensis",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "rainforest",
@@ -7286,6 +8076,7 @@
         },
         "Cuban Crocodile.png": {
           "scientific_name": "Crocodylus rhombifer",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7296,6 +8087,7 @@
         },
         "Elongated Tortoise.png": {
           "scientific_name": "Indotestudo elongata",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -7304,6 +8096,7 @@
         },
         "Emerald Tree Boa.png": {
           "scientific_name": "Corallus caninus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -7313,6 +8106,7 @@
         },
         "Eyelash Viper.png": {
           "scientific_name": "Bothriechis schlegelii",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -7322,6 +8116,7 @@
         },
         "Galapagos Giant Tortoise.png": {
           "scientific_name": "Chelonoidis niger",
+          "enclosure_size": "medium",
           "tags": [
             "tropical",
             "south-america"
@@ -7329,6 +8124,7 @@
         },
         "Giant Asian Pond Turtle.png": {
           "scientific_name": "Heosemys grandis",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7339,6 +8135,7 @@
         },
         "Green Tree Monitor.png": {
           "scientific_name": "Varanus prasinus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "oceania",
@@ -7347,6 +8144,7 @@
         },
         "Nose-Horned Viper.png": {
           "scientific_name": "Vipera ammodytes",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "europe",
@@ -7355,6 +8153,7 @@
         },
         "Indian Cobra.png": {
           "scientific_name": "Naja naja",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -7363,6 +8162,7 @@
         },
         "Komodo Dragon.png": {
           "scientific_name": "Varanus komodoensis",
+          "enclosure_size": "medium",
           "tags": [
             "tropical",
             "asia",
@@ -7371,6 +8171,7 @@
         },
         "Malagasy Ground Boa.png": {
           "scientific_name": "Acrantophis madagascariensis",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -7380,6 +8181,7 @@
         },
         "Malaysian Giant Turtle.png": {
           "scientific_name": "Orlitia borneensis",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7389,6 +8191,7 @@
         },
         "McCord's Snake-Necked Turtle.png": {
           "scientific_name": "Chelodina mccordi",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7398,6 +8201,7 @@
         },
         "Mediterranean Turtle": {
           "scientific_name": "Mauremys leprosa",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "europe",
@@ -7406,6 +8210,7 @@
         },
         "Monocled Cobra.png": {
           "scientific_name": "Naja kaouthia",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -7414,6 +8219,7 @@
         },
         "Nile Crocodile.png": {
           "scientific_name": "Crocodylus niloticus",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7427,6 +8233,7 @@
         },
         "Nile Monitor.png": {
           "scientific_name": "Varanus niloticus",
+          "enclosure_size": "small",
           "tags": [
             "africa",
             "congo",
@@ -7436,6 +8243,7 @@
         },
         "Puff Adder.png": {
           "scientific_name": "Bitis arietans",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -7445,6 +8253,7 @@
         },
         "Red Tegu.png": {
           "scientific_name": "Salvator rufescens",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "south-america",
@@ -7454,6 +8263,7 @@
         },
         "Spider Tortoise.png": {
           "scientific_name": "Pyxis arachnoides",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -7462,6 +8272,7 @@
         },
         "Utila Spiny-Tailed Iguana.png": {
           "scientific_name": "Ctenosaura bakeri",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "north-america",
@@ -7470,6 +8281,7 @@
         },
         "Western Gaboon Viper.png": {
           "scientific_name": "Bitis gabonica",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -7478,6 +8290,7 @@
         },
         "Yellow-Headed Water Monitor.png": {
           "scientific_name": "Varanus cumingi",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "asia",
@@ -7486,6 +8299,7 @@
         },
         "Yellow-Spotted Amazon River Turtle.png": {
           "scientific_name": "Podocnemis unifilis",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7498,6 +8312,7 @@
       "4": {
         "Bell's Hinge-Back Tortoise.png": {
           "scientific_name": "Kinixys belliana",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "africa",
@@ -7507,6 +8322,7 @@
         },
         "Black Mamba.png": {
           "scientific_name": "Dendroaspis polylepis",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -7516,6 +8332,7 @@
         },
         "Black-Headed Python.png": {
           "scientific_name": "Aspidites melanocephalus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "oceania",
@@ -7524,6 +8341,7 @@
         },
         "Borneo Earless Monitor.png": {
           "scientific_name": "Lanthanotus borneensis",
+          "enclosure_size": "small",
           "tags": [
             "asia",
             "southeast-asia"
@@ -7531,6 +8349,7 @@
         },
         "Burmese Star Tortoise.png": {
           "scientific_name": "Geochelone platynota",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -7539,6 +8358,7 @@
         },
         "Central African Rock Python.png": {
           "scientific_name": "Python sebae",
+          "enclosure_size": "small",
           "tags": [
             "forest",
             "desert",
@@ -7548,6 +8368,7 @@
         },
         "Central American Wood Turtle.png": {
           "scientific_name": "Rhinoclemmys pulcherrima",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "north-america",
@@ -7556,6 +8377,7 @@
         },
         "Chinese Alligator.png": {
           "scientific_name": "Alligator sinensis",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7565,6 +8387,7 @@
         },
         "Chinese Box Turtle.png": {
           "scientific_name": "Cuora flavomarginata",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -7573,6 +8396,7 @@
         },
         "Common Slow Worm.png": {
           "scientific_name": "Anguis fragilis",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -7583,6 +8407,7 @@
         },
         "Copperhead.png": {
           "scientific_name": "Agkistrodon contortrix",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -7591,6 +8416,7 @@
         },
         "Crocodile Monitor.png": {
           "scientific_name": "Varanus salvadorii",
+          "enclosure_size": "medium",
           "tags": [
             "tropical",
             "oceania",
@@ -7599,6 +8425,7 @@
         },
         "Desert Horned Viper.png": {
           "scientific_name": "Cerastes cerastes",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "nocturnal",
@@ -7609,6 +8436,7 @@
         },
         "Eastern Diamondback Rattlesnake.png": {
           "scientific_name": "Crotalus adamanteus",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -7617,6 +8445,7 @@
         },
         "Eastern Green Mamba.png": {
           "scientific_name": "Dendroaspis angusticeps",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -7626,6 +8455,7 @@
         },
         "False Gharial.png": {
           "scientific_name": "Tomistoma schlegelii",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7636,6 +8466,7 @@
         },
         "Freshwater Crocodile.png": {
           "scientific_name": "Crocodylus johnstoni",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7646,6 +8477,7 @@
         },
         "Green Bush Viper.png": {
           "scientific_name": "Atheris squamigera",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -7654,6 +8486,7 @@
         },
         "Indonesian Pit Viper.png": {
           "scientific_name": "Trimeresurus insularis",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -7662,6 +8495,7 @@
         },
         "Jackson's Chameleon.png": {
           "scientific_name": "Trioceros jacksonii",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -7670,6 +8504,7 @@
         },
         "Kenyan Sand Boa.png": {
           "scientific_name": "Eryx colubrinus",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "nocturnal",
@@ -7679,6 +8514,7 @@
         },
         "King Cobra.png": {
           "scientific_name": "Ophiophagus hannah",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -7688,6 +8524,7 @@
         },
         "Lace Monitor.png": {
           "scientific_name": "Varanus varius",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "oceania",
@@ -7696,6 +8533,7 @@
         },
         "Mitchell's Water Monitor.png": {
           "scientific_name": "Varanus mitchelli",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7706,6 +8544,7 @@
         },
         "Morelet's Crocodile.png": {
           "scientific_name": "Crocodylus moreletii",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7716,6 +8555,7 @@
         },
         "Philippine Crocodile.png": {
           "scientific_name": "Crocodylus mindorensis",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7726,6 +8566,7 @@
         },
         "Red Blood Python.png": {
           "scientific_name": "Python brongersmai",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -7734,6 +8575,7 @@
         },
         "Rosy Boa.png": {
           "scientific_name": "Lichanura trivirgata",
+          "enclosure_size": "small",
           "tags": [
             "nocturnal",
             "north-america",
@@ -7742,6 +8584,7 @@
         },
         "Saltwater Crocodile.png": {
           "scientific_name": "Crocodylus porosus",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7755,6 +8598,7 @@
         },
         "Siamese Crocodile.png": {
           "scientific_name": "Crocodylus siamensis",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7765,6 +8609,7 @@
         },
         "Slender-Snouted Crocodile.png": {
           "scientific_name": "Mecistops cataphractus",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7775,6 +8620,7 @@
         },
         "Smooth-Fronted Caiman.png": {
           "scientific_name": "Paleosuchus trigonatus",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7785,6 +8631,7 @@
         },
         "Spiny Hill Turtle.png": {
           "scientific_name": "Heosemys spinosa",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "asia",
@@ -7793,6 +8640,7 @@
         },
         "Spiny Softshell Turtle.png": {
           "scientific_name": "Apalone spinifera",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "north-america",
@@ -7801,6 +8649,7 @@
         },
         "Spotted Pond Turtle.png": {
           "scientific_name": "Geoclemys hamiltonii",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7811,6 +8660,7 @@
         },
         "Sumatran Short-Tailed Python.png": {
           "scientific_name": "Python curtus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -7820,6 +8670,7 @@
         },
         "Uracoan Rattlesnake.png": {
           "scientific_name": "Crotalus vegrandis",
+          "enclosure_size": "small",
           "tags": [
             "savanna",
             "south-america",
@@ -7828,6 +8679,7 @@
         },
         "West African Crocodile.png": {
           "scientific_name": "Crocodylus suchus",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7839,6 +8691,7 @@
         },
         "West African Mud Turtle.png": {
           "scientific_name": "Pelusios castaneus",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7849,6 +8702,7 @@
         },
         "Yacare Caiman.png": {
           "scientific_name": "Caiman yacare",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7861,6 +8715,7 @@
       "5": {
         "American Crocodile.png": {
           "scientific_name": "Crocodylus acutus",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7873,6 +8728,7 @@
         },
         "Arrau River Turtle.png": {
           "scientific_name": "Podocnemis expansa",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7882,6 +8738,7 @@
         },
         "Big-Headed Amazon River Turtle.png": {
           "scientific_name": "Peltocephalus dumerilianus",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7892,6 +8749,7 @@
         },
         "Big-Headed Turtle.png": {
           "scientific_name": "Platysternon megacephalum",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "nocturnal",
@@ -7901,6 +8759,7 @@
         },
         "Black Caiman.png": {
           "scientific_name": "Melanosuchus niger",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7911,6 +8770,7 @@
         },
         "Common Toadheaded Turtle.png": {
           "scientific_name": "Mesoclemmys nasuta",
+          "enclosure_size": "small",
           "tags": [
             "desert",
             "south-america",
@@ -7919,6 +8779,7 @@
         },
         "Four-Eyed Turtle.png": {
           "scientific_name": "Sacalia quadriocellata",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7928,6 +8789,7 @@
         },
         "Indian Gharial.png": {
           "scientific_name": "Gavialis gangeticus",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7938,6 +8800,7 @@
         },
         "Mugger Crocodile.png": {
           "scientific_name": "Crocodylus palustris",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7948,6 +8811,7 @@
         },
         "New Guinea Crocodile.png": {
           "scientific_name": "Crocodylus novaeguineae",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7958,6 +8822,7 @@
         },
         "Orinoco Crocodile.png": {
           "scientific_name": "Crocodylus intermedius",
+          "enclosure_size": "medium",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7968,6 +8833,7 @@
         },
         "Red-Headed River Turtle.png": {
           "scientific_name": "Podocnemis erythrocephala",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7978,6 +8844,7 @@
         },
         "Smooth Softshell Turtle.png": {
           "scientific_name": "Apalone mutica",
+          "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
             "wetland",
@@ -7988,6 +8855,7 @@
         },
         "Speckled Tortoise.png": {
           "scientific_name": "Chersobius signatus",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "africa",
@@ -7996,6 +8864,7 @@
         },
         "Spotted Turtle.png": {
           "scientific_name": "Clemmys guttata",
+          "enclosure_size": "small",
           "tags": [
             "tropical",
             "north-america",
@@ -8004,6 +8873,7 @@
         },
         "Sulawesi Forest Turtle.png": {
           "scientific_name": "Leucocephalon yuwonoi",
+          "enclosure_size": "small",
           "tags": [
             "wetlands",
             "asia",
@@ -8012,6 +8882,7 @@
         },
         "Tuatara.png": {
           "scientific_name": "Sphenodon punctatus",
+          "enclosure_size": "small",
           "tags": [
             "oceania",
             "new-zealand"

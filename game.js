@@ -19968,7 +19968,12 @@ function renderPlayerZooNameText(textNode) {
             const lowerName = fullName.toLocaleLowerCase();
             const lowerLocation = recognised.location.toLocaleLowerCase();
             const index = lowerName.lastIndexOf(lowerLocation);
-            if (index >= 0) {
+            // Only split when the recognised place is a suffix of a longer
+            // zoo name. If the recognised location IS the complete proper
+            // name (for example "Almere Jungle"), splitting at index 0
+            // would render fullName once as the fallback prefix and again as
+            // the place: "Almere JungleAlmere Jungle".
+            if (index > 0) {
                 prefix = fullName.slice(0, index).trim();
                 place = fullName.slice(index).trim();
             }

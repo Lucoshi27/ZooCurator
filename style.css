@@ -4095,3 +4095,331 @@ body.collection-menu-open #hoverPreview {
     stroke-linecap: square !important;
     shape-rendering: geometricPrecision;
 }
+
+
+/* ============================================================
+   V225 — REAL / FICTIONAL NEW-ZOO GENERATOR
+   ============================================================ */
+.new-zoo-modal #newZooKind,
+.new-zoo-modal #newZooRealName,
+.new-zoo-modal #newZooRealLocation {
+    width:280px;
+    min-width:224px;
+    padding:6px 7px;
+}
+.new-zoo-real-note {
+    padding:8px 10px;
+    border-radius:6px;
+    background:rgba(255,255,255,.58);
+}
+.new-zoo-modal [hidden] { display:none !important; }
+@media (max-width:600px) {
+    .new-zoo-modal #newZooKind,
+    .new-zoo-modal #newZooRealName,
+    .new-zoo-modal #newZooRealLocation {
+        width:100%;
+        min-width:0;
+    }
+}
+
+
+/* V225.2 — Real Zoo uses the established New Zoo identity layout. */
+.new-zoo-modal.real-zoo-mode #randomizeZooLocation { display:none !important; }
+
+
+/* ============================================================
+   V225.3 — REAL ZOO PICKERS + STARTING SIZE BROWSER
+   ============================================================ */
+.new-zoo-modal { position: relative; }
+.new-zoo-real-picker {
+    position: absolute;
+    z-index: 40;
+    width: min(430px, calc(100% - 32px));
+    max-height: 310px;
+    overflow-y: auto;
+    padding: 6px;
+    border: 1px solid rgba(70,58,39,.38);
+    border-radius: 8px;
+    background: #fffdf6;
+    box-shadow: 0 10px 28px rgba(0,0,0,.24);
+}
+.new-zoo-real-picker[hidden] { display: none !important; }
+.new-zoo-real-picker-option {
+    display: block;
+    width: 100%;
+    padding: 8px 10px;
+    border: 0 !important;
+    border-radius: 5px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.new-zoo-real-picker-option:hover { background: #f1ecdf !important; }
+.new-zoo-real-picker-option.selected { background: #e4ddca !important; }
+.new-zoo-modal.real-zoo-mode .new-zoo-edit-name,
+.new-zoo-modal.real-zoo-mode .new-zoo-edit-location {
+    font-size: 19px !important;
+    cursor: pointer;
+}
+
+
+/* ============================================================
+   V225.4 — FLOATING REAL-ZOO PICKERS / STRONG AREAS
+   ============================================================ */
+.new-zoo-real-picker {
+    position: fixed !important;
+    z-index: 32050 !important;
+    max-height: min(310px, calc(100vh - 24px)) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+}
+
+/* Area titles are map typography, not UI badges. They live in zoo-world
+   coordinates, so their size naturally scales together with enclosure cards. */
+.zoo-theme-area-title.zoo-theme-area-group-title {
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #29271f;
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    line-height: 34px !important;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(255,255,255,.82), 0 2px 4px rgba(0,0,0,.16);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 4;
+}
+.zoo-theme-area-leader {
+    position: absolute;
+    height: 0;
+    z-index: 3;
+    pointer-events: none;
+    transform-origin: 0 50%;
+    border-top: 4px solid var(--area-outline-color, rgba(70,70,60,.78));
+}
+.zoo-theme-area-leader.zoo-theme-layer-geography { border-top-width: 5px; }
+.zoo-theme-area-leader.zoo-theme-layer-habitat { border-top-style: dashed; }
+
+/* Deliberately strong first-pass recolouring. Keep the enclosure artwork and
+   its neutral card edge readable, but make Area membership unmistakable. */
+.enclosure.themed-enclosure .enclosure-image {
+    filter: var(--enclosure-theme-filter, saturate(2.2) contrast(1.16) brightness(.96)) !important;
+}
+.theme-africa        { --enclosure-theme-filter: sepia(.82) saturate(3.2) hue-rotate(342deg) contrast(1.18) brightness(.94); }
+.theme-asia          { --enclosure-theme-filter: sepia(.76) saturate(3.0) hue-rotate(310deg) contrast(1.18) brightness(.95); }
+.theme-europe        { --enclosure-theme-filter: sepia(.52) saturate(2.5) hue-rotate(158deg) contrast(1.17) brightness(.96); }
+.theme-north-america { --enclosure-theme-filter: sepia(.66) saturate(2.7) hue-rotate(66deg) contrast(1.18) brightness(.94); }
+.theme-south-america { --enclosure-theme-filter: sepia(.72) saturate(3.2) hue-rotate(70deg) contrast(1.18) brightness(.93); }
+.theme-oceania       { --enclosure-theme-filter: sepia(.72) saturate(2.9) hue-rotate(330deg) contrast(1.18) brightness(.95); }
+.theme-antarctica    { --enclosure-theme-filter: saturate(2.35) hue-rotate(155deg) brightness(1.04) contrast(1.15); }
+.theme-tropical, .theme-rainforest { --enclosure-theme-filter: sepia(.62) saturate(3.35) hue-rotate(62deg) contrast(1.18) brightness(.92); }
+.theme-savanna       { --enclosure-theme-filter: sepia(.86) saturate(3.15) hue-rotate(344deg) contrast(1.19) brightness(.95); }
+.theme-aquatic       { --enclosure-theme-filter: sepia(.46) saturate(3.05) hue-rotate(145deg) contrast(1.18) brightness(.94); }
+.theme-semi-aquatic, .theme-wetland { --enclosure-theme-filter: sepia(.52) saturate(2.9) hue-rotate(106deg) contrast(1.18) brightness(.93); }
+.theme-forest, .theme-boreal { --enclosure-theme-filter: sepia(.58) saturate(3.0) hue-rotate(64deg) contrast(1.19) brightness(.91); }
+.theme-desert        { --enclosure-theme-filter: sepia(.88) saturate(3.0) hue-rotate(344deg) contrast(1.18) brightness(.98); }
+.theme-temperate     { --enclosure-theme-filter: sepia(.50) saturate(2.6) hue-rotate(60deg) contrast(1.17) brightness(.94); }
+.theme-arctic        { --enclosure-theme-filter: saturate(2.25) hue-rotate(155deg) brightness(1.05) contrast(1.14); }
+.theme-mountain      { --enclosure-theme-filter: saturate(1.55) contrast(1.30) brightness(.90); }
+.theme-domestic, .theme-petting-zoo { --enclosure-theme-filter: sepia(.70) saturate(2.8) hue-rotate(338deg) contrast(1.18) brightness(.95); }
+
+/* ============================================================
+   V225.6 — LARGE DRAGGABLE AREA TITLES
+   ============================================================ */
+.zoo-theme-area-title.zoo-theme-area-group-title {
+    font-size: 56px !important;
+    line-height: 68px !important;
+    color: var(--area-outline-color, rgba(70,70,60,.92)) !important;
+    text-shadow: 0 2px 0 rgba(255,255,255,.88), 0 3px 7px rgba(0,0,0,.20) !important;
+    pointer-events: auto !important;
+    cursor: grab !important;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.zoo-theme-area-title.zoo-theme-area-group-title:active { cursor: grabbing !important; }
+.zoo-theme-area-leader {
+    border-top-color: var(--area-outline-color, rgba(70,70,60,.88)) !important;
+}
+
+/* ============================================================
+   V225.7 — SEAMLESS AREA PERIMETERS + OBSTACLE-SAFE LEADERS
+   ============================================================ */
+.zoo-theme-outline path {
+    stroke: currentColor;
+    stroke-width: 4px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    fill: none;
+    shape-rendering: geometricPrecision;
+}
+.zoo-theme-outline.zoo-theme-layer-geography path { stroke-width: 6px; }
+.zoo-theme-outline.zoo-theme-layer-habitat path { stroke-width: 4px; stroke-dasharray: 13 8; }
+.zoo-theme-outline.zoo-theme-layer-facility path,
+.zoo-theme-outline.zoo-theme-layer-special path { stroke-width: 4px; }
+
+
+/* ============================================================
+   V226 — VISIT MODE + AREA TOOL
+   ============================================================ */
+#returnFromZooVisit { display:none; position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:50000; padding:15px 30px; min-width:min(520px,86vw); border:2px solid rgba(55,48,36,.75); border-radius:10px; background:#f4efe2; color:#252219; font:700 20px/1.15 Arial,Helvetica,sans-serif; box-shadow:0 8px 28px rgba(0,0,0,.34); cursor:pointer; }
+/* Visiting remains pannable: cards/area editors are inert, while empty canvas
+   still receives the normal map-pan gesture. */
+body.visiting-real-zoo .area-colour-button { pointer-events:none !important; }
+/* Generated Area labels remain movable while visiting. Their click-to-edit and
+   colour controls stay disabled in JS, so this exposes positioning only. */
+body.visiting-real-zoo .zoo-theme-area-title { pointer-events:auto !important; cursor:grab !important; }
+body.visiting-real-zoo .player-custom-area-name { pointer-events:auto !important; cursor:grab !important; }
+body.visiting-real-zoo #areaToolButton { display:none !important; }
+#areaToolButton { position:fixed; right:24px; bottom:24px; z-index:12000; width:72px; height:72px; border-radius:14px; border:2px solid rgba(60,55,45,.55); background:#f4efe2; color:#383329; box-shadow:0 6px 20px rgba(0,0,0,.25); font:700 42px/1 Arial,sans-serif; cursor:pointer; }
+#areaToolButton.active { outline:4px solid rgba(224,174,45,.72); }
+body.area-tool-active #zooCanvas { cursor:crosshair; }
+#areaToolSelection { position:absolute; z-index:20; pointer-events:none; border:3px dashed rgba(65,60,50,.9); background:rgba(230,195,80,.12); box-sizing:border-box; }
+.player-custom-area { position:absolute; box-sizing:border-box; pointer-events:none; border:5px solid var(--custom-area); background:color-mix(in srgb,var(--custom-area) 22%,transparent); z-index:1; }
+.player-custom-area-name { position:absolute; z-index:7; min-width:120px; padding:2px 34px 4px 2px; font:700 56px/1.08 Arial,Helvetica,sans-serif; white-space:nowrap; cursor:text; text-shadow:0 1px 0 rgba(255,255,255,.82),0 2px 4px rgba(0,0,0,.16); }
+.player-custom-area-name.editing { min-width:180px; border-bottom:3px dotted currentColor; outline:none; }
+.area-colour-button { display:none; position:absolute; right:0; top:50%; transform:translateY(-50%); width:28px; height:28px; padding:0; border:1px solid currentColor; border-radius:50%; background:#f4efe2; color:inherit; font-size:18px; line-height:24px; cursor:pointer; }
+.player-custom-area-name:hover .area-colour-button,.player-custom-area-name:focus-within .area-colour-button { display:block; }
+/* North America is intentionally brown rather than green. */
+.theme-north-america { --enclosure-theme-filter: sepia(.86) saturate(2.25) hue-rotate(345deg) contrast(1.14) brightness(.94) !important; --enclosure-theme-edge:#8a6238 !important; --enclosure-theme-tint:rgba(138,98,56,.38) !important; }
+
+/* V226.4 — visited real-zoo layout persistence uses existing visit UI styles. */
+
+/* ============================================================
+   V226.5/V226.6 — AREA-NAME HOVER FEEDBACK
+   ============================================================ */
+.zoo-theme-outline.zoo-theme-layer-geography.area-name-hovered path {
+    stroke-width: 10px;
+}
+.zoo-theme-outline.zoo-theme-layer-habitat.area-name-hovered path,
+.zoo-theme-outline.zoo-theme-layer-facility.area-name-hovered path {
+    stroke-width: 5px;
+    stroke-dasharray: 13 8;
+    animation: zooAreaMarchingDashes .7s linear infinite;
+}
+@keyframes zooAreaMarchingDashes {
+    to { stroke-dashoffset: -21px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .zoo-theme-outline.zoo-theme-layer-habitat.area-name-hovered path,
+    .zoo-theme-outline.zoo-theme-layer-facility.area-name-hovered path {
+        animation: none;
+        stroke-width: 6px;
+    }
+}
+
+
+/* ============================================================
+   V226.7 — AREA TOOL / HOLDINGS / VISIT POLISH
+   ============================================================ */
+#areaToolButton.active {
+    outline: 3px solid rgba(92,82,63,.72) !important;
+    background: #c9c3b6 !important;
+    box-shadow: inset 0 4px 8px rgba(0,0,0,.28), 0 1px 2px rgba(255,255,255,.45) !important;
+    transform: translateY(2px);
+    filter: grayscale(.28);
+}
+.player-custom-area.dotted { border-style:dashed !important; }
+.area-style-menu {
+    position:fixed; z-index:60000; min-width:190px; padding:10px;
+    display:grid; grid-template-columns:1fr; gap:8px;
+    border:2px solid rgba(55,48,36,.7); border-radius:8px;
+    background:#f4efe2; color:#29251e; box-shadow:0 7px 22px rgba(0,0,0,.3);
+    font:700 13px/1.2 Arial,Helvetica,sans-serif;
+}
+.area-style-menu input[type="color"], .area-style-menu select { width:100%; min-height:34px; }
+.current-game-holder-country {
+    margin:12px 0 4px; padding-top:7px; border-top:1px solid rgba(0,0,0,.18);
+    font-weight:800; font-size:14px;
+}
+.current-game-holder-country:first-child { margin-top:2px; border-top:0; }
+body.visiting-real-zoo .exchange-eligible,
+body.visiting-real-zoo .exchange-glow-return,
+body.visiting-real-zoo .trade-eligible,
+body.visiting-real-zoo .compatibility-animal-match,
+body.visiting-real-zoo .compatibility-animal-match-fading,
+body.visiting-real-zoo .compatibility-hover-slot-match,
+body.visiting-real-zoo .compatibility-hover-slot-match-fading { animation:none !important; box-shadow:none !important; filter:none !important; }
+
+/* ============================================================
+   V226.8 — visit interaction + Area editor hardening
+   ============================================================ */
+/* Cards remain hover/click targets while visiting so the enlarged preview works.
+   JS blocks drag/mutation instead of disabling pointer events wholesale. */
+body.visiting-real-zoo .animal-card { pointer-events:auto !important; cursor:default !important; }
+body.visiting-real-zoo .enclosure { pointer-events:auto !important; }
+.player-custom-area-name { cursor:grab !important; }
+.player-custom-area-name.editing,
+.zoo-theme-area-title.editing { cursor:text !important; white-space:nowrap !important; }
+.zoo-theme-outline.user-dotted-outline path { stroke-dasharray:13 8 !important; }
+.zoo-theme-outline.user-solid-outline path { stroke-dasharray:none !important; }
+.current-game-holder { display:block; margin:3px 0; }
+.current-game-holder.visit-holder-button {
+    width:100%; text-align:left; padding:5px 8px; border:1px solid rgba(65,58,46,.42);
+    border-radius:5px; background:#eee7d8; color:inherit; font:inherit; font-weight:700;
+    cursor:pointer; box-shadow:0 1px 1px rgba(0,0,0,.08);
+}
+.current-game-holder.visit-holder-button:hover { background:#ddd2bd; transform:translateY(-1px); }
+.current-game-holder.player-holder { padding:5px 8px; font-weight:700; }
+.enclosure-user-tag {
+    position:absolute; left:calc(100% + 8px); z-index:15; max-width:180px;
+    padding:3px 7px; border:1px solid rgba(55,48,36,.65); border-radius:4px;
+    background:#f4efe2; color:#302b23; font:700 11px/1.2 Arial,Helvetica,sans-serif;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; pointer-events:auto;
+    box-shadow:0 2px 5px rgba(0,0,0,.16);
+}
+.enclosure-user-tag.exhibit-user-tag { border-style:dashed; }
+.enclosure-tag-editor {
+    position:fixed; z-index:65000; width:220px; padding:10px; display:grid; gap:8px;
+    border:2px solid rgba(55,48,36,.7); border-radius:8px; background:#f4efe2;
+    box-shadow:0 7px 22px rgba(0,0,0,.3); font:700 13px/1.2 Arial,Helvetica,sans-serif;
+}
+.enclosure-tag-editor input,.enclosure-tag-editor button { min-height:32px; font:inherit; }
+
+/* ============================================================
+   V226.9 — OVERLAPPING AREA / VISIT SAFETY POLISH
+   ============================================================ */
+/* Generated line-style choices now affect the actual SVG perimeter. */
+/* Visited custom Area labels may still be repositioned, but their style button
+   is unavailable: visits are presentation-only apart from label positioning. */
+body.visiting-real-zoo .player-custom-area-name .area-colour-button { display:none !important; }
+/* Overlapping Area layers stay individually legible instead of one layer
+   swallowing pointer/hover feedback from the labels above them. */
+.zoo-theme-outline { pointer-events:none !important; }
+.player-custom-area { pointer-events:none !important; }
+
+/* V226.11 — Area overlap/visit interaction cleanup. */
+
+/* ============================================================
+   V226.12 — SUBREGION + EXACT-OVERLAP AREA MERGING
+   ============================================================ */
+/* Subregions are geography-level Areas. They intentionally use one neutral
+   geography treatment; merged habitat/subregion Areas retain this perimeter
+   while their combined title communicates both concepts. */
+.theme-subregion { --area-outline-color: rgba(104, 92, 66, .88); --enclosure-theme-filter: sepia(.34) saturate(1.55) contrast(1.09); }
+.zoo-theme-outline.zoo-theme-layer-subregion path { stroke-width: 6px; }
+.zoo-theme-outline.zoo-theme-layer-subregion.area-name-hovered path { stroke-width: 10px; }
+
+
+/* V226.15 — robust document-level Real Zoo chooser */
+.new-zoo-real-picker {
+    pointer-events: auto !important;
+    visibility: visible;
+}
+.new-zoo-real-picker-option {
+    touch-action: manipulation;
+    user-select: none;
+}
+.new-zoo-real-picker-empty {
+    padding: 12px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    opacity: .7;
+}

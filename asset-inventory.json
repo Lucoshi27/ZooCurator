@@ -2524,6 +2524,17 @@
     },
     "Other Mammals": {
       "1": {
+		"African Crested Porcupine.png": {
+          "scientific_name": "Hystrix cristata",
+          "tags": [
+            "savanna",
+            "desert",
+            "nocturnal",
+			"africa",
+			"east-africa",
+			"west-africa"
+          ]
+        },
         "Azara's Agouti.png": {
           "scientific_name": "Dasyprocta azarae",
           "tags": [
@@ -2531,17 +2542,6 @@
             "tropical",
             "south-america",
             "amazon"
-          ]
-        },
-        "Cape Porcupine.png": {
-          "scientific_name": "Hystrix africaeaustralis",
-          "tags": [
-            "savanna",
-            "desert",
-            "nocturnal",
-            "africa",
-            "cape",
-            "southern-africa"
           ]
         },
         "Coypu.png": {
@@ -2671,6 +2671,17 @@
           "tags": [
             "north-america",
             "rockies"
+          ]
+        },
+		"Cape Porcupine.png": {
+          "scientific_name": "Hystrix africaeaustralis",
+          "tags": [
+            "savanna",
+            "desert",
+            "nocturnal",
+            "africa",
+            "cape",
+            "southern-africa"
           ]
         },
         "Capybara.png": {

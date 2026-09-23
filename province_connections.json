@@ -2,37 +2,1448 @@
   "schema_version": 1,
   "description": "Province adjacency graph for Zoo Curator real-zoo trading. Keys use Country|Province. Neighbour links are symmetric and only represent direct adjacency between regions present in the real-zoo database.",
   "provinces": {
-    "Austria|Vienna": { "country": "Austria", "province": "Vienna", "neighbours": [] },
-    "Belgium|Antwerp": { "country": "Belgium", "province": "Antwerp", "neighbours": ["Belgium|East Flanders", "Belgium|Limburg", "Netherlands|North Brabant", "Netherlands|Zeeland"] },
-    "Belgium|East Flanders": { "country": "Belgium", "province": "East Flanders", "neighbours": ["Belgium|Antwerp", "Belgium|Hainaut", "Belgium|West Flanders", "Netherlands|Zeeland"] },
-    "Belgium|Hainaut": { "country": "Belgium", "province": "Hainaut", "neighbours": ["Belgium|East Flanders", "Belgium|Namur", "Belgium|West Flanders"] },
-    "Belgium|Limburg": { "country": "Belgium", "province": "Limburg", "neighbours": ["Belgium|Antwerp", "Belgium|Liège", "Netherlands|Limburg", "Netherlands|North Brabant"] },
-    "Belgium|Liège": { "country": "Belgium", "province": "Liège", "neighbours": ["Belgium|Limburg", "Belgium|Luxembourg", "Belgium|Namur", "Germany|North Rhine-Westphalia", "Netherlands|Limburg"] },
-    "Belgium|Luxembourg": { "country": "Belgium", "province": "Luxembourg", "neighbours": ["Belgium|Liège", "Belgium|Namur"] },
-    "Belgium|Namur": { "country": "Belgium", "province": "Namur", "neighbours": ["Belgium|Hainaut", "Belgium|Liège", "Belgium|Luxembourg"] },
-    "Belgium|West Flanders": { "country": "Belgium", "province": "West Flanders", "neighbours": ["Belgium|East Flanders", "Belgium|Hainaut"] },
-    "Czechia|Plzeň Region": { "country": "Czechia", "province": "Plzeň Region", "neighbours": [] },
-    "Czechia|Prague": { "country": "Czechia", "province": "Prague", "neighbours": [] },
-    "Denmark|Capital Region": { "country": "Denmark", "province": "Capital Region", "neighbours": [] },
-    "France|Loir-et-Cher": { "country": "France", "province": "Loir-et-Cher", "neighbours": [] },
-    "Germany|Berlin": { "country": "Germany", "province": "Berlin", "neighbours": [] },
-    "Germany|North Rhine-Westphalia": { "country": "Germany", "province": "North Rhine-Westphalia", "neighbours": ["Belgium|Liège", "Netherlands|Gelderland", "Netherlands|Limburg"] },
-    "Germany|Saxony": { "country": "Germany", "province": "Saxony", "neighbours": [] },
-    "Netherlands|Drenthe": { "country": "Netherlands", "province": "Drenthe", "neighbours": ["Netherlands|Friesland", "Netherlands|Groningen", "Netherlands|Overijssel"] },
-    "Netherlands|Flevoland": { "country": "Netherlands", "province": "Flevoland", "neighbours": ["Netherlands|Friesland", "Netherlands|Gelderland", "Netherlands|North Holland", "Netherlands|Overijssel", "Netherlands|Utrecht"] },
-    "Netherlands|Friesland": { "country": "Netherlands", "province": "Friesland", "neighbours": ["Netherlands|Drenthe", "Netherlands|Flevoland", "Netherlands|Groningen", "Netherlands|North Holland"] },
-    "Netherlands|Gelderland": { "country": "Netherlands", "province": "Gelderland", "neighbours": ["Germany|North Rhine-Westphalia", "Netherlands|Flevoland", "Netherlands|Limburg", "Netherlands|North Brabant", "Netherlands|Overijssel", "Netherlands|South Holland", "Netherlands|Utrecht"] },
-    "Netherlands|Groningen": { "country": "Netherlands", "province": "Groningen", "neighbours": ["Netherlands|Drenthe", "Netherlands|Friesland"] },
-    "Netherlands|Limburg": { "country": "Netherlands", "province": "Limburg", "neighbours": ["Belgium|Liège", "Belgium|Limburg", "Germany|North Rhine-Westphalia", "Netherlands|Gelderland", "Netherlands|North Brabant"] },
-    "Netherlands|North Brabant": { "country": "Netherlands", "province": "North Brabant", "neighbours": ["Belgium|Antwerp", "Belgium|Limburg", "Netherlands|Gelderland", "Netherlands|Limburg", "Netherlands|South Holland", "Netherlands|Zeeland"] },
-    "Netherlands|North Holland": { "country": "Netherlands", "province": "North Holland", "neighbours": ["Netherlands|Flevoland", "Netherlands|Friesland", "Netherlands|South Holland", "Netherlands|Utrecht"] },
-    "Netherlands|Overijssel": { "country": "Netherlands", "province": "Overijssel", "neighbours": ["Netherlands|Drenthe", "Netherlands|Flevoland", "Netherlands|Gelderland"] },
-    "Netherlands|South Holland": { "country": "Netherlands", "province": "South Holland", "neighbours": ["Netherlands|Gelderland", "Netherlands|North Brabant", "Netherlands|North Holland", "Netherlands|Utrecht", "Netherlands|Zeeland"] },
-    "Netherlands|Utrecht": { "country": "Netherlands", "province": "Utrecht", "neighbours": ["Netherlands|Flevoland", "Netherlands|Gelderland", "Netherlands|North Holland", "Netherlands|South Holland"] },
-    "Netherlands|Zeeland": { "country": "Netherlands", "province": "Zeeland", "neighbours": ["Belgium|Antwerp", "Belgium|East Flanders", "Netherlands|North Brabant", "Netherlands|South Holland"] },
-    "Spain|Community of Madrid": { "country": "Spain", "province": "Community of Madrid", "neighbours": [] },
-    "Spain|Valencian Community": { "country": "Spain", "province": "Valencian Community", "neighbours": [] },
-    "United Kingdom|Cheshire": { "country": "United Kingdom", "province": "Cheshire", "neighbours": [] },
-    "United Kingdom|Greater London": { "country": "United Kingdom", "province": "Greater London", "neighbours": [] }
+    "Austria|Vienna": {
+      "country": "Austria",
+      "province": "Vienna",
+      "neighbours": []
+    },
+    "Belgium|Antwerp": {
+      "country": "Belgium",
+      "province": "Antwerp",
+      "neighbours": [
+        "Belgium|East Flanders",
+        "Belgium|Limburg",
+        "Netherlands|North Brabant",
+        "Netherlands|Zeeland"
+      ]
+    },
+    "Belgium|East Flanders": {
+      "country": "Belgium",
+      "province": "East Flanders",
+      "neighbours": [
+        "Belgium|Antwerp",
+        "Belgium|Hainaut",
+        "Belgium|West Flanders",
+        "Netherlands|Zeeland"
+      ]
+    },
+    "Belgium|Hainaut": {
+      "country": "Belgium",
+      "province": "Hainaut",
+      "neighbours": [
+        "Belgium|East Flanders",
+        "Belgium|Namur",
+        "Belgium|West Flanders"
+      ]
+    },
+    "Belgium|Limburg": {
+      "country": "Belgium",
+      "province": "Limburg",
+      "neighbours": [
+        "Belgium|Antwerp",
+        "Belgium|Liège",
+        "Netherlands|Limburg",
+        "Netherlands|North Brabant"
+      ]
+    },
+    "Belgium|Liège": {
+      "country": "Belgium",
+      "province": "Liège",
+      "neighbours": [
+        "Belgium|Limburg",
+        "Belgium|Luxembourg",
+        "Belgium|Namur",
+        "Germany|North Rhine-Westphalia",
+        "Netherlands|Limburg"
+      ]
+    },
+    "Belgium|Luxembourg": {
+      "country": "Belgium",
+      "province": "Luxembourg",
+      "neighbours": [
+        "Belgium|Liège",
+        "Belgium|Namur"
+      ]
+    },
+    "Belgium|Namur": {
+      "country": "Belgium",
+      "province": "Namur",
+      "neighbours": [
+        "Belgium|Hainaut",
+        "Belgium|Liège",
+        "Belgium|Luxembourg"
+      ]
+    },
+    "Belgium|West Flanders": {
+      "country": "Belgium",
+      "province": "West Flanders",
+      "neighbours": [
+        "Belgium|East Flanders",
+        "Belgium|Hainaut"
+      ]
+    },
+    "Czechia|Plzeň Region": {
+      "country": "Czechia",
+      "province": "Plzeň Region",
+      "neighbours": []
+    },
+    "Czechia|Prague": {
+      "country": "Czechia",
+      "province": "Prague",
+      "neighbours": []
+    },
+    "Denmark|Capital Region": {
+      "country": "Denmark",
+      "province": "Capital Region",
+      "neighbours": []
+    },
+    "France|Loir-et-Cher": {
+      "country": "France",
+      "province": "Loir-et-Cher",
+      "neighbours": []
+    },
+    "Germany|Berlin": {
+      "country": "Germany",
+      "province": "Berlin",
+      "neighbours": []
+    },
+    "Germany|North Rhine-Westphalia": {
+      "country": "Germany",
+      "province": "North Rhine-Westphalia",
+      "neighbours": [
+        "Belgium|Liège",
+        "Netherlands|Gelderland",
+        "Netherlands|Limburg"
+      ]
+    },
+    "Germany|Saxony": {
+      "country": "Germany",
+      "province": "Saxony",
+      "neighbours": []
+    },
+    "Netherlands|Drenthe": {
+      "country": "Netherlands",
+      "province": "Drenthe",
+      "neighbours": [
+        "Netherlands|Friesland",
+        "Netherlands|Groningen",
+        "Netherlands|Overijssel"
+      ]
+    },
+    "Netherlands|Flevoland": {
+      "country": "Netherlands",
+      "province": "Flevoland",
+      "neighbours": [
+        "Netherlands|Friesland",
+        "Netherlands|Gelderland",
+        "Netherlands|North Holland",
+        "Netherlands|Overijssel",
+        "Netherlands|Utrecht"
+      ]
+    },
+    "Netherlands|Friesland": {
+      "country": "Netherlands",
+      "province": "Friesland",
+      "neighbours": [
+        "Netherlands|Drenthe",
+        "Netherlands|Flevoland",
+        "Netherlands|Groningen",
+        "Netherlands|North Holland"
+      ]
+    },
+    "Netherlands|Gelderland": {
+      "country": "Netherlands",
+      "province": "Gelderland",
+      "neighbours": [
+        "Germany|North Rhine-Westphalia",
+        "Netherlands|Flevoland",
+        "Netherlands|Limburg",
+        "Netherlands|North Brabant",
+        "Netherlands|Overijssel",
+        "Netherlands|South Holland",
+        "Netherlands|Utrecht"
+      ]
+    },
+    "Netherlands|Groningen": {
+      "country": "Netherlands",
+      "province": "Groningen",
+      "neighbours": [
+        "Netherlands|Drenthe",
+        "Netherlands|Friesland"
+      ]
+    },
+    "Netherlands|Limburg": {
+      "country": "Netherlands",
+      "province": "Limburg",
+      "neighbours": [
+        "Belgium|Limburg",
+        "Belgium|Liège",
+        "Germany|North Rhine-Westphalia",
+        "Netherlands|Gelderland",
+        "Netherlands|North Brabant"
+      ]
+    },
+    "Netherlands|North Brabant": {
+      "country": "Netherlands",
+      "province": "North Brabant",
+      "neighbours": [
+        "Belgium|Antwerp",
+        "Belgium|Limburg",
+        "Netherlands|Gelderland",
+        "Netherlands|Limburg",
+        "Netherlands|South Holland",
+        "Netherlands|Zeeland"
+      ]
+    },
+    "Netherlands|North Holland": {
+      "country": "Netherlands",
+      "province": "North Holland",
+      "neighbours": [
+        "Netherlands|Flevoland",
+        "Netherlands|Friesland",
+        "Netherlands|South Holland",
+        "Netherlands|Utrecht"
+      ]
+    },
+    "Netherlands|Overijssel": {
+      "country": "Netherlands",
+      "province": "Overijssel",
+      "neighbours": [
+        "Netherlands|Drenthe",
+        "Netherlands|Flevoland",
+        "Netherlands|Gelderland"
+      ]
+    },
+    "Netherlands|South Holland": {
+      "country": "Netherlands",
+      "province": "South Holland",
+      "neighbours": [
+        "Netherlands|Gelderland",
+        "Netherlands|North Brabant",
+        "Netherlands|North Holland",
+        "Netherlands|Utrecht",
+        "Netherlands|Zeeland"
+      ]
+    },
+    "Netherlands|Utrecht": {
+      "country": "Netherlands",
+      "province": "Utrecht",
+      "neighbours": [
+        "Netherlands|Flevoland",
+        "Netherlands|Gelderland",
+        "Netherlands|North Holland",
+        "Netherlands|South Holland"
+      ]
+    },
+    "Netherlands|Zeeland": {
+      "country": "Netherlands",
+      "province": "Zeeland",
+      "neighbours": [
+        "Belgium|Antwerp",
+        "Belgium|East Flanders",
+        "Netherlands|North Brabant",
+        "Netherlands|South Holland"
+      ]
+    },
+    "Spain|Community of Madrid": {
+      "country": "Spain",
+      "province": "Community of Madrid",
+      "neighbours": []
+    },
+    "Spain|Valencian Community": {
+      "country": "Spain",
+      "province": "Valencian Community",
+      "neighbours": []
+    },
+    "United Kingdom|Cheshire": {
+      "country": "United Kingdom",
+      "province": "Cheshire",
+      "neighbours": []
+    },
+    "United Kingdom|Greater London": {
+      "country": "United Kingdom",
+      "province": "Greater London",
+      "neighbours": []
+    },
+    "Albania|Tirana County": {
+      "country": "Albania",
+      "province": "Tirana County",
+      "neighbours": []
+    },
+    "Austria|Lower Austria": {
+      "country": "Austria",
+      "province": "Lower Austria",
+      "neighbours": []
+    },
+    "Austria|Salzburg": {
+      "country": "Austria",
+      "province": "Salzburg",
+      "neighbours": []
+    },
+    "Austria|Styria": {
+      "country": "Austria",
+      "province": "Styria",
+      "neighbours": []
+    },
+    "Austria|Upper Austria": {
+      "country": "Austria",
+      "province": "Upper Austria",
+      "neighbours": []
+    },
+    "Austria|Vorarlberg": {
+      "country": "Austria",
+      "province": "Vorarlberg",
+      "neighbours": []
+    },
+    "Belarus|Minsk": {
+      "country": "Belarus",
+      "province": "Minsk",
+      "neighbours": []
+    },
+    "Belarus|Minsk Region": {
+      "country": "Belarus",
+      "province": "Minsk Region",
+      "neighbours": []
+    },
+    "Belarus|Other": {
+      "country": "Belarus",
+      "province": "Other",
+      "neighbours": []
+    },
+    "Belarus|Vitebsk Region": {
+      "country": "Belarus",
+      "province": "Vitebsk Region",
+      "neighbours": []
+    },
+    "Bosnia-Herzegovina|Tuzla Canton": {
+      "country": "Bosnia-Herzegovina",
+      "province": "Tuzla Canton",
+      "neighbours": []
+    },
+    "Bulgaria|Other": {
+      "country": "Bulgaria",
+      "province": "Other",
+      "neighbours": []
+    },
+    "Bulgaria|Pleven Province": {
+      "country": "Bulgaria",
+      "province": "Pleven Province",
+      "neighbours": []
+    },
+    "Croatia|Osijek-Baranja": {
+      "country": "Croatia",
+      "province": "Osijek-Baranja",
+      "neighbours": []
+    },
+    "Cyprus|Nicosia District": {
+      "country": "Cyprus",
+      "province": "Nicosia District",
+      "neighbours": []
+    },
+    "Cyprus|Paphos District": {
+      "country": "Cyprus",
+      "province": "Paphos District",
+      "neighbours": []
+    },
+    "Czech Republic|Ústí nad Labem Region": {
+      "country": "Czech Republic",
+      "province": "Ústí nad Labem Region",
+      "neighbours": []
+    },
+    "Czechia|Hradec Králové Region": {
+      "country": "Czechia",
+      "province": "Hradec Králové Region",
+      "neighbours": []
+    },
+    "Czechia|Other": {
+      "country": "Czechia",
+      "province": "Other",
+      "neighbours": []
+    },
+    "Czechia|South Bohemian Region": {
+      "country": "Czechia",
+      "province": "South Bohemian Region",
+      "neighbours": []
+    },
+    "Czechia|South Moravian Region": {
+      "country": "Czechia",
+      "province": "South Moravian Region",
+      "neighbours": []
+    },
+    "Czechia|Vysočina": {
+      "country": "Czechia",
+      "province": "Vysočina",
+      "neighbours": []
+    },
+    "Czechia|Zlín Region": {
+      "country": "Czechia",
+      "province": "Zlín Region",
+      "neighbours": []
+    },
+    "Denmark|Central Denmark": {
+      "country": "Denmark",
+      "province": "Central Denmark",
+      "neighbours": []
+    },
+    "Denmark|Central Denmark Region": {
+      "country": "Denmark",
+      "province": "Central Denmark Region",
+      "neighbours": []
+    },
+    "Denmark|North Denmark Region": {
+      "country": "Denmark",
+      "province": "North Denmark Region",
+      "neighbours": []
+    },
+    "Denmark|Other": {
+      "country": "Denmark",
+      "province": "Other",
+      "neighbours": []
+    },
+    "Denmark|Region Zealand": {
+      "country": "Denmark",
+      "province": "Region Zealand",
+      "neighbours": []
+    },
+    "Denmark|Region of Southern Denmark": {
+      "country": "Denmark",
+      "province": "Region of Southern Denmark",
+      "neighbours": []
+    },
+    "Estonia|Harju County": {
+      "country": "Estonia",
+      "province": "Harju County",
+      "neighbours": []
+    },
+    "Finland|Lapland": {
+      "country": "Finland",
+      "province": "Lapland",
+      "neighbours": []
+    },
+    "Finland|North Karelia": {
+      "country": "Finland",
+      "province": "North Karelia",
+      "neighbours": []
+    },
+    "Finland|North Ostrobothnia": {
+      "country": "Finland",
+      "province": "North Ostrobothnia",
+      "neighbours": []
+    },
+    "Finland|South Ostrobothnia": {
+      "country": "Finland",
+      "province": "South Ostrobothnia",
+      "neighbours": []
+    },
+    "France|Ardennes": {
+      "country": "France",
+      "province": "Ardennes",
+      "neighbours": []
+    },
+    "France|Auvergne-Rhône-Alpes": {
+      "country": "France",
+      "province": "Auvergne-Rhône-Alpes",
+      "neighbours": []
+    },
+    "France|Aveyron": {
+      "country": "France",
+      "province": "Aveyron",
+      "neighbours": []
+    },
+    "France|Bouches-du-Rhône": {
+      "country": "France",
+      "province": "Bouches-du-Rhône",
+      "neighbours": []
+    },
+    "France|Bourgogne-Franche-Comté": {
+      "country": "France",
+      "province": "Bourgogne-Franche-Comté",
+      "neighbours": []
+    },
+    "France|Brittany": {
+      "country": "France",
+      "province": "Brittany",
+      "neighbours": []
+    },
+    "France|Centre-Val de Loire": {
+      "country": "France",
+      "province": "Centre-Val de Loire",
+      "neighbours": []
+    },
+    "France|Côte-d'Or": {
+      "country": "France",
+      "province": "Côte-d'Or",
+      "neighbours": []
+    },
+    "France|Dordogne": {
+      "country": "France",
+      "province": "Dordogne",
+      "neighbours": []
+    },
+    "France|Doubs": {
+      "country": "France",
+      "province": "Doubs",
+      "neighbours": []
+    },
+    "France|Gironde": {
+      "country": "France",
+      "province": "Gironde",
+      "neighbours": []
+    },
+    "France|Grand Est": {
+      "country": "France",
+      "province": "Grand Est",
+      "neighbours": []
+    },
+    "France|Haute-Vienne": {
+      "country": "France",
+      "province": "Haute-Vienne",
+      "neighbours": []
+    },
+    "France|Hautes-Alpes": {
+      "country": "France",
+      "province": "Hautes-Alpes",
+      "neighbours": []
+    },
+    "France|Hauts-de-France": {
+      "country": "France",
+      "province": "Hauts-de-France",
+      "neighbours": []
+    },
+    "France|Hérault": {
+      "country": "France",
+      "province": "Hérault",
+      "neighbours": []
+    },
+    "France|Loire": {
+      "country": "France",
+      "province": "Loire",
+      "neighbours": []
+    },
+    "France|Loire-Atlantique": {
+      "country": "France",
+      "province": "Loire-Atlantique",
+      "neighbours": []
+    },
+    "France|Morbihan": {
+      "country": "France",
+      "province": "Morbihan",
+      "neighbours": []
+    },
+    "France|Moselle": {
+      "country": "France",
+      "province": "Moselle",
+      "neighbours": []
+    },
+    "France|Normandy": {
+      "country": "France",
+      "province": "Normandy",
+      "neighbours": []
+    },
+    "France|Nouvelle-Aquitaine": {
+      "country": "France",
+      "province": "Nouvelle-Aquitaine",
+      "neighbours": []
+    },
+    "France|Occitanie": {
+      "country": "France",
+      "province": "Occitanie",
+      "neighbours": []
+    },
+    "France|Other": {
+      "country": "France",
+      "province": "Other",
+      "neighbours": []
+    },
+    "France|Pays de la Loire": {
+      "country": "France",
+      "province": "Pays de la Loire",
+      "neighbours": []
+    },
+    "France|Puy-de-Dôme": {
+      "country": "France",
+      "province": "Puy-de-Dôme",
+      "neighbours": []
+    },
+    "France|Pyrénées-Atlantiques": {
+      "country": "France",
+      "province": "Pyrénées-Atlantiques",
+      "neighbours": []
+    },
+    "France|Pyrénées-Orientales": {
+      "country": "France",
+      "province": "Pyrénées-Orientales",
+      "neighbours": []
+    },
+    "France|Rhône": {
+      "country": "France",
+      "province": "Rhône",
+      "neighbours": []
+    },
+    "France|Sarthe": {
+      "country": "France",
+      "province": "Sarthe",
+      "neighbours": []
+    },
+    "France|Seine-Maritime": {
+      "country": "France",
+      "province": "Seine-Maritime",
+      "neighbours": []
+    },
+    "France|Seine-et-Marne": {
+      "country": "France",
+      "province": "Seine-et-Marne",
+      "neighbours": []
+    },
+    "France|Somme": {
+      "country": "France",
+      "province": "Somme",
+      "neighbours": []
+    },
+    "France|Var": {
+      "country": "France",
+      "province": "Var",
+      "neighbours": []
+    },
+    "France|Vienne": {
+      "country": "France",
+      "province": "Vienne",
+      "neighbours": []
+    },
+    "France|Yvelines": {
+      "country": "France",
+      "province": "Yvelines",
+      "neighbours": []
+    },
+    "France|Île-de-France": {
+      "country": "France",
+      "province": "Île-de-France",
+      "neighbours": []
+    },
+    "Germany|Baden-Württemberg": {
+      "country": "Germany",
+      "province": "Baden-Württemberg",
+      "neighbours": []
+    },
+    "Germany|Bavaria": {
+      "country": "Germany",
+      "province": "Bavaria",
+      "neighbours": []
+    },
+    "Germany|Brandenburg": {
+      "country": "Germany",
+      "province": "Brandenburg",
+      "neighbours": []
+    },
+    "Germany|Hamburg": {
+      "country": "Germany",
+      "province": "Hamburg",
+      "neighbours": []
+    },
+    "Germany|Hesse": {
+      "country": "Germany",
+      "province": "Hesse",
+      "neighbours": []
+    },
+    "Germany|Lower Saxony": {
+      "country": "Germany",
+      "province": "Lower Saxony",
+      "neighbours": []
+    },
+    "Germany|Mecklenburg-Vorpommern": {
+      "country": "Germany",
+      "province": "Mecklenburg-Vorpommern",
+      "neighbours": []
+    },
+    "Germany|Other": {
+      "country": "Germany",
+      "province": "Other",
+      "neighbours": []
+    },
+    "Germany|Rhineland-Palatinate": {
+      "country": "Germany",
+      "province": "Rhineland-Palatinate",
+      "neighbours": []
+    },
+    "Germany|Saarland": {
+      "country": "Germany",
+      "province": "Saarland",
+      "neighbours": []
+    },
+    "Germany|Saxony-Anhalt": {
+      "country": "Germany",
+      "province": "Saxony-Anhalt",
+      "neighbours": []
+    },
+    "Germany|Schleswig-Holstein": {
+      "country": "Germany",
+      "province": "Schleswig-Holstein",
+      "neighbours": []
+    },
+    "Germany|Thuringia": {
+      "country": "Germany",
+      "province": "Thuringia",
+      "neighbours": []
+    },
+    "Gibraltar|Gibraltar": {
+      "country": "Gibraltar",
+      "province": "Gibraltar",
+      "neighbours": []
+    },
+    "Greece|South Aegean": {
+      "country": "Greece",
+      "province": "South Aegean",
+      "neighbours": []
+    },
+    "Hungary|Baranya": {
+      "country": "Hungary",
+      "province": "Baranya",
+      "neighbours": []
+    },
+    "Hungary|Borsod-Abaúj-Zemplén": {
+      "country": "Hungary",
+      "province": "Borsod-Abaúj-Zemplén",
+      "neighbours": []
+    },
+    "Hungary|Bács-Kiskun": {
+      "country": "Hungary",
+      "province": "Bács-Kiskun",
+      "neighbours": []
+    },
+    "Hungary|Győr-Moson-Sopron": {
+      "country": "Hungary",
+      "province": "Győr-Moson-Sopron",
+      "neighbours": []
+    },
+    "Hungary|Heves County": {
+      "country": "Hungary",
+      "province": "Heves County",
+      "neighbours": []
+    },
+    "Hungary|Jász-Nagykun-Szolnok": {
+      "country": "Hungary",
+      "province": "Jász-Nagykun-Szolnok",
+      "neighbours": []
+    },
+    "Hungary|Pest": {
+      "country": "Hungary",
+      "province": "Pest",
+      "neighbours": []
+    },
+    "Hungary|Szabolcs-Szatmár-Bereg": {
+      "country": "Hungary",
+      "province": "Szabolcs-Szatmár-Bereg",
+      "neighbours": []
+    },
+    "Hungary|Veszprém": {
+      "country": "Hungary",
+      "province": "Veszprém",
+      "neighbours": []
+    },
+    "Ireland|County Donegal": {
+      "country": "Ireland",
+      "province": "County Donegal",
+      "neighbours": []
+    },
+    "Ireland|Leinster": {
+      "country": "Ireland",
+      "province": "Leinster",
+      "neighbours": []
+    },
+    "Italy|Abruzzo": {
+      "country": "Italy",
+      "province": "Abruzzo",
+      "neighbours": []
+    },
+    "Italy|Apulia": {
+      "country": "Italy",
+      "province": "Apulia",
+      "neighbours": []
+    },
+    "Italy|Campania": {
+      "country": "Italy",
+      "province": "Campania",
+      "neighbours": []
+    },
+    "Italy|Emilia-Romagna": {
+      "country": "Italy",
+      "province": "Emilia-Romagna",
+      "neighbours": []
+    },
+    "Italy|Friuli-Venezia Giulia": {
+      "country": "Italy",
+      "province": "Friuli-Venezia Giulia",
+      "neighbours": []
+    },
+    "Italy|Lazio": {
+      "country": "Italy",
+      "province": "Lazio",
+      "neighbours": []
+    },
+    "Italy|Marche": {
+      "country": "Italy",
+      "province": "Marche",
+      "neighbours": []
+    },
+    "Italy|Other": {
+      "country": "Italy",
+      "province": "Other",
+      "neighbours": []
+    },
+    "Italy|Piedmont": {
+      "country": "Italy",
+      "province": "Piedmont",
+      "neighbours": []
+    },
+    "Italy|Tuscany": {
+      "country": "Italy",
+      "province": "Tuscany",
+      "neighbours": []
+    },
+    "Italy|Veneto": {
+      "country": "Italy",
+      "province": "Veneto",
+      "neighbours": []
+    },
+    "Jersey|Jersey": {
+      "country": "Jersey",
+      "province": "Jersey",
+      "neighbours": []
+    },
+    "Latvia|Riga": {
+      "country": "Latvia",
+      "province": "Riga",
+      "neighbours": []
+    },
+    "Latvia|South Kurzeme": {
+      "country": "Latvia",
+      "province": "South Kurzeme",
+      "neighbours": []
+    },
+    "Latvia|Vidzeme": {
+      "country": "Latvia",
+      "province": "Vidzeme",
+      "neighbours": []
+    },
+    "Latvia|Zemgale": {
+      "country": "Latvia",
+      "province": "Zemgale",
+      "neighbours": []
+    },
+    "Lithuania|Kaunas County": {
+      "country": "Lithuania",
+      "province": "Kaunas County",
+      "neighbours": []
+    },
+    "Lithuania|Klaipėda County": {
+      "country": "Lithuania",
+      "province": "Klaipėda County",
+      "neighbours": []
+    },
+    "Lithuania|Marijampolė County": {
+      "country": "Lithuania",
+      "province": "Marijampolė County",
+      "neighbours": []
+    },
+    "Lithuania|Utena County": {
+      "country": "Lithuania",
+      "province": "Utena County",
+      "neighbours": []
+    },
+    "Luxembourg|Esch-sur-Alzette": {
+      "country": "Luxembourg",
+      "province": "Esch-sur-Alzette",
+      "neighbours": []
+    },
+    "Malta|Northern Region": {
+      "country": "Malta",
+      "province": "Northern Region",
+      "neighbours": []
+    },
+    "Malta|Southern Region": {
+      "country": "Malta",
+      "province": "Southern Region",
+      "neighbours": []
+    },
+    "Moldova|Chișinău": {
+      "country": "Moldova",
+      "province": "Chișinău",
+      "neighbours": []
+    },
+    "North Macedonia|Pelagonia": {
+      "country": "North Macedonia",
+      "province": "Pelagonia",
+      "neighbours": []
+    },
+    "North Macedonia|Skopje": {
+      "country": "North Macedonia",
+      "province": "Skopje",
+      "neighbours": []
+    },
+    "Norway|Agder": {
+      "country": "Norway",
+      "province": "Agder",
+      "neighbours": []
+    },
+    "Poland|Greater Poland": {
+      "country": "Poland",
+      "province": "Greater Poland",
+      "neighbours": []
+    },
+    "Poland|Lesser Poland": {
+      "country": "Poland",
+      "province": "Lesser Poland",
+      "neighbours": []
+    },
+    "Poland|Lower Silesia": {
+      "country": "Poland",
+      "province": "Lower Silesia",
+      "neighbours": []
+    },
+    "Poland|Lower Silesian": {
+      "country": "Poland",
+      "province": "Lower Silesian",
+      "neighbours": []
+    },
+    "Poland|Lublin": {
+      "country": "Poland",
+      "province": "Lublin",
+      "neighbours": []
+    },
+    "Poland|Masovian": {
+      "country": "Poland",
+      "province": "Masovian",
+      "neighbours": []
+    },
+    "Poland|Other": {
+      "country": "Poland",
+      "province": "Other",
+      "neighbours": []
+    },
+    "Poland|Podlaskie": {
+      "country": "Poland",
+      "province": "Podlaskie",
+      "neighbours": []
+    },
+    "Poland|Pomerania": {
+      "country": "Poland",
+      "province": "Pomerania",
+      "neighbours": []
+    },
+    "Poland|Pomeranian": {
+      "country": "Poland",
+      "province": "Pomeranian",
+      "neighbours": []
+    },
+    "Poland|Łódź": {
+      "country": "Poland",
+      "province": "Łódź",
+      "neighbours": []
+    },
+    "Poland|Świętokrzyskie": {
+      "country": "Poland",
+      "province": "Świętokrzyskie",
+      "neighbours": []
+    },
+    "Portugal|Lisbon District": {
+      "country": "Portugal",
+      "province": "Lisbon District",
+      "neighbours": []
+    },
+    "Portugal|Porto": {
+      "country": "Portugal",
+      "province": "Porto",
+      "neighbours": []
+    },
+    "Portugal|Setúbal District": {
+      "country": "Portugal",
+      "province": "Setúbal District",
+      "neighbours": []
+    },
+    "Romania|Argeș": {
+      "country": "Romania",
+      "province": "Argeș",
+      "neighbours": []
+    },
+    "Romania|Bucharest": {
+      "country": "Romania",
+      "province": "Bucharest",
+      "neighbours": []
+    },
+    "Romania|Dolj": {
+      "country": "Romania",
+      "province": "Dolj",
+      "neighbours": []
+    },
+    "Romania|Galați": {
+      "country": "Romania",
+      "province": "Galați",
+      "neighbours": []
+    },
+    "Romania|Mureș": {
+      "country": "Romania",
+      "province": "Mureș",
+      "neighbours": []
+    },
+    "Romania|Other": {
+      "country": "Romania",
+      "province": "Other",
+      "neighbours": []
+    },
+    "Romania|Prahova": {
+      "country": "Romania",
+      "province": "Prahova",
+      "neighbours": []
+    },
+    "Serbia|Vojvodina": {
+      "country": "Serbia",
+      "province": "Vojvodina",
+      "neighbours": []
+    },
+    "Slovakia|Bratislava Region": {
+      "country": "Slovakia",
+      "province": "Bratislava Region",
+      "neighbours": []
+    },
+    "Slovakia|Košice Region": {
+      "country": "Slovakia",
+      "province": "Košice Region",
+      "neighbours": []
+    },
+    "Slovakia|Nitra Region": {
+      "country": "Slovakia",
+      "province": "Nitra Region",
+      "neighbours": []
+    },
+    "Slovakia|Trenčín Region": {
+      "country": "Slovakia",
+      "province": "Trenčín Region",
+      "neighbours": []
+    },
+    "Slovakia|Trnava Region": {
+      "country": "Slovakia",
+      "province": "Trnava Region",
+      "neighbours": []
+    },
+    "Slovakia|Žilina Region": {
+      "country": "Slovakia",
+      "province": "Žilina Region",
+      "neighbours": []
+    },
+    "Slovenia|Central Slovenia": {
+      "country": "Slovenia",
+      "province": "Central Slovenia",
+      "neighbours": []
+    },
+    "Slovenia|Municipality of Horjul": {
+      "country": "Slovenia",
+      "province": "Municipality of Horjul",
+      "neighbours": []
+    },
+    "Slovenia|Savinja": {
+      "country": "Slovenia",
+      "province": "Savinja",
+      "neighbours": []
+    },
+    "Spain|Andalusia": {
+      "country": "Spain",
+      "province": "Andalusia",
+      "neighbours": []
+    },
+    "Spain|Balearic Islands": {
+      "country": "Spain",
+      "province": "Balearic Islands",
+      "neighbours": []
+    },
+    "Spain|Basque Country": {
+      "country": "Spain",
+      "province": "Basque Country",
+      "neighbours": []
+    },
+    "Spain|Canary Islands": {
+      "country": "Spain",
+      "province": "Canary Islands",
+      "neighbours": []
+    },
+    "Spain|Cantabria": {
+      "country": "Spain",
+      "province": "Cantabria",
+      "neighbours": []
+    },
+    "Spain|Castilla-La Mancha": {
+      "country": "Spain",
+      "province": "Castilla-La Mancha",
+      "neighbours": []
+    },
+    "Spain|Catalonia": {
+      "country": "Spain",
+      "province": "Catalonia",
+      "neighbours": []
+    },
+    "Spain|Other": {
+      "country": "Spain",
+      "province": "Other",
+      "neighbours": []
+    },
+    "Spain|Region of Murcia": {
+      "country": "Spain",
+      "province": "Region of Murcia",
+      "neighbours": []
+    },
+    "Sweden|Gävleborg": {
+      "country": "Sweden",
+      "province": "Gävleborg",
+      "neighbours": []
+    },
+    "Sweden|Skåne": {
+      "country": "Sweden",
+      "province": "Skåne",
+      "neighbours": []
+    },
+    "Sweden|Södermanland": {
+      "country": "Sweden",
+      "province": "Södermanland",
+      "neighbours": []
+    },
+    "Sweden|Västerbotten": {
+      "country": "Sweden",
+      "province": "Västerbotten",
+      "neighbours": []
+    },
+    "Sweden|Västra Götaland": {
+      "country": "Sweden",
+      "province": "Västra Götaland",
+      "neighbours": []
+    },
+    "Sweden|Örebro": {
+      "country": "Sweden",
+      "province": "Örebro",
+      "neighbours": []
+    },
+    "Sweden|Östergötland": {
+      "country": "Sweden",
+      "province": "Östergötland",
+      "neighbours": []
+    },
+    "Switzerland|Basel-Stadt": {
+      "country": "Switzerland",
+      "province": "Basel-Stadt",
+      "neighbours": []
+    },
+    "Switzerland|Bern": {
+      "country": "Switzerland",
+      "province": "Bern",
+      "neighbours": []
+    },
+    "Switzerland|Vaud": {
+      "country": "Switzerland",
+      "province": "Vaud",
+      "neighbours": []
+    },
+    "Switzerland|Zürich": {
+      "country": "Switzerland",
+      "province": "Zürich",
+      "neighbours": []
+    },
+    "Ukraine|Kyiv Oblast": {
+      "country": "Ukraine",
+      "province": "Kyiv Oblast",
+      "neighbours": []
+    },
+    "Ukraine|Lviv Oblast": {
+      "country": "Ukraine",
+      "province": "Lviv Oblast",
+      "neighbours": []
+    },
+    "Ukraine|Odesa Oblast": {
+      "country": "Ukraine",
+      "province": "Odesa Oblast",
+      "neighbours": []
+    },
+    "Ukraine|Vinnytsia Oblast": {
+      "country": "Ukraine",
+      "province": "Vinnytsia Oblast",
+      "neighbours": []
+    },
+    "Ukraine|Zaporizhzhia Oblast": {
+      "country": "Ukraine",
+      "province": "Zaporizhzhia Oblast",
+      "neighbours": []
+    },
+    "United Kingdom|Bedfordshire": {
+      "country": "United Kingdom",
+      "province": "Bedfordshire",
+      "neighbours": []
+    },
+    "United Kingdom|Bristol": {
+      "country": "United Kingdom",
+      "province": "Bristol",
+      "neighbours": []
+    },
+    "United Kingdom|Cambridgeshire": {
+      "country": "United Kingdom",
+      "province": "Cambridgeshire",
+      "neighbours": []
+    },
+    "United Kingdom|Cornwall": {
+      "country": "United Kingdom",
+      "province": "Cornwall",
+      "neighbours": []
+    },
+    "United Kingdom|Devon": {
+      "country": "United Kingdom",
+      "province": "Devon",
+      "neighbours": []
+    },
+    "United Kingdom|Dorset": {
+      "country": "United Kingdom",
+      "province": "Dorset",
+      "neighbours": []
+    },
+    "United Kingdom|Essex": {
+      "country": "United Kingdom",
+      "province": "Essex",
+      "neighbours": []
+    },
+    "United Kingdom|Isle of Wight": {
+      "country": "United Kingdom",
+      "province": "Isle of Wight",
+      "neighbours": []
+    },
+    "United Kingdom|Kent": {
+      "country": "United Kingdom",
+      "province": "Kent",
+      "neighbours": []
+    },
+    "United Kingdom|Leicestershire": {
+      "country": "United Kingdom",
+      "province": "Leicestershire",
+      "neighbours": []
+    },
+    "United Kingdom|Lincolnshire": {
+      "country": "United Kingdom",
+      "province": "Lincolnshire",
+      "neighbours": []
+    },
+    "United Kingdom|Merseyside": {
+      "country": "United Kingdom",
+      "province": "Merseyside",
+      "neighbours": []
+    },
+    "United Kingdom|Norfolk": {
+      "country": "United Kingdom",
+      "province": "Norfolk",
+      "neighbours": []
+    },
+    "United Kingdom|North Yorkshire": {
+      "country": "United Kingdom",
+      "province": "North Yorkshire",
+      "neighbours": []
+    },
+    "United Kingdom|Northumberland": {
+      "country": "United Kingdom",
+      "province": "Northumberland",
+      "neighbours": []
+    },
+    "United Kingdom|Other": {
+      "country": "United Kingdom",
+      "province": "Other",
+      "neighbours": []
+    },
+    "United Kingdom|Oxfordshire": {
+      "country": "United Kingdom",
+      "province": "Oxfordshire",
+      "neighbours": []
+    },
+    "United Kingdom|Pembrokeshire": {
+      "country": "United Kingdom",
+      "province": "Pembrokeshire",
+      "neighbours": []
+    },
+    "United Kingdom|Scotland": {
+      "country": "United Kingdom",
+      "province": "Scotland",
+      "neighbours": []
+    },
+    "United Kingdom|Shropshire": {
+      "country": "United Kingdom",
+      "province": "Shropshire",
+      "neighbours": []
+    },
+    "United Kingdom|Somerset": {
+      "country": "United Kingdom",
+      "province": "Somerset",
+      "neighbours": []
+    },
+    "United Kingdom|South Yorkshire": {
+      "country": "United Kingdom",
+      "province": "South Yorkshire",
+      "neighbours": []
+    },
+    "United Kingdom|Staffordshire": {
+      "country": "United Kingdom",
+      "province": "Staffordshire",
+      "neighbours": []
+    },
+    "United Kingdom|Suffolk": {
+      "country": "United Kingdom",
+      "province": "Suffolk",
+      "neighbours": []
+    },
+    "United Kingdom|Tyne and Wear": {
+      "country": "United Kingdom",
+      "province": "Tyne and Wear",
+      "neighbours": []
+    },
+    "United Kingdom|Wales": {
+      "country": "United Kingdom",
+      "province": "Wales",
+      "neighbours": []
+    },
+    "United Kingdom|Wiltshire": {
+      "country": "United Kingdom",
+      "province": "Wiltshire",
+      "neighbours": []
+    },
+    "United Kingdom|Worcestershire": {
+      "country": "United Kingdom",
+      "province": "Worcestershire",
+      "neighbours": []
+    },
+    "Czechia|Ústí nad Labem Region": {
+      "country": "Czechia",
+      "province": "Ústí nad Labem Region",
+      "neighbours": []
+    },
+    "Czechia|Central Bohemian Region": {
+      "country": "Czechia",
+      "province": "Central Bohemian Region",
+      "neighbours": []
+    },
+    "Italy|Trentino-Alto Adige": {
+      "country": "Italy",
+      "province": "Trentino-Alto Adige",
+      "neighbours": []
+    },
+    "Belarus|Brest Region": {
+      "country": "Belarus",
+      "province": "Brest Region",
+      "neighbours": []
+    },
+    "Bulgaria|Sofia City Province": {
+      "country": "Bulgaria",
+      "province": "Sofia City Province",
+      "neighbours": []
+    },
+    "Bulgaria|Stara Zagora Province": {
+      "country": "Bulgaria",
+      "province": "Stara Zagora Province",
+      "neighbours": []
+    },
+    "Belarus|Gomel Region": {
+      "country": "Belarus",
+      "province": "Gomel Region",
+      "neighbours": []
+    },
+    "Romania|Vaslui": {
+      "country": "Romania",
+      "province": "Vaslui",
+      "neighbours": []
+    },
+    "Bulgaria|Blagoevgrad Province": {
+      "country": "Bulgaria",
+      "province": "Blagoevgrad Province",
+      "neighbours": []
+    },
+    "Romania|Brăila": {
+      "country": "Romania",
+      "province": "Brăila",
+      "neighbours": []
+    },
+    "Romania|Brașov": {
+      "country": "Romania",
+      "province": "Brașov",
+      "neighbours": []
+    },
+    "Romania|Călărași": {
+      "country": "Romania",
+      "province": "Călărași",
+      "neighbours": []
+    },
+    "Czechia|Moravian-Silesian Region": {
+      "country": "Czechia",
+      "province": "Moravian-Silesian Region",
+      "neighbours": []
+    },
+    "Belarus|Grodno Region": {
+      "country": "Belarus",
+      "province": "Grodno Region",
+      "neighbours": []
+    },
+    "Bulgaria|Haskovo Province": {
+      "country": "Bulgaria",
+      "province": "Haskovo Province",
+      "neighbours": []
+    },
+    "Romania|Hunedoara": {
+      "country": "Romania",
+      "province": "Hunedoara",
+      "neighbours": []
+    },
+    "Romania|Dâmbovița": {
+      "country": "Romania",
+      "province": "Dâmbovița",
+      "neighbours": []
+    },
+    "Spain|Galicia": {
+      "country": "Spain",
+      "province": "Galicia",
+      "neighbours": []
+    },
+    "Czechia|Olomouc Region": {
+      "country": "Czechia",
+      "province": "Olomouc Region",
+      "neighbours": []
+    },
+    "Poland|Opole": {
+      "country": "Poland",
+      "province": "Opole",
+      "neighbours": []
+    },
+    "Romania|Bihor": {
+      "country": "Romania",
+      "province": "Bihor",
+      "neighbours": []
+    },
+    "Romania|Suceava": {
+      "country": "Romania",
+      "province": "Suceava",
+      "neighbours": []
+    },
+    "Bulgaria|Razgrad Province": {
+      "country": "Bulgaria",
+      "province": "Razgrad Province",
+      "neighbours": []
+    },
+    "Romania|Caraș-Severin": {
+      "country": "Romania",
+      "province": "Caraș-Severin",
+      "neighbours": []
+    },
+    "France|Nord": {
+      "country": "France",
+      "province": "Nord",
+      "neighbours": []
+    },
+    "France|Vendée": {
+      "country": "France",
+      "province": "Vendée",
+      "neighbours": []
+    },
+    "Bulgaria|Lovech Province": {
+      "country": "Bulgaria",
+      "province": "Lovech Province",
+      "neighbours": []
+    }
   }
 }

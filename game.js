@@ -1262,6 +1262,12 @@ function clearTradeEligibleGlow(immediate = true) {
 }
 
 function applyTradeEligibleGlow() {
+    // Trade-interest blue glow belongs only to the player's own zoo.
+    if (state.visitingZoo) {
+        clearTradeEligibleGlow();
+        return;
+    }
+
     // Trade hints belong only to the live/current turn. Historical snapshots
     // are strictly read-only inspection states.
     if (state.historyViewTurn !== null) {
@@ -4480,6 +4486,7 @@ function slotIsCompatibilityMatch(enclosure, slotIndex, candidateAnimals = compa
 
 function currentCompatibilityGlowKeys(candidateAnimals = compatibilityHintAnimals()) {
     const keys = new Set();
+    if (state.visitingZoo) return keys;
 
     for (const enclosure of state.enclosures) {
         for (const slotIndex of getAllSlots(enclosure)) {
@@ -4553,6 +4560,7 @@ function beginCompatibilityGlowFade(keys) {
 }
 
 function compatibilityCandidatesForHoveredSlot(enclosure, slotIndex) {
+    if (state.visitingZoo) return [];
     if (!enclosure || animalAtSlot(enclosure.id, slotIndex)) return [];
 
     // reverse lookup is intentionally destination-based. An animal may
@@ -7080,6 +7088,11 @@ function cancelCompatibilityIntent(animal = null) {
 }
 
 function requestCompatibilityIntent(animal) {
+    if (state.visitingZoo) {
+        cancelCompatibilityIntent();
+        return;
+    }
+
     // while a card is selected/being dragged, its own legal destinations
     // are the only compatibility hint that may glow. Merely crossing another
     // animal must not replace that with the hovered animal's compatibility.
@@ -8534,6 +8547,13 @@ function visitRealZoo(record) {
         // Visiting UI represents this zoo's collection, not the player's cached progression.
         state.discoveredCategoryLevels = new Set((state.animals || []).map(a => progressionKey(a.category, a.level)));
         clearCompatibilityHoverImmediately?.();
+        cancelCompatibilityIntent?.();
+        state.compatibilityIntentActiveAnimal = null;
+        state.compatibilityGlowFadeKeys?.clear?.();
+        state.compatibilityGlowHoldUntil = 0;
+        state.compatibilityGlowFadeUntil = 0;
+        applyCompatibilityDestinationGlowClasses?.();
+        clearTradeEligibleGlow?.();
         setExchangeEligibilityHover?.(false);
         captureRealZooVisitLayout(record);
         // This zoo has now incorporated every trade known at this moment.
@@ -18433,25 +18453,43 @@ function showRealZooDirectoryCollection(record, anchor) {
 }
 
 function realZooDirectoryRows() {
+    const playerSource = state.visitingZoo && visitPlayerSnapshot ? visitPlayerSnapshot : state;
+    const playerName = String(playerSource?.zooName || '').trim();
+    const playerNameKey = normaliseGeographyPart(playerName);
+
     const zoos = Array.isArray(state.realZooData?.zoos)
-        ? state.realZooData.zoos.filter(record => !isPlayerRealZooRecord(record))
+        ? state.realZooData.zoos.filter(record => {
+            if (isPlayerRealZooRecord(record)) return false;
+            // While visiting, state.zooName is the visited institution. Never
+            // add that same institution again as the synthetic player row.
+            return true;
+        })
         : [];
 
-    const rows = zoos.map(record => ({
-        record,
-        country: String(record?.country || 'Unknown'),
-        prestige: realZooPrestige(record),
-        isPlayer: false,
-        name: record?.name || 'Zoo'
-    }));
+    const rows = [];
+    const seen = new Set();
+    for (const record of zoos) {
+        const key = normaliseGeographyPart(record?.name || '');
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        rows.push({
+            record,
+            country: String(record?.country || 'Unknown'),
+            prestige: realZooPrestige(record),
+            isPlayer: false,
+            name: record?.name || 'Zoo'
+        });
+    }
 
-    if (state.zooName) {
+    if (playerName && !seen.has(playerNameKey)) {
         rows.push({
             record: null,
-            country: String(state.zooCountry || 'Unknown'),
-            prestige: updateHighestZooPrestige(),
+            country: String(playerSource?.zooCountry || 'Unknown'),
+            prestige: state.visitingZoo
+                ? Number(playerSource?.highestZooPrestige) || 0
+                : updateHighestZooPrestige(),
             isPlayer: true,
-            name: state.zooName
+            name: playerName
         });
     }
     return rows;
@@ -18536,7 +18574,7 @@ function renderRealZooDirectory() {
 
         const name = document.createElement('span');
         name.textContent = item.name || 'Zoo';
-        name.style.cssText = `flex:1;min-width:0;${item.isPlayer ? 'font-weight:800;' : 'font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;'}`;
+        name.style.cssText = `flex:1;min-width:0;font-weight:400;text-decoration:none;${item.isPlayer ? '' : 'cursor:pointer;'}`;
         if (!item.isPlayer && record) {
             name.classList.add('real-zoo-visit-link');
             name.title = uiText('Visit zoo');
@@ -18589,7 +18627,7 @@ function renderRealZooDirectory() {
             });
             row.addEventListener('pointerdown', event => {
                 if (event.pointerType === 'touch') {
-                    // A tap directly on the underlined zoo name is navigation,
+                    // A tap directly on the zoo name is navigation,
                     // not the touch collection-popup gesture. Do not cancel the
                     // click event that opens the visited zoo.
                     if (event.target.closest('.real-zoo-visit-link')) return;

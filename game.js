@@ -4775,7 +4775,8 @@ function canPlace(
     if (
         !state.sandboxMode &&
         enclosure.number === 10 &&
-        !state.enclosure10Unlocked
+        !state.enclosure10Unlocked &&
+        !level4IsInZoo()
     ) {
         return false;
     }
@@ -4842,7 +4843,7 @@ function hasSafeLevelOneDrawSpace() {
         // GROUPS is keyed by enclosure NUMBER. Using enclosure.filename here
         // silently missed the logical exhibit map and made Draw availability
         // disagree with the actual enclosure rules.
-        if (!state.sandboxMode && enclosure.number === 10 && !state.enclosure10Unlocked) {
+        if (!state.sandboxMode && enclosure.number === 10 && !state.enclosure10Unlocked && !level4IsInZoo()) {
             return false;
         }
         const groups = GROUPS[enclosure.number] || [];
@@ -5180,7 +5181,10 @@ function startupLayoutStats(numbers) {
 }
 
 function chooseStartupEnclosures(rewardCount = 0) {
+    // Enclosure 10 is the Huge Enclosure. It is part of generation only when
+    // this zoo already qualifies for it by owning a Level 4+ animal.
     const available = [1,2,3,4,5,6,7,8,9];
+    if (state.animals.some(animal => Number(animal?.level) >= 4)) available.push(10);
     const collectionRules = startingCollectionSizeRules(state.gameOptions.startingCollectionSize);
     const zooRules = startingZooSizeRules(state.gameOptions.startingZooSize);
     const requiredAnimals = collectionRules.species;
@@ -5797,6 +5801,12 @@ function createStartingZoo() {
         if (specialistCategories.includes(animal.category)) specialistCount += 1;
         markPlayerLevelSeen(animal.level);
     }
+    // Generation must establish the Huge Enclosure entitlement before
+    // choosing/placing enclosure cards. Otherwise a valid Enclosure 10 can be
+    // generated for a Level 4 opening but canPlace() rejects every startup card
+    // until the unlock is only set at the very end of generation.
+    state.enclosure10Unlocked = state.animals.some(animal => Number(animal?.level) >= 4);
+
     const startupRewardKeys = startupProgressionRewardKeys();
     state.awardedProgressMilestones = new Set(startupRewardKeys);
     state.awardedLevel2Milestones = new Set(
@@ -9482,7 +9492,7 @@ function levelOneDrawDropDestinationAtPoint(clientX, clientY) {
         );
         const slotIndex = Number(slot.dataset.slotIndex);
         if (!enclosure || animalAtSlot(enclosure.id, slotIndex)) continue;
-        if (enclosure.number === 10 && !state.enclosure10Unlocked) continue;
+        if (enclosure.number === 10 && !state.enclosure10Unlocked && !level4IsInZoo()) continue;
 
         const group = enclosureGroupForSlot(enclosure, slotIndex);
         if (!group) return { enclosure, slotIndex };
@@ -9508,7 +9518,7 @@ function levelOneDrawDropDestinationAtPoint(clientX, clientY) {
             item => item.id === Number(element.dataset.enclosureId)
         );
         if (!enclosure) continue;
-        if (enclosure.number === 10 && !state.enclosure10Unlocked) continue;
+        if (enclosure.number === 10 && !state.enclosure10Unlocked && !level4IsInZoo()) continue;
 
         for (const group of getGroups(enclosure)) {
             const occupants = animalsInEnclosureGroup(enclosure, group);
@@ -13667,7 +13677,7 @@ zooBoard.addEventListener(
 
 function isDrawSafeDestinationForAnimal(animal, enclosure, slotIndex) {
     if (!animal || !enclosure || slotIndex == null) return false;
-    if (!state.sandboxMode && enclosure.number === 10 && !state.enclosure10Unlocked) return false;
+    if (!state.sandboxMode && enclosure.number === 10 && !state.enclosure10Unlocked && !level4IsInZoo()) return false;
 
     const group = enclosureGroupForSlot(enclosure, slotIndex);
     if (!group) return false;
@@ -15217,7 +15227,7 @@ function addRealZooExpansionPlans(plans, animalCount) {
     return plans;
 }
 
-function realZooPlannedCards(units) {
+function realZooPlannedCards(units, allowHugeEnclosure = false) {
     // Real zoos should not default to Enclosure 5 for every four singleton
     // animals. Build smaller 1–3-exhibit cards as well, which naturally uses
     // the large-exhibit artwork (1–4, 8–10) much more often.
@@ -15236,7 +15246,7 @@ function realZooPlannedCards(units) {
             const key = realZooAreaSortKey(pair);
             const single = takeMatchingSingle(key);
             if (single) cards.push({ number: randomItem([1,2]), units: [pair, single] });
-            else cards.push({ number: 10, units: [pair] });
+            else cards.push({ number: allowHugeEnclosure ? 10 : randomItem([1,2,3,8,9]), units: [pair] });
             continue;
         }
 
@@ -15257,7 +15267,7 @@ function realZooPlannedCards(units) {
             same.push(remaining.splice(i, 1)[0]);
         }
         const count = same.length;
-        const number = count >= 4 ? 5 : count === 3 ? randomItem([4,6,7]) : count === 2 ? randomItem([1,2,3,8,9]) : 10;
+        const number = count >= 4 ? 5 : count === 3 ? randomItem([4,6,7]) : count === 2 ? randomItem([1,2,3,8,9]) : (allowHugeEnclosure ? 10 : randomItem([4,5,6,7]));
         cards.push({ number, units: same });
     }
     return cards;
@@ -15325,6 +15335,12 @@ function createRealZooFromRecord(record, options = {}) {
     }
     if (!state.animals.length) throw new Error('None of this zoo’s holdings match the current Zoo Curator animal inventory.');
 
+    // Real-zoo generation follows the same Huge Enclosure rule as fictional
+    // generation: Enclosure 10 may only be generated when the holdings contain
+    // at least one Level 4+ animal. Set this before planning so placement and
+    // later interaction agree from the first frame.
+    state.enclosure10Unlocked = state.animals.some(animal => Number(animal?.level) >= 4);
+
     const units = realZooPlacementUnits(record, state.animals);
     // Prefer obvious Areas, but do not force every eligible singleton into a
     // giant themed block. About one quarter of unpaired animals deliberately
@@ -15337,7 +15353,7 @@ function createRealZooFromRecord(record, options = {}) {
             : `zz-scattered-${Math.random().toString(36).slice(2, 8)}`;
     }
     units.sort((a,b) => (a._layoutAreaKey || '').localeCompare(b._layoutAreaKey || ''));
-    const occupiedPlans = realZooPlannedCards(units)
+    const occupiedPlans = realZooPlannedCards(units, state.enclosure10Unlocked)
         .sort((a,b) => {
             const ak = a.units[0]?._layoutAreaKey || realZooAreaSortKey(a.units.flat());
             const bk = b.units[0]?._layoutAreaKey || realZooAreaSortKey(b.units.flat());
@@ -15422,6 +15438,16 @@ function createRealZooFromRecord(record, options = {}) {
     }
 
     state.enclosure10Unlocked = state.animals.some(animal => Number(animal.level) >= 4);
+
+    // Old handcrafted templates may predate the Level-4 requirement. Keep
+    // their geometry/slot assignments intact, but substitute the four-slot
+    // Enclosure 5 artwork whenever this generated zoo is not entitled to a
+    // Huge Enclosure. This prevents locked Enclosure 10 cards from appearing.
+    if (!state.enclosure10Unlocked) {
+        for (const enclosure of state.enclosures) {
+            if (Number(enclosure?.number) === 10) enclosure.number = 5;
+        }
+    }
 
     // A generated real zoo begins with its existing progression already earned.
     // Without this baseline, the first later upgrade sees every pre-existing

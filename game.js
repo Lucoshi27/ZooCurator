@@ -879,17 +879,17 @@ function emergencyTradeSelection(writeState = true) {
                 })
                 .filter(item => item.matching.length)
                 .sort((a, b) => {
-                    // Guaranteed offers must respect proximity too: exhaust
-                    // the nearest geography band with a legal trade before
-                    // widening the search, then use prestige inside that band.
-                    const geographyDifference =
-                        realZooGeographyBand(a.record) - realZooGeographyBand(b.record);
-                    if (geographyDifference) return geographyDifference;
-
+                    // Keep the forced partner as sensible as possible: prefer a
+                    // zoo closest to the player's trade-access prestige, then
+                    // nearer geography, then a stable name order.
                     const prestigeDifference =
                         Math.abs(realZooPrestige(a.record) - tradePrestige) -
                         Math.abs(realZooPrestige(b.record) - tradePrestige);
                     if (prestigeDifference) return prestigeDifference;
+
+                    const geographyDifference =
+                        realZooGeographyBand(a.record) - realZooGeographyBand(b.record);
+                    if (geographyDifference) return geographyDifference;
 
                     return String(a.record.name || '').localeCompare(
                         String(b.record.name || '')
@@ -6440,7 +6440,7 @@ function refreshContextualExchangeEligibilityGlows() {
 }
 
 function setExchangeEligibilityHover(active) {
-    active = Boolean(active) && !state.sandboxMode;
+    active = Boolean(active) && !state.sandboxMode && !state.visitingZoo;
     if (state.exchangeEligibilityHoverActive === active) return;
     state.exchangeEligibilityHoverActive = active;
     refreshContextualExchangeEligibilityGlows();
@@ -9199,6 +9199,20 @@ function renderExchange() {
 
     restoreNormalActionBoxesIfNeeded();
 
+    if (state.visitingZoo) {
+        exchange1.innerHTML = '';
+        exchange2.innerHTML = '';
+        resultBox.innerHTML = '';
+        exchange1.classList.remove('exchange-ready');
+        exchange2.classList.remove('exchange-ready');
+        resultBox.classList.remove('result-ready');
+        const dutchUi = state.gameOptions.animalLanguage === 'nl';
+        exchange1.dataset.boxLabel = dutchUi ? 'INRUILEN' : 'EXCHANGE';
+        exchange2.dataset.boxLabel = dutchUi ? 'INRUILEN' : 'EXCHANGE';
+        resultBox.dataset.boxLabel = dutchUi ? 'UPGRADEN' : 'UPGRADE';
+        return;
+    }
+
     const categories =
         eligibleExchangeCategories();
 
@@ -11353,7 +11367,7 @@ function refreshDrawAvailabilityState() {
         state.drag?.type === 'draw' ||
         state.drag?.type === 'draw-result';
     const actionPending = hasPendingPlayerAction();
-    const drawUnavailable = noOpenSpace || drawAlreadyCommitted || actionPending || state.drawCommitInProgress;
+    const drawUnavailable = Boolean(state.visitingZoo) || noOpenSpace || drawAlreadyCommitted || actionPending || state.drawCommitInProgress;
 
     drawCard.classList.toggle('draw-no-space', drawUnavailable);
     drawCard.setAttribute('aria-disabled', drawUnavailable ? 'true' : 'false');
@@ -11369,7 +11383,9 @@ function refreshDrawAvailabilityState() {
         );
     }
 
-    drawCard.title = noOpenSpace
+    drawCard.title = state.visitingZoo
+        ? 'Drawing cards is disabled while visiting another zoo.'
+        : noOpenSpace
         ? 'No eligible enclosure space is available for the next Level 1 card.'
         : (state.drawCommitInProgress
             ? 'Finishing the current draw…'
@@ -14430,6 +14446,7 @@ document.addEventListener('mousemove', event => {
 
 drawCard?.addEventListener('pointerdown', event => {
     if (event.button !== 0) return;
+    if (state.visitingZoo) { event.preventDefault(); event.stopPropagation(); refreshDrawAvailabilityState(); return; }
 
     // immediate visual feedback as soon as this draw is committed.
     // renderAll() will subsequently decide whether it remains disabled.
@@ -15201,10 +15218,9 @@ function addRealZooExpansionPlans(plans, animalCount) {
 }
 
 function realZooPlannedCards(units) {
-    // Build OCCUPIED cards first and deliberately fill every logical exhibit on
-    // those cards. This matters because the Area system only qualifies a card
-    // when all of its logical exhibits are occupied. Pair evidence gets a large
-    // logical exhibit; nearby singleton units fill the remaining logical groups.
+    // Real zoos should not default to Enclosure 5 for every four singleton
+    // animals. Build smaller 1–3-exhibit cards as well, which naturally uses
+    // the large-exhibit artwork (1–4, 8–10) much more often.
     const remaining = units.slice();
     const cards = [];
     const takeMatchingSingle = key => {
@@ -15219,31 +15235,29 @@ function realZooPlannedCards(units) {
             const pair = remaining.splice(pairIndex, 1)[0];
             const key = realZooAreaSortKey(pair);
             const single = takeMatchingSingle(key);
-            if (single) {
-                // Enclosure 1 has [0,1] + [3]: perfect for one evidenced pair
-                // plus one separate animal, leaving no logical exhibit empty.
-                cards.push({ number: 1, units: [pair, single] });
-            } else {
-                // No singleton remains to complete a multi-exhibit card. Use the
-                // one-exhibit huge card only as a last-resort structural holder.
-                cards.push({ number: 10, units: [pair] });
-            }
+            if (single) cards.push({ number: randomItem([1,2]), units: [pair, single] });
+            else cards.push({ number: 10, units: [pair] });
             continue;
         }
 
         const key = remaining[0]._layoutAreaKey || realZooAreaSortKey(remaining[0]);
         const same = [];
-        for (let i = remaining.length - 1; i >= 0 && same.length < 4; i--) {
+        // Deliberately vary card density. Three logical exhibits is the normal
+        // maximum; four-small-exhibit Enclosure 5 remains possible but uncommon.
+        const roll = Math.random();
+        const targetCount = roll < 0.18 ? 1 : roll < 0.58 ? 2 : roll < 0.94 ? 3 : 4;
+        for (let i = remaining.length - 1; i >= 0 && same.length < targetCount; i--) {
             if (remaining[i].length === 1 && (remaining[i]._layoutAreaKey || realZooAreaSortKey(remaining[i])) === key) {
                 same.unshift(remaining.splice(i, 1)[0]);
             }
         }
-        while (same.length < 4 && remaining.length) {
+        while (same.length < targetCount && remaining.length) {
             const i = remaining.findIndex(unit => unit.length === 1);
             if (i < 0) break;
             same.push(remaining.splice(i, 1)[0]);
         }
-        const number = same.length >= 4 ? 5 : same.length === 3 ? 6 : same.length === 2 ? 3 : 10;
+        const count = same.length;
+        const number = count >= 4 ? 5 : count === 3 ? randomItem([4,6,7]) : count === 2 ? randomItem([1,2,3,8,9]) : 10;
         cards.push({ number, units: same });
     }
     return cards;
@@ -15271,12 +15285,20 @@ function realZooAreaSortKey(unit) {
     return preferred.find(tag => common.includes(tag)) || 'zz-other';
 }
 
-function createRealZooFromRecord(record) {
+function createRealZooFromRecord(record, options = {}) {
     if (!record || !Array.isArray(record.animals)) throw new Error('Selected real zoo has no animal holdings.');
+
+    // Real zoos can be opened in either Classic or Sandbox. createStartingZoo()
+    // is deliberately a Classic reset path and therefore clears sandboxMode, so
+    // remember the requested mode and restore it immediately after that reset.
+    // Keeping this decision here prevents future callers from accidentally
+    // turning a Real Zoo + Sandbox start back into Classic.
+    const requestedSandboxMode = Boolean(options?.sandboxMode ?? state.sandboxMode);
 
     // Reuse the battle-tested reset path, then replace its generated collection
     // before the real zoo reaches the screen.
     createStartingZoo();
+    state.sandboxMode = requestedSandboxMode;
     state.animals = [];
     state.enclosures = [];
     state.animalLineage = new Map();
@@ -15330,27 +15352,41 @@ function createRealZooFromRecord(record) {
     const cols = Math.max(4, Math.min(10, Math.ceil(Math.sqrt(plans.length * ENCLOSURE_H / ENCLOSURE_W))));
     const stepX = ENCLOSURE_W + ENCLOSURE_GAP;
     const stepY = ENCLOSURE_H + ENCLOSURE_GAP;
-    const startX = Math.max(60, STARTUP_CENTER_X - (Math.min(cols, plans.length) * stepX) / 2);
+    const startX = Math.max(60, STARTUP_CENTER_X - (Math.min(cols + 1, plans.length) * stepX) / 2);
     const startY = 500;
-    // Real zoos should read as grown institutions rather than perfect card
-    // rectangles, but cards themselves stay on the exact enclosure grid. The
-    // silhouette snakes through changing row widths and whole-column indents;
-    // never through per-card pixel offsets, which caused visible misalignment.
+
+    // Use ONLY whole enclosure-grid steps. Earlier organic-layout code added
+    // sub-card pixel bends; that made cards look misaligned and could make a
+    // diagonal neighbour appear connected while leaving a card orthogonally
+    // isolated. Every row below overlaps the previous row by at least two
+    // columns, so every generated card belongs to one 4-neighbour component.
     const rowWidths = [];
     let remainingPlans = plans.length, row = 0;
     while (remainingPlans > 0) {
-        const width = Math.max(3, Math.min(remainingPlans, cols + (row % 3 === 1 ? -1 : row % 3 === 2 ? 1 : 0)));
-        rowWidths.push(width); remainingPlans -= width; row += 1;
+        const width = Math.max(1, Math.min(remainingPlans, Math.max(3, cols + (row % 3 === 1 ? -1 : 0))));
+        rowWidths.push(width);
+        remainingPlans -= width;
+        row += 1;
     }
-    const positions=[];
-    let cursor=0;
-    rowWidths.forEach((width,rowIndex)=>{
-        const phase = rowIndex % 6;
-        const indentColumns = phase === 1 || phase === 2 ? 1 : (phase === 4 || phase === 5 ? -1 : 0);
-        const rowStartX = startX + indentColumns * stepX;
-        for(let col=0; col<width && cursor<plans.length; col++,cursor++){
-            positions[cursor]={x:rowStartX + col*stepX,y:startY + rowIndex*stepY};
+    const positions = [];
+    let cursor = 0;
+    let previousIndent = 0;
+    rowWidths.forEach((width, rowIndex) => {
+        let indent = rowIndex % 4 === 1 || rowIndex % 4 === 2 ? 1 : 0;
+        if (rowIndex && rowWidths[rowIndex - 1] === 1) indent = previousIndent;
+        // Guarantee an x-column shared with the previous row. This explicitly
+        // forbids diagonal-only connectivity.
+        if (rowIndex) {
+            const prevWidth = rowWidths[rowIndex - 1];
+            const prevMin = previousIndent, prevMax = previousIndent + prevWidth - 1;
+            const curMin = indent, curMax = indent + width - 1;
+            if (curMax < prevMin) indent += prevMin - curMax;
+            else if (curMin > prevMax) indent -= curMin - prevMax;
         }
+        for (let col = 0; col < width && cursor < plans.length; col++, cursor++) {
+            positions[cursor] = { x: startX + (indent + col) * stepX, y: startY + rowIndex * stepY };
+        }
+        previousIndent = indent;
     });
     state.enclosures = plans.map((plan, index) => ({
         id: state.nextId++, number: plan.number,
@@ -15996,12 +16032,14 @@ function ensureGenerateZooUI() {
         locationAction.setAttribute('aria-haspopup', real ? 'listbox' : 'false');
         overlay.querySelector('#randomizeZooLocation').hidden = real;
         overlay.querySelector('#randomizeZooCountry').hidden = false;
-        overlay.querySelector('#newZooGameModeRow').hidden = real;
+        // Real zoos support both Classic and Sandbox. Never hide the selector:
+        // Sandbox is also the editor used to create persistent real-zoo templates.
+        overlay.querySelector('#newZooGameModeRow').hidden = false;
         overlay.querySelector('#newZooSizeRow').hidden = false;
         zooSizeNote.hidden = false;
         closeRealZooPicker();
         if (real) {
-            gameMode.value = 'classic';
+            // Preserve the player's chosen gamemode when switching to Real Zoo.
             refreshRealZooChoices();
         } else {
             applyIdentity(generateZooSetupIdentity(country.value || 'Netherlands', true));
@@ -16250,9 +16288,9 @@ function ensureGenerateZooUI() {
 
             if (isRealZoo) {
                 state.realZooPlayerRecordName = realZooHoldingKey(realRecord);
-                // Real Zoo and game mode are independent choices.
-                state.sandboxMode = selectedGameMode === 'sandbox';
-                createRealZooFromRecord(realRecord);
+                const realZooSandboxMode = selectedGameMode === 'sandbox';
+                state.sandboxMode = realZooSandboxMode;
+                createRealZooFromRecord(realRecord, { sandboxMode: realZooSandboxMode });
                 assignOpponentProfiles();
                 createZooNameEditor();
                 renderAll();
@@ -16602,12 +16640,11 @@ let realZooAnimalSpecCacheReady = false;
 // same province, adjacent domestic, adjacent foreign, farther domestic,
 // farther Europe. Rows are smoothly interpolated between prestige anchors.
 const REAL_ZOO_GEOGRAPHY_PRESTIGE_CURVE = Object.freeze([
-    { prestige: 8,   weights: [74, 20, 5, 1, 0] },
-    { prestige: 25,  weights: [68, 22, 7, 3, 0] },
-    { prestige: 50,  weights: [60, 24, 9, 6, 1] },
-    { prestige: 100, weights: [50, 27, 13, 8, 3] },
-    { prestige: 160, weights: [42, 28, 17, 10, 5] },
-    { prestige: 350, weights: [32, 26, 22, 18, 12] },
+    { prestige: 8,   weights: [70, 20, 10, 0, 0] },
+    { prestige: 25,  weights: [60, 25, 12, 8, 2] },
+    { prestige: 70,  weights: [50, 28, 16, 18, 8] },
+    { prestige: 160, weights: [40, 28, 20, 24, 14] },
+    { prestige: 350, weights: [32, 26, 22, 24, 18] },
     { prestige: 700, weights: [22, 21, 20, 21, 20] }
 ]);
 
@@ -16925,11 +16962,9 @@ function selectPrestigeLocationCandidates(candidates, count, seedText = '') {
     const actualPrestige = updateHighestZooPrestige();
     const prestige = playerTradeAccessPrestige(actualPrestige);
     const window = realZooPrestigeWindow(actualPrestige, prestige);
-    // Prestige access can widen the eligible collection pool, but earned
-    // prestige alone controls how far the zoo's trade network has spread.
     const geographyWeights = interpolatedPrestigeWeights(
         REAL_ZOO_GEOGRAPHY_PRESTIGE_CURVE,
-        actualPrestige
+        prestige
     );
     const remaining = candidates.filter(item => {
         const zooPrestige = realZooPrestige(item.record);
@@ -18585,7 +18620,8 @@ function showOpponentInfoPopup(index, anchor) {
         `${profile.name || `Zoo ${index + 1}`}\n` +
         locationText +
         `Favours: ${favourites.length ? favourites.join(', ') : 'none'}\n\n` +
-        `Animals by category:\n${opponentAnimalsGroupedByCategory(stock) || 'none'}`;
+        `Animals by category:\n${opponentAnimalsGroupedByCategory(stock) || 'none'}` +
+        (record ? `\n\nClick to visit${state.selectedTradeOpponent === index ? '.' : ' after selecting this trade.'}` : '');
 
     popup.style.display = 'none';
     popup.style.opacity = '1';
@@ -19770,15 +19806,27 @@ function setupOpponentTradeClicks() {
         if (!el || el.dataset.tradeClickBound === '1') continue;
         el.dataset.tradeClickBound = '1';
 
-        el.addEventListener('click', () => {
-            if (state.autonomousTradeOffer) return;
-            if (!state.tradeOffers.some(o => o.opponentIndex === i)) return;
-            state.selectedTradeOpponent = i;
-            renderTrade();
+        el.addEventListener('mouseenter', () => {
+            const hasTrade = state.tradeOffers.some(o => o.opponentIndex === i) || state.autonomousTradeOffer?.opponentIndex === i;
+            if (hasTrade) showOpponentInfoPopup(i, el);
         });
+        el.addEventListener('mouseleave', scheduleOpponentInfoHide);
 
-        // opponent names on the main game screen no longer open
-        // collection popups. All Zoos and Trade History retain their popups.
+        el.addEventListener('click', () => {
+            const hasPlayerOffer = state.tradeOffers.some(o => o.opponentIndex === i);
+            const hasAutonomousOffer = state.autonomousTradeOffer?.opponentIndex === i;
+            if (!hasPlayerOffer && !hasAutonomousOffer) return;
+
+            // First click selects the offer so players can compare alternatives.
+            // A second click on the already-selected real zoo visits it.
+            if (state.selectedTradeOpponent !== i) {
+                state.selectedTradeOpponent = i;
+                renderTrade();
+                return;
+            }
+            const record = state.opponentProfiles[i]?.realZooRecord || null;
+            if (record) visitRealZoo(record);
+        });
     }
 }
 
@@ -19894,7 +19942,7 @@ function renderPlayerZooNameText(textNode) {
             const lowerName = fullName.toLocaleLowerCase();
             const lowerLocation = recognised.location.toLocaleLowerCase();
             const index = lowerName.lastIndexOf(lowerLocation);
-            if (index > 0) {
+            if (index >= 0) {
                 prefix = fullName.slice(0, index).trim();
                 place = fullName.slice(index).trim();
             }

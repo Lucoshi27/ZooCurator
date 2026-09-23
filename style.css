@@ -4423,3 +4423,15 @@ body.visiting-real-zoo .player-custom-area-name .area-colour-button { display:no
     font-weight: 700;
     opacity: .7;
 }
+
+/* V226.19 — visited zoos are inspection-only gameplay-wise. */
+body.visiting-real-zoo #drawCard,
+body.visiting-real-zoo #exchange1,
+body.visiting-real-zoo #exchange2,
+body.visiting-real-zoo #result {
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+    opacity: .38 !important;
+    filter: grayscale(1) brightness(.82) !important;
+}
+body.visiting-real-zoo #drawCard img { opacity: .55 !important; filter: grayscale(1) !important; }

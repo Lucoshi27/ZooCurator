@@ -4025,3 +4025,73 @@ body.history-viewing #zooCanvas .animal-card {
     background: var(--enclosure-theme-tint, rgba(80,120,80,0.064));
 }
 \n\n/* ============================================================\n   V224.5 — SEAMLESS AREA OUTLINES + TRUE ENCLOSURE RECOLOUR\n   ============================================================ */\n\n/* Connected cells overlap across the normal enclosure gap. Remove the shared\n   edge so the component reads as one continuous outline rather than a stack\n   of individually boxed cards. */\n.zoo-theme-area.theme-join-left  { border-left-color: transparent !important;  border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; }\n.zoo-theme-area.theme-join-right { border-right-color: transparent !important; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }\n.zoo-theme-area.theme-join-up    { border-top-color: transparent !important;   border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }\n.zoo-theme-area.theme-join-down  { border-bottom-color: transparent !important;border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; }\n\n/* Do not wash artwork out with the old translucent sheet. Recolour the actual\n   enclosure image instead, while drawing a crisp neutral enclosure edge above\n   it so the printable card/exhibit boundary remains unmistakable. */\n.enclosure.themed-enclosure::after {\n    display: none !important;\n}\n.enclosure.themed-enclosure .enclosure-image {\n    filter: var(--enclosure-theme-filter, saturate(1.28) contrast(1.05));\n}\n.enclosure.themed-enclosure::before {\n    content: \"\";\n    position: absolute;\n    inset: 0;\n    z-index: 2;\n    pointer-events: none;\n    border: 3px solid rgba(55, 51, 43, .72);\n    border-radius: 10px;\n    box-shadow: inset 0 0 0 1px rgba(255,255,255,.18), 0 3px 9px rgba(0,0,0,.13);\n}\n.enclosure.themed-enclosure .slot { z-index: 3; }\n.enclosure.themed-enclosure .enclosure-theme-title { z-index: 5; }\n\n/* Strong colour transforms: these recolour the artwork itself rather than\n   placing a translucent colour panel over it. */\n.theme-africa        { --enclosure-theme-filter: sepia(.48) saturate(1.75) hue-rotate(348deg) contrast(1.08) brightness(1.02); }\n.theme-asia          { --enclosure-theme-filter: sepia(.40) saturate(1.65) hue-rotate(318deg) contrast(1.08); }\n.theme-europe        { --enclosure-theme-filter: sepia(.24) saturate(1.38) hue-rotate(165deg) contrast(1.07); }\n.theme-north-america { --enclosure-theme-filter: sepia(.34) saturate(1.48) hue-rotate(72deg) contrast(1.07); }\n.theme-south-america { --enclosure-theme-filter: sepia(.38) saturate(1.70) hue-rotate(75deg) contrast(1.08); }\n.theme-oceania       { --enclosure-theme-filter: sepia(.42) saturate(1.62) hue-rotate(338deg) contrast(1.07); }\n.theme-antarctica    { --enclosure-theme-filter: saturate(1.28) hue-rotate(158deg) brightness(1.08) contrast(1.04); }\n.theme-tropical, .theme-rainforest { --enclosure-theme-filter: sepia(.34) saturate(1.78) hue-rotate(68deg) contrast(1.08); }\n.theme-savanna       { --enclosure-theme-filter: sepia(.52) saturate(1.72) hue-rotate(350deg) contrast(1.08); }\n.theme-aquatic       { --enclosure-theme-filter: sepia(.25) saturate(1.65) hue-rotate(150deg) contrast(1.07); }\n.theme-semi-aquatic, .theme-wetland { --enclosure-theme-filter: sepia(.28) saturate(1.58) hue-rotate(112deg) contrast(1.07); }\n.theme-forest, .theme-boreal { --enclosure-theme-filter: sepia(.30) saturate(1.55) hue-rotate(70deg) contrast(1.08); }\n.theme-desert        { --enclosure-theme-filter: sepia(.54) saturate(1.58) hue-rotate(350deg) contrast(1.08) brightness(1.03); }\n.theme-temperate     { --enclosure-theme-filter: sepia(.25) saturate(1.42) hue-rotate(66deg) contrast(1.06); }\n.theme-arctic        { --enclosure-theme-filter: saturate(1.20) hue-rotate(160deg) brightness(1.08) contrast(1.04); }\n.theme-mountain      { --enclosure-theme-filter: saturate(.82) contrast(1.14) brightness(.98); }\n.theme-domestic, .theme-petting-zoo { --enclosure-theme-filter: sepia(.38) saturate(1.52) hue-rotate(345deg) contrast(1.07); }\n.theme-crocodile-house, .theme-bear-forest, .theme-lemur-forest, .theme-australian-walkabout { --enclosure-theme-filter: sepia(.28) saturate(1.48) hue-rotate(70deg) contrast(1.08); }\n.theme-aquarium, .theme-penguin-coast, .theme-seal-coast, .theme-otter-river { --enclosure-theme-filter: sepia(.20) saturate(1.58) hue-rotate(150deg) contrast(1.07); }\n.theme-flamingo-lagoon { --enclosure-theme-filter: sepia(.26) saturate(1.52) hue-rotate(300deg) contrast(1.06); }\n.theme-camelid-paddocks { --enclosure-theme-filter: sepia(.42) saturate(1.48) hue-rotate(345deg) contrast(1.07); }\n.theme-kattenrotonde { --enclosure-theme-filter: sepia(.24) saturate(1.34) hue-rotate(338deg) contrast(1.10); }\n
+
+/* ============================================================
+   V224.6 — COLLECTION KEEPS INTERACTIVE ANIMAL PREVIEW ABOVE MODAL
+   ============================================================ */
+body.collection-menu-open #hoverPreview {
+    z-index: 10120 !important;
+}
+
+/* ============================================================
+   V224.7 — TRUE SINGLE-PERIMETER AREA OUTLINES
+   ============================================================ */
+/* V224.5 used one bordered rectangle per member enclosure. Even with shared
+   sides hidden, anti-aliasing and rounded corners could leave visible seams.
+   V224.7 renders only the exposed perimeter edges in one SVG per Area. */
+.zoo-theme-outline {
+    position: absolute;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 1;
+    color: var(--area-outline-color, rgba(70,70,60,.62));
+}
+.zoo-theme-outline line {
+    stroke: currentColor;
+    stroke-width: 4px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+.zoo-theme-outline.zoo-theme-layer-geography line { stroke-width: 6px; }
+.zoo-theme-outline.zoo-theme-layer-habitat line { stroke-width: 4px; stroke-dasharray: 13 8; }
+.zoo-theme-outline.zoo-theme-layer-facility line,
+.zoo-theme-outline.zoo-theme-layer-special line { stroke-width: 4px; }
+
+/* The old per-card area rectangles must never render in this build. */
+.zoo-theme-area { display: none !important; }
+
+/* Group label is positioned directly in zooCanvas coordinates by JS. */
+.zoo-theme-area-group-title {
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* Semantic outline colours. */
+.theme-africa        { --area-outline-color: rgba(151,101,38,.86); }
+.theme-asia          { --area-outline-color: rgba(143,67,49,.84); }
+.theme-europe        { --area-outline-color: rgba(65,100,130,.82); }
+.theme-north-america { --area-outline-color: rgba(64,98,57,.84); }
+.theme-south-america { --area-outline-color: rgba(42,112,76,.86); }
+.theme-oceania       { --area-outline-color: rgba(156,92,48,.84); }
+.theme-antarctica    { --area-outline-color: rgba(93,156,180,.86); }
+.theme-tropical, .theme-rainforest { --area-outline-color: rgba(31,112,56,.86); }
+.theme-savanna       { --area-outline-color: rgba(157,119,28,.86); }
+.theme-aquatic       { --area-outline-color: rgba(35,102,151,.88); }
+.theme-semi-aquatic, .theme-wetland { --area-outline-color: rgba(38,111,103,.86); }
+.theme-forest, .theme-boreal { --area-outline-color: rgba(45,91,41,.86); }
+.theme-desert        { --area-outline-color: rgba(154,106,48,.86); }
+.theme-temperate     { --area-outline-color: rgba(75,107,54,.84); }
+.theme-arctic        { --area-outline-color: rgba(94,155,178,.88); }
+.theme-mountain      { --area-outline-color: rgba(86,87,92,.84); }
+.theme-domestic, .theme-petting-zoo { --area-outline-color: rgba(161,111,33,.88); }
+
+/* ============================================================
+   V224.8 — AREA OUTLINE HARDENING
+   Each exposed SVG edge is a separate segment. Square caps deliberately
+   overlap at corners so browser anti-aliasing cannot leave hairline gaps.
+   ============================================================ */
+.zoo-theme-outline line {
+    stroke-linecap: square !important;
+    shape-rendering: geometricPrecision;
+}

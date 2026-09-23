@@ -438,6 +438,7 @@ const state = {
     collectionRecords: new Map(),
     collectionCohabitationActive: new Map(),
     collectionActiveLevel: 1,
+    collectionMenuOpen: false,
 
     // Player-initiated trade results are cached per physical animal card for
     // a three-turn window. Removing and re-adding the same card therefore
@@ -2370,6 +2371,9 @@ function connectedEnclosureThemeGroups() {
 }
 
 function renderEnclosureAreaBackgrounds() {
+    // V224.8: this renderer is rebuilt from state on every renderZoo() call.
+    // zooCanvas is cleared immediately before this function runs, so stale area
+    // outlines/titles cannot survive when occupancy or adjacency stops qualifying.
     const groups = connectedEnclosureThemeGroups();
     const layerOrder = { geography: 0, habitat: 1, facility: 2, special: 3 };
     groups.sort((a, b) =>
@@ -2378,48 +2382,73 @@ function renderEnclosureAreaBackgrounds() {
     );
 
     for (const group of groups) {
-        const pad = group.theme.layer === 'geography' ? 14 : 12;
+        // Draw ONE perimeter for the complete connected component. The previous
+        // implementation drew one bordered DIV per enclosure and merely hid the
+        // touching sides. That still left visible seams/corners in several layouts.
+        // Here every internal edge is omitted entirely and only exposed outer edges
+        // are emitted into a single SVG overlay.
+        const halfGap = ENCLOSURE_GAP / 2;
+        const pad = halfGap; // neighbouring area cells meet exactly halfway in the gap
+        const stepX = ENCLOSURE_W + ENCLOSURE_GAP;
+        const stepY = ENCLOSURE_H + ENCLOSURE_GAP;
+        const tolerance = ENCLOSURE_AREA_ADJACENCY_TOLERANCE;
 
-        // Per-enclosure cells prevent an L-shaped group's rectangular bounding
-        // box from visually swallowing an unrelated enclosure in its empty corner.
-        const titleHost = group.enclosures
-            .slice()
-            .sort((a, b) => a.y - b.y || a.x - b.x)[0];
-
-        const memberIds = new Set(group.enclosures.map(enclosure => enclosure.id));
         const neighbourAt = (enclosure, side) => group.enclosures.some(other => {
-            if (other.id === enclosure.id || !memberIds.has(other.id)) return false;
+            if (other.id === enclosure.id) return false;
             const dx = other.x - enclosure.x;
             const dy = other.y - enclosure.y;
-            const stepX = ENCLOSURE_W + ENCLOSURE_GAP;
-            const stepY = ENCLOSURE_H + ENCLOSURE_GAP;
-            if (side === 'left')  return Math.abs(dx + stepX) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE && Math.abs(dy) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE;
-            if (side === 'right') return Math.abs(dx - stepX) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE && Math.abs(dy) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE;
-            if (side === 'up')    return Math.abs(dy + stepY) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE && Math.abs(dx) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE;
-            return Math.abs(dy - stepY) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE && Math.abs(dx) <= ENCLOSURE_AREA_ADJACENCY_TOLERANCE;
+            if (side === 'left')  return Math.abs(dx + stepX) <= tolerance && Math.abs(dy) <= tolerance;
+            if (side === 'right') return Math.abs(dx - stepX) <= tolerance && Math.abs(dy) <= tolerance;
+            if (side === 'up')    return Math.abs(dy + stepY) <= tolerance && Math.abs(dx) <= tolerance;
+            return Math.abs(dy - stepY) <= tolerance && Math.abs(dx) <= tolerance;
         });
 
-        for (const enclosure of group.enclosures) {
-            const area = document.createElement('div');
-            area.className = `zoo-theme-area ${group.theme.className} zoo-theme-layer-${group.theme.layer}`;
-            if (neighbourAt(enclosure, 'left')) area.classList.add('theme-join-left');
-            if (neighbourAt(enclosure, 'right')) area.classList.add('theme-join-right');
-            if (neighbourAt(enclosure, 'up')) area.classList.add('theme-join-up');
-            if (neighbourAt(enclosure, 'down')) area.classList.add('theme-join-down');
-            area.style.left = `${enclosure.x - pad}px`;
-            area.style.top = `${enclosure.y - pad}px`;
-            area.style.width = `${ENCLOSURE_W + pad * 2}px`;
-            area.style.height = `${ENCLOSURE_H + pad * 2}px`;
+        const minX = Math.min(...group.enclosures.map(e => e.x - pad));
+        const minY = Math.min(...group.enclosures.map(e => e.y - pad));
+        const maxX = Math.max(...group.enclosures.map(e => e.x + ENCLOSURE_W + pad));
+        const maxY = Math.max(...group.enclosures.map(e => e.y + ENCLOSURE_H + pad));
 
-            if (enclosure.id === titleHost.id) {
-                const title = document.createElement('div');
-                title.className = 'zoo-theme-area-title';
-                title.textContent = group.theme.title;
-                if (group.theme.italicTitle) title.style.fontStyle = 'italic';
-                area.appendChild(title);
-            }
-            zooCanvas.appendChild(area);
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.classList.add('zoo-theme-outline', group.theme.className, `zoo-theme-layer-${group.theme.layer}`);
+        svg.setAttribute('aria-hidden', 'true');
+        svg.style.left = `${minX}px`;
+        svg.style.top = `${minY}px`;
+        svg.style.width = `${maxX - minX}px`;
+        svg.style.height = `${maxY - minY}px`;
+        svg.setAttribute('viewBox', `0 0 ${maxX - minX} ${maxY - minY}`);
+
+        const addEdge = (x1, y1, x2, y2) => {
+            const line = document.createElementNS(svgNS, 'line');
+            line.setAttribute('x1', String(x1 - minX));
+            line.setAttribute('y1', String(y1 - minY));
+            line.setAttribute('x2', String(x2 - minX));
+            line.setAttribute('y2', String(y2 - minY));
+            line.setAttribute('vector-effect', 'non-scaling-stroke');
+            svg.appendChild(line);
+        };
+
+        for (const enclosure of group.enclosures) {
+            const left = enclosure.x - pad;
+            const right = enclosure.x + ENCLOSURE_W + pad;
+            const top = enclosure.y - pad;
+            const bottom = enclosure.y + ENCLOSURE_H + pad;
+            if (!neighbourAt(enclosure, 'up')) addEdge(left, top, right, top);
+            if (!neighbourAt(enclosure, 'right')) addEdge(right, top, right, bottom);
+            if (!neighbourAt(enclosure, 'down')) addEdge(right, bottom, left, bottom);
+            if (!neighbourAt(enclosure, 'left')) addEdge(left, bottom, left, top);
         }
+        zooCanvas.appendChild(svg);
+
+        // One label for the entire connected Area, never one label per enclosure.
+        const titleHost = group.enclosures.slice().sort((a, b) => a.y - b.y || a.x - b.x)[0];
+        const title = document.createElement('div');
+        title.className = `zoo-theme-area-title zoo-theme-area-group-title ${group.theme.className} zoo-theme-layer-${group.theme.layer}`;
+        title.textContent = group.theme.title;
+        if (group.theme.italicTitle) title.style.fontStyle = 'italic';
+        title.style.left = `${titleHost.x}px`;
+        title.style.top = `${titleHost.y - pad - 28}px`;
+        zooCanvas.appendChild(title);
     }
 }
 
@@ -3182,6 +3211,8 @@ function ensureCollectionMenu() {
 }
 
 function closeCollectionMenu() {
+    state.collectionMenuOpen = false;
+    document.body.classList.remove('collection-menu-open');
     if (collectionOverlay) collectionOverlay.style.display = 'none';
     if (collectionTooltip) collectionTooltip.style.display = 'none';
 }
@@ -3273,10 +3304,24 @@ function renderCollectionMenu() {
             }
 
             if (record && (acquired || offered)) {
-                card.addEventListener('mouseenter', event => showCollectionTooltip(event, record));
+                // Collection cards use the exact same bottom-left interactive preview
+                // as live zoo cards. A stable synthetic id keeps the normal hover-intent,
+                // fade and flip-to-information behaviour working unchanged.
+                const previewAnimal = {
+                    id: `collection:${entry.category}:${entry.level}:${entry.filename}`,
+                    category: entry.category,
+                    level: entry.level,
+                    filename: entry.filename
+                };
+
+                card.addEventListener('mouseenter', event => {
+                    showCollectionTooltip(event, record);
+                    requestHoverPreview(previewAnimal, { allowDuringCollection: true });
+                });
                 card.addEventListener('mousemove', moveCollectionTooltip);
                 card.addEventListener('mouseleave', () => {
                     if (collectionTooltip) collectionTooltip.style.display = 'none';
+                    hideHoverPreviewIfAllowed(previewAnimal);
                 });
             }
 
@@ -3292,6 +3337,8 @@ function openCollectionMenu() {
     if (state.sandboxMode) return;
     ensureCollectionMenu();
     renderCollectionMenu();
+    state.collectionMenuOpen = true;
+    document.body.classList.add('collection-menu-open');
     collectionOverlay.style.display = 'flex';
 }
 
@@ -6699,7 +6746,11 @@ function showHoverPreview(animal) {
 /* A short hover-intent delay prevents cards merely crossed by the cursor
    from replacing the preview. 180 ms is quick when you deliberately stop
    on a card, but long enough to ignore normal mouse travel across the zoo. */
-function requestHoverPreview(animal) {
+function requestHoverPreview(animal, options = {}) {
+    // While Collection is open, only Collection cards may replace the preview.
+    // This explicitly prevents enclosure cards underneath the modal from ever
+    // winning a stale/pointer hover and changing the bottom-left animal.
+    if (state.collectionMenuOpen && !options.allowDuringCollection) return;
     cancelHoverPreviewHide();
     cancelHoverPreviewIntent();
     state.previewIntentAnimalId = animal.id;
@@ -6818,8 +6869,8 @@ function ensureWikipediaBack() {
     back.innerHTML = `
         <div class="animal-info-tabs">
             <button type="button" class="animal-info-tab active" data-info-tab="information">Information</button>
-            <button type="button" class="animal-info-tab" data-info-tab="wikipedia">Wikipedia</button>
             <button type="button" class="animal-info-tab" data-info-tab="holdings">Holdings</button>
+            <button type="button" class="animal-info-tab" data-info-tab="wikipedia">Wikipedia</button>
         </div>
         <div id="animalInformationPane">
             <div class="wiki-preview-toolbar">
@@ -7724,7 +7775,7 @@ function renderCurrentGameHoldings(animal) {
 
     // The player's zoo is part of the current game too.
     if ((state.animals || []).some(a => animalCardKey(a) === animalCardKey(animal))) {
-        holders.push({ name: state.zooName || 'Your Zoo', player: true, trade: null });
+        holders.push({ name: state.zooName || 'Your Zoo', country: state.zooCountry || state.country || '', player: true, trade: null });
     }
 
     for (const record of state.realZooData?.zoos || []) {
@@ -7735,14 +7786,21 @@ function renderCurrentGameHoldings(animal) {
         if (!hasSpecies) continue;
         holders.push({
             name: record.name || 'Zoo',
+            country: String(record.country || '').trim(),
             player: false,
             trade: latestCurrentHoldingAcquisition(record.name, name)
         });
     }
 
+    // Holdings are grouped alphabetically by country; zoos within the same
+    // country are alphabetical as well. Keep the player's zoo at the top as a
+    // special current-game entry rather than mixing it into the real-zoo list.
+    const countryCollator = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
     holders.sort((a,b) => {
         if (a.player !== b.player) return a.player ? -1 : 1;
-        return a.name.localeCompare(b.name);
+        const countryOrder = countryCollator.compare(a.country || 'ZZZ', b.country || 'ZZZ');
+        if (countryOrder) return countryOrder;
+        return countryCollator.compare(a.name, b.name);
     });
 
     if (!holders.length) {

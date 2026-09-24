@@ -1,0 +1,273 @@
+{
+  "schema_version": 5,
+  "framework": "One Earth Bioregions Framework",
+  "design_note": "Canonical One Earth hierarchy: realm -> subrealm -> bioregion. Zoo Curator stores One Earth bioregions as factual wild-region units; ecoregions remain research-only. Non-One-Earth labels such as Latin America, The Americas, Eurasia, and Worldwide are kept separately under range_display_groups and are presentation-only.",
+  "realms": {
+    "central-america-caribbean": {
+      "name": "Central America & Caribbean",
+      "subrealms": [
+        "central-america",
+        "caribbean"
+      ]
+    },
+    "southern-america": {
+      "name": "Southern America",
+      "subrealms": [
+        "andes-pacific-coast",
+        "south-american-grasslands",
+        "brazil-cerrado-atlantic-coast",
+        "amazonia",
+        "upper-south-america"
+      ]
+    }
+  },
+  "subrealms": {
+    "andes-pacific-coast": {
+      "name": "Andes Mountains & Pacific Coast",
+      "bioregions": [
+        "NT11",
+        "NT10",
+        "NT8",
+        "NT7",
+        "NT6",
+        "NT5",
+        "NT9",
+        "NT1"
+      ],
+      "realm": "southern-america"
+    },
+    "south-american-grasslands": {
+      "name": "South American Grasslands",
+      "bioregions": [
+        "NT4",
+        "NT3",
+        "NT2"
+      ],
+      "realm": "southern-america"
+    },
+    "brazil-cerrado-atlantic-coast": {
+      "name": "Brazil Cerrado & Atlantic Coast",
+      "bioregions": [
+        "NT15",
+        "NT13",
+        "NT12",
+        "NT14"
+      ],
+      "realm": "southern-america"
+    },
+    "amazonia": {
+      "name": "Amazonia",
+      "bioregions": [
+        "NT20",
+        "NT18",
+        "NT17",
+        "NT16",
+        "NT19"
+      ],
+      "realm": "southern-america"
+    },
+    "upper-south-america": {
+      "name": "Upper South America",
+      "bioregions": [
+        "NT23",
+        "NT22",
+        "NT21"
+      ],
+      "realm": "southern-america"
+    },
+    "central-america": {
+      "name": "Central America",
+      "bioregions": [
+        "NT24",
+        "NT25",
+        "NT27",
+        "NT28",
+        "NT29"
+      ],
+      "realm": "central-america-caribbean"
+    },
+    "caribbean": {
+      "name": "Caribbean",
+      "bioregions": [
+        "NT26"
+      ],
+      "realm": "central-america-caribbean"
+    }
+  },
+  "bioregions": {
+    "NT11": {
+      "name": "Andean Mountain Forests & Valleys",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT10": {
+      "name": "Ecuadorean Dry Coastal Forests & Flooded Grasslands",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT8": {
+      "name": "South American Coastal Deserts",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT7": {
+      "name": "Juan Fernández & Desventuradas Islands",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT6": {
+      "name": "Chilean Matorral Shrublands & Savanna",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT5": {
+      "name": "Andean Mountain Grasslands",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT9": {
+      "name": "Galápagos Islands",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT1": {
+      "name": "Chilean Mixed Forests",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT4": {
+      "name": "Chaco Grasslands",
+      "subrealm": "south-american-grasslands",
+      "realm": "southern-america"
+    },
+    "NT3": {
+      "name": "Rio de la Plata Grasslands",
+      "subrealm": "south-american-grasslands",
+      "realm": "southern-america"
+    },
+    "NT2": {
+      "name": "Patagonia Steppe & Low Mountains",
+      "subrealm": "south-american-grasslands",
+      "realm": "southern-america"
+    },
+    "NT15": {
+      "name": "Brazilian Atlantic Dry Forests",
+      "subrealm": "brazil-cerrado-atlantic-coast",
+      "realm": "southern-america"
+    },
+    "NT13": {
+      "name": "Cerrado Savannas",
+      "subrealm": "brazil-cerrado-atlantic-coast",
+      "realm": "southern-america"
+    },
+    "NT12": {
+      "name": "Pantanal Flooded Grasslands & Dry Forests",
+      "subrealm": "brazil-cerrado-atlantic-coast",
+      "realm": "southern-america"
+    },
+    "NT14": {
+      "name": "Brazilian Atlantic Moist Forests",
+      "subrealm": "brazil-cerrado-atlantic-coast",
+      "realm": "southern-america"
+    },
+    "NT20": {
+      "name": "Northern Amazonian Forests",
+      "subrealm": "amazonia",
+      "realm": "southern-america"
+    },
+    "NT18": {
+      "name": "Western Amazonian Forests & Plains",
+      "subrealm": "amazonia",
+      "realm": "southern-america"
+    },
+    "NT17": {
+      "name": "Southern Amazonian Forests",
+      "subrealm": "amazonia",
+      "realm": "southern-america"
+    },
+    "NT16": {
+      "name": "Amazon River Estuary",
+      "subrealm": "amazonia",
+      "realm": "southern-america"
+    },
+    "NT19": {
+      "name": "Central Amazonian Forests",
+      "subrealm": "amazonia",
+      "realm": "southern-america"
+    },
+    "NT23": {
+      "name": "Venezuelan Coast",
+      "subrealm": "upper-south-america",
+      "realm": "southern-america"
+    },
+    "NT22": {
+      "name": "Llanos & Dry Forests",
+      "subrealm": "upper-south-america",
+      "realm": "southern-america"
+    },
+    "NT21": {
+      "name": "Guianan Forests & Savanna",
+      "subrealm": "upper-south-america",
+      "realm": "southern-america"
+    },
+    "NT24": {
+      "name": "Central American Isthmian & Colombian Coastal Forests",
+      "subrealm": "central-america",
+      "realm": "central-america-caribbean"
+    },
+    "NT25": {
+      "name": "Central American Mixed Forests",
+      "subrealm": "central-america",
+      "realm": "central-america-caribbean"
+    },
+    "NT26": {
+      "name": "Caribbean Islands",
+      "subrealm": "caribbean",
+      "realm": "central-america-caribbean"
+    },
+    "NT27": {
+      "name": "Yucatan & Veracruz Mixed Forests",
+      "subrealm": "central-america",
+      "realm": "central-america-caribbean"
+    },
+    "NT28": {
+      "name": "Mexican Dry & Coniferous Forests",
+      "subrealm": "central-america",
+      "realm": "central-america-caribbean"
+    },
+    "NT29": {
+      "name": "Mexican Subtropical Islands",
+      "subrealm": "central-america",
+      "realm": "central-america-caribbean"
+    }
+  },
+  "range_display_groups": {
+    "latin-america": {
+      "name": "Latin America",
+      "realms": [
+        "central-america-caribbean",
+        "southern-america"
+      ]
+    },
+    "the-americas": {
+      "name": "The Americas",
+      "continents": [
+        "north america",
+        "south america"
+      ],
+      "match": "exact"
+    },
+    "eurasia": {
+      "name": "Eurasia",
+      "continents": [
+        "europe",
+        "asia"
+      ],
+      "match": "exact"
+    },
+    "worldwide": {
+      "name": "Worldwide",
+      "min_continents": 5
+    }
+  }
+}

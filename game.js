@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V227.1";
+const ZOO_CURATOR_VERSION = "V227.9.7";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 1;
 
@@ -1870,7 +1870,7 @@ function loadRealZooDataInBackground() {
             ) ? embeddedTradeIndex : null;
             resetRealZooSessionHoldings();
             rebuildRealZooStaticIdMap();
-            loadBundledRealZooLayoutTemplates().then(() => { renderAll?.(); });
+            Promise.all([loadBundledRealZooLayoutTemplates(), loadPregeneratedRealZooLayouts()]).then(() => { renderAll?.(); });
             const newZooOverlay = document.getElementById('generateZooOverlay');
             if (newZooOverlay?._refreshRealZooChoices) newZooOverlay._refreshRealZooChoices();
             // Predictions made before the optional database arrived may have
@@ -2205,9 +2205,9 @@ function animalInventoryTags(category, level, filename) {
 // ============================================================
 // DYNAMIC ZOO AREAS / HOUSES
 // ============================================================
-// Areas are derived from the animals currently inside each enclosure. Nothing
-// is persisted: moving an enclosure or changing its occupants immediately
-// splits/merges/relabels the visible areas on the next render.
+// Areas are derived from current animals, with established generated membership
+// persisted only for qualifying vacant cards. Occupied cards that lose the tag
+// leave immediately; every recalculation atomically splits/merges/removes Areas.
 const ENCLOSURE_AREA_THEMES = Object.freeze({
     'africa':        { title: 'African Area',        className: 'theme-africa',        layer: 'geography' },
     'asia':          { title: 'Asian Area',          className: 'theme-asia',          layer: 'geography' },
@@ -2217,43 +2217,56 @@ const ENCLOSURE_AREA_THEMES = Object.freeze({
     'oceania':       { title: 'Oceanian Area',       className: 'theme-oceania',       layer: 'geography' },
     'antarctica':    { title: 'Antarctic Area',      className: 'theme-antarctica',    layer: 'geography' },
 
-    // Subregions are geography too, but more specific than continents. When a
-    // connected subregion covers exactly the same cards as its continent, the
-    // subregion replaces the continent label/outline instead of drawing both.
-    'congo':               { title: 'Congo Area',               className: 'theme-subregion', layer: 'subregion' },
-    'madagascar':          { title: 'Madagascar Area',          className: 'theme-subregion', layer: 'subregion' },
-    'east-africa':         { title: 'East Africa Area',         className: 'theme-subregion', layer: 'subregion' },
-    'cape':                { title: 'Cape Area',                className: 'theme-subregion', layer: 'subregion' },
-    'southern-africa':     { title: 'Southern Africa Area',     className: 'theme-subregion', layer: 'subregion' },
-    'sahel':               { title: 'Sahel Area',               className: 'theme-subregion', layer: 'subregion' },
-    'west-africa':         { title: 'West Africa Area',         className: 'theme-subregion', layer: 'subregion' },
-    'ethiopian-highlands': { title: 'Ethiopian Highlands Area',className: 'theme-subregion', layer: 'subregion' },
-    'china':               { title: 'China Area',               className: 'theme-subregion', layer: 'subregion' },
-    'japan':               { title: 'Japan Area',               className: 'theme-subregion', layer: 'subregion' },
-    'india':               { title: 'India Area',               className: 'theme-subregion', layer: 'subregion' },
-    'himalayas':           { title: 'Himalayas Area',           className: 'theme-subregion', layer: 'subregion' },
-    'arabia':              { title: 'Arabia Area',              className: 'theme-subregion', layer: 'subregion' },
-    'southeast-asia':      { title: 'Southeast Asia Area',      className: 'theme-subregion', layer: 'subregion' },
-    'central-europe':      { title: 'Central Europe Area',      className: 'theme-subregion', layer: 'subregion' },
-    'alps':                { title: 'Alps Area',                className: 'theme-subregion', layer: 'subregion' },
-    'mediterranean':       { title: 'Mediterranean Area',       className: 'theme-subregion', layer: 'subregion' },
-    'central-america':     { title: 'Central America Area',     className: 'theme-subregion', layer: 'subregion' },
-    'caribbean':           { title: 'Caribbean Area',           className: 'theme-subregion', layer: 'subregion' },
-    'amazon':              { title: 'Amazon Area',              className: 'theme-subregion', layer: 'subregion' },
-    'pantanal':            { title: 'Pantanal Area',            className: 'theme-subregion', layer: 'subregion' },
-    'andes':               { title: 'Andes Area',               className: 'theme-subregion', layer: 'subregion' },
-    'pampas':              { title: 'Pampas Area',              className: 'theme-subregion', layer: 'subregion' },
-    'patagonia':           { title: 'Patagonia Area',           className: 'theme-subregion', layer: 'subregion' },
-    'australia':           { title: 'Australia Area',           className: 'theme-subregion', layer: 'subregion' },
-    'new-guinea':          { title: 'New Guinea Area',          className: 'theme-subregion', layer: 'subregion' },
-    'arctic-region':       { title: 'Arctic Region',            className: 'theme-subregion', layer: 'subregion' },
-    'rockies':             { title: 'Rockies Area',             className: 'theme-subregion', layer: 'subregion' },
-    'florida':             { title: 'Florida Area',             className: 'theme-subregion', layer: 'subregion' },
-    'new-zealand':         { title: 'New Zealand Area',         className: 'theme-subregion', layer: 'subregion' },
-    'subantarctic':        { title: 'Subantarctic Area',        className: 'theme-subregion', layer: 'subregion' },
+    // Player-facing named regions are synchronized with asset-inventory.json v6.
+    // Broad directional tags remain useful internally, but are deliberately not Areas.
+    "sahel"                  : { title: "Sahel Area"                  , className: 'theme-subregion', layer: 'subregion' },
+    "cape"                   : { title: "Cape Region Area"            , className: 'theme-subregion', layer: 'subregion' },
+    "congo"                  : { title: "Congo Basin Area"            , className: 'theme-subregion', layer: 'subregion' },
+    "madagascar"             : { title: "Madagascar Area"             , className: 'theme-subregion', layer: 'subregion' },
+    "ethiopian-highlands"    : { title: "Ethiopian Highlands Area"    , className: 'theme-subregion', layer: 'subregion' },
+    "india"                  : { title: "India Area"                  , className: 'theme-subregion', layer: 'subregion' },
+    "japan"                  : { title: "Japanese Archipelago Area"   , className: 'theme-subregion', layer: 'subregion' },
+    "arabia"                 : { title: "Arabian Peninsula Area"      , className: 'theme-subregion', layer: 'subregion' },
+    "himalayas"              : { title: "Himalayas Area"              , className: 'theme-subregion', layer: 'subregion' },
+    "mediterranean"          : { title: "Mediterranean Area"          , className: 'theme-subregion', layer: 'subregion' },
+    "alps"                   : { title: "Alps Area"                   , className: 'theme-subregion', layer: 'subregion' },
+    "caribbean"              : { title: "Caribbean Area"              , className: 'theme-subregion', layer: 'subregion' },
+    "rockies"                : { title: "Rocky Mountains Area"        , className: 'theme-subregion', layer: 'subregion' },
+    "pantanal"               : { title: "Pantanal Area"               , className: 'theme-subregion', layer: 'subregion' },
+    "andes"                  : { title: "Andes Area"                  , className: 'theme-subregion', layer: 'subregion' },
+    "pampas"                 : { title: "Pampas Area"                 , className: 'theme-subregion', layer: 'subregion' },
+    "patagonia"              : { title: "Patagonia Area"              , className: 'theme-subregion', layer: 'subregion' },
+    "guiana-shield"          : { title: "Guiana Shield Area"          , className: 'theme-subregion', layer: 'subregion' },
+    "australia"              : { title: "Australia Area"              , className: 'theme-subregion', layer: 'subregion' },
+    "new-guinea"             : { title: "New Guinea Area"             , className: 'theme-subregion', layer: 'subregion' },
+    "new-zealand"            : { title: "New Zealand Area"            , className: 'theme-subregion', layer: 'subregion' },
+    "arctic-region"          : { title: "Arctic Region"               , className: 'theme-subregion', layer: 'subregion' },
+    "subantarctic"           : { title: "Subantarctic Islands Area"   , className: 'theme-subregion', layer: 'subregion' },
+    "antarctica"             : { title: "Antarctica Area"             , className: 'theme-subregion', layer: 'subregion' },
+    "amazon"                 : { title: "Amazon Area"                 , className: 'theme-subregion', layer: 'subregion' },
+    "serengeti"              : { title: "Serengeti Area"              , className: 'theme-subregion', layer: 'subregion' },
+    "okavango"               : { title: "Okavango Delta Area"         , className: 'theme-subregion', layer: 'subregion' },
+    "sundaland"              : { title: "Sundaland Area"              , className: 'theme-subregion', layer: 'subregion' },
+    "kalahari"               : { title: "Kalahari Area"               , className: 'theme-subregion', layer: 'subregion' },
+    "everglades"             : { title: "Everglades Area"             , className: 'theme-subregion', layer: 'subregion' },
+    "great-plains"           : { title: "Great Plains Area"           , className: 'theme-subregion', layer: 'subregion' },
+    "atlantic-forest"        : { title: "Atlantic Forest Area"        , className: 'theme-subregion', layer: 'subregion' },
+    "gran-chaco"             : { title: "Gran Chaco Area"             , className: 'theme-subregion', layer: 'subregion' },
+    "borneo"                 : { title: "Borneo Area"                 , className: 'theme-subregion', layer: 'subregion' },
+    "sumatra"                : { title: "Sumatra Area"                , className: 'theme-subregion', layer: 'subregion' },
+    "amur"                   : { title: "Amur Area"                   , className: 'theme-subregion', layer: 'subregion' },
+    "mongolian-steppe"       : { title: "Mongolian Steppe Area"       , className: 'theme-subregion', layer: 'subregion' },
+    "tasmania"               : { title: "Tasmania Area"               , className: 'theme-subregion', layer: 'subregion' },
+    "sonoran-desert"         : { title: "Sonoran Desert Area"         , className: 'theme-subregion', layer: 'subregion' },
+    "carpathians"            : { title: "Carpathians Area"            , className: 'theme-subregion', layer: 'subregion' },
+    "balkans"                : { title: "Balkans Area"                , className: 'theme-subregion', layer: 'subregion' },
+    "scandinavia"            : { title: "Scandinavia Area"            , className: 'theme-subregion', layer: 'subregion' },
+    "pacific-northwest"      : { title: "Pacific Northwest Area"      , className: 'theme-subregion', layer: 'subregion' },
+    "sulawesi"               : { title: "Sulawesi Area"               , className: 'theme-subregion', layer: 'subregion' },
+    "philippines"            : { title: "Philippines Area"            , className: 'theme-subregion', layer: 'subregion' },
 
-    'tropical':      { title: 'Tropical House',      className: 'theme-tropical',      layer: 'habitat' },
     'rainforest':    { title: 'Rainforest House',    className: 'theme-rainforest',    layer: 'habitat' },
+    'tropical-house':{ title: 'Tropical House',      className: 'theme-tropical',      layer: 'facility' },
     'savanna':       { title: 'Savanna Area',        className: 'theme-savanna',       layer: 'habitat' },
     'aquatic':       { title: 'Aquatic Area',        className: 'theme-aquatic',       layer: 'habitat' },
     'semi-aquatic':  { title: 'Waterside Area',      className: 'theme-semi-aquatic',  layer: 'habitat' },
@@ -2270,6 +2283,31 @@ const ENCLOSURE_AREA_THEMES = Object.freeze({
 });
 
 const ENCLOSURE_AREA_TAGS = new Set(Object.keys(ENCLOSURE_AREA_THEMES));
+
+const DERIVED_TROPICAL_HOUSE_THEME = ENCLOSURE_AREA_THEMES['tropical-house'];
+const TROPICAL_HOUSE_GEOGRAPHY_TAGS = new Set([
+    'amazon','pantanal','atlantic-forest','guiana-shield','congo','madagascar',
+    'southeast-asia','sundaland','borneo','sumatra','java','philippines',
+    'visayan-islands','india','central-america'
+]);
+const TROPICAL_HOUSE_HABITAT_TAGS = new Set([
+    'rainforest','wetland','semi-aquatic','aquatic','forest'
+]);
+
+function animalQualifiesForTropicalHouse(animal) {
+    const tags = new Set(
+        inventoryTagsForAnimal(animal)
+            .map(tag => String(tag).trim().toLowerCase())
+    );
+    if (![...TROPICAL_HOUSE_HABITAT_TAGS].some(tag => tags.has(tag))) return false;
+    return [...TROPICAL_HOUSE_GEOGRAPHY_TAGS].some(tag => tags.has(tag));
+}
+
+function enclosureQualifiesForTropicalHouse(enclosure) {
+    const occupants = animalsInWholeEnclosure(enclosure);
+    return occupants.length > 0 && occupants.every(animal => animalQualifiesForTropicalHouse(animal));
+}
+
 const ENCLOSURE_AREA_ADJACENCY_TOLERANCE = 8;
 
 function animalsInWholeEnclosure(enclosure) {
@@ -2344,6 +2382,21 @@ function specialEnclosureTheme(enclosure) {
         layer: 'special'
     });
 
+
+    // Micro-geographic specials are data-driven. They are reserved for recognizable
+    // places with 2–3 strongly representative cards; 4+ belongs in the normal
+    // geographic Region system instead. At least two eligible species must actually
+    // share this enclosure card before the Special is shown.
+    const geographicSpecials = state.inventory?.tagDefinitions?.geographyHierarchy?.geographic_specials || [];
+    const occupantNames = new Set(animals.map(animal => animalDisplayName(animal).trim().toLowerCase()));
+    for (const definition of geographicSpecials) {
+        const eligible = new Set((definition?.eligible_animals || []).map(name => String(name).trim().toLowerCase()));
+        const matching = [...occupantNames].filter(name => eligible.has(name));
+        if (matching.length >= 2 && occupantNames.size === matching.length) {
+            return special(`geography-${definition.tag}`, definition.name, 'subregion');
+        }
+    }
+
     // Unique historic-style small-cat facility. Keep this deliberately narrower
     // than Carnivora: every occupant must be one of the game's small felids.
     const smallCatName = /(?:wild cat|caracal|lynx|leopard cat|ocelot|pallas(?:'s)? cat|serval|bobcat|fishing cat|geoffroy(?:'s)? cat|jungle cat|margay|jaguarundi|oncilla|rusty-spotted cat|sand cat|andean mountain cat|asian golden cat|black-footed cat|chinese mountain cat|flat-headed cat|kodkod|marbled cat|pampas cat)/;
@@ -2376,33 +2429,72 @@ function specialEnclosureTheme(enclosure) {
 
     return null;
 }
-function enclosureThemes(enclosure) {
-    const fullyOccupied = enclosureCardIsFullyOccupiedForTheme(enclosure);
-    const common = fullyOccupied ? commonEnclosureTags(enclosure) : new Set();
+function normalizeGeneratedAreaMembership(value) {
+    if (value instanceof Map) return new Map([...value.entries()].map(([key, ids]) => [
+        key, ids instanceof Set ? new Set(ids) : new Set(ids || [])
+    ]));
+    if (Array.isArray(value)) return new Map(value.map(entry => [
+        entry[0], entry[1] instanceof Set ? new Set(entry[1]) : new Set(entry[1] || [])
+    ]));
+    if (value && typeof value === 'object') return new Map(Object.entries(value).map(([key, ids]) => [
+        key, ids instanceof Set ? new Set(ids) : new Set(ids || [])
+    ]));
+    return new Map();
+}
+
+function strictEnclosureThemes(enclosure) {
+    const animals = animalsInWholeEnclosure(enclosure);
+    // New generated-Area membership is earned by the FULL enclosure card:
+    // every current occupant must share the tag. Empty cards never create
+    // membership on their own.
+    const common = animals.length ? commonEnclosureTags(enclosure) : new Set();
     const themes = [...common]
         .map(tag => ({ key: tag, ...ENCLOSURE_AREA_THEMES[tag] }))
         .filter(Boolean);
-    const special = fullyOccupied ? specialEnclosureTheme(enclosure) : null;
-    if (special) themes.unshift(special);
 
-    // V226 sticky membership: qualifying a card creates membership, but a
-    // temporary reshuffle does not destroy it. A broad generated Area releases
-    // this enclosure only when NO animal left on the card carries that Area tag.
-    // Thus swapping one African species for another is stable, while removing
-    // every African animal really does shrink the African Area.
-    if (!(state.generatedAreaMembership instanceof Map)) state.generatedAreaMembership = new Map();
-    for (const theme of themes) {
-        if (!ENCLOSURE_AREA_THEMES[theme.key]) continue;
-        if (!state.generatedAreaMembership.has(theme.key)) state.generatedAreaMembership.set(theme.key,new Set());
-        state.generatedAreaMembership.get(theme.key).add(enclosure.id);
+    // Tropical House is derived from specific habitat + tropical geography.
+    // It is intentionally not an animal tag: "tropical" is too broad to be a
+    // useful habitat classification.
+    if (enclosureQualifiesForTropicalHouse(enclosure)) {
+        themes.push({ key: 'tropical-house', ...DERIVED_TROPICAL_HOUSE_THEME });
     }
-    const animals=animalsInWholeEnclosure(enclosure);
+
+    // Specials are exhibit/house identities rather than persistent broad Areas.
+    const special = enclosureCardIsFullyOccupiedForTheme(enclosure) ? specialEnclosureTheme(enclosure) : null;
+    if (special) themes.unshift(special);
+    return themes;
+}
+
+function enclosureCanRetainGeneratedTheme(enclosure, key) {
+    const def = ENCLOSURE_AREA_THEMES[key];
+    if (!def) return false;
+    const animals = animalsInWholeEnclosure(enclosure);
+    // Established membership survives a genuinely vacant card. Once animals
+    // are present again, at least one occupant anywhere on the full card must
+    // still carry the Area tag; otherwise this card leaves immediately.
+    if (animals.length === 0) return true;
+    if (key === 'tropical-house') {
+        return animals.some(animal => animalQualifiesForTropicalHouse(animal));
+    }
+    return animals.some(animal =>
+        animalInventoryTags(animal.category, animal.level, animal.filename).includes(key)
+    );
+}
+
+function enclosureThemes(enclosure) {
+    const themes = strictEnclosureThemes(enclosure);
+    state.generatedAreaMembership = normalizeGeneratedAreaMembership(state.generatedAreaMembership);
+
+    // IMPORTANT: this is deliberately read-only. The old implementation
+    // deleted membership while merely asking for an enclosure's themes. That
+    // made Area state depend on render/call order and allowed stale components
+    // to resurrect themselves during the same recalculation.
     for (const [key, rawIds] of state.generatedAreaMembership.entries()) {
-        const ids=rawIds instanceof Set?rawIds:new Set(rawIds||[]); state.generatedAreaMembership.set(key,ids);
-        if(!ids.has(enclosure.id) || themes.some(t=>t.key===key)) continue;
-        const stillFits=animals.some(animal=>animalInventoryTags(animal.category,animal.level,animal.filename).includes(key));
-        if(stillFits){ const def=ENCLOSURE_AREA_THEMES[key]; if(def) themes.push({key,...def}); }
-        else ids.delete(enclosure.id);
+        const ids = rawIds instanceof Set ? rawIds : new Set(rawIds || []);
+        if (!ids.has(enclosure.id) || themes.some(theme => theme.key === key)) continue;
+        if (!enclosureCanRetainGeneratedTheme(enclosure, key)) continue;
+        const def = ENCLOSURE_AREA_THEMES[key];
+        if (def) themes.push({ key, ...def });
     }
     return themes;
 }
@@ -2418,25 +2510,49 @@ function enclosuresAreAreaAdjacent(a, b) {
 }
 
 function connectedEnclosureThemeGroups() {
-    const themesById = new Map(state.enclosures.map(enclosure => [
+    state.generatedAreaMembership = normalizeGeneratedAreaMembership(state.generatedAreaMembership);
+
+    // Snapshot the previous membership before doing any work. Reconciliation
+    // below is atomic: no per-card theme lookup is allowed to mutate it.
+    const liveEnclosureIds = new Set((state.enclosures || []).map(enclosure => enclosure.id));
+    const previousMembership = new Map(
+        [...state.generatedAreaMembership.entries()].map(([key, rawIds]) => [
+            key,
+            new Set([...(rawIds instanceof Set ? rawIds : new Set(rawIds || []))]
+                .filter(id => liveEnclosureIds.has(id)))
+        ]).filter(([, ids]) => ids.size)
+    );
+
+    const strictById = new Map(state.enclosures.map(enclosure => [
         enclosure.id,
-        enclosureThemes(enclosure)
+        strictEnclosureThemes(enclosure)
     ]));
-    const themeKeys = new Set();
-    for (const themes of themesById.values()) {
-        for (const theme of themes) themeKeys.add(theme.key);
+
+    const normalKeys = new Set();
+    for (const themes of strictById.values()) {
+        for (const theme of themes) if (ENCLOSURE_AREA_THEMES[theme.key]) normalKeys.add(theme.key);
+    }
+    for (const key of previousMembership.keys()) {
+        if (ENCLOSURE_AREA_THEMES[key]) normalKeys.add(key);
     }
 
     const groups = [];
-    for (const key of themeKeys) {
-        const eligible = state.enclosures.filter(enclosure =>
-            themesById.get(enclosure.id)?.some(theme => theme.key === key)
-        );
+    const nextMembership = new Map();
+
+    // Specials are never persistent. Group them strictly from current animals.
+    const specialKeys = new Set();
+    for (const themes of strictById.values()) {
+        for (const theme of themes) if (!ENCLOSURE_AREA_THEMES[theme.key]) specialKeys.add(theme.key);
+    }
+
+    const buildComponents = (key, eligible, theme) => {
         const unseen = new Set(eligible.map(enclosure => enclosure.id));
         while (unseen.size) {
             const firstId = unseen.values().next().value;
             unseen.delete(firstId);
-            const component = [state.enclosures.find(e => e.id === firstId)];
+            const first = state.enclosures.find(e => e.id === firstId);
+            if (!first) continue;
+            const component = [first];
             for (let i = 0; i < component.length; i++) {
                 const current = component[i];
                 for (const candidate of eligible) {
@@ -2446,11 +2562,54 @@ function connectedEnclosureThemeGroups() {
                     component.push(candidate);
                 }
             }
-            if (component.length < 2) continue;
-            const theme = themesById.get(component[0].id).find(item => item.key === key);
-            groups.push({ theme, enclosures: component });
+            if (component.length >= 2) groups.push({ theme, enclosures: component });
+            yieldComponent(component);
         }
+    };
+
+    // Small local callback lets the same component walker serve persistent and
+    // non-persistent themes without duplicating adjacency logic.
+    let componentSink = null;
+    const yieldComponent = component => { if (componentSink) componentSink(component); };
+
+    for (const key of normalKeys) {
+        const def = ENCLOSURE_AREA_THEMES[key];
+        const previous = previousMembership.get(key) || new Set();
+
+        const eligible = state.enclosures.filter(enclosure => {
+            const strict = strictById.get(enclosure.id)?.some(theme => theme.key === key);
+            if (strict) return true; // can establish/join normally
+            return previous.has(enclosure.id) && enclosureCanRetainGeneratedTheme(enclosure, key);
+        });
+
+        const retained = new Set();
+        componentSink = component => {
+            // A generated Area exists only as a connected component of >=2
+            // cards. If one card loses the tag and the remainder falls to one,
+            // the entire Area disappears. Empty established cards can survive,
+            // but only while they remain connected to a valid >=2-card Area.
+            if (component.length >= 2) {
+                for (const enclosure of component) retained.add(enclosure.id);
+            }
+        };
+        buildComponents(key, eligible, { key, ...def });
+        componentSink = null;
+        if (retained.size >= 2) nextMembership.set(key, retained);
     }
+
+    for (const key of specialKeys) {
+        const eligible = state.enclosures.filter(enclosure =>
+            strictById.get(enclosure.id)?.some(theme => theme.key === key)
+        );
+        const theme = eligible.length
+            ? strictById.get(eligible[0].id).find(item => item.key === key)
+            : null;
+        if (!theme) continue;
+        componentSink = null;
+        buildComponents(key, eligible, theme);
+    }
+
+    state.generatedAreaMembership = nextMembership;
     return groups;
 }
 
@@ -2509,8 +2668,26 @@ function mergeCompletelyOverlappingAreaGroups(groups) {
     return result;
 }
 
+let renderedConnectedAreaGroups = null;
+let renderedConnectedAreaGroupsSignature = '';
+
+function areaRenderStateSignature() {
+    const enclosurePart = (state.enclosures || []).map(e =>
+        `${e.id}:${Math.round(e.x || 0)}:${Math.round(e.y || 0)}:${e.file || ''}:${e.rotated180 ? 1 : 0}`
+    ).join('|');
+    const animalPart = (state.animals || []).map(a =>
+        `${a.id}:${a.enclosureId || ''}:${a.groupId || a.slotId || ''}:${a.filename || ''}`
+    ).join('|');
+    return `${enclosurePart}#${animalPart}`;
+}
+
 function renderEnclosureAreaBackgrounds() {
-    const groups = mergeCompletelyOverlappingAreaGroups(connectedEnclosureThemeGroups());
+    const connectedGroups = connectedEnclosureThemeGroups();
+    // Reuse this exact reconciliation while enclosure DOM is built. Previously
+    // every enclosure ran another state-mutating reconciliation in one render.
+    renderedConnectedAreaGroups = connectedGroups;
+    renderedConnectedAreaGroupsSignature = areaRenderStateSignature();
+    const groups = mergeCompletelyOverlappingAreaGroups(connectedGroups);
     const layerOrder = { geography: 0, subregion: 0, habitat: 1, facility: 2, special: 3 };
     groups.sort((a, b) =>
         (layerOrder[a.theme.layer] ?? 9) - (layerOrder[b.theme.layer] ?? 9) ||
@@ -2651,7 +2828,10 @@ function renderEnclosureAreaBackgrounds() {
                 if(found<0) break;
                 unused.delete(found); chain.push(next);
             }
-            loops.push(chain);
+            // A valid Area perimeter must be a closed loop. An open chain means
+            // adjacency/tolerance left a gap; drawing it produces stray border
+            // fragments over empty zoo space, so discard it instead.
+            if (pointKey(chain.at(-1)) === pointKey(chain[0])) loops.push(chain);
         }
         const svgNS='http://www.w3.org/2000/svg';
         const svg=document.createElementNS(svgNS,'svg');
@@ -2662,7 +2842,7 @@ function renderEnclosureAreaBackgrounds() {
         for(const chain of loops){
             if(chain.length<2) continue;
             const path=document.createElementNS(svgNS,'path');
-            path.setAttribute('d',chain.map((p,i)=>`${i?'L':'M'} ${p.x-minX} ${p.y-minY}`).join(' ') + (pointKey(chain.at(-1))===pointKey(chain[0])?' Z':''));
+            path.setAttribute('d',chain.map((p,i)=>`${i?'L':'M'} ${p.x-minX} ${p.y-minY}`).join(' ') + ' Z');
             path.setAttribute('vector-effect','non-scaling-stroke');
             svg.appendChild(path);
         }
@@ -2764,6 +2944,9 @@ function renderEnclosureAreaBackgrounds() {
                 leader.className=`zoo-theme-area-leader ${group.theme.className} zoo-theme-layer-${group.theme.layer}`;
                 leader.dataset.areaLabelKey=groupKey;
                 if(areaOverride?.color) leader.style.setProperty('--area-outline-color',areaOverride.color);
+                leader.classList.toggle('user-dotted-outline', areaOverride?.lineStyle === 'dotted');
+                leader.classList.toggle('user-solid-outline', areaOverride?.lineStyle !== 'dotted');
+                if (areaOverride?.lineStyle === 'dotted') leader.style.borderStyle = 'dotted';
                 if(a.y===b.y) Object.assign(leader.style,{left:`${Math.min(a.x,b.x)}px`,top:`${a.y}px`,width:`${Math.abs(b.x-a.x)}px`});
                 else Object.assign(leader.style,{left:`${a.x}px`,top:`${Math.min(a.y,b.y)}px`,width:`${Math.abs(b.y-a.y)}px`,transform:'rotate(90deg)',transformOrigin:'0 0'});
                 zooCanvas.insertBefore(leader,title);
@@ -2801,6 +2984,13 @@ function renderEnclosureAreaBackgrounds() {
             const up=()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);drawLeader();writeAutoResumeSnapshot?.();};
             window.addEventListener('pointermove',move);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
         });
+        title.addEventListener('click', event => {
+            if (!areaToolActive || state.visitingZoo || title.isContentEditable) return;
+            if (event.target.closest('.area-colour-button')) return;
+            event.preventDefault();
+            event.stopPropagation();
+            title.dispatchEvent(new MouseEvent('dblclick', { bubbles: false, cancelable: true }));
+        });
         title.addEventListener('dblclick',event=>{
             if(state.visitingZoo)return; event.preventDefault();event.stopPropagation();
             const current=state.generatedAreaOverrides.get(groupKey)||{};
@@ -2835,21 +3025,33 @@ function renderEnclosureAreaBackgrounds() {
 }
 
 function displayEnclosureThemes(enclosure) {
-    const themes = enclosureThemes(enclosure);
-    if (!themes.length) return [];
+    const strict = strictEnclosureThemes(enclosure);
+    const visible = [];
+    const seen = new Set();
 
-    // Specialist facility names (Crocodile House, Aquarium, "Kattenrotonde", etc.)
-    // may apply to one fully occupied enclosure card. Broad habitat/geography/
-    // facility areas only become visible when at least two adjacent cards share
-    // the same qualifying theme.
-    return themes.filter(theme => {
-        if (theme.layer === 'special') return true;
-        return state.enclosures.some(other =>
-            other.id !== enclosure.id &&
-            enclosuresAreAreaAdjacent(enclosure, other) &&
-            enclosureThemes(other).some(otherTheme => otherTheme.key === theme.key)
-        );
-    });
+    // Single-card specialist houses remain visible independently.
+    for (const theme of strict) {
+        if (theme.layer === 'special') {
+            visible.push(theme);
+            seen.add(theme.key);
+        }
+    }
+
+    // Broad Areas use exactly the same reconciled connected groups as outlines,
+    // prestige and labels. This removes the old second, contradictory adjacency
+    // calculation that could leave cards visually themed after an Area broke.
+    const currentAreaSignature = areaRenderStateSignature();
+    const groups = (
+        renderedConnectedAreaGroups &&
+        renderedConnectedAreaGroupsSignature === currentAreaSignature
+    ) ? renderedConnectedAreaGroups : connectedEnclosureThemeGroups();
+    for (const group of groups) {
+        if (!group.enclosures.some(item => item.id === enclosure.id)) continue;
+        if (seen.has(group.theme.key)) continue;
+        visible.push(group.theme);
+        seen.add(group.theme.key);
+    }
+    return visible;
 }
 
 function applyEnclosureThemePresentation(element, enclosure) {
@@ -5258,6 +5460,32 @@ function chooseStartupEnclosures(rewardCount = 0) {
         });
     }
 
+    // Enclosure artwork must be able to satisfy the generated collection's
+    // Small/Medium/Large requirements before placement begins. This is a
+    // capacity check, not a compatibility check: each animal is greedily
+    // matched to the smallest logical exhibit that can legally contain it.
+    function layoutSupportsGeneratedAnimalSizes(candidateNumbers) {
+        const exhibitRanks = [];
+        for (const number of candidateNumbers) {
+            for (const group of (GROUPS[number] || [[0]])) {
+                exhibitRanks.push(ENCLOSURE_SIZE_RANK[enclosureGroupSizeName(group)] || 1);
+            }
+        }
+        exhibitRanks.sort((a,b)=>a-b);
+        const needs = state.animals.map(animal => ENCLOSURE_SIZE_RANK[animalEnclosureSize(animal)] || 1).sort((a,b)=>b-a);
+        const availableRanks = [...exhibitRanks];
+        for (const need of needs) {
+            const index = availableRanks.findIndex(rank => rank >= need);
+            if (index < 0) return false;
+            availableRanks.splice(index,1);
+        }
+        return true;
+    }
+    const sizeValidCandidates = candidates.filter(item => layoutSupportsGeneratedAnimalSizes([...numbers, ...item.extra]));
+    if (sizeValidCandidates.length) {
+        candidates.splice(0, candidates.length, ...sizeValidCandidates);
+    }
+
     if (!candidates.length) {
         throw new Error(
             `Could not build a starting enclosure layout with about ${targetSpots} spaces.`
@@ -5835,7 +6063,7 @@ function createStartingZoo() {
 
     const numbers = chooseStartupEnclosures(startupRewardKeys.length);
 
-    state.enclosures = positionStartupEnclosures(numbers);
+    state.enclosures = ensureGeneratedEnclosureRotations(positionStartupEnclosures(numbers));
 
 
     /*
@@ -5923,8 +6151,12 @@ function createStartingZoo() {
                 }
             }
 
-            if (bestCandidates === null || candidates.length < bestCandidates.length) {
-                bestCandidates = candidates;
+            const generationCandidates = sortGenerationDestinationsForAreas(
+                animal,
+                preferSizeAppropriateGenerationDestinations(animal, candidates)
+            );
+            if (bestCandidates === null || generationCandidates.length < bestCandidates.length) {
+                bestCandidates = generationCandidates;
                 bestIndex = i;
             }
             if (!candidates.length) break;
@@ -5935,7 +6167,7 @@ function createStartingZoo() {
         [animals[index], animals[bestIndex]] = [animals[bestIndex], animals[index]];
         const animal = animals[index];
 
-        for (const destination of shuffle(bestCandidates)) {
+        for (const destination of bestCandidates) {
             if (startupSearchNodes > STARTUP_SEARCH_NODE_LIMIT) break;
 
             animal.enclosureId = destination.enclosure.id;
@@ -6270,6 +6502,10 @@ function createStartingZoo() {
     // A generated Level 4 card counts as placed now, so Enclosure 10 becomes
     // available for future rewards exactly as it would during normal play.
     checkEnclosure10Unlock();
+    // Final fictional-zoo pass: compact the generated cards and cluster cards
+    // with a shared full-card Area identity. This is deliberately after animal
+    // placement: Areas influence adjacency, but never override husbandry.
+    arrangeGeneratedZooForAreas();
     updateHighestZooPrestige();
 
     updateDiscoveredCategoryLevels();
@@ -6924,11 +7160,12 @@ function setupAnimalCard(
                     const enclosure=state.enclosures.find(x=>String(x.id)===String(target.dataset.enclosureId));
                     const slotIndex=Number(target.dataset.slotIndex);
                     if(enclosure && canPlace(animal,enclosure,slotIndex)){
-                        animal.sandboxLoose=false;
-                        state.sandboxLooseAnimals=state.sandboxLooseAnimals.filter(x=>x.id!==animalId);
-                        placeAnimal(animal,enclosure,slotIndex);
-                        renderAll();
-                        return;
+                        if (placeAnimal(animal,enclosure,slotIndex)) {
+                            animal.sandboxLoose=false;
+                            state.sandboxLooseAnimals=state.sandboxLooseAnimals.filter(x=>x.id!==animalId);
+                            renderAll();
+                            return;
+                        }
                     }
                 }
 
@@ -7156,6 +7393,7 @@ function cancelHoverPreviewHide() {
 const PREVIEW_INTENT_DELAY = 180;
 const PREVIEW_VISIBLE_AFTER_LEAVE = 1000;
 const PREVIEW_FADE_DURATION = 1000;
+let previewInfoFaceContinuity = false;
 
 function setHoverPreviewSuperZoom(enabled) {
     hoverPreview.classList.toggle('super-zoom', enabled);
@@ -7196,7 +7434,10 @@ function showHoverPreview(animal) {
     state.lastHoveredAnimal = animal;
     state.previewHoveredAnimalId = animal.id;
     state.previewWikiAnimalId = null;
-    hoverPreview.classList.remove('wiki-open');
+    const keepInformationFace =
+        previewInfoFaceContinuity &&
+        hoverPreview.classList.contains('visible');
+    if (!keepInformationFace) hoverPreview.classList.remove('wiki-open');
     hoverPreview.classList.remove('preview-fading');
     applyLocalizedAnimalImage(hoverPreviewImage, animal);
     // Only an intentional card hover is allowed to reveal the preview.
@@ -7211,6 +7452,16 @@ function showHoverPreview(animal) {
     hoverPreview.style.removeProperty('pointer-events');
     hoverPreview.setAttribute('aria-hidden', 'false');
     hoverPreview.classList.add('visible');
+
+    // Once the player is reading Information, moving directly between animal
+    // cards keeps that face active and replaces its contents with the newly
+    // hovered animal. The artwork becomes the default again only after the
+    // entire preview has completed its hide/fade lifecycle.
+    if (keepInformationFace) {
+        hoverPreview.classList.add('wiki-open');
+        renderAnimalInformation(animal);
+        selectAnimalInfoTab('information');
+    }
 }
 
 /* A short hover-intent delay prevents cards merely crossed by the cursor
@@ -7244,6 +7495,7 @@ function scheduleHoverPreviewHide(animal = null) {
 
         state.previewHideTimer = setTimeout(() => {
             state.previewHoveredAnimalId = null;
+            previewInfoFaceContinuity = false;
             hoverPreview.classList.remove('preview-fading');
             hoverPreview.classList.remove('visible');
             hoverPreview.style.setProperty('display', 'none', 'important');
@@ -7330,6 +7582,112 @@ function enclosureGroupSizeName(group) {
     return n >= 4 ? 'huge' : n === 3 ? 'large' : n === 2 ? 'medium' : 'small';
 }
 
+
+// Generated layouts strongly prefer exhibits that satisfy the animal-size rules.
+// A deliberate 1% imperfection rate keeps generated zoos from feeling mechanically
+// perfect; if no suitable exhibit exists, generation may also fall back to the
+// best otherwise-legal destination rather than failing the whole zoo.
+const GENERATED_UNDERSIZED_EXHIBIT_CHANCE = 0.01;
+
+function generationGroupFitsAnimals(group, animals) {
+    const exhibitSize = enclosureGroupSizeName(group);
+    const exhibitRank = ENCLOSURE_SIZE_RANK[exhibitSize] || 1;
+    const occupants = (animals || []).filter(Boolean);
+    if (occupants.length > (Array.isArray(group) ? group.length : 1)) return false;
+    if (occupants.some(animal => (ENCLOSURE_SIZE_RANK[animalEnclosureSize(animal)] || 1) > exhibitRank)) return false;
+    const counts = { small: 0, medium: 0, large: 0 };
+    for (const animal of occupants) counts[animalEnclosureSize(animal)] += 1;
+    if (exhibitSize === 'medium' && (counts.large > 0 || counts.medium > 1)) return false;
+    if (exhibitSize === 'large' && (counts.large > 1 || (counts.large > 0 && counts.medium > 1))) return false;
+    if (exhibitSize === 'huge' && (counts.large > 2 || counts.medium > 2)) return false;
+    return true;
+}
+
+function generationDestinationFitsAnimal(animal, enclosure, slotIndex) {
+    const group = enclosureGroupForSlot(enclosure, slotIndex);
+    return !group || generationGroupFitsAnimals(group, [animal]);
+}
+
+function preferSizeAppropriateGenerationDestinations(animal, destinations) {
+    const all = Array.isArray(destinations) ? destinations : [];
+    const suitable = all.filter(({ enclosure, slotIndex }) =>
+        generationDestinationFitsAnimal(animal, enclosure, slotIndex)
+    );
+    if (!suitable.length) return all; // no appropriate enclosure is available
+    if (Math.random() < GENERATED_UNDERSIZED_EXHIBIT_CHANCE) return all;
+    return suitable;
+}
+
+// Fictional-zoo generation uses the same hierarchy as canonical generation:
+// husbandry first, then efficient packing, then meaningful Area coherence.
+// Area affinity is evaluated across the FULL enclosure card, because that is
+// also the unit used by the live Area system.
+function generationAreaAffinity(animal, enclosure) {
+    const occupants = animalsInWholeEnclosure(enclosure);
+    if (!occupants.length) return 0;
+    const animalTags = new Set(animalInventoryTags(animal.category, animal.level, animal.filename));
+    let common = null;
+    for (const occupant of occupants) {
+        const tags = new Set(animalInventoryTags(occupant.category, occupant.level, occupant.filename));
+        common = common === null ? tags : new Set([...common].filter(tag => tags.has(tag)));
+    }
+    let score = 0;
+    for (const tag of common || []) {
+        if (!animalTags.has(tag) || !ENCLOSURE_AREA_THEMES[tag]) continue;
+        const layer = ENCLOSURE_AREA_THEMES[tag].layer;
+        score = Math.max(score, layer === 'subregion' ? 30 : layer === 'geography' ? 20 : layer === 'habitat' ? 12 : 8);
+    }
+    return score;
+}
+
+function sortGenerationDestinationsForAreas(animal, destinations) {
+    return (destinations || []).map(destination => ({
+        ...destination,
+        _generationScore:
+            generationAreaAffinity(animal, destination.enclosure) +
+            (animalsInWholeEnclosure(destination.enclosure).length ? 6 : 0) +
+            (generationDestinationFitsAnimal(animal, destination.enclosure, destination.slotIndex) ? 50 : -100) +
+            Math.random() * 2
+    })).sort((a,b) => b._generationScore - a._generationScore);
+}
+
+function generatedCardPrimaryAreaKey(enclosure) {
+    const animals = animalsInWholeEnclosure(enclosure);
+    if (!animals.length) return '';
+    let common = null;
+    for (const animal of animals) {
+        const tags = new Set(animalInventoryTags(animal.category, animal.level, animal.filename));
+        common = common === null ? tags : new Set([...common].filter(tag => tags.has(tag)));
+    }
+    const keys = [...(common || [])].filter(tag => ENCLOSURE_AREA_THEMES[tag]);
+    const rank = key => {
+        const layer = ENCLOSURE_AREA_THEMES[key]?.layer;
+        return layer === 'subregion' ? 4 : layer === 'geography' ? 3 : layer === 'habitat' ? 2 : 1;
+    };
+    return keys.sort((a,b) => rank(b)-rank(a) || a.localeCompare(b))[0] || '';
+}
+
+function arrangeGeneratedZooForAreas() {
+    if (!state.enclosures?.length) return;
+    const grouped = [...state.enclosures].sort((a,b) => {
+        const ak = generatedCardPrimaryAreaKey(a), bk = generatedCardPrimaryAreaKey(b);
+        if (ak !== bk) return ak.localeCompare(bk);
+        return a.id - b.id;
+    });
+    // Compact connected rows. Cards sharing a primary region/habitat are kept
+    // consecutive, so qualifying pairs actually become adjacent Areas.
+    const cols = Math.max(2, Math.min(7, Math.ceil(Math.sqrt(grouped.length * 1.7))));
+    const stepX = ENCLOSURE_W + ENCLOSURE_GAP;
+    const stepY = ENCLOSURE_H + ENCLOSURE_GAP;
+    grouped.forEach((enclosure, index) => {
+        enclosure.x = STARTUP_CENTER_X - ((Math.min(cols, grouped.length)-1) * stepX)/2 + (index % cols) * stepX;
+        enclosure.y = STARTUP_CENTER_Y + Math.floor(index / cols) * stepY;
+    });
+    // Establish qualifying memberships now, using the exact same full-card
+    // rules as normal gameplay. Empty cards cannot create an Area.
+    connectedEnclosureThemeGroups();
+}
+
 function exhibitHusbandryStatus(enclosure, group) {
     const exhibitSize = enclosureGroupSizeName(group);
     const occupants = animalsInEnclosureGroup(enclosure, group, null, false);
@@ -7389,11 +7747,16 @@ function ensureWikipediaBack() {
             <button type="button" class="animal-info-tab" data-info-tab="wikipedia">Wikipedia</button>
         </div>
         <div id="animalInformationPane">
-            <div class="wiki-preview-toolbar">
+            <div class="wiki-preview-toolbar animal-information-header">
                 <strong id="animalInformationTitle">Information</strong>
+                <span class="animal-information-header-spacer" aria-hidden="true"></span>
+                <span id="animalEnclosureSizeHeader" class="animal-information-size">Exhibit size: —</span>
             </div>
             <div id="animalInformationText">
-                <div class="animal-continent-row"><strong>Continent:</strong> <span id="animalContinentValue">Loading…</span></div>
+                <div class="animal-continent-row"><strong>Habitat:</strong> <span id="animalHabitatValue">Loading…</span></div>
+                <div id="animalRangeMap" class="animal-range-map" aria-label="Animal geographic range map">
+                    <div class="animal-range-map-loading">Loading map…</div>
+                </div>
                 <div class="animal-combinations-heading">Possible combinations</div>
                 <div id="animalCombinationList"></div>
             </div>
@@ -7443,10 +7806,20 @@ function selectAnimalInfoTab(tab) {
     );
 
     const information = tab === 'information';
+    if(information){
+        for(const node of [
+            document.getElementById('hoverPreview'),
+            document.getElementById('hoverPreviewWiki'),
+            document.getElementById('animalInformationPane')
+        ]){
+            if(node){ node.scrollTop=0; node.scrollLeft=0; }
+        }
+    }
     const ztl = tab === 'holdings';
     const wikipedia = !information && !ztl;
 
     infoPane.hidden = !information;
+    if(information) requestAnimationFrame(fitAnimalInformationTitle);
     wikiText.hidden = !wikipedia;
     wikiStatus.hidden = !wikipedia;
     wikiToolbar.hidden = !wikipedia;
@@ -7908,6 +8281,42 @@ function continentFromInventoryTags(animal) {
         .join(', ');
 }
 
+function informationRegionForAnimal(animal) {
+    const tags = inventoryTagsForAnimal(animal)
+        .map(tag => String(tag).trim().toLowerCase());
+    const subregions = [];
+
+    for (const tag of tags) {
+        const theme = ENCLOSURE_AREA_THEMES[tag];
+        if (!theme || theme.layer !== 'subregion') continue;
+        subregions.push(
+            String(theme.title || tag)
+                .replace(/\s+(Area|House)$/i, '')
+                .trim()
+        );
+    }
+
+    return [...new Set(subregions)].join(', ') || '/';
+}
+
+function informationHabitatForAnimal(animal) {
+    const tags = inventoryTagsForAnimal(animal)
+        .map(tag => String(tag).trim().toLowerCase());
+    const habitats = [];
+
+    for (const tag of tags) {
+        const theme = ENCLOSURE_AREA_THEMES[tag];
+        if (!theme || theme.layer !== 'habitat') continue;
+        const label = String(theme.title || tag)
+            .replace(/\s+(Area|House)$/i, '')
+            .replace(/^Waterside$/i, 'Semi-aquatic')
+            .trim();
+        habitats.push(label);
+    }
+
+    return [...new Set(habitats)].join(', ') || 'Not listed yet';
+}
+
 function continentFromAnimalRecord(record) {
     if (!record) return '';
     const raw = record.continents ?? record.continent ?? record.native_continents ??
@@ -7943,21 +8352,1237 @@ function inventoryDisplayNameForCompatibilityName(value) {
         .replace(/\b\w/g, char => char.toUpperCase());
 }
 
+
+const ANIMAL_INFO_WORLD_GEOJSON_URL =
+    'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson';
+const ANIMAL_INFO_REGION_GEOJSON_URL = 'assets/data/zoo-curator-regions.geojson';
+const ZOO_GEOGRAPHY_DATA_URL = 'assets/data/zoo-curator-geography.json';
+const ONE_EARTH_BIOREGIONS_GEOJSON_URL = 'assets/data/one_earth-bioregions-2023.geojson';
+const ONE_EARTH_BIOREGIONS_ARCGIS_URL =
+    'https://services7.arcgis.com/poOcx60xJtGtoR7g/arcgis/rest/services/OE_Bioregions_land/FeatureServer/0/query';
+const ANIMAL_INFO_RESOLVE_ECOREGIONS_URL =
+    'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/Resolve_Ecoregions/FeatureServer/0/query';
+
+// Zoo Curator region -> RESOLVE 2017 ECO_NAME search terms.
+// These deliberately cover only regions that can be represented defensibly by
+// named RESOLVE ecoregions. The local GeoJSON layer remains available for
+// geographic regions whose proper boundary comes from another authoritative source.
+const ANIMAL_INFO_RESOLVE_REGION_TERMS = Object.freeze({
+    'serengeti':['Serengeti'],
+    'congo':['Congolian'],
+    'amazon':['Amazon','Amazonian','Madeira','Tapajós','Xingu','Purus','Juruá','Negro-Branco','Solimões'],
+    'pantanal':['Pantanal'],
+    'atlantic-forest':['Atlantic Forest','Serra do Mar','Bahia coastal','Pernambuco coastal'],
+    'gran-chaco':['Chaco'],
+    'guiana-shield':['Guianan'],
+    'pampas':['Pampas','Humid Pampas'],
+    'patagonia':['Patagonian'],
+    'himalayas':['Himalayan','Himalaya'],
+    'sundaland':['Sundaland','Borneo','Sumatran','Malay Peninsula'],
+    'borneo':['Borneo'],
+    'sumatra':['Sumatran'],
+    'sulawesi':['Sulawesi'],
+    'philippines':['Philippine','Luzon','Mindanao','Palawan'],
+    'new-guinea':['New Guinea'],
+    'new-zealand':['New Zealand'],
+    'tasmania':['Tasmanian','Tasmania'],
+    'madagascar':['Madagascar'],
+    'ethiopian-highlands':['Ethiopian montane','Ethiopian highlands'],
+    'sahel':['Sahel'],
+    'kalahari':['Kalahari'],
+    'sonoran-desert':['Sonoran'],
+    'rockies':['Rocky Mountain','Rockies'],
+    'great-plains':['Great Plains'],
+    'everglades':['Everglades'],
+    'amur':['Amur'],
+    'mongolian-steppe':['Mongolian-Manchurian grassland','Mongolian steppe'],
+    'alps':['Alps'],
+    'carpathians':['Carpathian'],
+    'scandinavia':['Scandinavian'],
+    'mediterranean':['Mediterranean'],
+    'arctic-region':['Arctic'],
+    'subantarctic':['Subantarctic']
+});
+let animalInfoResolveRegionPromises = new Map();
+let animalInfoWorldGeoJSONPromise = null;
+let animalInfoRegionGeoJSONPromise = null;
+let zooGeographyDataPromise = null;
+let oneEarthBioregionsGeoJSONPromise = null;
+
+const ANIMAL_INFO_CONTINENT_COLOURS = Object.freeze({
+    africa:'#f0a000',
+    asia:'#ef3b2c',
+    europe:'#2878d8',
+    'north america':'#ff7a18',
+    'south america':'#16a765',
+    oceania:'#9b51e0',
+    antarctica:'#28b8d5'
+});
+
+// Map colour is resolved per factual region, never once per animal. This lets a
+// wide-ranging species legitimately show several realm/continent colours.
+const ONE_EARTH_CODE_COLOURS = Object.freeze({
+    nt:'#16a765', // Neotropical / Southern + Central America
+    na:'#ff7a18', // Nearctic / Northern America
+    pa:'#2878d8', // Palearctic
+    at:'#f0a000', // Afrotropics
+    im:'#ef3b2c', // Indomalaya
+    au:'#9b51e0', // Australasia
+    oc:'#9b51e0', // Oceania
+    an:'#28b8d5'  // Antarctica
+});
+// Stable One Earth-inspired Southern America bioregion hues. These are keyed by
+// canonical bioregion ID, so the same region always has the same colour on every
+// animal card. They stay within the Southern America green family while making
+// the major landscapes legible at a glance.
+const ONE_EARTH_BIOREGION_COLOURS = Object.freeze({
+    nt1:'#3f8f68',   // Chilean Mixed Forests
+    nt2:'#78a982',   // Patagonia Steppe & Low Mountains
+    nt3:'#72bd75',   // Rio de la Plata / Pampas grasslands
+    nt4:'#62a96a',   // Chaco Grasslands
+    nt5:'#788f78',   // Andean Mountain Grasslands
+    nt6:'#679775',   // Chilean Matorral
+    nt7:'#4f9477',   // Juan Fernández & Desventuradas
+    nt8:'#8b9d82',   // South American Coastal Deserts
+    nt9:'#3f9b72',   // Galápagos
+    nt10:'#4fa879',  // Ecuadorean Dry Coastal Forests
+    nt11:'#617f70',  // Andean Mountain Forests & Valleys
+    nt12:'#42a96b',  // Pantanal
+    nt13:'#55ae62',  // Cerrado
+    nt14:'#1f9d63',  // Brazilian Atlantic Moist Forests
+    nt15:'#579b62',  // Brazilian Atlantic Dry Forests
+    nt16:'#19aa70',  // Amazon River Estuary
+    nt17:'#12a95f',  // Southern Amazonian Forests
+    nt18:'#08b968',  // Western Amazonian Forests & Plains
+    nt19:'#00b85c',  // Central Amazonian Forests
+    nt20:'#0caf65',  // Northern Amazonian Forests
+    nt21:'#25a76c',  // Guianan Forests & Savanna
+    nt22:'#55ae67',  // Llanos & Dry Forests
+    nt23:'#319d70'   // Venezuelan Coast
+});
+
+// Stable colour for a fully covered One Earth subrealm. These are used only
+// when every canonical member bioregion is actually present in wild_regions.
+const ONE_EARTH_SUBREALM_COLOURS = Object.freeze({
+    'andes-pacific-coast':'#718b79',
+    'south-american-grasslands':'#79b979',
+    'brazil-cerrado-atlantic-coast':'#3fa866',
+    'amazonia':'#08b866',
+    'upper-south-america':'#36a66d'
+});
+function animalMapSubrealmColour(parentKey,fallback='#777'){
+    return ONE_EARTH_SUBREALM_COLOURS[String(parentKey||'').toLowerCase()]||fallback;
+}
+function animalMapRegionColour(regionKey,fallback='#777'){
+    const key=String(regionKey||'').trim().toLowerCase();
+    if(ONE_EARTH_BIOREGION_COLOURS[key])return ONE_EARTH_BIOREGION_COLOURS[key];
+    const meta=factualRegionMeta(key);
+    const continent=String(meta?.continent||'').toLowerCase();
+    if(continent && ANIMAL_INFO_CONTINENT_COLOURS[continent])return ANIMAL_INFO_CONTINENT_COLOURS[continent];
+    const prefix=key.match(/^([a-z]{2})\d+$/)?.[1];
+    return ONE_EARTH_CODE_COLOURS[prefix]||fallback;
+}
+function animalMapRangeEnvironment(animal,record=null){
+    const inventory=inventoryEntryForAnimal(animal);
+    const explicit=String(inventory?.range_environment||inventory?.map_environment||'').trim().toLowerCase();
+    if(['marine','ocean','sea'].includes(explicit))return 'marine';
+    if(['freshwater','river','rivers','terrestrial','land'].includes(explicit))return explicit==='terrestrial'?'land':'freshwater';
+    // Until the marine audit supplies explicit values, Marine Mania is the only
+    // category whose One Earth offshore geometry is intentionally retained.
+    if(String(animal?.category||record?.category||'').toLowerCase()==='marine mania')return 'marine';
+    return 'land';
+}
+
+// Geography V2: factual wild geography and broader Zoo Curator geography are
+// separate data layers. The coming inventory/region audit can populate these
+// dictionaries without another renderer rewrite.
+const ZOO_GEOGRAPHY = {
+    factual_regions: Object.create(null),
+    zoo_regions: Object.create(null),
+    realms: Object.create(null),
+    range_display_groups: Object.create(null)
+};
+// Built-in One Earth label/parent fallback for the currently migrated Neotropical realms.
+// The external geography JSON is authoritative; this fallback only prevents labels
+// degrading to raw IDs if that file is unavailable.
+const ZOO_GEOGRAPHY_BUILTIN_ONE_EARTH = Object.freeze({"realms":{"central-america-caribbean":{"name":"Central America & Caribbean","subrealms":["central-america","caribbean"]},"southern-america":{"name":"Southern America","subrealms":["andes-pacific-coast","south-american-grasslands","brazil-cerrado-atlantic-coast","amazonia","upper-south-america"]}},"subrealms":{"andes-pacific-coast":{"name":"Andes Mountains & Pacific Coast","bioregions":["NT11","NT10","NT8","NT7","NT6","NT5","NT9","NT1"],"realm":"southern-america"},"south-american-grasslands":{"name":"South American Grasslands","bioregions":["NT4","NT3","NT2"],"realm":"southern-america"},"brazil-cerrado-atlantic-coast":{"name":"Brazil Cerrado & Atlantic Coast","bioregions":["NT15","NT13","NT12","NT14"],"realm":"southern-america"},"amazonia":{"name":"Amazonia","bioregions":["NT20","NT18","NT17","NT16","NT19"],"realm":"southern-america"},"upper-south-america":{"name":"Upper South America","bioregions":["NT23","NT22","NT21"],"realm":"southern-america"},"central-america":{"name":"Central America","bioregions":["NT24","NT25","NT27","NT28","NT29"],"realm":"central-america-caribbean"},"caribbean":{"name":"Caribbean","bioregions":["NT26"],"realm":"central-america-caribbean"}},"bioregions":{"NT11":{"name":"Andean Mountain Forests & Valleys","subrealm":"andes-pacific-coast","realm":"southern-america"},"NT10":{"name":"Ecuadorean Dry Coastal Forests & Flooded Grasslands","subrealm":"andes-pacific-coast","realm":"southern-america"},"NT8":{"name":"South American Coastal Deserts","subrealm":"andes-pacific-coast","realm":"southern-america"},"NT7":{"name":"Juan Fernández & Desventuradas Islands","subrealm":"andes-pacific-coast","realm":"southern-america"},"NT6":{"name":"Chilean Matorral Shrublands & Savanna","subrealm":"andes-pacific-coast","realm":"southern-america"},"NT5":{"name":"Andean Mountain Grasslands","subrealm":"andes-pacific-coast","realm":"southern-america"},"NT9":{"name":"Galápagos Islands","subrealm":"andes-pacific-coast","realm":"southern-america"},"NT1":{"name":"Chilean Mixed Forests","subrealm":"andes-pacific-coast","realm":"southern-america"},"NT4":{"name":"Chaco Grasslands","subrealm":"south-american-grasslands","realm":"southern-america"},"NT3":{"name":"Rio de la Plata Grasslands","subrealm":"south-american-grasslands","realm":"southern-america"},"NT2":{"name":"Patagonia Steppe & Low Mountains","subrealm":"south-american-grasslands","realm":"southern-america"},"NT15":{"name":"Brazilian Atlantic Dry Forests","subrealm":"brazil-cerrado-atlantic-coast","realm":"southern-america"},"NT13":{"name":"Cerrado Savannas","subrealm":"brazil-cerrado-atlantic-coast","realm":"southern-america"},"NT12":{"name":"Pantanal Flooded Grasslands & Dry Forests","subrealm":"brazil-cerrado-atlantic-coast","realm":"southern-america"},"NT14":{"name":"Brazilian Atlantic Moist Forests","subrealm":"brazil-cerrado-atlantic-coast","realm":"southern-america"},"NT20":{"name":"Northern Amazonian Forests","subrealm":"amazonia","realm":"southern-america"},"NT18":{"name":"Western Amazonian Forests & Plains","subrealm":"amazonia","realm":"southern-america"},"NT17":{"name":"Southern Amazonian Forests","subrealm":"amazonia","realm":"southern-america"},"NT16":{"name":"Amazon River Estuary","subrealm":"amazonia","realm":"southern-america"},"NT19":{"name":"Central Amazonian Forests","subrealm":"amazonia","realm":"southern-america"},"NT23":{"name":"Venezuelan Coast","subrealm":"upper-south-america","realm":"southern-america"},"NT22":{"name":"Llanos & Dry Forests","subrealm":"upper-south-america","realm":"southern-america"},"NT21":{"name":"Guianan Forests & Savanna","subrealm":"upper-south-america","realm":"southern-america"},"NT24":{"name":"Central American Isthmian & Colombian Coastal Forests","subrealm":"central-america","realm":"central-america-caribbean"},"NT25":{"name":"Central American Mixed Forests","subrealm":"central-america","realm":"central-america-caribbean"},"NT26":{"name":"Caribbean Islands","subrealm":"caribbean","realm":"central-america-caribbean"},"NT27":{"name":"Yucatan & Veracruz Mixed Forests","subrealm":"central-america","realm":"central-america-caribbean"},"NT28":{"name":"Mexican Dry & Coniferous Forests","subrealm":"central-america","realm":"central-america-caribbean"},"NT29":{"name":"Mexican Subtropical Islands","subrealm":"central-america","realm":"central-america-caribbean"}}});
+
+
+
+function normalizeOneEarthCode(value){ return String(value||'').trim().toUpperCase(); }
+function oneEarthFeatureCode(feature){
+    const p=feature?.properties||{};
+    // One Earth's distributed layer uses BIOREGIO_1, whose value is normally
+    // "Bioregion display name (NT11)". Keep named candidates first, then scan
+    // every property so future harmless schema changes cannot blank the map.
+    const candidates=[
+        p.BIOREGIO_1,p.BIOREGION_,p.BIOREGION,p.bioregion,
+        p.code,p.CODE,p.Code,p.bioregion_code,p.BIOREGION_CODE,
+        p.biocode,p.BIOCODE,p.Bioregion,
+        ...Object.values(p)
+    ];
+    for(const value of candidates){
+        const match=String(value||'').toUpperCase().match(/\b(?:NT|NA|PA|AT|IM|AU|OC|AN)\d+\b/);
+        if(match)return match[0];
+    }
+    return '';
+}
+function installZooGeographyData(payload){
+    ZOO_GEOGRAPHY.factual_regions=Object.create(null);
+    ZOO_GEOGRAPHY.zoo_regions=Object.create(null);
+    ZOO_GEOGRAPHY.realms=Object.create(null);
+    ZOO_GEOGRAPHY.range_display_groups=Object.create(null);
+    for(const [key,meta] of Object.entries(payload?.realms||{})){
+        ZOO_GEOGRAPHY.realms[String(key).toLowerCase()]={
+            label:String(meta?.name||key),
+            subrealms:(meta?.subrealms||[]).map(value=>String(value||'').toLowerCase()).filter(Boolean)
+        };
+    }
+    for(const [key,meta] of Object.entries(payload?.subrealms||{})){
+        ZOO_GEOGRAPHY.zoo_regions[String(key).toLowerCase()]={
+            label:String(meta?.name||key),
+            realm:String(meta?.realm||'').toLowerCase(),
+            bioregions:(meta?.bioregions||[]).map(normalizeOneEarthCode)
+        };
+    }
+    for(const [code,meta] of Object.entries(payload?.bioregions||{})){
+        const key=normalizeOneEarthCode(code).toLowerCase();
+        const subrealm=String(meta?.subrealm||'').toLowerCase();
+        const realm=String(meta?.realm||ZOO_GEOGRAPHY.zoo_regions[subrealm]?.realm||'').toLowerCase();
+        ZOO_GEOGRAPHY.factual_regions[key]={
+            code:normalizeOneEarthCode(code),
+            label:String(meta?.name||code),
+            zoo_region:subrealm,
+            realm
+        };
+    }
+    for(const [key,meta] of Object.entries(payload?.range_display_groups||{})){
+        ZOO_GEOGRAPHY.range_display_groups[String(key).toLowerCase()]={
+            label:String(meta?.name||key),
+            realms:(meta?.realms||[]).map(value=>String(value||'').toLowerCase()).filter(Boolean),
+            continents:(meta?.continents||[]).map(value=>String(value||'').toLowerCase()).filter(Boolean),
+            match:String(meta?.match||'contains').toLowerCase(),
+            min_continents:Number(meta?.min_continents)||0
+        };
+    }
+}
+function loadZooGeographyData(){
+    // Install the bundled labels immediately so tooltips are deterministic even
+    // before/failing the optional external geography fetch.
+    if(!Object.keys(ZOO_GEOGRAPHY.factual_regions).length){
+        installZooGeographyData(ZOO_GEOGRAPHY_BUILTIN_ONE_EARTH);
+    }
+    if(!zooGeographyDataPromise){
+        zooGeographyDataPromise=fetch(`${ZOO_GEOGRAPHY_DATA_URL}?v=${encodeURIComponent(ZOO_CURATOR_VERSION)}`)
+            .then(r=>{if(!r.ok)throw new Error(`Geography HTTP ${r.status}`);return r.json();})
+            .then(data=>{installZooGeographyData(data);return data;})
+            .catch(error=>{
+                console.warn('Could not load Zoo Curator geography data; using built-in One Earth labels:',error);
+                installZooGeographyData(ZOO_GEOGRAPHY_BUILTIN_ONE_EARTH);
+                return ZOO_GEOGRAPHY_BUILTIN_ONE_EARTH;
+            });
+    }
+    return zooGeographyDataPromise;
+}
+function loadOneEarthBioregionsGeoJSON(){
+    if(!oneEarthBioregionsGeoJSONPromise){
+        oneEarthBioregionsGeoJSONPromise=fetch(ONE_EARTH_BIOREGIONS_GEOJSON_URL)
+            .then(r=>r.ok?r.json():null)
+            .catch(()=>null);
+    }
+    return oneEarthBioregionsGeoJSONPromise;
+}
+async function loadOneEarthBioregionsForCodes(regionKeys){
+    const wanted=[...new Set([...regionKeys].map(normalizeOneEarthCode)
+        .filter(code=>/^(?:NT|NA|PA|AT|IM|AU|OC|AN)\d+$/.test(code)))];
+    if(!wanted.length)return null;
+
+    // Prefer the local official download. If it is absent, malformed, or its
+    // schema changes, ask the public One Earth ArcGIS layer for only the
+    // bioregions this animal needs.
+    const local=await loadOneEarthBioregionsGeoJSON();
+    const localMatches=(local?.features||[]).filter(f=>wanted.includes(oneEarthFeatureCode(f)));
+    if(localMatches.length)return {type:'FeatureCollection',features:localMatches};
+
+    const where=wanted.map(code=>`BIOREGIO_1 LIKE '%(${code})%'`).join(' OR ');
+    const params=new URLSearchParams({
+        where,
+        outFields:'BIOREGION_,BIOREGIO_1',
+        returnGeometry:'true',
+        outSR:'4326',
+        f:'geojson'
+    });
+    try{
+        const response=await fetch(`${ONE_EARTH_BIOREGIONS_ARCGIS_URL}?${params}`);
+        if(!response.ok)throw new Error(`One Earth ArcGIS HTTP ${response.status}`);
+        return await response.json();
+    }catch(error){
+        console.warn('Could not load One Earth bioregion geometry:',error);
+        return null;
+    }
+}
+
+function animalWildRegionKeys(animal){
+    const record=inventoryEntryForAnimal(animal);
+    const explicit=Array.isArray(record?.wild_regions) ? record.wild_regions : [];
+    if(explicit.length){
+        return [...new Set(explicit.map(v=>String(v).trim().toLowerCase()).filter(Boolean))];
+    }
+    // Migration fallback: today's subregion tags keep working until each
+    // species is deliberately moved to factual wild_regions.
+    return animalInfoRegionKeys(animal);
+}
+function factualRegionMeta(regionKey){
+    const key=String(regionKey||'').trim().toLowerCase();
+    const meta=ZOO_GEOGRAPHY.factual_regions[key];
+    return meta ? {key,...meta} : {key,label:animalInfoRegionLabel(key),zoo_region:null,continent:null};
+}
+function zooRegionMeta(regionKey){
+    const key=String(regionKey||'').trim().toLowerCase();
+    const meta=ZOO_GEOGRAPHY.zoo_regions[key];
+    return meta ? {key,...meta} : null;
+}
+function collapsedFullSubrealms(regionKeys){
+    const keys=new Set([...regionKeys].map(v=>String(v).toLowerCase()));
+    const collapsed=new Map();
+    for(const [parentKey,parent] of Object.entries(ZOO_GEOGRAPHY.zoo_regions)){
+        const canonicalMembers=(parent?.bioregions||[]).map(v=>String(v).toLowerCase()).filter(Boolean);
+        if(!canonicalMembers.length)continue;
+        // Strict rule: collapse only when EVERY canonical member is explicitly
+        // present. Never infer/add a missing member from majority coverage.
+        if(canonicalMembers.every(code=>keys.has(code))){
+            collapsed.set(parentKey,new Set(canonicalMembers));
+        }
+    }
+    return collapsed;
+}
+function geographyParentForFactualRegion(regionKey){
+    const factual=factualRegionMeta(regionKey);
+    return factual.zoo_region ? zooRegionMeta(factual.zoo_region) : null;
+}
+function geographyHoverLabel(regionKey){
+    const factual=factualRegionMeta(regionKey);
+    const parent=geographyParentForFactualRegion(regionKey);
+    return parent?.label ? `${factual.label}, ${parent.label}` : factual.label;
+}
+
+
+function ensureAnimalRangeMapStyles() {
+    if (document.getElementById('animalRangeMapStyles')) return;
+    const style=document.createElement('style');
+    style.id='animalRangeMapStyles';
+    style.textContent=`
+        .animal-range-map{position:relative;width:100%;aspect-ratio:1.260590/1;margin:12px 0 16px;
+            overflow:hidden;border:1px solid rgba(120,120,120,.35);border-radius:10px;background:#d8d8d8}
+        .animal-range-map svg{display:block;width:100%;height:100%}
+        .animal-range-map .map-ocean{fill:#ededed}
+        .animal-range-map .map-country{fill:#c2c2c2;stroke:#f4f4f4;stroke-width:.38;vector-effect:non-scaling-stroke}
+        .animal-range-map .map-country.map-continent-active{fill:var(--continent-fill,#777)}
+        
+        .animal-range-map .map-zoo-region{fill:var(--zoo-region-fill,#777);fill-opacity:.10;stroke:none;stroke-width:0;pointer-events:none}
+        .animal-range-map .map-zoo-region.is-highlighted{fill-opacity:.16}
+        .animal-range-map .map-zoo-region.is-revealed-missing-bioregion{fill-opacity:.20;filter:saturate(.68) brightness(1.12)}
+        .animal-range-map.is-bioregion-interaction .map-zoo-region.is-revealed-missing-bioregion{pointer-events:auto;cursor:default}
+        .animal-range-map.is-bioregion-interaction .map-zoo-region.is-revealed-missing-bioregion.is-missing-hovered{fill-opacity:.30;filter:saturate(.78) brightness(1.08)}
+        .animal-range-map.is-bioregion-interaction .map-zoo-region.is-revealed-missing-bioregion.is-missing-other{fill-opacity:.10;filter:saturate(.52) brightness(1.18)}
+.animal-range-map .map-region{fill:var(--region-fill,#777);fill-opacity:.88;
+            stroke:none;stroke-width:0;vector-effect:non-scaling-stroke;
+            pointer-events:auto;cursor:zoom-in}
+        .animal-range-map{touch-action:none}
+        .animal-range-map.is-panning{cursor:grabbing}
+        .animal-range-map.is-region-zoomed{cursor:grab}
+        .animal-range-map.is-region-zoomed.is-panning{cursor:grabbing}
+        .animal-range-map.is-region-zoomed .map-region{cursor:zoom-in}
+        .animal-range-map .map-region.is-highlighted{fill-opacity:1;stroke:none;stroke-width:0;filter:saturate(1.22) brightness(1.08)}
+        .animal-range-map.has-region-highlight .map-region:not(.is-highlighted):not(.is-same-subrealm):not(.is-subrealm-highlighted){fill-opacity:.48;filter:saturate(.78) brightness(.98)}
+        .animal-range-map.has-region-highlight .map-region.is-same-subrealm{fill-opacity:.88;filter:none}
+        .animal-range-map.has-region-highlight .map-region.is-subrealm-highlighted{fill-opacity:.96;filter:saturate(1.08) brightness(1.03)}
+        /* Full-subrealm collapse is presentation-only. Keep the canonical member
+           bioregions mounted underneath and reveal them in detailed zoom mode. */
+        .animal-range-map:not(.is-bioregion-interaction) .map-region.map-collapsed-member{display:none}
+        .animal-range-map.is-bioregion-interaction .map-region.map-collapsed-subrealm{display:none}
+        .animal-range-map.is-bioregion-interaction .map-region.map-collapsed-member{display:block}
+        .animal-range-map:not(.is-bioregion-interaction) .map-region-hit.map-collapsed-member{display:none}
+        .animal-range-map.is-bioregion-interaction .map-region-hit.map-collapsed-subrealm{display:none}
+        .animal-range-map.is-bioregion-interaction .map-region-hit.map-collapsed-member{display:block}
+
+        .animal-range-map-tooltip{position:absolute;z-index:4;display:none;pointer-events:none;
+            padding:4px 7px;border-radius:5px;background:rgba(25,25,25,.9);color:#fff;
+            font-size:11px;font-weight:700;white-space:nowrap;transform:translate(10px,10px)}
+        .animal-range-map-subrealm-label{position:absolute;z-index:3;left:8px;bottom:8px;display:none;pointer-events:none;
+            max-width:calc(100% - 16px);padding:5px 8px;border-radius:6px;background:rgba(25,25,25,.78);color:#fff;
+            font-size:11px;font-weight:700;line-height:1.2;white-space:normal}
+        .animal-card.region-map-match{outline:3px solid var(--region-map-glow,#fff);
+            outline-offset:2px;filter:brightness(1.08)}
+        .animal-range-map-loading{position:absolute;inset:0;display:grid;place-items:center;color:#555;font-size:12px}
+        .animal-information-header{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:10px}
+        #animalInformationTitle{justify-self:stretch;min-width:0;width:auto;text-align:left;white-space:nowrap;overflow:hidden}
+        .animal-information-header-spacer{display:none}
+        .animal-information-size{justify-self:end;width:auto;text-align:right;font-size:12px;font-weight:600;white-space:nowrap}
+    `;
+    document.head.append(style);
+}
+
+function loadAnimalInfoWorldGeoJSON() {
+    if (!animalInfoWorldGeoJSONPromise) {
+        animalInfoWorldGeoJSONPromise=fetch(ANIMAL_INFO_WORLD_GEOJSON_URL).then(response=>{
+            if(!response.ok) throw new Error(`World map HTTP ${response.status}`);
+            return response.json();
+        });
+    }
+    return animalInfoWorldGeoJSONPromise;
+}
+function loadAnimalInfoRegionGeoJSON() {
+    if (!animalInfoRegionGeoJSONPromise) {
+        animalInfoRegionGeoJSONPromise=fetch(ANIMAL_INFO_REGION_GEOJSON_URL)
+            .then(response=>response.ok?response.json():null).catch(()=>null);
+    }
+    return animalInfoRegionGeoJSONPromise;
+}
+const ANIMAL_MAP_WIDTH = 1000;
+const ANIMAL_MAP_MERCATOR_WORLD = 1000;
+const ANIMAL_MAP_NORTH_LAT = 85.05112878;
+const ANIMAL_MAP_SOUTH_LAT = -72;
+
+function mercatorWorldY(lat){
+    const limited=Math.max(-85.05112878,Math.min(85.05112878,Number(lat)));
+    const rad=limited*Math.PI/180;
+    return (1-Math.log(Math.tan(Math.PI/4+rad/2))/Math.PI)/2*ANIMAL_MAP_MERCATOR_WORLD;
+}
+const ANIMAL_MAP_VIEW_TOP = mercatorWorldY(ANIMAL_MAP_NORTH_LAT);
+const ANIMAL_MAP_VIEW_BOTTOM = mercatorWorldY(ANIMAL_MAP_SOUTH_LAT);
+const ANIMAL_MAP_HEIGHT = ANIMAL_MAP_VIEW_BOTTOM - ANIMAL_MAP_VIEW_TOP;
+
+
+function resolveRegionWhereClause(regionKey){
+    const terms=ANIMAL_INFO_RESOLVE_REGION_TERMS[regionKey]||[];
+    if(!terms.length)return '';
+    return terms.map(term=>`ECO_NAME LIKE '%${String(term).replace(/'/g,"''")}%'`).join(' OR ');
+}
+function loadResolveRegionGeoJSON(regionKey){
+    if(animalInfoResolveRegionPromises.has(regionKey))return animalInfoResolveRegionPromises.get(regionKey);
+    const where=resolveRegionWhereClause(regionKey);
+    if(!where)return Promise.resolve(null);
+    const params=new URLSearchParams({
+        where,
+        outFields:'ECO_NAME,ECO_ID',
+        returnGeometry:'true',
+        outSR:'4326',
+        f:'geojson'
+    });
+    const promise=fetch(`${ANIMAL_INFO_RESOLVE_ECOREGIONS_URL}?${params}`)
+        .then(response=>{
+            if(!response.ok)throw new Error(`RESOLVE region HTTP ${response.status}`);
+            return response.json();
+        })
+        .catch(error=>{
+            console.warn(`Could not load sourced region geometry for ${regionKey}:`,error);
+            return null;
+        });
+    animalInfoResolveRegionPromises.set(regionKey,promise);
+    return promise;
+}
+
+function mercatorPoint(lon,lat){
+    const x=(Number(lon)+180)/360*ANIMAL_MAP_WIDTH;
+    return [x, mercatorWorldY(lat)-ANIMAL_MAP_VIEW_TOP];
+}
+function geoRingToSvgPath(ring){
+    return ring.map((p,i)=>{const [x,y]=mercatorPoint(p[0],p[1]);return `${i?'L':'M'}${x.toFixed(2)},${y.toFixed(2)}`;}).join(' ')+' Z';
+}
+function geoGeometryToSvgPath(geometry){
+    if(!geometry)return '';
+    if(geometry.type==='Polygon')return geometry.coordinates.map(geoRingToSvgPath).join(' ');
+    if(geometry.type==='MultiPolygon')return geometry.coordinates.flatMap(p=>p.map(geoRingToSvgPath)).join(' ');
+    return '';
+}
+function normalizedMapContinent(value){
+    return String(value||'').trim().toLowerCase().replace(/-/g,' ');
+}
+function animalInfoContinentKeys(animal,record=null){
+    const keys=new Set();
+    for(const tag of inventoryTagsForAnimal(animal)){
+        const key=String(tag).trim().toLowerCase();
+        if(ENCLOSURE_AREA_THEMES[key]?.layer==='geography')keys.add(normalizedMapContinent(key));
+    }
+    if(!keys.size){
+        for(const value of String(continentFromAnimalRecord(record)||'').split(',')){
+            const key=normalizedMapContinent(value);if(key)keys.add(key);
+        }
+    }
+    return keys;
+}
+function animalInfoRegionKeys(animal){
+    return [...new Set(inventoryTagsForAnimal(animal).map(t=>String(t).trim().toLowerCase())
+        .filter(key=>ENCLOSURE_AREA_THEMES[key]?.layer==='subregion'))];
+}
+
+function animalInfoRegionLabel(regionKey){
+    return String(ENCLOSURE_AREA_THEMES[regionKey]?.title||regionKey||'Region')
+        .replace(/\s+(Area|House)$/i,'').trim();
+}
+function clearAnimalInfoRegionCardHighlights(){
+    document.querySelectorAll('.animal-card.region-map-match').forEach(card=>{
+        card.classList.remove('region-map-match');
+        card.style.removeProperty('--region-map-glow');
+    });
+}
+function highlightZooCardsForInfoRegion(regionKey,colour){
+    clearAnimalInfoRegionCardHighlights();
+    const animalsById=new Map((state.animals||[]).map(animal=>[Number(animal.id),animal]));
+    document.querySelectorAll('.animal-card[data-animal-id]').forEach(card=>{
+        const animal=animalsById.get(Number(card.dataset.animalId));
+        if(!animal)return;
+        const matches=animalWildRegionKeys(animal).includes(regionKey);
+        if(matches){
+            card.classList.add('region-map-match');
+            card.style.setProperty('--region-map-glow',colour||'#fff');
+        }
+    });
+}
+
+
+function animalRangeMapRegionBounds(svg,regionKey){
+    const paths=[...svg.querySelectorAll('.map-region')]
+        .filter(path=>path.dataset.regionKey===regionKey);
+    if(!paths.length)return null;
+    let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity;
+    for(const path of paths){
+        try{
+            const b=path.getBBox();
+            if(!Number.isFinite(b.x)||!Number.isFinite(b.y)||b.width<=0||b.height<=0)continue;
+            x1=Math.min(x1,b.x); y1=Math.min(y1,b.y);
+            x2=Math.max(x2,b.x+b.width); y2=Math.max(y2,b.y+b.height);
+        }catch(_){}
+    }
+    return Number.isFinite(x1)?{x:x1,y:y1,width:x2-x1,height:y2-y1}:null;
+}
+function animalRangeMapFittedViewBox(bounds,padding=.10){
+    if(!bounds)return [0,0,ANIMAL_MAP_WIDTH,ANIMAL_MAP_HEIGHT];
+    const aspect=ANIMAL_MAP_WIDTH/ANIMAL_MAP_HEIGHT;
+    let w=Math.max(1,bounds.width)*(1+padding*2);
+    let h=Math.max(1,bounds.height)*(1+padding*2);
+    const cx=bounds.x+bounds.width/2,cy=bounds.y+bounds.height/2;
+    if(w/h<aspect)w=h*aspect;else h=w/aspect;
+    return [cx-w/2,cy-h/2,w,h];
+}
+function animalRangeMapViewBox(svg){
+    const box=(svg.getAttribute('viewBox')||`0 0 ${ANIMAL_MAP_WIDTH} ${ANIMAL_MAP_HEIGHT}`)
+        .trim().split(/\s+/).map(Number);
+    return box.length===4&&box.every(Number.isFinite)
+        ? box : [0,0,ANIMAL_MAP_WIDTH,ANIMAL_MAP_HEIGHT];
+}
+function setAnimalRangeMapViewBox(svg,box){
+    svg.setAttribute('viewBox',box.join(' '));
+    if(typeof svg._refreshAnimalMapInteraction==='function')svg._refreshAnimalMapInteraction();
+}
+function animateAnimalRangeMapViewBox(svg,target,duration=240){
+    if(svg._animalMapZoomFrame)cancelAnimationFrame(svg._animalMapZoomFrame);
+    const token=(svg._animalMapZoomToken||0)+1;
+    svg._animalMapZoomToken=token;
+    const start=animalRangeMapViewBox(svg);
+    const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if(reduce){setAnimalRangeMapViewBox(svg,target);return;}
+    const began=performance.now();
+    const tick=now=>{
+        if(svg._animalMapZoomToken!==token)return;
+        const t=Math.min(1,(now-began)/duration);
+        const eased=1-Math.pow(1-t,3);
+        const box=start.map((value,i)=>value+(target[i]-value)*eased);
+        setAnimalRangeMapViewBox(svg,box);
+        if(t<1)svg._animalMapZoomFrame=requestAnimationFrame(tick);
+        else svg._animalMapZoomFrame=null;
+    };
+    svg._animalMapZoomFrame=requestAnimationFrame(tick);
+}
+function cancelAnimalRangeMapAnimation(svg){
+    svg._animalMapZoomToken=(svg._animalMapZoomToken||0)+1;
+    if(svg._animalMapZoomFrame)cancelAnimationFrame(svg._animalMapZoomFrame);
+    svg._animalMapZoomFrame=null;
+}
+function clampAnimalRangeMapViewBox(box){
+    let [x,y,w,h]=box;
+    const minW=ANIMAL_MAP_WIDTH/40;
+    const maxW=ANIMAL_MAP_WIDTH;
+    w=Math.max(minW,Math.min(maxW,w));
+    h=w*(ANIMAL_MAP_HEIGHT/ANIMAL_MAP_WIDTH);
+    x=Math.max(-w*.35,Math.min(ANIMAL_MAP_WIDTH-w+w*.35,x));
+    y=Math.max(-h*.25,Math.min(ANIMAL_MAP_HEIGHT-h+h*.25,y));
+    return [x,y,w,h];
+}
+function animalRangeMapClientPointToSvg(svg,clientX,clientY){
+    const rect=svg.getBoundingClientRect();
+    const [x,y,w,h]=animalRangeMapViewBox(svg);
+    return {
+        x:x+((clientX-rect.left)/Math.max(1,rect.width))*w,
+        y:y+((clientY-rect.top)/Math.max(1,rect.height))*h
+    };
+}
+function installAnimalRangeMapNavigation(host,svg){
+    let drag=null;
+    svg.addEventListener('wheel',event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        cancelAnimalRangeMapAnimation(svg);
+        const old=animalRangeMapViewBox(svg);
+        const point=animalRangeMapClientPointToSvg(svg,event.clientX,event.clientY);
+        const factor=Math.exp(Math.max(-1,Math.min(1,event.deltaY/300)));
+        const newW=Math.max(ANIMAL_MAP_WIDTH/40,Math.min(ANIMAL_MAP_WIDTH,old[2]*factor));
+        const scale=newW/old[2];
+        const next=clampAnimalRangeMapViewBox([
+            point.x-(point.x-old[0])*scale,
+            point.y-(point.y-old[1])*scale,
+            newW,
+            old[3]*scale
+        ]);
+        setAnimalRangeMapViewBox(svg,next);
+        host.classList.toggle('is-region-zoomed',next[2]<ANIMAL_MAP_WIDTH*.999);
+    },{passive:false});
+
+    svg.addEventListener('pointerdown',event=>{
+        if(event.button!==0)return;
+        cancelAnimalRangeMapAnimation(svg);
+        const start=animalRangeMapClientPointToSvg(svg,event.clientX,event.clientY);
+        const pressedRegion=event.target.closest?.('.map-region,.map-region-hit');
+        drag={
+            pointerId:event.pointerId,
+            start,
+            clientStart:{x:event.clientX,y:event.clientY},
+            box:animalRangeMapViewBox(svg),
+            moved:false,
+            regionKey:pressedRegion?.dataset?.regionKey||''
+        };
+        svg.setPointerCapture?.(event.pointerId);
+        event.stopPropagation();
+    });
+    let pendingPanEvent=null;
+    let panFrame=0;
+    const renderPan=()=>{
+        panFrame=0;
+        const event=pendingPanEvent;
+        pendingPanEvent=null;
+        if(!event||!drag||drag.pointerId!==event.pointerId)return;
+
+        // Convert screen-pixel movement directly into viewBox movement. Do not
+        // repeatedly transform the pointer through the changing viewBox: that
+        // creates a feedback loop which makes panning feel slow/choppy.
+        const rect=svg.getBoundingClientRect();
+        const scaleX=drag.box[2]/Math.max(1,rect.width);
+        const scaleY=drag.box[3]/Math.max(1,rect.height);
+        const clientDX=event.clientX-drag.clientStart.x;
+        const clientDY=event.clientY-drag.clientStart.y;
+        setAnimalRangeMapViewBox(svg,clampAnimalRangeMapViewBox([
+            drag.box[0]-clientDX*scaleX,
+            drag.box[1]-clientDY*scaleY,
+            drag.box[2],drag.box[3]
+        ]));
+        host.classList.toggle('is-region-zoomed',drag.box[2]<ANIMAL_MAP_WIDTH*.999);
+    };
+    svg.addEventListener('pointermove',event=>{
+        if(typeof svg._moveAnimalMapTooltip==='function')svg._moveAnimalMapTooltip(event);
+        if(!drag||drag.pointerId!==event.pointerId)return;
+        const clientDistance=Math.hypot(
+            event.clientX-drag.clientStart.x,
+            event.clientY-drag.clientStart.y
+        );
+        if(clientDistance>=5&&!drag.moved){
+            drag.moved=true;
+            host.classList.add('is-panning');
+        }
+        if(!drag.moved)return;
+        pendingPanEvent={
+            pointerId:event.pointerId,
+            clientX:event.clientX,
+            clientY:event.clientY
+        };
+        if(!panFrame)panFrame=requestAnimationFrame(renderPan);
+        event.preventDefault();
+        event.stopPropagation();
+    });
+    const finish=event=>{
+        if(!drag||drag.pointerId!==event.pointerId)return;
+        if(panFrame){
+            cancelAnimationFrame(panFrame);
+            panFrame=0;
+            if(pendingPanEvent)renderPan();
+        }
+        pendingPanEvent=null;
+        const completed=drag;
+        svg.releasePointerCapture?.(event.pointerId);
+        host.classList.remove('is-panning');
+        drag=null;
+        if(completed.moved){
+            host.dataset.suppressMapClick='1';
+        }else if(completed.regionKey){
+            // Pointer capture may retarget the browser's synthetic click to the
+            // host. Execute region selection here, where the original pressed
+            // path is still known, and suppress that later synthetic click.
+            zoomAnimalRangeMapToRegion(host,svg,completed.regionKey);
+            host.dataset.suppressMapClick='1';
+        }
+        event.stopPropagation();
+    };
+    svg.addEventListener('pointerup',finish);
+    svg.addEventListener('pointercancel',finish);
+}
+function zoomAnimalRangeMapToRegion(host,svg,regionKey){
+    if(typeof svg._cancelAnimalMapPendingHover==='function')svg._cancelAnimalMapPendingHover();
+    const bounds=animalRangeMapRegionBounds(svg,regionKey);
+    if(!bounds)return;
+    let target=animalRangeMapFittedViewBox(bounds);
+    // Clicking a factual map region is an explicit request to inspect it.
+    // Natural fit can be too wide for long/tall bioregions, leaving the map in
+    // subregion interaction mode. Ensure click-zoom lands just inside the
+    // detailed threshold, while ordinary wheel zoom still uses the delayed
+    // threshold from V234.10.
+    if(target[2]>ANIMAL_MAP_BIOREGION_INTERACTION_WIDTH*.94){
+        const cx=target[0]+target[2]/2;
+        const cy=target[1]+target[3]/2;
+        const w=ANIMAL_MAP_BIOREGION_INTERACTION_WIDTH*.94;
+        const h=w*(ANIMAL_MAP_HEIGHT/ANIMAL_MAP_WIDTH);
+        target=clampAnimalRangeMapViewBox([cx-w/2,cy-h/2,w,h]);
+    }
+    animateAnimalRangeMapViewBox(svg,target);
+    host.classList.add('is-region-zoomed');
+}
+function resetAnimalRangeMapZoom(host,svg){
+    animateAnimalRangeMapViewBox(svg,[0,0,ANIMAL_MAP_WIDTH,ANIMAL_MAP_HEIGHT]);
+    host.classList.remove('is-region-zoomed');
+}
+
+const ANIMAL_MAP_BIOREGION_INTERACTION_WIDTH = ANIMAL_MAP_WIDTH * 0.32;
+function animalRangeMapUsesBioregionInteraction(svg){
+    const attr=String(svg?.getAttribute?.('viewBox')||'').trim().split(/\s+/).map(Number);
+    const width=attr.length===4&&Number.isFinite(attr[2])?attr[2]:svg?.viewBox?.baseVal?.width;
+    const detailed=Boolean(width>0 && width<=ANIMAL_MAP_BIOREGION_INTERACTION_WIDTH);
+    const host=svg?.closest?.('.animal-range-map');
+    if(host){
+        host.classList.toggle('is-bioregion-interaction',detailed);
+        host.classList.toggle('is-subrealm-interaction',!detailed);
+    }
+    return detailed;
+}
+function animalRangeMapInteractionKey(path,svg){
+    if(!path)return '';
+    const factual=String(path.dataset.regionKey||'');
+    const parent=String(path.dataset.parentSubrealm||'');
+    // Zoomed-in: interact with the precise factual bioregion. Zoomed-out:
+    // interact with the broader subrealm so adjacent bioregions behave as one.
+    return animalRangeMapUsesBioregionInteraction(svg) ? factual : (parent ? `subrealm:${parent}` : factual);
+}
+function animalRangeMapInteractionLabel(path,svg){
+    const interactionKey=animalRangeMapInteractionKey(path,svg);
+    if(interactionKey.startsWith('subrealm:')){
+        const parentKey=interactionKey.slice('subrealm:'.length);
+        return String(ZOO_GEOGRAPHY.zoo_regions[parentKey]?.label||path.dataset.regionLabel||parentKey);
+    }
+    const key=String(path?.dataset?.regionKey||'');
+    const factual=factualRegionMeta(key);
+    return String(factual?.label||path?.dataset?.regionLabel||key.toUpperCase());
+}
+
+async function renderAnimalRangeMap(animal,record=null){
+    const host=document.getElementById('animalRangeMap');if(!host)return;
+    clearAnimalInfoRegionCardHighlights();
+    ensureAnimalRangeMapStyles();
+    const renderKey=`${animal?.category||''}|${animal?.level||''}|${animal?.filename||''}`;
+    host.dataset.renderKey=renderKey;
+        // Each animal gets a clean navigation session.
+        delete host.dataset.suppressMapClick;
+        host.classList.remove('is-region-zoomed','is-panning','has-region-highlight');
+    host.innerHTML='<div class="animal-range-map-loading">Loading map…</div>';
+    try{
+        const baseValues=await Promise.all([loadAnimalInfoWorldGeoJSON(),loadAnimalInfoRegionGeoJSON(),loadZooGeographyData()]);
+        const [world,regions]=baseValues;
+        if(host.dataset.renderKey!==renderKey)return;
+        const continentKeys=animalInfoContinentKeys(animal,record);
+        const regionKeys=new Set(animalWildRegionKeys(animal));
+        const collapsedSubrealms=collapsedFullSubrealms(regionKeys);
+        const collapsedMemberCodes=new Set();
+        for(const members of collapsedSubrealms.values())for(const code of members)collapsedMemberCodes.add(code);
+        const oneEarth=await loadOneEarthBioregionsForCodes(regionKeys);
+        if(host.dataset.renderKey!==renderKey)return;
+        const primaryContinent=[...continentKeys][0]||'';
+        const fallbackRegionColour=ANIMAL_INFO_CONTINENT_COLOURS[primaryContinent]||'#777';
+        const rangeEnvironment=animalMapRangeEnvironment(animal,record);
+        const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');
+        svg.setAttribute('viewBox',`0 0 ${ANIMAL_MAP_WIDTH} ${ANIMAL_MAP_HEIGHT}`);svg.setAttribute('role','img');
+        svg.setAttribute('aria-label','Web Mercator world map showing the animal geography');
+        const ocean=document.createElementNS(ns,'rect');ocean.setAttribute('class','map-ocean');
+        ocean.setAttribute('width',String(ANIMAL_MAP_WIDTH));ocean.setAttribute('height',String(ANIMAL_MAP_HEIGHT));svg.append(ocean);
+
+        const defs=document.createElementNS(ns,'defs');
+        const landClip=document.createElementNS(ns,'clipPath');
+        landClip.setAttribute('id',`animal-map-land-${renderKey.replace(/[^a-z0-9_-]/gi,'-')}`);
+        for(const feature of world?.features||[]){
+            const d=geoGeometryToSvgPath(feature.geometry);if(!d)continue;
+            const land=document.createElementNS(ns,'path');
+            land.setAttribute('d',d);land.setAttribute('fill-rule','evenodd');
+            landClip.append(land);
+        }
+        defs.append(landClip);svg.append(defs);
+        const landClipUrl=`url(#${landClip.id})`;
+
+        for(const feature of world?.features||[]){
+            const d=geoGeometryToSvgPath(feature.geometry);if(!d)continue;
+            const path=document.createElementNS(ns,'path');path.setAttribute('d',d);
+            path.setAttribute('fill-rule','evenodd');path.setAttribute('class','map-country');
+            // Countries are intentionally neutral. Geographic range is shown
+            // only by the animal's factual geography layers below; the parent
+            // continent supplies colour identity, never a whole-continent fill.
+            svg.append(path);
+        }
+        for(const feature of regions?.features||[]){
+            const key=String(feature.properties?.tag||'').trim().toLowerCase();
+            if(!regionKeys.has(key))continue;
+            const d=geoGeometryToSvgPath(feature.geometry);if(!d)continue;
+            const path=document.createElementNS(ns,'path');path.setAttribute('d',d);
+            path.setAttribute('fill-rule','evenodd');path.setAttribute('class','map-region');
+            path.dataset.regionKey=key;path.dataset.regionSource='local';
+            path.dataset.parentSubrealm=geographyParentForFactualRegion(key)?.key||'';
+            path.style.setProperty('--region-fill',animalMapRegionColour(key,fallbackRegionColour));if(rangeEnvironment!=='marine')path.style.clipPath=landClipUrl;svg.append(path);
+        }
+
+        // Canonical One Earth bioregions. Migrated wild_regions use IDs such as NT11.
+        for(const feature of oneEarth?.features||[]){
+            const code=oneEarthFeatureCode(feature); const key=code.toLowerCase();
+            if(!key || !regionKeys.has(key))continue;
+            const d=geoGeometryToSvgPath(feature.geometry);if(!d)continue;
+            const path=document.createElementNS(ns,'path');path.setAttribute('d',d);
+            path.setAttribute('fill-rule','evenodd');path.setAttribute('class','map-region');
+            path.dataset.regionKey=key;path.dataset.regionSource='one-earth-2023';
+            path.dataset.parentSubrealm=geographyParentForFactualRegion(key)?.key||'';
+            if(collapsedMemberCodes.has(key))path.classList.add('map-collapsed-member');
+            path.style.setProperty('--region-fill',animalMapRegionColour(key,fallbackRegionColour));if(rangeEnvironment!=='marine')path.style.clipPath=landClipUrl;svg.append(path);
+        }
+
+        const locallyMapped=new Set([...svg.querySelectorAll('.map-region[data-region-source]')]
+            .map(path=>path.dataset.regionKey));
+        const resolveResults=await Promise.all([...regionKeys]
+            .filter(key=>!locallyMapped.has(key))
+            .map(async key=>[key,await loadResolveRegionGeoJSON(key)]));
+        if(host.dataset.renderKey!==renderKey)return;
+        for(const [key,collection] of resolveResults){
+            for(const feature of collection?.features||[]){
+                const d=geoGeometryToSvgPath(feature.geometry);if(!d)continue;
+                const path=document.createElementNS(ns,'path');path.setAttribute('d',d);
+                path.setAttribute('fill-rule','evenodd');path.setAttribute('class','map-region');
+                path.dataset.regionKey=key;path.dataset.regionSource='resolve-2017';
+                path.dataset.parentSubrealm=geographyParentForFactualRegion(key)?.key||'';
+                path.dataset.ecoregion=String(feature.properties?.ECO_NAME||'');
+                path.style.setProperty('--region-fill',animalMapRegionColour(key,fallbackRegionColour));if(rangeEnvironment!=='marine')path.style.clipPath=landClipUrl;svg.append(path);
+            }
+        }
+        // Full-subrealm coverage gets a broad-view aggregate overlay. Canonical
+        // member bioregions remain mounted underneath for detailed zoom mode.
+        for(const [parentKey,members] of collapsedSubrealms){
+            const parent=ZOO_GEOGRAPHY.zoo_regions[parentKey];
+            for(const feature of oneEarth?.features||[]){
+                const code=oneEarthFeatureCode(feature).toLowerCase();
+                if(!members.has(code))continue;
+                const d=geoGeometryToSvgPath(feature.geometry);if(!d)continue;
+                const path=document.createElementNS(ns,'path');path.setAttribute('d',d);
+                path.setAttribute('fill-rule','evenodd');path.setAttribute('class','map-region map-collapsed-subrealm');
+                path.dataset.regionKey=`subrealm:${parentKey}`;
+                path.dataset.zooRegionKey=parentKey;
+                path.dataset.parentSubrealm=parentKey;
+                path.dataset.regionSource='one-earth-subrealm';
+                path.dataset.regionLabel=String(parent?.label||parentKey);
+                path.style.setProperty('--region-fill',animalMapSubrealmColour(parentKey,fallbackRegionColour));
+                if(rangeEnvironment!=='marine')path.style.clipPath=landClipUrl;
+                svg.append(path);
+            }
+        }
+
+        const parentLayer=document.createElementNS(ns,'g'); parentLayer.dataset.layer='zoo-regions';
+        const activeParentCodes=new Set();
+        for(const key of regionKeys){
+            const parent=geographyParentForFactualRegion(key);
+            for(const code of parent?.bioregions||[])activeParentCodes.add(String(code).toLowerCase());
+        }
+        const parentEarth=activeParentCodes.size
+            ? await loadOneEarthBioregionsForCodes(activeParentCodes)
+            : oneEarth;
+        if(host.dataset.renderKey!==renderKey)return;
+        for(const [parentKey,parent] of Object.entries(ZOO_GEOGRAPHY.zoo_regions)){
+            const members=new Set((parent.bioregions||[]).map(v=>String(v).toLowerCase()));
+            for(const feature of parentEarth?.features||[]){
+                const code=oneEarthFeatureCode(feature).toLowerCase(); if(!members.has(code))continue;
+                const d=geoGeometryToSvgPath(feature.geometry);if(!d)continue;
+                const path=document.createElementNS(ns,'path');path.setAttribute('d',d);
+                path.setAttribute('fill-rule','evenodd');path.setAttribute('class','map-zoo-region');
+                path.dataset.zooRegionKey=parentKey; path.dataset.regionKey=code; path.style.setProperty('--zoo-region-fill',animalMapSubrealmColour(parentKey,animalMapRegionColour(code,fallbackRegionColour))); if(rangeEnvironment!=='marine')path.style.clipPath=landClipUrl; path.style.display='none'; parentLayer.append(path);
+            }
+        }
+        const firstRegion=svg.querySelector('.map-region'); if(firstRegion)svg.insertBefore(parentLayer,firstRegion);else svg.append(parentLayer);
+
+        // A transparent interaction copy gives ~2 CSS/SVG pixels of forgiveness
+        // around polygon edges without changing the visible geography.
+        const hitLayer=document.createElementNS(ns,'g');hitLayer.dataset.layer='region-hit-areas';
+        for(const region of [...svg.querySelectorAll('.map-region')]){
+            const hit=region.cloneNode(false);
+            hit.removeAttribute('class');
+            hit.setAttribute('class','map-region-hit');
+            if(region.classList.contains('map-collapsed-member'))hit.classList.add('map-collapsed-member');
+            if(region.classList.contains('map-collapsed-subrealm'))hit.classList.add('map-collapsed-subrealm');
+            hit.setAttribute('fill','none');
+            hit.setAttribute('stroke','rgba(0,0,0,0.001)');
+            hit.setAttribute('stroke-width','3');
+            hit.setAttribute('vector-effect','non-scaling-stroke');
+            hit.setAttribute('pointer-events','stroke');
+            hit.dataset.regionKey=region.dataset.regionKey||'';
+            hit.dataset.parentSubrealm=region.dataset.parentSubrealm||'';
+            hit.dataset.regionLabel=region.dataset.regionLabel||'';
+            hitLayer.append(hit);
+        }
+        const visibleFirstRegion=svg.querySelector('.map-region');
+        if(visibleFirstRegion)svg.insertBefore(hitLayer,visibleFirstRegion);else svg.append(hitLayer);
+
+        host.replaceChildren(svg);
+        // The host survives animal changes; only install this outer guard once.
+        if(host.dataset.mapCardClickGuard!=='1'){
+            host.dataset.mapCardClickGuard='1';
+            host.addEventListener('click',event=>event.stopPropagation());
+            host.addEventListener('pointerdown',event=>event.stopPropagation());
+        }
+        installAnimalRangeMapNavigation(host,svg);
+        animalRangeMapUsesBioregionInteraction(svg);
+        const tooltip=document.createElement('div');
+        tooltip.className='animal-range-map-tooltip';
+        host.appendChild(tooltip);
+        const subrealmLabel=document.createElement('div');
+        subrealmLabel.className='animal-range-map-subrealm-label';
+        host.appendChild(subrealmLabel);
+
+        // Persistent bottom-left range label. Canonical realm/subrealm names and presentation-only aggregate labels
+        // come from zoo-curator-geography.json. game.js only resolves the
+        // narrowest appropriate label for the animal's range.
+        const defaultAnimalRangeLabel=(()=>{
+            const parents=new Set();
+            for(const rawKey of regionKeys){
+                const parent=geographyParentForFactualRegion(String(rawKey||'').toLowerCase())?.key;
+                if(parent)parents.add(parent);
+            }
+            // The persistent broad-view label starts at the canonical One Earth
+            // realm level even when every covered bioregion belongs to one subrealm.
+            // Zoomed-in hover can still temporarily override this with that subrealm.
+            const realms=new Set([...parents].map(key=>ZOO_GEOGRAPHY.zoo_regions[key]?.realm).filter(Boolean));
+            if(realms.size===1){
+                const only=[...realms][0];
+                const realmLabel=ZOO_GEOGRAPHY.realms[only]?.label;
+                if(realmLabel)return realmLabel;
+            }
+
+            // Presentation-only cross-realm labels (Latin America, Eurasia, etc.)
+            // are deliberately separate from the One Earth hierarchy.
+            const groups=Object.values(ZOO_GEOGRAPHY.range_display_groups||{});
+            const realmMatches=groups
+                .filter(group=>group.realms?.length&&realms.size&&[...realms].every(key=>group.realms.includes(key)))
+                .sort((a,b)=>a.realms.length-b.realms.length);
+            if(realmMatches.length)return realmMatches[0].label;
+
+            const continents=new Set([...continentKeys].map(value=>String(value||'').toLowerCase()).filter(Boolean));
+            const continentMatches=groups.filter(group=>{
+                if(group.min_continents)return continents.size>=group.min_continents;
+                if(!group.continents?.length)return false;
+                const contains=[...continents].every(key=>group.continents.includes(key));
+                return contains&&(group.match!=='exact'||continents.size===group.continents.length);
+            }).sort((a,b)=>(a.continents?.length||Number.MAX_SAFE_INTEGER)-(b.continents?.length||Number.MAX_SAFE_INTEGER));
+            if(continentMatches.length)return continentMatches[0].label;
+
+            if(continents.size===1){
+                const only=[...continents][0];
+                return only.replace(/\b\w/g,char=>char.toUpperCase());
+            }
+            if(continents.size>1)return [...continents].map(value=>value.replace(/\b\w/g,char=>char.toUpperCase())).join(' & ');
+            return '';
+        })();
+        const restoreAnimalRangeCornerLabel=()=>{
+            subrealmLabel.textContent=defaultAnimalRangeLabel;
+            subrealmLabel.style.display=defaultAnimalRangeLabel?'block':'none';
+        };
+        restoreAnimalRangeCornerLabel();
+
+        // The map owns its clicks. Never let them bubble to the enlarged-card
+        // click handler, which would otherwise turn the card over.
+        svg.addEventListener('pointerdown',event=>event.stopPropagation());
+        svg.addEventListener('dblclick',event=>{
+            event.preventDefault();
+            event.stopPropagation();
+        });
+        svg.addEventListener('click',event=>{
+            event.preventDefault();
+            event.stopPropagation();
+            if(host.dataset.suppressMapClick==='1'){
+                delete host.dataset.suppressMapClick;
+                return;
+            }
+            const region=event.target.closest('.map-region,.map-region-hit');
+            if(region){
+                const key=region.dataset.regionKey;
+                if(key)zoomAnimalRangeMapToRegion(host,svg,key);
+                return;
+            }
+            resetAnimalRangeMapZoom(host,svg);
+        });
+
+        let pendingRegionHoverClear=0;
+        let pendingRegionSwitch=0;
+        let lastMapPointer={x:0,y:0};
+        let activeMapHoverPath=null;
+        let activeMapHighlight=null;
+        let activeInteractionKey='';
+        let activeMissingHoverRegion=null;
+        const MAP_REGION_SWITCH_DELAY_MS=85;
+        svg._cancelAnimalMapPendingHover=()=>{
+            if(pendingRegionSwitch){clearTimeout(pendingRegionSwitch);pendingRegionSwitch=0;}
+        };
+        host.addEventListener('pointermove',event=>{lastMapPointer={x:event.clientX,y:event.clientY};},{passive:true});
+        const updateSubrealmCornerLabel=path=>{
+            if(!path||!animalRangeMapUsesBioregionInteraction(svg)){
+                restoreAnimalRangeCornerLabel();
+                return;
+            }
+            const key=String(path.dataset.regionKey||'');
+            const parentKey=String(path.dataset.parentSubrealm||geographyParentForFactualRegion(key)?.key||'');
+            const label=String(ZOO_GEOGRAPHY.zoo_regions[parentKey]?.label||'');
+            if(!label){restoreAnimalRangeCornerLabel();return;}
+            subrealmLabel.textContent=label;
+            subrealmLabel.style.display='block';
+        };
+        svg._refreshAnimalMapInteraction=()=>{
+            // Panning changes the SVG viewBox and therefore refreshes hover styling.
+            // A revealed missing bioregion is its own hover target: do not fall
+            // back to the last covered bioregion while pointer capture is active.
+            if(activeMissingHoverRegion&&animalRangeMapUsesBioregionInteraction(svg)){
+                const region=activeMissingHoverRegion;
+                const parentKey=String(region.dataset.zooRegionKey||'');
+                host.querySelectorAll('.map-zoo-region.is-revealed-missing-bioregion').forEach(other=>{
+                    const sameParent=String(other.dataset.zooRegionKey||'')===parentKey;
+                    other.style.display=sameParent?'':'none';
+                    other.classList.toggle('is-missing-hovered',sameParent&&other===region);
+                    other.classList.toggle('is-missing-other',sameParent&&other!==region);
+                });
+                const key=String(region.dataset.regionKey||'').toLowerCase();
+                const factual=factualRegionMeta(key);
+                tooltip.textContent=`Not found in ${String(factual?.label||key.toUpperCase())}`;
+                tooltip.style.display='block';
+                const parentLabel=String(ZOO_GEOGRAPHY.zoo_regions[parentKey]?.label||'');
+                if(parentLabel){subrealmLabel.textContent=parentLabel;subrealmLabel.style.display='block';}
+                return;
+            }
+            if(!activeMapHoverPath||!activeMapHighlight){restoreAnimalRangeCornerLabel();return;}
+            activeInteractionKey=animalRangeMapInteractionKey(activeMapHoverPath,svg);
+            activeMapHighlight(true);
+            tooltip.textContent=animalRangeMapInteractionLabel(activeMapHoverPath,svg);
+            updateSubrealmCornerLabel(activeMapHoverPath);
+        };
+        host.querySelectorAll('.map-region,.map-region-hit').forEach(path=>{
+            const key=path.dataset.regionKey;
+            const collapsedParentKey=key.startsWith('subrealm:')?key.slice('subrealm:'.length):'';
+            const highlight=on=>{
+                host.classList.toggle('has-region-highlight',Boolean(on));
+                const interactionKey=animalRangeMapInteractionKey(path,svg);
+                const subrealmMode=interactionKey.startsWith('subrealm:');
+                const parentKey=subrealmMode
+                    ? interactionKey.slice('subrealm:'.length)
+                    : (collapsedParentKey||geographyParentForFactualRegion(key)?.key||'');
+                host.querySelectorAll('.map-region').forEach(region=>{
+                    const inParent=!!(on&&parentKey&&region.dataset.parentSubrealm===parentKey);
+                    const selected=!!(on&&!subrealmMode&&region.dataset.regionKey===key);
+                    const sibling=!!(on&&!subrealmMode&&!selected&&inParent);
+                    region.classList.toggle('is-highlighted',selected);
+                    region.classList.toggle('is-same-subrealm',sibling);
+                    region.classList.toggle('is-subrealm-highlighted',Boolean(subrealmMode&&inParent));
+                    if(!on)region.classList.remove('is-highlighted','is-same-subrealm','is-subrealm-highlighted');
+                });
+                host.querySelectorAll('.map-zoo-region').forEach(region=>{
+                    const sameParent=Boolean(on&&parentKey&&region.dataset.zooRegionKey===parentKey);
+                    const uncovered=Boolean(sameParent&&!regionKeys.has(String(region.dataset.regionKey||'').toLowerCase()));
+                    // While a covered range is hovered, reveal uncovered sibling
+                    // bioregions from the same subrealm. Broad view treats them as
+                    // visual context only; detailed view makes them hoverable.
+                    const revealMissing=uncovered;
+                    const showParent=Boolean(sameParent&&!subrealmMode&&!collapsedParentKey);
+                    region.style.display=(showParent||revealMissing)?'':'none';
+                    region.classList.toggle('is-highlighted',showParent);
+                    region.classList.toggle('is-revealed-missing-bioregion',revealMissing);
+                    if(!on)region.classList.remove('is-highlighted','is-revealed-missing-bioregion','is-missing-hovered','is-missing-other');
+                });
+                if(on){
+                    const interactionParent=interactionKey.startsWith('subrealm:')
+                        ? interactionKey.slice('subrealm:'.length)
+                        : collapsedParentKey;
+                    const highlightKey=interactionParent
+                        ? (String(ZOO_GEOGRAPHY.zoo_regions[interactionParent]?.bioregions?.[0]||'').toLowerCase()||key)
+                        : key;
+                    highlightZooCardsForInfoRegion(highlightKey,animalMapRegionColour(highlightKey,fallbackRegionColour));
+                }else clearAnimalInfoRegionCardHighlights();
+            };
+            const moveTooltip=event=>{
+                const rect=host.getBoundingClientRect();
+                const pad=6;
+                const localX=event.clientX-rect.left;
+                const localY=event.clientY-rect.top;
+                const tipW=tooltip.offsetWidth||0;
+                const tipH=tooltip.offsetHeight||0;
+                tooltip.style.left=`${Math.max(pad,Math.min(rect.width-tipW-pad,localX+10))}px`;
+                tooltip.style.top=`${Math.max(pad,Math.min(rect.height-tipH-pad,localY+10))}px`;
+            };
+            svg._moveAnimalMapTooltip=moveTooltip;
+            path.addEventListener('mouseenter',event=>{
+                if(pendingRegionHoverClear){cancelAnimationFrame(pendingRegionHoverClear);pendingRegionHoverClear=0;}
+                if(pendingRegionSwitch){clearTimeout(pendingRegionSwitch);pendingRegionSwitch=0;}
+                activeMissingHoverRegion=null;
+                const nextKey=animalRangeMapInteractionKey(path,svg);
+                const commit=()=>{
+                    pendingRegionSwitch=0;
+                    if(activeMapHighlight&&activeMapHighlight!==highlight)activeMapHighlight(false);
+                    activeMapHoverPath=path;
+                    activeMapHighlight=highlight;
+                    activeInteractionKey=animalRangeMapInteractionKey(path,svg);
+                    highlight(true);
+                    tooltip.textContent=animalRangeMapInteractionLabel(path,svg);
+                    tooltip.style.display='block';
+                    updateSubrealmCornerLabel(path);
+                };
+                // Moving inside the same subrealm/bioregion should be immediate.
+                // Crossing a true interaction boundary gets a tiny dwell period,
+                // which prevents jagged borders from rapidly toggling focus.
+                if(!activeInteractionKey||nextKey===activeInteractionKey)commit();
+                else pendingRegionSwitch=setTimeout(()=>{
+                    const under=document.elementFromPoint(lastMapPointer.x,lastMapPointer.y);
+                    const current=under?.closest?.('.map-region,.map-region-hit');
+                    if(current&&animalRangeMapInteractionKey(current,svg)===nextKey)commit();
+                },MAP_REGION_SWITCH_DELAY_MS);
+                moveTooltip(event);
+            });
+            path.addEventListener('mousemove',moveTooltip);
+            path.addEventListener('mouseleave',()=>{
+                if(pendingRegionHoverClear)cancelAnimationFrame(pendingRegionHoverClear);
+                pendingRegionHoverClear=requestAnimationFrame(()=>{
+                    pendingRegionHoverClear=0;
+                    const under=document.elementFromPoint(lastMapPointer.x,lastMapPointer.y);
+                    const nextRegion=under?.closest?.('.map-region,.map-region-hit,.map-zoo-region.is-revealed-missing-bioregion');
+                    if(nextRegion)return;
+                    if(pendingRegionSwitch){clearTimeout(pendingRegionSwitch);pendingRegionSwitch=0;}
+                    if(activeMapHighlight)activeMapHighlight(false);
+                    activeMapHoverPath=null;
+                    activeMapHighlight=null;
+                    activeInteractionKey='';
+                    tooltip.style.display='none';
+                    restoreAnimalRangeCornerLabel();
+                });
+            });
+        });
+
+        // Detailed view only: revealed missing siblings become temporary hover
+        // targets. The hovered one is emphasized, the others fade further, and
+        // the temporary overlays disappear after leaving the subrealm hover group.
+        host.querySelectorAll('.map-zoo-region').forEach(region=>{
+            const focusMissingSibling=event=>{
+                if(!animalRangeMapUsesBioregionInteraction(svg)||!region.classList.contains('is-revealed-missing-bioregion'))return;
+                if(pendingRegionHoverClear){cancelAnimationFrame(pendingRegionHoverClear);pendingRegionHoverClear=0;}
+                if(pendingRegionSwitch){clearTimeout(pendingRegionSwitch);pendingRegionSwitch=0;}
+                activeMissingHoverRegion=region;
+                const parentKey=String(region.dataset.zooRegionKey||'');
+                // Keep all missing siblings of this subrealm visible while the pointer
+                // moves among them, but visually prioritize the one under the cursor.
+                host.querySelectorAll('.map-zoo-region.is-revealed-missing-bioregion').forEach(other=>{
+                    const sameParent=String(other.dataset.zooRegionKey||'')===parentKey;
+                    other.style.display=sameParent?'':'none';
+                    other.classList.toggle('is-missing-hovered',sameParent&&other===region);
+                    other.classList.toggle('is-missing-other',sameParent&&other!==region);
+                });
+                const key=String(region.dataset.regionKey||'').toLowerCase();
+                const factual=factualRegionMeta(key);
+                const label=String(factual?.label||key.toUpperCase());
+                tooltip.textContent=`Not found in ${label}`;
+                tooltip.style.display='block';
+                const parentLabel=String(ZOO_GEOGRAPHY.zoo_regions[parentKey]?.label||'');
+                if(parentLabel){subrealmLabel.textContent=parentLabel;subrealmLabel.style.display='block';}
+                moveTooltip(event);
+            };
+            region.addEventListener('mouseenter',focusMissingSibling);
+            region.addEventListener('mousemove',focusMissingSibling);
+            region.addEventListener('mouseleave',()=>{
+                if(!animalRangeMapUsesBioregionInteraction(svg))return;
+                requestAnimationFrame(()=>{
+                    const under=document.elementFromPoint(lastMapPointer.x,lastMapPointer.y);
+                    const next=under?.closest?.('.map-region,.map-region-hit,.map-zoo-region.is-revealed-missing-bioregion');
+                    if(next){
+                        // Stay in the same temporary hover group.
+                        return;
+                    }
+                    host.querySelectorAll('.map-zoo-region.is-revealed-missing-bioregion').forEach(other=>{
+                        other.style.display='none';
+                        other.classList.remove('is-revealed-missing-bioregion','is-missing-hovered','is-missing-other','is-highlighted');
+                    });
+                    if(activeMapHighlight)activeMapHighlight(false);
+                    activeMapHoverPath=null;
+                    activeMapHighlight=null;
+                    activeInteractionKey='';
+                    activeMissingHoverRegion=null;
+                    tooltip.style.display='none';
+                    restoreAnimalRangeCornerLabel();
+                });
+            });
+        });
+    }catch(error){
+        if(host.dataset.renderKey!==renderKey)return;
+        clearAnimalInfoRegionCardHighlights();
+        host.innerHTML='<div class="animal-range-map-loading">Map unavailable</div>';
+        console.warn('Could not load animal information map:',error);
+    }
+}
+
+function fitAnimalInformationTitle() {
+    const title=document.getElementById('animalInformationTitle');
+    if(!title) return;
+    title.style.removeProperty('font-size');
+
+    const available=title.clientWidth;
+    const needed=title.scrollWidth;
+    if(!available || needed<=available) return;
+
+    const base=parseFloat(getComputedStyle(title).fontSize)||16;
+    // Scale only as much as necessary to keep the English name on one line.
+    // A small floor prevents pathological names from becoming unreadably tiny.
+    const fitted=Math.max(9, Math.floor((base * available / needed) * 10) / 10);
+    title.style.fontSize=`${fitted}px`;
+}
+
 function renderAnimalInformation(animal) {
+    // Information belongs to the newly selected card, not the previous card's
+    // reading position. Reset every possible preview/info scroll container.
+    // The actual desktop scroller is hoverPreviewWiki; older code only reset
+    // the outer preview, so its nested scrollTop survived when changing cards.
+    const preview=document.getElementById('hoverPreview');
+    const infoBack=document.getElementById('hoverPreviewWiki');
+    const infoPane=document.getElementById('animalInformationPane');
+    const resetInfoScroll=()=>{
+        for(const node of [preview,infoBack,infoPane]){
+            if(node){ node.scrollTop=0; node.scrollLeft=0; }
+        }
+    };
+    resetInfoScroll();
     if (!animal) return;
     ensureWikipediaBack();
 
     const name = animalDisplayName(animal);
     const title = document.getElementById('animalInformationTitle');
-    const continent = document.getElementById('animalContinentValue');
+    const habitat = document.getElementById('animalHabitatValue');
+    const exhibitSizeHeader = document.getElementById('animalEnclosureSizeHeader');
     const list = document.getElementById('animalCombinationList');
-    if (!title || !continent || !list) return;
+    if (!title || !habitat || !exhibitSizeHeader || !list) return;
 
     const record = inventoryEntryForAnimal(animal);
     const scientificName = scientificNameForAnimal(animal);
 
-    // Information always uses English name followed by Latin name.
-    title.textContent = scientificName ? `${name} (${scientificName})` : (name || 'Information');
+    // Keep the compact header to the English card name only.
+    // The scientific name remains in the dedicated footer below.
+    title.textContent = name || 'Information';
+    requestAnimationFrame(fitAnimalInformationTitle);
 
     const scientificFooter = document.getElementById('animalInformationScientificName');
     const ztlLink = document.getElementById('animalInformationZtlLink');
@@ -7971,12 +9596,20 @@ function renderAnimalInformation(animal) {
         ztlLink.textContent = 'Open on Zootierliste ↗';
     }
 
-    // geography lives in asset-inventory.json. The Information tab
-    // should use the continent tags we audited there rather than expecting
-    // animals.json to duplicate them.
-    const inventoryContinent = continentFromInventoryTags(animal);
-    const databaseContinent = continentFromAnimalRecord(record);
-    continent.textContent = inventoryContinent || databaseContinent || 'Not listed yet';
+    // Geography is represented by the map; habitat remains textual.
+    habitat.textContent = informationHabitatForAnimal(animal);
+    renderAnimalRangeMap(animal, record);
+    requestAnimationFrame(()=>{
+        resetInfoScroll();
+        // One further frame covers browser scroll anchoring while the async
+        // map/combination content changes the information pane's height.
+        requestAnimationFrame(resetInfoScroll);
+    });
+    const requiredSize = animalEnclosureSize(animal);
+    const sizeLabel = requiredSize
+        ? requiredSize[0].toUpperCase() + requiredSize.slice(1)
+        : 'Small';
+    exhibitSizeHeader.textContent = `Exhibit size: ${sizeLabel}`;
 
     const animalName = compatibilityName(name);
 
@@ -8331,18 +9964,19 @@ function renderCurrentGameHoldings(animal) {
     if (!animal) return;
     const titleEl=document.getElementById('ztlPreviewTitle'),linkEl=document.getElementById('ztlPreviewLink'),statusEl=document.getElementById('ztlPreviewStatus'),textEl=document.getElementById('ztlPreviewText');
     if(!titleEl||!linkEl||!statusEl||!textEl)return;
-    const name=animalDisplayName(animal),scientificName=scientificNameForAnimal(animal);titleEl.textContent=`Holdings — ${name}`;statusEl.textContent='Current holders in this game';textEl.innerHTML='';
+    const name=animalDisplayName(animal),scientificName=scientificNameForAnimal(animal);titleEl.textContent=`Holdings — ${name}`;statusEl.textContent='';textEl.innerHTML='';
     const holders=[];
     const playerAnimals=state.visitingZoo?(visitPlayerSnapshot?.animals||[]):(state.animals||[]);
     const playerName=state.visitingZoo?(visitPlayerView?.name||'Your Zoo'):(state.zooName||'Your Zoo');
     const playerCountry=state.visitingZoo?(visitPlayerSnapshot?.zooCountry||''):(state.zooCountry||state.country||'');
     if(playerAnimals.some(a=>animalCardKey(a)===animalCardKey(animal)))holders.push({name:playerName,country:playerCountry,player:true});
     for(const record of state.realZooData?.zoos||[]){if(isPlayerRealZooRecord(record))continue;const has=realZooSessionAnimalNames(record).some(raw=>{const spec=realZooAnimalSpecByName(raw);return spec&&animalCardKey(spec)===animalCardKey(animal);});if(!has)continue;holders.push({name:record.name||'Zoo',country:String(record.country||'').trim(),player:false,record,trade:latestCurrentHoldingAcquisition(record.name,name)});}
+    statusEl.textContent=`Current holders in this game: ${holders.length}`;
     const coll=new Intl.Collator('en',{sensitivity:'base',numeric:true}),groups=new Map();
     for(const h of holders){const c=String(h.country||'Unknown country').trim()||'Unknown country';if(!groups.has(c))groups.set(c,[]);groups.get(c).push(h);}
     const countries=[...groups].map(x=>x[0]).sort((a,b)=>{const ap=playerCountry&&coll.compare(a,playerCountry)===0,bp=playerCountry&&coll.compare(b,playerCountry)===0;return ap!==bp?(ap?-1:1):coll.compare(a,b);});
     if(!holders.length)textEl.textContent='No current holder in this game.';
-    for(const country of countries){const heading=document.createElement('div');heading.className='current-game-holder-country';heading.textContent=country;textEl.appendChild(heading);for(const holder of groups.get(country).sort((a,b)=>a.player!==b.player?(a.player?-1:1):coll.compare(a.name,b.name))){
+    for(const country of countries){const countryHolders=groups.get(country);const heading=document.createElement('div');heading.className='current-game-holder-country';heading.textContent=`${country}: ${countryHolders.length}`;textEl.appendChild(heading);for(const holder of countryHolders.sort((a,b)=>a.player!==b.player?(a.player?-1:1):coll.compare(a.name,b.name))){
         const row=document.createElement(holder.player?'span':'button');row.className='current-game-holder'+(holder.player?' player-holder':' visit-holder-button');row.type=holder.player?undefined:'button';
         const age=holder.trade?Number(state.turn)-Number(holder.trade.turn):Infinity;row.textContent=holder.name+(age>=0&&age<=20?' ★':'');
         if(!holder.player)row.addEventListener('click',()=>visitRealZoo(holder.record));
@@ -8365,6 +9999,7 @@ async function flipPreviewToWikipedia() {
     }
 
     hoverPreview.classList.add('wiki-open');
+    previewInfoFaceContinuity = true;
 
     // Colour belongs to the whole information card, not specifically Wikipedia.
     // Apply it immediately so the default Information tab opens in the correct category colour.
@@ -8592,6 +10227,19 @@ function relinkRestoredAnimalReferences() {
         state.result = byId.get(state.result.id);
     }
 }
+function realZooLocationText(record) {
+    const raw = record?.location ?? record?.city ?? record?.place ?? record?.province ?? record?.country ?? '';
+    if (typeof raw === 'string' || typeof raw === 'number') return String(raw).trim();
+    if (raw && typeof raw === 'object') {
+        // Newer real-zoo data may store structured geography. Never stringify the
+        // object directly: that is what produced "[object Object]" in the New Zoo
+        // menu and header. Prefer the most local human-readable field available.
+        const candidates = [raw.city, raw.place, raw.locality, raw.municipality, raw.location, raw.province, raw.region, raw.country];
+        for (const value of candidates) if (typeof value === 'string' && value.trim()) return value.trim();
+    }
+    return String(record?.province || record?.country || '').trim();
+}
+
 function realZooRecordByName(name) {
     const wanted=normaliseGeographyPart(name||'');
     return (state.realZooData?.zoos||[]).find(r=>normaliseGeographyPart(r?.name||'')===wanted)||null;
@@ -8619,7 +10267,7 @@ function restoreRealZooVisitLayout(record, layout) {
     state.zooName=record?.name||state.zooName||'Zoo';
     state.zooCountry=record?.country||'';
     state.zooProvince=record?.province||'';
-    state.zooLocation=record?.location||record?.city||record?.province||'';
+    state.zooLocation=realZooLocationText(record);
     return true;
 }
 function visitAnimalTags(animal){ return new Set(animalInventoryTags(animal.category,animal.level,animal.filename)); }
@@ -8663,7 +10311,7 @@ function addVisitExpansionEnclosureNear(animal) {
     const occupied=(px,py)=>(state.enclosures||[]).some(e=>Math.abs(e.x-px)<ENCLOSURE_W*.9 && Math.abs(e.y-py)<ENCLOSURE_H*.9);
     let tries=0;
     while(occupied(x,y) && tries<30){ tries++; x=(anchor?.x||600)+((tries%5)-2)*(ENCLOSURE_W+ENCLOSURE_GAP); y=(anchor?.y||600)+(Math.floor(tries/5)+1)*(ENCLOSURE_H+ENCLOSURE_GAP); }
-    const enclosure={id,number:10,x,y};
+    const enclosure={id,number:10,x,y,rotated180:false};
     state.enclosures.push(enclosure);
     state.enclosure10Unlocked=true;
     return enclosure;
@@ -8688,6 +10336,7 @@ function reconcileVisitedRealZoo(record) {
         try { animal=createAnimal(spec.category,spec.level,spec.filename); } catch(e){ continue; }
         state.animals.push(animal);
         let destinations=eligibleDestinationsForAnimal(animal);
+        destinations=preferSizeAppropriateGenerationDestinations(animal,destinations);
         destinations.sort((a,b)=>visitEnclosureThemeScore(b.enclosure,animal)-visitEnclosureThemeScore(a.enclosure,animal));
         let destination=destinations[0]||null;
         if(!destination){
@@ -8749,7 +10398,7 @@ function visitRealZoo(record) {
         state.realZooSessionHoldings=sessionHoldings;
         state.realZooTradeDirtyZoos=dirty;
         state.zooName=record.name||'Zoo'; state.zooCountry=record.country||'';
-        state.zooProvince=record.province||''; state.zooLocation=record.location||record.city||record.province||'';
+        state.zooProvince=record.province||''; state.zooLocation=realZooLocationText(record);
         state.realZooPlayerRecordName='';
         state.visitingZoo={name:state.zooName};
         rememberVisitedZooQuickTab(state.zooName);
@@ -8913,6 +10562,7 @@ function attachDraggableAreaLabel(label,area){
         const up=()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);if(moved)writeAutoResumeSnapshot?.(true);};
         window.addEventListener('pointermove',move);window.addEventListener('pointerup',up,{once:true});window.addEventListener('pointercancel',up,{once:true});
     });
+    label.addEventListener('click',e=>{if(!areaToolActive||state.visitingZoo||label.isContentEditable)return;if(e.target.closest('.area-colour-button'))return;e.preventDefault();e.stopPropagation();startInlineAreaName(area,label);});
     label.addEventListener('dblclick',e=>{if(state.visitingZoo)return;e.preventDefault();e.stopPropagation();startInlineAreaName(area,label);});
 }
 function renderCustomAreas(){
@@ -8958,6 +10608,7 @@ function setupAreaToolInteractions(){
 }
 
 function renderZoo() {
+    hideHusbandryPopup();
 
     const scrollLeft =
         zooBoard.scrollLeft;
@@ -9000,6 +10651,10 @@ function renderZoo() {
         );
 
     }
+
+    // Never leak a render-only Area cache into later gameplay/prestige work.
+    renderedConnectedAreaGroups = null;
+    renderedConnectedAreaGroupsSignature = '';
 
     // Sandbox cards may exist loose on the board until the player drags them
     // into an enclosure. They are deliberately outside normal-game state.
@@ -9053,6 +10708,73 @@ function showHusbandryPopup(anchor, problems){
     p.textContent=lines.join('\n');p.style.display='block';positionSmallPopup(p,anchor);
 }
 function hideHusbandryPopup(){const p=document.getElementById('husbandryPopup');if(p)p.style.display='none';}
+
+const ROTATABLE_ENCLOSURE_NUMBERS = new Set([1, 2, 4, 6, 7, 8, 9]);
+const GENERATED_ENCLOSURE_ROTATION_CHANCE = 0.35;
+
+function enclosureSupportsRotation(enclosureOrNumber) {
+    const number = Number(
+        typeof enclosureOrNumber === 'object'
+            ? enclosureOrNumber?.number
+            : enclosureOrNumber
+    );
+    return ROTATABLE_ENCLOSURE_NUMBERS.has(number);
+}
+
+function enclosureIsCompletelyEmpty(enclosure) {
+    return !state.animals.some(animal => animal?.enclosureId === enclosure?.id);
+}
+
+function randomGeneratedEnclosureRotation(number) {
+    return enclosureSupportsRotation(number) &&
+        Math.random() < GENERATED_ENCLOSURE_ROTATION_CHANCE;
+}
+
+function ensureGeneratedEnclosureRotations(enclosures) {
+    for (const enclosure of enclosures || []) {
+        const rotatable = enclosureSupportsRotation(enclosure);
+        if (!rotatable) {
+            enclosure.rotated180 = false;
+        } else if (typeof enclosure.rotated180 !== 'boolean') {
+            // Preserve authored/saved choices; randomize only new cards.
+            enclosure.rotated180 = randomGeneratedEnclosureRotation(enclosure.number);
+        }
+    }
+    return enclosures;
+}
+
+function rotateEmptyEnclosure(enclosure) {
+    if (!enclosureSupportsRotation(enclosure) || !enclosureIsCompletelyEmpty(enclosure)) return false;
+    enclosure.rotated180 = !Boolean(enclosure.rotated180);
+    state.areaPlacementRevision = (Number(state.areaPlacementRevision) || 0) + 1;
+    captureTurnSnapshot();
+    renderAll();
+    return true;
+}
+
+function mirrorRotatedEnclosureSlots(element, enclosure) {
+    if (!element || !enclosureSupportsRotation(enclosure) || !enclosure.rotated180) return;
+
+    // Keep the enclosure DOM itself unrotated so animals, controls and drag
+    // geometry remain stable. Instead mirror each slot rectangle through the
+    // card centre. This makes the usable enclosure spaces follow the rotated
+    // artwork exactly while animal cards themselves remain upright.
+    const cardWidth = element.offsetWidth;
+    const cardHeight = element.offsetHeight;
+    if (!(cardWidth > 0 && cardHeight > 0)) return;
+
+    for (const slot of element.querySelectorAll('.slot')) {
+        const left = slot.offsetLeft;
+        const top = slot.offsetTop;
+        const width = slot.offsetWidth;
+        const height = slot.offsetHeight;
+
+        slot.style.left = `${cardWidth - left - width}px`;
+        slot.style.top = `${cardHeight - top - height}px`;
+        slot.style.right = 'auto';
+        slot.style.bottom = 'auto';
+    }
+}
 
 // ============================================================
 // RENDER ENCLOSURE
@@ -9114,6 +10836,9 @@ function renderEnclosure(
     element.style.top =
         enclosure.y + 'px';
 
+    const enclosureRotated180 =
+        enclosureSupportsRotation(enclosure) && enclosure.rotated180;
+
 
     const image =
         document.createElement(
@@ -9129,6 +10854,15 @@ function renderEnclosure(
         enclosurePath(
             enclosure.number
         );
+
+    // Rotation is artwork-only. Slot geometry must remain canonical: generated
+    // and saved animal placements are keyed to the enclosure's original slot
+    // map. Rotating the parent DOM element moved those slots (and therefore
+    // animals) to mirrored positions/outside the intended exhibit artwork.
+    if (enclosureRotated180) {
+        image.style.transform = 'rotate(180deg)';
+        image.style.transformOrigin = '50% 50%';
+    }
 
 
     image.draggable =
@@ -9147,12 +10881,10 @@ function renderEnclosure(
 
     applyEnclosureThemePresentation(element, enclosure);
 
-    const husbandryProblems = getGroups(enclosure).map(group => exhibitHusbandryStatus(enclosure, group)).filter(status => status.invalid);
-    if (husbandryProblems.length) {
-        element.classList.add('husbandry-too-small');
-        element.addEventListener('mouseenter', () => showHusbandryPopup(element, husbandryProblems));
-        element.addEventListener('mouseleave', hideHusbandryPopup);
-    }
+    const husbandryProblems = getGroups(enclosure)
+        .map(group => exhibitHusbandryStatus(enclosure, group))
+        .filter(status => status.invalid);
+    if (husbandryProblems.length) element.classList.add('husbandry-too-small');
 
     // Build the visible occupancy lookup once for this enclosure. Previously
     // animalAtSlot(..., includeReserved=false) scanned the entire animal array
@@ -9233,7 +10965,17 @@ function renderEnclosure(
                 animal,
                 'enclosure'
             );
-            if (animalHasHusbandryProblem(animal)) card.classList.add('husbandry-animal-warning');
+
+            if (animalHasHusbandryProblem(animal)) {
+                card.classList.add('husbandry-animal-warning');
+                const group = enclosureGroupForSlot(enclosure, slotIndex);
+                const problem = group ? exhibitHusbandryStatus(enclosure, group) : null;
+                if (problem?.invalid) {
+                    card.addEventListener('mouseenter', () => showHusbandryPopup(card, [problem]));
+                    card.addEventListener('mouseleave', hideHusbandryPopup);
+                    card.addEventListener('pointercancel', hideHusbandryPopup);
+                }
+            }
 
             if (state.sandboxMode && sandboxAnimalHasCompatibilityConflict(animal)) {
 card.classList.add('sandbox-compatibility-conflict');
@@ -9275,6 +11017,92 @@ card.classList.add('sandbox-compatibility-conflict');
 
     }
 
+    if (enclosureSupportsRotation(enclosure) && enclosureIsCompletelyEmpty(enclosure)) {
+        const rotateButton = document.createElement('button');
+        rotateButton.type = 'button';
+        rotateButton.className = 'enclosure-rotate-button';
+        rotateButton.textContent = '↻';
+        rotateButton.title = 'Rotate enclosure 180°';
+        rotateButton.setAttribute('aria-label', 'Rotate enclosure 180 degrees');
+
+        // The button lives just outside the card, so give it a transparent
+        // bridge/hover zone back to the enclosure. Moving from the card to the
+        // button therefore never crosses a dead area that can hide the control.
+        const rotateHoverZone = document.createElement('div');
+        rotateHoverZone.className = 'enclosure-rotate-hover-zone';
+        Object.assign(rotateHoverZone.style, {
+            position: 'absolute',
+            left: '50%',
+            top: '-42px',
+            bottom: 'auto',
+            width: '58px',
+            height: '48px',
+            transform: 'translateX(-50%)',
+            transformOrigin: '50% 100%',
+            zIndex: '29',
+            display: 'none',
+            pointerEvents: 'auto'
+        });
+
+        Object.assign(rotateButton.style, {
+            position: 'absolute',
+            left: '50%',
+            top: '4px',
+            width: '30px',
+            height: '30px',
+            borderRadius: '50%',
+            border: '1px solid rgba(0,0,0,.32)',
+            background: '#fff',
+            color: '#1d2329',
+            boxShadow: '0 2px 8px rgba(0,0,0,.28)',
+            fontSize: '20px',
+            fontWeight: '700',
+            lineHeight: '26px',
+            padding: '0',
+            cursor: 'pointer',
+            zIndex: '30',
+            transform: enclosure.rotated180
+                ? 'translateX(-50%) rotate(180deg)'
+                : 'translateX(-50%)'
+        });
+
+        const showRotateControl = () => {
+            rotateHoverZone.style.display = 'block';
+        };
+        const hideRotateControl = event => {
+            const next = event?.relatedTarget;
+            if (
+                next &&
+                (element.contains(next) || rotateHoverZone.contains(next))
+            ) return;
+            rotateHoverZone.style.display = 'none';
+        };
+
+        // Anywhere on an empty eligible enclosure reveals the control.
+        element.addEventListener('pointerenter', showRotateControl);
+        element.addEventListener('pointerleave', hideRotateControl);
+        rotateHoverZone.addEventListener('pointerenter', showRotateControl);
+        rotateHoverZone.addEventListener('pointerleave', hideRotateControl);
+
+        // Stop the enclosure's drag handler from seeing either the button or
+        // its surrounding bridge zone.
+        rotateHoverZone.addEventListener('pointerdown', event => {
+            event.stopPropagation();
+        });
+        rotateButton.addEventListener('pointerdown', event => {
+            event.preventDefault();
+            event.stopPropagation();
+        });
+        rotateButton.addEventListener('click', event => {
+            event.preventDefault();
+            event.stopPropagation();
+            rotateEmptyEnclosure(enclosure);
+        });
+
+        rotateHoverZone.appendChild(rotateButton);
+        element.appendChild(rotateHoverZone);
+    }
+
     renderEnclosureUserTags(element,enclosure);
 
     element.addEventListener(
@@ -9290,7 +11118,7 @@ card.classList.add('sandbox-compatibility-conflict');
 
             if (
                 event.target.closest(
-                    '.animal-card'
+                    '.animal-card, .enclosure-rotate-button, .enclosure-rotate-hover-zone'
                 )
             ) {
                 return;
@@ -9373,6 +11201,8 @@ card.classList.add('sandbox-compatibility-conflict');
     zooCanvas.appendChild(
         element
     );
+
+    mirrorRotatedEnclosureSlots(element, enclosure);
 
 }
 
@@ -10402,6 +12232,11 @@ function currentVisualSnapshot() {
         zooName: state.zooName,
         enclosures: cloneForSave(state.enclosures),
         animals: cloneForSave(state.animals),
+        // Generated Area membership is stateful because an established empty
+        // enclosure may retain its Area. It therefore has to travel with the
+        // visual turn snapshot; otherwise merely viewing an old turn can mutate
+        // and destroy the live game's retained empty-card memberships.
+        generatedAreaMembership: cloneForSave(state.generatedAreaMembership),
         zoom: state.zoom
     };
 }
@@ -10495,6 +12330,20 @@ function writeAutoResumeSnapshot(force = false) {
         return false;
     }
 }
+
+function persistCurrentCameraForReload() {
+    // Camera movement is deliberately not a game turn. Force-refresh the
+    // auto-resume record here so its view.scrollLeft/scrollTop and saved zoom
+    // describe the exact view the player is leaving, rather than the camera
+    // from the last gameplay action.
+    if (!state.loaded || state.visitingZoo || state.historyViewTurn !== null) return;
+    writeAutoResumeSnapshot(true);
+}
+
+window.addEventListener('pagehide', persistCurrentCameraForReload);
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') persistCurrentCameraForReload();
+});
 
 function readAutoResumeSnapshot() {
     try {
@@ -10669,8 +12518,37 @@ function normaliseLoadedGameCollections() {
 }
 
 
+function relinkSandboxLooseAnimals() {
+    const byId = new Map((state.animals || []).map(animal => [animal.id, animal]));
+    const relinked = [];
+    const seenIds = new Set();
+
+    for (const loose of state.sandboxLooseAnimals || []) {
+        if (!loose || loose.id == null || seenIds.has(loose.id)) continue;
+
+        let canonical = byId.get(loose.id);
+        if (!canonical) {
+            canonical = loose;
+            state.animals.push(canonical);
+            byId.set(canonical.id, canonical);
+        }
+
+        if (Number.isFinite(Number(loose.x))) canonical.x = Number(loose.x);
+        if (Number.isFinite(Number(loose.y))) canonical.y = Number(loose.y);
+        canonical.sandboxLoose = true;
+        canonical.enclosureId = null;
+        canonical.slotIndex = null;
+
+        relinked.push(canonical);
+        seenIds.add(canonical.id);
+    }
+
+    state.sandboxLooseAnimals = relinked;
+    return byId;
+}
+
 function relinkLoadedPlayerReferences() {
-    const byId = new Map(state.animals.map(animal => [animal.id, animal]));
+    const byId = relinkSandboxLooseAnimals();
     if (!(state.animalLineage instanceof Map)) state.animalLineage = new Map();
     state.collectionRecords = normaliseLoadedCollection(state.collectionRecords, 'Map');
     state.collectionCohabitationActive = normaliseLoadedCollection(state.collectionCohabitationActive, 'Map');
@@ -10918,8 +12796,14 @@ function importGameState(saveData, { deferRender = false } = {}) {
 
     requestAnimationFrame(() => {
         if (saveData.view) {
-            zooBoard.scrollLeft = Number(saveData.view.scrollLeft) || 0;
-            zooBoard.scrollTop = Number(saveData.view.scrollTop) || 0;
+            const left=Math.max(0,Number(saveData.view.scrollLeft)||0);
+            const top=Math.max(0,Number(saveData.view.scrollTop)||0);
+            zooBoard.scrollLeft=left;
+            zooBoard.scrollTop=top;
+            requestAnimationFrame(() => {
+                if (Math.abs(zooBoard.scrollLeft-left)>1) zooBoard.scrollLeft=left;
+                if (Math.abs(zooBoard.scrollTop-top)>1) zooBoard.scrollTop=top;
+            });
         }
         state.suppressHistoryCapture = false;
         captureTurnSnapshot();
@@ -10989,10 +12873,40 @@ function loadBundledRealZooLayoutTemplates() {
             return state.realZooLayoutTemplates;
         });
 }
+let REAL_ZOO_PREGENERATED_LAYOUTS = new Map();
+
+function loadPregeneratedRealZooLayouts() {
+    const path = 'pregenerated_real_zoo_layouts_netherlands_v7.json';
+    return fetch(path, { cache:'default' })
+        .then(response => response.ok ? response.json() : { layouts:[] })
+        .then(data => {
+            const layouts = Array.isArray(data) ? data : (Array.isArray(data?.layouts) ? data.layouts : []);
+            const map = new Map();
+            for (const layout of layouts) {
+                const key = realZooTemplateKey(layout?.zoo?.name || layout?.zooName || '');
+                if (key && Array.isArray(layout?.enclosures) && layout.enclosures.length) map.set(key, layout);
+            }
+            REAL_ZOO_PREGENERATED_LAYOUTS = map;
+            REAL_ZOO_PRESTIGE_CACHE = new WeakMap();
+            return map;
+        })
+        .catch(error => {
+            console.warn('Could not load pregenerated real-zoo layouts:', error);
+            REAL_ZOO_PREGENERATED_LAYOUTS = new Map();
+            return REAL_ZOO_PREGENERATED_LAYOUTS;
+        });
+}
+
+function pregeneratedRealZooLayout(recordOrName) {
+    const key = realZooTemplateKey(recordOrName);
+    return key ? REAL_ZOO_PREGENERATED_LAYOUTS.get(key) || null : null;
+}
+
 function authoritativeRealZooLayout(record) {
-    // Development/local template remains useful while authoring, then the
-    // committed data/layouts template takes precedence over pregeneration.
-    return localRealZooTemplate(record) || realZooBundledTemplate(record) || record?.pregenerated_layout || null;
+    // Strict separation of concerns:
+    // local authoring override -> handcrafted data/layouts override ->
+    // separate canonical pregenerated layout file -> procedural fallback.
+    return localRealZooTemplate(record) || realZooBundledTemplate(record) || pregeneratedRealZooLayout(record) || null;
 }
 
 function loadLocalRealZooTemplates() {
@@ -11078,6 +12992,9 @@ function matchSandboxZooToRealZoo() {
 }
 
 function buildRealZooLayoutTemplate(record) {
+    // Capture current reconciled membership, not stale membership from before
+    // the most recent animal/enclosure change.
+    connectedEnclosureThemeGroups();
     const enclosureIds = new Set((state.enclosures || []).map(enclosure => enclosure.id));
     const membership = {};
     for (const [key, ids] of state.generatedAreaMembership instanceof Map ? state.generatedAreaMembership : []) {
@@ -11176,7 +13093,7 @@ function applyRealZooLayoutTemplate(record, template) {
         animal.enclosureId = enclosureId;
         animal.slotIndex = Number.isInteger(saved.slotIndex) ? saved.slotIndex : null;
     }
-    state.enclosures = newEnclosures;
+    state.enclosures = ensureGeneratedEnclosureRotations(newEnclosures);
     state.customAreas = (template.customAreas || []).map(area => ({
         ...cloneForSave(area),
         enclosureIds: (area.enclosureIds || []).map(id => oldToNew.get(id)).filter(id => id != null)
@@ -11603,6 +13520,9 @@ function viewHistoricalTurn(turn) {
 
     state.enclosures = cloneForSave(snapshot.enclosures);
     state.animals = cloneForSave(snapshot.animals);
+    state.generatedAreaMembership = normalizeGeneratedAreaMembership(
+        cloneForSave(snapshot.generatedAreaMembership)
+    );
     state.zoom = snapshot.zoom || state.zoom;
     document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
 
@@ -11623,6 +13543,9 @@ function exitHistoryView(render = true) {
     if (live) {
         state.enclosures = cloneForSave(live.enclosures);
         state.animals = cloneForSave(live.animals);
+        state.generatedAreaMembership = normalizeGeneratedAreaMembership(
+            cloneForSave(live.generatedAreaMembership)
+        );
         state.zoom = live.zoom || state.zoom;
         document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
     }
@@ -15021,12 +16944,14 @@ function sandboxSpawnAnimal(category, level, filename) {
 function sandboxSpawnEnclosure(number) {
     if (!state.sandboxMode) return;
     const pos = sandboxFindLoosePosition(ENCLOSURE_W, ENCLOSURE_H);
-    state.enclosures.push({id:state.nextId++, number:Number(number), x:pos.x, y:pos.y});
+    state.enclosures.push({id:state.nextId++, number:Number(number), x:pos.x, y:pos.y, rotated180:randomGeneratedEnclosureRotation(Number(number))});
     renderAll();
 }
 
 function renderSandboxLooseAnimals() {
-    for (const animal of state.sandboxLooseAnimals || []) {
+    const animalsById = new Map((state.animals || []).map(animal => [animal.id, animal]));
+    for (const loose of state.sandboxLooseAnimals || []) {
+        const animal = loose && (animalsById.get(loose.id) || loose);
         if (!animal || animal.enclosureId !== null) continue;
         const wrap=document.createElement('div');
         wrap.className='sandbox-loose-card';
@@ -15608,9 +17533,67 @@ function realZooAreaSortKey(unit) {
     if (all(/bear|panda/) && common.includes('forest')) return '00-special-bear';
     if (common.includes('petting-zoo')) return '00-special-petting';
     if (common.includes('domestic')) return '01-facility-farm';
-    const preferred = ['tropical','rainforest','savanna','aquatic','semi-aquatic','wetland','forest','desert','temperate','boreal','arctic','mountain',
+    // Prefer the current data-driven named Regions before habitat and continent.
+    // This makes procedural visiting zoos actually form Serengeti, Amazon,
+    // Sulawesi, Carpathians, etc. blocks instead of losing those tags behind a
+    // broader rainforest/savanna/continent key.
+    const regionTags = (state.inventory?.tagDefinitions?.geographyHierarchy?.player_facing_prestige_regions || [])
+        .map(definition => definition?.tag).filter(Boolean);
+    const preferred = [...regionTags,
+        'rainforest','savanna','aquatic','semi-aquatic','wetland','forest','desert','temperate','boreal','arctic','mountain',
         'africa','asia','europe','north-america','south-america','oceania','antarctica'];
     return preferred.find(tag => common.includes(tag)) || 'zz-other';
+}
+
+
+function realZooPlanFitsEnclosureNumber(plan, number, enforceSize = true) {
+    const groups = GROUPS[number] || [];
+    const units = plan?.units || [];
+    if (groups.length < units.length) return false;
+    for (let i = 0; i < units.length; i++) {
+        const group = groups[i];
+        const unit = units[i] || [];
+        if (!group || group.length < unit.length) return false;
+        if (enforceSize && !generationGroupFitsAnimals(group, unit)) return false;
+    }
+    return true;
+}
+
+function sizeAwareRealZooPlans(plans, allowHugeEnclosure = false) {
+    const normalNumbers = [1,2,3,4,5,6,7,8,9];
+    const allNumbers = allowHugeEnclosure ? [...normalNumbers,10] : normalNumbers;
+    const output = [];
+    for (const original of plans || []) {
+        if (!original?.units?.length) { output.push(original); continue; }
+        const capacityCandidates = allNumbers.filter(number => realZooPlanFitsEnclosureNumber(original, number, false));
+        const sizeCandidates = capacityCandidates.filter(number => realZooPlanFitsEnclosureNumber(original, number, true));
+        if (sizeCandidates.length && Math.random() >= GENERATED_UNDERSIZED_EXHIBIT_CHANCE) {
+            const nonHuge = sizeCandidates.filter(number => number !== 10);
+            original.number = randomItem(nonHuge.length ? nonHuge : sizeCandidates);
+            output.push(original);
+            continue;
+        }
+        if (capacityCandidates.length) {
+            // 1% deliberate exception, or the best capacity-only fallback when no
+            // size-correct card exists for this exact multi-exhibit plan.
+            original.number = randomItem(capacityCandidates.filter(n => n !== 10).length ? capacityCandidates.filter(n => n !== 10) : capacityCandidates);
+            output.push(original);
+            continue;
+        }
+        // The card shape itself cannot accommodate these units. Split it rather
+        // than forcing an invalid assignment; each unit then gets its own best-fit card.
+        for (const unit of original.units) {
+            const single = { number: 5, units: [unit] };
+            const cap = allNumbers.filter(number => realZooPlanFitsEnclosureNumber(single, number, false));
+            const fit = cap.filter(number => realZooPlanFitsEnclosureNumber(single, number, true));
+            const pool = fit.length ? fit : cap;
+            if (!pool.length) throw new Error('No enclosure can accommodate a generated real-zoo exhibit.');
+            const nonHuge = pool.filter(number => number !== 10);
+            single.number = randomItem(nonHuge.length ? nonHuge : pool);
+            output.push(single);
+        }
+    }
+    return output;
 }
 
 function createRealZooFromRecord(record, options = {}) {
@@ -15673,17 +17656,21 @@ function createRealZooFromRecord(record, options = {}) {
             : `zz-scattered-${Math.random().toString(36).slice(2, 8)}`;
     }
     units.sort((a,b) => (a._layoutAreaKey || '').localeCompare(b._layoutAreaKey || ''));
-    const occupiedPlans = realZooPlannedCards(units, state.enclosure10Unlocked)
-        .sort((a,b) => {
+    const occupiedPlans = sizeAwareRealZooPlans(
+        realZooPlannedCards(units, state.enclosure10Unlocked),
+        state.enclosure10Unlocked
+    ).sort((a,b) => {
             const ak = a.units[0]?._layoutAreaKey || realZooAreaSortKey(a.units.flat());
             const bk = b.units[0]?._layoutAreaKey || realZooAreaSortKey(b.units.flat());
             return ak.localeCompare(bk);
         });
 
-    // Existing unused slots count toward startup headroom. This is crucial for
-    // real zoos: a large enclosure holding one or two animals may already offer
-    // 2–3 future card positions, so it must not also trigger another empty card.
-    const plans = addRealZooExpansionPlans(occupiedPlans.slice(), state.animals.length);
+    // Do not manufacture expansion cards for a real zoo. Earlier builds added
+    // free-space cards on top of the unused footprint already required by large
+    // exhibits, making generated/visited zoos look mostly empty. Canonical and
+    // procedural real zoos now start from occupied plans only; future gameplay
+    // can add genuine expansion capacity through the normal enclosure systems.
+    const plans = occupiedPlans.slice();
 
     const cols = Math.max(4, Math.min(10, Math.ceil(Math.sqrt(plans.length * ENCLOSURE_H / ENCLOSURE_W))));
     const stepX = ENCLOSURE_W + ENCLOSURE_GAP;
@@ -15727,7 +17714,8 @@ function createRealZooFromRecord(record, options = {}) {
     state.enclosures = plans.map((plan, index) => ({
         id: state.nextId++, number: plan.number,
         x: positions[index]?.x ?? startX,
-        y: positions[index]?.y ?? startY
+        y: positions[index]?.y ?? startY,
+        rotated180: randomGeneratedEnclosureRotation(plan.number)
     }));
 
     // Occupied cards were planned around their GROUPS, so every logical exhibit
@@ -16221,7 +18209,7 @@ function ensureGenerateZooUI() {
     }
 
     function realZooRecordLocation(record) {
-        return String(record?.location || record?.city || record?.place || record?.province || record?.country || '').trim();
+        return realZooLocationText(record);
     }
 
     function selectedRealZooRecord() {
@@ -17060,7 +19048,8 @@ function positionSmallPopup(popup, anchor) {
 }
 function prestigeBreakdownText(b) {
     const diff=Math.ceil(b.current)-Math.ceil(b.base), sign=diff>0?'+':'';
-    const lines=[`Current prestige: ${Math.ceil(b.current)}`,`Original prestige: ${Math.ceil(b.base)}`,`Difference: ${sign}${diff}`];
+    const lines=[`Current prestige: ${Math.ceil(b.current)}`,`Collection prestige: ${Math.ceil(b.base)} (raw ${Math.ceil(b.rawBase ?? b.base)})`,`Difference: ${sign}${diff}`];
+    if(b.identityPercent) lines.push(`Collection identity: +${Math.round(b.identityBonus)} (${b.identityPercent}%)`);
     if(b.areaBonusPercent) {
         const d=b.areaDetails||{};
         lines.push(`Areas / speciality exhibits: +${Math.round(b.areaBonus)} (${Number(b.areaBonusPercent.toFixed(2))}% of base)`);
@@ -17069,6 +19058,7 @@ function prestigeBreakdownText(b) {
         if(d.tagPercent) lines.push(`  Custom exhibit tags: ${Number(d.tagPercent.toFixed(2))}%`);
     }
     if(b.combinationUnits) lines.push(`Mixed exhibits: +${Math.round(b.combinationBonus)} (${b.combinationUnits}% of base)`);
+    if(b.curationPercent) lines.push(`Curation: +${Math.round(b.curationBonus)} (${b.curationPercent}%; ${Math.round((b.curationRatio||0)*100)}% of animals in recognised areas)`);
     if(b.husbandryPenaltyPercent) lines.push(`Husbandry penalty: −${Math.round(b.husbandryPenalty)} (${b.husbandryPenaltyPercent}%)`);
     return lines.join('\n');
 }
@@ -17106,11 +19096,50 @@ const REAL_ZOO_GEOGRAPHY_PRESTIGE_CURVE = Object.freeze([
     { prestige: 700, weights: [22, 21, 20, 21, 20] }
 ]);
 
-function baseZooPrestige() {
+function rawZooCollectionPrestige() {
     return (state.animals || []).reduce((total, animal) => {
         if (!animal || animal.enclosureId === null) return total;
         return total + (ZOO_PRESTIGE_BY_LEVEL[Number(animal.level)] || 0);
     }, 0);
+}
+function diminishedCategoryPrestige(raw) {
+    const value = Math.max(0, Number(raw) || 0);
+    return Math.min(value, 200)
+        + Math.max(0, Math.min(value - 200, 200)) * 0.50
+        + Math.max(0, Math.min(value - 400, 200)) * 0.25
+        + Math.max(0, value - 600) * 0.10;
+}
+function collectionPrestigeDetails() {
+    const rawByCategory = new Map();
+    const speciesByCategory = new Map();
+    for (const animal of state.animals || []) {
+        if (!animal || animal.enclosureId === null) continue;
+        const category = animal.category || 'Other';
+        rawByCategory.set(category, (rawByCategory.get(category) || 0) + (ZOO_PRESTIGE_BY_LEVEL[Number(animal.level)] || 0));
+        if (!speciesByCategory.has(category)) speciesByCategory.set(category, new Set());
+        speciesByCategory.get(category).add(animalDatabaseKey(animal.filename));
+    }
+    const raw = [...rawByCategory.values()].reduce((a,b)=>a+b,0);
+    const adjustedByCategory = new Map([...rawByCategory].map(([category,value]) => [category,diminishedCategoryPrestige(value)]));
+    const adjusted = [...adjustedByCategory.values()].reduce((a,b)=>a+b,0);
+    let dominantCategory = null, dominantRaw = 0;
+    for (const [category,value] of rawByCategory) if (value > dominantRaw) { dominantCategory=category; dominantRaw=value; }
+    const share = raw > 0 ? dominantRaw / raw : 0;
+    const dominantSpecies = dominantCategory ? (speciesByCategory.get(dominantCategory)?.size || 0) : 0;
+    // A specialist identity must have genuine depth; a tiny collection cannot
+    // earn a large percentage simply because all of its cards share a category.
+    const depthQualified = dominantRaw >= 150 && dominantSpecies >= 8;
+    let identityPercent = 0;
+    if (depthQualified) {
+        if (share >= .80) identityPercent = 40;
+        else if (share >= .70) identityPercent = 30;
+        else if (share >= .55) identityPercent = 20;
+        else if (share >= .40) identityPercent = 10;
+    }
+    return { raw, adjusted, rawByCategory, adjustedByCategory, dominantCategory, share, dominantSpecies, identityPercent };
+}
+function baseZooPrestige() {
+    return collectionPrestigeDetails().adjusted;
 }
 
 // Area prestige rewards structure, but recognised game-generated Areas/Houses
@@ -17163,10 +19192,27 @@ function prestigeAreaBonusDetails() {
     }
     const tagPercent = Math.min(5, tagLocations.size * 0.25);
 
+    // Prevent nested/overlapping geography from multiplying prestige without
+    // bound. Continents and named regions together cap at +30%; habitat/facility
+    // presentation has its own +30% cap. Specials are handled as recognised
+    // presentation but remain inside the overall presentation ceiling.
+    let geographyPercent = 0, habitatPercent = 0, specialPercent = 0;
+    for (const item of recognised) {
+        const source = recognisedGroups.find(group => areaMembershipSignature(group) === item.signature);
+        const layer = source?.theme?.layer || 'special';
+        if (layer === 'geography' || layer === 'subregion') geographyPercent += item.percent;
+        else if (layer === 'habitat' || layer === 'facility') habitatPercent += item.percent;
+        else specialPercent += item.percent;
+    }
+    geographyPercent = Math.min(30, geographyPercent);
+    habitatPercent = Math.min(30, habitatPercent);
+    specialPercent = Math.min(40, specialPercent);
+    recognisedPercent = geographyPercent + habitatPercent + specialPercent;
+    const totalPercent = Math.min(100, recognisedPercent + customPercent + tagPercent);
     return {
         recognised, custom, tagLocations: tagLocations.size,
-        recognisedPercent, customPercent, tagPercent,
-        totalPercent: recognisedPercent + customPercent + tagPercent
+        recognisedPercent, geographyPercent, habitatPercent, specialPercent,
+        customPercent, tagPercent, totalPercent
     };
 }
 
@@ -17190,18 +19236,34 @@ function prestigeCombinationBonusUnits() {
 }
 
 function zooPrestigeBreakdown() {
-    const base = baseZooPrestige();
+    const collection = collectionPrestigeDetails();
+    const base = collection.adjusted;
+    const identityPercent = collection.identityPercent;
+    const identityBonus = base * identityPercent * 0.01;
     const areaDetails = prestigeAreaBonusDetails();
     const areaCount = areaDetails.recognised.length + areaDetails.custom.length;
     const areaBonusPercent = areaDetails.totalPercent;
-    const combinationUnits = prestigeCombinationBonusUnits();
+    const combinationUnits = Math.min(25, prestigeCombinationBonusUnits());
     const problems = allHusbandryProblems();
     const husbandryPenaltyPercent = problems.some(p => p.severe) ? 50 : problems.length ? 25 : 0;
     const areaBonus = base * areaBonusPercent * 0.01;
     const combinationBonus = base * combinationUnits * 0.01;
+
+    // Curation is layout-derived: reward the proportion of the collection that
+    // actually sits in a recognised >=2-card area/house. Standalone placement
+    // does not count. This lets a carefully organised specialist compete with a
+    // broad collection without hard-coding bonuses for named zoos.
+    const recognisedGroups = mergeCompletelyOverlappingAreaGroups(connectedEnclosureThemeGroups());
+    const curatedEnclosures = new Set(recognisedGroups.flatMap(group => group.enclosures.map(e => e.id)));
+    const placedAnimals = (state.animals || []).filter(a => a && a.enclosureId !== null);
+    const curatedAnimals = placedAnimals.filter(a => curatedEnclosures.has(a.enclosureId)).length;
+    const curationRatio = placedAnimals.length ? curatedAnimals / placedAnimals.length : 0;
+    const curationPercent = curationRatio >= .85 ? 15 : curationRatio >= .70 ? 10 : curationRatio >= .50 ? 6 : curationRatio >= .25 ? 3 : 0;
+    const curationBonus = base * curationPercent * 0.01;
+
     const husbandryPenalty = base * husbandryPenaltyPercent * 0.01;
-    const current = Math.max(0, base + areaBonus + combinationBonus - husbandryPenalty);
-    return { base, current, areaCount, areaDetails, areaBonusPercent, areaBonus, combinationUnits, combinationBonus, husbandryPenaltyPercent, husbandryPenalty, problems };
+    const current = Math.max(0, base + identityBonus + areaBonus + combinationBonus + curationBonus - husbandryPenalty);
+    return { base, rawBase: collection.raw, collection, current, identityPercent, identityBonus, areaCount, areaDetails, areaBonusPercent, areaBonus, combinationUnits, combinationBonus, curationRatio, curationPercent, curationBonus, husbandryPenaltyPercent, husbandryPenalty, problems };
 }
 
 function currentZooPrestige() {
@@ -17461,7 +19523,7 @@ function realZooStoredPrestigeSummary(record) {
     // base layout. Pregenerated records written by the offline generator carry
     // the same prestige summary inside pregenerated_layout.prestige.
     const layout = authoritativeRealZooLayout(record);
-    return layout?.prestige || record?.layout_prestige || record?.pregenerated_layout?.prestige || null;
+    return layout?.prestige || record?.layout_prestige || null;
 }
 function realZooPrestige(record) {
     if (!record || typeof record !== 'object') return 0;
@@ -21127,6 +23189,7 @@ hoverPreview?.addEventListener('mouseleave', () => {
 });
 
 hoverPreview?.addEventListener('click', event => {
+    if (event.target.closest('#animalRangeMap')) return;
     if (event.target.closest('#wikiPreviewLink, #ztlPreviewLink, #animalInformationZtlLink, .animal-info-tab, .ztl-record')) return;
 
     // normal click still flips the card, but a click-drag text selection
@@ -21154,6 +23217,7 @@ function dismissMobileCardPreview() {
     cancelHoverPreviewHide();
     state.previewHoveredAnimalId = null;
     state.previewWikiAnimalId = null;
+    previewInfoFaceContinuity = false;
     setHoverPreviewSuperZoom(false);
     hoverPreview.classList.remove('wiki-open');
     hoverPreview.classList.remove('visible');
@@ -21399,6 +23463,8 @@ async function startGame() {
             12000
         );
 
+        loadZooGeographyData();
+
         const availableCategories = Object.keys(FOLDERS).filter(
             category => levelFiles(category, 1).length > 0
         );
@@ -21469,8 +23535,16 @@ async function startGame() {
             const restoredView = state.pendingRestoredView;
             state.pendingRestoredView = null;
             requestAnimationFrame(() => {
-                zooBoard.scrollLeft = restoredView.scrollLeft;
-                zooBoard.scrollTop = restoredView.scrollTop;
+                const left=Math.max(0,Number(restoredView.scrollLeft)||0);
+                const top=Math.max(0,Number(restoredView.scrollTop)||0);
+                zooBoard.scrollLeft=left;
+                zooBoard.scrollTop=top;
+                requestAnimationFrame(() => {
+                    // A late canvas/layout resize during startup must not
+                    // recenter or nudge an explicitly restored camera.
+                    if (Math.abs(zooBoard.scrollLeft-left)>1) zooBoard.scrollLeft=left;
+                    if (Math.abs(zooBoard.scrollTop-top)>1) zooBoard.scrollTop=top;
+                });
             });
         } else {
             centerInitialView();

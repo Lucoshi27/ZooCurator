@@ -20,9 +20,11 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "borneo",
+            "sumatra",
+            "sundaland"
           ]
         },
         "Banded Mongoose.png": {
@@ -31,18 +33,29 @@
           "tags": [
             "savanna",
             "africa",
-            "east-africa"
+            "east-africa",
+            "serengeti",
+            "okavango"
           ]
         },
         "Common Raccoon.png": {
           "scientific_name": "Procyon lotor",
           "enclosure_size": "small",
           "tags": [
-            "forest",
-            "nocturnal",
-            "north-america",
-            "central-america",
-            "florida"
+            "rainforest",
+            "dry-forest",
+            "temperate-forest",
+            "wetland",
+            "riverine",
+            "mangrove",
+            "coastal",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
           ]
         },
         "Dwarf Mongoose.png": {
@@ -51,7 +64,8 @@
           "tags": [
             "savanna",
             "africa",
-            "east-africa"
+            "east-africa",
+            "serengeti"
           ]
         },
         "Eurasian Otter.png": {
@@ -66,7 +80,8 @@
             "europe",
             "central-europe",
             "china",
-            "india"
+            "india",
+            "japan"
           ]
         },
         "European Badger.png": {
@@ -79,7 +94,10 @@
             "europe",
             "central-europe",
             "mediterranean",
-            "alps"
+            "alps",
+            "scandinavia",
+            "carpathians",
+            "balkans"
           ]
         },
         "European Wild Cat.png": {
@@ -90,7 +108,10 @@
             "temperate",
             "nocturnal",
             "europe",
-            "central-europe"
+            "central-europe",
+            "carpathians",
+            "balkans",
+            "mediterranean"
           ]
         },
         "Fennec Fox.png": {
@@ -110,7 +131,8 @@
             "savanna",
             "africa",
             "cape",
-            "southern-africa"
+            "southern-africa",
+            "kalahari"
           ]
         },
         "Red Fox.png": {
@@ -126,16 +148,39 @@
             "mediterranean",
             "japan",
             "alps",
-            "rockies"
+            "rockies",
+            "scandinavia",
+            "pacific-northwest",
+            "carpathians",
+            "balkans",
+            "amur",
+            "himalayas"
           ]
         },
         "South American Coati.png": {
           "scientific_name": "Nasua nasua",
           "enclosure_size": "small",
           "tags": [
-            "south-america",
-            "amazon",
-            "pantanal"
+            "rainforest",
+            "dry-forest",
+            "cloud-forest",
+            "shrubland",
+            "riverine"
+          ],
+          "wild_regions": [
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT4",
+            "NT3"
           ]
         },
         "Striped Skunk.png": {
@@ -145,7 +190,9 @@
             "nocturnal",
             "north-america",
             "rockies",
-            "florida"
+            "florida",
+            "everglades",
+            "sonoran-desert"
           ]
         }
       },
@@ -156,7 +203,9 @@
           "tags": [
             "nocturnal",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sumatra",
+            "sundaland"
           ]
         },
         "Binturong.png": {
@@ -164,10 +213,12 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sundaland",
+            "borneo",
+            "sumatra"
           ]
         },
         "Caracal.png": {
@@ -199,7 +250,8 @@
           "enclosure_size": "small",
           "tags": [
             "asia",
-            "china"
+            "china",
+            "mongolian-steppe"
           ]
         },
         "Eurasian Lynx.png": {
@@ -215,7 +267,11 @@
             "alps",
             "china",
             "himalayas",
-            "mediterranean"
+            "mediterranean",
+            "amur",
+            "carpathians",
+            "balkans",
+            "scandinavia"
           ]
         },
         "Golden Jackal.png": {
@@ -228,18 +284,35 @@
             "mediterranean",
             "arabia",
             "china",
-            "himalayas"
+            "himalayas",
+            "balkans"
           ]
         },
         "Kinkajou.png": {
           "scientific_name": "Potos flavus",
           "enclosure_size": "small",
           "tags": [
-            "nocturnal",
-            "north-america",
-            "south-america",
-            "central-america",
-            "amazon"
+            "rainforest",
+            "dry-forest",
+            "riverine",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
           ]
         },
         "Leopard Cat.png": {
@@ -251,19 +324,46 @@
             "china",
             "japan",
             "india",
-            "southeast-asia"
+            "southeast-asia",
+            "borneo",
+            "sumatra",
+            "sundaland"
           ]
         },
         "Ocelot.png": {
           "scientific_name": "Leopardus pardalis",
           "enclosure_size": "small",
           "tags": [
-            "nocturnal",
-            "north-america",
-            "south-america",
-            "central-america",
-            "amazon",
-            "pantanal"
+            "rainforest",
+            "dry-forest",
+            "cloud-forest",
+            "savanna",
+            "shrubland",
+            "wetland",
+            "riverine",
+            "mangrove",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT15",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT4",
+            "NT3",
+            "NT11",
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
           ]
         },
         "Pallas's Cat.png": {
@@ -274,7 +374,8 @@
             "nocturnal",
             "asia",
             "china",
-            "himalayas"
+            "himalayas",
+            "mongolian-steppe"
           ]
         },
         "Raccoon Dog.png": {
@@ -285,7 +386,8 @@
             "temperate",
             "nocturnal",
             "asia",
-            "japan"
+            "japan",
+            "amur"
           ]
         },
         "Serval.png": {
@@ -298,7 +400,9 @@
             "southern-africa",
             "sahel",
             "west-africa",
-            "congo"
+            "congo",
+            "serengeti",
+            "okavango"
           ]
         },
         "Tayra.png": {
@@ -306,17 +410,46 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "dry-forest",
+            "cloud-forest",
+            "riverine"
+          ],
+          "wild_regions": [
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT4",
+            "NT11",
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
           ]
         },
         "White-Nosed Coati.png": {
           "scientific_name": "Nasua narica",
           "enclosure_size": "small",
           "tags": [
-            "north-america",
-            "central-america"
+            "rainforest",
+            "dry-forest",
+            "cloud-forest",
+            "temperate-forest",
+            "conifer-forest",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
           ]
         },
         "Yellow Mongoose.png": {
@@ -325,7 +458,8 @@
           "tags": [
             "savanna",
             "africa",
-            "cape"
+            "cape",
+            "kalahari"
           ]
         },
         "Yellow-Throated Marten.png": {
@@ -336,7 +470,9 @@
             "nocturnal",
             "asia",
             "china",
-            "southeast-asia"
+            "southeast-asia",
+            "borneo",
+            "sundaland"
           ]
         }
       },
@@ -361,7 +497,9 @@
             "cape",
             "east-africa",
             "southern-africa",
-            "west-africa"
+            "west-africa",
+            "serengeti",
+            "okavango"
           ]
         },
         "American Black Bear.png": {
@@ -370,7 +508,9 @@
           "tags": [
             "north-america",
             "rockies",
-            "florida"
+            "florida",
+            "everglades",
+            "pacific-northwest"
           ]
         },
         "Bat-Eared Fox.png": {
@@ -383,16 +523,26 @@
             "africa",
             "cape",
             "east-africa",
-            "southern-africa"
+            "southern-africa",
+            "kalahari",
+            "serengeti"
           ]
         },
         "Bobcat.png": {
           "scientific_name": "Lynx rufus",
           "enclosure_size": "small",
           "tags": [
-            "north-america",
-            "rockies",
-            "florida"
+            "dry-forest",
+            "conifer-forest",
+            "shrubland",
+            "grassland",
+            "desert",
+            "mountain",
+            "rocky",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT28"
           ]
         },
         "Brown Bear.png": {
@@ -404,15 +554,38 @@
             "europe",
             "north-america",
             "central-europe",
-            "alps"
+            "alps",
+            "amur",
+            "carpathians",
+            "balkans",
+            "scandinavia",
+            "himalayas"
           ]
         },
         "Bush Dog.png": {
           "scientific_name": "Speothos venaticus",
           "enclosure_size": "small",
           "tags": [
-            "south-america",
-            "amazon"
+            "rainforest",
+            "savanna",
+            "wetland",
+            "riverine",
+            "semi-aquatic"
+          ],
+          "wild_regions": [
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT4",
+            "NT24",
+            "NT25"
           ]
         },
         "Cape Genet.png": {
@@ -435,15 +608,55 @@
             "southern-africa",
             "sahel",
             "west-africa",
-            "arabia"
+            "arabia",
+            "serengeti",
+            "okavango",
+            "kalahari"
           ]
         },
         "Cougar.png": {
           "scientific_name": "Puma concolor",
           "enclosure_size": "medium",
           "tags": [
-            "north-america",
-            "rockies"
+            "rainforest",
+            "dry-forest",
+            "temperate-forest",
+            "conifer-forest",
+            "cloud-forest",
+            "savanna",
+            "grassland",
+            "shrubland",
+            "desert",
+            "mountain",
+            "rocky",
+            "riverine"
+          ],
+          "wild_regions": [
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT15",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT11",
+            "NT10",
+            "NT8",
+            "NT6",
+            "NT5",
+            "NT1",
+            "NT4",
+            "NT3",
+            "NT2",
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
           ]
         },
         "Fishing Cat.png": {
@@ -463,7 +676,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "africa",
             "madagascar"
@@ -473,22 +685,43 @@
           "scientific_name": "Leopardus geoffroyi",
           "enclosure_size": "small",
           "tags": [
-            "nocturnal",
-            "south-america",
-            "pampas"
+            "grassland",
+            "shrubland",
+            "savanna",
+            "wetland",
+            "mountain",
+            "rocky",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT5",
+            "NT4",
+            "NT3",
+            "NT2"
           ]
         },
         "Giant Otter.png": {
           "scientific_name": "Pteronura brasiliensis",
           "enclosure_size": "small",
           "tags": [
-            "semi-aquatic",
-            "wetland",
             "rainforest",
-            "tropical",
-            "south-america",
-            "amazon",
-            "pantanal"
+            "savanna",
+            "wetland",
+            "riverine",
+            "semi-aquatic"
+          ],
+          "wild_regions": [
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT13",
+            "NT12",
+            "NT4",
+            "NT3"
           ]
         },
         "Grey Wolf.png": {
@@ -501,7 +734,13 @@
             "north-america",
             "central-europe",
             "alps",
-            "rockies"
+            "rockies",
+            "carpathians",
+            "balkans",
+            "scandinavia",
+            "pacific-northwest",
+            "amur",
+            "himalayas"
           ]
         },
         "Jungle Cat.png": {
@@ -517,11 +756,29 @@
           "scientific_name": "Leopardus wiedii",
           "enclosure_size": "small",
           "tags": [
-            "nocturnal",
-            "north-america",
-            "south-america",
-            "central-america",
-            "amazon"
+            "rainforest",
+            "dry-forest",
+            "cloud-forest",
+            "riverine",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT11",
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
           ]
         },
         "Nepalese Red Panda.png": {
@@ -542,7 +799,10 @@
             "east-africa",
             "southern-africa",
             "sahel",
-            "west-africa"
+            "west-africa",
+            "serengeti",
+            "okavango",
+            "kalahari"
           ]
         },
         "Wolverine.png": {
@@ -552,7 +812,9 @@
             "boreal",
             "nocturnal",
             "europe",
-            "rockies"
+            "rockies",
+            "scandinavia",
+            "pacific-northwest"
           ]
         }
       },
@@ -566,7 +828,10 @@
             "sahel",
             "east-africa",
             "southern-africa",
-            "west-africa"
+            "west-africa",
+            "serengeti",
+            "okavango",
+            "kalahari"
           ]
         },
         "Amur Leopard.png": {
@@ -575,7 +840,8 @@
           "tags": [
             "boreal",
             "asia",
-            "china"
+            "china",
+            "amur"
           ]
         },
         "Clouded Leopard.png": {
@@ -583,7 +849,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "asia",
             "southeast-asia"
@@ -593,7 +858,7 @@
           "scientific_name": "Crossarchus obscurus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "congo",
             "west-africa"
@@ -603,10 +868,32 @@
           "scientific_name": "Procyon cancrivorus",
           "enclosure_size": "small",
           "tags": [
-            "nocturnal",
-            "south-america",
-            "amazon",
-            "pantanal"
+            "rainforest",
+            "dry-forest",
+            "savanna",
+            "wetland",
+            "riverine",
+            "mangrove",
+            "coastal",
+            "semi-aquatic",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT15",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT4",
+            "NT3",
+            "NT11"
           ]
         },
         "Dhole.png": {
@@ -643,7 +930,8 @@
             "southern-africa",
             "sahel",
             "cape",
-            "east-africa"
+            "east-africa",
+            "kalahari"
           ]
         },
         "Jaguar.png": {
@@ -651,12 +939,35 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
-            "nocturnal",
-            "south-america",
-            "central-america",
-            "amazon",
-            "pantanal"
+            "dry-forest",
+            "cloud-forest",
+            "savanna",
+            "shrubland",
+            "wetland",
+            "riverine",
+            "mangrove",
+            "semi-aquatic",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT15",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT4",
+            "NT11",
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
           ]
         },
         "Jaguarundi.png": {
@@ -664,29 +975,64 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "nocturnal",
-            "south-america",
-            "central-america",
-            "amazon",
-            "pantanal"
+            "dry-forest",
+            "cloud-forest",
+            "savanna",
+            "grassland",
+            "shrubland",
+            "wetland",
+            "riverine"
+          ],
+          "wild_regions": [
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT15",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT4",
+            "NT3",
+            "NT11",
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
           ]
         },
         "Kit Fox.png": {
           "scientific_name": "Vulpes macrotis",
           "enclosure_size": "small",
           "tags": [
-            "north-america",
-            "rockies"
+            "desert",
+            "grassland",
+            "shrubland",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT28"
           ]
         },
         "Maned Wolf.png": {
           "scientific_name": "Chrysocyon brachyurus",
           "enclosure_size": "medium",
           "tags": [
-            "south-america",
-            "pantanal",
-            "pampas"
+            "savanna",
+            "grassland",
+            "shrubland",
+            "wetland"
+          ],
+          "wild_regions": [
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT4",
+            "NT3"
           ]
         },
         "Oncilla.png": {
@@ -694,12 +1040,13 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "south-america",
             "central-america",
-            "amazon"
-          ]
+            "amazon",
+            "atlantic-forest"
+          ],
+          "geography_review_status": "taxonomy-review-required-2026"
         },
         "Polar Bear.png": {
           "scientific_name": "Ursus maritimus",
@@ -717,7 +1064,7 @@
           "scientific_name": "Galidia elegans",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "madagascar"
           ]
@@ -726,10 +1073,18 @@
           "scientific_name": "Bassariscus astutus",
           "enclosure_size": "small",
           "tags": [
+            "dry-forest",
+            "temperate-forest",
+            "conifer-forest",
+            "shrubland",
             "desert",
-            "nocturnal",
-            "north-america",
-            "rockies"
+            "mountain",
+            "rocky",
+            "riverine",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT28"
           ]
         },
         "Rusty-Spotted Cat.png": {
@@ -769,7 +1124,8 @@
           "tags": [
             "boreal",
             "asia",
-            "china"
+            "china",
+            "amur"
           ]
         },
         "Sloth Bear.png": {
@@ -777,7 +1133,6 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "asia",
             "india"
@@ -796,8 +1151,15 @@
           "scientific_name": "Tremarctos ornatus",
           "enclosure_size": "medium",
           "tags": [
-            "south-america",
-            "andes"
+            "rainforest",
+            "cloud-forest",
+            "dry-forest",
+            "shrubland",
+            "grassland",
+            "mountain"
+          ],
+          "wild_regions": [
+            "NT11"
           ]
         },
         "Striped Hyena.png": {
@@ -819,9 +1181,10 @@
           "enclosure_size": "large",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sundaland",
+            "sumatra"
           ]
         },
         "Sun Bear.png": {
@@ -829,10 +1192,22 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sundaland",
+            "borneo",
+            "sumatra"
+          ]
+        },
+        "Sri Lankan Leopard.png": {
+          "scientific_name": "Panthera pardus kotiya",
+          "enclosure_size": "medium",
+          "tags": [
+            "rainforest",
+            "asia",
+            "india",
+            "sri-lanka"
           ]
         }
       },
@@ -846,17 +1221,24 @@
             "africa",
             "sahel",
             "east-africa",
-            "southern-africa"
+            "southern-africa",
+            "kalahari"
           ]
         },
         "Andean Mountain Cat.png": {
           "scientific_name": "Leopardus jacobita",
           "enclosure_size": "small",
           "tags": [
+            "grassland",
+            "shrubland",
+            "desert",
             "mountain",
-            "nocturnal",
-            "south-america",
-            "andes"
+            "rocky",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT5",
+            "NT2"
           ]
         },
         "Asian Golden Cat.png": {
@@ -876,7 +1258,8 @@
             "desert",
             "nocturnal",
             "africa",
-            "cape"
+            "cape",
+            "kalahari"
           ]
         },
         "Brown Hyena.png": {
@@ -886,7 +1269,8 @@
             "nocturnal",
             "africa",
             "cape",
-            "southern-africa"
+            "southern-africa",
+            "kalahari"
           ]
         },
         "Canadian Lynx.png": {
@@ -895,7 +1279,8 @@
           "tags": [
             "boreal",
             "north-america",
-            "rockies"
+            "rockies",
+            "pacific-northwest"
           ]
         },
         "Chinese Mountain Cat.png": {
@@ -913,7 +1298,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "africa",
             "madagascar"
@@ -924,7 +1308,6 @@
           "enclosure_size": "small",
           "tags": [
             "wetland",
-            "tropical",
             "nocturnal",
             "asia",
             "southeast-asia"
@@ -935,7 +1318,6 @@
           "enclosure_size": "large",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "china"
           ]
@@ -953,10 +1335,14 @@
           "scientific_name": "Leopardus guigna",
           "enclosure_size": "small",
           "tags": [
-            "nocturnal",
-            "south-america",
-            "andes",
-            "patagonia"
+            "temperate-forest",
+            "mediterranean",
+            "shrubland",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT6",
+            "NT1"
           ]
         },
         "Marbled Cat.png": {
@@ -965,18 +1351,38 @@
           "tags": [
             "nocturnal",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "borneo",
+            "sumatra",
+            "sundaland"
           ]
         },
         "Pampas Cat.png": {
           "scientific_name": "Leopardus colocola",
           "enclosure_size": "small",
           "tags": [
-            "nocturnal",
-            "south-america",
-            "pampas",
-            "andes",
-            "patagonia"
+            "grassland",
+            "shrubland",
+            "savanna",
+            "desert",
+            "mountain",
+            "rocky",
+            "wetland",
+            "temperate-forest",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT11",
+            "NT8",
+            "NT6",
+            "NT5",
+            "NT1",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT4",
+            "NT3",
+            "NT2"
           ]
         }
       }
@@ -997,7 +1403,6 @@
           "enclosure_size": "small",
           "tags": [
             "forest",
-            "tropical",
             "asia",
             "india"
           ]
@@ -1009,7 +1414,8 @@
             "desert",
             "domestic",
             "asia",
-            "china"
+            "china",
+            "mongolian-steppe"
           ]
         },
         "Cameroon Sheep.png": {
@@ -1038,7 +1444,11 @@
             "forest",
             "temperate",
             "europe",
-            "central-europe"
+            "central-europe",
+            "scandinavia",
+            "carpathians",
+            "balkans",
+            "mediterranean"
           ]
         },
         "Fallow Deer.png": {
@@ -1086,7 +1496,11 @@
             "europe",
             "central-europe",
             "alps",
-            "mediterranean"
+            "mediterranean",
+            "carpathians",
+            "balkans",
+            "scandinavia",
+            "amur"
           ]
         },
         "West African Dwarf Goat.png": {
@@ -1104,7 +1518,6 @@
           "enclosure_size": "small",
           "tags": [
             "forest",
-            "tropical",
             "temperate",
             "africa",
             "asia",
@@ -1115,7 +1528,11 @@
             "china",
             "southeast-asia",
             "india",
-            "alps"
+            "alps",
+            "carpathians",
+            "balkans",
+            "scandinavia",
+            "amur"
           ]
         },
         "Zebu.png": {
@@ -1167,12 +1584,32 @@
           "scientific_name": "Pecari tajacu",
           "enclosure_size": "small",
           "tags": [
+            "rainforest",
+            "dry-forest",
             "savanna",
-            "north-america",
-            "south-america",
-            "central-america",
-            "amazon",
-            "pantanal"
+            "shrubland",
+            "desert"
+          ],
+          "wild_regions": [
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28",
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT15",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT11",
+            "NT10",
+            "NT4"
           ]
         },
         "Domestic Yak.png": {
@@ -1200,17 +1637,29 @@
           "enclosure_size": "medium",
           "tags": [
             "north-america",
-            "rockies"
+            "rockies",
+            "great-plains",
+            "pacific-northwest"
           ]
         },
         "Guanaco.png": {
           "scientific_name": "Lama guanicoe",
           "enclosure_size": "small",
           "tags": [
-            "south-america",
-            "patagonia",
-            "andes",
-            "pampas"
+            "grassland",
+            "shrubland",
+            "desert",
+            "mountain",
+            "temperate-forest"
+          ],
+          "wild_regions": [
+            "NT8",
+            "NT6",
+            "NT5",
+            "NT1",
+            "NT4",
+            "NT3",
+            "NT2"
           ]
         },
         "Kirk's Dik-Dik.png": {
@@ -1219,7 +1668,8 @@
           "tags": [
             "savanna",
             "africa",
-            "east-africa"
+            "east-africa",
+            "serengeti"
           ]
         },
         "Lechwe.png": {
@@ -1230,7 +1680,8 @@
             "wetland",
             "savanna",
             "africa",
-            "southern-africa"
+            "southern-africa",
+            "okavango"
           ]
         },
         "Plains Zebra.png": {
@@ -1240,14 +1691,16 @@
             "savanna",
             "africa",
             "east-africa",
-            "southern-africa"
+            "southern-africa",
+            "serengeti",
+            "okavango"
           ]
         },
         "Red River Hog.png": {
           "scientific_name": "Potamochoerus porcus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "congo",
             "west-africa"
@@ -1271,7 +1724,8 @@
             "asia",
             "europe",
             "north-america",
-            "arctic-region"
+            "arctic-region",
+            "scandinavia"
           ]
         },
         "Sika Deer.png": {
@@ -1281,16 +1735,20 @@
             "forest",
             "asia",
             "japan",
-            "china"
+            "china",
+            "amur"
           ]
         },
         "Vicuña.png": {
           "scientific_name": "Vicugna vicugna",
           "enclosure_size": "small",
           "tags": [
-            "mountain",
-            "south-america",
-            "andes"
+            "grassland",
+            "shrubland",
+            "mountain"
+          ],
+          "wild_regions": [
+            "NT5"
           ]
         },
         "Wisent.png": {
@@ -1300,7 +1758,8 @@
             "forest",
             "temperate",
             "europe",
-            "central-europe"
+            "central-europe",
+            "carpathians"
           ]
         }
       },
@@ -1319,7 +1778,8 @@
           "enclosure_size": "small",
           "tags": [
             "north-america",
-            "rockies"
+            "rockies",
+            "great-plains"
           ]
         },
         "Blesbok.png": {
@@ -1348,7 +1808,10 @@
             "africa",
             "cape",
             "east-africa",
-            "southern-africa"
+            "southern-africa",
+            "serengeti",
+            "okavango",
+            "kalahari"
           ]
         },
         "Bongo.png": {
@@ -1364,9 +1827,11 @@
           "scientific_name": "Catagonus wagneri",
           "enclosure_size": "small",
           "tags": [
-            "savanna",
-            "south-america",
-            "pampas"
+            "dry-forest",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "NT4"
           ]
         },
         "Common Eland.png": {
@@ -1377,7 +1842,9 @@
             "africa",
             "east-africa",
             "cape",
-            "southern-africa"
+            "southern-africa",
+            "serengeti",
+            "kalahari"
           ]
         },
         "Common Warthog.png": {
@@ -1390,7 +1857,10 @@
             "cape",
             "sahel",
             "southern-africa",
-            "west-africa"
+            "west-africa",
+            "serengeti",
+            "okavango",
+            "kalahari"
           ]
         },
         "Common Waterbuck.png": {
@@ -1401,7 +1871,9 @@
             "savanna",
             "africa",
             "east-africa",
-            "sahel"
+            "sahel",
+            "serengeti",
+            "okavango"
           ]
         },
         "Dama Gazelle.png": {
@@ -1437,7 +1909,9 @@
             "savanna",
             "africa",
             "east-africa",
-            "southern-africa"
+            "southern-africa",
+            "serengeti",
+            "okavango"
           ]
         },
         "Javan Banteng.png": {
@@ -1445,7 +1919,9 @@
           "enclosure_size": "medium",
           "tags": [
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sundaland",
+            "java"
           ]
         },
         "Takin.png": {
@@ -1467,7 +1943,8 @@
             "asia",
             "europe",
             "north-america",
-            "rockies"
+            "rockies",
+            "scandinavia"
           ]
         },
         "Nile Lechwe.png": {
@@ -1494,7 +1971,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "africa",
             "congo",
             "west-africa"
@@ -1525,9 +2001,9 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "africa",
-            "congo"
+            "congo",
+            "okavango"
           ]
         },
         "Somali Wild Ass.png": {
@@ -1544,10 +2020,29 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "amazon",
-            "pantanal"
+            "dry-forest",
+            "savanna",
+            "grassland",
+            "wetland",
+            "riverine",
+            "mangrove",
+            "semi-aquatic"
+          ],
+          "wild_regions": [
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT15",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT11",
+            "NT4"
           ]
         },
         "Springbok.png": {
@@ -1557,16 +2052,19 @@
             "savanna",
             "africa",
             "cape",
-            "southern-africa"
+            "southern-africa",
+            "kalahari"
           ]
         },
         "Visayan Warty Pig.png": {
           "scientific_name": "Sus cebifrons",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "philippines",
+            "visayan-islands"
           ]
         },
         "White-Lipped Peccary.png": {
@@ -1574,10 +2072,27 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "amazon",
-            "central-america"
+            "dry-forest",
+            "savanna"
+          ],
+          "wild_regions": [
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT16",
+            "NT15",
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT11",
+            "NT4"
           ]
         }
       },
@@ -1623,7 +2138,8 @@
           "enclosure_size": "medium",
           "tags": [
             "africa",
-            "cape"
+            "cape",
+            "okavango"
           ]
         },
         "Common Hog Deer.png": {
@@ -1631,7 +2147,6 @@
           "enclosure_size": "small",
           "tags": [
             "wetland",
-            "tropical",
             "asia",
             "india"
           ]
@@ -1644,7 +2159,8 @@
             "desert",
             "africa",
             "cape",
-            "southern-africa"
+            "southern-africa",
+            "kalahari"
           ]
         },
         "Greater Kudu.png": {
@@ -1655,7 +2171,9 @@
             "africa",
             "cape",
             "east-africa",
-            "southern-africa"
+            "southern-africa",
+            "okavango",
+            "kalahari"
           ]
         },
         "Hippopotamus.png": {
@@ -1666,7 +2184,9 @@
             "wetland",
             "savanna",
             "africa",
-            "east-africa"
+            "east-africa",
+            "serengeti",
+            "okavango"
           ]
         },
         "Indian Muntjac.png": {
@@ -1700,7 +2220,9 @@
           "tags": [
             "nocturnal",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sundaland",
+            "java"
           ]
         },
         "Kordofan Giraffe.png": {
@@ -1720,7 +2242,8 @@
           "tags": [
             "nocturnal",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sulawesi"
           ]
         },
         "Malayan Tapir.png": {
@@ -1728,9 +2251,10 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sundaland",
+            "sumatra"
           ]
         },
         "Markhor.png": {
@@ -1767,7 +2291,6 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "congo"
           ]
@@ -1785,14 +2308,15 @@
           "enclosure_size": "medium",
           "tags": [
             "asia",
-            "china"
+            "china",
+            "mongolian-steppe"
           ]
         },
         "Red Buffalo.png": {
           "scientific_name": "Syncerus nanus",
           "enclosure_size": "medium",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "congo"
           ]
@@ -1828,9 +2352,12 @@
           "scientific_name": "Pudu puda",
           "enclosure_size": "small",
           "tags": [
-            "south-america",
-            "andes",
-            "patagonia"
+            "temperate-forest",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "NT6",
+            "NT1"
           ]
         },
         "Thomson's Gazelle.png": {
@@ -1839,7 +2366,8 @@
           "tags": [
             "savanna",
             "africa",
-            "east-africa"
+            "east-africa",
+            "serengeti"
           ]
         },
         "Tufted Deer.png": {
@@ -1855,9 +2383,11 @@
           "scientific_name": "Rusa alfredi",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "philippines",
+            "visayan-islands"
           ]
         },
         "White Rhinoceros.png": {
@@ -1875,9 +2405,27 @@
           "scientific_name": "Odocoileus virginianus",
           "enclosure_size": "small",
           "tags": [
-            "north-america",
-            "rockies",
-            "florida"
+            "rainforest",
+            "dry-forest",
+            "temperate-forest",
+            "conifer-forest",
+            "savanna",
+            "grassland",
+            "shrubland",
+            "wetland",
+            "mountain"
+          ],
+          "wild_regions": [
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28",
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT20",
+            "NT11",
+            "NT5"
           ]
         }
       },
@@ -1896,10 +2444,19 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "central-america",
-            "amazon"
+            "dry-forest",
+            "cloud-forest",
+            "wetland",
+            "riverine",
+            "mangrove",
+            "mountain",
+            "semi-aquatic"
+          ],
+          "wild_regions": [
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
           ]
         },
         "Black Rhinoceros.png": {
@@ -1909,7 +2466,9 @@
             "savanna",
             "africa",
             "east-africa",
-            "southern-africa"
+            "southern-africa",
+            "serengeti",
+            "okavango"
           ]
         },
         "Blue Duiker.png": {
@@ -1975,7 +2534,8 @@
           "tags": [
             "savanna",
             "africa",
-            "east-africa"
+            "east-africa",
+            "serengeti"
           ]
         },
         "Mountain Goat.png": {
@@ -2015,7 +2575,8 @@
           "tags": [
             "nocturnal",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "philippines"
           ]
         },
         "Sambar.png": {
@@ -2042,9 +2603,9 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sulawesi"
           ]
         },
         "Yellow-Backed Duiker.png": {
@@ -2073,9 +2634,11 @@
           "scientific_name": "Saimiri boliviensis",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
-            "south-america",
-            "amazon"
+            "rainforest",
+            "riverine"
+          ],
+          "wild_regions": [
+            "NT18"
           ]
         },
         "Common Marmoset.png": {
@@ -2083,18 +2646,25 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "dry-forest",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "NT15",
+            "NT14"
           ]
         },
         "Common Squirrel Monkey.png": {
           "scientific_name": "Saimiri sciureus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
-            "south-america",
-            "amazon"
+            "rainforest",
+            "riverine",
+            "wetland"
+          ],
+          "wild_regions": [
+            "NT21",
+            "NT20"
           ]
         },
         "Cotton-Top Tamarin.png": {
@@ -2102,29 +2672,31 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "central-america"
+            "dry-forest"
+          ],
+          "wild_regions": [
+            "NT24"
           ]
         },
         "Goeldi's Monkey.png": {
           "scientific_name": "Callimico goeldii",
           "enclosure_size": "small",
           "tags": [
-            "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "rainforest"
+          ],
+          "wild_regions": [
+            "NT18"
           ]
         },
         "Golden-Handed Tamarin.png": {
           "scientific_name": "Saguinus midas",
           "enclosure_size": "small",
           "tags": [
-            "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "rainforest"
+          ],
+          "wild_regions": [
+            "NT21",
+            "NT20"
           ]
         },
         "Pygmy Marmoset.png": {
@@ -2132,9 +2704,12 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "riverine",
+            "wetland"
+          ],
+          "wild_regions": [
+            "NT20",
+            "NT18"
           ]
         },
         "Rhesus Macaque.png": {
@@ -2160,19 +2735,26 @@
           "scientific_name": "Sapajus apella",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
-            "south-america",
-            "amazon"
+            "rainforest",
+            "dry-forest",
+            "savanna"
+          ],
+          "wild_regions": [
+            "NT21",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17"
           ]
         },
         "White-Headed Marmoset.png": {
           "scientific_name": "Callithrix geoffroyi",
           "enclosure_size": "small",
           "tags": [
-            "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "rainforest"
+          ],
+          "wild_regions": [
+            "NT14"
           ]
         }
       },
@@ -2190,7 +2772,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "madagascar"
           ]
@@ -2207,7 +2788,7 @@
           "scientific_name": "Cercopithecus neglectus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "congo"
           ]
@@ -2217,9 +2798,11 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "riverine",
+            "wetland"
+          ],
+          "wild_regions": [
+            "NT18"
           ]
         },
         "Golden Lion Tamarin.png": {
@@ -2227,19 +2810,20 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "wetland"
+          ],
+          "wild_regions": [
+            "NT14"
           ]
         },
         "Golden-Headed Lion Tamarin.png": {
           "scientific_name": "Leontopithecus chrysomelas",
           "enclosure_size": "small",
           "tags": [
-            "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "rainforest"
+          ],
+          "wild_regions": [
+            "NT14"
           ]
         },
         "Green Monkey.png": {
@@ -2269,7 +2853,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "madagascar"
           ]
@@ -2286,18 +2869,22 @@
           "scientific_name": "Saguinus labiatus",
           "enclosure_size": "small",
           "tags": [
-            "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "rainforest"
+          ],
+          "wild_regions": [
+            "NT18",
+            "NT19"
           ]
         },
         "White-Faced Saki.png": {
           "scientific_name": "Pithecia pithecia",
           "enclosure_size": "small",
           "tags": [
-            "south-america",
-            "amazon"
+            "rainforest"
+          ],
+          "wild_regions": [
+            "NT21",
+            "NT20"
           ]
         },
         "White-Handed Gibbon.png": {
@@ -2305,7 +2892,6 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -2317,10 +2903,16 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "nocturnal",
-            "south-america",
-            "amazon"
+            "dry-forest",
+            "riverine",
+            "wetland"
+          ],
+          "wild_regions": [
+            "NT14",
+            "NT13",
+            "NT12",
+            "NT4",
+            "NT3"
           ]
         },
         "Black-Headed Spider Monkey.png": {
@@ -2328,16 +2920,18 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "central-america"
+            "cloud-forest"
+          ],
+          "wild_regions": [
+            "NT24",
+            "NT10"
           ]
         },
         "Collared Mangabey.png": {
           "scientific_name": "Cercocebus torquatus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "congo"
           ]
@@ -2355,7 +2949,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "west-africa"
           ]
@@ -2407,18 +3000,21 @@
           "scientific_name": "Saguinus bicolor",
           "enclosure_size": "small",
           "tags": [
-            "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "rainforest"
+          ],
+          "wild_regions": [
+            "NT20"
           ]
         },
         "Red Titi.png": {
           "scientific_name": "Plecturocebus cupreus",
           "enclosure_size": "small",
           "tags": [
-            "south-america",
-            "amazon"
+            "rainforest",
+            "riverine"
+          ],
+          "wild_regions": [
+            "NT18"
           ]
         },
         "Senegal Bushbaby.png": {
@@ -2435,9 +3031,10 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sundaland",
+            "sumatra"
           ]
         },
         "Silvery Marmoset.png": {
@@ -2445,9 +3042,11 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "savanna"
+          ],
+          "wild_regions": [
+            "NT17",
+            "NT16"
           ]
         },
         "White-Cheeked Gibbon.png": {
@@ -2455,7 +3054,6 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -2464,9 +3062,13 @@
           "scientific_name": "Cebus capucinus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
-            "south-america",
-            "central-america"
+            "rainforest",
+            "dry-forest",
+            "mangrove"
+          ],
+          "wild_regions": [
+            "NT24",
+            "NT10"
           ]
         },
         "White-Fronted Lemur.png": {
@@ -2491,7 +3093,7 @@
           "scientific_name": "Lophocebus aterrimus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "congo"
           ]
@@ -2501,9 +3103,10 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "riverine"
+          ],
+          "wild_regions": [
+            "NT18"
           ]
         },
         "Capped Gibbon.png": {
@@ -2511,7 +3114,6 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -2520,7 +3122,7 @@
           "scientific_name": "Pan troglodytes",
           "enclosure_size": "large",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "congo",
             "west-africa"
@@ -2547,7 +3149,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -2573,17 +3174,23 @@
           "scientific_name": "Aotus griseimembra",
           "enclosure_size": "small",
           "tags": [
-            "nocturnal",
-            "south-america",
-            "amazon"
+            "rainforest",
+            "dry-forest",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT24",
+            "NT11"
           ]
         },
         "Guaian Bearded Saki.png": {
           "scientific_name": "Chiropotes sagulatus",
           "enclosure_size": "small",
           "tags": [
-            "south-america",
-            "amazon"
+            "rainforest"
+          ],
+          "wild_regions": [
+            "NT21"
           ]
         },
         "Mohol Bushbaby.png": {
@@ -2618,20 +3225,29 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "nocturnal",
-            "south-america",
-            "amazon"
+            "dry-forest",
+            "cloud-forest",
+            "riverine"
+          ],
+          "wild_regions": [
+            "NT24",
+            "NT23",
+            "NT22",
+            "NT20",
+            "NT18",
+            "NT19",
+            "NT11"
           ]
         },
         "Red-Faced Spider Monkey.png": {
           "scientific_name": "Ateles paniscus",
           "enclosure_size": "medium",
           "tags": [
-            "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "rainforest"
+          ],
+          "wild_regions": [
+            "NT21",
+            "NT20"
           ]
         },
         "Red-Fronted Lemur.png": {
@@ -2655,7 +3271,6 @@
           "enclosure_size": "large",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "africa",
             "congo",
@@ -2669,7 +3284,6 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -2679,7 +3293,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "africa",
             "madagascar"
@@ -2698,7 +3311,6 @@
           "enclosure_size": "large",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "congo"
           ]
@@ -2708,9 +3320,10 @@
           "enclosure_size": "large",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sundaland",
+            "borneo"
           ]
         },
         "Coquerel's Sifaka.png": {
@@ -2718,7 +3331,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "madagascar"
           ]
@@ -2728,7 +3340,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "madagascar"
           ]
@@ -2755,7 +3366,6 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -2782,9 +3392,9 @@
           "enclosure_size": "medium",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "java"
           ]
         },
         "Sumatran Orangutan.png": {
@@ -2792,9 +3402,10 @@
           "enclosure_size": "large",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sundaland",
+            "sumatra"
           ]
         },
         "Woolly Monkey.png": {
@@ -2802,9 +3413,16 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
-            "south-america",
-            "amazon"
+            "cloud-forest",
+            "mountain"
+          ],
+          "wild_regions": [
+            "NT22",
+            "NT20",
+            "NT19",
+            "NT18",
+            "NT17",
+            "NT11"
           ]
         }
       }
@@ -2828,7 +3446,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -2915,7 +3532,8 @@
           "enclosure_size": "small",
           "tags": [
             "oceania",
-            "australia"
+            "australia",
+            "tasmania"
           ]
         },
         "Red-Rumped Agouti.png": {
@@ -2923,7 +3541,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -2956,7 +3573,8 @@
             "wetland",
             "forest",
             "north-america",
-            "rockies"
+            "rockies",
+            "pacific-northwest"
           ]
         },
         "Black-Rumped Agouti.png": {
@@ -2964,7 +3582,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -2974,7 +3591,8 @@
           "enclosure_size": "small",
           "tags": [
             "north-america",
-            "rockies"
+            "rockies",
+            "great-plains"
           ]
         },
         "Cape Porcupine.png": {
@@ -2986,7 +3604,8 @@
             "nocturnal",
             "africa",
             "cape",
-            "southern-africa"
+            "southern-africa",
+            "kalahari"
           ]
         },
         "Capybara.png": {
@@ -2998,7 +3617,11 @@
             "south-america",
             "amazon",
             "pantanal",
-            "central-america"
+            "central-america",
+            "atlantic-forest",
+            "gran-chaco",
+            "guiana-shield",
+            "pampas"
           ]
         },
         "Chacoan Mara.png": {
@@ -3007,7 +3630,8 @@
           "tags": [
             "south-america",
             "pampas",
-            "patagonia"
+            "patagonia",
+            "gran-chaco"
           ]
         },
         "Egyptian Fruit Bat.png": {
@@ -3037,7 +3661,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "south-america",
             "amazon"
@@ -3062,14 +3685,15 @@
             "forest",
             "nocturnal",
             "north-america",
-            "rockies"
+            "rockies",
+            "pacific-northwest"
           ]
         },
         "Northern Treeshrew.png": {
           "scientific_name": "Tupaia belangeri",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia"
           ]
@@ -3107,7 +3731,8 @@
             "south-america",
             "amazon",
             "pantanal",
-            "pampas"
+            "pampas",
+            "gran-chaco"
           ]
         },
         "Swamp Wallaby.png": {
@@ -3115,7 +3740,8 @@
           "enclosure_size": "small",
           "tags": [
             "oceania",
-            "australia"
+            "australia",
+            "tasmania"
           ]
         }
       },
@@ -3132,7 +3758,7 @@
           "scientific_name": "Rhynchocyon petersi",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "east-africa",
             "congo"
@@ -3142,7 +3768,7 @@
           "scientific_name": "Coendou prehensilis",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "nocturnal",
             "south-america",
             "amazon"
@@ -3153,7 +3779,8 @@
           "enclosure_size": "small",
           "tags": [
             "oceania",
-            "australia"
+            "australia",
+            "tasmania"
           ]
         },
         "Eastern Wallaroo.png": {
@@ -3171,7 +3798,10 @@
             "south-america",
             "amazon",
             "pantanal",
-            "central-america"
+            "central-america",
+            "atlantic-forest",
+            "gran-chaco",
+            "guiana-shield"
           ]
         },
         "Grey Kangaroo.png": {
@@ -3186,7 +3816,7 @@
           "scientific_name": "Pteropus medius",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "nocturnal",
             "asia",
             "india"
@@ -3214,19 +3844,20 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "south-america",
             "amazon",
             "central-america",
-            "pantanal"
+            "pantanal",
+            "atlantic-forest",
+            "guiana-shield"
           ]
         },
         "Lyle's Flying Fox.png": {
           "scientific_name": "Pteropus lylei",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "nocturnal",
             "asia",
             "southeast-asia"
@@ -3245,11 +3876,11 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "south-america",
             "amazon",
-            "pantanal"
+            "pantanal",
+            "atlantic-forest"
           ]
         },
         "Western Woylie.png": {
@@ -3307,14 +3938,15 @@
             "temperate",
             "nocturnal",
             "oceania",
-            "australia"
+            "australia",
+            "tasmania"
           ]
         },
         "Dusky Pademelon.png": {
           "scientific_name": "Thylogale brunii",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "oceania",
             "new-guinea"
           ]
@@ -3324,7 +3956,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "oceania",
             "new-guinea"
@@ -3335,7 +3966,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "south-america",
             "amazon",
@@ -3361,7 +3991,9 @@
             "amazon",
             "pantanal",
             "pampas",
-            "florida"
+            "florida",
+            "atlantic-forest",
+            "gran-chaco"
           ]
         },
         "Plains Viscacha.png": {
@@ -3380,7 +4012,8 @@
           "tags": [
             "africa",
             "cape",
-            "east-africa"
+            "east-africa",
+            "ethiopian-highlands"
           ]
         },
         "Short-Beaked Echidna.png": {
@@ -3388,7 +4021,8 @@
           "enclosure_size": "small",
           "tags": [
             "oceania",
-            "australia"
+            "australia",
+            "tasmania"
           ]
         },
         "West Indian Manatee.png": {
@@ -3396,11 +4030,12 @@
           "enclosure_size": "medium",
           "tags": [
             "aquatic",
-            "tropical",
             "north-america",
             "south-america",
             "central-america",
-            "florida"
+            "florida",
+            "everglades",
+            "caribbean"
           ]
         },
         "Yellow-Footed Rock Wallaby.png": {
@@ -3422,7 +4057,9 @@
             "east-africa",
             "southern-africa",
             "sahel",
-            "west-africa"
+            "west-africa",
+            "serengeti",
+            "okavango"
           ]
         },
         "Bear Cuscus.png": {
@@ -3430,7 +4067,8 @@
           "enclosure_size": "small",
           "tags": [
             "oceania",
-            "new-guinea"
+            "new-guinea",
+            "sulawesi"
           ]
         },
         "Brown-Throated Sloth.png": {
@@ -3438,7 +4076,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "south-america",
             "amazon",
@@ -3459,7 +4096,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "oceania",
             "new-guinea"
           ]
@@ -3470,7 +4106,8 @@
           "tags": [
             "semi-aquatic",
             "oceania",
-            "australia"
+            "australia",
+            "tasmania"
           ]
         },
         "Tasmanian Devil.png": {
@@ -3480,7 +4117,8 @@
             "temperate",
             "nocturnal",
             "oceania",
-            "australia"
+            "australia",
+            "tasmania"
           ]
         }
       }
@@ -3507,7 +4145,12 @@
             "europe",
             "central-europe",
             "alps",
-            "rockies"
+            "rockies",
+            "scandinavia",
+            "pacific-northwest",
+            "carpathians",
+            "balkans",
+            "mediterranean"
           ]
         },
         "Demoiselle Crane.png": {
@@ -3536,7 +4179,8 @@
             "south-america",
             "pampas",
             "pantanal",
-            "patagonia"
+            "patagonia",
+            "gran-chaco"
           ]
         },
         "Grey Crowned Crane.png": {
@@ -3545,7 +4189,8 @@
           "tags": [
             "wetland",
             "africa",
-            "east-africa"
+            "east-africa",
+            "serengeti"
           ]
         },
         "Laughing Kookaburra.png": {
@@ -3563,7 +4208,8 @@
             "wetland",
             "asia",
             "china",
-            "japan"
+            "japan",
+            "amur"
           ]
         },
         "Scarlet Ibis.png": {
@@ -3582,7 +4228,8 @@
             "wetland",
             "temperate",
             "europe",
-            "central-europe"
+            "central-europe",
+            "mediterranean"
           ]
         }
       },
@@ -3622,7 +4269,9 @@
             "savanna",
             "africa",
             "east-africa",
-            "cape"
+            "cape",
+            "kalahari",
+            "serengeti"
           ]
         },
         "Glossy Ibis.png": {
@@ -3645,7 +4294,8 @@
           "enclosure_size": "small",
           "tags": [
             "africa",
-            "east-africa"
+            "east-africa",
+            "okavango"
           ]
         },
         "Lesser Rhea.png": {
@@ -3664,7 +4314,9 @@
             "africa",
             "south-america",
             "sahel",
-            "east-africa"
+            "east-africa",
+            "serengeti",
+            "okavango"
           ]
         },
         "Northern Bald Ibis.png": {
@@ -3684,7 +4336,8 @@
           "tags": [
             "savanna",
             "south-america",
-            "pampas"
+            "pampas",
+            "gran-chaco"
           ]
         },
         "Sarus Crane.png": {
@@ -3702,7 +4355,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "east-africa"
           ]
@@ -3734,7 +4386,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "ethiopian-highlands"
           ]
@@ -3757,7 +4408,8 @@
             "north-america",
             "south-america",
             "central-america",
-            "florida"
+            "florida",
+            "everglades"
           ]
         },
         "Black Crake.png": {
@@ -3793,9 +4445,9 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
-            "amazon"
+            "amazon",
+            "guiana-shield"
           ]
         },
         "Giant Wood-Rail.png": {
@@ -3833,14 +4485,15 @@
           "tags": [
             "wetland",
             "africa",
-            "east-africa"
+            "east-africa",
+            "okavango"
           ]
         },
         "Southern Cassowary.png": {
           "scientific_name": "Casuarius casuarius",
           "enclosure_size": "medium",
           "tags": [
-            "tropical",
+            "rainforest",
             "oceania",
             "southeast-asia",
             "new-guinea"
@@ -4039,7 +4692,8 @@
             "savanna",
             "africa",
             "east-africa",
-            "cape"
+            "cape",
+            "kalahari"
           ]
         },
         "Little Bustard.png": {
@@ -4056,7 +4710,7 @@
           "scientific_name": "Casuarius unappendiculatus",
           "enclosure_size": "medium",
           "tags": [
-            "tropical",
+            "rainforest",
             "oceania",
             "southeast-asia",
             "new-guinea"
@@ -4102,7 +4756,8 @@
             "wetland",
             "asia",
             "europe",
-            "mediterranean"
+            "mediterranean",
+            "balkans"
           ]
         },
         "Eurasian Spoonbill.png": {
@@ -4148,7 +4803,8 @@
             "aquatic",
             "europe",
             "north-america",
-            "japan"
+            "japan",
+            "pacific-northwest"
           ]
         },
         "Humboldt Penguin.png": {
@@ -4157,7 +4813,8 @@
           "tags": [
             "aquatic",
             "south-america",
-            "patagonia"
+            "patagonia",
+            "andes"
           ]
         },
         "Roseate Spoonbill.png": {
@@ -4169,7 +4826,8 @@
             "central-america",
             "amazon",
             "pantanal",
-            "florida"
+            "florida",
+            "everglades"
           ]
         }
       },
@@ -4182,7 +4840,8 @@
             "north-america",
             "south-america",
             "central-america",
-            "florida"
+            "florida",
+            "caribbean"
           ]
         },
         "Blacktip Reef Shark.png": {
@@ -4227,7 +4886,8 @@
           "tags": [
             "aquatic",
             "north-america",
-            "central-america"
+            "central-america",
+            "pacific-northwest"
           ]
         },
         "Cownose Ray.png": {
@@ -4409,7 +5069,8 @@
             "australia",
             "new-guinea",
             "arabia",
-            "caribbean"
+            "caribbean",
+            "everglades"
           ]
         },
         "Grey Reef Shark.png": {
@@ -4430,8 +5091,8 @@
           "enclosure_size": "small",
           "tags": [
             "aquatic",
-            "antarctica",
-            "subantarctic"
+            "subantarctic",
+            "patagonia"
           ]
         },
         "Lesser Flamingo.png": {
@@ -4459,8 +5120,8 @@
           "enclosure_size": "small",
           "tags": [
             "aquatic",
-            "antarctica",
-            "subantarctic"
+            "subantarctic",
+            "patagonia"
           ]
         },
         "Sand Tiger Shark.png": {
@@ -4493,7 +5154,8 @@
           "tags": [
             "aquatic",
             "south-america",
-            "patagonia"
+            "patagonia",
+            "subantarctic"
           ]
         },
         "South American Sea Lion.png": {
@@ -4608,7 +5270,6 @@
           "enclosure_size": "medium",
           "tags": [
             "aquatic",
-            "tropical",
             "africa",
             "asia",
             "north-america",
@@ -4636,7 +5297,6 @@
           "enclosure_size": "small",
           "tags": [
             "aquatic",
-            "antarctica",
             "subantarctic"
           ]
         },
@@ -4671,7 +5331,8 @@
             "semi-aquatic",
             "asia",
             "north-america",
-            "japan"
+            "japan",
+            "pacific-northwest"
           ]
         },
         "Steller Sea Lion.png": {
@@ -4681,7 +5342,8 @@
             "aquatic",
             "asia",
             "north-america",
-            "japan"
+            "japan",
+            "pacific-northwest"
           ]
         },
         "Walrus.png": {
@@ -4755,7 +5417,6 @@
           "enclosure_size": "large",
           "tags": [
             "aquatic",
-            "tropical",
             "africa",
             "asia",
             "oceania",
@@ -4809,7 +5470,8 @@
             "aquatic",
             "oceania",
             "australia",
-            "new-zealand"
+            "new-zealand",
+            "tasmania"
           ]
         },
         "Melon-Headed Whale.png": {
@@ -4829,7 +5491,8 @@
           "tags": [
             "aquatic",
             "north-america",
-            "central-america"
+            "central-america",
+            "subantarctic"
           ]
         },
         "Orca.png": {
@@ -4845,7 +5508,8 @@
             "central-america",
             "mediterranean",
             "southeast-asia",
-            "cape"
+            "cape",
+            "pacific-northwest"
           ]
         },
         "Orinoco Dolphin.png": {
@@ -5011,7 +5675,9 @@
             "himalayas",
             "arabia",
             "mediterranean",
-            "alps"
+            "alps",
+            "carpathians",
+            "balkans"
           ]
         },
         "Golden Eagle.png": {
@@ -5026,7 +5692,13 @@
             "central-europe",
             "india",
             "china",
-            "arabia"
+            "arabia",
+            "carpathians",
+            "great-plains",
+            "scandinavia",
+            "pacific-northwest",
+            "balkans",
+            "ethiopian-highlands"
           ]
         },
         "Great Grey Owl.png": {
@@ -5042,8 +5714,7 @@
             "rockies",
             "china",
             "japan",
-            "central-europe",
-            "alps"
+            "central-europe"
           ]
         },
         "Harris's Hawk.png": {
@@ -5054,7 +5725,8 @@
             "north-america",
             "south-america",
             "central-america",
-            "andes"
+            "andes",
+            "sonoran-desert"
           ]
         },
         "Little Owl.png": {
@@ -5079,7 +5751,8 @@
             "europe",
             "north-america",
             "rockies",
-            "arctic-region"
+            "arctic-region",
+            "scandinavia"
           ]
         },
         "Tawny Owl.png": {
@@ -5103,7 +5776,9 @@
             "asia",
             "europe",
             "japan",
-            "central-europe"
+            "central-europe",
+            "scandinavia",
+            "amur"
           ]
         },
         "Western Barn Owl.png": {
@@ -5127,7 +5802,10 @@
             "europe",
             "japan",
             "central-europe",
-            "mediterranean"
+            "mediterranean",
+            "scandinavia",
+            "carpathians",
+            "amur"
           ]
         }
       },
@@ -5138,7 +5816,10 @@
           "tags": [
             "north-america",
             "rockies",
-            "florida"
+            "florida",
+            "great-plains",
+            "pacific-northwest",
+            "everglades"
           ]
         },
         "Black Vulture.png": {
@@ -5148,7 +5829,8 @@
             "north-america",
             "south-america",
             "central-america",
-            "pantanal"
+            "pantanal",
+            "patagonia"
           ]
         },
         "Black-Chested Buzzard-Eagle.png": {
@@ -5180,7 +5862,9 @@
             "andes",
             "pampas",
             "rockies",
-            "florida"
+            "florida",
+            "great-plains",
+            "sonoran-desert"
           ]
         },
         "Crested Caracara.png": {
@@ -5192,7 +5876,9 @@
             "south-america",
             "central-america",
             "pantanal",
-            "florida"
+            "florida",
+            "sonoran-desert",
+            "pampas"
           ]
         },
         "Egyptian Vulture.png": {
@@ -5204,7 +5890,8 @@
             "asia",
             "europe",
             "mediterranean",
-            "arabia"
+            "arabia",
+            "balkans"
           ]
         },
         "Eurasian Goshawk.png": {
@@ -5238,7 +5925,8 @@
             "nocturnal",
             "north-america",
             "rockies",
-            "florida"
+            "florida",
+            "pacific-northwest"
           ]
         },
         "Griffon Vulture.png": {
@@ -5249,7 +5937,8 @@
             "mediterranean",
             "alps",
             "arabia",
-            "central-europe"
+            "central-europe",
+            "balkans"
           ]
         },
         "Hooded Vulture.png": {
@@ -5282,7 +5971,8 @@
             "africa",
             "asia",
             "europe",
-            "sahel"
+            "sahel",
+            "ethiopian-highlands"
           ]
         },
         "Long-Eared Owl.png": {
@@ -5338,7 +6028,14 @@
             "pampas",
             "patagonia",
             "australia",
-            "new-guinea"
+            "new-guinea",
+            "scandinavia",
+            "pacific-northwest",
+            "carpathians",
+            "balkans",
+            "amur",
+            "tasmania",
+            "everglades"
           ]
         },
         "Red Kite.png": {
@@ -5393,7 +6090,8 @@
             "boreal",
             "asia",
             "china",
-            "japan"
+            "japan",
+            "amur"
           ]
         },
         "Steppe Eagle.png": {
@@ -5438,7 +6136,8 @@
             "africa",
             "east-africa",
             "sahel",
-            "west-africa"
+            "west-africa",
+            "okavango"
           ]
         },
         "African Wood Owl.png": {
@@ -5462,7 +6161,9 @@
             "central-america",
             "caribbean",
             "andes",
-            "pampas"
+            "pampas",
+            "great-plains",
+            "sonoran-desert"
           ]
         },
         "Andean Condor.png": {
@@ -5490,7 +6191,8 @@
           "tags": [
             "nocturnal",
             "oceania",
-            "australia"
+            "australia",
+            "tasmania"
           ]
         },
         "Bateleur.png": {
@@ -5517,7 +6219,8 @@
             "asia",
             "europe",
             "himalayas",
-            "alps"
+            "alps",
+            "ethiopian-highlands"
           ]
         },
         "Boreal Owl.png": {
@@ -5533,7 +6236,8 @@
             "rockies",
             "china",
             "japan",
-            "central-europe"
+            "central-europe",
+            "scandinavia"
           ]
         },
         "Cape Eagle-Owl.png": {
@@ -5551,7 +6255,8 @@
           "tags": [
             "nocturnal",
             "south-america",
-            "pampas"
+            "pampas",
+            "gran-chaco"
           ]
         },
         "Ferruginous Hawk.png": {
@@ -5560,7 +6265,8 @@
           "tags": [
             "temperate",
             "north-america",
-            "rockies"
+            "rockies",
+            "great-plains"
           ]
         },
         "Ferruginous Pygmy Owl.png": {
@@ -5570,7 +6276,8 @@
             "nocturnal",
             "north-america",
             "south-america",
-            "central-america"
+            "central-america",
+            "sonoran-desert"
           ]
         },
         "Greyish Eagle-Owl.png": {
@@ -5594,7 +6301,6 @@
             "china",
             "himalayas",
             "japan",
-            "alps",
             "arctic-region"
           ]
         },
@@ -5612,10 +6318,10 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "central-america",
-            "amazon"
+            "amazon",
+            "guiana-shield"
           ]
         },
         "Laggar Falcon.png": {
@@ -5680,7 +6386,6 @@
           "enclosure_size": "small",
           "tags": [
             "wetland",
-            "tropical",
             "africa",
             "west-africa"
           ]
@@ -5691,7 +6396,8 @@
           "tags": [
             "north-america",
             "rockies",
-            "florida"
+            "florida",
+            "great-plains"
           ]
         },
         "Rüppell's Vulture.png": {
@@ -5700,7 +6406,8 @@
           "tags": [
             "africa",
             "sahel",
-            "east-africa"
+            "east-africa",
+            "serengeti"
           ]
         },
         "Secretary Bird.png": {
@@ -5713,7 +6420,9 @@
             "cape",
             "east-africa",
             "southern-africa",
-            "west-africa"
+            "west-africa",
+            "kalahari",
+            "serengeti"
           ]
         },
         "Short-Eared Owl.png": {
@@ -5780,7 +6489,8 @@
           "tags": [
             "savanna",
             "africa",
-            "east-africa"
+            "east-africa",
+            "serengeti"
           ]
         }
       },
@@ -5872,7 +6582,6 @@
           "enclosure_size": "small",
           "tags": [
             "wetland",
-            "tropical",
             "asia",
             "oceania",
             "southeast-asia"
@@ -6010,7 +6719,8 @@
           "tags": [
             "nocturnal",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "philippines"
           ]
         },
         "Red-Backed Hawk.png": {
@@ -6136,14 +6846,15 @@
           "enclosure_size": "medium",
           "tags": [
             "africa",
-            "cape"
+            "cape",
+            "kalahari"
           ]
         },
         "Crested Serpent Eagle.png": {
           "scientific_name": "Spilornis cheela",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "india",
             "southeast-asia"
@@ -6154,7 +6865,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6164,9 +6874,9 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
-            "amazon"
+            "amazon",
+            "guiana-shield"
           ]
         },
         "Nubian Vulture.png": {
@@ -6175,7 +6885,8 @@
           "tags": [
             "savanna",
             "africa",
-            "sahel"
+            "sahel",
+            "arabia"
           ]
         },
         "Osprey.png": {
@@ -6196,7 +6907,9 @@
             "amazon",
             "pantanal",
             "australia",
-            "new-guinea"
+            "new-guinea",
+            "pacific-northwest",
+            "everglades"
           ]
         },
         "Red-Headed Vulture.png": {
@@ -6218,7 +6931,8 @@
             "oceania",
             "southeast-asia",
             "australia",
-            "new-guinea"
+            "new-guinea",
+            "tasmania"
           ]
         }
       }
@@ -6229,7 +6943,7 @@
           "scientific_name": "Psittacus erithacus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "congo",
             "west-africa"
@@ -6240,10 +6954,10 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon",
-            "pantanal"
+            "pantanal",
+            "guiana-shield"
           ]
         },
         "Blue-Fronted Amazon.png": {
@@ -6251,10 +6965,10 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "pantanal",
-            "pampas"
+            "pampas",
+            "gran-chaco"
           ]
         },
         "Galah.png": {
@@ -6270,7 +6984,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6280,7 +6993,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6290,7 +7002,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "west-africa"
           ]
@@ -6300,17 +7011,17 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon",
-            "central-america"
+            "central-america",
+            "guiana-shield"
           ]
         },
         "Senegal Parrot.png": {
           "scientific_name": "Poicephalus senegalus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "africa",
             "west-africa",
             "sahel"
@@ -6329,7 +7040,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "west-africa"
           ]
@@ -6339,7 +7049,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "west-africa",
             "east-africa"
@@ -6359,7 +7068,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6370,7 +7078,7 @@
           "scientific_name": "Pionites melanocephalus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "south-america",
             "amazon"
           ]
@@ -6380,7 +7088,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6390,7 +7097,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon",
             "pantanal"
@@ -6401,9 +7107,9 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
-            "caribbean"
+            "caribbean",
+            "cuba"
           ]
         },
         "Great Green Macaw.png": {
@@ -6411,7 +7117,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "central-america"
           ]
@@ -6421,9 +7126,9 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
-            "amazon"
+            "amazon",
+            "guiana-shield"
           ]
         },
         "Green Turaco.png": {
@@ -6431,7 +7136,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "west-africa",
             "congo"
@@ -6442,7 +7146,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon",
             "pantanal"
@@ -6462,7 +7165,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon",
             "andes"
@@ -6481,7 +7183,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "congo",
             "cape"
@@ -6492,7 +7193,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6502,7 +7202,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "central-america"
           ]
@@ -6520,7 +7219,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "congo",
             "cape"
@@ -6531,7 +7229,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "north-america",
             "central-america"
           ]
@@ -6541,7 +7238,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6551,7 +7247,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "east-africa"
           ]
@@ -6567,7 +7262,7 @@
           "scientific_name": "Cacatua goffiniana",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia"
           ]
@@ -6576,7 +7271,7 @@
           "scientific_name": "Psittacus timneh",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "africa",
             "west-africa"
           ]
@@ -6586,7 +7281,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon",
             "pantanal"
@@ -6597,7 +7291,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "congo",
             "cape"
@@ -6608,10 +7301,10 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon",
-            "pampas"
+            "pampas",
+            "atlantic-forest"
           ]
         },
         "Von Der Decken's Hornbill.png": {
@@ -6627,7 +7320,7 @@
           "scientific_name": "Pionites leucogaster",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "south-america",
             "amazon"
           ]
@@ -6637,7 +7330,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "north-america",
             "central-america"
           ]
@@ -6647,7 +7339,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "north-america",
             "central-america"
           ]
@@ -6659,7 +7350,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "asia",
             "west-africa",
@@ -6672,7 +7362,7 @@
           "scientific_name": "Lybius dubius",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "africa",
             "west-africa"
           ]
@@ -6682,7 +7372,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6692,7 +7381,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6709,7 +7397,7 @@
           "scientific_name": "Pionus menstruus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "south-america",
             "amazon"
           ]
@@ -6719,7 +7407,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6729,7 +7416,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6739,7 +7425,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6749,7 +7434,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "east-africa"
           ]
@@ -6759,7 +7443,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "central-america"
           ]
@@ -6776,7 +7459,7 @@
           "scientific_name": "Poicephalus meyeri",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "africa",
             "west-africa",
             "east-africa",
@@ -6796,7 +7479,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "new-guinea"
           ]
@@ -6806,7 +7488,8 @@
           "enclosure_size": "small",
           "tags": [
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "philippines"
           ]
         },
         "Red-Billed Hornbill.png": {
@@ -6814,7 +7497,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "west-africa",
             "east-africa"
@@ -6825,7 +7507,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "pampas",
             "central-america"
@@ -6836,7 +7517,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6845,7 +7525,7 @@
           "scientific_name": "Poicephalus gulielmi",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "africa",
             "west-africa",
             "east-africa"
@@ -6856,9 +7536,9 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
-            "amazon"
+            "amazon",
+            "atlantic-forest"
           ]
         },
         "Red-Tailed Black Cockatoo.png": {
@@ -6874,9 +7554,11 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sundaland",
+            "borneo",
+            "sumatra"
           ]
         },
         "Tarictic Hornbill.png": {
@@ -6884,9 +7566,9 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "philippines"
           ]
         },
         "White-Crested Turaco.png": {
@@ -6894,7 +7576,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "west-africa"
           ]
@@ -6904,7 +7585,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "central-america"
           ]
@@ -6914,7 +7594,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "caribbean"
           ]
@@ -6926,9 +7605,11 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sundaland",
+            "borneo",
+            "sumatra"
           ]
         },
         "Black-Casqued Hornbill.png": {
@@ -6936,7 +7617,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "congo",
             "west-africa"
@@ -6947,7 +7627,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6956,7 +7635,7 @@
           "scientific_name": "Pionus chalcopterus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "south-america",
             "amazon"
           ]
@@ -6966,7 +7645,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6976,7 +7654,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -6986,7 +7663,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -6996,7 +7672,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon",
             "pantanal"
@@ -7007,7 +7682,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "india"
           ]
@@ -7017,7 +7691,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -7027,7 +7700,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "east-africa"
           ]
@@ -7037,7 +7709,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -7046,7 +7717,7 @@
           "scientific_name": "Forpus coelestis",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "south-america",
             "amazon",
             "andes"
@@ -7076,16 +7747,17 @@
           "scientific_name": "Deroptyus accipitrinus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "south-america",
-            "amazon"
+            "amazon",
+            "guiana-shield"
           ]
         },
         "Scaly-Headed Parrot.png": {
           "scientific_name": "Pionus maximiliani",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "south-america",
             "amazon"
           ]
@@ -7095,7 +7767,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "congo"
           ]
@@ -7104,7 +7775,7 @@
           "scientific_name": "Pionus senilis",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "north-america",
             "south-america",
             "caribbean",
@@ -7116,7 +7787,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -7126,7 +7796,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -7136,9 +7805,11 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sundaland",
+            "borneo",
+            "sumatra"
           ]
         },
         "Yellow-Billed Amazon.png": {
@@ -7146,7 +7817,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -7155,7 +7825,7 @@
           "scientific_name": "Alipiopsitta xanthops",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "south-america",
             "amazon"
           ]
@@ -7165,7 +7835,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "central-america"
           ]
@@ -7177,7 +7846,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "asia",
             "west-africa",
@@ -7189,7 +7857,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -7199,7 +7866,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -7209,7 +7875,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "west-africa",
             "east-africa"
@@ -7220,7 +7885,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "central-america"
           ]
@@ -7238,7 +7902,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "congo",
             "west-africa"
@@ -7249,9 +7912,9 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
-            "amazon"
+            "amazon",
+            "guiana-shield"
           ]
         },
         "Ivory-Billed Aracari.png": {
@@ -7259,7 +7922,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -7269,7 +7931,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "central-america"
           ]
@@ -7279,9 +7940,9 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sulawesi"
           ]
         },
         "Lear's Macaw.png": {
@@ -7289,7 +7950,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america"
           ]
         },
@@ -7306,9 +7966,11 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "borneo",
+            "sumatra",
+            "sundaland"
           ]
         },
         "Palawan Hornbill.png": {
@@ -7316,9 +7978,9 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "philippines"
           ]
         },
         "Pale-Billed Aracari.png": {
@@ -7326,7 +7988,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -7336,7 +7997,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -7346,7 +8006,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "mountain",
             "south-america",
             "andes"
@@ -7357,7 +8016,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -7367,9 +8025,9 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
-            "amazon"
+            "amazon",
+            "atlantic-forest"
           ]
         },
         "Ross's Turaco.png": {
@@ -7377,7 +8035,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "africa",
             "congo"
           ]
@@ -7387,7 +8044,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -7397,7 +8053,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -7406,7 +8061,7 @@
           "scientific_name": "Forpus conspicillatus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "south-america",
             "amazon"
           ]
@@ -7416,7 +8071,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -7426,7 +8080,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -7436,7 +8089,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -7445,7 +8097,7 @@
           "scientific_name": "Crinifer piscator",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "africa",
             "west-africa"
           ]
@@ -7455,7 +8107,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -7465,7 +8116,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -7475,9 +8125,9 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "philippines"
           ]
         },
         "Yellow-Tailed Black Cockatoo.png": {
@@ -7505,7 +8155,7 @@
           "scientific_name": "Boa constrictor",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "south-america",
             "central-america",
             "amazon",
@@ -7516,7 +8166,7 @@
           "scientific_name": "Python bivittatus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia"
           ]
@@ -7525,7 +8175,7 @@
           "scientific_name": "Morelia spilota",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "nocturnal",
             "oceania",
             "australia"
@@ -7573,7 +8223,7 @@
           "scientific_name": "Iguana iguana",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "nocturnal",
             "north-america",
             "south-america",
@@ -7586,7 +8236,6 @@
           "enclosure_size": "small",
           "tags": [
             "rainforest",
-            "tropical",
             "nocturnal",
             "oceania",
             "new-guinea"
@@ -7626,21 +8275,24 @@
           "scientific_name": "Chelonoidis carbonarius",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
             "savanna",
             "south-america",
             "amazon",
-            "pantanal"
+            "pantanal",
+            "guiana-shield",
+            "atlantic-forest"
           ]
         },
         "Reticulated Python.png": {
           "scientific_name": "Malayopython reticulatus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia",
-            "india"
+            "india",
+            "sumatra",
+            "sundaland"
           ]
         },
         "Yemen Chameleon.png": {
@@ -7657,7 +8309,7 @@
           "scientific_name": "Aldabrachelys gigantea",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "africa"
           ]
         },
@@ -7675,7 +8327,7 @@
           "scientific_name": "Corallus hortulana",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "nocturnal",
             "south-america",
             "amazon"
@@ -7688,16 +8340,18 @@
             "semi-aquatic",
             "wetland",
             "north-america",
-            "florida"
+            "florida",
+            "everglades"
           ]
         },
         "Argentine Black and White Tegu.png": {
           "scientific_name": "Salvator merianae",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "south-america",
-            "pampas"
+            "pampas",
+            "gran-chaco"
           ]
         },
         "Asian Water Monitor.png": {
@@ -7705,7 +8359,6 @@
           "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -7742,7 +8395,7 @@
           "scientific_name": "Eunectes murinus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "nocturnal",
             "south-america",
             "amazon"
@@ -7785,9 +8438,9 @@
           "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
-            "tropical",
             "south-america",
-            "amazon"
+            "amazon",
+            "guiana-shield"
           ]
         },
         "Dumeril's Boa.png": {
@@ -7804,7 +8457,6 @@
           "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
-            "tropical",
             "africa",
             "congo",
             "west-africa"
@@ -7841,7 +8493,7 @@
           "scientific_name": "Chlamydosaurus kingii",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "oceania",
             "australia"
           ]
@@ -7852,7 +8504,8 @@
           "tags": [
             "desert",
             "north-america",
-            "rockies"
+            "rockies",
+            "sonoran-desert"
           ]
         },
         "Indian Star Tortoise.png": {
@@ -7878,7 +8531,7 @@
           "scientific_name": "Sanzinia madagascariensis",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "nocturnal",
             "africa",
             "madagascar"
@@ -7888,7 +8541,7 @@
           "scientific_name": "Testudo marginata",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "europe",
             "mediterranean"
           ]
@@ -7908,14 +8561,15 @@
           "enclosure_size": "small",
           "tags": [
             "north-america",
-            "central-america"
+            "central-america",
+            "sonoran-desert"
           ]
         },
         "Pancake Tortoise.png": {
           "scientific_name": "Malacochersus tornieri",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "africa",
             "east-africa"
           ]
@@ -7934,7 +8588,7 @@
           "scientific_name": "Astrochelys radiata",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "madagascar"
           ]
@@ -7952,7 +8606,7 @@
           "scientific_name": "Emydura subglobosa",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "oceania",
             "australia"
           ]
@@ -7961,7 +8615,7 @@
           "scientific_name": "Cyclura cornuta",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "north-america",
             "caribbean"
           ]
@@ -7970,7 +8624,7 @@
           "scientific_name": "Varanus exanthematicus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "africa",
             "east-africa",
             "west-africa",
@@ -7984,7 +8638,6 @@
           "enclosure_size": "small",
           "tags": [
             "semi-aquatic",
-            "tropical",
             "south-america",
             "central-america",
             "amazon",
@@ -8006,26 +8659,29 @@
           "tags": [
             "nocturnal",
             "north-america",
-            "rockies"
+            "rockies",
+            "sonoran-desert"
           ]
         },
         "Yellow Anaconda.png": {
           "scientific_name": "Eunectes notaeus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "nocturnal",
             "south-america",
-            "pantanal"
+            "pantanal",
+            "gran-chaco"
           ]
         },
         "Yellow-Footed Tortoise.png": {
           "scientific_name": "Chelonoidis denticulatus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "south-america",
-            "amazon"
+            "amazon",
+            "guiana-shield"
           ]
         }
       },
@@ -8034,7 +8690,7 @@
           "scientific_name": "Pelomedusa subrufa",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "east-africa",
             "west-africa",
@@ -8046,7 +8702,7 @@
           "scientific_name": "Manouria emys",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia"
           ]
@@ -8057,7 +8713,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "south-america",
             "pantanal",
             "pampas"
@@ -8069,7 +8724,6 @@
           "tags": [
             "semi-aquatic",
             "rainforest",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -8080,16 +8734,16 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "north-america",
-            "caribbean"
+            "caribbean",
+            "cuba"
           ]
         },
         "Elongated Tortoise.png": {
           "scientific_name": "Indotestudo elongata",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia"
           ]
@@ -8098,7 +8752,7 @@
           "scientific_name": "Corallus caninus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "nocturnal",
             "south-america",
             "amazon"
@@ -8118,7 +8772,7 @@
           "scientific_name": "Chelonoidis niger",
           "enclosure_size": "medium",
           "tags": [
-            "tropical",
+            "forest",
             "south-america"
           ]
         },
@@ -8128,7 +8782,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -8137,7 +8790,7 @@
           "scientific_name": "Varanus prasinus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "oceania",
             "new-guinea"
           ]
@@ -8155,7 +8808,7 @@
           "scientific_name": "Naja naja",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "asia",
             "india"
           ]
@@ -8164,7 +8817,7 @@
           "scientific_name": "Varanus komodoensis",
           "enclosure_size": "medium",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia"
           ]
@@ -8173,7 +8826,7 @@
           "scientific_name": "Acrantophis madagascariensis",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "nocturnal",
             "africa",
             "madagascar"
@@ -8186,7 +8839,9 @@
             "semi-aquatic",
             "wetland",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "borneo",
+            "sundaland"
           ]
         },
         "McCord's Snake-Necked Turtle.png": {
@@ -8212,7 +8867,7 @@
           "scientific_name": "Naja kaouthia",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia"
           ]
@@ -8228,7 +8883,8 @@
             "east-africa",
             "sahel",
             "southern-africa",
-            "west-africa"
+            "west-africa",
+            "okavango"
           ]
         },
         "Nile Monitor.png": {
@@ -8245,7 +8901,7 @@
           "scientific_name": "Bitis arietans",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "africa",
             "asia",
             "east-africa"
@@ -8255,17 +8911,18 @@
           "scientific_name": "Salvator rufescens",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "south-america",
             "pantanal",
-            "pampas"
+            "pampas",
+            "gran-chaco"
           ]
         },
         "Spider Tortoise.png": {
           "scientific_name": "Pyxis arachnoides",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "madagascar"
           ]
@@ -8274,7 +8931,7 @@
           "scientific_name": "Ctenosaura bakeri",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "north-america",
             "central-america"
           ]
@@ -8283,7 +8940,7 @@
           "scientific_name": "Bitis gabonica",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "africa",
             "west-africa"
           ]
@@ -8303,7 +8960,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -8324,7 +8980,7 @@
           "scientific_name": "Dendroaspis polylepis",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "nocturnal",
             "africa",
             "east-africa"
@@ -8344,14 +9000,16 @@
           "enclosure_size": "small",
           "tags": [
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "borneo",
+            "sundaland"
           ]
         },
         "Burmese Star Tortoise.png": {
           "scientific_name": "Geochelone platynota",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia"
           ]
@@ -8370,7 +9028,7 @@
           "scientific_name": "Rhinoclemmys pulcherrima",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "north-america",
             "central-america"
           ]
@@ -8389,7 +9047,7 @@
           "scientific_name": "Cuora flavomarginata",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "asia",
             "china"
           ]
@@ -8398,7 +9056,7 @@
           "scientific_name": "Anguis fragilis",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "asia",
             "europe",
             "central-europe",
@@ -8418,7 +9076,7 @@
           "scientific_name": "Varanus salvadorii",
           "enclosure_size": "medium",
           "tags": [
-            "tropical",
+            "forest",
             "oceania",
             "new-guinea"
           ]
@@ -8447,7 +9105,7 @@
           "scientific_name": "Dendroaspis angusticeps",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "nocturnal",
             "africa",
             "east-africa"
@@ -8459,9 +9117,11 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "borneo",
+            "sumatra",
+            "sundaland"
           ]
         },
         "Freshwater Crocodile.png": {
@@ -8470,7 +9130,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "oceania",
             "australia"
           ]
@@ -8479,7 +9138,7 @@
           "scientific_name": "Atheris squamigera",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "africa",
             "congo"
           ]
@@ -8488,7 +9147,7 @@
           "scientific_name": "Trimeresurus insularis",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia"
           ]
@@ -8497,7 +9156,7 @@
           "scientific_name": "Trioceros jacksonii",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "savanna",
             "africa",
             "east-africa"
           ]
@@ -8516,7 +9175,7 @@
           "scientific_name": "Ophiophagus hannah",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia",
             "india"
@@ -8526,7 +9185,7 @@
           "scientific_name": "Varanus varius",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "oceania",
             "australia"
           ]
@@ -8537,7 +9196,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "oceania",
             "australia"
           ]
@@ -8548,7 +9206,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "north-america",
             "central-america"
           ]
@@ -8559,16 +9216,16 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "philippines"
           ]
         },
         "Red Blood Python.png": {
           "scientific_name": "Python brongersmai",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia"
           ]
@@ -8579,7 +9236,8 @@
           "tags": [
             "nocturnal",
             "north-america",
-            "rockies"
+            "rockies",
+            "sonoran-desert"
           ]
         },
         "Saltwater Crocodile.png": {
@@ -8588,12 +9246,12 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "asia",
             "oceania",
             "australia",
             "new-guinea",
-            "southeast-asia"
+            "southeast-asia",
+            "borneo"
           ]
         },
         "Siamese Crocodile.png": {
@@ -8602,7 +9260,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "asia",
             "southeast-asia"
           ]
@@ -8613,7 +9270,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "africa",
             "congo"
           ]
@@ -8624,7 +9280,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -8633,7 +9288,7 @@
           "scientific_name": "Heosemys spinosa",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "asia",
             "southeast-asia"
           ]
@@ -8642,7 +9297,7 @@
           "scientific_name": "Apalone spinifera",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "north-america",
             "rockies"
           ]
@@ -8653,7 +9308,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "asia",
             "china"
           ]
@@ -8662,10 +9316,12 @@
           "scientific_name": "Python curtus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "rainforest",
             "nocturnal",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sumatra",
+            "sundaland"
           ]
         },
         "Uracoan Rattlesnake.png": {
@@ -8683,7 +9339,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "africa",
             "west-africa",
             "sahel"
@@ -8695,7 +9350,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "africa",
             "west-africa"
           ]
@@ -8706,7 +9360,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "south-america",
             "pantanal"
           ]
@@ -8719,11 +9372,11 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "north-america",
             "south-america",
             "central-america",
-            "florida"
+            "florida",
+            "everglades"
           ]
         },
         "Arrau River Turtle.png": {
@@ -8742,7 +9395,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -8751,7 +9403,7 @@
           "scientific_name": "Platysternon megacephalum",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "nocturnal",
             "asia",
             "china"
@@ -8763,9 +9415,9 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "south-america",
-            "amazon"
+            "amazon",
+            "guiana-shield"
           ]
         },
         "Common Toadheaded Turtle.png": {
@@ -8793,7 +9445,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "asia",
             "india"
           ]
@@ -8804,7 +9455,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "asia",
             "india"
           ]
@@ -8815,7 +9465,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "oceania",
             "new-guinea"
           ]
@@ -8826,7 +9475,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -8837,7 +9485,6 @@
           "tags": [
             "semi-aquatic",
             "wetland",
-            "tropical",
             "south-america",
             "amazon"
           ]
@@ -8857,7 +9504,7 @@
           "scientific_name": "Chersobius signatus",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "africa",
             "cape"
           ]
@@ -8866,7 +9513,7 @@
           "scientific_name": "Clemmys guttata",
           "enclosure_size": "small",
           "tags": [
-            "tropical",
+            "forest",
             "north-america",
             "florida"
           ]
@@ -8877,7 +9524,8 @@
           "tags": [
             "wetlands",
             "asia",
-            "southeast-asia"
+            "southeast-asia",
+            "sulawesi"
           ]
         },
         "Tuatara.png": {
@@ -8943,7 +9591,7 @@
       "audit": "Completed second-pass audit: all animals now have at least one zoo-preference tag; conspicuous aquatic/semi-aquatic and geographic omissions from the first pass were also corrected.",
       "reptileExpansion": "Added missing species-level reptile entries from Zoo_Curator_animals_scientific_names_batch1.xlsm using the spreadsheet rarity levels. Existing inventory names remain canonical; obvious spreadsheet name variants already represented in inventory were not duplicated. Common Marmoset and Okapi were also added.",
       "petting-zoo": "Hands-on petting-zoo suitability. Kept separate from domestic so large cattle and camelids can still form Farm Areas without automatically becoming a Petting Zoo.",
-      "subregions": "Geographic subregions are optional and overlapping. Pass 1 uses conservative species-level assignments; animals may retain only a continent tag until their subregional range is checked. Subregions are intended to add information beyond continent + habitat."
+      "subregions": "Player-facing geography uses continent > recognizable named region only. Directional/broad database tags such as east-africa and southeast-asia remain available internally for matching and generation but are not prestige area names. A player-facing region requires at least four supported inventory animals."
     },
     "subregion": [
       "congo",
@@ -8976,8 +9624,470 @@
       "rockies",
       "florida",
       "new-zealand",
-      "subantarctic"
-    ]
+      "subantarctic",
+      "guiana-shield",
+      "serengeti",
+      "okavango",
+      "sundaland",
+      "kalahari",
+      "everglades",
+      "great-plains",
+      "atlantic-forest",
+      "gran-chaco",
+      "borneo",
+      "sumatra",
+      "amur",
+      "mongolian-steppe",
+      "tasmania",
+      "sonoran-desert",
+      "carpathians",
+      "balkans",
+      "scandinavia",
+      "pacific-northwest",
+      "sulawesi",
+      "philippines",
+      "cuba",
+      "visayan-islands",
+      "java"
+    ],
+    "geographyHierarchy": {
+      "model": "continent-to-recognizable-region",
+      "minimum_animals_per_region": 4,
+      "player_facing_prestige_regions": [
+        {
+          "tag": "sahel",
+          "name": "Sahel",
+          "parents": [
+            "africa"
+          ],
+          "animal_count": 60
+        },
+        {
+          "tag": "cape",
+          "name": "Cape Region",
+          "parents": [
+            "africa"
+          ],
+          "animal_count": 59
+        },
+        {
+          "tag": "congo",
+          "name": "Congo Basin",
+          "parents": [
+            "africa"
+          ],
+          "animal_count": 51
+        },
+        {
+          "tag": "madagascar",
+          "name": "Madagascar",
+          "parents": [
+            "africa"
+          ],
+          "animal_count": 24
+        },
+        {
+          "tag": "ethiopian-highlands",
+          "name": "Ethiopian Highlands",
+          "parents": [
+            "africa"
+          ],
+          "animal_count": 9
+        },
+        {
+          "tag": "india",
+          "name": "India",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 56
+        },
+        {
+          "tag": "japan",
+          "name": "Japanese Archipelago",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 27
+        },
+        {
+          "tag": "arabia",
+          "name": "Arabian Peninsula",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 30
+        },
+        {
+          "tag": "himalayas",
+          "name": "Himalayas",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 26
+        },
+        {
+          "tag": "mediterranean",
+          "name": "Mediterranean",
+          "parents": [
+            "europe"
+          ],
+          "animal_count": 58
+        },
+        {
+          "tag": "alps",
+          "name": "Alps",
+          "parents": [
+            "europe"
+          ],
+          "animal_count": 14
+        },
+        {
+          "tag": "caribbean",
+          "name": "Caribbean",
+          "parents": [
+            "north-america"
+          ],
+          "animal_count": 27
+        },
+        {
+          "tag": "rockies",
+          "name": "Rocky Mountains",
+          "parents": [
+            "north-america"
+          ],
+          "animal_count": 43
+        },
+        {
+          "tag": "pantanal",
+          "name": "Pantanal",
+          "parents": [
+            "south-america"
+          ],
+          "animal_count": 35
+        },
+        {
+          "tag": "andes",
+          "name": "Andes",
+          "parents": [
+            "south-america"
+          ],
+          "animal_count": 28
+        },
+        {
+          "tag": "pampas",
+          "name": "Pampas",
+          "parents": [
+            "south-america"
+          ],
+          "animal_count": 32
+        },
+        {
+          "tag": "patagonia",
+          "name": "Patagonia",
+          "parents": [
+            "south-america"
+          ],
+          "animal_count": 27
+        },
+        {
+          "tag": "guiana-shield",
+          "name": "Guiana Shield",
+          "parents": [
+            "south-america"
+          ],
+          "animal_count": 22
+        },
+        {
+          "tag": "australia",
+          "name": "Australia",
+          "parents": [
+            "oceania"
+          ],
+          "animal_count": 67
+        },
+        {
+          "tag": "new-guinea",
+          "name": "New Guinea",
+          "parents": [
+            "oceania"
+          ],
+          "animal_count": 29
+        },
+        {
+          "tag": "new-zealand",
+          "name": "New Zealand",
+          "parents": [
+            "oceania"
+          ],
+          "animal_count": 9
+        },
+        {
+          "tag": "arctic-region",
+          "name": "Arctic",
+          "parents": [
+            "north-america",
+            "europe",
+            "asia"
+          ],
+          "animal_count": 11
+        },
+        {
+          "tag": "subantarctic",
+          "name": "Subantarctic Islands",
+          "parents": [
+            "antarctica",
+            "oceania"
+          ],
+          "animal_count": 7
+        },
+        {
+          "tag": "antarctica",
+          "name": "Antarctica",
+          "parents": [
+            "antarctica"
+          ],
+          "animal_count": 4
+        },
+        {
+          "tag": "amazon",
+          "name": "Amazon",
+          "parents": [
+            "south-america"
+          ],
+          "animal_count": 135
+        },
+        {
+          "tag": "serengeti",
+          "name": "Serengeti",
+          "parents": [
+            "africa"
+          ],
+          "animal_count": 26
+        },
+        {
+          "tag": "okavango",
+          "name": "Okavango Delta",
+          "parents": [
+            "africa"
+          ],
+          "animal_count": 23
+        },
+        {
+          "tag": "sundaland",
+          "name": "Sundaland",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 23
+        },
+        {
+          "tag": "kalahari",
+          "name": "Kalahari",
+          "parents": [
+            "africa"
+          ],
+          "animal_count": 21
+        },
+        {
+          "tag": "everglades",
+          "name": "Everglades",
+          "parents": [
+            "north-america"
+          ],
+          "animal_count": 14
+        },
+        {
+          "tag": "great-plains",
+          "name": "Great Plains",
+          "parents": [
+            "north-america"
+          ],
+          "animal_count": 10
+        },
+        {
+          "tag": "atlantic-forest",
+          "name": "Atlantic Forest",
+          "parents": [
+            "south-america"
+          ],
+          "animal_count": 19
+        },
+        {
+          "tag": "gran-chaco",
+          "name": "Gran Chaco",
+          "parents": [
+            "south-america"
+          ],
+          "animal_count": 21
+        },
+        {
+          "tag": "borneo",
+          "name": "Borneo",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 15
+        },
+        {
+          "tag": "sumatra",
+          "name": "Sumatra",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 17
+        },
+        {
+          "tag": "amur",
+          "name": "Amur",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 15
+        },
+        {
+          "tag": "mongolian-steppe",
+          "name": "Mongolian Steppe",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 4
+        },
+        {
+          "tag": "tasmania",
+          "name": "Tasmania",
+          "parents": [
+            "oceania"
+          ],
+          "animal_count": 11
+        },
+        {
+          "tag": "sonoran-desert",
+          "name": "Sonoran Desert",
+          "parents": [
+            "north-america"
+          ],
+          "animal_count": 17
+        },
+        {
+          "tag": "carpathians",
+          "name": "Carpathians",
+          "parents": [
+            "europe"
+          ],
+          "animal_count": 15
+        },
+        {
+          "tag": "balkans",
+          "name": "Balkans",
+          "parents": [
+            "europe"
+          ],
+          "animal_count": 17
+        },
+        {
+          "tag": "scandinavia",
+          "name": "Scandinavia",
+          "parents": [
+            "europe"
+          ],
+          "animal_count": 18
+        },
+        {
+          "tag": "pacific-northwest",
+          "name": "Pacific Northwest",
+          "parents": [
+            "north-america"
+          ],
+          "animal_count": 22
+        },
+        {
+          "tag": "sulawesi",
+          "name": "Sulawesi",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 5
+        },
+        {
+          "tag": "philippines",
+          "name": "Philippines",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 9
+        }
+      ],
+      "internal_only_geography_tags": [
+        "east-africa",
+        "southern-africa",
+        "west-africa",
+        "southeast-asia",
+        "china",
+        "central-europe",
+        "central-america",
+        "florida"
+      ],
+      "rules": {
+        "continent_and_region_do_not_stack_full_prestige": true,
+        "region_is_more_prestigious_than_continent": true,
+        "overlapping_region_tags_allowed": true,
+        "minimum_animals_per_region": 4,
+        "directional_regions_not_player_facing": true,
+        "amazonia_note": "Amazon is the canonical broad Amazon region; Amazonia is not kept as a duplicate tag.",
+        "amazon_specificity_note": "More specific South American regions such as Guiana Shield can overlap Amazon, but Southwest Amazonia has been removed as too redundant.",
+        "recognizable_region_expansion": "Named regions are added only when at least four inventory animals have a defensible range association; broad directional tags remain internal.",
+        "geographic_special_threshold": "2-3 strongly representative current animals; 4+ becomes a normal geographic region"
+      },
+      "research_notes": {
+        "serengeti": "Added conservatively from UNESCO Serengeti species examples present in the inventory.",
+        "okavango": "Added conservatively from UNESCO/National Geographic Okavango species examples present in the inventory.",
+        "sundaland": "Added conservatively from clearly Sundaland-associated taxa already present in the inventory; intended for further audit.",
+        "full_subregion_pass_2026_09_23": "2026-09-23 full current-subregion pass: reviewed all existing player-facing regions against the animal inventory; added conservative range associations, corrected clear false positives, added Sulawesi and Philippines as normal regions, and added Cuba, Visayan Islands and Java as 2-3-animal geographic specials."
+      },
+      "geographic_specials": [
+        {
+          "tag": "cuba",
+          "name": "Cuba",
+          "parents": [
+            "caribbean"
+          ],
+          "animal_count": 2,
+          "eligible_animals": [
+            "Cuban Amazon",
+            "Cuban Crocodile"
+          ],
+          "rule": "2-3 strongly representative current animals; single-enclosure special geography"
+        },
+        {
+          "tag": "visayan-islands",
+          "name": "Visayan Islands",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 2,
+          "eligible_animals": [
+            "Visayan Warty Pig",
+            "Visayan Spotted Deer"
+          ],
+          "rule": "2-3 strongly representative current animals; single-enclosure special geography"
+        },
+        {
+          "tag": "java",
+          "name": "Java",
+          "parents": [
+            "asia"
+          ],
+          "animal_count": 3,
+          "eligible_animals": [
+            "Javan Banteng",
+            "Javan Chevrotain",
+            "Silvery Gibbon"
+          ],
+          "rule": "2-3 strongly representative current animals; single-enclosure special geography"
+        }
+      ]
+    }
   },
   "zooTypeWeights": {
     "version": 2,
@@ -9135,5 +10245,34 @@
       "Nocturnal is retained as animal metadata for a future nocturnal-house or nocturnal-zoo preference; it is not forced into an unrelated current type.",
       "Logic pass v2 adds restrained secondary preferences based on likely facilities and husbandry expertise (e.g. reptile zoos also favour tropical and aquatic animals). Primary identity bonuses remain substantially stronger than crossover bonuses."
     ]
+  },
+  "geography_migration": {
+    "southern_america": {
+      "framework": "One Earth Bioregions Framework",
+      "status": "carnivora_reviewed_except_taxonomy_hold",
+      "field": "wild_regions",
+      "pass": "south-american-carnivora-pass2-full-review",
+      "note": "Legacy tags retained during migration. wild_regions contains One Earth bioregion IDs only.",
+      "reviewed_records": 18,
+      "taxonomy_holds": [
+        "Oncilla.png"
+      ]
+    },
+    "central_america_carnivora_batch_3": {
+      "framework": "One Earth Bioregions 2023",
+      "status": "reviewed",
+      "animals": [
+        "Ocelot.png",
+        "Tayra.png",
+        "Kinkajou.png",
+        "Margay.png",
+        "Cougar.png",
+        "Bush Dog.png",
+        "Jaguar.png",
+        "Jaguarundi.png",
+        "White-Nosed Coati.png"
+      ],
+      "note": "Adds mainland Central America occurrence only. Mexican/Nearctic extensions will be handled with the Northern America geography batch; no Caribbean or Mexican Subtropical Islands were inferred."
+    }
   }
 }

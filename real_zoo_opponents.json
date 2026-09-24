@@ -46,7 +46,6 @@
               "Common Raven",
               "Common Squirrel Monkey",
               "Corncrake",
-              "Crocodile Lizard",
               "Dalmatian Pelican",
               "Dwarf Mongoose",
               "Egyptian Fruit Bat",
@@ -216,7 +215,7 @@
       "Other": {
         "tier_3": [
           {
-            "name": "Wildpark",
+            "name": "Wildpark Feldkirch",
             "country": "Austria",
             "province": "Vorarlberg",
             "tier": 3,
@@ -254,7 +253,7 @@
         ],
         "tier_2": [
           {
-            "name": "Naturpark",
+            "name": "Naturpark Geras",
             "country": "Austria",
             "province": "Lower Austria",
             "tier": 2,
@@ -422,7 +421,7 @@
             }
           },
           {
-            "name": "Der Wilde Berg - ehem. Erlebnispark Elfenberg",
+            "name": "Der Wilde Berg",
             "country": "Austria",
             "province": "Styria",
             "tier": 4,
@@ -532,7 +531,7 @@
             }
           },
           {
-            "name": "Zoo - ehem. Tiergarten Hellbrunn",
+            "name": "Tiergarten Hellbrunn",
             "country": "Austria",
             "province": "Salzburg",
             "tier": 4,
@@ -745,7 +744,8 @@
               "White-Handed Gibbon",
               "White-Naped Crane",
               "Yellow Anaconda",
-              "Yellow-Crowned Amazon"
+              "Yellow-Crowned Amazon",
+              "Watusi"
             ],
             "trade_id": 1,
             "city": "Olmen Balen",
@@ -859,7 +859,7 @@
               "Other Birds"
             ],
             "animals": [
-              "Abyssian Ground Hornbill",
+              "Abyssinian Ground Hornbill",
               "African Penguin",
               "African Sacred Ibis",
               "African Spoonbill",
@@ -921,7 +921,7 @@
               "Violet Turaco",
               "Von Der Decken's Hornbill",
               "Western Diamondback Rattlesnake",
-              "Western Gabook Viper",
+              "Western Gaboon Viper",
               "Western Lowland Gorilla",
               "White-Crested Turaco",
               "Yellow Mongoose",
@@ -967,7 +967,8 @@
               "Scarlet Macaw",
               "Striped Skunk",
               "Umbrella Cockatoo",
-              "White-Cheeked Turaco"
+              "White-Cheeked Turaco",
+              "African Crested Porcupine"
             ],
             "trade_id": 4,
             "location": {
@@ -996,7 +997,8 @@
               "Meerkat",
               "Orange-Winged Amazon",
               "Spotted Eagle-Owl",
-              "White-Cheeked Turaco"
+              "White-Cheeked Turaco",
+              "Watusi"
             ],
             "trade_id": 5,
             "location": {
@@ -1047,7 +1049,7 @@
               "European Pond Turtle",
               "Green Tree Monitor",
               "Hermann's Tortoise",
-              "Malagasy Spider Tortoise",
+              "Spider Tortoise",
               "Marginated Tortoise",
               "Reticulated Python"
             ],
@@ -1082,7 +1084,6 @@
               "American Flamingo",
               "American Kestrel",
               "Andean Condor",
-              "Angulate Tortoise",
               "Argentine Black and White Tegu",
               "Asian Elephant",
               "Asian Small-Clawed Otter",
@@ -1115,7 +1116,7 @@
               "Central Bearded Dragon",
               "Chilean Flamingo",
               "Chinese Alligator",
-              "Chinese Softshelled Turtle",
+              "Chinese Softshell Turtle",
               "Chinese Stripe-Necked Turtle",
               "Chinese Water Dragon",
               "Common Anaconda",
@@ -1177,13 +1178,12 @@
               "Linnaeus's Two-Toed Sloth",
               "Lowland Paca",
               "Lyle's Flying Fox",
-              "Malagasy Spider Tortoise",
+              "Spider Tortoise",
               "Maned Wolf",
               "Marginated Tortoise",
               "Mata-Mata",
               "Meerkat",
               "Military Macaw",
-              "Mindanao Water Monitor",
               "Mohol Bushbaby",
               "Nepalese Red Panda",
               "North American Porcupine",
@@ -1220,7 +1220,7 @@
               "Saddle-Billed Stork",
               "Saker Falcon",
               "Saltwater Crocodile",
-              "Savanna Monitor",
+              "Savannah Monitor",
               "Scarlet Ibis",
               "Scarlet Macaw",
               "Secretary Bird",
@@ -1256,10 +1256,9 @@
               "Toco Toucan",
               "Turkey Vulture",
               "Ural Owl",
-              "Utila Spinytail Iguana",
+              "Utila Spiny-Tailed Iguana",
               "Verreaux's Eagle-Owl",
               "Vinaceous-Breasted Amazon",
-              "West African Helmeted Turtle",
               "Western Lowland Gorilla",
               "White-Cheeked Turaco",
               "White-Crested Turaco",
@@ -1384,7 +1383,7 @@
               "Domestic Donkey",
               "Domestic Yak",
               "Llama",
-              "Mishmi Takin",
+              "Takin",
               "North American Porcupine",
               "Sika Deer",
               "Striped Skunk",
@@ -1425,7 +1424,7 @@
         ],
         "tier_4": [
           {
-            "name": "Monde Sauvage",
+            "name": "Monde Sauvage Zoo",
             "country": "Belgium",
             "province": "Liège",
             "tier": 4,
@@ -1593,7 +1592,8 @@
               "Spotted Eagle-Owl",
               "Steppe Eagle",
               "Turkey Vulture",
-              "Western Barn Owl"
+              "Western Barn Owl",
+              "Watusi"
             ],
             "trade_id": 15,
             "location": {
@@ -1811,7 +1811,7 @@
               "Llama",
               "Mandrill",
               "Maned Wolf",
-              "Mishmi Takin",
+              "Takin",
               "Nilgai",
               "Northern Bald Ibis",
               "Nyala",
@@ -2019,7 +2019,8 @@
               "Red-Necked Wallaby",
               "Scarlet Ibis",
               "Spectacled Owl",
-              "White-Cheeked Turaco"
+              "White-Cheeked Turaco",
+              "African Crested Porcupine"
             ],
             "trade_id": 21,
             "location": {
@@ -2162,13 +2163,11 @@
               "Bat-Eared Fox",
               "Binturong",
               "Black Lemur",
-              "Black Stork",
               "Black-Headed Ibis",
               "Black-Rumped Agouti",
               "Blackbuck",
               "Blesbok",
               "Bobcat",
-              "Boobook Owl",
               "Brazilian Porcupine",
               "Brown Bear",
               "Brushtail Possum",
@@ -2181,7 +2180,6 @@
               "Common Buzzard",
               "Common Ostrich",
               "Corncrake",
-              "Crocodile Lizard",
               "Crowned Lemur",
               "Dumeril's Boa",
               "Dusky Pademelon",
@@ -2319,7 +2317,6 @@
               "Bearded Vulture",
               "Binturong",
               "Black Sable Antelope",
-              "Black Stork",
               "Black Vulture",
               "Black-Faced Ibis",
               "Black-Headed Ibis",
@@ -2401,7 +2398,7 @@
               "Malayan Tapir",
               "Maned Wolf",
               "Meerkat",
-              "Mishmi Takin",
+              "Takin",
               "Nepalese Red Panda",
               "Nile Lechwe",
               "North American Porcupine",
@@ -2487,7 +2484,7 @@
               "Aardvark",
               "Aardwolf",
               "Abdim's Stork",
-              "Abyssian Ground Hornbill",
+              "Abyssinian Ground Hornbill",
               "Addax",
               "African Brush-Tailed Porcupine",
               "African Civet",
@@ -2605,8 +2602,7 @@
               "Verreaux's Eagle-Owl",
               "Violet Turaco",
               "Wattled Crane",
-              "Western Gabook Viper",
-              "Western Piping Hornbill",
+              "Western Gaboon Viper",
               "White Rhinoceros",
               "White Stork",
               "Yellow Mongoose",
@@ -2809,7 +2805,8 @@
               "Yellow-Footed Tortoise",
               "Yellow-Throated Marten",
               "Yemen Chameleon",
-              "Zebu"
+              "Zebu",
+              "African Crested Porcupine"
             ],
             "trade_id": 81,
             "location": {
@@ -2820,7 +2817,7 @@
         ],
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Zoo Tábor",
             "country": "Czechia",
             "province": "South Bohemian Region",
             "tier": 4,
@@ -2901,7 +2898,7 @@
             ],
             "animals": [
               "Aardwolf",
-              "Abyssian Ground Hornbill",
+              "Abyssinian Ground Hornbill",
               "African Elephant",
               "African Lion",
               "African Openbill",
@@ -2997,7 +2994,6 @@
               "Violet Turaco",
               "Wattled Crane",
               "Western Long-Tailed Hornbill",
-              "Western Piping Hornbill",
               "White Rhinoceros",
               "White-Cheeked Turaco",
               "White-Faced Saki",
@@ -3088,7 +3084,7 @@
               "McCord's Snake-Necked Turtle",
               "Meerkat",
               "Mexican Beaded Lizard",
-              "Mishmi Takin",
+              "Takin",
               "Mitchell's Water Monitor",
               "Mohol Bushbaby",
               "Nepalese Red Panda",
@@ -3141,7 +3137,7 @@
         ],
         "tier_5": [
           {
-            "name": "Zoo",
+            "name": "Zoo Hodonín",
             "country": "Czechia",
             "province": "South Moravian Region",
             "tier": 5,
@@ -3492,7 +3488,8 @@
               "Timneh Parrot",
               "Tufted Capuchin",
               "White-Bellied Parrot",
-              "Yemen Chameleon"
+              "Yemen Chameleon",
+              "African Crested Porcupine"
             ],
             "trade_id": 381,
             "location": {
@@ -3507,7 +3504,7 @@
       "Ústí nad Labem Region": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Zoo Děčín",
             "country": "Czechia",
             "province": "Ústí nad Labem Region",
             "tier": 4,
@@ -3602,7 +3599,7 @@
       "Moravian-Silesian Region": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Zoo Ostrava",
             "country": "Czechia",
             "province": "Moravian-Silesian Region",
             "tier": 4,
@@ -3750,7 +3747,7 @@
       "Olomouc Region": {
         "tier_5": [
           {
-            "name": "Zoo",
+            "name": "Zoo Olomouc",
             "country": "Czechia",
             "province": "Olomouc Region",
             "tier": 5,
@@ -4222,7 +4219,7 @@
         ],
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Blåvand Zoo",
             "country": "Denmark",
             "province": "Region of Southern Denmark",
             "tier": 4,
@@ -4280,7 +4277,8 @@
               "West African Dwarf Goat",
               "White-Cheeked Turaco",
               "White-Fronted Lemur",
-              "White-Handed Gibbon"
+              "White-Handed Gibbon",
+              "African Crested Porcupine"
             ],
             "trade_id": 451,
             "location": {
@@ -4291,7 +4289,7 @@
             "city": "Blavand"
           },
           {
-            "name": "Zoo",
+            "name": "GIVSKUD ZOO",
             "country": "Denmark",
             "province": "Region of Southern Denmark",
             "tier": 4,
@@ -4861,7 +4859,6 @@
               "Common Trumpeter",
               "Cotton-Top Tamarin",
               "Crested Caracara",
-              "Crocodile Lizard",
               "Cuvier's Dwarf Caiman",
               "De Brazza's Monkey",
               "Demoiselle Crane",
@@ -4919,7 +4916,7 @@
               "Long-Legged Buzzard",
               "Malayan Tapir",
               "Meerkat",
-              "Mishmi Takin",
+              "Takin",
               "Nepalese Red Panda",
               "Nilgai",
               "Nyala",
@@ -4952,7 +4949,7 @@
               "Rodriguez Flying Fox",
               "Roseate Spoonbill",
               "Saker Falcon",
-              "Savanna Monitor",
+              "Savannah Monitor",
               "Scarlet Ibis",
               "Scarlet Macaw",
               "Serval",
@@ -5129,7 +5126,7 @@
               "Red-Crowned Amazon",
               "Red-Legged Seriema",
               "Red-Necked Wallaby",
-              "Sichuan Takin",
+              "Takin",
               "Snowy Owl",
               "Southern Cassowary",
               "Spectacled Owl",
@@ -5299,7 +5296,6 @@
               "Malagasy Ground Boa",
               "Malagasy Tree Boa",
               "Mata-Mata",
-              "Mediterranean Turtle",
               "Meerkat",
               "Military Macaw",
               "Northern Bald Ibis",
@@ -5484,7 +5480,9 @@
               "White Rhinoceros",
               "White Stork",
               "White-Faced Saki",
-              "White-Lipped Peccary"
+              "White-Lipped Peccary",
+              "African Crested Porcupine",
+              "Watusi"
             ],
             "trade_id": 122,
             "location": {
@@ -5546,7 +5544,8 @@
               "White Stork",
               "White-Crested Turaco",
               "White-Faced Saki",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 99,
             "location": {
@@ -6629,7 +6628,6 @@
               "Laughing Kookaburra",
               "Llama",
               "Marabou Stork",
-              "Mediterranean Turtle",
               "Military Macaw",
               "Nepalese Red Panda",
               "Nile Lechwe",
@@ -6771,7 +6769,8 @@
               "White-Lipped Peccary",
               "White-Naped Crane",
               "Wild Boar",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 224,
             "location": {
@@ -7095,7 +7094,8 @@
               "White-Cheeked Gibbon",
               "White-Handed Gibbon",
               "Wisent",
-              "Wolverine"
+              "Wolverine",
+              "African Crested Porcupine"
             ],
             "trade_id": 244,
             "city": "Ardes sur Couze",
@@ -7182,7 +7182,8 @@
               "Tanimbar Corella",
               "Umbrella Cockatoo",
               "West African Dwarf Goat",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 245,
             "city": "Arnay sous Vitteaux",
@@ -7277,7 +7278,8 @@
               "Red-Necked Wallaby",
               "Reindeer",
               "West African Dwarf Goat",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 262,
             "city": "Casteil",
@@ -7411,7 +7413,8 @@
               "Western Barn Owl",
               "White Stork",
               "Wisent",
-              "Yellow-Shouldered Amazon"
+              "Yellow-Shouldered Amazon",
+              "African Crested Porcupine"
             ],
             "trade_id": 334,
             "city": "Le Breil sur Merize",
@@ -7833,7 +7836,8 @@
               "Yellow-Crowned Amazon",
               "Yellow-Spotted Amazon River Turtle",
               "Yemen Chameleon",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 376,
             "city": "Pelissane",
@@ -7899,7 +7903,8 @@
               "Umbrella Cockatoo",
               "West African Dwarf Goat",
               "White-Handed Gibbon",
-              "Yellow Mongoose"
+              "Yellow Mongoose",
+              "African Crested Porcupine"
             ],
             "trade_id": 379,
             "city": "Pessac",
@@ -8607,7 +8612,7 @@
       "Loire-Atlantique": {
         "tier_5": [
           {
-            "name": "Zoo",
+            "name": "Zoo de La Boissière du Doré",
             "country": "France",
             "province": "Loire-Atlantique",
             "tier": 5,
@@ -8666,7 +8671,6 @@
               "Grey Wolf",
               "Griffon Vulture",
               "Harris's Hawk",
-              "Leopard",
               "Linnaeus's Two-Toed Sloth",
               "Malayan Tapir",
               "Marabou Stork",
@@ -8712,7 +8716,8 @@
               "White-Naped Crane",
               "White-Nosed Coati",
               "Yellow-Footed Rock Wallaby",
-              "Yellow-Footed Tortoise"
+              "Yellow-Footed Tortoise",
+              "African Crested Porcupine"
             ],
             "trade_id": 438,
             "location": {
@@ -8727,7 +8732,7 @@
       "Var": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Zoo de Fréjus",
             "country": "France",
             "province": "Var",
             "tier": 4,
@@ -8807,7 +8812,8 @@
               "White-Handed Gibbon",
               "Yellow Mongoose",
               "Yellow-Crested Cockatoo",
-              "Yellow-Crowned Amazon"
+              "Yellow-Crowned Amazon",
+              "African Crested Porcupine"
             ],
             "trade_id": 441,
             "location": {
@@ -8822,7 +8828,7 @@
       "Loire": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Espace Zoologique de Saint-Martin-la-Plaine",
             "country": "France",
             "province": "Loire",
             "tier": 4,
@@ -8905,7 +8911,7 @@
       "Nord": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Zoo de Maubeuge",
             "country": "France",
             "province": "Nord",
             "tier": 4,
@@ -8962,7 +8968,8 @@
               "Watusi",
               "White Stork",
               "White-Faced Saki",
-              "White-Handed Gibbon"
+              "White-Handed Gibbon",
+              "African Crested Porcupine"
             ],
             "trade_id": 478,
             "location": {
@@ -8973,7 +8980,7 @@
             "city": "Maubeuge"
           },
           {
-            "name": "Zoo",
+            "name": "Zoo de Lille",
             "country": "France",
             "province": "Nord",
             "tier": 4,
@@ -9059,7 +9066,7 @@
       "Dordogne": {
         "tier_3": [
           {
-            "name": "Zoo",
+            "name": "Zoo de Mescoules",
             "country": "France",
             "province": "Dordogne",
             "tier": 3,
@@ -9091,7 +9098,8 @@
               "Red-Necked Wallaby",
               "Reticulated Python",
               "Scarlet Ibis",
-              "Western Diamondback Rattlesnake"
+              "Western Diamondback Rattlesnake",
+              "African Crested Porcupine"
             ],
             "trade_id": 479,
             "location": {
@@ -9106,7 +9114,7 @@
       "Hérault": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Zoo de Montpellier",
             "country": "France",
             "province": "Hérault",
             "tier": 4,
@@ -9156,7 +9164,7 @@
       "Vendée": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Zoo des Sables d'Olonne",
             "country": "France",
             "province": "Vendée",
             "tier": 4,
@@ -9254,7 +9262,6 @@
               "Bateleur",
               "Bearded Barbet",
               "Bearded Vulture",
-              "Black Stork",
               "Black-Headed Spider Monkey",
               "Black-Necked Aracari",
               "Black-Rumped Agouti",
@@ -9325,7 +9332,7 @@
               "Margay",
               "Meerkat",
               "Military Macaw",
-              "Mishmi Takin",
+              "Takin",
               "Nepalese Red Panda",
               "Northern Bald Ibis",
               "Nurse Shark",
@@ -9361,7 +9368,6 @@
               "Short-Beaked Echidna",
               "Siamang",
               "Siberian Tiger",
-              "Sichuan Takin",
               "Sika Deer",
               "Silvery-Cheeked Hornbill",
               "Sitatunga",
@@ -9458,7 +9464,6 @@
               "Bluespotted Ribbontail Ray",
               "Boa Constrictor",
               "Bolivian Squirrel Monkey",
-              "Boobook Owl",
               "Brown Bear",
               "Burmese Python",
               "Bush Dog",
@@ -9489,7 +9494,6 @@
               "Cougar",
               "Coypu",
               "Crested Caracara",
-              "Crocodile Lizard",
               "Cuban Amazon",
               "Cuvier's Dwarf Caiman",
               "Cuvier's Gazelle",
@@ -9579,7 +9583,7 @@
               "Markhor",
               "Meerkat",
               "Military Macaw",
-              "Mishmi Takin",
+              "Takin",
               "Moose",
               "Mouflon",
               "Mountain Caracara",
@@ -9644,7 +9648,6 @@
               "Siamang",
               "Siberian Crane",
               "Siberian Tiger",
-              "Sichuan Takin",
               "Sika Deer",
               "Sitatunga",
               "Six-Banded Armadillo",
@@ -9901,7 +9904,7 @@
               "Linnaeus's Two-Toed Sloth",
               "Malagasy Tree Boa",
               "Meerkat",
-              "Mishmi Takin",
+              "Takin",
               "Mountain Caracara",
               "Nepalese Red Panda",
               "Northern Bald Ibis",
@@ -10365,7 +10368,7 @@
             }
           },
           {
-            "name": "Wildpark",
+            "name": "Wildpark Gangelt",
             "country": "Germany",
             "province": "North Rhine-Westphalia",
             "tier": 4,
@@ -10453,7 +10456,6 @@
               "Chimpanzee",
               "Chinese Water Dragon",
               "Cownose Ray",
-              "Crocodile Lizard",
               "Crowned Lemur",
               "Diana Monkey",
               "Dwarf Crocodile",
@@ -10633,7 +10635,7 @@
               "Reptiles"
             ],
             "animals": [
-              "Abyssian Ground Hornbill",
+              "Abyssinian Ground Hornbill",
               "African Lion",
               "Alpaca",
               "American Flamingo",
@@ -10778,7 +10780,6 @@
               "Grévy's Zebra",
               "Hartlaub's Turaco",
               "Hermann's Tortoise",
-              "Horned Viper",
               "Hyacinth Macaw",
               "Jaguar",
               "Javan Chevrotain",
@@ -10836,7 +10837,7 @@
               "Vicuña",
               "Vinaceous-Breasted Amazon",
               "Von Der Decken's Hornbill",
-              "Western Gabook Viper",
+              "Western Gaboon Viper",
               "Western Lowland Gorilla",
               "Western Woylie",
               "White-Faced Saki",
@@ -10885,7 +10886,7 @@
         ],
         "tier_3": [
           {
-            "name": "Wildpark",
+            "name": "Wildpark Bad Mergentheim",
             "country": "Germany",
             "province": "Baden-Württemberg",
             "tier": 3,
@@ -11051,7 +11052,7 @@
         ],
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Zoo Eberswalde",
             "country": "Germany",
             "province": "Brandenburg",
             "tier": 4,
@@ -11225,7 +11226,7 @@
         ],
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Zoo Saarbrücken",
             "country": "Germany",
             "province": "Saarland",
             "tier": 4,
@@ -11315,7 +11316,7 @@
         ],
         "tier_2": [
           {
-            "name": "Wildpark",
+            "name": "Wildpark Saarbrücken",
             "country": "Germany",
             "province": "Saarland",
             "tier": 2,
@@ -11661,7 +11662,8 @@
               "Yellow-Backed Duiker",
               "Yellow-Crowned Amazon",
               "Yellow-Footed Tortoise",
-              "Yellow-Spotted Amazon River Turtle"
+              "Yellow-Spotted Amazon River Turtle",
+              "Watusi"
             ],
             "trade_id": 233,
             "location": {
@@ -11670,7 +11672,7 @@
             }
           },
           {
-            "name": "Zoo",
+            "name": "Zoo Augsburg",
             "country": "Germany",
             "province": "Bavaria",
             "tier": 5,
@@ -11865,7 +11867,7 @@
             }
           },
           {
-            "name": "Zoo",
+            "name": "Zoo Schwerin",
             "country": "Germany",
             "province": "Mecklenburg-Vorpommern",
             "tier": 5,
@@ -11941,7 +11943,7 @@
         ],
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Zoo Stralsund",
             "country": "Germany",
             "province": "Mecklenburg-Vorpommern",
             "tier": 4,
@@ -12234,7 +12236,7 @@
               "Lesser Rhea",
               "Mandrill",
               "Meerkat",
-              "Mishmi Takin",
+              "Takin",
               "Nepalese Red Panda",
               "Nile Lechwe",
               "North American Porcupine",
@@ -12269,7 +12271,7 @@
         ],
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Zoo Aschersleben",
             "country": "Germany",
             "province": "Saxony-Anhalt",
             "tier": 4,
@@ -12391,7 +12393,7 @@
               "Kordofan Giraffe",
               "Mandrill",
               "Meerkat",
-              "Mishmi Takin",
+              "Takin",
               "Nepalese Red Panda",
               "Nile Lechwe",
               "Nilgai",
@@ -12665,7 +12667,6 @@
               "Lesser Flamingo",
               "Little Owl",
               "Marginated Tortoise",
-              "Mediterranean Turtle",
               "Meerkat",
               "Mexican Beaded Lizard",
               "Mouflon",
@@ -13418,7 +13419,7 @@
             }
           },
           {
-            "name": "Zoo und Freizeitpark Tatzmania - vormals Schwarzwaldpark",
+            "name": "Zoo und Freizeitpark Tatzmania",
             "country": "Germany",
             "province": "Baden-Württemberg",
             "tier": 4,
@@ -13671,7 +13672,7 @@
             }
           },
           {
-            "name": "Tier- und Freizeitpark Thüle - vormals Tierpark Worberg",
+            "name": "Tier- und Freizeitpark Thüle",
             "country": "Germany",
             "province": "Lower Saxony",
             "tier": 4,
@@ -13844,7 +13845,8 @@
               "West African Dwarf Goat",
               "White-Tailed Eagle",
               "Wild Boar",
-              "Wisent"
+              "Wisent",
+              "Watusi"
             ],
             "trade_id": 242,
             "city": "Allensbach",
@@ -13887,7 +13889,7 @@
             }
           },
           {
-            "name": "Wildparadies Tripsdrill - vormals Wildparadies Stromberg",
+            "name": "Wildparadies Tripsdrill",
             "country": "Germany",
             "province": "Baden-Württemberg",
             "tier": 3,
@@ -14003,7 +14005,8 @@
               "Red-Necked Wallaby",
               "Snowy Owl",
               "West African Dwarf Goat",
-              "White Stork"
+              "White Stork",
+              "African Crested Porcupine"
             ],
             "trade_id": 310,
             "city": "Jülich",
@@ -14144,27 +14147,6 @@
             "city": "Rheinböllen"
           },
           {
-            "name": "Museum für Meereskunde und Fischerei · Aquarium",
-            "country": "Germany",
-            "province": "Mecklenburg-Vorpommern",
-            "tier": 3,
-            "preferred_categories": [
-              "Marine Mania"
-            ],
-            "animals": [
-              "Bluespotted Ribbontail Ray",
-              "Epaulette Shark",
-              "Green Sea Turtle"
-            ],
-            "trade_id": 406,
-            "city": "Stralsund",
-            "location": {
-              "country": "Germany",
-              "province": "Mecklenburg-Vorpommern",
-              "city": "Stralsund"
-            }
-          },
-          {
             "name": "Ozeaneum",
             "country": "Germany",
             "province": "Mecklenburg-Vorpommern",
@@ -14248,7 +14230,7 @@
         ],
         "tier_5": [
           {
-            "name": "Tier-, Freizeit- und Saurierpark - vormals Tier- und Freizeitpark Eichholz",
+            "name": "Tier-, Freizeit- und Saurierpark",
             "country": "Germany",
             "province": "Brandenburg",
             "tier": 5,
@@ -14531,6 +14513,7 @@
               "Meerkat",
               "Parma Wallaby",
               "Pond Slider",
+              "Red Squirrel",
               "Six-Banded Armadillo",
               "South American Coati",
               "Yellow Mongoose"
@@ -14557,9 +14540,11 @@
               "African Lion",
               "African Spurred Tortoise",
               "Asian Elephant",
+              "Asian Forest Tortoise",
               "Asian Small-Clawed Otter",
               "Bactrian Camel",
               "Black Lemur",
+              "Black-and-Rufous Elephant Shrew",
               "Black-Headed Spider Monkey",
               "Black-Tailed Prairie Dog",
               "Blue Wildebeest",
@@ -14571,9 +14556,12 @@
               "Dwarf Mongoose",
               "Emperor Tamarin",
               "Eurasian Beaver",
+              "Fischer's Turaco",
               "Golden Lion Tamarin",
               "Greater Rhea",
+              "Green Aracari",
               "Green Sea Turtle",
+              "Green Tree Monitor",
               "Hamadryas Baboon",
               "Hamerkop",
               "Harbour Seal",
@@ -14585,6 +14573,7 @@
               "Meerkat",
               "Onager",
               "Pied Tamarin",
+              "Plains Zebra",
               "Polar Bear",
               "Pygmy Marmoset",
               "Red River Hog",
@@ -14596,6 +14585,7 @@
               "Scarlet Ibis",
               "Snowy Owl",
               "Southern Three-Banded Armadillo",
+              "Spotted Pond Turtle",
               "Sunbittern",
               "Swamp Wallaby",
               "Vicuña",
@@ -14603,6 +14593,7 @@
               "White Rhinoceros",
               "White-Cheeked Turaco",
               "White-Faced Saki",
+              "White-Handed Gibbon",
               "Zebu"
             ],
             "country": "Netherlands",
@@ -14630,14 +14621,18 @@
             "animals": [
               "African Sacred Ibis",
               "American Kestrel",
-              "Blue-And-Yellow Macaw",
+              "Blue-and-Yellow Macaw",
+              "Boa Constrictor",
               "Central Bearded Dragon",
+              "Common Raccoon",
               "Domestic Donkey",
               "Greater Rhea",
+              "Pond Slider",
               "Red-Footed Tortoise",
-              "Savanna Monitor",
+              "Savannah Monitor",
               "South American Coati",
-              "Striped Skunk"
+              "Striped Skunk",
+              "Western Barn Owl"
             ],
             "trade_id": 37,
             "location": {
@@ -14659,9 +14654,15 @@
               "African Spurred Tortoise",
               "Alpaca",
               "American Flamingo",
+              "Boa Constrictor",
               "Central Bearded Dragon",
+              "Common Marmoset",
               "Golden-Headed Lion Tamarin",
+              "Green Iguana",
               "Meerkat",
+              "Oriental Pied Hornbill",
+              "Peacock-Eye Stingray",
+              "Pond Slider",
               "Red-Bellied Tamarin",
               "Red-Footed Tortoise",
               "Ring-Tailed Lemur",
@@ -14669,7 +14670,9 @@
               "Scarlet Macaw",
               "Toco Toucan",
               "Violet Turaco",
+              "White Stork",
               "White-Cheeked Turaco",
+              "Xingu River Ray",
               "Yellow Anaconda"
             ],
             "trade_id": 38,
@@ -14689,18 +14692,28 @@
               "Other Mammals"
             ],
             "animals": [
+              "African Crested Porcupine",
               "African Grey Parrot",
               "African Spurred Tortoise",
               "Alpaca",
+              "Black-Necked Aracari",
               "Burmese Python",
               "Central Bearded Dragon",
+              "Chinese Pond Turtle",
+              "Chinese Stripe-Necked Turtle",
+              "Common Marmoset",
+              "Common Musk Turtle",
               "Common Raccoon",
+              "False Map Turtle",
+              "Florida Redbelly Turtle",
               "Galah",
               "Greater Rhea",
               "Green Iguana",
               "Hermann's Tortoise",
               "Indian Eagle-Owl",
               "Meerkat",
+              "Painted Turtle",
+              "Peacock-Eye Stingray",
               "Pond Slider",
               "Red Squirrel",
               "Red-Footed Tortoise",
@@ -14737,12 +14750,16 @@
               "Common Ostrich",
               "Domestic Donkey",
               "Emu",
+              "Eurasian Eagle-Owl",
+              "Fallow Deer",
               "Greater Rhea",
               "Laughing Kookaburra",
               "Meerkat",
               "Prevost's Squirrel",
+              "Red-Necked Wallaby",
               "Scarlet Ibis",
-              "South American Coati"
+              "South American Coati",
+              "Zebu"
             ],
             "trade_id": 40,
             "location": {
@@ -14761,9 +14778,11 @@
               "Carnivora"
             ],
             "animals": [
+              "American Beaver",
+              "Asian Small-Clawed Otter",
               "Azara's Agouti",
               "Bald Eagle",
-              "Black and White Ruffed Lemur",
+              "Black-and-White Ruffed Lemur",
               "Capybara",
               "Common Raccoon",
               "Common Raven",
@@ -14778,11 +14797,11 @@
               "Humboldt Penguin",
               "Large Hairy Armadillo",
               "Lesser Flamingo",
-              "Linneaus's Two-Toed Sloth",
+              "Linnaeus's Two-Toed Sloth",
               "Nepalese Red Panda",
               "Nile Crocodile",
               "North American Porcupine",
-              "Pere David's Deer",
+              "Père David's Deer",
               "Polar Bear",
               "Pond Slider",
               "Red Kangaroo",
@@ -14793,7 +14812,7 @@
               "Small-Spotted Catshark",
               "South American Tapir",
               "Swamp Wallaby",
-              "Vicuna",
+              "Vicuña",
               "White-Faced Saki",
               "White-Handed Gibbon",
               "White-Naped Crane"
@@ -14820,20 +14839,21 @@
             ],
             "animals": [
               "Alpaca",
+              "Amazon Tree Boa",
               "Capybara",
               "Domestic Donkey",
               "Dwarf Mongoose",
               "Goeldi's Monkey",
               "Greater Rhea",
               "Indian Crested Porcupine",
-              "Linneaus's Two-Toed Sloth",
+              "Linnaeus's Two-Toed Sloth",
               "Pond Slider",
               "Red-Footed Tortoise",
-              "Red-necked Wallaby",
+              "Red-Necked Wallaby",
               "Six-Banded Armadillo",
               "Southern Tamandua",
               "Spiny-Tailed Monitor",
-              "Vicuna",
+              "Vicuña",
               "West African Dwarf Goat"
             ],
             "country": "Netherlands",
@@ -14856,16 +14876,15 @@
               "African Spurred Tortoise",
               "Allen's Gallinule",
               "Asian Palm Civet",
+              "Asian Small-Clawed Otter",
+              "Australian Boobook",
               "Bactrian Camel",
               "Bald Eagle",
               "Black Crowned Crane",
-              "Black Stork",
               "Blue Crane",
-              "Blue-And-Yellow Macaw",
-              "Boobook Owl",
+              "Blue-and-Yellow Macaw",
               "Brown Wood Owl",
               "Capybara",
-              "Common Hoopoe",
               "Common Marmoset",
               "Common Raven",
               "Common Squirrel Monkey",
@@ -14875,7 +14894,7 @@
               "Demoiselle Crane",
               "Eurasian Eagle-Owl",
               "Eurasian Spoonbill",
-              "Ferruginous Pygmy-Owl",
+              "Ferruginous Pygmy Owl",
               "Galah",
               "Glossy Ibis",
               "Great Horned Owl",
@@ -14894,11 +14913,11 @@
               "Parma Wallaby",
               "Pond Slider",
               "Red Squirrel",
-              "Red-And-Green Macaw",
+              "Red-and-Green Macaw",
               "Red-Crowned Crane",
               "Red-Fronted Macaw",
               "Red-Legged Seriema",
-              "Red-necked Wallaby",
+              "Red-Necked Wallaby",
               "Reeve's Muntjac",
               "Sarus Crane",
               "Scarlet Macaw",
@@ -14911,9 +14930,10 @@
               "Verreaux's Eagle-Owl",
               "Western Barn Owl",
               "White-Cheeked Turaco",
+              "White-Nosed Coati",
               "White-Tailed Eagle",
-              "White-nosed Coati",
-              "Yellow Mongoose"
+              "Yellow Mongoose",
+              "Watusi"
             ],
             "country": "Netherlands",
             "province": "Gelderland",
@@ -14938,8 +14958,8 @@
               "Alaotran Bamboo Lemur",
               "Barbary Macaque",
               "Black Howler Monkey",
-              "Black-Headed Spider Monkey",
               "Black-and-White Ruffed Lemur",
+              "Black-Headed Spider Monkey",
               "Blue-Eyed Black Lemur",
               "Bolivian Squirrel Monkey",
               "Bonobo",
@@ -14948,6 +14968,7 @@
               "Collared Mangabey",
               "Crowned Sifaka",
               "Domestic Donkey",
+              "Egyptian Tortoise",
               "Emperor Tamarin",
               "Golden Lion Tamarin",
               "Golden-Headed Lion Tamarin",
@@ -15102,21 +15123,29 @@
               "Other Mammals"
             ],
             "animals": [
+              "African Pygmy Falcon",
+              "African Wood Owl",
               "American Kestrel",
               "Bald Eagle",
-              "Black-Tailed Prairie Dog",
               "Black-and-White Ruffed Lemur",
-              "Blue-And-Yellow Macaw",
+              "Black-Tailed Prairie Dog",
+              "Blue-and-Yellow Macaw",
+              "Boreal Owl",
               "Brown Wood Owl",
               "Burrowing Owl",
               "Chaco Owl",
               "Common Squirrel Monkey",
               "Cotton-Top Tamarin",
+              "Eurasian Eagle-Owl",
+              "Great Grey Owl",
+              "Great Horned Owl",
               "Greater Rhea",
               "Laughing Kookaburra",
               "Lesser Hedgehog Tenrec",
               "Little Owl",
+              "Long-Eared Owl",
               "Meerkat",
+              "Northern Hawk-Owl",
               "Parma Wallaby",
               "Pond Slider",
               "Pygmy Marmoset",
@@ -15130,8 +15159,11 @@
               "Spectacled Owl",
               "Spotted Eagle-Owl",
               "Steller's Sea Eagle",
+              "Tawny Owl",
               "Ural Owl",
               "Verreaux's Eagle-Owl",
+              "Western Barn Owl",
+              "White Stork",
               "White-Cheeked Turaco"
             ],
             "trade_id": 47,
@@ -15158,11 +15190,13 @@
               "African Spoonbill",
               "African Spurred Tortoise",
               "Alpaca",
+              "Asian Small-Clawed Otter",
               "Bactrian Camel",
               "Barbary Macaque",
               "Bateleur",
               "Blue-Fronted Amazon",
               "Cape Eagle-Owl",
+              "Common Marmoset",
               "Common Raccoon",
               "Domestic Donkey",
               "Emu",
@@ -15179,7 +15213,7 @@
               "Little Owl",
               "Orange-Winged Amazon",
               "Pond Slider",
-              "Red-And-Green Macaw",
+              "Red-and-Green Macaw",
               "Red-Footed Tortoise",
               "Red-Necked Wallaby",
               "Reeve's Muntjac",
@@ -15190,7 +15224,8 @@
               "West African Dwarf Goat",
               "Western Barn Owl",
               "White Stork",
-              "Yellow-Crested Cockatoo"
+              "Yellow-Crested Cockatoo",
+              "Yellow-Headed Amazon"
             ],
             "country": "Netherlands",
             "province": "Limburg",
@@ -15213,32 +15248,43 @@
               "Marine Mania"
             ],
             "animals": [
+              "African Grey Parrot",
+              "African Lion",
               "African Sacred Ibis",
               "African Spoonbill",
               "Alpaca",
               "Bactrian Camel",
-              "Blue-And-Yellow Macaw",
+              "Blue-and-Yellow Macaw",
               "Chilean Flamingo",
               "Curl-Crested Aracari",
               "Demoiselle Crane",
               "Egyptian Fruit Bat",
               "Emu",
+              "Eurasian Eagle-Owl",
+              "Fallow Deer",
               "Greater Flamingo",
               "Greater Rhea",
               "Green Aracari",
+              "Green Turaco",
+              "Grey Wolf",
+              "Griffon Vulture",
               "Laughing Kookaburra",
-              "Luzon Hornbill",
               "Meerkat",
               "Papuan Hornbill",
+              "Red-and-Green Macaw",
               "Red-Crowned Crane",
               "Red-Necked Wallaby",
               "Red-Tailed Black Cockatoo",
               "Rhinoceros Hornbill",
               "Ring-Tailed Lemur",
               "Roseate Spoonbill",
+              "Sarus Crane",
               "Scarlet Ibis",
               "Scarlet Macaw",
+              "Silvery-Cheeked Hornbill",
               "Southern Ground Hornbill",
+              "Tufted Capuchin",
+              "White-Handed Gibbon",
               "Yellow-Billed Stork"
             ],
             "trade_id": 49,
@@ -15260,6 +15306,7 @@
             "animals": [
               "African Spurred Tortoise",
               "Alpine Ibex",
+              "American Alligator",
               "Andean Condor",
               "Bald Eagle",
               "Bateleur",
@@ -15269,14 +15316,19 @@
               "Blackbuck",
               "Blue Crane",
               "Brushtail Possum",
+              "Channel-Billed Toucan",
               "Chilean Flamingo",
+              "Curl-Crested Aracari",
               "Demoiselle Crane",
               "Eastern Wallaroo",
               "Eurasian Eagle-Owl",
               "Golden Eagle",
+              "Great Blue Turaco",
               "Great Grey Owl",
+              "Great Indian Hornbill",
               "Grey Crowned Crane",
               "Humboldt Penguin",
+              "Knobbed Hornbill",
               "Kori Bustard",
               "Lechwe",
               "Little Bustard",
@@ -15286,23 +15338,33 @@
               "Martial Eagle",
               "Meerkat",
               "Northern Cassowary",
+              "Northern Rufous Hornbill",
+              "Papuan Hornbill",
               "Parma Wallaby",
               "Patagonian Mara",
+              "Plains Zebra",
+              "Red-Breasted Toucan",
               "Red-Crowned Crane",
               "Red-Rumped Agouti",
+              "Rhinoceros Hornbill",
               "Scarlet Ibis",
+              "Sitatunga",
               "Snowy Owl",
               "South American Tapir",
               "Southern Cassowary",
               "Spectacled Owl",
+              "Spot-Billed Toucanet",
               "Steller's Sea Eagle",
+              "Toco Toucan",
               "Ural Owl",
               "Verreaux's Eagle",
               "Verreaux's Eagle-Owl",
               "Wattled Crane",
               "White Stork",
               "White-Bellied Sea Eagle",
-              "White-Naped Crane"
+              "White-Naped Crane",
+              "Wreathed Hornbill",
+              "Writhed Hornbill"
             ],
             "country": "Netherlands",
             "province": "Limburg",
@@ -15332,18 +15394,20 @@
               "Bat-Eared Fox",
               "Black Crested Mangabey",
               "Black Howler Monkey",
-              "Black Stork",
               "Black Vulture",
               "Bolivian Squirrel Monkey",
               "Bongo",
               "Bush Dog",
               "Capybara",
+              "Common Ostrich",
               "Common Raven",
               "Common Trumpeter",
+              "Dama Gazelle",
               "Demoiselle Crane",
               "Egyptian Vulture",
               "Eurasian Beaver",
               "Eurasian Eagle-Owl",
+              "Eurasian Lynx",
               "Eurasian Otter",
               "Giant Anteater",
               "Glossy Ibis",
@@ -15352,16 +15416,20 @@
               "Hadada Ibis",
               "Hamerkop",
               "Hermann's Tortoise",
+              "Highland Cattle",
               "Indian Crested Porcupine",
               "Kirk's Dik-Dik",
               "Lesser Kestrel",
               "Lesser Rhea",
               "Meerkat",
+              "Monk Vulture",
               "Nepalese Red Panda",
               "Northern Bald Ibis",
               "Pied Tamarin",
+              "Pond Slider",
               "Przewalski's Horse",
               "Pygmy Hippopotamus",
+              "Red-Faced Spider Monkey",
               "Red-Legged Seriema",
               "Reindeer",
               "Rothschild's Giraffe",
@@ -15375,7 +15443,8 @@
               "White-Faced Saki",
               "White-Lipped Peccary",
               "Wolverine",
-              "Yellow-Footed Rock Wallaby"
+              "Yellow-Footed Rock Wallaby",
+              "Viscacha"
             ],
             "country": "Netherlands",
             "province": "Limburg",
@@ -15402,12 +15471,13 @@
               "African Spurred Tortoise",
               "Allen's Gallinule",
               "Alpaca",
+              "Asian Small-Clawed Otter",
               "Bactrian Camel",
               "Banded Mongoose",
               "Binturong",
               "Black Howler Monkey",
               "Black-Headed Spider Monkey",
-              "Blue-And-Yellow Macaw",
+              "Blue-and-Yellow Macaw",
               "Brazilian Porcupine",
               "Brown Dorcopsis",
               "Central Bearded Dragon",
@@ -15426,6 +15496,7 @@
               "Laughing Kookaburra",
               "Long-Eared Hedgehog",
               "Meerkat",
+              "Papuan Hornbill",
               "Parma Wallaby",
               "Pink-Backed Pelican",
               "Pond Slider",
@@ -15433,8 +15504,10 @@
               "Red-Crowned Crane",
               "Red-Footed Falcon",
               "Rhesus Macaque",
+              "Ross's Turaco",
               "Scarlet Ibis",
               "Serval",
+              "Silvery-Cheeked Hornbill",
               "Snowy Owl",
               "South American Coati",
               "Southern Ground Hornbill",
@@ -15464,17 +15537,17 @@
               "Primates"
             ],
             "animals": [
+              "African Crested Porcupine",
               "Alpaca",
               "American Alligator",
               "American Kestrel",
-              "Asian Rock Python",
               "Asian Water Monitor",
               "Bald Eagle",
               "Bateleur",
-              "Beautiful Pitviper",
               "Black Vulture",
               "Black-Chested Buzzard-Eagle",
-              "Blue-And-Yellow Macaw",
+              "Blue-and-Yellow Macaw",
+              "Boa Constrictor",
               "Burrowing Owl",
               "Caiman Lizard",
               "Caracal",
@@ -15483,7 +15556,6 @@
               "Common Marmoset",
               "Common Squirrel Monkey",
               "Cotton-Top Tamarin",
-              "Crocodile Lizard",
               "Dumeril's Boa",
               "Dwarf Crocodile",
               "Dwarf Mongoose",
@@ -15500,6 +15572,7 @@
               "Large Hairy Armadillo",
               "Meerkat",
               "Mexican Beaded Lizard",
+              "Mohol Bushbaby",
               "Northern White-Faced Owl",
               "Orange-Winged Amazon",
               "Pancake Tortoise",
@@ -15516,10 +15589,9 @@
               "Turkey Vulture",
               "Western Barn Owl",
               "White Stork",
+              "White-Faced Capuchin",
               "White-Faced Saki",
               "White-Headed Vulture",
-              "White-Lipped Tree Viper",
-              "Yellow Tree Monitor",
               "Yellow-Headed Amazon",
               "Yemen Chameleon"
             ],
@@ -15539,8 +15611,9 @@
             ],
             "animals": [
               "African Spurred Tortoise",
-              "Argentine Black And White Tegu",
+              "Argentine Black and White Tegu",
               "Asian Water Monitor",
+              "Boa Constrictor",
               "Central Bearded Dragon",
               "Chinese Water Dragon",
               "Cuvier's Dwarf Caiman",
@@ -15550,9 +15623,8 @@
               "Pond Slider",
               "Red-Footed Tortoise",
               "Reticulated Python",
-              "Savanna Monitor",
-              "Spiny-Tailed Monitor",
-              "White-Throated Monitor"
+              "Savannah Monitor",
+              "Spiny-Tailed Monitor"
             ],
             "country": "Netherlands",
             "province": "North Brabant",
@@ -15581,12 +15653,17 @@
               "Bald Eagle",
               "Bearded Vulture",
               "Black-Chested Buzzard-Eagle",
+              "Black-Headed Parrot",
               "Black-Tailed Prairie Dog",
               "Blue Crane",
-              "Blue-And-Yellow Macaw",
+              "Blue-and-Yellow Macaw",
               "Blue-Fronted Amazon",
+              "Blue-Headed Macaw",
+              "Blue-Headed Parrot",
               "Blue-Winged Kookaburra",
+              "Blue-Winged Macaw",
               "Cameroon Sheep",
+              "Chestnut-Fronted Macaw",
               "Chilean Flamingo",
               "Common Raven",
               "Demoiselle Crane",
@@ -15599,34 +15676,53 @@
               "Hermann's Tortoise",
               "Kea",
               "Leopard Tortoise",
+              "Lilac-Crowned Amazon",
+              "Lilacine Amazon",
+              "Little Corella",
+              "Mealy Amazon",
               "Meerkat",
+              "Meyer's Parrot",
+              "Military Macaw",
               "Orange-Winged Amazon",
+              "Pacific Parrotlet",
               "Plains Zebra",
               "Pond Slider",
-              "Red-And-Green Macaw",
+              "Red-and-Green Macaw",
+              "Red-Crowned Amazon",
               "Red-Legged Seriema",
+              "Red-Lored Amazon",
               "Red-Necked Wallaby",
+              "Red-Shouldered Macaw",
               "Reeve's Muntjac",
               "Ring-Tailed Lemur",
+              "Scaly-Headed Parrot",
               "Scarlet Ibis",
               "Scarlet Macaw",
               "Senegal Parrot",
               "Snowy Owl",
+              "Solomons Corella",
               "Spectacled Owl",
               "Spotted Eagle-Owl",
               "Steller's Sea Eagle",
               "Steppe Eagle",
               "Straw-Necked Ibis",
+              "Tanimbar Corella",
               "Tawny Owl",
               "Umbrella Cockatoo",
               "Ural Owl",
               "Verreaux's Eagle",
               "West African Dwarf Goat",
               "White Stork",
+              "White-Bellied Parrot",
               "White-Cheeked Turaco",
+              "White-Crowned Hornbill",
+              "White-Fronted Amazon",
               "White-Tailed Eagle",
               "Yellow-Crested Cockatoo",
-              "Yellow-Crowned Amazon"
+              "Yellow-Crowned Amazon",
+              "Yellow-Headed Amazon",
+              "Yellow-Naped Amazon",
+              "Yellow-Shouldered Amazon"
             ],
             "country": "Netherlands",
             "province": "North Brabant",
@@ -15649,16 +15745,19 @@
             "animals": [
               "African Spurred Tortoise",
               "African Wild Dog",
+              "Alpaca",
               "Azara's Agouti",
               "Bactrian Camel",
               "Bateleur",
               "Bearded Vulture",
               "Binturong",
+              "Black Kite",
               "Black-Tailed Prairie Dog",
-              "Blue-And-Yellow Macaw",
+              "Blue-and-Yellow Macaw",
               "Blue-Headed Macaw",
               "Bush Dog",
               "Caiman Lizard",
+              "Cameroon Sheep",
               "Capybara",
               "Clouded Leopard",
               "Common Raven",
@@ -15691,22 +15790,24 @@
               "Parma Wallaby",
               "Plains Viscacha",
               "Pond Slider",
+              "Red Squirrel",
               "Red-Crowned Crane",
-              "Ring-tailed Vontsira",
+              "Ring-Tailed Vontsira",
               "Rock Hyrax",
+              "Round-Eared Elephant Shrew",
               "Scarlet Macaw",
               "Serval",
-              "Snow leopard",
+              "Snow Leopard",
               "Snowy Owl",
               "Steller's Sea Eagle",
               "Striped Hyena",
               "Striped Skunk",
               "Tayra",
-              "Vicuna",
+              "Vicuña",
               "White Stork",
               "White-Backed Vulture",
               "White-Lipped Peccary",
-              "White-nosed Coati"
+              "White-Nosed Coati"
             ],
             "country": "Netherlands",
             "province": "North Brabant",
@@ -15725,6 +15826,7 @@
               "Primates"
             ],
             "animals": [
+              "African Crested Porcupine",
               "African Lion",
               "Alpaca",
               "Alpine Ibex",
@@ -15737,7 +15839,7 @@
               "Banded Mongoose",
               "Barbary Macaque",
               "Black Kite",
-              "Blue-And-Yellow Macaw",
+              "Blue-and-Yellow Macaw",
               "Brown Bear",
               "Cheetah",
               "Chimpanzee",
@@ -15747,7 +15849,7 @@
               "Eurasian Eagle-Owl",
               "Eurasian Lynx",
               "Eurasian Spoonbill",
-              "Golden Takin",
+              "Takin",
               "Greater Flamingo",
               "Grey Crowned Crane",
               "Grey Wolf",
@@ -15804,17 +15906,21 @@
               "Bactrian Camel",
               "Black Howler Monkey",
               "Boa Constrictor",
+              "Bolivian Squirrel Monkey",
               "Bush Dog",
               "Capybara",
               "Cheetah",
               "Chilean Flamingo",
               "Clouded Leopard",
+              "Common Ostrich",
               "Common Trumpeter",
               "Crab-Eating Raccoon",
               "Dalmatian Pelican",
+              "Dama Gazelle",
               "De Brazza's Monkey",
               "Drill",
               "Dromedary Camel",
+              "Egyptian Tortoise",
               "Fossa",
               "Giant Anteater",
               "Golden Lion Tamarin",
@@ -15826,11 +15932,13 @@
               "Linnaeus's Two-Toed Sloth",
               "Meerkat",
               "Nepalese Red Panda",
+              "Okapi",
               "Pygmy Hippopotamus",
               "Red Kangaroo",
               "Red River Hog",
               "Red Ruffed Lemur",
               "Red Titi",
+              "Red-Faced Spider Monkey",
               "Red-Footed Tortoise",
               "Red-Necked Wallaby",
               "Reticulated Giraffe",
@@ -15895,7 +16003,6 @@
               "Cheetah",
               "Chimpanzee",
               "Common Eland",
-              "Common Hoopoe",
               "Common Ostrich",
               "Common Waterbuck",
               "De Brazza's Monkey",
@@ -15912,17 +16019,21 @@
               "Hamadryas Baboon",
               "Hamerkop",
               "Harbour Seal",
+              "Highland Cattle",
               "Hippopotamus",
               "Hooded Vulture",
               "Javan Banteng",
               "Kirk's Dik-Dik",
               "Kordofan Giraffe",
+              "Mantled Guereza",
               "Meerkat",
               "Nepalese Red Panda",
               "Nile Crocodile",
               "Nile Lechwe",
               "Nyala",
+              "Okapi",
               "Palm-Nut Vulture",
+              "Plains Zebra",
               "Przewalski's Horse",
               "Père David's Deer",
               "Red Buffalo",
@@ -15931,6 +16042,7 @@
               "Red-Crested Turaco",
               "Ring-Tailed Lemur",
               "Rothschild's Giraffe",
+              "Rüppell's Vulture",
               "Secretary Bird",
               "Siberian Tiger",
               "Sika Deer",
@@ -15941,14 +16053,15 @@
               "Springbok",
               "Steppe Eagle",
               "Violet Turaco",
+              "Watusi",
               "Western Lowland Gorilla",
               "White Rhinoceros",
               "White-Backed Vulture",
+              "White-Handed Gibbon",
               "White-Headed Vulture",
               "Yellow-Billed Kite",
               "Yellow-Billed Stork",
-              "Zebu",
-              "Watusi"
+              "Zebu"
             ],
             "country": "Netherlands",
             "province": "North Brabant",
@@ -15973,7 +16086,7 @@
             "animals": [
               "Arctic Fox",
               "Banded Mongoose",
-              "Chinese Three-Keeled Pond Turtle",
+              "Chinese Pond Turtle",
               "Common Raccoon",
               "Common Snapping Turtle",
               "Greater Rhea",
@@ -16007,15 +16120,16 @@
               "African Spoonbill",
               "African Spurred Tortoise",
               "American Kestrel",
+              "Australian Boobook",
               "Azara's Agouti",
               "Bearded Barbet",
               "Black Crake",
-              "Boobook Owl",
+              "Common Kusimanse",
               "Common Marmoset",
               "Common Squirrel Monkey",
               "Cotton-Top Tamarin",
               "Crimson-Rumped Toucanet",
-              "Golden Handed Tamarin",
+              "Golden-Handed Tamarin",
               "Golden-Headed Lion Tamarin",
               "Green Aracari",
               "Green Iguana",
@@ -16036,7 +16150,8 @@
               "Violet Turaco",
               "Western Barn Owl",
               "White-Cheeked Turaco",
-              "White-Crested Turaco"
+              "White-Crested Turaco",
+              "Watusi"
             ],
             "country": "Netherlands",
             "province": "North Holland",
@@ -16060,7 +16175,9 @@
               "Brown-Banded Bambooshark",
               "Chinese Water Dragon",
               "Epaulette Shark",
+              "Green Iguana",
               "Nursehound",
+              "Pond Slider",
               "Small-Spotted Catshark",
               "Whitetip Reef Shark"
             ],
@@ -16081,6 +16198,7 @@
               "Birds of Prey"
             ],
             "animals": [
+              "Baltic Seal",
               "Grey Seal",
               "Harbour Seal",
               "Nursehound",
@@ -16109,6 +16227,7 @@
             ],
             "animals": [
               "Abyssinian Ground Hornbill",
+              "African Grey Parrot",
               "African Lion",
               "African Sacred Ibis",
               "African Spoonbill",
@@ -16124,19 +16243,20 @@
               "Barbary Sheep",
               "Black Crake",
               "Black Kite",
+              "Black-and-White Ruffed Lemur",
               "Black-Chested Buzzard-Eagle",
               "Black-Faced Ibis",
               "Black-Necked Aracari",
               "Black-Tailed Prairie Dog",
-              "Black-and-White Ruffed Lemur",
               "Blue Crane",
-              "Blue-And-Yellow Macaw",
+              "Blue-and-Yellow Macaw",
               "Blue-and-Yellow Macaw",
               "Brazilian Porcupine",
               "Brown Bear",
               "Capybara",
               "Caracal",
               "Chilean Flamingo",
+              "Common Marmoset",
               "Common Ostrich",
               "Common Raccoon",
               "Common Raven",
@@ -16151,10 +16271,13 @@
               "Eurasian Eagle-Owl",
               "Eurasian Lynx",
               "Eurasian Spoonbill",
+              "Fallow Deer",
               "Galah",
               "Glossy Ibis",
+              "Golden-Cheeked Gibbon",
               "Golden-Headed Lion Tamarin",
               "Great Green Macaw",
+              "Great Grey Owl",
               "Great Horned Owl",
               "Great White Pelican",
               "Greater Rhea",
@@ -16175,20 +16298,22 @@
               "Little Corella",
               "Llama",
               "Meerkat",
+              "Military Macaw",
               "Monk Vulture",
               "Parma Wallaby",
               "Patagonian Mara",
               "Pink-Backed Pelican",
+              "Plains Zebra",
               "Pond Slider",
               "Red Kangaroo",
               "Red Kite",
               "Red Squirrel",
+              "Red-and-Green Macaw",
               "Red-Crested Turaco",
               "Red-Crowned Crane",
               "Red-Legged Seriema",
               "Red-Necked Wallaby",
               "Red-Tailed Hawk",
-              "Red-and-Green Macaw",
               "Reeve's Muntjac",
               "Rhesus Macaque",
               "Ring-Tailed Lemur",
@@ -16201,6 +16326,8 @@
               "Serval",
               "Siberian Tiger",
               "Sika Deer",
+              "Silvery-Cheeked Hornbill",
+              "Sitatunga",
               "Six-Banded Armadillo",
               "Snow Leopard",
               "Snowy Owl",
@@ -16210,18 +16337,20 @@
               "Spectacled Caiman",
               "Spotted Hyena",
               "Steller's Sea Eagle",
+              "Tanimbar Corella",
               "Toco Toucan",
               "Tufted Capuchin",
               "Ural Owl",
               "Vinaceous-Breasted Amazon",
               "Violet Turaco",
+              "Watusi",
               "White Stork",
               "White-Cheeked Turaco",
               "White-Naped Crane",
               "White-Tailed Eagle",
               "Yellow-Billed Stork",
-              "Yellow-Throated Marten",
-              "Watusi"
+              "Yellow-Headed Amazon",
+              "Yellow-Throated Marten"
             ],
             "trade_id": 64,
             "location": {
@@ -16243,22 +16372,22 @@
               "African Sacred Ibis",
               "African Spoonbill",
               "African Spurred Tortoise",
+              "Alpaca",
               "American Flamingo",
               "Amur Leopard",
               "Andean Condor",
+              "Asian Small-Clawed Otter",
               "Bactrian Camel",
               "Bald Eagle",
               "Black Crake",
               "Black Kite",
-              "Black-Capped Capuchin",
               "Black-Chested Buzzard-Eagle",
               "Black-Necked Aracari",
               "Blue Crane",
-              "Blue-And-Yellow Macaw",
+              "Blue-and-Yellow Macaw",
               "Brazilian Porcupine",
               "Brown Bear",
               "Chilean Flamingo",
-              "Common Crane",
               "Common Raccoon",
               "Common Raven",
               "Common Snapping Turtle",
@@ -16286,29 +16415,31 @@
               "Humboldt Penguin",
               "King Vulture",
               "Laughing Kookaburra",
-              "Linneaus's Two-Toed Sloth",
+              "Linnaeus's Two-Toed Sloth",
               "Meerkat",
               "Monk Vulture",
               "Patagonian Mara",
               "Pond Slider",
               "Red Kangaroo",
               "Red Kite",
-              "Red-And-Green Macaw",
+              "Red Squirrel",
+              "Red-and-Green Macaw",
               "Red-Crested Turaco",
               "Red-Crowned Crane",
               "Red-Legged Seriema",
+              "Red-Necked Wallaby",
               "Red-Tailed Hawk",
-              "Red-necked Wallaby",
               "Reeve's Muntjac",
               "Reindeer",
               "Ring-Tailed Lemur",
+              "Ross's Turaco",
               "Rüppell's Vulture",
               "Saddle-Billed Stork",
               "Scarlet Ibis",
               "Scarlet Macaw",
               "Senegal Bushbaby",
               "Six-Banded Armadillo",
-              "Snow leopard",
+              "Snow Leopard",
               "South American Coati",
               "Southern Ground Hornbill",
               "Southern Tamandua",
@@ -16317,6 +16448,7 @@
               "Steller's Sea Eagle",
               "Sumatran Tiger",
               "Toco Toucan",
+              "Tufted Capuchin",
               "Violet Turaco",
               "White Stork",
               "White-Tailed Eagle",
@@ -16344,31 +16476,37 @@
             "animals": [
               "African Lion",
               "African Penguin",
+              "Aldabra Giant Tortoise",
               "Alpine Ibex",
               "Asian Elephant",
               "Asian Small-Clawed Otter",
               "Bat-Eared Fox",
+              "Blue-Throated Macaw",
               "Bluespotted Ribbontail Ray",
+              "Borneo Earless Monitor",
               "Burrowing Owl",
               "California Sea Lion",
               "Capybara",
               "Chilean Flamingo",
               "Chimpanzee",
-              "Common Hoopoe",
               "Common Ostrich",
               "Cotton-Top Tamarin",
-              "Crocodile Lizard",
               "Diana Monkey",
               "Dwarf Mongoose",
+              "Egyptian Tortoise",
               "Emperor Tamarin",
               "Eurasian Spoonbill",
               "European Legless Lizard",
               "European Pond Turtle",
+              "False Gharial",
+              "Goeldi's Monkey",
+              "Golden-Cheeked Gibbon",
               "Great White Pelican",
               "Greater Kudu",
               "Green Aracari",
               "Green Iguana",
               "Green Tree Python",
+              "Grey Wolf",
               "Grey-Handed Night Monkey",
               "Griffon Vulture",
               "Hamerkop",
@@ -16380,35 +16518,47 @@
               "Linnaeus's Two-Toed Sloth",
               "Lowland Anoa",
               "Mandrill",
+              "McCord's Snake-Necked Turtle",
               "Meerkat",
               "Mexican Beaded Lizard",
               "Nepalese Red Panda",
               "Nile Lechwe",
               "Northern Bald Ibis",
               "Nurse Shark",
+              "Painted Turtle",
               "Pancake Tortoise",
               "Patagonian Mara",
+              "Pig-Nosed Turtle",
+              "Plains Zebra",
               "Pygmy Marmoset",
+              "Radiated Tortoise",
               "Rainbow Boa",
               "Red Ruffed Lemur",
               "Red-Crowned Crane",
+              "Red-Faced Spider Monkey",
               "Red-Necked Wallaby",
+              "Red-Tailed Amazon",
               "Reticulated Giraffe",
               "Rhinoceros Iguana",
               "Ring-Tailed Lemur",
               "Rodriguez Flying Fox",
               "Round-Eared Elephant Shrew",
               "Scarlet Ibis",
+              "Scimitar Oryx",
               "Small-Spotted Catshark",
               "South American Tapir",
               "Southern Cassowary",
               "Southern Ground Hornbill",
               "Southern Three-Banded Armadillo",
+              "Speckled Tortoise",
               "Starry Smooth-Hound",
               "Vicuña",
+              "Visayan Warty Pig",
               "Western Lowland Gorilla",
               "White Stork",
-              "White-Faced Saki"
+              "White-Faced Saki",
+              "Wreathed Hornbill",
+              "Yellow-Crested Cockatoo"
             ],
             "country": "Netherlands",
             "province": "North Holland",
@@ -16444,7 +16594,8 @@
               "Parma Wallaby",
               "Prevost's Squirrel",
               "Reeve's Muntjac",
-              "Sugar Glider"
+              "Sugar Glider",
+              "Tanimbar Corella"
             ],
             "country": "Netherlands",
             "province": "Overijssel",
@@ -16467,13 +16618,16 @@
               "Birds of Prey"
             ],
             "animals": [
+              "African Brush-Tailed Porcupine",
               "Alpaca",
               "Asian Palm Civet",
+              "Asian Small-Clawed Otter",
               "Azara's Agouti",
               "Banded Mongoose",
               "Black-Tailed Prairie Dog",
-              "Blue-And-Yellow Macaw",
+              "Blue-and-Yellow Macaw",
               "Bobcat",
+              "Cape Genet",
               "Capybara",
               "Caracal",
               "Chaco Owl",
@@ -16484,6 +16638,7 @@
               "Coypu",
               "Domestic Donkey",
               "Dwarf Mongoose",
+              "Egyptian Mongoose",
               "Emu",
               "Eurasian Eagle-Owl",
               "European Wild Cat",
@@ -16501,8 +16656,8 @@
               "Prevost's Squirrel",
               "Red Squirrel",
               "Red-Legged Seriema",
-              "Red-necked Wallaby",
-              "Rusty-spotted Cat",
+              "Red-Necked Wallaby",
+              "Rusty-Spotted Cat",
               "Serval",
               "Snowy Owl",
               "South American Coati",
@@ -16541,6 +16696,7 @@
               "Cuvier's Dwarf Caiman",
               "Humboldt Penguin",
               "Nursehound",
+              "Peacock-Eye Stingray",
               "Small-Spotted Catshark",
               "Zebra Shark"
             ],
@@ -16565,6 +16721,8 @@
               "Black Crowned Crane",
               "Black Kite",
               "Black-Faced Ibis",
+              "Blue-Throated Macaw",
+              "Chestnut-Eared Aracari",
               "Common Ostrich",
               "Common Raven",
               "Common Trumpeter",
@@ -16576,6 +16734,9 @@
               "Galah",
               "Giant Anteater",
               "Glossy Ibis",
+              "Great Blue Turaco",
+              "Great Indian Hornbill",
+              "Green Aracari",
               "Grey Crowned Crane",
               "Hamerkop",
               "Hooded Vulture",
@@ -16584,31 +16745,44 @@
               "Lesser Rhea",
               "Marabou Stork",
               "Meerkat",
+              "Military Macaw",
               "Nepalese Red Panda",
+              "Northern Rufous Hornbill",
+              "Palawan Hornbill",
+              "Papuan Hornbill",
               "Patagonian Mara",
               "Red Howler Monkey",
               "Red Ruffed Lemur",
               "Red Titi",
-              "Red-And-Green Macaw",
+              "Red-and-Green Macaw",
               "Red-Bellied Lemur",
               "Red-Legged Seriema",
+              "Red-Tailed Black Cockatoo",
+              "Rhinoceros Hornbill",
               "Ring-Tailed Lemur",
               "Roseate Spoonbill",
               "Rüppell's Vulture",
               "Sarus Crane",
               "Scarlet Ibis",
               "Secretary Bird",
+              "Solomons Corella",
               "Southern Cassowary",
               "Southern Ground Hornbill",
               "Steller's Sea Eagle",
               "Sunbittern",
+              "Tarictic Hornbill",
+              "Toco Toucan",
               "Vicuña",
               "Violet Turaco",
               "Von Der Decken's Hornbill",
               "White Stork",
+              "White-Crested Turaco",
               "White-Faced Saki",
               "White-Headed Vulture",
-              "Yellow-Billed Stork"
+              "Wrinkled Hornbill",
+              "Yellow-Billed Stork",
+              "Yellow-Shouldered Amazon",
+              "Yellow-Spotted Amazon River Turtle"
             ],
             "country": "Netherlands",
             "province": "South Holland",
@@ -16701,6 +16875,7 @@
               "Pond Slider",
               "Prevost's Squirrel",
               "Pygmy Hippopotamus",
+              "Red Buffalo",
               "Red River Hog",
               "Red-Billed Woodhoopoe",
               "Reindeer",
@@ -16759,6 +16934,7 @@
             "animals": [
               "African Lion",
               "African Penguin",
+              "Aldabra Giant Tortoise",
               "Asian Elephant",
               "Asian Small-Clawed Otter",
               "Azara's Agouti",
@@ -16772,6 +16948,8 @@
               "Eurasian Eagle-Owl",
               "Eurasian Spoonbill",
               "European Badger",
+              "Gila Monster",
+              "Grey Wolf",
               "Grey-Handed Night Monkey",
               "Griffon Vulture",
               "Grévy's Zebra",
@@ -16779,12 +16957,15 @@
               "Hamerkop",
               "Impala",
               "Indian Crested Porcupine",
+              "Indian Rhinoceros",
               "Linnaeus's Two-Toed Sloth",
               "Meerkat",
               "Nepalese Red Panda",
+              "Nile Monitor",
               "Northern Bald Ibis",
               "Pygmy Slow Loris",
               "Red Ruffed Lemur",
+              "Red-Crowned Amazon",
               "Red-Crowned Crane",
               "Ring-Tailed Lemur",
               "Rothschild's Giraffe",
@@ -16795,6 +16976,7 @@
               "Somali Wild Ass",
               "Spectacled Bear",
               "Spotted Hyena",
+              "West African Mud Turtle",
               "Western Woylie",
               "White Stork",
               "Yellow Mongoose",
@@ -16822,6 +17004,7 @@
               "Addax",
               "African Elephant",
               "African Lion",
+              "Aldabra Giant Tortoise",
               "Alpaca",
               "American Flamingo",
               "Banded Mongoose",
@@ -16837,34 +17020,43 @@
               "Brown-Banded Bambooshark",
               "California Sea Lion",
               "Clouded Leopard",
+              "Common Musk Turtle",
               "Common Ostrich",
+              "Common Warthog",
               "Cuvier's Dwarf Caiman",
               "Domestic Yak",
               "Galah",
               "Giant Panda",
               "Golden-Headed Lion Tamarin",
+              "Great Indian Hornbill",
               "Great White Pelican",
               "Green Iguana",
               "Grey Crowned Crane",
+              "Grey Wolf",
               "Grey-Handed Night Monkey",
               "Grévy's Zebra",
               "Harbour Seal",
               "Humboldt Penguin",
+              "Hyacinth Macaw",
+              "Keel-Billed Toucan",
               "King Vulture",
               "Koala",
               "Linnaeus's Two-Toed Sloth",
               "Lyle's Flying Fox",
               "Mandrill",
               "Meerkat",
+              "Monk Vulture",
               "Nepalese Red Panda",
               "Parma Wallaby",
               "Polar Bear",
+              "Pond Slider",
               "Pygmy Slow Loris",
               "Red Kite",
               "Red River Hog",
               "Red-Bellied Tamarin",
               "Red-Crested Turaco",
               "Reindeer",
+              "Rhinoceros Hornbill",
               "Ring-Tailed Lemur",
               "Rothschild's Giraffe",
               "Saddle-Billed Stork",
@@ -16877,7 +17069,11 @@
               "Toco Toucan",
               "Von Der Decken's Hornbill",
               "Western Lowland Gorilla",
+              "White-Handed Gibbon",
               "White-Naped Crane",
+              "White-Throated Toucan",
+              "Wrinkled Hornbill",
+              "Yellow-Footed Tortoise",
               "Yellow-Throated Marten"
             ],
             "country": "Netherlands",
@@ -16903,6 +17099,7 @@
             "animals": [
               "Blacktip Reef Shark",
               "California Sea Lion",
+              "Harbour Seal",
               "Nursehound",
               "Small-Spotted Catshark",
               "Whitetip Reef Shark"
@@ -16927,7 +17124,12 @@
               "African Spurred Tortoise",
               "Alligator Snapping Turtle",
               "American Alligator",
+              "Asian Forest Tortoise",
+              "Boa Constrictor",
+              "Burmese Python",
+              "Carpet Python",
               "Central Bearded Dragon",
+              "Chinese Pond Turtle",
               "Chinese Water Dragon",
               "Common Anaconda",
               "Common Snapping Turtle",
@@ -16938,6 +17140,7 @@
               "European Pond Turtle",
               "Frill-Necked Lizard",
               "Galapagos Giant Tortoise",
+              "Green Iguana",
               "Hermann's Tortoise",
               "Lace Monitor",
               "Malagasy Ground Boa",
@@ -16984,7 +17187,6 @@
               "Binturong",
               "Black Vulture",
               "Black Wildebeest",
-              "Black-Capped Capuchin",
               "Black-Chested Buzzard-Eagle",
               "Black-and-White Ruffed Lemur",
               "Blacktip Reef Shark",
@@ -17023,7 +17225,7 @@
               "Lesser Kestrel",
               "Mandrill",
               "Meerkat",
-              "Mishmi Takin",
+              "Takin",
               "Mouflon",
               "Nepalese Red Panda",
               "Nurse Shark",
@@ -17168,7 +17370,8 @@
               "Western Gaboon Viper",
               "Western Woylie",
               "White-Faced Saki",
-              "White-Fronted Lemur"
+              "White-Fronted Lemur",
+              "African Crested Porcupine"
             ],
             "trade_id": 156,
             "location": {
@@ -17431,7 +17634,9 @@
               "White-Fronted Lemur",
               "White-Handed Gibbon",
               "Yellow Anaconda",
-              "Yemen Chameleon"
+              "Yemen Chameleon",
+              "African Crested Porcupine",
+              "Watusi"
             ],
             "trade_id": 195,
             "location": {
@@ -17849,7 +18054,7 @@
             }
           },
           {
-            "name": "Zoo",
+            "name": "Zoo de Castellar",
             "country": "Spain",
             "province": "Andalusia",
             "tier": 4,
@@ -17927,7 +18132,8 @@
               "White-Handed Gibbon",
               "White-Headed Marmoset",
               "Yellow-Crowned Amazon",
-              "Yemen Chameleon"
+              "Yemen Chameleon",
+              "African Crested Porcupine"
             ],
             "trade_id": 456,
             "location": {
@@ -18240,7 +18446,7 @@
             }
           },
           {
-            "name": "Zoo",
+            "name": "Centro de Conservación Zoo Córdoba",
             "country": "Spain",
             "province": "Andalusia",
             "tier": 5,
@@ -18584,7 +18790,6 @@
               "Lyle's Flying Fox",
               "Malagasy Tree Boa",
               "Mealy Amazon",
-              "Mediterranean Turtle",
               "Meerkat",
               "Mouflon",
               "Nepalese Red Panda",
@@ -18802,7 +19007,9 @@
               "Tropical Screech Owl",
               "Wattled Crane",
               "White-Faced Saki",
-              "Yellow-Billed Stork"
+              "Yellow-Billed Stork",
+              "African Crested Porcupine",
+              "Watusi"
             ],
             "trade_id": 143,
             "location": {
@@ -18961,7 +19168,8 @@
               "Straw-Necked Ibis",
               "Turkey Vulture",
               "Violet Turaco",
-              "White-Faced Capuchin"
+              "White-Faced Capuchin",
+              "African Crested Porcupine"
             ],
             "trade_id": 186,
             "location": {
@@ -19090,7 +19298,8 @@
               "White Stork",
               "White-Crested Turaco",
               "White-Headed Marmoset",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 300,
             "city": "Hinojosa de San Vicente",
@@ -19145,7 +19354,8 @@
               "Snowy Owl",
               "West African Dwarf Goat",
               "Western Barn Owl",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 308,
             "city": "Jimena de la Frontera",
@@ -19315,7 +19525,8 @@
               "White Rhinoceros",
               "White-Faced Capuchin",
               "White-Handed Gibbon",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 391,
             "city": "Sa Coma",
@@ -19478,7 +19689,8 @@
               "White Stork",
               "White-Backed Vulture",
               "White-Naped Crane",
-              "Wild Boar"
+              "Wild Boar",
+              "African Crested Porcupine"
             ],
             "trade_id": 428,
             "city": "Santo Domingo",
@@ -19586,7 +19798,8 @@
               "White Stork",
               "White-Cheeked Turaco",
               "White-Naped Crane",
-              "Yellow Mongoose"
+              "Yellow Mongoose",
+              "African Crested Porcupine"
             ],
             "trade_id": 396,
             "city": "Santa Eugenia",
@@ -19704,7 +19917,7 @@
       "Galicia": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "VigoZoo",
             "country": "Spain",
             "province": "Galicia",
             "tier": 4,
@@ -19753,7 +19966,6 @@
               "Little Owl",
               "Llama",
               "Long-Eared Owl",
-              "Mediterranean Turtle",
               "Meerkat",
               "Mouflon",
               "Plains Zebra",
@@ -19774,7 +19986,8 @@
               "Western Barn Owl",
               "White Stork",
               "Yellow Anaconda",
-              "Yemen Chameleon"
+              "Yemen Chameleon",
+              "African Crested Porcupine"
             ],
             "trade_id": 467,
             "location": {
@@ -19929,7 +20142,6 @@
               "Common Buzzard",
               "Common Ostrich",
               "Common Warthog",
-              "Crocodile Lizard",
               "Diana Monkey",
               "Dumeril's Boa",
               "Dwarf Mongoose",
@@ -20280,7 +20492,7 @@
         ],
         "tier_5": [
           {
-            "name": "Zoo",
+            "name": "Linton Zoo",
             "country": "United Kingdom",
             "province": "Cambridgeshire",
             "tier": 5,
@@ -20577,7 +20789,7 @@
             ],
             "animals": [
               "Abdim's Stork",
-              "Abyssian Ground Hornbill",
+              "Abyssinian Ground Hornbill",
               "African Civet",
               "African Spoonbill",
               "African Spurred Tortoise",
@@ -21027,7 +21239,8 @@
               "Somali Wild Ass",
               "Verreaux's Eagle-Owl",
               "White Rhinoceros",
-              "Yellow Mongoose"
+              "Yellow Mongoose",
+              "African Crested Porcupine"
             ],
             "trade_id": 164,
             "location": {
@@ -21308,7 +21521,8 @@
               "Wolverine",
               "Wrinkled Hornbill",
               "Yacare Caiman",
-              "Yellow Mongoose"
+              "Yellow Mongoose",
+              "Watusi"
             ],
             "trade_id": 173,
             "location": {
@@ -22293,7 +22507,8 @@
               "Western Woylie",
               "White Rhinoceros",
               "White-Backed Vulture",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 344,
             "city": "Warminster",
@@ -22304,7 +22519,7 @@
             }
           },
           {
-            "name": "Lincoln Zoo - vormals Woodside Wildlife & Falconry Park",
+            "name": "Lincoln Zoo",
             "country": "United Kingdom",
             "province": "Lincolnshire",
             "tier": 4,
@@ -22469,7 +22684,8 @@
               "White-Faced Saki",
               "White-Handed Gibbon",
               "Yellow-Crowned Amazon",
-              "Yellow-Footed Tortoise"
+              "Yellow-Footed Tortoise",
+              "African Crested Porcupine"
             ],
             "trade_id": 383,
             "city": "Polbeth",
@@ -22759,7 +22975,8 @@
               "Ring-Tailed Lemur",
               "South American Coati",
               "Striped Skunk",
-              "West African Dwarf Goat"
+              "West African Dwarf Goat",
+              "African Crested Porcupine"
             ],
             "trade_id": 276,
             "city": "Deeside",
@@ -22887,7 +23104,8 @@
               "Yellow-Crested Cockatoo",
               "Yellow-Crowned Amazon",
               "Yellow-Headed Amazon",
-              "Yemen Chameleon"
+              "Yemen Chameleon",
+              "African Crested Porcupine"
             ],
             "trade_id": 425,
             "city": "Wingham",
@@ -22902,7 +23120,7 @@
       "Scotland": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Edinburgh Zoo",
             "country": "United Kingdom",
             "province": "Scotland",
             "tier": 4,
@@ -23482,7 +23700,7 @@
             }
           },
           {
-            "name": "MiniZoo",
+            "name": "MiniZoo Žilina",
             "country": "Slovakia",
             "province": "Žilina Region",
             "tier": 4,
@@ -23544,7 +23762,7 @@
         ],
         "tier_5": [
           {
-            "name": "Zoo",
+            "name": "Zoo Spišská Nová Ves",
             "country": "Slovakia",
             "province": "Košice Region",
             "tier": 5,
@@ -23951,7 +24169,7 @@
               "McCord's Snake-Necked Turtle",
               "Mealy Amazon",
               "Meerkat",
-              "Mishmi Takin",
+              "Takin",
               "Mouflon",
               "Nepalese Red Panda",
               "Northern Bald Ibis",
@@ -24022,7 +24240,8 @@
               "Yellow-Billed Stork",
               "Yellow-Crowned Amazon",
               "Zebra Shark",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 148,
             "location": {
@@ -24062,7 +24281,8 @@
               "Siberian Tiger",
               "South American Coati",
               "Umbrella Cockatoo",
-              "West African Dwarf Goat"
+              "West African Dwarf Goat",
+              "African Crested Porcupine"
             ],
             "trade_id": 288,
             "city": "Felsőlajos",
@@ -24137,7 +24357,8 @@
               "West African Dwarf Goat",
               "White-Handed Gibbon",
               "Wild Boar",
-              "Yellow-Crowned Amazon"
+              "Yellow-Crowned Amazon",
+              "African Crested Porcupine"
             ],
             "trade_id": 306,
             "city": "Jászberény",
@@ -24205,7 +24426,8 @@
               "Tufted Capuchin",
               "West African Dwarf Goat",
               "Western Barn Owl",
-              "White Stork"
+              "White Stork",
+              "African Crested Porcupine"
             ],
             "trade_id": 319,
             "city": "Kecskemét",
@@ -24216,7 +24438,7 @@
             }
           },
           {
-            "name": "Állatkert - vormals Állatkert és Kultúrpark",
+            "name": "Állatkert",
             "country": "Hungary",
             "province": "Borsod-Abaúj-Zemplén",
             "tier": 4,
@@ -24392,7 +24614,8 @@
               "Wolverine",
               "Yellow Mongoose",
               "Yemen Chameleon",
-              "Zebra Shark"
+              "Zebra Shark",
+              "African Crested Porcupine"
             ],
             "trade_id": 375,
             "city": "Pécs",
@@ -24403,7 +24626,7 @@
             }
           },
           {
-            "name": "Zoo",
+            "name": "Szigetbecse Zoo",
             "country": "Hungary",
             "province": "Pest",
             "tier": 4,
@@ -24534,7 +24757,8 @@
               "Vicuña",
               "West African Dwarf Goat",
               "White Rhinoceros",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 420,
             "city": "Veszprém",
@@ -24561,7 +24785,7 @@
               "Primates"
             ],
             "animals": [
-              "Abyssian Ground Hornbill",
+              "Abyssinian Ground Hornbill",
               "Addax",
               "African Elephant",
               "African Grey Parrot",
@@ -25061,7 +25285,7 @@
               "Malagasy Ground Boa",
               "Maned Wolf",
               "Meerkat",
-              "Mishmi Takin",
+              "Takin",
               "Northern Hawk-Owl",
               "Nubian Ibex",
               "Pancake Tortoise",
@@ -25443,7 +25667,8 @@
               "Tawny Owl",
               "West African Dwarf Goat",
               "Wild Boar",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 270,
             "city": "Civitella Casanova",
@@ -25507,7 +25732,8 @@
               "West African Dwarf Goat",
               "White-Faced Saki",
               "White-Handed Gibbon",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 286,
             "city": "Falconara Marittima",
@@ -25654,7 +25880,8 @@
               "Utila Spiny-Tailed Iguana",
               "West African Dwarf Goat",
               "Western Diamondback Rattlesnake",
-              "Yellow Anaconda"
+              "Yellow Anaconda",
+              "Viscacha"
             ],
             "trade_id": 378,
             "city": "Pesco Sannita",
@@ -25665,7 +25892,7 @@
             }
           },
           {
-            "name": "Zoo",
+            "name": "Giardino Zoologico di Pistoia",
             "country": "Italy",
             "province": "Tuscany",
             "tier": 4,
@@ -25758,7 +25985,8 @@
               "White Stork",
               "Wild Boar",
               "Yellow Anaconda",
-              "Yellow-Crowned Amazon"
+              "Yellow-Crowned Amazon",
+              "African Crested Porcupine"
             ],
             "trade_id": 380,
             "city": "Pistoia",
@@ -25877,7 +26105,8 @@
               "White Stork",
               "White-Headed Vulture",
               "Yellow-Crested Cockatoo",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 384,
             "city": "Pombia",
@@ -26113,37 +26342,6 @@
               "city": "Torino"
             }
           }
-        ],
-        "tier_3": [
-          {
-            "name": "formerly Area Faunistica Orso Bruno)",
-            "country": "Italy",
-            "province": "Trentino-Alto Adige",
-            "tier": 3,
-            "preferred_categories": [
-              "Carnivora",
-              "Ungulates",
-              "Birds of Prey"
-            ],
-            "animals": [
-              "Brown Bear",
-              "Eurasian Eagle-Owl",
-              "Eurasian Lynx",
-              "Eurasian Otter",
-              "European Wild Cat",
-              "Grey Wolf",
-              "Red Fox",
-              "Reindeer",
-              "West African Dwarf Goat"
-            ],
-            "trade_id": 404,
-            "location": {
-              "country": "Italy",
-              "province": "Trentino-Alto Adige",
-              "city": "Spormaggiore"
-            },
-            "city": "Spormaggiore"
-          }
         ]
       }
     },
@@ -26204,7 +26402,7 @@
               "Maned Wolf",
               "Marginated Tortoise",
               "Meerkat",
-              "Mishmi Takin",
+              "Takin",
               "Nepalese Red Panda",
               "Nile Crocodile",
               "North American Porcupine",
@@ -26446,7 +26644,7 @@
               "Scarlet Macaw",
               "Serval",
               "Siamese Crocodile",
-              "Sichuan Takin",
+              "Takin",
               "Snow Leopard",
               "Somali Wild Ass",
               "Southern Cassowary",
@@ -26473,7 +26671,7 @@
             }
           },
           {
-            "name": "Zoo",
+            "name": "Miejski Ogród Zoologiczny w Płocku",
             "country": "Poland",
             "province": "Masovian",
             "tier": 5,
@@ -26818,32 +27016,6 @@
       },
       "Other": {
         "tier_3": [
-          {
-            "name": "Rezerwat Pokazowy Zubrow - Bialowiezki Park Narodowy",
-            "country": "Poland",
-            "province": "Podlaskie",
-            "tier": 3,
-            "preferred_categories": [
-              "Ungulates",
-              "Carnivora"
-            ],
-            "animals": [
-              "Eurasian Lynx",
-              "European Roe Deer",
-              "Grey Wolf",
-              "Moose",
-              "Red Deer",
-              "Wild Boar",
-              "Wisent"
-            ],
-            "trade_id": 251,
-            "city": "Bialowieza",
-            "location": {
-              "country": "Poland",
-              "province": "Podlaskie",
-              "city": "Bialowieza"
-            }
-          },
           {
             "name": "MiniZoo Mantadia",
             "country": "Poland",
@@ -27250,7 +27422,8 @@
               "White-Cheeked Turaco",
               "White-Fronted Amazon",
               "White-Fronted Lemur",
-              "White-Handed Gibbon"
+              "White-Handed Gibbon",
+              "African Crested Porcupine"
             ],
             "trade_id": 353,
             "city": "Mieroszów",
@@ -27417,7 +27590,7 @@
       "Lesser Poland": {
         "tier_5": [
           {
-            "name": "Zoo",
+            "name": "Kraków Zoo",
             "country": "Poland",
             "province": "Lesser Poland",
             "tier": 5,
@@ -27575,7 +27748,7 @@
       "Łódź": {
         "tier_5": [
           {
-            "name": "Zoo",
+            "name": "Orientarium Zoo Łódź",
             "country": "Poland",
             "province": "Łódź",
             "tier": 5,
@@ -27733,7 +27906,7 @@
       "Opole": {
         "tier_5": [
           {
-            "name": "Zoo",
+            "name": "Zoo Opole",
             "country": "Poland",
             "province": "Opole",
             "tier": 5,
@@ -27884,55 +28057,12 @@
     },
     "Sweden": {
       "Västra Götaland": {
-        "tier_5": [
-          {
-            "name": "Borås Djurpark",
-            "country": "Sweden",
-            "province": "Västra Götaland",
-            "tier": 5,
-            "preferred_categories": [
-              "Carnivora",
-              "Ungulates",
-              "Primates"
-            ],
-            "animals": [
-              "African Elephant",
-              "African Lion",
-              "African Wild Dog",
-              "Alpaca",
-              "Blesbok",
-              "Bongo",
-              "Bornean Orangutan",
-              "Brown Bear",
-              "Cape Buffalo",
-              "Cheetah",
-              "Common Eland",
-              "Common Ostrich",
-              "Cotton-Top Tamarin",
-              "Eurasian Lynx",
-              "Greater Flamingo",
-              "Humboldt Penguin",
-              "Nepalese Red Panda",
-              "Red-Footed Tortoise",
-              "Rothschild's Giraffe",
-              "Spotted Hyena",
-              "White Rhinoceros",
-              "Wolverine"
-            ],
-            "trade_id": 132,
-            "city": "Boras",
-            "location": {
-              "country": "Sweden",
-              "province": "Västra Götaland",
-              "city": "Boras"
-            }
-          }
-        ]
+        "tier_5": []
       },
       "Skåne": {
         "tier_4": [
           {
-            "name": "Djurparken / ex. Fågelparken",
+            "name": "Helsingborgs Djur- & Lekpark",
             "country": "Sweden",
             "province": "Skåne",
             "tier": 4,
@@ -27969,11 +28099,11 @@
               "Yellow-Naped Amazon"
             ],
             "trade_id": 133,
-            "city": "Boras",
+            "city": "Helsingborg",
             "location": {
               "country": "Sweden",
               "province": "Skåne",
-              "city": "Boras"
+              "city": "Helsingborg"
             }
           }
         ],
@@ -28002,11 +28132,11 @@
               "Wolverine"
             ],
             "trade_id": 134,
-            "city": "Boras",
+            "city": "Höör",
             "location": {
               "country": "Sweden",
               "province": "Skåne",
-              "city": "Boras"
+              "city": "Höör"
             }
           }
         ]
@@ -28014,7 +28144,7 @@
       "Västerbotten": {
         "tier_3": [
           {
-            "name": "Djurpark",
+            "name": "Borås Djurpark",
             "country": "Sweden",
             "province": "Västerbotten",
             "tier": 3,
@@ -28092,11 +28222,11 @@
               "Llama"
             ],
             "trade_id": 136,
-            "city": "Boras",
+            "city": "Vintrosa",
             "location": {
               "country": "Sweden",
               "province": "Örebro",
-              "city": "Boras"
+              "city": "Vintrosa"
             }
           }
         ]
@@ -28167,7 +28297,7 @@
             }
           },
           {
-            "name": "Tierpark",
+            "name": "Kolmårdens Djurpark",
             "country": "Sweden",
             "province": "Östergötland",
             "tier": 4,
@@ -28237,7 +28367,7 @@
             }
           },
           {
-            "name": "Tropicarium",
+            "name": "Tropicarium Kolmården",
             "country": "Sweden",
             "province": "Östergötland",
             "tier": 4,
@@ -28732,7 +28862,7 @@
             }
           },
           {
-            "name": "Zoo",
+            "name": "Zoo de Servion",
             "country": "Switzerland",
             "province": "Vaud",
             "tier": 4,
@@ -28853,7 +28983,7 @@
       "Other": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Bitola Zoo",
             "country": "North Macedonia",
             "province": "Pelagonia",
             "tier": 4,
@@ -29785,7 +29915,7 @@
       "Vaslui": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Grădina Zoologică Bârlad",
             "country": "Romania",
             "province": "Vaslui",
             "tier": 4,
@@ -29828,7 +29958,8 @@
               "White Stork",
               "Wisent",
               "Yellow Anaconda",
-              "Zebu"
+              "Zebu",
+              "Watusi"
             ],
             "trade_id": 446,
             "location": {
@@ -29843,7 +29974,7 @@
       "Brăila": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Grădina Zoologică Brăila",
             "country": "Romania",
             "province": "Brăila",
             "tier": 4,
@@ -29872,7 +30003,8 @@
               "Siberian Tiger",
               "South American Coati",
               "Watusi",
-              "West African Dwarf Goat"
+              "West African Dwarf Goat",
+              "African Crested Porcupine"
             ],
             "trade_id": 452,
             "location": {
@@ -29887,7 +30019,7 @@
       "Brașov": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Zoo Brașov",
             "country": "Romania",
             "province": "Brașov",
             "tier": 4,
@@ -29954,7 +30086,7 @@
       "Bucharest": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Bucharest Zoo",
             "country": "Romania",
             "province": "Bucharest",
             "tier": 4,
@@ -30055,7 +30187,7 @@
       "Călărași": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Grădina Zoologică Călărași",
             "country": "Romania",
             "province": "Călărași",
             "tier": 4,
@@ -30114,7 +30246,7 @@
       "Hunedoara": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Grădina Zoologică Hunedoara",
             "country": "Romania",
             "province": "Hunedoara",
             "tier": 4,
@@ -30150,7 +30282,7 @@
       "Dâmbovița": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Târgoviște Zoo",
             "country": "Romania",
             "province": "Dâmbovița",
             "tier": 4,
@@ -30229,7 +30361,7 @@
       "Bihor": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Grădina Zoologică Oradea",
             "country": "Romania",
             "province": "Bihor",
             "tier": 4,
@@ -30304,7 +30436,7 @@
       "Suceava": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Grădina Zoologică Rădăuți",
             "country": "Romania",
             "province": "Suceava",
             "tier": 4,
@@ -30342,7 +30474,7 @@
       "Caraș-Severin": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Grădina Zoologică „Ioan Crișan” Reșița",
             "country": "Romania",
             "province": "Caraș-Severin",
             "tier": 4,
@@ -30374,7 +30506,8 @@
               "Siberian Tiger",
               "South American Coati",
               "West African Dwarf Goat",
-              "Wisent"
+              "Wisent",
+              "African Crested Porcupine"
             ],
             "trade_id": 474,
             "location": {
@@ -30428,7 +30561,7 @@
       "Other": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "ZOO Ljubljana",
             "country": "Slovenia",
             "province": "Central Slovenia",
             "tier": 4,
@@ -30731,39 +30864,6 @@
       "Other": {
         "tier_3": [
           {
-            "name": "Touristischer Komplex des Nationalparks Bialowieza Forest",
-            "country": "Belarus",
-            "province": "Brest Region",
-            "tier": 3,
-            "preferred_categories": [
-              "Ungulates",
-              "Carnivora",
-              "Birds of Prey"
-            ],
-            "animals": [
-              "Common Buzzard",
-              "Common Ostrich",
-              "Domestic Donkey",
-              "Eurasian Lynx",
-              "European Roe Deer",
-              "Fallow Deer",
-              "Grey Wolf",
-              "Raccoon Dog",
-              "Red Deer",
-              "Red Fox",
-              "Sika Deer",
-              "White-Tailed Eagle",
-              "Wisent"
-            ],
-            "trade_id": 250,
-            "location": {
-              "country": "Belarus",
-              "province": "Brest Region",
-              "city": "Kamenyuki"
-            },
-            "city": "Kamenyuki"
-          },
-          {
             "name": "Lesnoy Zoo / Waldzoo",
             "country": "Belarus",
             "province": "Vitebsk Region",
@@ -30921,7 +31021,7 @@
       "Gomel Region": {
         "tier_3": [
           {
-            "name": "Zoo",
+            "name": "Aktsyabrski Zoo",
             "country": "Belarus",
             "province": "Gomel Region",
             "tier": 3,
@@ -30965,7 +31065,7 @@
       "Grodno Region": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Grodno Zoo",
             "country": "Belarus",
             "province": "Grodno Region",
             "tier": 4,
@@ -31077,7 +31177,7 @@
       "Vitebsk Region": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Vitebsk Zoo",
             "country": "Belarus",
             "province": "Vitebsk Region",
             "tier": 4,
@@ -31122,7 +31222,7 @@
       "Minsk": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Minsk Zoo",
             "country": "Belarus",
             "province": "Minsk",
             "tier": 4,
@@ -31434,7 +31534,7 @@
       "Sofia City Province": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Sofia Zoo",
             "country": "Bulgaria",
             "province": "Sofia City Province",
             "tier": 4,
@@ -31567,7 +31667,8 @@
               "Wild Boar",
               "Yellow Anaconda",
               "Yellow-Crested Cockatoo",
-              "Yemen Chameleon"
+              "Yemen Chameleon",
+              "African Crested Porcupine"
             ],
             "trade_id": 434,
             "location": {
@@ -31582,7 +31683,7 @@
       "Stara Zagora Province": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Stara Zagora Zoo",
             "country": "Bulgaria",
             "province": "Stara Zagora Province",
             "tier": 4,
@@ -31633,7 +31734,7 @@
       "Blagoevgrad Province": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Blagoevgrad Zoo",
             "country": "Bulgaria",
             "province": "Blagoevgrad Province",
             "tier": 4,
@@ -31661,7 +31762,8 @@
               "Watusi",
               "West African Dwarf Goat",
               "White Stork",
-              "Wild Boar"
+              "Wild Boar",
+              "African Crested Porcupine"
             ],
             "trade_id": 450,
             "location": {
@@ -31676,7 +31778,7 @@
       "Haskovo Province": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Haskovo Zoo",
             "country": "Bulgaria",
             "province": "Haskovo Province",
             "tier": 4,
@@ -31718,7 +31820,7 @@
       "Razgrad Province": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Razgrad Zoo",
             "country": "Bulgaria",
             "province": "Razgrad Province",
             "tier": 4,
@@ -31752,7 +31854,7 @@
       "Lovech Province": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Lovech Zoo",
             "country": "Bulgaria",
             "province": "Lovech Province",
             "tier": 4,
@@ -31828,7 +31930,7 @@
         ],
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Chișinău Zoo",
             "country": "Moldova",
             "province": "Chișinău",
             "tier": 4,
@@ -32140,6 +32242,99 @@
               "province": "Zaporizhzhia Oblast",
               "city": "Zaporizhzhya"
             }
+          },
+          {
+            "name": "Odesa Zoo",
+            "country": "Ukraine",
+            "province": "Odesa Oblast",
+            "tier": 4,
+            "preferred_categories": [
+              "Birds of Prey",
+              "Carnivora",
+              "Ungulates"
+            ],
+            "trade_id": 486,
+            "city": "Odesa",
+            "location": {
+              "country": "Ukraine",
+              "province": "Odesa Oblast",
+              "city": "Odesa"
+            },
+            "animals": [
+              "Amur Leopard",
+              "Asian Elephant",
+              "Bactrian Camel",
+              "Boa Constrictor",
+              "Booted Eagle",
+              "Brown Bear",
+              "Cameroon Sheep",
+              "Capybara",
+              "Wild Boar",
+              "Central Bearded Dragon",
+              "Collared Peccary",
+              "Western Barn Owl",
+              "Black Kite",
+              "Common Buzzard",
+              "Fallow Deer",
+              "Green Iguana",
+              "Common Ostrich",
+              "Common Raven",
+              "European Scops Owl",
+              "Coypu",
+              "Dalmatian Pelican",
+              "Demoiselle Crane",
+              "Grey Crowned Crane",
+              "Eastern Imperial Eagle",
+              "Egyptian Fruit Bat",
+              "Emu",
+              "Monk Vulture",
+              "Eurasian Eagle-Owl",
+              "Long-Eared Owl",
+              "Eurasian Lynx",
+              "Red Squirrel",
+              "Grey Wolf",
+              "European Badger",
+              "European Pond Turtle",
+              "Red Fox",
+              "White Stork",
+              "Golden Eagle",
+              "Plains Zebra",
+              "Great White Pelican",
+              "Greater Flamingo",
+              "Hamadryas Baboon",
+              "Indian Crested Porcupine",
+              "Indian Star Tortoise",
+              "Lesser Spotted Eagle",
+              "African Lion",
+              "Little Owl",
+              "Llama",
+              "Long-Legged Buzzard",
+              "Mata-Mata",
+              "Nile Crocodile",
+              "Nile Monitor",
+              "Nilgai",
+              "Common Raccoon",
+              "Peacock-Eye Stingray",
+              "Ocelot",
+              "Patagonian Mara",
+              "Pond Slider",
+              "Przewalski's Horse",
+              "Raccoon Dog",
+              "Reeve's Muntjac",
+              "Reticulated Python",
+              "Saker Falcon",
+              "Siberian Tiger",
+              "South American Coati",
+              "Steppe Eagle",
+              "Striped Hyena",
+              "Striped Skunk",
+              "Griffon Vulture",
+              "Western Honey Buzzard",
+              "Western Marsh-Harrier",
+              "European Roe Deer",
+              "White-Tailed Eagle",
+              "Yellow Anaconda"
+            ]
           }
         ],
         "tier_5": [
@@ -32393,7 +32588,7 @@
         ],
         "tier_3": [
           {
-            "name": "Malta Falkonry Centre - temporär geschlossen",
+            "name": "Malta Falkonry Centre",
             "country": "Malta",
             "province": "Southern Region",
             "tier": 3,
@@ -32490,7 +32685,7 @@
             }
           },
           {
-            "name": "Zoo",
+            "name": "Lithuanian Zoo",
             "country": "Lithuania",
             "province": "Kaunas County",
             "tier": 4,
@@ -32572,7 +32767,7 @@
             }
           },
           {
-            "name": "Trakénų ZooParkas - vormals Kalvarijos Mini ZOO",
+            "name": "Trakénų ZooParkas",
             "country": "Lithuania",
             "province": "Marijampolė County",
             "tier": 4,
@@ -32621,7 +32816,7 @@
         ],
         "tier_3": [
           {
-            "name": "Gamtos Perlas Mini ZOO - vormals Sodyba Aglaura",
+            "name": "Gamtos Perlas Mini ZOO",
             "country": "Lithuania",
             "province": "Klaipėda County",
             "tier": 3,
@@ -32932,7 +33127,8 @@
               "West African Dwarf Goat",
               "White Stork",
               "Zebu",
-              "Watusi"
+              "Watusi",
+              "African Crested Porcupine"
             ],
             "trade_id": 352,
             "city": "Nicosia",
@@ -32945,7 +33141,7 @@
         ],
         "tier_5": [
           {
-            "name": "Zoo",
+            "name": "Pafos Zoo",
             "country": "Cyprus",
             "province": "Paphos District",
             "tier": 5,
@@ -33103,7 +33299,8 @@
               "Yellow-Crested Cockatoo",
               "Yellow-Crowned Amazon",
               "Yellow-Headed Amazon",
-              "Yellow-Tailed Black Cockatoo"
+              "Yellow-Tailed Black Cockatoo",
+              "African Crested Porcupine"
             ],
             "trade_id": 373,
             "city": "Pafos",
@@ -33120,7 +33317,7 @@
       "Other": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "ZOO vrt Osijek",
             "country": "Croatia",
             "province": "Osijek-Baranja",
             "tier": 4,
@@ -33202,7 +33399,7 @@
       "Other": {
         "tier_4": [
           {
-            "name": "Zoo",
+            "name": "Palić Zoo",
             "country": "Serbia",
             "province": "Vojvodina",
             "tier": 4,
@@ -33348,7 +33545,8 @@
               "Ring-Tailed Lemur",
               "West African Dwarf Goat",
               "Wild Boar",
-              "Zebu"
+              "Zebu",
+              "African Crested Porcupine"
             ],
             "trade_id": 390,
             "city": "Rhodos",
@@ -33418,7 +33616,7 @@
       "Other": {
         "tier_4": [
           {
-            "name": "Zoopark",
+            "name": "Tirana Zoo",
             "country": "Albania",
             "province": "Tirana County",
             "tier": 4,
@@ -35432,5 +35630,12 @@
         79
       ]
     }
+  },
+  "name_metadata": {
+    "version": 1,
+    "updated": "2026-09-24",
+    "official_name_field": "names.official",
+    "zootierliste_name_field": "names.zootierliste",
+    "notes": "ZooTierListe spellings/locations were matched from both supplied holdings pastes. Existing canonical zoo names are preserved as official/public-facing names; ZooTierListe variants are retained separately rather than replacing them."
   }
 }

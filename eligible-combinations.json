@@ -827,6 +827,21 @@
     },
     {
       "animals": [
+        "African Crested Porcupine",
+        "Meerkat"
+      ],
+      "evidence": [
+        {
+          "zoo": "Almere Jungle",
+          "country": "Netherlands",
+          "date": "2024",
+          "source": "ZooTierListe current/2024 holdings + Almere Jungle zoo map",
+          "note": "Species shown together on the Almere Jungle zoo map; ZooTierListe lists the species at Almere Jungle from 2024."
+        }
+      ]
+    },
+    {
+      "animals": [
         "African Elephant",
         "Bat-Eared Fox"
       ],
@@ -2130,6 +2145,19 @@
           "zoo": "Houston Zoo",
           "country": "United States",
           "date": "2020-05-18"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Spurred Tortoise",
+        "Common Ostrich"
+      ],
+      "evidence": [
+        {
+          "zoo": "Nahariya Zoo-Botanical Garden",
+          "country": "Israel",
+          "date": "documented mixed African exhibit; Masai Ostrich represented at species level"
         }
       ]
     },
@@ -7077,6 +7105,21 @@
     {
       "animals": [
         "Black-Necked Aracari",
+        "Common Marmoset"
+      ],
+      "evidence": [
+        {
+          "zoo": "Almere Jungle",
+          "country": "Netherlands",
+          "date": "2024",
+          "source": "ZooTierListe current/2024 holdings + Almere Jungle zoo map",
+          "note": "Species shown together on the Almere Jungle zoo map; ZooTierListe lists the species at Almere Jungle from 2024."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Necked Aracari",
         "Giant Anteater"
       ],
       "evidence": [
@@ -7097,6 +7140,21 @@
           "zoo": "Weltvogelpark Walsrode",
           "country": "Germany",
           "date": "2026-08"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Necked Aracari",
+        "Peacock-Eye Stingray"
+      ],
+      "evidence": [
+        {
+          "zoo": "Almere Jungle",
+          "country": "Netherlands",
+          "date": "2024",
+          "source": "ZooTierListe current/2024 holdings + Almere Jungle zoo map",
+          "note": "Species shown together on the Almere Jungle zoo map; ZooTierListe lists the species at Almere Jungle from 2024."
         }
       ]
     },
@@ -8724,6 +8782,19 @@
     {
       "animals": [
         "Boa Constrictor",
+        "Common Anaconda"
+      ],
+      "evidence": [
+        {
+          "zoo": "Singapore Zoo",
+          "country": "Singapore",
+          "date": "2015"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Boa Constrictor",
         "Emerald Tree Boa"
       ],
       "evidence": [
@@ -8744,6 +8815,19 @@
           "zoo": "Randers Regnskov Tropical Zoo",
           "country": "Denmark",
           "date": "2021-11-25"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Boa Constrictor",
+        "Yellow Anaconda"
+      ],
+      "evidence": [
+        {
+          "zoo": "Lake District Wildlife Park (formerly Trotters)",
+          "country": "United Kingdom",
+          "date": "2013"
         }
       ]
     },
@@ -9344,6 +9428,19 @@
           "zoo": "Zoo d'Amnéville",
           "country": "France",
           "date": "2020-06-12"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Burmese Python",
+        "Common Anaconda"
+      ],
+      "evidence": [
+        {
+          "zoo": "Heythrop Zoological Gardens",
+          "country": "United Kingdom",
+          "date": "documented"
         }
       ]
     },
@@ -10799,6 +10896,19 @@
     },
     {
       "animals": [
+        "Carpet Python",
+        "Water Python"
+      ],
+      "evidence": [
+        {
+          "zoo": "National Aquarium, Australia: Wild Extremes",
+          "country": "United States",
+          "date": "documented"
+        }
+      ]
+    },
+    {
+      "animals": [
         "Central American Wood Turtle",
         "Chinese Water Dragon"
       ],
@@ -10931,6 +11041,19 @@
           "zoo": "National Aquarium of Australia",
           "country": "Australia",
           "date": "2020"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Central Bearded Dragon",
+        "Frilled Lizard"
+      ],
+      "evidence": [
+        {
+          "zoo": "National Aquarium / multiple Australian-reptile zoo exhibits",
+          "country": "United States / Australia",
+          "date": "documented"
         }
       ]
     },
@@ -11655,6 +11778,19 @@
     {
       "animals": [
         "Common Anaconda",
+        "Emerald Tree Boa"
+      ],
+      "evidence": [
+        {
+          "zoo": "Singapore Zoo",
+          "country": "Singapore",
+          "date": "2015"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Anaconda",
         "Red-Footed Tortoise"
       ],
       "evidence": [
@@ -11662,6 +11798,19 @@
           "zoo": "Louisville Zoo",
           "country": "United States",
           "date": "2010"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Anaconda",
+        "Reticulated Python"
+      ],
+      "evidence": [
+        {
+          "zoo": "Heythrop Zoological Gardens",
+          "country": "United Kingdom",
+          "date": "documented"
         }
       ]
     },
@@ -12430,6 +12579,21 @@
           "zoo": "Zoologischer Garten Halle",
           "country": "Germany",
           "date": "2002"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Marmoset",
+        "Peacock-Eye Stingray"
+      ],
+      "evidence": [
+        {
+          "zoo": "Almere Jungle",
+          "country": "Netherlands",
+          "date": "2024",
+          "source": "ZooTierListe current/2024 holdings + Almere Jungle zoo map",
+          "note": "Species shown together on the Almere Jungle zoo map; ZooTierListe lists the species at Almere Jungle from 2024."
         }
       ]
     },
@@ -16265,6 +16429,32 @@
     },
     {
       "animals": [
+        "European Pond Turtle",
+        "European Legless Lizard"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "documented Reptile Walk"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "European Pond Turtle",
+        "Marginated Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "documented Reptile Walk"
+        }
+      ]
+    },
+    {
+      "animals": [
         "European Roe Deer",
         "Wild Boar"
       ],
@@ -18943,6 +19133,13 @@
           "zoo": "Hai Park",
           "country": "Israel",
           "date": "2020"
+        },
+        {
+          "zoo": "Almere Jungle",
+          "country": "Netherlands",
+          "date": "2024",
+          "source": "ZooTierListe current/2024 holdings + Almere Jungle zoo map",
+          "note": "Species shown together on the Almere Jungle zoo map; ZooTierListe lists the species at Almere Jungle from 2024."
         }
       ]
     },
@@ -19245,6 +19442,32 @@
     {
       "animals": [
         "Green Iguana",
+        "Aldabra Giant Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological institution documented by Mo & Mo (2021)",
+          "country": "France",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "American Alligator"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "documented 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
         "American White Ibis"
       ],
       "evidence": [
@@ -19258,6 +19481,19 @@
     {
       "animals": [
         "Green Iguana",
+        "Argentine Black And White Tegu"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological institution documented by Mo & Mo (2021)",
+          "country": "United Kingdom",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
         "Asian Water Monitor"
       ],
       "evidence": [
@@ -19265,6 +19501,19 @@
           "zoo": "Dallas Zoo",
           "country": "United States",
           "date": "1969"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Burmese Python"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological institution documented by Mo & Mo (2021)",
+          "country": "United States",
+          "date": "published 2021"
         }
       ]
     },
@@ -19310,6 +19559,32 @@
     {
       "animals": [
         "Green Iguana",
+        "Common Musk Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "TerraZoo Rheinberg",
+          "country": "Germany",
+          "date": "documented 2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Cuvier's Dwarf Caiman"
+      ],
+      "evidence": [
+        {
+          "zoo": "Multiple zoological institutions documented by Mo & Mo (2021)",
+          "country": "Multiple",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
         "Greater Flamingo"
       ],
       "evidence": [
@@ -19322,6 +19597,19 @@
           "zoo": "Crocus City Oceanarium",
           "country": "Russia",
           "date": "2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Hermann's Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "De Zonnegloed Wild Animal Sanctuary",
+          "country": "Belgium",
+          "date": "documented 2021"
         }
       ]
     },
@@ -19372,6 +19660,19 @@
     {
       "animals": [
         "Green Iguana",
+        "Mata-Mata"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological institution documented by Mo & Mo (2021)",
+          "country": "Italy",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
         "Military Macaw"
       ],
       "evidence": [
@@ -19392,6 +19693,19 @@
           "zoo": "Dallas Zoo",
           "country": "United States",
           "date": "1969"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Pig-Nosed Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Aquarium/terrarium documented by Mo & Mo (2021)",
+          "country": "United States",
+          "date": "published 2021"
         }
       ]
     },
@@ -19424,6 +19738,19 @@
     {
       "animals": [
         "Green Iguana",
+        "Red-Bellied Short-Necked Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Walk-through aviary documented by Mo & Mo (2021)",
+          "country": "Singapore",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
         "Red-Footed Tortoise"
       ],
       "evidence": [
@@ -19431,6 +19758,13 @@
           "zoo": "Brandywine Zoo",
           "country": "United States",
           "date": "2026-07-23"
+        },
+        {
+          "zoo": "Almere Jungle",
+          "country": "Netherlands",
+          "date": "2024",
+          "source": "ZooTierListe current/2024 holdings + Almere Jungle zoo map",
+          "note": "Species shown together on the Almere Jungle zoo map; ZooTierListe lists the species at Almere Jungle from 2024."
         }
       ]
     },
@@ -19579,6 +19913,19 @@
     {
       "animals": [
         "Green Iguana",
+        "Spectacled Caiman"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoological institution documented by Mo & Mo (2021)",
+          "country": "Belgium",
+          "date": "published 2021"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
         "Toco Toucan"
       ],
       "evidence": [
@@ -19617,6 +19964,19 @@
           "zoo": "Selwo Marina Benalmádena",
           "country": "Spain",
           "date": "2025-09-21"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Iguana",
+        "Yellow-Footed Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Multiple zoological institutions documented by Mo & Mo (2021)",
+          "country": "Multiple",
+          "date": "published 2021"
         }
       ]
     },
@@ -21068,6 +21428,19 @@
     {
       "animals": [
         "Hermann's Tortoise",
+        "Marginated Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Ohrada",
+          "country": "Czech Republic",
+          "date": "2025-10-19"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hermann's Tortoise",
         "Red Ruffed Lemur"
       ],
       "evidence": [
@@ -21075,6 +21448,19 @@
           "zoo": "ZooParc Overloon",
           "country": "Netherlands",
           "date": "documented mixed exhibit"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hermann's Tortoise",
+        "Red-Footed Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "TerraZoo Rheinberg",
+          "country": "Germany",
+          "date": "documented 2022"
         }
       ]
     },
@@ -23519,6 +23905,36 @@
     },
     {
       "animals": [
+        "Malaysian Giant Turtle",
+        "Chinese Stripe-Necked Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026",
+          "source": "San Diego Zoo official Turtle and Terrapin page",
+          "note": "Official zoo page states one large pond habitat contains Malaysian giant turtle, stripe-necked turtles, Fly River turtles and narrow-headed softshell turtles. Fly River turtle maps to Zoo Curator's Pig-Nosed Turtle."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Malaysian Giant Turtle",
+        "Pig-Nosed Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "San Diego Zoo",
+          "country": "United States",
+          "date": "2026",
+          "source": "San Diego Zoo official Turtle and Terrapin page",
+          "note": "Official zoo page states one large pond habitat contains Malaysian giant turtle, stripe-necked turtles, Fly River turtles and narrow-headed softshell turtles. Fly River turtle maps to Zoo Curator's Pig-Nosed Turtle."
+        }
+      ]
+    },
+    {
+      "animals": [
         "Mandrill",
         "Mantled Guereza"
       ],
@@ -25884,6 +26300,45 @@
     {
       "animals": [
         "Pond Slider",
+        "Blue-And-Yellow Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Parco Faunistico le Cornelle",
+          "country": "Italy",
+          "date": "2018"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pond Slider",
+        "Chinese Softshelled Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Israeli Sea Turtle Rescue Center",
+          "country": "Israel",
+          "date": "documented mixed turtle exhibit"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pond Slider",
+        "Chinese Water Dragon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Chilean zoological collection(s), eyewitness mixed-exhibit record",
+          "country": "Chile",
+          "date": "documented 2022"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pond Slider",
         "Roseate Spoonbill"
       ],
       "evidence": [
@@ -25904,6 +26359,19 @@
           "zoo": "Zoomarine Algarve",
           "country": "Portugal",
           "date": "2023"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pond Slider",
+        "Scarlet Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Parco Faunistico le Cornelle",
+          "country": "Italy",
+          "date": "2018"
         }
       ]
     },
@@ -30078,400 +30546,6 @@
           "date": "current"
         }
       ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Burmese Python"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoological institution documented by Mo & Mo (2021)",
-          "country": "United States",
-          "date": "published 2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Hermann's Tortoise"
-      ],
-      "evidence": [
-        {
-          "zoo": "De Zonnegloed Wild Animal Sanctuary",
-          "country": "Belgium",
-          "date": "documented 2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Pig-Nosed Turtle"
-      ],
-      "evidence": [
-        {
-          "zoo": "Aquarium/terrarium documented by Mo & Mo (2021)",
-          "country": "United States",
-          "date": "published 2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Red-Bellied Short-Necked Turtle"
-      ],
-      "evidence": [
-        {
-          "zoo": "Walk-through aviary documented by Mo & Mo (2021)",
-          "country": "Singapore",
-          "date": "published 2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Mata-Mata"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoological institution documented by Mo & Mo (2021)",
-          "country": "Italy",
-          "date": "published 2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Yellow-Footed Tortoise"
-      ],
-      "evidence": [
-        {
-          "zoo": "Multiple zoological institutions documented by Mo & Mo (2021)",
-          "country": "Multiple",
-          "date": "published 2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Aldabra Giant Tortoise"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoological institution documented by Mo & Mo (2021)",
-          "country": "France",
-          "date": "published 2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Cuvier's Dwarf Caiman"
-      ],
-      "evidence": [
-        {
-          "zoo": "Multiple zoological institutions documented by Mo & Mo (2021)",
-          "country": "Multiple",
-          "date": "published 2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "American Alligator"
-      ],
-      "evidence": [
-        {
-          "zoo": "Antwerp Zoo",
-          "country": "Belgium",
-          "date": "documented 2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Spectacled Caiman"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoological institution documented by Mo & Mo (2021)",
-          "country": "Belgium",
-          "date": "published 2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Argentine Black And White Tegu"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoological institution documented by Mo & Mo (2021)",
-          "country": "United Kingdom",
-          "date": "published 2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Common Musk Turtle"
-      ],
-      "evidence": [
-        {
-          "zoo": "TerraZoo Rheinberg",
-          "country": "Germany",
-          "date": "documented 2022"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Hermann's Tortoise",
-        "Marginated Tortoise"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Ohrada",
-          "country": "Czech Republic",
-          "date": "2025-10-19"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Hermann's Tortoise",
-        "Red-Footed Tortoise"
-      ],
-      "evidence": [
-        {
-          "zoo": "TerraZoo Rheinberg",
-          "country": "Germany",
-          "date": "documented 2022"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "European Pond Turtle",
-        "Marginated Tortoise"
-      ],
-      "evidence": [
-        {
-          "zoo": "San Diego Zoo",
-          "country": "United States",
-          "date": "documented Reptile Walk"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "European Pond Turtle",
-        "European Legless Lizard"
-      ],
-      "evidence": [
-        {
-          "zoo": "San Diego Zoo",
-          "country": "United States",
-          "date": "documented Reptile Walk"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "African Spurred Tortoise",
-        "Common Ostrich"
-      ],
-      "evidence": [
-        {
-          "zoo": "Nahariya Zoo-Botanical Garden",
-          "country": "Israel",
-          "date": "documented mixed African exhibit; Masai Ostrich represented at species level"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Pond Slider",
-        "Scarlet Macaw"
-      ],
-      "evidence": [
-        {
-          "zoo": "Parco Faunistico le Cornelle",
-          "country": "Italy",
-          "date": "2018"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Pond Slider",
-        "Blue-And-Yellow Macaw"
-      ],
-      "evidence": [
-        {
-          "zoo": "Parco Faunistico le Cornelle",
-          "country": "Italy",
-          "date": "2018"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Pond Slider",
-        "Chinese Softshelled Turtle"
-      ],
-      "evidence": [
-        {
-          "zoo": "Israeli Sea Turtle Rescue Center",
-          "country": "Israel",
-          "date": "documented mixed turtle exhibit"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Boa Constrictor",
-        "Yellow Anaconda"
-      ],
-      "evidence": [
-        {
-          "zoo": "Lake District Wildlife Park (formerly Trotters)",
-          "country": "United Kingdom",
-          "date": "2013"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Boa Constrictor",
-        "Common Anaconda"
-      ],
-      "evidence": [
-        {
-          "zoo": "Singapore Zoo",
-          "country": "Singapore",
-          "date": "2015"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Common Anaconda",
-        "Emerald Tree Boa"
-      ],
-      "evidence": [
-        {
-          "zoo": "Singapore Zoo",
-          "country": "Singapore",
-          "date": "2015"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Pond Slider",
-        "Chinese Water Dragon"
-      ],
-      "evidence": [
-        {
-          "zoo": "Chilean zoological collection(s), eyewitness mixed-exhibit record",
-          "country": "Chile",
-          "date": "documented 2022"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Central Bearded Dragon",
-        "Frilled Lizard"
-      ],
-      "evidence": [
-        {
-          "zoo": "National Aquarium / multiple Australian-reptile zoo exhibits",
-          "country": "United States / Australia",
-          "date": "documented"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Carpet Python",
-        "Water Python"
-      ],
-      "evidence": [
-        {
-          "zoo": "National Aquarium, Australia: Wild Extremes",
-          "country": "United States",
-          "date": "documented"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Common Anaconda",
-        "Reticulated Python"
-      ],
-      "evidence": [
-        {
-          "zoo": "Heythrop Zoological Gardens",
-          "country": "United Kingdom",
-          "date": "documented"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Burmese Python",
-        "Common Anaconda"
-      ],
-      "evidence": [
-        {
-          "zoo": "Heythrop Zoological Gardens",
-          "country": "United Kingdom",
-          "date": "documented"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Malaysian Giant Turtle",
-        "Chinese Stripe-Necked Turtle"
-      ],
-      "evidence": [
-        {
-          "zoo": "San Diego Zoo",
-          "country": "United States",
-          "date": "2026",
-          "source": "San Diego Zoo official Turtle and Terrapin page",
-          "note": "Official zoo page states one large pond habitat contains Malaysian giant turtle, stripe-necked turtles, Fly River turtles and narrow-headed softshell turtles. Fly River turtle maps to Zoo Curator's Pig-Nosed Turtle."
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Malaysian Giant Turtle",
-        "Pig-Nosed Turtle"
-      ],
-      "evidence": [
-        {
-          "zoo": "San Diego Zoo",
-          "country": "United States",
-          "date": "2026",
-          "source": "San Diego Zoo official Turtle and Terrapin page",
-          "note": "Official zoo page states one large pond habitat contains Malaysian giant turtle, stripe-necked turtles, Fly River turtles and narrow-headed softshell turtles. Fly River turtle maps to Zoo Curator's Pig-Nosed Turtle."
-        }
-      ]
     }
   ],
   "proxy_compatibility": {
@@ -31113,7 +31187,7 @@
         "Hamerkop"
       ],
       "hystrix_porcupines_shared_husbandry": [
-	    "African Crested Porcupine",
+        "African Crested Porcupine",
         "Cape Porcupine",
         "Indian Crested Porcupine"
       ],

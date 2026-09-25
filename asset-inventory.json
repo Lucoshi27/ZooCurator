@@ -301,13 +301,10 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT6",
-            "AT10"
+            "PA23",
+            "PA24",
+            "PA25",
+            "AT23"
           ]
         },
         "Meerkat.png": {
@@ -561,17 +558,12 @@
             "rocky"
           ],
           "wild_regions": [
-            "AT1",
             "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
             "AT10",
             "AT11",
-            "AT12",
             "AT13",
             "AT16",
             "AT19",
@@ -579,17 +571,22 @@
             "AT21",
             "AT22",
             "AT23",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27",
             "PA29",
             "PA30",
-            "PA31",
             "PA32",
             "PA33",
-            "PA34",
-            "PA35",
             "IM1",
             "IM2",
-            "IM3",
-            "IM4"
+            "IM3"
           ]
         },
         "Common Genet.png": {
@@ -633,22 +630,17 @@
             "desert"
           ],
           "wild_regions": [
+            "PA32",
+            "PA33",
             "PA34",
             "PA35",
             "PA36",
             "PA37",
             "PA38",
             "PA39",
-            "PA40",
-            "PA41",
             "PA42",
             "PA43",
-            "PA44",
-            "PA45",
-            "PA49",
-            "PA50",
-            "PA51",
-            "PA52"
+            "PA44"
           ]
         },
         "Eurasian Lynx.png": {
@@ -867,22 +859,21 @@
             "rocky"
           ],
           "wild_regions": [
+            "PA27",
+            "PA29",
+            "PA30",
+            "PA31",
             "PA34",
             "PA35",
             "PA36",
             "PA37",
             "PA38",
-            "PA39",
             "PA40",
             "PA41",
             "PA42",
             "PA43",
             "PA44",
-            "PA45",
-            "PA49",
-            "PA50",
-            "PA51",
-            "PA52"
+            "PA53"
           ]
         },
         "Raccoon Dog.png": {
@@ -1069,9 +1060,6 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -1079,14 +1067,14 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
-            "AT21"
+            "AT21",
+            "AT22",
+            "AT23"
           ]
         },
         "African Wild Dog.png": {
@@ -1099,9 +1087,6 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -1109,10 +1094,7 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
-            "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -1347,10 +1329,8 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT2",
+            "AT8"
           ]
         },
         "Cheetah.png": {
@@ -1363,33 +1343,20 @@
             "desert"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
             "AT10",
             "AT11",
-            "AT12",
             "AT13",
-            "AT14",
             "AT16",
-            "AT17",
             "AT18",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
             "AT23",
-            "PA33",
-            "PA34",
-            "PA35",
-            "PA36",
-            "PA37",
-            "PA38",
-            "PA39",
-            "PA40"
+            "PA29"
           ]
         },
         "Cougar.png": {
@@ -1829,9 +1796,6 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -1839,10 +1803,7 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
-            "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -1879,7 +1840,7 @@
             "riverine"
           ],
           "wild_regions": [
-            "IM1"
+            "IM3"
           ]
         },
         "Clouded Leopard.png": {
@@ -1990,25 +1951,30 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT1",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27",
+            "PA28",
             "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
             "AT10",
             "AT11",
-            "AT12",
             "AT13",
-            "AT14",
             "AT16",
             "AT17",
-            "PA25",
-            "PA26",
-            "PA27",
-            "PA28"
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
           ]
         },
         "Honey Badger.png": {
@@ -2025,9 +1991,6 @@
           "wild_regions": [
             "AT1",
             "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -2035,24 +1998,35 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
-            "AT17",
             "AT18",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
             "AT23",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27",
+            "PA28",
+            "PA29",
+            "PA30",
+            "PA32",
             "PA33",
-            "PA36",
-            "PA37",
-            "PA38",
-            "PA39",
-            "PA40",
             "IM1",
             "IM2",
-            "IM3"
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8"
           ]
         },
         "Jaguar.png": {
@@ -2177,11 +2151,10 @@
             "rocky"
           ],
           "wild_regions": [
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
-            "PA45"
+            "PA46",
+            "PA49",
+            "PA50",
+            "PA51"
           ]
         },
         "Oncilla.png": {
@@ -2306,14 +2279,11 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
-            "PA33",
-            "PA36",
-            "PA37"
+            "PA24",
+            "PA25",
+            "PA26",
+            "AT22",
+            "AT23"
           ]
         },
         "Sand Cat.png": {
@@ -2325,15 +2295,16 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA29",
+            "PA30",
+            "PA32",
             "PA33",
-            "PA36",
-            "PA37",
-            "PA38"
+            "PA38",
+            "PA39",
+            "PA43"
           ]
         },
         "Siberian Tiger.png": {
@@ -2346,13 +2317,8 @@
             "mountain"
           ],
           "wild_regions": [
-            "PA1",
-            "PA2",
-            "PA3",
-            "PA4",
-            "PA5",
-            "PA49",
-            "PA50"
+            "PA45",
+            "PA46"
           ]
         },
         "Sloth Bear.png": {
@@ -2436,31 +2402,36 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT10",
+            "AT7",
             "AT11",
-            "AT12",
+            "AT13",
+            "AT16",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
             "PA27",
-            "PA28",
             "PA29",
             "PA30",
-            "PA31",
             "PA32",
             "PA33",
-            "PA34",
-            "PA35",
-            "PA36",
-            "PA37",
-            "PA38",
-            "PA39",
-            "PA40",
             "IM1",
             "IM2",
-            "IM3"
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8"
           ]
         },
         "Sumatran Tiger.png": {
@@ -2471,7 +2442,7 @@
             "wetland"
           ],
           "wild_regions": [
-            "IM12"
+            "IM18"
           ]
         },
         "Sun Bear.png": {
@@ -2577,10 +2548,9 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT8",
+            "AT9",
+            "AT10"
           ]
         },
         "Brown Hyena.png": {
@@ -2595,12 +2565,9 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT8",
+            "AT9",
+            "AT10"
           ]
         },
         "Canadian Lynx.png": {
@@ -2640,10 +2607,9 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "PA44",
-            "PA45",
-            "PA46",
-            "PA47"
+            "PA40",
+            "PA42",
+            "PA53"
           ]
         },
         "Fanaloka.png": {
@@ -2800,12 +2766,11 @@
             "riverine"
           ],
           "wild_regions": [
-            "IM1",
-            "IM2",
             "IM3",
-            "IM4",
             "IM5",
-            "IM6"
+            "IM6",
+            "IM7",
+            "IM8"
           ]
         },
         "Bactrian Camel.png": {
@@ -2818,11 +2783,9 @@
             "shrubland"
           ],
           "wild_regions": [
-            "PA44",
-            "PA45",
-            "PA46",
-            "PA47",
-            "PA48"
+            "PA38",
+            "PA43",
+            "PA44"
           ]
         },
         "Cameroon Sheep.png": {
@@ -2874,17 +2837,7 @@
             "PA17",
             "PA18",
             "PA19",
-            "PA20",
-            "PA21",
-            "PA22",
-            "PA23",
-            "PA24",
-            "PA25",
-            "PA26",
-            "PA27",
-            "PA28",
-            "PA29",
-            "PA30"
+            "PA20"
           ]
         },
         "Fallow Deer.png": {
@@ -2897,7 +2850,8 @@
             "shrubland"
           ],
           "wild_regions": [
-            "PA29"
+            "PA17",
+            "PA18"
           ]
         },
         "Highland Cattle.png": {
@@ -2958,11 +2912,6 @@
             "mountain"
           ],
           "wild_regions": [
-            "PA4",
-            "PA5",
-            "PA6",
-            "PA7",
-            "PA8",
             "PA9",
             "PA10",
             "PA11",
@@ -2975,31 +2924,10 @@
             "PA18",
             "PA19",
             "PA20",
-            "PA21",
-            "PA22",
             "PA23",
-            "PA24",
-            "PA25",
-            "PA26",
             "PA27",
             "PA28",
-            "PA29",
-            "PA30",
-            "PA31",
-            "PA32",
-            "PA33",
-            "PA34",
-            "PA35",
-            "PA36",
-            "PA37",
-            "PA38",
-            "PA39",
-            "PA40",
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
-            "PA45"
+            "PA29"
           ]
         },
         "West African Dwarf Goat.png": {
@@ -3145,12 +3073,9 @@
             "rocky"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT10"
+            "PA23",
+            "PA24",
+            "PA25"
           ]
         },
         "Blackbuck.png": {
@@ -3237,13 +3162,10 @@
             "grassland"
           ],
           "wild_regions": [
-            "PA27",
-            "PA28",
-            "PA29",
-            "PA30",
-            "PA31",
-            "PA32",
-            "PA33"
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26"
           ]
         },
         "Elk.png": {
@@ -3278,7 +3200,14 @@
             "NA23",
             "NA24",
             "NA25",
-            "NA31"
+            "NA31",
+            "PA35",
+            "PA36",
+            "PA37",
+            "PA44",
+            "PA45",
+            "PA46",
+            "PA48"
           ]
         },
         "Guanaco.png": {
@@ -3383,11 +3312,11 @@
             "shrubland"
           ],
           "wild_regions": [
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
-            "PA45"
+            "PA49",
+            "PA50",
+            "PA51",
+            "PA52",
+            "IM13"
           ]
         },
         "Reindeer.png": {
@@ -3404,6 +3333,7 @@
             "mountain"
           ],
           "wild_regions": [
+            "NA1",
             "NA2",
             "NA3",
             "NA4",
@@ -3413,22 +3343,12 @@
             "NA8",
             "NA9",
             "PA1",
-            "PA2",
             "PA3",
             "PA4",
             "PA5",
             "PA6",
             "PA7",
-            "PA8",
-            "PA9",
-            "PA10",
-            "PA11",
-            "PA12",
-            "PA13",
-            "PA14",
-            "PA15",
-            "PA16",
-            "PA17"
+            "PA8"
           ]
         },
         "Sika Deer.png": {
@@ -3441,15 +3361,16 @@
             "wetland"
           ],
           "wild_regions": [
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
             "PA45",
+            "PA46",
+            "PA47",
+            "PA48",
             "PA49",
             "PA50",
             "PA51",
-            "PA52"
+            "PA52",
+            "PA53",
+            "IM13"
           ]
         },
         "Vicuña.png": {
@@ -3495,9 +3416,9 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5"
+            "PA24",
+            "PA25",
+            "AT23"
           ]
         },
         "American Bison.png": {
@@ -3707,11 +3628,10 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5"
+            "PA23",
+            "PA24",
+            "PA25",
+            "AT23"
           ]
         },
         "Grévy's Zebra.png": {
@@ -3724,11 +3644,9 @@
             "desert"
           ],
           "wild_regions": [
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14"
+            "AT7",
+            "AT21",
+            "AT22"
           ]
         },
         "Himalayan Tahr.png": {
@@ -3741,12 +3659,8 @@
             "shrubland"
           ],
           "wild_regions": [
-            "PA38",
-            "PA39",
-            "PA40",
-            "IM1",
-            "IM2",
-            "IM3"
+            "PA41",
+            "IM5"
           ]
         },
         "Impala.png": {
@@ -3828,6 +3742,7 @@
             "shrubland"
           ],
           "wild_regions": [
+            "NA3",
             "NA4",
             "NA5",
             "NA6",
@@ -3836,44 +3751,27 @@
             "NA9",
             "NA10",
             "NA11",
-            "NA12",
             "NA13",
             "NA14",
             "NA15",
             "NA16",
-            "PA1",
-            "PA2",
             "PA3",
             "PA4",
             "PA5",
             "PA6",
             "PA7",
             "PA8",
-            "PA9",
-            "PA10",
             "PA11",
             "PA12",
-            "PA13",
             "PA14",
-            "PA15",
             "PA16",
             "PA17",
             "PA34",
             "PA35",
             "PA36",
             "PA37",
-            "PA38",
-            "PA39",
-            "PA40",
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
             "PA45",
-            "PA49",
-            "PA50",
-            "PA51",
-            "PA52"
+            "PA46"
           ]
         },
         "Nile Lechwe.png": {
@@ -3942,9 +3840,11 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5"
+            "PA24",
+            "PA25",
+            "AT20",
+            "AT21",
+            "AT23"
           ]
         },
         "Sitatunga.png": {
@@ -3981,8 +3881,8 @@
             "rocky"
           ],
           "wild_regions": [
-            "AT10",
-            "AT11"
+            "AT21",
+            "AT22"
           ]
         },
         "South American Tapir.png": {
@@ -4025,11 +3925,9 @@
             "desert"
           ],
           "wild_regions": [
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT8",
+            "AT9",
+            "AT10"
           ]
         },
         "Visayan Warty Pig.png": {
@@ -4087,6 +3985,7 @@
             "rocky"
           ],
           "wild_regions": [
+            "AT9",
             "AT10"
           ]
         }
@@ -4100,9 +3999,7 @@
             "shrubland"
           ],
           "wild_regions": [
-            "PA33",
-            "PA36",
-            "PA37"
+            "PA26"
           ]
         },
         "Arabian Sand Gazelle.png": {
@@ -4113,10 +4010,7 @@
             "shrubland"
           ],
           "wild_regions": [
-            "PA33",
-            "PA36",
-            "PA37",
-            "PA38"
+            "PA26"
           ]
         },
         "Black Sable Antelope.png": {
@@ -4184,12 +4078,15 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "IM1",
-            "IM2",
             "IM3",
             "IM4",
             "IM5",
-            "IM6"
+            "IM6",
+            "IM7",
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12"
           ]
         },
         "Gemsbok.png": {
@@ -4202,11 +4099,8 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT9",
+            "AT10"
           ]
         },
         "Greater Kudu.png": {
@@ -4273,7 +4167,6 @@
             "shrubland"
           ],
           "wild_regions": [
-            "IM1",
             "IM2",
             "IM3",
             "IM4",
@@ -4285,7 +4178,10 @@
             "IM10",
             "IM11",
             "IM12",
-            "IM13"
+            "IM13",
+            "IM16",
+            "IM17",
+            "IM18"
           ]
         },
         "Indian Rhinoceros.png": {
@@ -4298,9 +4194,11 @@
             "savanna"
           ],
           "wild_regions": [
-            "IM1",
-            "IM2",
-            "IM3"
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM10",
+            "IM11"
           ]
         },
         "Indian Swamp Deer.png": {
@@ -4312,9 +4210,10 @@
             "riverine"
           ],
           "wild_regions": [
-            "IM1",
-            "IM2",
-            "IM3"
+            "IM3",
+            "IM5",
+            "IM6",
+            "IM7"
           ]
         },
         "Javan Chevrotain.png": {
@@ -4456,17 +4355,7 @@
             "shrubland"
           ],
           "wild_regions": [
-            "PA30",
-            "PA31",
-            "PA32",
-            "PA33",
-            "PA34",
-            "PA35",
-            "PA36",
-            "PA37",
-            "PA38",
-            "PA39",
-            "PA40"
+            "PA29"
           ]
         },
         "Przewalski's Horse.png": {
@@ -4478,11 +4367,9 @@
             "desert"
           ],
           "wild_regions": [
-            "PA44",
-            "PA45",
-            "PA46",
-            "PA47",
-            "PA48"
+            "PA38",
+            "PA43",
+            "PA44"
           ]
         },
         "Red Buffalo.png": {
@@ -4560,8 +4447,8 @@
             "shrubland"
           ],
           "wild_regions": [
-            "NT6",
-            "NT1"
+            "NT1",
+            "NT6"
           ]
         },
         "Thomson's Gazelle.png": {
@@ -4587,14 +4474,14 @@
             "shrubland"
           ],
           "wild_regions": [
-            "PA41",
-            "PA42",
-            "PA43",
             "PA49",
             "PA50",
-            "IM2",
-            "IM3",
-            "IM4"
+            "PA51",
+            "PA52",
+            "PA53",
+            "IM10",
+            "IM11",
+            "IM13"
           ]
         },
         "Visayan Spotted Deer.png": {
@@ -4642,16 +4529,6 @@
             "riverine"
           ],
           "wild_regions": [
-            "NT24",
-            "NT25",
-            "NT27",
-            "NT28",
-            "NT23",
-            "NT22",
-            "NT21",
-            "NT20",
-            "NT11",
-            "NT5",
             "NA8",
             "NA9",
             "NA10",
@@ -4673,7 +4550,15 @@
             "NA27",
             "NA28",
             "NA29",
-            "NA31"
+            "NA31",
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28",
+            "NT23",
+            "NT22",
+            "NT21",
+            "NT11"
           ]
         }
       },
@@ -4806,11 +4691,9 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14"
+            "AT7",
+            "AT21",
+            "AT22"
           ]
         },
         "Kiang.png": {
@@ -4823,11 +4706,8 @@
             "desert"
           ],
           "wild_regions": [
-            "PA44",
-            "PA45",
-            "PA46",
-            "PA47",
-            "PA48"
+            "PA40",
+            "PA41"
           ]
         },
         "Klipspringer.png": {
@@ -4929,18 +4809,11 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
-            "PA27",
-            "PA28",
-            "PA29",
-            "PA30",
-            "PA31",
-            "PA32",
-            "PA33"
+            "PA24",
+            "PA25",
+            "PA26",
+            "AT21",
+            "AT22"
           ]
         },
         "Philippine Mouse-Deer.png": {
@@ -4965,7 +4838,6 @@
             "wetland"
           ],
           "wild_regions": [
-            "IM1",
             "IM2",
             "IM3",
             "IM4",
@@ -4977,7 +4849,10 @@
             "IM10",
             "IM11",
             "IM12",
-            "IM13"
+            "IM13",
+            "IM16",
+            "IM17",
+            "IM18"
           ]
         },
         "Siberian Musk Deer.png": {
@@ -4989,19 +4864,20 @@
             "mountain"
           ],
           "wild_regions": [
-            "PA1",
-            "PA2",
             "PA3",
             "PA4",
-            "PA41",
-            "PA42",
-            "PA43",
+            "PA5",
+            "PA6",
+            "PA7",
+            "PA8",
+            "PA34",
+            "PA35",
+            "PA36",
+            "PA37",
             "PA44",
             "PA45",
-            "PA49",
-            "PA50",
-            "PA51",
-            "PA52"
+            "PA46",
+            "PA48"
           ]
         },
         "Sulawesi Babirusa.png": {
@@ -5346,10 +5222,9 @@
             "mountain"
           ],
           "wild_regions": [
-            "AT10",
-            "AT11",
-            "AT12",
-            "PA33"
+            "AT21",
+            "AT22",
+            "PA26"
           ]
         },
         "Red Ruffed Lemur.png": {
@@ -5612,9 +5487,6 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -5622,9 +5494,13 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
-            "AT17"
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
           ]
         },
         "Siamang.png": {
@@ -5983,8 +5859,6 @@
             "wetland"
           ],
           "wild_regions": [
-            "AT8",
-            "AT9",
             "AT15",
             "AT16",
             "AT17"
@@ -6122,9 +5996,8 @@
             "mountain"
           ],
           "wild_regions": [
-            "AT15",
-            "AT16",
-            "AT17"
+            "AT12",
+            "AT15"
           ]
         },
         "Red-Shanked Douc.png": {
@@ -6161,7 +6034,7 @@
             "wetland"
           ],
           "wild_regions": [
-            "IM12"
+            "IM18"
           ]
         },
         "Woolly Monkey.png": {
@@ -6339,20 +6212,24 @@
             "nocturnal"
           ],
           "wild_regions": [
+            "PA26",
+            "PA27",
+            "PA28",
             "PA29",
             "PA30",
             "PA31",
             "PA32",
             "PA33",
-            "PA34",
-            "PA35",
-            "PA41",
-            "IM1",
+            "PA38",
+            "PA39",
+            "PA40",
             "IM2",
             "IM3",
             "IM4",
             "IM5",
-            "IM6"
+            "IM6",
+            "IM7",
+            "IM8"
           ]
         },
         "Lesser Hedgehog Tenrec.png": {
@@ -6376,6 +6253,7 @@
             "desert"
           ],
           "wild_regions": [
+            "NT1",
             "NT2"
           ]
         },
@@ -6674,8 +6552,22 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT1",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27",
+            "PA28",
+            "PA29",
+            "PA30",
             "AT2",
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
@@ -6684,20 +6576,11 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
             "AT23",
-            "PA27",
-            "PA28",
-            "PA29",
-            "PA30",
-            "PA31",
-            "PA32",
-            "PA33",
-            "PA34",
             "IM1",
             "IM2",
             "IM3",
@@ -6887,11 +6770,8 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT9",
+            "AT10"
           ]
         },
         "Six-Banded Armadillo.png": {
@@ -7119,10 +6999,14 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "IM1",
             "IM2",
             "IM3",
-            "IM4"
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8",
+            "IM9"
           ]
         },
         "Large Flying Fox.png": {
@@ -7646,9 +7530,6 @@
             "desert"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -7656,10 +7537,7 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
-            "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -7718,16 +7596,16 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA49",
             "PA50",
-            "IM1",
-            "IM2",
-            "IM3",
-            "IM4",
-            "IM5"
+            "PA51",
+            "PA52",
+            "PA53",
+            "IM5",
+            "IM6",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM13"
           ]
         },
         "Matschie's Tree-Kangaroo.png": {
@@ -7791,10 +7669,6 @@
             "coastal"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT6",
             "AT7",
             "AT8",
             "AT9",
@@ -7806,12 +7680,12 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
+            "AT23",
+            "PA27"
           ]
         },
         "Common Raven.png": {
@@ -8347,15 +8221,8 @@
             "coastal"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
-            "PA27",
-            "PA28",
-            "PA29",
-            "PA30",
-            "PA31",
-            "PA32",
-            "PA33"
+            "PA18",
+            "PA23"
           ]
         },
         "Red-Legged Seriema.png": {
@@ -8410,17 +8277,14 @@
             "dry-forest"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
             "AT13",
-            "AT14",
-            "AT15",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT21"
           ]
         },
         "White-Naped Crane.png": {
@@ -8487,19 +8351,11 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
             "AT16",
-            "AT17"
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
           ]
         },
         "Allen's Gallinule.png": {
@@ -8825,12 +8681,9 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT6",
             "AT7",
             "AT8",
-            "AT9",
             "AT10",
             "AT11",
             "AT12",
@@ -8838,9 +8691,6 @@
             "AT14",
             "AT15",
             "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
             "AT20",
             "AT21",
             "AT22",
@@ -8881,8 +8731,6 @@
             "coastal"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
             "AU3",
             "AU4",
             "AU5",
@@ -8890,13 +8738,9 @@
             "AU7",
             "AU8",
             "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
             "AU13",
             "AU14",
-            "AU15",
-            "AU16"
+            "AU15"
           ]
         },
         "Black-Headed Ibis.png": {
@@ -9084,17 +8928,7 @@
             "PA5",
             "PA6",
             "PA7",
-            "PA8",
-            "PA9",
-            "PA10",
-            "PA11",
-            "PA12",
-            "PA13",
-            "PA14",
-            "PA15",
-            "PA16",
-            "PA49",
-            "PA50"
+            "PA8"
           ]
         },
         "Southern Bald Ibis.png": {
@@ -9107,11 +8941,8 @@
             "wetland"
           ],
           "wild_regions": [
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT8",
+            "AT9"
           ]
         },
         "Wattled Crane.png": {
@@ -9389,9 +9220,6 @@
             "coastal"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT6",
             "AT7",
             "AT8",
@@ -9404,7 +9232,6 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -9493,11 +9320,25 @@
             "PA38",
             "PA39",
             "PA40",
-            "PA41",
             "PA42",
             "PA43",
+            "PA44",
+            "PA45",
+            "PA46",
+            "PA48",
             "PA49",
-            "PA50"
+            "PA50",
+            "PA51",
+            "PA52",
+            "AT22",
+            "AT23",
+            "IM2",
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8"
           ]
         },
         "Great White Pelican.png": {
@@ -11302,8 +11143,7 @@
             "mountain"
           ],
           "wild_regions": [
-            "NT5",
-            "NT3"
+            "NT5"
           ]
         },
         "Atlantic Puffin.png": {
@@ -15458,18 +15298,6 @@
             "mountain"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
             "PA18",
             "PA19",
             "PA20",
@@ -15487,15 +15315,22 @@
             "PA32",
             "PA33",
             "PA34",
-            "PA35",
-            "PA36",
             "PA37",
             "PA38",
             "PA39",
             "PA40",
-            "IM1",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23",
+            "AT24",
             "IM2",
-            "IM3"
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8"
           ]
         },
         "Eurasian Goshawk.png": {
@@ -15572,15 +15407,13 @@
             "nocturnal"
           ],
           "wild_regions": [
+            "PA10",
             "PA18",
             "PA19",
             "PA20",
             "PA21",
             "PA22",
             "PA23",
-            "PA24",
-            "PA25",
-            "PA26",
             "PA27",
             "PA28",
             "PA29",
@@ -15589,15 +15422,14 @@
             "PA32",
             "PA33",
             "PA34",
-            "PA35",
-            "PA36",
             "PA37",
             "PA38",
             "PA39",
             "PA40",
             "PA41",
             "PA42",
-            "PA43"
+            "PA43",
+            "PA44"
           ]
         },
         "Great Horned Owl.png": {
@@ -15730,9 +15562,11 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "IM1",
-            "IM2",
-            "IM3"
+            "IM3",
+            "IM4",
+            "IM6",
+            "IM7",
+            "IM8"
           ]
         },
         "Lanner Falcon.png": {
@@ -16256,12 +16090,8 @@
             "coastal"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
-            "AT9",
             "AT10",
             "AT11",
             "AT12",
@@ -16270,7 +16100,6 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -16298,7 +16127,6 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -16417,22 +16245,13 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
             "AU3",
             "AU4",
             "AU5",
             "AU6",
             "AU7",
             "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15",
-            "AU16"
+            "AU9"
           ]
         },
         "Bateleur.png": {
@@ -16584,11 +16403,10 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT2",
+            "AT8",
+            "AT9",
+            "AT10"
           ]
         },
         "Chaco Owl.png": {
@@ -16736,10 +16554,13 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "IM1",
             "IM2",
             "IM3",
-            "IM4"
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8"
           ]
         },
         "King Vulture.png": {
@@ -16936,17 +16757,13 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14"
+            "AT16",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
           ]
         },
         "Palm-Nut Vulture.png": {
@@ -17143,16 +16960,12 @@
             "nocturnal"
           ],
           "wild_regions": [
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
             "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT21"
           ]
         },
         "Tawny Eagle.png": {
@@ -17300,20 +17113,10 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT9",
             "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
-            "AT18",
-            "AT19",
-            "AT20",
             "AT21",
-            "AT22",
-            "AT23"
+            "AT22"
           ]
         },
         "American Barn Owl.png": {
@@ -17633,15 +17436,21 @@
             "wetland"
           ],
           "wild_regions": [
+            "PA9",
+            "PA10",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15",
+            "PA16",
+            "PA17",
             "PA18",
             "PA19",
             "PA20",
             "PA21",
             "PA22",
             "PA23",
-            "PA24",
-            "PA25",
-            "PA26",
             "PA27",
             "PA28",
             "PA29",
@@ -17665,7 +17474,14 @@
             "PA47",
             "PA48",
             "PA49",
-            "PA50"
+            "PA50",
+            "PA51",
+            "PA52",
+            "PA53",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM13"
           ]
         },
         "Eurasian Pygmy-Owl.png": {
@@ -17694,20 +17510,13 @@
             "PA14",
             "PA15",
             "PA16",
-            "PA18",
-            "PA19",
-            "PA20",
-            "PA21",
-            "PA22",
-            "PA23",
-            "PA24",
             "PA34",
             "PA35",
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA49",
-            "PA50"
+            "PA36",
+            "PA37",
+            "PA44",
+            "PA45",
+            "PA46"
           ]
         },
         "Eurasian Sparrowhawk.png": {
@@ -17779,17 +17588,12 @@
             "grassland"
           ],
           "wild_regions": [
-            "PA38",
-            "PA39",
+            "PA30",
+            "PA31",
             "PA40",
             "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
-            "PA45",
-            "PA46",
-            "PA47",
-            "PA48"
+            "PA53",
+            "IM5"
           ]
         },
         "Jackal Buzzard.png": {
@@ -18217,27 +18021,28 @@
             "dry-forest"
           ],
           "wild_regions": [
+            "PA9",
             "PA10",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15",
+            "PA16",
+            "PA17",
             "PA18",
             "PA19",
             "PA20",
             "PA21",
             "PA22",
             "PA23",
-            "PA24",
-            "PA25",
-            "PA26",
             "PA27",
             "PA28",
             "PA29",
             "PA30",
             "PA31",
-            "PA32",
             "PA34",
-            "PA35",
-            "PA41",
-            "PA42",
-            "PA43"
+            "PA35"
           ]
         },
         "Western Marsh-Harrier.png": {
@@ -18256,9 +18061,6 @@
             "PA21",
             "PA22",
             "PA23",
-            "PA24",
-            "PA25",
-            "PA26",
             "PA27",
             "PA28",
             "PA29",
@@ -18273,11 +18075,9 @@
             "PA38",
             "PA39",
             "PA40",
-            "PA41",
             "PA42",
             "PA43",
-            "PA49",
-            "PA50"
+            "PA44"
           ]
         },
         "Western Screech Owl.png": {
@@ -18412,11 +18212,9 @@
             "mountain"
           ],
           "wild_regions": [
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT8",
+            "AT9",
+            "AT10"
           ]
         },
         "Crested Serpent Eagle.png": {
@@ -18503,23 +18301,17 @@
             "desert"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
-            "AT18",
-            "AT19",
             "AT20",
             "AT21",
             "AT22",
             "AT23",
-            "PA31",
-            "PA32",
-            "PA33"
+            "PA24",
+            "PA25",
+            "PA26"
           ]
         },
         "Osprey.png": {
@@ -18658,15 +18450,12 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT15",
-            "AT16"
+            "AT16",
+            "AT17",
+            "AT19"
           ]
         },
         "Blue-and-Yellow Macaw.png": {
@@ -18822,13 +18611,10 @@
             "grassland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT11"
+            "AT19",
+            "AT20",
+            "AT23",
+            "AT16"
           ]
         },
         "Umbrella Cockatoo.png": {
@@ -19251,7 +19037,7 @@
             "coastal"
           ],
           "wild_regions": [
-            "AU18"
+            "AU12"
           ]
         },
         "Tanimbar Corella.png": {
@@ -19406,9 +19192,6 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -19416,10 +19199,8 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -19969,19 +19750,15 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "IM1",
             "IM2",
-            "IM3",
-            "IM4",
             "IM5",
             "IM6",
-            "IM7",
             "IM8",
-            "IM9",
             "IM10",
             "IM11",
             "IM12",
-            "IM13"
+            "IM13",
+            "IM18"
           ]
         },
         "Grey-Cheeked Hornbill.png": {
@@ -20248,9 +20025,8 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
+            "AT12",
+            "AT13",
             "AT15",
             "AT16",
             "AT17"
@@ -20291,11 +20067,9 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14"
+            "AT7",
+            "AT21",
+            "AT22"
           ]
         },
         "Emerald Toucanet.png": {
@@ -20596,9 +20370,10 @@
             "rainforest"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9"
+            "AT15",
+            "AT16",
+            "AT17",
+            "AT19"
           ]
         },
         "Western Plantain-Eater.png": {
@@ -20610,12 +20385,10 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9"
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20"
           ]
         },
         "White-Crowned Hornbill.png": {
@@ -20693,14 +20466,10 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11"
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
           ]
         },
         "Boa Constrictor.png": {
@@ -20748,18 +20517,14 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "IM2",
-            "IM3",
-            "IM4",
-            "IM5",
-            "IM6",
-            "IM7",
-            "IM8",
             "IM9",
             "IM10",
             "IM11",
             "IM12",
-            "IM13"
+            "IM13",
+            "IM16",
+            "IM17",
+            "IM18"
           ]
         },
         "Carpet Python.png": {
@@ -21116,11 +20881,12 @@
             "wetland"
           ],
           "wild_regions": [
-            "NT14",
-            "NT13",
-            "NT12",
+            "NT3",
             "NT4",
-            "NT3"
+            "NT12",
+            "NT13",
+            "NT14",
+            "NT15"
           ]
         },
         "Asian Water Monitor.png": {
@@ -21159,15 +20925,14 @@
             "riverine"
           ],
           "wild_regions": [
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
-            "PA45",
+            "PA46",
+            "PA48",
             "PA49",
             "PA50",
             "PA51",
-            "PA52"
+            "PA52",
+            "PA53",
+            "IM13"
           ]
         },
         "Chinese Softshell Turtle.png": {
@@ -21179,15 +20944,14 @@
             "riverine"
           ],
           "wild_regions": [
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
-            "PA45",
+            "PA46",
+            "PA48",
             "PA49",
             "PA50",
             "PA51",
-            "PA52"
+            "PA52",
+            "PA53",
+            "IM13"
           ]
         },
         "Chinese Stripe-Necked Turtle.png": {
@@ -21199,15 +20963,11 @@
             "riverine"
           ],
           "wild_regions": [
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
-            "PA45",
-            "IM5",
-            "IM6",
-            "IM7",
-            "IM8"
+            "PA50",
+            "PA51",
+            "PA52",
+            "IM12",
+            "IM13"
           ]
         },
         "Common Anaconda.png": {
@@ -21377,12 +21137,8 @@
             "coastal"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
-            "PA27",
-            "PA28",
-            "PA29",
-            "PA30"
+            "PA23",
+            "PA24"
           ]
         },
         "European Legless Lizard.png": {
@@ -21465,9 +21221,12 @@
             "shrubland"
           ],
           "wild_regions": [
-            "IM1",
             "IM2",
-            "IM3"
+            "IM3",
+            "IM4",
+            "IM6",
+            "IM7",
+            "IM8"
           ]
         },
         "Leopard Tortoise.png": {
@@ -21549,6 +21308,7 @@
             "nocturnal"
           ],
           "wild_regions": [
+            "NT25",
             "NT27",
             "NT28"
           ]
@@ -21991,9 +21751,12 @@
             "wetland"
           ],
           "wild_regions": [
-            "IM1",
             "IM2",
-            "IM3"
+            "IM3",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8"
           ]
         },
         "Komodo Dragon.png": {
@@ -22370,7 +22133,7 @@
             "shrubland"
           ],
           "wild_regions": [
-            "IM6"
+            "IM11"
           ]
         },
         "Central African Rock Python.png": {
@@ -22426,8 +22189,7 @@
             "riverine"
           ],
           "wild_regions": [
-            "PA42",
-            "PA43"
+            "PA50"
           ]
         },
         "Chinese Box Turtle.png": {
@@ -22439,10 +22201,9 @@
             "shrubland"
           ],
           "wild_regions": [
-            "PA42",
-            "PA43",
-            "PA49",
-            "PA50"
+            "PA50",
+            "IM13",
+            "IM14"
           ]
         },
         "Common Slow Worm.png": {
@@ -22516,18 +22277,10 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
-            "PA27",
-            "PA28",
-            "PA29",
-            "PA30",
-            "PA31",
-            "PA32",
-            "PA33"
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26"
           ]
         },
         "Eastern Diamondback Rattlesnake.png": {
@@ -22630,12 +22383,6 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "IM9",
-            "IM10",
-            "IM11",
-            "IM12",
-            "IM13",
-            "IM16",
             "IM17",
             "IM18"
           ]
@@ -22664,11 +22411,10 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT10",
+            "AT7",
             "AT11",
-            "AT12",
-            "AT13",
-            "AT14"
+            "AT21",
+            "AT22"
           ]
         },
         "King Cobra.png": {
@@ -22935,7 +22681,7 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "IM12"
+            "IM18"
           ]
         },
         "Uracoan Rattlesnake.png": {
@@ -22960,17 +22706,16 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12"
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23",
+            "PA23",
+            "PA24",
+            "PA25"
           ]
         },
         "West African Mud Turtle.png": {
@@ -22982,12 +22727,11 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9"
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT23"
           ]
         },
         "Yacare Caiman.png": {
@@ -23150,9 +22894,11 @@
             "riverine"
           ],
           "wild_regions": [
-            "IM1",
-            "IM2",
-            "IM3"
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7"
           ]
         },
         "Mugger Crocodile.png": {
@@ -23231,7 +22977,9 @@
             "rocky"
           ],
           "wild_regions": [
-            "AT23"
+            "AT2",
+            "AT9",
+            "AT10"
           ]
         },
         "Spotted Turtle.png": {

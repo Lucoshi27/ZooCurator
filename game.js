@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V2.22.71";
+const ZOO_CURATOR_VERSION = "V2.22.76";
 // Definitive V2 baseline: True-mode systems + current Information-map geography fixes.
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
@@ -16818,6 +16818,50 @@ function moveResultDragImage(event) {
     state.drag.image.style.top = `${event.clientY - state.drag.offsetY}px`;
 }
 
+// ============================================================
+// CLASSIC ACTION BOUNDARY — MULTIPLAYER READINESS
+//
+// Classic still runs entirely locally. These definitions create one stable
+// vocabulary for the small set of turn-consuming actions so a future match
+// server can submit the same intents without teaching the networking layer
+// about DOM controls. Existing UI entry points remain valid during the
+// refactor; performClassicGameAction() is deliberately additive for now.
+// ============================================================
+// Authoritative gameplay randomness will eventually be supplied by the match
+// server. Keeping the source behind one seam lets Classic remain local today.
+function classicGameRandom() { return Math.random(); }
+
+const CLASSIC_GAME_ACTION = Object.freeze({
+    DRAW_LEVEL_1: 'draw-level-1',
+    COMPLETE_EXCHANGE: 'complete-exchange',
+    ACCEPT_TRADE: 'accept-trade'
+});
+
+function performClassicGameAction(action) {
+    if (!action || typeof action !== 'object') return false;
+
+    switch (action.type) {
+        case CLASSIC_GAME_ACTION.DRAW_LEVEL_1:
+            return drawLevelOne();
+        case CLASSIC_GAME_ACTION.COMPLETE_EXCHANGE:
+            return completeExchange(action.destination ?? null, !!action.autoPlace);
+        case CLASSIC_GAME_ACTION.ACCEPT_TRADE:
+            return acceptSelectedTrade(action.destination ?? null, !!action.autoPlace);
+        default:
+            console.warn('Unknown Classic game action ignored:', action.type);
+            return false;
+    }
+}
+
+// A successful turn-consuming action must advance the turn and run the
+// post-turn opponent update exactly once. Keeping those two mutations together
+// is important for eventual server authority and also prevents new Classic
+// actions from accidentally advancing only half of the turn lifecycle.
+function commitClassicTurn() {
+    state.turn++;
+    updateAutonomousOpponentOffer();
+}
+
 async function completeExchange(destination = null, autoPlace = false) {
     if (!state.result) return false;
 
@@ -16896,8 +16940,7 @@ async function completeExchange(destination = null, autoPlace = false) {
 
     checkEnclosureReward(newAnimal);
     updateCollectionCohabitation();
-    state.turn++;
-    updateAutonomousOpponentOffer();
+    commitClassicTurn();
     renderAll();
     return true;
 }
@@ -17192,13 +17235,13 @@ function finishResultDrag(event) {
     // clicking the upgrade card auto-places it in a random eligible
     // enclosure. Dragging the card to a chosen enclosure remains unchanged.
     if (distance < 6) {
-        completeExchange(null, true);
+        performClassicGameAction({ type:CLASSIC_GAME_ACTION.COMPLETE_EXCHANGE, destination:null, autoPlace:true });
         return;
     }
 
     const destination = resultDropDestination(event);
     if (destination) {
-        completeExchange(destination);
+        performClassicGameAction({ type:CLASSIC_GAME_ACTION.COMPLETE_EXCHANGE, destination });
     } else {
         renderExchange();
     }
@@ -18414,24 +18457,115 @@ function downloadRealZooLayoutTemplate(template) {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function saveRealZooTemplate() {
+// ============================================================
+// GAME-NATIVE DIALOGS
+//
+// Never use browser alert()/confirm()/prompt() for Zoo Curator UI. Apart from
+// breaking visual consistency, browsers can permanently suppress those dialogs
+// for a site. This Promise-based modal is owned by the game and therefore also
+// remains usable when native browser pop-ups are disabled.
+// ============================================================
+function ensureGameDialogUI() {
+    let overlay = document.getElementById('zooGameDialogOverlay');
+    if (overlay) return overlay;
+
+    const style = document.createElement('style');
+    style.id = 'zooGameDialogStyles';
+    style.textContent = `
+        .zoo-game-dialog-overlay{position:fixed;inset:0;z-index:120000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(34,30,22,.34);backdrop-filter:blur(1px)}
+        .zoo-game-dialog-overlay.visible{display:flex}
+        .zoo-game-dialog{box-sizing:border-box;width:min(460px,calc(100vw - 28px));max-height:min(78vh,720px);overflow:auto;padding:16px 18px 14px;background:#eee3c4;color:#554a38;border:1px solid #9d8e6e;border-radius:8px;box-shadow:0 10px 34px rgba(0,0,0,.32);font:600 13px/1.4 Arial,sans-serif}
+        .zoo-game-dialog h2{margin:0 0 10px;font-size:18px;color:#514633}
+        .zoo-game-dialog-message{white-space:pre-wrap;font-weight:500;overflow-wrap:anywhere}
+        .zoo-game-dialog-input{box-sizing:border-box;width:100%;margin-top:12px;padding:8px 9px;background:#fffdf7;color:#40392e;border:1px solid #9d8e6e;border-radius:4px;font:600 13px Arial,sans-serif;outline:none}
+        .zoo-game-dialog-input:focus{box-shadow:0 0 0 2px rgba(142,119,68,.22)}
+        .zoo-game-dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}
+        .zoo-game-dialog button{padding:6px 12px;background:#fffaf0;color:#514633;border:1px solid #9d8e6e;border-radius:4px;font:700 12px Arial,sans-serif;cursor:pointer}
+        .zoo-game-dialog button:hover{background:#f8efd9}
+        body.zoo-dark-mode .zoo-game-dialog{background:#302f2b;color:#eee6d3;border-color:#706a5d}
+        body.zoo-dark-mode .zoo-game-dialog h2{color:#f2ead8}
+        body.zoo-dark-mode .zoo-game-dialog-input,body.zoo-dark-mode .zoo-game-dialog button{background:#22211f;color:#eee6d3;border-color:#706a5d}
+    `;
+    document.head.appendChild(style);
+
+    overlay = document.createElement('div');
+    overlay.id = 'zooGameDialogOverlay';
+    overlay.className = 'zoo-game-dialog-overlay';
+    overlay.innerHTML = `<div class="zoo-game-dialog" role="dialog" aria-modal="true" aria-labelledby="zooGameDialogTitle"><h2 id="zooGameDialogTitle"></h2><div class="zoo-game-dialog-message"></div><input class="zoo-game-dialog-input" type="text"><div class="zoo-game-dialog-actions"><button type="button" data-dialog-cancel>Cancel</button><button type="button" data-dialog-confirm>OK</button></div></div>`;
+    document.body.appendChild(overlay);
+    return overlay;
+}
+
+function showGameDialog({ title='Zoo Curator', message='', inputValue=null, confirmLabel='OK', cancelLabel='Cancel', showCancel=false }={}) {
+    const overlay = ensureGameDialogUI();
+    const titleEl = overlay.querySelector('#zooGameDialogTitle');
+    const messageEl = overlay.querySelector('.zoo-game-dialog-message');
+    const input = overlay.querySelector('.zoo-game-dialog-input');
+    const confirmButton = overlay.querySelector('[data-dialog-confirm]');
+    const cancelButton = overlay.querySelector('[data-dialog-cancel]');
+    titleEl.textContent = title;
+    messageEl.textContent = String(message ?? '');
+    confirmButton.textContent = confirmLabel;
+    cancelButton.textContent = cancelLabel;
+    cancelButton.hidden = !showCancel;
+    input.hidden = inputValue === null;
+    if (inputValue !== null) input.value = String(inputValue ?? '');
+    overlay.classList.add('visible');
+
+    return new Promise(resolve => {
+        let settled = false;
+        const finish = value => {
+            if (settled) return;
+            settled = true;
+            overlay.classList.remove('visible');
+            confirmButton.removeEventListener('click', onConfirm);
+            cancelButton.removeEventListener('click', onCancel);
+            overlay.removeEventListener('pointerdown', onBackdrop);
+            document.removeEventListener('keydown', onKey);
+            resolve(value);
+        };
+        const onConfirm = () => finish(inputValue === null ? true : input.value);
+        const onCancel = () => finish(inputValue === null ? false : null);
+        const onBackdrop = event => { if (event.target === overlay && showCancel) onCancel(); };
+        const onKey = event => {
+            if (event.key === 'Escape' && showCancel) { event.preventDefault(); onCancel(); }
+            else if (event.key === 'Enter' && (!input.hidden || document.activeElement !== cancelButton)) { event.preventDefault(); onConfirm(); }
+        };
+        confirmButton.addEventListener('click', onConfirm);
+        cancelButton.addEventListener('click', onCancel);
+        overlay.addEventListener('pointerdown', onBackdrop);
+        document.addEventListener('keydown', onKey);
+        requestAnimationFrame(() => (input.hidden ? confirmButton : input).focus());
+    });
+}
+function showGameNotice(message, title='Zoo Curator') {
+    return showGameDialog({ title, message, confirmLabel:'OK' });
+}
+function showGameConfirm(message, options={}) {
+    return showGameDialog({ title:options.title || 'Zoo Curator', message, confirmLabel:options.confirmLabel || 'OK', cancelLabel:options.cancelLabel || 'Cancel', showCancel:true });
+}
+function showGamePrompt(message, defaultValue='', options={}) {
+    return showGameDialog({ title:options.title || 'Zoo Curator', message, inputValue:defaultValue, confirmLabel:options.confirmLabel || 'OK', cancelLabel:options.cancelLabel || 'Cancel', showCancel:true });
+}
+
+async function saveRealZooTemplate() {
     if (!state.sandboxMode) {
-        alert('Real zoo templates can only be created from Sandbox mode.');
+        showGameNotice('Real zoo templates can only be created from Sandbox mode.');
         return false;
     }
     if (state.realZooDataLoadState !== 'ready') {
-        alert('The real zoo database is still loading. Try again when it has finished.');
+        showGameNotice('The real zoo database is still loading. Try again when it has finished.');
         return false;
     }
     const match = matchSandboxZooToRealZoo();
     if (!match.record) {
-        alert(`Could not match “${state.zooName || 'Unnamed Zoo'}” to a real zoo.`);
+        showGameNotice(`Could not match “${state.zooName || 'Unnamed Zoo'}” to a real zoo.`);
         return false;
     }
     if (!match.exact) {
         const suggestion = match.record.name;
         const confidence = Math.round(Math.max(0, match.score) * 100);
-        if (!confirm(`The zoo name “${state.zooName || 'Unnamed Zoo'}” is not an exact match.\n\nI think this is supposed to be:\n${suggestion}\n\nName similarity: ${confidence}%\n\nSave the template for ${suggestion}?`)) return false;
+        if (!(await showGameConfirm(`The zoo name “${state.zooName || 'Unnamed Zoo'}” is not an exact match.\n\nI think this is supposed to be:\n${suggestion}\n\nName similarity: ${confidence}%\n\nSave the template for ${suggestion}?`))) return false;
     }
     const diff = realZooTemplateSpeciesDiff(match.record);
     if (diff.missing.length || diff.added.length) {
@@ -18439,7 +18573,7 @@ function saveRealZooTemplate() {
         if (diff.missing.length) lines.push(`\nMissing from this Sandbox zoo (${diff.missing.length}):\n• ${diff.missing.join('\n• ')}`);
         if (diff.added.length) lines.push(`\nAdded/not in the real-zoo record (${diff.added.length}):\n• ${diff.added.join('\n• ')}`);
         lines.push('\nThe template can still be saved. Missing species will simply have no saved placement; added species will be ignored when this template is used for the real zoo.\n\nSave anyway?');
-        if (!confirm(lines.join('\n'))) return false;
+        if (!(await showGameConfirm(lines.join('\n')))) return false;
     }
     const template = buildRealZooLayoutTemplate(match.record);
     try {
@@ -18447,10 +18581,10 @@ function saveRealZooTemplate() {
         downloadRealZooLayoutTemplate(template);
     } catch (error) {
         console.error(error);
-        alert(`Could not save the real zoo template:\n\n${error.message}`);
+        showGameNotice(`Could not save the real zoo template:\n\n${error.message}`);
         return false;
     }
-    alert(`Saved real zoo template for ${match.record.name}.\n\nIt is stored separately from save games in this browser, so deleting the save game will not delete the template. A JSON copy has also been downloaded for assets/data/layouts/${realZooTemplateSlug(match.record.name)}.json.`);
+    showGameNotice(`Saved real zoo template for ${match.record.name}.\n\nIt is stored separately from save games in this browser, so deleting the save game will not delete the template. A JSON copy has also been downloaded for assets/data/layouts/${realZooTemplateSlug(match.record.name)}.json.`);
     return true;
 }
 
@@ -18488,9 +18622,9 @@ function applyRealZooLayoutTemplate(record, template) {
     return true;
 }
 
-function saveCurrentGame(slotId = null, options = {}) {
+async function saveCurrentGame(slotId = null, options = {}) {
     if (state.historyViewTurn !== null) {
-        alert(uiText('Return to the current turn before saving the game.'));
+        showGameNotice(uiText('Return to the current turn before saving the game.'));
         return;
     }
 
@@ -18505,7 +18639,7 @@ function saveCurrentGame(slotId = null, options = {}) {
         ? slots[existingIndex].name
         : `Save ${slots.length + 1}`;
 
-    const entered = prompt(uiText('Name this save game:'), name);
+    const entered = await showGamePrompt(uiText('Name this save game:'), name, { title:'Save Game', confirmLabel:'Save' });
     if (entered === null) return;
 
     name = entered.trim() || name;
@@ -18513,7 +18647,7 @@ function saveCurrentGame(slotId = null, options = {}) {
     const record = {
         id: existingIndex >= 0
             ? slots[existingIndex].id
-            : `save-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            : `save-${Date.now()}-${classicGameRandom().toString(36).slice(2, 8)}`,
         name,
         zooName: state.zooName,
         turn: state.sandboxMode ? '∞' : state.turn,
@@ -18527,7 +18661,7 @@ function saveCurrentGame(slotId = null, options = {}) {
         slots[existingIndex] = record;
     } else {
         if (slots.length >= MAX_SAVE_SLOTS) {
-            alert(`You can keep up to ${MAX_SAVE_SLOTS} saved games. Delete or overwrite one first.`);
+            showGameNotice(`You can keep up to ${MAX_SAVE_SLOTS} saved games. Delete or overwrite one first.`);
             return;
         }
         slots.unshift(record);
@@ -18536,22 +18670,23 @@ function saveCurrentGame(slotId = null, options = {}) {
     try {
         writeSaveSlots(slots);
         renderSaveSlots();
-        if (options.alsoRealZooTemplate) saveRealZooTemplate();
+        if (options.alsoRealZooTemplate) await saveRealZooTemplate();
     } catch (error) {
         console.error(error);
-        alert(
+        showGameNotice(
             'The browser could not store this save. Its local storage may be full. ' +
             'Delete an older save and try again.'
         );
     }
 }
 
-function loadSavedGame(slotId) {
+async function loadSavedGame(slotId) {
     const record = loadSaveSlots().find(slot => slot.id === slotId);
     if (!record) return;
 
-    const ok = confirm(
-        `Load “${record.name}”?\n\nYour current unsaved game will be replaced.`
+    const ok = await showGameConfirm(
+        `Load “${record.name}”?\n\nYour current unsaved game will be replaced.`,
+        { title:'Load Game', confirmLabel:'Load' }
     );
     if (!ok) return;
 
@@ -18580,15 +18715,15 @@ function loadSavedGame(slotId) {
             console.error('Could not restore the game after failed Load:', rollbackError);
         }
 
-        alert(`Could not load this save:\n\n${error.message}\n\nYour current game has been kept.`);
+        showGameNotice(`Could not load this save:\n\n${error.message}\n\nYour current game has been kept.`);
     }
 }
 
-function deleteSavedGame(slotId) {
+async function deleteSavedGame(slotId) {
     const slots = loadSaveSlots();
     const record = slots.find(slot => slot.id === slotId);
     if (!record) return;
-    if (!confirm(`Delete “${record.name}”?`)) return;
+    if (!(await showGameConfirm(`Delete “${record.name}”?`, { title:'Delete Save', confirmLabel:'Delete' }))) return;
 
     writeSaveSlots(slots.filter(slot => slot.id !== slotId));
     renderSaveSlots();
@@ -19932,7 +20067,7 @@ function trueTransferMergeArrivalIntoTarget(animal,target){
 // TRUE POPULATION GROUP MOVES
 // ============================================================
 
-function truePopulationSelection(source, actionLabel='Move'){
+async function truePopulationSelection(source, actionLabel='Move'){
     if(state.gameMode!=='true'||state.sandboxMode) return null;
     const physical=normaliseTrueAnimalPopulation(source);
     if(!physical) return null;
@@ -19941,20 +20076,20 @@ function truePopulationSelection(source, actionLabel='Move'){
     // A one-animal population has nothing to split.
     if(trueAnimalPopulationTotal(source)<=1) return {...p};
 
-    const read=(label,max)=>{
+    const read=async(label,max)=>{
         if(max<=0) return 0;
-        const raw=prompt(`${actionLabel}: ${label} (0–${max})`, String(max));
+        const raw=await showGamePrompt(`${actionLabel}: ${label} (0–${max})`, String(max), { title:actionLabel });
         if(raw===null) return null;
         const n=Number(raw);
         if(!Number.isInteger(n)||n<0||n>max){
-            alert(`Enter a whole number from 0 to ${max}.`);
-            return read(label,max);
+            showGameNotice(`Enter a whole number from 0 to ${max}.`);
+            return await read(label,max);
         }
         return n;
     };
-    const males=read('males',p.males); if(males===null)return null;
-    const females=read('females',p.females); if(females===null)return null;
-    const unknown=read('unknown sex',p.unknown); if(unknown===null)return null;
+    const males=await read('males',p.males); if(males===null)return null;
+    const females=await read('females',p.females); if(females===null)return null;
+    const unknown=await read('unknown sex',p.unknown); if(unknown===null)return null;
     if(males+females+unknown<=0) return null;
     return {males,females,unknown};
 }
@@ -20904,7 +21039,7 @@ function applyMilestonesToCurrentZoo(newMilestones, retroactive) {
             const result = removeEmptyEnclosures(wanted);
             if (result.removed < wanted) {
                 const missing = wanted - result.removed;
-                alert(
+                showGameNotice(
                     `The new milestone settings would remove ${wanted} enclosure card${wanted===1?'':'s'}, ` +
                     `but only ${result.removed} completely empty enclosure card${result.removed===1?' is':'s are'} available.\n\n` +
                     `Only the ${result.removed} available empty enclosure card${result.removed===1?' has':'s have'} been removed. ` +
@@ -22021,8 +22156,7 @@ async function createLevelOneForDrawUnlocked(destination) {
     checkEnclosureReward(animal);
     updateCollectionCohabitation();
 
-    state.turn++;
-    updateAutonomousOpponentOffer();
+    commitClassicTurn();
     renderAll();
 
     // Prepare the following card after the successful turn. This also makes
@@ -22119,7 +22253,7 @@ async function finishDrawDrag(event) {
     // a simple click auto-places the prepared Level 1 card in a
     // random eligible enclosure. Dragging remains unchanged.
     if (distance < 6) {
-        await drawLevelOne();
+        await performClassicGameAction({ type:CLASSIC_GAME_ACTION.DRAW_LEVEL_1 });
         return;
     }
 
@@ -22822,9 +22956,9 @@ function clearTransientZooUIForSandbox() {
     if (tradePopup) tradePopup.style.display = 'none';
 }
 
-function startSandboxMode(options = {}) {
+async function startSandboxMode(options = {}) {
     const { skipConfirm = false, preserveIdentity = false } = options || {};
-    if (!skipConfirm && !confirm('Start a new Sandbox game? Your current unsaved game will be replaced.')) return;
+    if (!skipConfirm && !(await showGameConfirm('Start a new Sandbox game? Your current unsaved game will be replaced.', { title:'New Sandbox', confirmLabel:'Start' }))) return;
     clearAutoResumeSnapshot();
     exitHistoryView(false);
 
@@ -23655,7 +23789,7 @@ function createRealZooFromRecord(record, options = {}) {
         const naturalKey = realZooAreaSortKey(unit);
         unit._layoutAreaKey = unit.length > 1 || Math.random() >= 0.25
             ? naturalKey
-            : `zz-scattered-${Math.random().toString(36).slice(2, 8)}`;
+            : `zz-scattered-${classicGameRandom().toString(36).slice(2, 8)}`;
     }
     units.sort((a,b) => (a._layoutAreaKey || '').localeCompare(b._layoutAreaKey || ''));
     const occupiedPlans = sizeAwareRealZooPlans(
@@ -24591,7 +24725,7 @@ function ensureGenerateZooUI() {
         const isRealZoo = zooKind.value === 'real';
         const realRecord = isRealZoo ? selectedRealZooRecord() : null;
         if (isRealZoo && !realRecord) {
-            alert(state.realZooDataLoadState === 'failed'
+            showGameNotice(state.realZooDataLoadState === 'failed'
                 ? 'The real zoo database is unavailable.'
                 : 'The real zoo database is still loading.');
             return;
@@ -24599,12 +24733,12 @@ function ensureGenerateZooUI() {
         const finalName = isRealZoo ? String(realRecord.name || '').trim() : zooName.value.trim();
         const finalLocation = isRealZoo ? realZooRecordLocation(realRecord) : location.value.trim();
         if (!finalName) {
-            alert('Please enter a zoo name.');
+            showGameNotice('Please enter a zoo name.');
             zooName.focus();
             return;
         }
         if (!finalLocation) {
-            alert('Please enter a location.');
+            showGameNotice('Please enter a location.');
             location.focus();
             return;
         }
@@ -24679,7 +24813,7 @@ function ensureGenerateZooUI() {
             resumeHintGlowsAfterMenu();
         } catch (error) {
             console.error('New zoo generation failed:', error);
-            alert(`Zoo generation failed: ${error?.message || error}`);
+            showGameNotice(`Zoo generation failed: ${error?.message || error}`);
         } finally {
             loading.classList.remove('visible');
             loading.setAttribute('aria-hidden', 'true');
@@ -25000,12 +25134,12 @@ function ensureGameOptionsUI() {
         if (event.target === overlay) close();
     });
 
-    overlay.querySelector('#applyGameOptions').addEventListener('click', () => {
+    overlay.querySelector('#applyGameOptions').addEventListener('click', async () => {
         const selected = [...list.querySelectorAll('input[type="checkbox"]:checked')]
             .map(cb => cb.value);
 
         if (!selected.length) {
-            alert(uiText('At least one animal category must remain enabled.'));
+            showGameNotice(uiText('At least one animal category must remain enabled.'));
             return;
         }
 
@@ -25055,7 +25189,7 @@ function ensureGameOptionsUI() {
                     ? `This would immediately add ${difference} enclosure card${difference===1?'':'s'} to your current zoo.`
                     : `This would immediately remove ${-difference} enclosure card${difference===-1?'':'s'} from your current zoo, using completely empty enclosures only.`;
 
-                applyMilestonesRetroactively = confirm(
+                applyMilestonesRetroactively = await showGameConfirm(
                     `The new enclosure milestones change rewards your current zoo would already have earned.
 
 ` +
@@ -29848,8 +29982,7 @@ function acceptSelectedTrade(destination=null, autoPlace=false) {
     });
 
     updateCollectionCohabitation();
-    state.turn++;
-    updateAutonomousOpponentOffer();
+    commitClassicTurn();
     renderAll();
     return true;
 }
@@ -29862,7 +29995,7 @@ function finishTradeResultDrag(event) {
     if(distance<6){
         // A click/very short drag uses auto-placement. The reservation remains
         // released while the destination is chosen.
-        if(!acceptSelectedTrade(null,true) && state.outgoingOffer && drag.releasedOutgoingReservation) {
+        if(!performClassicGameAction({ type:CLASSIC_GAME_ACTION.ACCEPT_TRADE, destination:null, autoPlace:true }) && state.outgoingOffer && drag.releasedOutgoingReservation) {
             reserveAnimalZooSlot(
                 state.outgoingOffer,
                 drag.releasedOutgoingReservation.enclosureId,
@@ -29883,7 +30016,7 @@ function finishTradeResultDrag(event) {
         : null;
 
     if(destination) {
-        if(!acceptSelectedTrade(destination) && state.outgoingOffer && drag.releasedOutgoingReservation) {
+        if(!performClassicGameAction({ type:CLASSIC_GAME_ACTION.ACCEPT_TRADE, destination }) && state.outgoingOffer && drag.releasedOutgoingReservation) {
             reserveAnimalZooSlot(
                 state.outgoingOffer,
                 drag.releasedOutgoingReservation.enclosureId,

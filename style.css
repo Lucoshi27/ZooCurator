@@ -2,7 +2,7 @@
 
 :root {
     /* Compatibility contract. Increment only for breaking CSS/JS expectations. */
-    --zoo-css-interface: 1;
+    --zoo-css-interface: 2;
     --zoo-zoom: 1;
 }
 
@@ -614,10 +614,15 @@ body {
     touch-action: none;
 }
 
-.enclosure.dragging-enclosure {
-    cursor: grabbing;
 
-    z-index: 500;
+
+.enclosure.dragging-enclosure .enclosure-image,
+.enclosure.dragging-enclosure .slot,
+.enclosure.dragging-enclosure .enclosure-animal,
+.enclosure.dragging-enclosure .animal-card {
+    /* Preserve each child's normal internal ordering while the parent stacking
+       context itself sits above the rest of the zoo. */
+    position: absolute;
 }
 
 .enclosure-image {
@@ -4865,10 +4870,401 @@ body.visiting-real-zoo [class*="glow"] {
 }
 
 
-/* V2.22.25 — 1080p desktop animal preview is half the established 2K size. */
-@media (min-width: 701px) and (max-height: 1200px) {
-    #hoverPreview:not(.super-zoom) {
-        width: 202.5px;
-        height: 291.6px;
+
+
+/* ============================================================
+   V2.22.30 — 2K-LEADING RESPONSIVE DESKTOP UI
+   2560x1440 is the reference composition. JS continuously updates
+   --desktop-ui-scale from the browser viewport. The zoo canvas/world is NOT
+   scaled here: its existing pan/zoom coordinate system remains independent.
+   Mobile keeps its dedicated <=700px layout.
+   ============================================================ */
+:root {
+    --desktop-ui-scale: 1;
+    --desktop-header-height: 220px;
+}
+
+@media (min-width: 701px) {
+    /* The header consumes the same proportion of the viewport as at 2K. */
+    #actionMenu {
+        height: var(--desktop-header-height) !important;
     }
+    #zooBoard {
+        top: var(--desktop-header-height) !important;
+    }
+
+    /* Scale the independent desktop HUD islands from their natural 2K sizes.
+       CSS individual scale preserves each component's own translate/active
+       transforms and keeps pointer hit-testing aligned with the visual UI. */
+    #headerLeft {
+        left: calc(18px * var(--desktop-ui-scale)) !important;
+        top: calc(18px * var(--desktop-ui-scale)) !important;
+        width: auto !important;
+        height: auto !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        gap: 7px !important;
+        scale: var(--desktop-ui-scale);
+        transform-origin: top left;
+    }
+    #headerLeft > .save-load-button,
+    #headerLeft > .game-options-button,
+    #headerLeft > #newGameButton {
+        width: auto !important;
+        min-height: 0 !important;
+    }
+
+    #progressTracker {
+        left: calc(245px * var(--desktop-ui-scale)) !important;
+        top: calc(4px * var(--desktop-ui-scale)) !important;
+        width: 405px !important;
+        scale: var(--desktop-ui-scale);
+        transform: none !important;
+        transform-origin: top left;
+    }
+    #progressTracker .progress-table {
+        width: auto !important;
+        grid-template-columns: 115px repeat(5,54px) !important;
+    }
+    #progressTracker .progress-heading { height:18px !important; font-size:9px !important; }
+    #progressTracker .progress-category,
+    #progressTracker .progress-check-cell { height:17px !important; }
+    #progressTracker .progress-category { padding:1px 6px !important; overflow:visible !important; text-overflow:clip !important; }
+    #progressTracker .progress-checkbox { width:13px !important; height:13px !important; font-size:11px !important; }
+
+    #playerZooName {
+        left: 50vw !important;
+        top: calc(4px * var(--desktop-ui-scale)) !important;
+        scale: var(--desktop-ui-scale);
+        transform-origin: top center;
+    }
+    #headerActions {
+        /* The four-card action cluster is optically a little right-heavy next
+           to the left HUD. Nudge its centre left without changing its internal
+           spacing or the mobile layout. */
+        left: calc(50vw - (24px * var(--desktop-ui-scale))) !important;
+        top: calc(45px * var(--desktop-ui-scale)) !important;
+        scale: var(--desktop-ui-scale);
+        transform: translateX(-50%) !important;
+        transform-origin: top center !important;
+    }
+    #opponentZoos {
+        right: calc(18px * var(--desktop-ui-scale)) !important;
+        top: calc(8px * var(--desktop-ui-scale)) !important;
+        width: 255px !important;
+        scale: var(--desktop-ui-scale);
+        transform-origin: top right;
+    }
+    #opponentTradeArea {
+        scale: var(--desktop-ui-scale);
+        transform-origin: top left;
+    }
+
+    /* Fixed map/UI tools follow the same scale but remain anchored to the
+       viewport edges, so they never drift into the zoo coordinate system. */
+    #areaToolButton,
+    #trueEnclosureBuilderButton,
+    #returnFromZooVisit {
+        scale: var(--desktop-ui-scale);
+    }
+    #areaToolButton,
+    #trueEnclosureBuilderButton { transform-origin: bottom right; }
+    #returnFromZooVisit { transform-origin: bottom center; }
+
+    /* Ordinary (non-super) animal preview follows the same continuous scale.
+       Super zoom is sized in JS from desktopUiScale(), avoiding double scale. */
+    #hoverPreview:not(.super-zoom) {
+        width: calc(405px * var(--desktop-ui-scale)) !important;
+        height: calc(583.2px * var(--desktop-ui-scale)) !important;
+        left: calc(18px * var(--desktop-ui-scale)) !important;
+        bottom: calc(18px * var(--desktop-ui-scale)) !important;
+    }
+
+    /* Centre-screen windows retain the exact 2K internal composition and
+       shrink as one readable object. Their overlays still cover the viewport. */
+    .game-options-modal,
+    .save-load-modal,
+    .collection-window {
+        scale: var(--desktop-ui-scale);
+        transform-origin: center center;
+    }
+
+    /* Smaller floating UI uses edge-appropriate origins. */
+    .turn-history-panel,
+    .enclosure-tag-editor,
+    #zooColourSchemeMenu,
+    #areaStyleMenu,
+    .area-style-menu {
+        scale: var(--desktop-ui-scale);
+        transform-origin: top left;
+    }
+    #collectionTooltip {
+        scale: var(--desktop-ui-scale);
+        transform-origin: top left;
+    }
+}
+
+
+/* ============================================================
+   V2.22.32 — AREA BUILDER TAG CONTROLS
+   Style/delete controls are builder-only siblings of the Area tag.
+   ============================================================ */
+.area-tag-controls{
+    position:absolute;
+    z-index:10022;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    pointer-events:auto;
+}
+.area-tag-controls .area-colour-button,
+.area-tag-controls .area-remove-button{
+    position:static !important;
+    display:flex !important;
+    transform:none !important;
+    align-items:center;
+    justify-content:center;
+    width:30px;
+    height:30px;
+    margin:0 !important;
+    padding:0 !important;
+    border:2px solid rgba(255,255,255,.92) !important;
+    border-radius:50% !important;
+    box-shadow:0 2px 5px rgba(0,0,0,.22);
+    font:900 19px/1 Arial,Helvetica,sans-serif !important;
+    cursor:pointer;
+}
+.area-tag-controls .area-colour-button{
+    background:#f4efe2 !important;
+    color:#5b5144 !important;
+}
+.area-tag-controls .area-remove-button{
+    background:#c9433f !important;
+    color:#fff !important;
+}
+.area-tag-controls .area-colour-button:hover,
+.area-tag-controls .area-remove-button:hover{
+    filter:brightness(1.08);
+}
+/* Legacy in-tag style buttons are no longer used for player Areas. */
+.player-custom-area-name > .area-colour-button{
+    display:none !important;
+}
+
+
+/* ============================================================
+   V2.22.34 — TRANSIENT DRAG COMPOSITING
+   The moving card is isolated onto its own compositor layer. Do not apply
+   containment to enclosure/Area layers: their borders intentionally cross.
+   ============================================================ */
+.dragging-animal {
+    will-change: transform, left, top;
+    backface-visibility: hidden;
+}
+
+
+/* ============================================================
+   V2.22.35 — OFFSCREEN / HIDDEN UI COST
+   Hidden modal bodies do not need layout/paint until opened.
+   ============================================================ */
+.game-options-overlay:not(.visible),
+.save-load-overlay:not(.visible) {
+    content-visibility: hidden;
+}
+
+
+/* ============================================================
+   V2.22.38 — DRAGGED ENCLOSURE FOREGROUND STACK
+   The dragged physical card is one stacking context. Its artwork remains
+   behind its own animals, while the whole object overlays every other zoo card.
+   ============================================================ */
+#zooCanvas .enclosure.dragging-enclosure {
+    z-index: 4500 !important;
+    isolation: isolate;
+    cursor: grabbing;
+}
+#zooCanvas .enclosure.dragging-enclosure > .enclosure-image {
+    z-index: 0;
+}
+#zooCanvas .enclosure.dragging-enclosure > .slot {
+    z-index: 20;
+}
+#zooCanvas .enclosure.dragging-enclosure .enclosure-animal,
+#zooCanvas .enclosure.dragging-enclosure .animal-card {
+    z-index: 30;
+}
+
+
+/* ============================================================
+   V2.22.40 — RECOGNISED AREA GEOGRAPHY PREVIEW
+   ============================================================ */
+.geographic-area-preview {
+    position: fixed;
+    width: min(390px, calc(100vw - 24px));
+    z-index: 7200;
+    padding: 9px;
+    border: 1px solid rgba(70, 66, 57, .45);
+    border-radius: 10px;
+    background: rgba(250, 248, 241, .98);
+    box-shadow: 0 8px 24px rgba(0,0,0,.24);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .10s ease;
+}
+.geographic-area-preview.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+.geographic-area-preview-title {
+    margin: 1px 3px 7px;
+    font-size: 13px;
+    font-weight: 900;
+}
+.geographic-area-preview-map {
+    width: 100%;
+    aspect-ratio: 1.26059 / 1;
+    overflow: hidden;
+    border: 1px solid rgba(80,80,80,.28);
+    border-radius: 7px;
+    background: #ededed;
+}
+.geographic-area-preview-map svg { display:block;width:100%;height:100%; }
+.geographic-area-preview-loading { padding:18px;font-size:12px;font-weight:700;opacity:.65; }
+.geographic-area-preview .area-preview-ocean { fill:#ededed; }
+.geographic-area-preview .area-preview-country {
+    fill:#c2c2c2;
+    stroke:#f4f4f4;
+    stroke-width:.38;
+    vector-effect:non-scaling-stroke;
+}
+.geographic-area-preview .area-preview-region {
+    fill:var(--area-tag-color,#477344);
+    fill-opacity:.88;
+    stroke:#fff;
+    stroke-width:.7;
+    vector-effect:non-scaling-stroke;
+}
+
+
+/* ============================================================
+   V2.22.41 — AREA FOLLOWS ENCLOSURE DRAG
+   Area membership is not recomputed per pointermove. Its currently rendered
+   pieces translate with the enclosure and are rebuilt once the card is placed.
+   ============================================================ */
+#zooCanvas [data-area-id].enclosure-drag-area-follower {
+    translate: var(--enclosure-drag-area-x, 0px) var(--enclosure-drag-area-y, 0px);
+    will-change: translate;
+}
+
+
+/* V2.22.43 — geographic hierarchy: detail reads as significance */
+#zooCanvas .player-custom-area.geo-detail-realm .player-custom-area-edge { border-width: 2px; }
+#zooCanvas .player-custom-area.geo-detail-subregion .player-custom-area-edge { border-width: 3px; }
+#zooCanvas .player-custom-area.geo-detail-bioregion .player-custom-area-edge { border-width: 5px; }
+
+
+/* V2.22.44 — geographic Area preview hierarchy label */
+.geographic-area-preview-level {
+    margin: -4px 3px 7px;
+    font-size: 11px;
+    font-weight: 700;
+    opacity: .62;
+    letter-spacing: .02em;
+}
+
+
+/* V2.22.45 — Area tool preview and compact tag controls */
+.area-tag-controls {
+    gap: 4px;
+}
+.geographic-area-preview-level strong {
+    font-weight: 900;
+    opacity: 1;
+}
+.area-tool-preview-border {
+    pointer-events: none;
+}
+
+
+/* ============================================================
+   V2.22.46 — AREA SPECIES QUALIFICATION EXPLANATION
+   ============================================================ */
+.geographic-area-preview-title-wrap {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+.geographic-area-preview-title {
+    cursor: help;
+}
+.geographic-area-preview-title.recognised {
+    padding-right: 2px;
+}
+.geographic-area-preview-species {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 7px);
+    width: min(330px, calc(100vw - 40px));
+    padding: 10px 11px;
+    border: 1px solid rgba(70,66,57,.38);
+    border-radius: 8px;
+    background: rgba(255,253,247,.99);
+    box-shadow: 0 7px 20px rgba(0,0,0,.22);
+    font-size: 11px;
+    line-height: 1.35;
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 3;
+}
+.geographic-area-preview-title-wrap:hover .geographic-area-preview-species {
+    opacity: 1;
+    visibility: visible;
+}
+.area-preview-species-status {
+    display: grid;
+    gap: 2px;
+    margin-bottom: 8px;
+}
+.area-preview-species-status span {
+    opacity: .72;
+}
+.area-preview-species-row + .area-preview-species-row {
+    margin-top: 7px;
+}
+.area-preview-species-row b {
+    display: block;
+    margin-bottom: 1px;
+}
+
+
+/* ============================================================
+   V2.22.47 — AREA POPUP PLACEMENT + PERFECT DIAGNOSTIC BADGE
+   ============================================================ */
+.area-preview-validity {
+    display: inline-block;
+    margin-left: 5px;
+    font-weight: 900;
+}
+.area-preview-validity.perfect,
+.area-preview-gold-check {
+    color: #c69218;
+    text-shadow: 0 1px 0 rgba(255,255,255,.75);
+}
+
+
+/* ============================================================
+   V2.22.48 — CLEAN AREA LEADER ROUTING
+   Leader lines identify the tag; Area borders remain the dominant geometry.
+   ============================================================ */
+.player-area-leader[data-segment-axis="y"] {
+    height: 2px !important;
+    margin-top: -1px;
+}
+.player-area-leader[data-segment-axis="x"] {
+    width: 2px !important;
+    margin-left: -1px;
 }

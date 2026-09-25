@@ -591,7 +591,7 @@
     },
     {
       "animals": [
-        "Abyssian Ground Hornbill",
+        "Abyssinian Ground Hornbill",
         "African Spoonbill"
       ],
       "evidence": [
@@ -604,7 +604,7 @@
     },
     {
       "animals": [
-        "Abyssian Ground Hornbill",
+        "Abyssinian Ground Hornbill",
         "Glossy Ibis"
       ],
       "evidence": [
@@ -617,7 +617,7 @@
     },
     {
       "animals": [
-        "Abyssian Ground Hornbill",
+        "Abyssinian Ground Hornbill",
         "Secretary Bird"
       ],
       "evidence": [
@@ -630,7 +630,7 @@
     },
     {
       "animals": [
-        "Abyssian Ground Hornbill",
+        "Abyssinian Ground Hornbill",
         "Sitatunga"
       ],
       "evidence": [
@@ -1014,7 +1014,7 @@
     {
       "animals": [
         "African Grey Parrot",
-        "Abyssian Ground Hornbill"
+        "Abyssinian Ground Hornbill"
       ],
       "evidence": [
         {
@@ -3832,7 +3832,7 @@
     },
     {
       "animals": [
-        "Asian Giant Tortoise",
+        "Asian Forest Tortoise",
         "Burmese Star Tortoise"
       ],
       "evidence": [
@@ -3845,7 +3845,7 @@
     },
     {
       "animals": [
-        "Asian Giant Tortoise",
+        "Asian Forest Tortoise",
         "Spiny Hill Turtle"
       ],
       "evidence": [
@@ -5737,19 +5737,6 @@
     {
       "animals": [
         "Binturong",
-        "Common Palm Civet"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-25"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Binturong",
         "Dhole"
       ],
       "evidence": [
@@ -5848,19 +5835,6 @@
     {
       "animals": [
         "Binturong",
-        "Malayan Porcupine"
-      ],
-      "evidence": [
-        {
-          "zoo": "Saigon Zoo and Botanical Gardens",
-          "country": "Vietnam",
-          "date": "2020-05-25"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Binturong",
         "Malayan Tapir"
       ],
       "evidence": [
@@ -5928,19 +5902,6 @@
         {
           "zoo": "AquaZoo Friesland",
           "country": "Netherlands",
-          "date": "2020-05-25"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Binturong",
-        "Silvery Lutung"
-      ],
-      "evidence": [
-        {
-          "zoo": "Colchester Zoo",
-          "country": "United Kingdom",
           "date": "2020-05-25"
         }
       ]
@@ -10896,19 +10857,6 @@
     },
     {
       "animals": [
-        "Carpet Python",
-        "Water Python"
-      ],
-      "evidence": [
-        {
-          "zoo": "National Aquarium, Australia: Wild Extremes",
-          "country": "United States",
-          "date": "documented"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Central American Wood Turtle",
         "Chinese Water Dragon"
       ],
@@ -11041,15 +10989,7 @@
           "zoo": "National Aquarium of Australia",
           "country": "Australia",
           "date": "2020"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Central Bearded Dragon",
-        "Frilled Lizard"
-      ],
-      "evidence": [
+        },
         {
           "zoo": "National Aquarium / multiple Australian-reptile zoo exhibits",
           "country": "United States / Australia",
@@ -11345,7 +11285,7 @@
     },
     {
       "animals": [
-        "Chinese Softshelled Turtle",
+        "Chinese Softshell Turtle",
         "Chinese Stripe-Necked Turtle"
       ],
       "evidence": [
@@ -15242,7 +15182,7 @@
     {
       "animals": [
         "Demoiselle Crane",
-        "Chinese Three-Keeled Pond Turtle"
+        "Chinese Pond Turtle"
       ],
       "evidence": [
         {
@@ -16661,7 +16601,7 @@
     {
       "animals": [
         "Gelada Baboon",
-        "Abyssian Ground Hornbill"
+        "Abyssinian Ground Hornbill"
       ],
       "evidence": [
         {
@@ -18128,8 +18068,8 @@
     },
     {
       "animals": [
-        "Golden Takin",
-        "Mishmi Takin"
+        "Takin",
+        "Takin"
       ],
       "evidence": [
         {
@@ -18141,28 +18081,7 @@
           "zoo": "ZooParc de Beauval",
           "country": "France",
           "date": "2024"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Golden Takin",
-        "Reeve's Muntjac"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Augsburg",
-          "country": "Germany",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Golden Takin",
-        "Sichuan Takin"
-      ],
-      "evidence": [
+        },
         {
           "zoo": "Poznań Zoo",
           "country": "Poland",
@@ -18172,6 +18091,24 @@
           "zoo": "Poznań Zoo",
           "country": "Poland",
           "date": "2025"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Takin",
+        "Reeve's Muntjac"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Augsburg",
+          "country": "Germany",
+          "date": "2025"
+        },
+        {
+          "zoo": "Réserve zoologique de la Haute-Touche",
+          "country": "France",
+          "date": "2017"
         }
       ]
     },
@@ -19481,7 +19418,7 @@
     {
       "animals": [
         "Green Iguana",
-        "Argentine Black And White Tegu"
+        "Argentine Black and White Tegu"
       ],
       "evidence": [
         {
@@ -22396,7 +22333,7 @@
     {
       "animals": [
         "Indian Gharial",
-        "Malaysian Giant Pond Turtle"
+        "Malaysian Giant Turtle"
       ],
       "evidence": [
         {
@@ -23218,19 +23155,6 @@
           "zoo": "Zoological Center Tel Aviv-Ramat Gan",
           "country": "Israel",
           "date": "2007"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Leopard Cat",
-        "Malayan Porcupine"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Taiping & Night Safari",
-          "country": "Malaysia",
-          "date": "2020-05-18"
         }
       ]
     },
@@ -24695,19 +24619,6 @@
     },
     {
       "animals": [
-        "Matschie's Tree-Kangaroo",
-        "Brush-Tailed Rat-Kangaroo"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoologischer Garten Duisburg",
-          "country": "Germany",
-          "date": "current"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Meerkat",
         "Plains Zebra"
       ],
@@ -25066,7 +24977,7 @@
     },
     {
       "animals": [
-        "Mishmi Takin",
+        "Takin",
         "Bactrian Camel"
       ],
       "evidence": [
@@ -25079,7 +24990,7 @@
     },
     {
       "animals": [
-        "Mishmi Takin",
+        "Takin",
         "Himalayan Tahr"
       ],
       "evidence": [
@@ -25092,7 +25003,7 @@
     },
     {
       "animals": [
-        "Mishmi Takin",
+        "Takin",
         "Markhor"
       ],
       "evidence": [
@@ -25105,7 +25016,7 @@
     },
     {
       "animals": [
-        "Mishmi Takin",
+        "Takin",
         "Nepalese Red Panda"
       ],
       "evidence": [
@@ -25118,7 +25029,7 @@
     },
     {
       "animals": [
-        "Mishmi Takin",
+        "Takin",
         "Père David's Deer"
       ],
       "evidence": [
@@ -25131,20 +25042,7 @@
     },
     {
       "animals": [
-        "Mishmi Takin",
-        "Reeve's Muntjac"
-      ],
-      "evidence": [
-        {
-          "zoo": "Réserve zoologique de la Haute-Touche",
-          "country": "France",
-          "date": "2017"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Mishmi Takin",
+        "Takin",
         "White-Naped Crane"
       ],
       "evidence": [
@@ -26300,7 +26198,7 @@
     {
       "animals": [
         "Pond Slider",
-        "Blue-And-Yellow Macaw"
+        "Blue-and-Yellow Macaw"
       ],
       "evidence": [
         {
@@ -26313,7 +26211,7 @@
     {
       "animals": [
         "Pond Slider",
-        "Chinese Softshelled Turtle"
+        "Chinese Softshell Turtle"
       ],
       "evidence": [
         {
@@ -27197,7 +27095,7 @@
     {
       "animals": [
         "Red-Crested Turaco",
-        "Abyssian Ground Hornbill"
+        "Abyssinian Ground Hornbill"
       ],
       "evidence": [
         {
@@ -27649,7 +27547,7 @@
     {
       "animals": [
         "Rhesus Macaque",
-        "Sichuan Takin"
+        "Takin"
       ],
       "evidence": [
         {
@@ -29833,7 +29731,7 @@
     {
       "animals": [
         "Visayan Warty Pig",
-        "Golden Takin"
+        "Takin"
       ],
       "evidence": [
         {
@@ -29872,19 +29770,6 @@
     {
       "animals": [
         "Visayan Warty Pig",
-        "Mishmi Takin"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Visayan Warty Pig",
         "Nilgai"
       ],
       "evidence": [
@@ -29910,19 +29795,6 @@
           "zoo": "Zoo Basel",
           "country": "Switzerland",
           "date": "2020-06-12"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Visayan Warty Pig",
-        "Sichuan Takin"
-      ],
-      "evidence": [
-        {
-          "zoo": "ZooRope",
-          "country": "unknown",
-          "date": "2021"
         }
       ]
     },
@@ -30640,7 +30512,6 @@
       "tamarins": [
         "Golden-Handed Tamarin",
         "Golden-Headed Lion Tamarin",
-        "Geoffroy's Tufted-Ear Marmoset",
         "Golden Lion Tamarin",
         "Red-Bellied Tamarin",
         "Silvery Marmoset",
@@ -30706,8 +30577,7 @@
         "Orange-Winged Amazon"
       ],
       "south_american_water_turtles": [
-        "Yellow-Spotted Amazon River Turtle",
-        "Hilaire's Side-Necked Turtle"
+        "Yellow-Spotted Amazon River Turtle"
       ],
       "south_american_tropical_house_mammals": [
         "Capybara",
@@ -30841,7 +30711,7 @@
         "Common Ostrich",
         "Greater Kudu",
         "Springbok",
-        "Thompson's Gazelle",
+        "Thomson's Gazelle",
         "Grévy's Zebra",
         "Kordofan Giraffe",
         "Rothschild's Giraffe",
@@ -30950,8 +30820,8 @@
         "Brown Dorcopsis"
       ],
       "neotropical_psittacine_profile": [
-        "Blue-And-Yellow Macaw",
-        "Red-And-Green Macaw",
+        "Blue-and-Yellow Macaw",
+        "Red-and-Green Macaw",
         "Scarlet Macaw",
         "Military Macaw",
         "Hyacinth Macaw",
@@ -31007,7 +30877,6 @@
       "neotropical_tropical_house_mammals": [
         "Golden-Handed Tamarin",
         "Golden-Headed Lion Tamarin",
-        "Geoffroy's Tufted-Ear Marmoset",
         "Golden Lion Tamarin",
         "Red-Bellied Tamarin",
         "Silvery Marmoset",
@@ -31099,7 +30968,7 @@
       ],
       "gorillas": [
         "Western Lowland Gorilla",
-        "Mountain Gorilla"
+        "Eastern Gorilla"
       ],
       "small_hedgehog_like_insectivores": [
         "Four-Toed Hedgehog",
@@ -31111,7 +30980,6 @@
         "Xingu River Ray"
       ],
       "marine_sea_turtles": [
-        "Loggerhead Turtle",
         "Green Sea Turtle",
         "Hawksbill Turtle",
         "Atlantic Ridley Turtle"
@@ -31142,9 +31010,7 @@
         "Pond Slider",
         "Yellow-Spotted Amazon River Turtle",
         "Arrau River Turtle",
-        "Mata-Mata",
-        "Geoffroy's Side-Necked Turtle",
-        "Neotropical Painted Wood Turtle"
+        "Mata-Mata"
       ],
       "african_small_antelope_proxy": [
         "Blue Duiker",
@@ -31162,7 +31028,7 @@
         "Binturong"
       ],
       "asian_mouse_deer_chevrotains": [
-        "Phillipine Mouse-Deer",
+        "Philippine Mouse-Deer",
         "Javan Chevrotain"
       ],
       "asian_mouse_deer_nocturnal_partners": [
@@ -31242,25 +31108,18 @@
         "Greater Yellow-Headed Vulture"
       ],
       "national_aquarium_amazon_river_turtles": [
-        "Red-Headed Amazon Side-Necked Turtle",
         "Big-Headed Amazon River Turtle",
         "Yellow-Spotted Amazon River Turtle"
       ],
       "seoul_grand_park_mixed_cranes": [
-        "Common Crane",
         "Sarus Crane",
         "Red-Crowned Crane",
         "Demoiselle Crane",
         "White-Naped Crane"
       ],
       "dusit_asian_stork_waterfowl_2010": [
-        "Milky Stork",
-        "Painted Stork",
-        "Woolly-Necked Stork",
-        "Black Stork",
-        "Black-Headed Ibis",
-        "Spotted-Billed Pelican",
-        "Green Peafowl"
+        "Asian Woolly-Necked Stork",
+        "Black-Headed Ibis"
       ],
       "parc_des_oiseaux_african_stork_aviary": [
         "Egyptian Vulture",
@@ -31337,7 +31196,7 @@
         "Red River Hog",
         "Rothschild's Giraffe",
         "Sitatunga",
-        "Thompson's Gazelle"
+        "Thomson's Gazelle"
       ],
       "capuchin_shared_partner_pool": [
         "Barbary Macaque",
@@ -31346,7 +31205,6 @@
         "South American Coati"
       ],
       "squirrel_monkey_shared_partner_pool": [
-        "Hilaire's Side-Necked Turtle",
         "South American Coati",
         "White-Faced Saki",
         "Yellow-Spotted Amazon River Turtle"
@@ -31361,10 +31219,8 @@
       "tamarin_external_partner_pool": [
         "Black Howler Monkey",
         "Giant Wood-Rail",
-        "Great Curassow",
         "Green Aracari",
         "Green Iguana",
-        "Hilaire's Side-Necked Turtle",
         "Ivory-Billed Aracari",
         "Plate-Billed Mountain Toucan",
         "Pond Slider",
@@ -31390,32 +31246,27 @@
         "White-Faced Saki"
       ],
       "choloepus_shared_partner_pool": [
-        "Annam Leaf Turtle",
         "Black-Necked Aracari",
         "Brazilian Porcupine",
         "Brown-Mantled Tamarin",
         "Chinese Stripe-Necked Turtle",
-        "Chinese Three-Keeled Pond Turtle",
+        "Chinese Pond Turtle",
         "Common Marmoset",
         "European Pond Turtle",
         "Florida Redbelly Turtle",
-        "Geoffroy's Tufted-Ear Marmoset",
         "Giant Anteater",
         "Giant Asian Pond Turtle",
         "Giant Wood-Rail",
         "Goeldi's Monkey",
         "Golden-Handed Tamarin",
-        "Great Curassow",
         "Green Iguana",
         "Grey-Handed Night Monkey",
         "Kinkajou",
-        "Mediterranean Turtle",
         "Nine-Banded Armadillo",
         "Painted Turtle",
         "Pied Tamarin",
         "Pond Slider",
         "Red-Bellied Tamarin",
-        "Red-Necked Pond Turtle",
         "Saffron Toucanet",
         "Scarlet Ibis",
         "Silvery Marmoset",
@@ -31438,7 +31289,6 @@
         "Common Trumpeter",
         "Cotton-Top Tamarin",
         "Emperor Tamarin",
-        "Geoffroy's Tufted-Ear Marmoset",
         "Goeldi's Monkey",
         "Golden Lion Tamarin",
         "Golden-Handed Tamarin",
@@ -31465,7 +31315,6 @@
         "Abdim's Stork",
         "African Spoonbill",
         "Cape Buffalo",
-        "Common Hoopoe",
         "Glossy Ibis",
         "Grey-Cheeked Hornbill",
         "Hadada Ibis",
@@ -31516,14 +31365,14 @@
         "Capybara"
       ],
       "capybara_established_partner_pool": [
-        "Lowland Tapir",
+        "South American Tapir",
         "Common Squirrel Monkey",
         "White-Faced Saki",
         "Linneaus's Two-Toed Sloth"
       ],
       "south_american_large_paddock_profiles": [
         "Capybara",
-        "Lowland Tapir",
+        "South American Tapir",
         "Collared Peccary",
         "Giant Anteater"
       ],
@@ -31533,8 +31382,6 @@
         "Vicuña",
         "Greater Rhea",
         "Lesser Rhea",
-        "Black-Necked Swan",
-        "Crested Screamer",
         "Southern Pudu"
       ],
       "amazon_freshwater_turtle_core": [
@@ -31567,10 +31414,7 @@
         "Arrau River Turtle",
         "Big-Headed Amazon River Turtle",
         "Red-Headed River Turtle",
-        "Mata-Mata",
-        "Hilaire's Side-Necked Turtle",
-        "Geoffroy's Side-Necked Turtle",
-        "Neotropical Painted Wood Turtle"
+        "Mata-Mata"
       ],
       "asian_water_turtle_profile": [
         "Chinese Stripe-Necked Turtle",
@@ -31579,10 +31423,7 @@
         "Malaysian Giant Turtle",
         "McCord's Snake-Necked Turtle",
         "Spotted Pond Turtle",
-        "Four-Eyed Turtle",
-        "Annam Leaf Turtle",
-        "Chinese Three-Keeled Pond Turtle",
-        "Red-Necked Pond Turtle"
+        "Four-Eyed Turtle"
       ],
       "african_water_turtle_profile": [
         "African Helmeted Turtle",
@@ -31600,7 +31441,7 @@
         "Spotted Turtle"
       ],
       "south_american_pond_turtle_partner_pool": [
-        "Blue-And-Yellow Macaw",
+        "Blue-and-Yellow Macaw",
         "Capybara",
         "Collared Peccary",
         "Cuvier's Dwarf Caiman",
@@ -37170,6 +37011,116 @@
         "Published Green Iguana mixed-species review reports Malaysian Giant Turtle + Green Iguana in a Bali walk-through aviary; retained as proxy because the surfaced text does not identify the institution.",
         "Softshells were not generalized into the proxy despite San Diego's narrow-headed softshell mix, because Zoo Curator's softshell taxa are different species and softshell husbandry can be materially more aggressive."
       ]
+    },
+    "inventory_orphan_cleanup_2026-09-25": {
+      "inventory_file": "asset-inventory(20260925-142736).json",
+      "rule": "All direct compatible-pair animals and proxy group members must resolve to a current asset-inventory animal.",
+      "mapped_aliases": {
+        "Abyssian Ground Hornbill": "Abyssinian Ground Hornbill",
+        "Argentine Black And White Tegu": "Argentine Black and White Tegu",
+        "Blue-And-Yellow Macaw": "Blue-and-Yellow Macaw",
+        "Chinese Softshelled Turtle": "Chinese Softshell Turtle",
+        "Common Palm Civet": "Asian Palm Civet",
+        "Frilled Lizard": "Frill-Necked Lizard",
+        "Mishmi Takin": "Takin",
+        "Golden Takin": "Takin",
+        "Sichuan Takin": "Takin",
+        "Asian Giant Tortoise": "Asian Forest Tortoise",
+        "Malaysian Giant Pond Turtle": "Malaysian Giant Turtle",
+        "Phillipine Mouse-Deer": "Philippine Mouse-Deer",
+        "Red-And-Green Macaw": "Red-and-Green Macaw",
+        "Thompson's Gazelle": "Thomson's Gazelle",
+        "Woolly-Necked Stork": "Asian Woolly-Necked Stork",
+        "Lowland Tapir": "South American Tapir",
+        "Mountain Gorilla": "Eastern Gorilla",
+        "Chinese Three-Keeled Pond Turtle": "Chinese Pond Turtle"
+      },
+      "removed_direct_pairs_due_to_missing_species": [
+        [
+          "Binturong",
+          "Malayan Porcupine"
+        ],
+        [
+          "Binturong",
+          "Silvery Lutung"
+        ],
+        [
+          "Carpet Python",
+          "Water Python"
+        ],
+        [
+          "Leopard Cat",
+          "Malayan Porcupine"
+        ],
+        [
+          "Matschie's Tree-Kangaroo",
+          "Brush-Tailed Rat-Kangaroo"
+        ]
+      ],
+      "removed_proxy_members": {
+        "tamarins": [
+          "Geoffroy's Tufted-Ear Marmoset"
+        ],
+        "south_american_water_turtles": [
+          "Hilaire's Side-Necked Turtle"
+        ],
+        "neotropical_tropical_house_mammals": [
+          "Geoffroy's Tufted-Ear Marmoset"
+        ],
+        "marine_sea_turtles": [
+          "Loggerhead Turtle"
+        ],
+        "south_american_robust_water_turtles": [
+          "Geoffroy's Side-Necked Turtle",
+          "Neotropical Painted Wood Turtle"
+        ],
+        "national_aquarium_amazon_river_turtles": [
+          "Red-Headed Amazon Side-Necked Turtle"
+        ],
+        "seoul_grand_park_mixed_cranes": [
+          "Common Crane"
+        ],
+        "dusit_asian_stork_waterfowl_2010": [
+          "Milky Stork",
+          "Painted Stork",
+          "Black Stork",
+          "Spotted-Billed Pelican",
+          "Green Peafowl"
+        ],
+        "squirrel_monkey_shared_partner_pool": [
+          "Hilaire's Side-Necked Turtle"
+        ],
+        "tamarin_external_partner_pool": [
+          "Great Curassow",
+          "Hilaire's Side-Necked Turtle"
+        ],
+        "choloepus_shared_partner_pool": [
+          "Annam Leaf Turtle",
+          "Geoffroy's Tufted-Ear Marmoset",
+          "Great Curassow",
+          "Mediterranean Turtle",
+          "Red-Necked Pond Turtle"
+        ],
+        "south_american_armadillo_shared_partner_pool": [
+          "Geoffroy's Tufted-Ear Marmoset"
+        ],
+        "rotterdam_green_violet_turaco_partner_pool": [
+          "Common Hoopoe"
+        ],
+        "south_american_large_paddock_repeated_partners": [
+          "Black-Necked Swan",
+          "Crested Screamer"
+        ],
+        "south_american_water_turtle_profile": [
+          "Hilaire's Side-Necked Turtle",
+          "Geoffroy's Side-Necked Turtle",
+          "Neotropical Painted Wood Turtle"
+        ],
+        "asian_water_turtle_profile": [
+          "Annam Leaf Turtle",
+          "Red-Necked Pond Turtle"
+        ]
+      }
     }
   }
 }

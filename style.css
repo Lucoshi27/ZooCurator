@@ -1237,26 +1237,23 @@ body {
 .decline-opponent-offer:hover { background:#ffe2e2; }
 
 
-/* ============================================================
-   V26 Ã¢â‚¬â€ LARGE HEADER-FITTING TRADE CARDS
-   ============================================================ */
-.opponent-trade-area {
-    gap: var(--trade-card-gap, 12px) !important;
-}
+/* Desktop trade cards share the exact same 100 x 144 reference geometry as
+   Draw/Exchange. The whole trade pair receives the single desktop HUD scale. */
+.opponent-trade-area { gap:12px !important; }
 .opponent-trade-area .trade-offer {
-    width: var(--trade-card-width, 100px) !important;
-    height: var(--trade-card-height, 144px) !important;
-    flex: 0 0 var(--trade-card-width, 100px) !important;
+    width:100px !important;
+    height:144px !important;
+    flex:0 0 100px !important;
 }
 .opponent-trade-area .trade-card {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: fill !important;
+    width:100% !important;
+    height:100% !important;
+    object-fit:fill !important;
 }
 .opponent-trade-area .decline-opponent-offer {
-    left: calc(var(--trade-card-width, 100px) + var(--trade-card-gap, 12px));
-    top: calc(var(--trade-card-height, 144px) + 6px);
-    width: var(--trade-card-width, 100px);
+    left:112px;
+    top:150px;
+    width:100px;
 }
 
 
@@ -4942,7 +4939,7 @@ body.visiting-real-zoo [class*="glow"] {
         /* The four-card action cluster is optically a little right-heavy next
            to the left HUD. Nudge its centre left without changing its internal
            spacing or the mobile layout. */
-        left: calc(50vw - (24px * var(--desktop-ui-scale))) !important;
+        left: 50vw !important;
         top: calc(45px * var(--desktop-ui-scale)) !important;
         scale: var(--desktop-ui-scale);
         transform: translateX(-50%) !important;
@@ -4955,6 +4952,8 @@ body.visiting-real-zoo [class*="glow"] {
         scale: var(--desktop-ui-scale);
         transform-origin: top right;
     }
+    /* Desktop trade area is mounted directly under <body>, not inside the
+       scaled opponent list. Give it the same single HUD scale as Draw/Exchange. */
     #opponentTradeArea {
         scale: var(--desktop-ui-scale);
         transform-origin: top left;
@@ -5268,3 +5267,121 @@ body.visiting-real-zoo [class*="glow"] {
     width: 2px !important;
     margin-left: -1px;
 }
+
+
+/* ============================================================
+   V2.22.60 — DESKTOP HUD RESIZE + TRUE CENTRELINE
+   The responsive proportions from V2.22.59 are retained, but desktop chrome
+   is given more visual weight. Zoo name and the four action cells share the
+   exact viewport centreline. Save/Load and Trade History use one button height.
+   ============================================================ */
+@media (min-width: 701px) {
+    #playerZooName,
+    #headerActions {
+        left: 50vw !important;
+    }
+
+    #headerActions {
+        transform: translateX(-50%) !important;
+    }
+
+    #headerLeft > #saveLoadButton,
+    #tradeHistoryButton {
+        box-sizing: border-box !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
+    }
+}
+
+
+/* ============================================================
+   V2.22.61 — DESKTOP HUD SIZE CORRECTION
+   V2.22.60 overshot the requested mock-up by enlarging the whole HUD.
+   Scaling is corrected in JS: 1080p = .92, 2560x1440 = 1.0.
+   Keep the true centreline and matched top-corner button heights.
+   ============================================================ */
+
+
+/* ============================================================
+   V2.22.71 — DESKTOP HEADER GEOMETRY CONSOLIDATION
+   Centre actions stay exactly on the established desktop scale. Peripheral
+   HUD elements use one explicit multiplier; trade cards consume the variables
+   set by positionOpponentTradeArea() instead of stale 100x144 overrides.
+   ============================================================ */
+@media (min-width: 701px) {
+    :root { --desktop-peripheral-scale: 1.12; }
+
+    /* Left controls and Other Zoos are deliberately larger than the centre
+       action row, matching the approved mock-up. Use `scale` only — no second
+       transform scale from JavaScript. */
+    #headerLeft {
+        scale: calc(var(--desktop-ui-scale) * var(--desktop-peripheral-scale)) !important;
+        transform: none !important;
+        transform-origin: top left !important;
+    }
+    #opponentZoos {
+        scale: calc(var(--desktop-ui-scale) * var(--desktop-peripheral-scale)) !important;
+        transform: none !important;
+        transform-origin: top right !important;
+    }
+
+    /* Progression tracker gets the wider/readable mock-up geometry. */
+    #progressTracker {
+        width: 454px !important;
+        scale: calc(var(--desktop-ui-scale) * var(--desktop-peripheral-scale)) !important;
+        transform-origin: top left !important;
+    }
+    #progressTracker .progress-table {
+        width: auto !important;
+        grid-template-columns: 129px repeat(5,60px) !important;
+    }
+
+    /* The centre is intentionally untouched: playerZooName/headerActions keep
+       the existing --desktop-ui-scale from V2.22.30. */
+
+    /* Trade pair: one size source. JS supplies 112x161 + 13 gap variables;
+       these rules finally consume them and override the historical 100x144
+       declarations above. */
+    #opponentTradeArea {
+        gap: var(--trade-card-gap, 14px) !important;
+        scale: calc(var(--desktop-ui-scale) * var(--desktop-peripheral-scale)) !important;
+        transform: none !important;
+        transform-origin: top left !important;
+    }
+    #opponentTradeArea .trade-offer {
+        width: var(--trade-card-width, 122px) !important;
+        height: var(--trade-card-height, 176px) !important;
+        flex: 0 0 var(--trade-card-width, 122px) !important;
+    }
+    #opponentTradeArea .trade-card {
+        width: 100% !important;
+        height: 100% !important;
+        transform: none !important;
+    }
+    #opponentTradeArea .decline-opponent-offer {
+        left: calc(var(--trade-card-width, 122px) + var(--trade-card-gap, 14px)) !important;
+        top: calc(var(--trade-card-height, 176px) + 6px) !important;
+        width: var(--trade-card-width, 122px) !important;
+    }
+}
+
+
+/* ============================================================
+   V2.22.72 — TRADE PAIR FINAL DESKTOP ALIGNMENT
+   Trade cards belong to the peripheral HUD, not the centre action row.
+   They therefore share the peripheral scale and are vertically centre-aligned
+   to Draw/Exchange by positionOpponentTradeArea().
+   ============================================================ */
+
+
+/* ============================================================
+   V2.22.73 — TRADE PAIR PROPORTION TUNE
+   Final visual tune against the 1080p reference: slightly larger trade cells
+   and a small optical lift while preserving the unified positioning model.
+   ============================================================ */

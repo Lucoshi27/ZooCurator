@@ -1,8 +1,75 @@
 {
-  "schema_version": 5,
+  "schema_version": "8.1",
   "framework": "One Earth Bioregions Framework",
-  "design_note": "Canonical One Earth hierarchy: realm -> subrealm -> bioregion. Zoo Curator stores One Earth bioregions as factual wild-region units; ecoregions remain research-only. Non-One-Earth labels such as Latin America, The Americas, Eurasia, and Worldwide are kept separately under range_display_groups and are presentation-only.",
+  "framework_year": 2023,
+  "design_note": "Global Zoo Curator geography registry with parallel nested map hierarchies. Land/freshwater: One Earth realm-division -> subrealm -> bioregion. Coastal/shelf ocean: MEOW realm -> province -> ecoregion. Off-shelf surface ocean/high seas: PPOW realm -> province. UI should use each framework's broad recognizable parent as the overview layer and reveal its child units on zoom. MEOW and PPOW are broadly aligned and non-overlapping. Deep benthic geography remains reserved.",
+  "framework_counts": {
+    "realm_divisions": 14,
+    "bioregions": 185,
+    "ecoregions_reference_only": 844,
+    "meow_realms": 12,
+    "meow_provinces": 62,
+    "meow_ecoregions": 232,
+    "ppow_realms": 4,
+    "ppow_provinces": 37,
+    "one_earth_habitable_subrealms": 52,
+    "one_earth_subrealm_slots_in_registry": 53
+  },
+  "id_prefixes": {
+    "NA": {
+      "name": "Nearctic",
+      "count": 31
+    },
+    "NT": {
+      "name": "Neotropical",
+      "count": 29
+    },
+    "PA": {
+      "name": "Palearctic",
+      "count": 53
+    },
+    "AT": {
+      "name": "Afrotropical",
+      "count": 24
+    },
+    "IM": {
+      "name": "Indomalayan",
+      "count": 18
+    },
+    "AU": {
+      "name": "Australasian",
+      "count": 16
+    },
+    "OC": {
+      "name": "Oceanian",
+      "count": 11
+    },
+    "AN": {
+      "name": "Antarctic",
+      "count": 3
+    }
+  },
   "realms": {
+    "subarctic-america": {
+      "name": "Subarctic America",
+      "subrealms": [
+        "greenland",
+        "canadian-tundra",
+        "alaska",
+        "canadian-boreal-forests"
+      ]
+    },
+    "northern-america": {
+      "name": "Northern America",
+      "subrealms": [
+        "northeast-american-forests",
+        "southeast-us-savannas-forests",
+        "great-plains",
+        "american-west",
+        "mexican-drylands",
+        "north-pacific-coast"
+      ]
+    },
     "central-america-caribbean": {
       "name": "Central America & Caribbean",
       "subrealms": [
@@ -19,9 +86,204 @@
         "amazonia",
         "upper-south-america"
       ]
+    },
+    "subarctic-eurasia": {
+      "name": "Subarctic Eurasia",
+      "subrealms": [
+        "palearctic-tundra",
+        "scandinavia-west-boreal-forests",
+        "siberia-east-boreal-forests",
+        "sea-okhotsk-bering-tundra-taiga"
+      ]
+    },
+    "western-eurasia": {
+      "name": "Western Eurasia",
+      "subrealms": [
+        "greater-european-mixed-forests",
+        "european-mountain-forests",
+        "black-sea-forests-steppe",
+        "mediterranean",
+        "anglo-celtic-isles"
+      ]
+    },
+    "central-eurasia": {
+      "name": "Central Eurasia",
+      "subrealms": [
+        "kazakh-steppes-hemiboreal-forests",
+        "caspian-central-asian-deserts",
+        "tien-shan-mountains",
+        "persian-deserts-forests",
+        "altai-sayan-mountains"
+      ]
+    },
+    "eastern-eurasia": {
+      "name": "Eastern Eurasia",
+      "subrealms": [
+        "east-asian-deserts",
+        "tibetan-plateau",
+        "mongolian-grasslands",
+        "central-east-asian-forests",
+        "northeast-asian-forests",
+        "japanese-islands"
+      ]
+    },
+    "southern-eurasia": {
+      "name": "Southern Eurasia",
+      "subrealms": [
+        "north-africa",
+        "greater-arabian-peninsula"
+      ]
+    },
+    "afrotropics": {
+      "name": "Afrotropics",
+      "subrealms": [
+        "southern-afrotropics",
+        "sub-equatorial-afrotropics",
+        "equatorial-afrotropics",
+        "madagascar-east-african-coast",
+        "sub-saharan-afrotropics",
+        "horn-of-africa"
+      ]
+    },
+    "indomalaya": {
+      "name": "Indomalaya",
+      "subrealms": [
+        "indian-subcontinent",
+        "southeast-asian-forests",
+        "malaysia-western-indonesia"
+      ]
+    },
+    "australasia": {
+      "name": "Australasia",
+      "subrealms": [
+        "new-zealand",
+        "australia",
+        "australasian-islands-eastern-indonesia"
+      ]
+    },
+    "oceania": {
+      "name": "Oceania",
+      "subrealms": [
+        "oceanic-islands"
+      ]
+    },
+    "antarctica": {
+      "name": "Antarctica",
+      "subrealms": [
+        "antarctic-continent-islands"
+      ]
     }
   },
   "subrealms": {
+    "greenland": {
+      "name": "Greenland",
+      "bioregions": [
+        "NA1"
+      ],
+      "realm": "subarctic-america"
+    },
+    "canadian-tundra": {
+      "name": "Canadian Tundra",
+      "bioregions": [
+        "NA2"
+      ],
+      "realm": "subarctic-america"
+    },
+    "alaska": {
+      "name": "Alaska",
+      "bioregions": [
+        "NA3",
+        "NA4",
+        "NA5"
+      ],
+      "realm": "subarctic-america"
+    },
+    "canadian-boreal-forests": {
+      "name": "Canadian Boreal Forests",
+      "bioregions": [
+        "NA6",
+        "NA7",
+        "NA8",
+        "NA9"
+      ],
+      "realm": "subarctic-america"
+    },
+    "northeast-american-forests": {
+      "name": "Northeast American Forests",
+      "bioregions": [
+        "NA10",
+        "NA11",
+        "NA23",
+        "NA24"
+      ],
+      "realm": "northern-america"
+    },
+    "southeast-us-savannas-forests": {
+      "name": "Southeast US Savannas & Forests",
+      "bioregions": [
+        "NA22",
+        "NA25",
+        "NA26",
+        "NA27",
+        "NA28"
+      ],
+      "realm": "northern-america"
+    },
+    "great-plains": {
+      "name": "Great Plains",
+      "bioregions": [
+        "NA12",
+        "NA20",
+        "NA21"
+      ],
+      "realm": "northern-america"
+    },
+    "american-west": {
+      "name": "American West",
+      "bioregions": [
+        "NA13",
+        "NA14",
+        "NA17",
+        "NA18",
+        "NA19"
+      ],
+      "realm": "northern-america"
+    },
+    "mexican-drylands": {
+      "name": "Mexican Drylands",
+      "bioregions": [
+        "NA29",
+        "NA30"
+      ],
+      "realm": "northern-america"
+    },
+    "north-pacific-coast": {
+      "name": "North Pacific Coast",
+      "bioregions": [
+        "NA15",
+        "NA16",
+        "NA31"
+      ],
+      "realm": "northern-america"
+    },
+    "central-america": {
+      "name": "Central America",
+      "bioregions": [
+        "NT24",
+        "NT25",
+        "NT27",
+        "NT28",
+        "NT29"
+      ],
+      "realm": "central-america-caribbean"
+    },
+    "caribbean": {
+      "name": "Caribbean",
+      "bioregions": [
+        "NT26"
+      ],
+      "realm": "central-america-caribbean"
+    },
     "andes-pacific-coast": {
       "name": "Andes Mountains & Pacific Coast",
       "bioregions": [
@@ -75,68 +337,513 @@
       ],
       "realm": "southern-america"
     },
-    "central-america": {
-      "name": "Central America",
+    "palearctic-tundra": {
+      "name": "Palearctic Tundra",
       "bioregions": [
-        "NT24",
-        "NT25",
-        "NT27",
-        "NT28",
-        "NT29"
+        "PA1",
+        "PA4"
       ],
-      "realm": "central-america-caribbean"
+      "realm": "subarctic-eurasia"
     },
-    "caribbean": {
-      "name": "Caribbean",
+    "scandinavia-west-boreal-forests": {
+      "name": "Scandinavia & Western Boreal Forests",
       "bioregions": [
-        "NT26"
+        "PA2",
+        "PA3",
+        "PA8"
       ],
-      "realm": "central-america-caribbean"
+      "realm": "subarctic-eurasia"
+    },
+    "siberia-east-boreal-forests": {
+      "name": "Siberia & Eastern Boreal Forests",
+      "bioregions": [
+        "PA7"
+      ],
+      "realm": "subarctic-eurasia"
+    },
+    "sea-okhotsk-bering-tundra-taiga": {
+      "name": "Sea of Okhotsk & Bering Tundra-Taiga",
+      "bioregions": [
+        "PA5",
+        "PA6"
+      ],
+      "realm": "subarctic-eurasia"
+    },
+    "greater-european-mixed-forests": {
+      "name": "Greater European Forests",
+      "bioregions": [
+        "PA10",
+        "PA11",
+        "PA12"
+      ],
+      "realm": "western-eurasia"
+    },
+    "european-mountain-forests": {
+      "name": "European Mountain Forests",
+      "bioregions": [
+        "PA13",
+        "PA14",
+        "PA15"
+      ],
+      "realm": "western-eurasia"
+    },
+    "black-sea-forests-steppe": {
+      "name": "Black Sea Forests & Steppe",
+      "bioregions": [
+        "PA16",
+        "PA17"
+      ],
+      "realm": "western-eurasia"
+    },
+    "mediterranean": {
+      "name": "Mediterranean",
+      "bioregions": [
+        "PA18",
+        "PA19",
+        "PA20",
+        "PA21"
+      ],
+      "realm": "western-eurasia"
+    },
+    "anglo-celtic-isles": {
+      "name": "Anglo-Celtic Isles",
+      "bioregions": [
+        "PA9"
+      ],
+      "realm": "western-eurasia"
+    },
+    "kazakh-steppes-hemiboreal-forests": {
+      "name": "Kazakh Steppes & Hemiboreal Forest",
+      "bioregions": [
+        "PA34",
+        "PA35"
+      ],
+      "realm": "central-eurasia"
+    },
+    "caspian-central-asian-deserts": {
+      "name": "Caspian Sea & Central Asian Deserts",
+      "bioregions": [
+        "PA32",
+        "PA33"
+      ],
+      "realm": "central-eurasia"
+    },
+    "tien-shan-mountains": {
+      "name": "Tien Shan Mountains",
+      "bioregions": [
+        "PA31"
+      ],
+      "realm": "central-eurasia"
+    },
+    "persian-deserts-forests": {
+      "name": "Persian Deserts & Forests",
+      "bioregions": [
+        "PA27",
+        "PA28",
+        "PA29",
+        "PA30"
+      ],
+      "realm": "central-eurasia"
+    },
+    "altai-sayan-mountains": {
+      "name": "Altai-Sayan Mountains",
+      "bioregions": [
+        "PA36",
+        "PA37"
+      ],
+      "realm": "central-eurasia"
+    },
+    "east-asian-deserts": {
+      "name": "East Asian Deserts",
+      "bioregions": [
+        "PA38",
+        "PA39",
+        "PA43"
+      ],
+      "realm": "eastern-eurasia"
+    },
+    "tibetan-plateau": {
+      "name": "Tibetan Plateau",
+      "bioregions": [
+        "PA40",
+        "PA41"
+      ],
+      "realm": "eastern-eurasia"
+    },
+    "mongolian-grasslands": {
+      "name": "Mongolian Grasslands",
+      "bioregions": [
+        "PA42",
+        "PA44"
+      ],
+      "realm": "eastern-eurasia"
+    },
+    "central-east-asian-forests": {
+      "name": "Central East Asian Forests",
+      "bioregions": [
+        "PA49",
+        "PA50",
+        "PA51",
+        "PA52",
+        "PA53"
+      ],
+      "realm": "eastern-eurasia"
+    },
+    "northeast-asian-forests": {
+      "name": "Northeast Asian Forests",
+      "bioregions": [
+        "PA45",
+        "PA46",
+        "PA48"
+      ],
+      "realm": "eastern-eurasia"
+    },
+    "japanese-islands": {
+      "name": "Japanese Islands",
+      "bioregions": [
+        "PA47"
+      ],
+      "realm": "eastern-eurasia"
+    },
+    "north-africa": {
+      "name": "North Africa",
+      "bioregions": [
+        "PA22",
+        "PA23",
+        "PA24",
+        "PA25"
+      ],
+      "realm": "southern-eurasia"
+    },
+    "greater-arabian-peninsula": {
+      "name": "Greater Arabian Peninsula",
+      "bioregions": [
+        "PA26"
+      ],
+      "realm": "southern-eurasia"
+    },
+    "southern-afrotropics": {
+      "name": "Southern Afrotropics",
+      "bioregions": [
+        "AT1",
+        "AT2",
+        "AT8",
+        "AT9",
+        "AT10"
+      ],
+      "realm": "afrotropics"
+    },
+    "sub-equatorial-afrotropics": {
+      "name": "Sub-Equatorial Afrotropics",
+      "bioregions": [
+        "AT11",
+        "AT18"
+      ],
+      "realm": "afrotropics"
+    },
+    "equatorial-afrotropics": {
+      "name": "Equatorial Afrotropics",
+      "bioregions": [
+        "AT12",
+        "AT13",
+        "AT14",
+        "AT15",
+        "AT16",
+        "AT17",
+        "AT19",
+        "AT24"
+      ],
+      "realm": "afrotropics"
+    },
+    "madagascar-east-african-coast": {
+      "name": "Madagascar & East African Coast",
+      "bioregions": [
+        "AT3",
+        "AT4",
+        "AT5",
+        "AT6",
+        "AT7"
+      ],
+      "realm": "afrotropics"
+    },
+    "sub-saharan-afrotropics": {
+      "name": "Sub-Saharan Afrotropics",
+      "bioregions": [
+        "AT20",
+        "AT23"
+      ],
+      "realm": "afrotropics"
+    },
+    "horn-of-africa": {
+      "name": "Horn of Africa",
+      "bioregions": [
+        "AT21",
+        "AT22"
+      ],
+      "realm": "afrotropics"
+    },
+    "indian-subcontinent": {
+      "name": "Indian Subcontinent",
+      "bioregions": [
+        "IM1",
+        "IM2",
+        "IM3",
+        "IM4",
+        "IM5",
+        "IM6",
+        "IM7",
+        "IM8"
+      ],
+      "realm": "indomalaya"
+    },
+    "southeast-asian-forests": {
+      "name": "Southeast Asian Forests",
+      "bioregions": [
+        "IM9",
+        "IM10",
+        "IM11",
+        "IM12",
+        "IM13",
+        "IM14",
+        "IM15"
+      ],
+      "realm": "indomalaya"
+    },
+    "malaysia-western-indonesia": {
+      "name": "Malaysia & Western Indonesia",
+      "bioregions": [
+        "IM16",
+        "IM17",
+        "IM18"
+      ],
+      "realm": "indomalaya"
+    },
+    "new-zealand": {
+      "name": "New Zealand",
+      "bioregions": [
+        "AU1",
+        "AU2",
+        "AU16"
+      ],
+      "realm": "australasia"
+    },
+    "australia": {
+      "name": "Australia",
+      "bioregions": [
+        "AU3",
+        "AU4",
+        "AU5",
+        "AU6",
+        "AU7",
+        "AU8",
+        "AU9"
+      ],
+      "realm": "australasia"
+    },
+    "australasian-islands-eastern-indonesia": {
+      "name": "Australasian Islands & Eastern Indonesia",
+      "bioregions": [
+        "AU10",
+        "AU11",
+        "AU12",
+        "AU13",
+        "AU14",
+        "AU15"
+      ],
+      "realm": "australasia"
+    },
+    "oceanic-islands": {
+      "name": "Oceanic Islands",
+      "bioregions": [
+        "OC1",
+        "OC2",
+        "OC3",
+        "OC4",
+        "OC5",
+        "OC6",
+        "OC7",
+        "OC8",
+        "OC9",
+        "OC10",
+        "OC11"
+      ],
+      "realm": "oceania",
+      "framework_note": "Uniform Zoo Curator wrapper for a One Earth realm that is not subdivided into multiple subrealms."
+    },
+    "antarctic-continent-islands": {
+      "name": "Antarctic Continent & Islands",
+      "bioregions": [
+        "AN1",
+        "AN2",
+        "AN3"
+      ],
+      "realm": "antarctica",
+      "framework_note": "Uniform Zoo Curator wrapper for a One Earth realm that is not subdivided into multiple subrealms."
     }
   },
   "bioregions": {
-    "NT11": {
-      "name": "Andean Mountain Forests & Valleys",
-      "subrealm": "andes-pacific-coast",
-      "realm": "southern-america"
+    "NA1": {
+      "name": "Greenland",
+      "subrealm": "greenland",
+      "realm": "subarctic-america"
     },
-    "NT10": {
-      "name": "Ecuadorean Dry Coastal Forests & Flooded Grasslands",
-      "subrealm": "andes-pacific-coast",
-      "realm": "southern-america"
+    "NA2": {
+      "name": "Canadian Tundra",
+      "subrealm": "canadian-tundra",
+      "realm": "subarctic-america"
     },
-    "NT8": {
-      "name": "South American Coastal Deserts",
-      "subrealm": "andes-pacific-coast",
-      "realm": "southern-america"
+    "NA3": {
+      "name": "North Alaskan Tundra",
+      "subrealm": "alaska",
+      "realm": "subarctic-america"
     },
-    "NT7": {
-      "name": "Juan Fernández & Desventuradas Islands",
-      "subrealm": "andes-pacific-coast",
-      "realm": "southern-america"
+    "NA4": {
+      "name": "Greater Alaska Taiga & Tundra",
+      "subrealm": "alaska",
+      "realm": "subarctic-america"
     },
-    "NT6": {
-      "name": "Chilean Matorral Shrublands & Savanna",
-      "subrealm": "andes-pacific-coast",
-      "realm": "southern-america"
+    "NA5": {
+      "name": "Far Northern Pacific Coast",
+      "subrealm": "alaska",
+      "realm": "subarctic-america"
     },
-    "NT5": {
-      "name": "Andean Mountain Grasslands",
-      "subrealm": "andes-pacific-coast",
-      "realm": "southern-america"
+    "NA6": {
+      "name": "Greater Yukon",
+      "subrealm": "canadian-boreal-forests",
+      "realm": "subarctic-america"
     },
-    "NT9": {
-      "name": "Galápagos Islands",
-      "subrealm": "andes-pacific-coast",
-      "realm": "southern-america"
+    "NA7": {
+      "name": "Northwest Canadian Taiga, Lakes, & Wetlands",
+      "subrealm": "canadian-boreal-forests",
+      "realm": "subarctic-america"
+    },
+    "NA8": {
+      "name": "Mid-Canada Boreal Plains & Foothill Forests",
+      "subrealm": "canadian-boreal-forests",
+      "realm": "subarctic-america"
+    },
+    "NA9": {
+      "name": "Canadian Shield & Coastal Taiga-Forests",
+      "subrealm": "canadian-boreal-forests",
+      "realm": "subarctic-america"
+    },
+    "NA10": {
+      "name": "Northeastern American Mixed Forests",
+      "subrealm": "northeast-american-forests",
+      "realm": "northern-america"
+    },
+    "NA11": {
+      "name": "Northern Great Lakes Forests",
+      "subrealm": "northeast-american-forests",
+      "realm": "northern-america"
+    },
+    "NA12": {
+      "name": "Northern Prairie & Aspen Forests",
+      "subrealm": "great-plains",
+      "realm": "northern-america"
+    },
+    "NA13": {
+      "name": "Greater Rockies & Mountain Forests",
+      "subrealm": "american-west",
+      "realm": "northern-america"
+    },
+    "NA14": {
+      "name": "Northwest Intermountain Conifer Forests",
+      "subrealm": "american-west",
+      "realm": "northern-america"
+    },
+    "NA15": {
+      "name": "Pacific Northwest Coastal Forests",
+      "subrealm": "north-pacific-coast",
+      "realm": "northern-america"
+    },
+    "NA16": {
+      "name": "Cascades Mountain Forests & Valleys",
+      "subrealm": "north-pacific-coast",
+      "realm": "northern-america"
+    },
+    "NA17": {
+      "name": "Columbia Plateau & Blue Mountains",
+      "subrealm": "american-west",
+      "realm": "northern-america"
+    },
+    "NA18": {
+      "name": "Great Basin & Columbia Steppe",
+      "subrealm": "american-west",
+      "realm": "northern-america"
+    },
+    "NA19": {
+      "name": "Colorado Plateau & Mountain Forests",
+      "subrealm": "american-west",
+      "realm": "northern-america"
+    },
+    "NA20": {
+      "name": "Southern Prairie Mixed Grasslands",
+      "subrealm": "great-plains",
+      "realm": "northern-america"
+    },
+    "NA21": {
+      "name": "Midwestern Tallgrass Prairie & Forest Transition",
+      "subrealm": "great-plains",
+      "realm": "northern-america"
+    },
+    "NA22": {
+      "name": "Ozarks Mixed Forests",
+      "subrealm": "southeast-us-savannas-forests",
+      "realm": "northern-america"
+    },
+    "NA23": {
+      "name": "Interior Plateau & Southern Great Lakes Forests",
+      "subrealm": "northeast-american-forests",
+      "realm": "northern-america"
+    },
+    "NA24": {
+      "name": "Appalachia & Allegheny Interior Forests",
+      "subrealm": "northeast-american-forests",
+      "realm": "northern-america"
+    },
+    "NA25": {
+      "name": "Southeast Savannas & Riparian Forests",
+      "subrealm": "southeast-us-savannas-forests",
+      "realm": "northern-america"
+    },
+    "NA26": {
+      "name": "Bermuda",
+      "subrealm": "southeast-us-savannas-forests",
+      "realm": "northern-america"
+    },
+    "NA27": {
+      "name": "Western Gulf Coastal Grasslands",
+      "subrealm": "southeast-us-savannas-forests",
+      "realm": "northern-america"
+    },
+    "NA28": {
+      "name": "Southern Mixed Forests & Blackland Prairies",
+      "subrealm": "southeast-us-savannas-forests",
+      "realm": "northern-america"
+    },
+    "NA29": {
+      "name": "Sierra Madre Forests & Mexican Drylands",
+      "subrealm": "mexican-drylands",
+      "realm": "northern-america"
+    },
+    "NA30": {
+      "name": "Baja California & Southern Deserts",
+      "subrealm": "mexican-drylands",
+      "realm": "northern-america"
+    },
+    "NA31": {
+      "name": "Greater California",
+      "subrealm": "north-pacific-coast",
+      "realm": "northern-america"
     },
     "NT1": {
       "name": "Chilean Mixed Forests",
       "subrealm": "andes-pacific-coast",
       "realm": "southern-america"
     },
-    "NT4": {
-      "name": "Chaco Grasslands",
+    "NT2": {
+      "name": "Patagonia Steppe & Low Mountains",
       "subrealm": "south-american-grasslands",
       "realm": "southern-america"
     },
@@ -145,13 +852,48 @@
       "subrealm": "south-american-grasslands",
       "realm": "southern-america"
     },
-    "NT2": {
-      "name": "Patagonia Steppe & Low Mountains",
+    "NT4": {
+      "name": "Chaco Grasslands",
       "subrealm": "south-american-grasslands",
       "realm": "southern-america"
     },
-    "NT15": {
-      "name": "Brazilian Atlantic Dry Forests",
+    "NT5": {
+      "name": "Andean Mountain Grasslands",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT6": {
+      "name": "Chilean Matorral Shrublands & Savanna",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT7": {
+      "name": "Juan Fernández & Desventuradas Islands",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT8": {
+      "name": "South American Coastal Deserts",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT9": {
+      "name": "Galápagos Islands",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT10": {
+      "name": "Ecuadorean Dry Coastal Forests & Flooded Grasslands",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT11": {
+      "name": "Andean Mountain Forests & Valleys",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america"
+    },
+    "NT12": {
+      "name": "Pantanal Flooded Grasslands & Dry Forests",
       "subrealm": "brazil-cerrado-atlantic-coast",
       "realm": "southern-america"
     },
@@ -160,23 +902,18 @@
       "subrealm": "brazil-cerrado-atlantic-coast",
       "realm": "southern-america"
     },
-    "NT12": {
-      "name": "Pantanal Flooded Grasslands & Dry Forests",
-      "subrealm": "brazil-cerrado-atlantic-coast",
-      "realm": "southern-america"
-    },
     "NT14": {
       "name": "Brazilian Atlantic Moist Forests",
       "subrealm": "brazil-cerrado-atlantic-coast",
       "realm": "southern-america"
     },
-    "NT20": {
-      "name": "Northern Amazonian Forests",
-      "subrealm": "amazonia",
+    "NT15": {
+      "name": "Brazilian Atlantic Dry Forests",
+      "subrealm": "brazil-cerrado-atlantic-coast",
       "realm": "southern-america"
     },
-    "NT18": {
-      "name": "Western Amazonian Forests & Plains",
+    "NT16": {
+      "name": "Amazon River Estuary",
       "subrealm": "amazonia",
       "realm": "southern-america"
     },
@@ -185,8 +922,8 @@
       "subrealm": "amazonia",
       "realm": "southern-america"
     },
-    "NT16": {
-      "name": "Amazon River Estuary",
+    "NT18": {
+      "name": "Western Amazonian Forests & Plains",
       "subrealm": "amazonia",
       "realm": "southern-america"
     },
@@ -195,8 +932,13 @@
       "subrealm": "amazonia",
       "realm": "southern-america"
     },
-    "NT23": {
-      "name": "Venezuelan Coast",
+    "NT20": {
+      "name": "Northern Amazonian Forests",
+      "subrealm": "amazonia",
+      "realm": "southern-america"
+    },
+    "NT21": {
+      "name": "Guianan Forests & Savanna",
       "subrealm": "upper-south-america",
       "realm": "southern-america"
     },
@@ -205,8 +947,8 @@
       "subrealm": "upper-south-america",
       "realm": "southern-america"
     },
-    "NT21": {
-      "name": "Guianan Forests & Savanna",
+    "NT23": {
+      "name": "Venezuelan Coast",
       "subrealm": "upper-south-america",
       "realm": "southern-america"
     },
@@ -239,6 +981,631 @@
       "name": "Mexican Subtropical Islands",
       "subrealm": "central-america",
       "realm": "central-america-caribbean"
+    },
+    "PA1": {
+      "name": "Russian Arctic Desert Islands",
+      "subrealm": "palearctic-tundra",
+      "realm": "subarctic-eurasia"
+    },
+    "PA2": {
+      "name": "Iceland",
+      "subrealm": "scandinavia-west-boreal-forests",
+      "realm": "subarctic-eurasia"
+    },
+    "PA3": {
+      "name": "Scandinavian Birch & Coastal Conifer Forests",
+      "subrealm": "scandinavia-west-boreal-forests",
+      "realm": "subarctic-eurasia"
+    },
+    "PA4": {
+      "name": "Greater Eurasian Tundra",
+      "subrealm": "palearctic-tundra",
+      "realm": "subarctic-eurasia"
+    },
+    "PA5": {
+      "name": "East Eurasian Coastal Tundra",
+      "subrealm": "sea-okhotsk-bering-tundra-taiga",
+      "realm": "subarctic-eurasia"
+    },
+    "PA6": {
+      "name": "Sea of Okhotsk Coastal Taiga, Meadows & Tundra",
+      "subrealm": "sea-okhotsk-bering-tundra-taiga",
+      "realm": "subarctic-eurasia"
+    },
+    "PA7": {
+      "name": "Siberian Boreal Forests & Mountain Tundra",
+      "subrealm": "siberia-east-boreal-forests",
+      "realm": "subarctic-eurasia"
+    },
+    "PA8": {
+      "name": "Ural Mountains & West Eurasian Taiga Forests",
+      "subrealm": "scandinavia-west-boreal-forests",
+      "realm": "subarctic-eurasia"
+    },
+    "PA9": {
+      "name": "Great Britain, Ireland & Faroe Islands",
+      "subrealm": "anglo-celtic-isles",
+      "realm": "western-eurasia"
+    },
+    "PA10": {
+      "name": "West European Coastal Mixed Forests",
+      "subrealm": "greater-european-mixed-forests",
+      "realm": "western-eurasia"
+    },
+    "PA11": {
+      "name": "Baltic Sea & Sarmatic Mixed Forests",
+      "subrealm": "greater-european-mixed-forests",
+      "realm": "western-eurasia"
+    },
+    "PA12": {
+      "name": "European Interior Mixed Forests",
+      "subrealm": "greater-european-mixed-forests",
+      "realm": "western-eurasia"
+    },
+    "PA13": {
+      "name": "Alps & Po Basin Mixed Forests",
+      "subrealm": "european-mountain-forests",
+      "realm": "western-eurasia"
+    },
+    "PA14": {
+      "name": "Carpathian Mountain & Plains Mixed Forests",
+      "subrealm": "european-mountain-forests",
+      "realm": "western-eurasia"
+    },
+    "PA15": {
+      "name": "Dinaric Mountains & Balkan Mixed Forests",
+      "subrealm": "european-mountain-forests",
+      "realm": "western-eurasia"
+    },
+    "PA16": {
+      "name": "Pontic Steppe Grasslands",
+      "subrealm": "black-sea-forests-steppe",
+      "realm": "western-eurasia"
+    },
+    "PA17": {
+      "name": "Black Sea, Caucasus-Anatolian Mixed Forests & Steppe",
+      "subrealm": "black-sea-forests-steppe",
+      "realm": "western-eurasia"
+    },
+    "PA18": {
+      "name": "Aegean Sea & East Mediterranean Mixed Forests",
+      "subrealm": "mediterranean",
+      "realm": "western-eurasia"
+    },
+    "PA19": {
+      "name": "Adriatic Sea & Central Mediterranean Mixed Forests",
+      "subrealm": "mediterranean",
+      "realm": "western-eurasia"
+    },
+    "PA20": {
+      "name": "Balearic Sea & West Mediterranean Mixed Forests",
+      "subrealm": "mediterranean",
+      "realm": "western-eurasia"
+    },
+    "PA21": {
+      "name": "Azores Forest Islands",
+      "subrealm": "mediterranean",
+      "realm": "western-eurasia"
+    },
+    "PA22": {
+      "name": "Madeira Evergreen Island",
+      "subrealm": "north-africa",
+      "realm": "southern-eurasia"
+    },
+    "PA23": {
+      "name": "South Mediterranean Mixed Woodlands & Forests",
+      "subrealm": "north-africa",
+      "realm": "southern-eurasia"
+    },
+    "PA24": {
+      "name": "Northern Sahara Deserts, Savannas & Marshes",
+      "subrealm": "north-africa",
+      "realm": "southern-eurasia"
+    },
+    "PA25": {
+      "name": "Southern Sahara Deserts & Mountain Woodlands",
+      "subrealm": "north-africa",
+      "realm": "southern-eurasia"
+    },
+    "PA26": {
+      "name": "Red Sea, Arabian Deserts & Salt Marshes",
+      "subrealm": "greater-arabian-peninsula",
+      "realm": "southern-eurasia"
+    },
+    "PA27": {
+      "name": "Zagros Mountain Forests & East Anatolian Steppe",
+      "subrealm": "persian-deserts-forests",
+      "realm": "central-eurasia"
+    },
+    "PA28": {
+      "name": "South Caspian Coastal & Mountain Mixed Forests",
+      "subrealm": "persian-deserts-forests",
+      "realm": "central-eurasia"
+    },
+    "PA29": {
+      "name": "Persian Deserts & Mountain Woodlands",
+      "subrealm": "persian-deserts-forests",
+      "realm": "central-eurasia"
+    },
+    "PA30": {
+      "name": "Afghan-Balochistan Drylands, Mountain Meadows & Conifer Forests",
+      "subrealm": "persian-deserts-forests",
+      "realm": "central-eurasia"
+    },
+    "PA31": {
+      "name": "Tian Shan-Pamir Grasslands, Mountain Steppe & Conifer Forests",
+      "subrealm": "tien-shan-mountains",
+      "realm": "central-eurasia"
+    },
+    "PA32": {
+      "name": "Central Asian Deserts & Riparian Woodlands",
+      "subrealm": "caspian-central-asian-deserts",
+      "realm": "central-eurasia"
+    },
+    "PA33": {
+      "name": "Caspian Sea, Coastal Deserts & Kopet Dagh Mountain Woodlands",
+      "subrealm": "caspian-central-asian-deserts",
+      "realm": "central-eurasia"
+    },
+    "PA34": {
+      "name": "Kazakh Forest Steppe & Grasslands",
+      "subrealm": "kazakh-steppes-hemiboreal-forests",
+      "realm": "central-eurasia"
+    },
+    "PA35": {
+      "name": "Siberian Hemiboreal Forests & Steppe",
+      "subrealm": "kazakh-steppes-hemiboreal-forests",
+      "realm": "central-eurasia"
+    },
+    "PA36": {
+      "name": "Sayan Mountain Conifer Forests, Alpine Meadows & Steppe",
+      "subrealm": "altai-sayan-mountains",
+      "realm": "central-eurasia"
+    },
+    "PA37": {
+      "name": "Altai Mountains & Ermin Valley",
+      "subrealm": "altai-sayan-mountains",
+      "realm": "central-eurasia"
+    },
+    "PA38": {
+      "name": "Junggar Semi-Desert & Ermin Valley Steppe",
+      "subrealm": "east-asian-deserts",
+      "realm": "eastern-eurasia"
+    },
+    "PA39": {
+      "name": "Taklimakan Desert & Lowland Deciduous Forests",
+      "subrealm": "east-asian-deserts",
+      "realm": "eastern-eurasia"
+    },
+    "PA40": {
+      "name": "Greater Tibetan Plateau Alpine Meadows & Shrublands",
+      "subrealm": "tibetan-plateau",
+      "realm": "eastern-eurasia"
+    },
+    "PA41": {
+      "name": "Himalayan-Pamir Alpine Shrub & Meadows",
+      "subrealm": "tibetan-plateau",
+      "realm": "eastern-eurasia"
+    },
+    "PA42": {
+      "name": "Ordos Plateau Steppe & Mountain Conifer Forests",
+      "subrealm": "mongolian-grasslands",
+      "realm": "eastern-eurasia"
+    },
+    "PA43": {
+      "name": "Greater Gobi Desert",
+      "subrealm": "east-asian-deserts",
+      "realm": "eastern-eurasia"
+    },
+    "PA44": {
+      "name": "Mongolian Grasslands, Alpine Meadows & Forest Steppe",
+      "subrealm": "mongolian-grasslands",
+      "realm": "eastern-eurasia"
+    },
+    "PA45": {
+      "name": "Dzhagdy Mountain Conifer Forests",
+      "subrealm": "northeast-asian-forests",
+      "realm": "eastern-eurasia"
+    },
+    "PA46": {
+      "name": "Manchuria-Ussuri Mixed Forests & Meadow Steppes",
+      "subrealm": "northeast-asian-forests",
+      "realm": "eastern-eurasia"
+    },
+    "PA47": {
+      "name": "Japan Forest Islands",
+      "subrealm": "japanese-islands",
+      "realm": "eastern-eurasia"
+    },
+    "PA48": {
+      "name": "Korean Peninsula Mixed Forests",
+      "subrealm": "northeast-asian-forests",
+      "realm": "eastern-eurasia"
+    },
+    "PA49": {
+      "name": "Loess Plateau & Huang He Plain Mixed Forests",
+      "subrealm": "central-east-asian-forests",
+      "realm": "eastern-eurasia"
+    },
+    "PA50": {
+      "name": "Chang Jiang Plain Evergreen Forests",
+      "subrealm": "central-east-asian-forests",
+      "realm": "eastern-eurasia"
+    },
+    "PA51": {
+      "name": "Sichuan Basin & Central Mountain Forests",
+      "subrealm": "central-east-asian-forests",
+      "realm": "eastern-eurasia"
+    },
+    "PA52": {
+      "name": "Guizhou & Yunnan Subtropical Forest Plateaus",
+      "subrealm": "central-east-asian-forests",
+      "realm": "eastern-eurasia"
+    },
+    "PA53": {
+      "name": "Hengduan Mountain Conifer Forests",
+      "subrealm": "central-east-asian-forests",
+      "realm": "eastern-eurasia"
+    },
+    "AT1": {
+      "name": "Tristan Volcanic Islands",
+      "subrealm": "southern-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT2": {
+      "name": "South African Cape Shrublands & Mountain Forests",
+      "subrealm": "southern-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT3": {
+      "name": "Amsterdam-Saint Paul Islands",
+      "subrealm": "madagascar-east-african-coast",
+      "realm": "afrotropics"
+    },
+    "AT4": {
+      "name": "Mascarene Tropical Forest Islands",
+      "subrealm": "madagascar-east-african-coast",
+      "realm": "afrotropics"
+    },
+    "AT5": {
+      "name": "Seychelles & Comoros Tropical Islands",
+      "subrealm": "madagascar-east-african-coast",
+      "realm": "afrotropics"
+    },
+    "AT6": {
+      "name": "Madagascar Island",
+      "subrealm": "madagascar-east-african-coast",
+      "realm": "afrotropics"
+    },
+    "AT7": {
+      "name": "East African Coastal Forests",
+      "subrealm": "madagascar-east-african-coast",
+      "realm": "afrotropics"
+    },
+    "AT8": {
+      "name": "Southeast African Subtropical Grasslands",
+      "subrealm": "southern-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT9": {
+      "name": "Greater Karoo & Kalahari Drylands",
+      "subrealm": "southern-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT10": {
+      "name": "Southwest African Coastal Drylands",
+      "subrealm": "southern-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT11": {
+      "name": "Greater African Subequatorial Savannas & Mixed Woodlands",
+      "subrealm": "sub-equatorial-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT12": {
+      "name": "Victoria Basin & Albertine Rift Forests",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT13": {
+      "name": "South Congolian Forest-Savannas & Coastal Scarp",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT14": {
+      "name": "Central Congolian Tropical Forests",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT15": {
+      "name": "North Congolian Lowland Forests",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT16": {
+      "name": "Mandara Mountain & North Congolian Forest-Savannas",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT17": {
+      "name": "Gulf of Guinea Coastal Forests & Mangroves",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT18": {
+      "name": "St. Helena & Ascension Islands",
+      "subrealm": "sub-equatorial-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT19": {
+      "name": "West African Coastal Forests & Savanna",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT20": {
+      "name": "West Sudanian Savanna",
+      "subrealm": "sub-saharan-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT21": {
+      "name": "Lake Turkana-Sudd Grasslands, Bushlands & Forests",
+      "subrealm": "horn-of-africa",
+      "realm": "afrotropics"
+    },
+    "AT22": {
+      "name": "South Red Sea & Gulf of Aden Coastal Drylands",
+      "subrealm": "horn-of-africa",
+      "realm": "afrotropics"
+    },
+    "AT23": {
+      "name": "Sahel Acacia Savannas",
+      "subrealm": "sub-saharan-afrotropics",
+      "realm": "afrotropics"
+    },
+    "AT24": {
+      "name": "Cape Verde Islands",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics"
+    },
+    "IM1": {
+      "name": "Central Indian Ocean Islands",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya"
+    },
+    "IM2": {
+      "name": "Indian Tropical Coastal Forests",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya"
+    },
+    "IM3": {
+      "name": "Indian Dry Deciduous Forests",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya"
+    },
+    "IM4": {
+      "name": "North Indomalayan Deserts & Scrub Forest",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya"
+    },
+    "IM5": {
+      "name": "Himalayan Mixed Forests & Grasslands",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya"
+    },
+    "IM6": {
+      "name": "North Indian Tropical Forests & Sundarbans",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya"
+    },
+    "IM7": {
+      "name": "Northern Deccan & Odisha Tropical Forests",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya"
+    },
+    "IM8": {
+      "name": "Greater Deccan-Sri Lankan Forests & Drylands",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya"
+    },
+    "IM9": {
+      "name": "Myanmar Coastal Rainforests & Andaman Sea Islands",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya"
+    },
+    "IM10": {
+      "name": "Arakan Mountains & Northern Triangle Forests",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya"
+    },
+    "IM11": {
+      "name": "Irrawaddy & North Indochina Mixed Forests",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya"
+    },
+    "IM12": {
+      "name": "Indochina Mixed Forests & Peatlands",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya"
+    },
+    "IM13": {
+      "name": "South China Subtropical Evergreen & Monsoon Forests",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya"
+    },
+    "IM14": {
+      "name": "Nansei Islands Subtropical Evergreen Forests",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya"
+    },
+    "IM15": {
+      "name": "Philippines & Sulu Sea Tropical Forests",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya"
+    },
+    "IM16": {
+      "name": "Borneo Tropical Forests & Sundaland Heath Forests",
+      "subrealm": "malaysia-western-indonesia",
+      "realm": "indomalaya"
+    },
+    "IM17": {
+      "name": "Javan-Bali Tropical Rainforests",
+      "subrealm": "malaysia-western-indonesia",
+      "realm": "indomalaya"
+    },
+    "IM18": {
+      "name": "Peninsular Malaysian & Sumatran Tropical Rainforests",
+      "subrealm": "malaysia-western-indonesia",
+      "realm": "indomalaya"
+    },
+    "AU1": {
+      "name": "New Zealand",
+      "subrealm": "new-zealand",
+      "realm": "australasia"
+    },
+    "AU2": {
+      "name": "Lord Howe & Norfolk Islands",
+      "subrealm": "new-zealand",
+      "realm": "australasia"
+    },
+    "AU3": {
+      "name": "East Australian Temperate Forests & Mountain Shrublands",
+      "subrealm": "australia",
+      "realm": "australasia"
+    },
+    "AU4": {
+      "name": "East Australian Mediterranean Woodlands & Temperate Savannas",
+      "subrealm": "australia",
+      "realm": "australasia"
+    },
+    "AU5": {
+      "name": "South Australian Mediterranean Forests, Woodlands & Scrub",
+      "subrealm": "australia",
+      "realm": "australasia"
+    },
+    "AU6": {
+      "name": "West Australian Dry Coastal Shrublands",
+      "subrealm": "australia",
+      "realm": "australasia"
+    },
+    "AU7": {
+      "name": "Greater Australian Interior Desert & Shrublands",
+      "subrealm": "australia",
+      "realm": "australasia"
+    },
+    "AU8": {
+      "name": "North Australian Tropical Savannas",
+      "subrealm": "australia",
+      "realm": "australasia"
+    },
+    "AU9": {
+      "name": "Queensland Tropical Rainforests & Savannas",
+      "subrealm": "australia",
+      "realm": "australasia"
+    },
+    "AU10": {
+      "name": "Coral Sea & New Caledonia Islands",
+      "subrealm": "australasian-islands-eastern-indonesia",
+      "realm": "australasia"
+    },
+    "AU11": {
+      "name": "Vanuatu Islands",
+      "subrealm": "australasian-islands-eastern-indonesia",
+      "realm": "australasia"
+    },
+    "AU12": {
+      "name": "Solomon Islands",
+      "subrealm": "australasian-islands-eastern-indonesia",
+      "realm": "australasia"
+    },
+    "AU13": {
+      "name": "New Guinea & Surrounding Islands",
+      "subrealm": "australasian-islands-eastern-indonesia",
+      "realm": "australasia"
+    },
+    "AU14": {
+      "name": "Sulawesi & Maluku Islands",
+      "subrealm": "australasian-islands-eastern-indonesia",
+      "realm": "australasia"
+    },
+    "AU15": {
+      "name": "Southeast Indonesian Dry Forest Islands",
+      "subrealm": "australasian-islands-eastern-indonesia",
+      "realm": "australasia"
+    },
+    "AU16": {
+      "name": "Subantarctic Antipodes Islands",
+      "subrealm": "new-zealand",
+      "realm": "australasia"
+    },
+    "OC1": {
+      "name": "Salas y Gómez & Easter Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania"
+    },
+    "OC2": {
+      "name": "Marquesas Tropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania"
+    },
+    "OC3": {
+      "name": "Southeast Polynesian Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania"
+    },
+    "OC4": {
+      "name": "Central Polynesian Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania"
+    },
+    "OC5": {
+      "name": "Samoa & West Polynesian Tropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania"
+    },
+    "OC6": {
+      "name": "Fiji & Tongan Tropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania"
+    },
+    "OC7": {
+      "name": "East Micronesian Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania"
+    },
+    "OC8": {
+      "name": "Palau & Caroline Tropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania"
+    },
+    "OC9": {
+      "name": "Guam & Marianas Dry Tropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania"
+    },
+    "OC10": {
+      "name": "Ogasawara Subtropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania"
+    },
+    "OC11": {
+      "name": "Hawai’i Tropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania"
+    },
+    "AN1": {
+      "name": "Continental Antarctica",
+      "subrealm": "antarctic-continent-islands",
+      "realm": "antarctica"
+    },
+    "AN2": {
+      "name": "Antarctic Peninsula & Scotia Sea",
+      "subrealm": "antarctic-continent-islands",
+      "realm": "antarctica"
+    },
+    "AN3": {
+      "name": "Subantarctic Indian Ocean Islands",
+      "subrealm": "antarctic-continent-islands",
+      "realm": "antarctica"
     }
   },
   "range_display_groups": {
@@ -268,6 +1635,2324 @@
     "worldwide": {
       "name": "Worldwide",
       "min_continents": 5
+    },
+    "nearctic": {
+      "name": "Nearctic",
+      "realms": [
+        "subarctic-america",
+        "northern-america"
+      ]
+    },
+    "neotropics": {
+      "name": "Neotropics",
+      "realms": [
+        "central-america-caribbean",
+        "southern-america"
+      ]
+    },
+    "palearctic": {
+      "name": "Palearctic",
+      "realms": [
+        "subarctic-eurasia",
+        "western-eurasia",
+        "central-eurasia",
+        "eastern-eurasia",
+        "southern-eurasia"
+      ]
+    },
+    "old-world": {
+      "name": "Old World",
+      "realms": [
+        "subarctic-eurasia",
+        "western-eurasia",
+        "central-eurasia",
+        "eastern-eurasia",
+        "southern-eurasia",
+        "afrotropics",
+        "indomalaya",
+        "australasia",
+        "oceania"
+      ]
+    },
+    "global-one-earth": {
+      "name": "Global One Earth Framework",
+      "realms": [
+        "subarctic-america",
+        "northern-america",
+        "central-america-caribbean",
+        "southern-america",
+        "subarctic-eurasia",
+        "western-eurasia",
+        "central-eurasia",
+        "eastern-eurasia",
+        "southern-eurasia",
+        "afrotropics",
+        "indomalaya",
+        "australasia",
+        "oceania",
+        "antarctica"
+      ]
     }
+  },
+  "marine_frameworks": {
+    "coastal_shelf": {
+      "framework": "Marine Ecoregions of the World (MEOW)",
+      "year": 2007,
+      "scope": "Coastal, intertidal and continental-shelf marine biogeography; principally benthos above 200 m and overlying neritic water column.",
+      "animal_field": "marine_regions",
+      "recommended_storage_level": "ecoregion",
+      "id_pattern": "MEOW-E###",
+      "realms": {
+        "MEOW-R-arctic": {
+          "name": "Arctic",
+          "provinces": [
+            "MEOW-P01"
+          ]
+        },
+        "MEOW-R-temperate-northern-atlantic": {
+          "name": "Temperate Northern Atlantic",
+          "provinces": [
+            "MEOW-P02",
+            "MEOW-P03",
+            "MEOW-P04",
+            "MEOW-P05",
+            "MEOW-P06",
+            "MEOW-P07"
+          ]
+        },
+        "MEOW-R-temperate-northern-pacific": {
+          "name": "Temperate Northern Pacific",
+          "provinces": [
+            "MEOW-P08",
+            "MEOW-P09",
+            "MEOW-P10",
+            "MEOW-P11"
+          ]
+        },
+        "MEOW-R-tropical-atlantic": {
+          "name": "Tropical Atlantic",
+          "provinces": [
+            "MEOW-P12",
+            "MEOW-P13",
+            "MEOW-P14",
+            "MEOW-P15",
+            "MEOW-P16",
+            "MEOW-P17"
+          ]
+        },
+        "MEOW-R-western-indo-pacific": {
+          "name": "Western Indo-Pacific",
+          "provinces": [
+            "MEOW-P18",
+            "MEOW-P19",
+            "MEOW-P20",
+            "MEOW-P21",
+            "MEOW-P22",
+            "MEOW-P23",
+            "MEOW-P24"
+          ]
+        },
+        "MEOW-R-central-indo-pacific": {
+          "name": "Central Indo-Pacific",
+          "provinces": [
+            "MEOW-P25",
+            "MEOW-P26",
+            "MEOW-P27",
+            "MEOW-P28",
+            "MEOW-P29",
+            "MEOW-P30",
+            "MEOW-P31",
+            "MEOW-P32",
+            "MEOW-P33",
+            "MEOW-P34",
+            "MEOW-P35",
+            "MEOW-P36"
+          ]
+        },
+        "MEOW-R-eastern-indo-pacific": {
+          "name": "Eastern Indo-Pacific",
+          "provinces": [
+            "MEOW-P37",
+            "MEOW-P38",
+            "MEOW-P39",
+            "MEOW-P40",
+            "MEOW-P41",
+            "MEOW-P42"
+          ]
+        },
+        "MEOW-R-tropical-eastern-pacific": {
+          "name": "Tropical Eastern Pacific",
+          "provinces": [
+            "MEOW-P43",
+            "MEOW-P44"
+          ]
+        },
+        "MEOW-R-temperate-south-america": {
+          "name": "Temperate South America",
+          "provinces": [
+            "MEOW-P45",
+            "MEOW-P46",
+            "MEOW-P47",
+            "MEOW-P48",
+            "MEOW-P49"
+          ]
+        },
+        "MEOW-R-temperate-southern-africa": {
+          "name": "Temperate Southern Africa",
+          "provinces": [
+            "MEOW-P50",
+            "MEOW-P51",
+            "MEOW-P52"
+          ]
+        },
+        "MEOW-R-temperate-australasia": {
+          "name": "Temperate Australasia",
+          "provinces": [
+            "MEOW-P53",
+            "MEOW-P54",
+            "MEOW-P55",
+            "MEOW-P56",
+            "MEOW-P57",
+            "MEOW-P58"
+          ]
+        },
+        "MEOW-R-southern-ocean": {
+          "name": "Southern Ocean",
+          "provinces": [
+            "MEOW-P59",
+            "MEOW-P60",
+            "MEOW-P61",
+            "MEOW-P62"
+          ]
+        }
+      },
+      "provinces": {
+        "MEOW-P01": {
+          "name": "Arctic",
+          "realm": "MEOW-R-arctic",
+          "ecoregions": [
+            "MEOW-E001",
+            "MEOW-E002",
+            "MEOW-E003",
+            "MEOW-E004",
+            "MEOW-E005",
+            "MEOW-E006",
+            "MEOW-E007",
+            "MEOW-E008",
+            "MEOW-E009",
+            "MEOW-E010",
+            "MEOW-E011",
+            "MEOW-E012",
+            "MEOW-E013",
+            "MEOW-E014",
+            "MEOW-E015",
+            "MEOW-E016",
+            "MEOW-E017",
+            "MEOW-E018",
+            "MEOW-E019"
+          ]
+        },
+        "MEOW-P02": {
+          "name": "Northern European Seas",
+          "realm": "MEOW-R-temperate-northern-atlantic",
+          "ecoregions": [
+            "MEOW-E020",
+            "MEOW-E021",
+            "MEOW-E022",
+            "MEOW-E023",
+            "MEOW-E024",
+            "MEOW-E025",
+            "MEOW-E026"
+          ]
+        },
+        "MEOW-P03": {
+          "name": "Lusitanian",
+          "realm": "MEOW-R-temperate-northern-atlantic",
+          "ecoregions": [
+            "MEOW-E027",
+            "MEOW-E028",
+            "MEOW-E029"
+          ]
+        },
+        "MEOW-P04": {
+          "name": "Mediterranean Sea",
+          "realm": "MEOW-R-temperate-northern-atlantic",
+          "ecoregions": [
+            "MEOW-E030",
+            "MEOW-E031",
+            "MEOW-E032",
+            "MEOW-E033",
+            "MEOW-E034",
+            "MEOW-E035",
+            "MEOW-E036"
+          ]
+        },
+        "MEOW-P05": {
+          "name": "Cold Temperate Northwest Atlantic",
+          "realm": "MEOW-R-temperate-northern-atlantic",
+          "ecoregions": [
+            "MEOW-E037",
+            "MEOW-E038",
+            "MEOW-E039",
+            "MEOW-E040",
+            "MEOW-E041"
+          ]
+        },
+        "MEOW-P06": {
+          "name": "Warm Temperate Northwest Atlantic",
+          "realm": "MEOW-R-temperate-northern-atlantic",
+          "ecoregions": [
+            "MEOW-E042",
+            "MEOW-E043"
+          ]
+        },
+        "MEOW-P07": {
+          "name": "Black Sea",
+          "realm": "MEOW-R-temperate-northern-atlantic",
+          "ecoregions": [
+            "MEOW-E044"
+          ]
+        },
+        "MEOW-P08": {
+          "name": "Cold Temperate Northwest Pacific",
+          "realm": "MEOW-R-temperate-northern-pacific",
+          "ecoregions": [
+            "MEOW-E045",
+            "MEOW-E046",
+            "MEOW-E047",
+            "MEOW-E048",
+            "MEOW-E049",
+            "MEOW-E050"
+          ]
+        },
+        "MEOW-P09": {
+          "name": "Warm Temperate Northwest Pacific",
+          "realm": "MEOW-R-temperate-northern-pacific",
+          "ecoregions": [
+            "MEOW-E051",
+            "MEOW-E052"
+          ]
+        },
+        "MEOW-P10": {
+          "name": "Cold Temperate Northeast Pacific",
+          "realm": "MEOW-R-temperate-northern-pacific",
+          "ecoregions": [
+            "MEOW-E053",
+            "MEOW-E054",
+            "MEOW-E055",
+            "MEOW-E056",
+            "MEOW-E057",
+            "MEOW-E058"
+          ]
+        },
+        "MEOW-P11": {
+          "name": "Warm Temperate Northeast Pacific",
+          "realm": "MEOW-R-temperate-northern-pacific",
+          "ecoregions": [
+            "MEOW-E059",
+            "MEOW-E060",
+            "MEOW-E061"
+          ]
+        },
+        "MEOW-P12": {
+          "name": "Tropical Northwestern Atlantic",
+          "realm": "MEOW-R-tropical-atlantic",
+          "ecoregions": [
+            "MEOW-E062",
+            "MEOW-E063",
+            "MEOW-E064",
+            "MEOW-E065",
+            "MEOW-E066",
+            "MEOW-E067",
+            "MEOW-E068",
+            "MEOW-E069",
+            "MEOW-E070"
+          ]
+        },
+        "MEOW-P13": {
+          "name": "North Brazil Shelf",
+          "realm": "MEOW-R-tropical-atlantic",
+          "ecoregions": [
+            "MEOW-E071",
+            "MEOW-E072"
+          ]
+        },
+        "MEOW-P14": {
+          "name": "Tropical Southwestern Atlantic",
+          "realm": "MEOW-R-tropical-atlantic",
+          "ecoregions": [
+            "MEOW-E073",
+            "MEOW-E074",
+            "MEOW-E075",
+            "MEOW-E076",
+            "MEOW-E077"
+          ]
+        },
+        "MEOW-P15": {
+          "name": "St. Helena and Ascension Islands",
+          "realm": "MEOW-R-tropical-atlantic",
+          "ecoregions": [
+            "MEOW-E078"
+          ]
+        },
+        "MEOW-P16": {
+          "name": "West African Transition",
+          "realm": "MEOW-R-tropical-atlantic",
+          "ecoregions": [
+            "MEOW-E079",
+            "MEOW-E080"
+          ]
+        },
+        "MEOW-P17": {
+          "name": "Gulf of Guinea",
+          "realm": "MEOW-R-tropical-atlantic",
+          "ecoregions": [
+            "MEOW-E081",
+            "MEOW-E082",
+            "MEOW-E083",
+            "MEOW-E084",
+            "MEOW-E085",
+            "MEOW-E086"
+          ]
+        },
+        "MEOW-P18": {
+          "name": "Red Sea and Gulf of Aden",
+          "realm": "MEOW-R-western-indo-pacific",
+          "ecoregions": [
+            "MEOW-E087",
+            "MEOW-E088",
+            "MEOW-E089"
+          ]
+        },
+        "MEOW-P19": {
+          "name": "Somali/Arabian",
+          "realm": "MEOW-R-western-indo-pacific",
+          "ecoregions": [
+            "MEOW-E090",
+            "MEOW-E091",
+            "MEOW-E092",
+            "MEOW-E093"
+          ]
+        },
+        "MEOW-P20": {
+          "name": "Western Indian Ocean",
+          "realm": "MEOW-R-western-indo-pacific",
+          "ecoregions": [
+            "MEOW-E094",
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E097",
+            "MEOW-E098",
+            "MEOW-E099",
+            "MEOW-E100",
+            "MEOW-E101",
+            "MEOW-E102"
+          ]
+        },
+        "MEOW-P21": {
+          "name": "West and South Indian Shelf",
+          "realm": "MEOW-R-western-indo-pacific",
+          "ecoregions": [
+            "MEOW-E103",
+            "MEOW-E104"
+          ]
+        },
+        "MEOW-P22": {
+          "name": "Central Indian Ocean Islands",
+          "realm": "MEOW-R-western-indo-pacific",
+          "ecoregions": [
+            "MEOW-E105",
+            "MEOW-E106"
+          ]
+        },
+        "MEOW-P23": {
+          "name": "Bay of Bengal",
+          "realm": "MEOW-R-western-indo-pacific",
+          "ecoregions": [
+            "MEOW-E107",
+            "MEOW-E108"
+          ]
+        },
+        "MEOW-P24": {
+          "name": "Andaman",
+          "realm": "MEOW-R-western-indo-pacific",
+          "ecoregions": [
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E111"
+          ]
+        },
+        "MEOW-P25": {
+          "name": "South China Sea",
+          "realm": "MEOW-R-central-indo-pacific",
+          "ecoregions": [
+            "MEOW-E112",
+            "MEOW-E113",
+            "MEOW-E114"
+          ]
+        },
+        "MEOW-P26": {
+          "name": "Sunda Shelf",
+          "realm": "MEOW-R-central-indo-pacific",
+          "ecoregions": [
+            "MEOW-E115",
+            "MEOW-E116",
+            "MEOW-E117",
+            "MEOW-E118"
+          ]
+        },
+        "MEOW-P27": {
+          "name": "Java Transitional",
+          "realm": "MEOW-R-central-indo-pacific",
+          "ecoregions": [
+            "MEOW-E119",
+            "MEOW-E120"
+          ]
+        },
+        "MEOW-P28": {
+          "name": "South Kuroshio",
+          "realm": "MEOW-R-central-indo-pacific",
+          "ecoregions": [
+            "MEOW-E121"
+          ]
+        },
+        "MEOW-P29": {
+          "name": "Tropical Northwestern Pacific",
+          "realm": "MEOW-R-central-indo-pacific",
+          "ecoregions": [
+            "MEOW-E122",
+            "MEOW-E123",
+            "MEOW-E124",
+            "MEOW-E125"
+          ]
+        },
+        "MEOW-P30": {
+          "name": "Western Coral Triangle",
+          "realm": "MEOW-R-central-indo-pacific",
+          "ecoregions": [
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E131",
+            "MEOW-E132",
+            "MEOW-E133"
+          ]
+        },
+        "MEOW-P31": {
+          "name": "Eastern Coral Triangle",
+          "realm": "MEOW-R-central-indo-pacific",
+          "ecoregions": [
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E136",
+            "MEOW-E137"
+          ]
+        },
+        "MEOW-P32": {
+          "name": "Sahul Shelf",
+          "realm": "MEOW-R-central-indo-pacific",
+          "ecoregions": [
+            "MEOW-E138",
+            "MEOW-E139",
+            "MEOW-E140",
+            "MEOW-E141"
+          ]
+        },
+        "MEOW-P33": {
+          "name": "Northeast Australian Shelf",
+          "realm": "MEOW-R-central-indo-pacific",
+          "ecoregions": [
+            "MEOW-E142",
+            "MEOW-E143"
+          ]
+        },
+        "MEOW-P34": {
+          "name": "Northwest Australian Shelf",
+          "realm": "MEOW-R-central-indo-pacific",
+          "ecoregions": [
+            "MEOW-E144",
+            "MEOW-E145"
+          ]
+        },
+        "MEOW-P35": {
+          "name": "Tropical Southwestern Pacific",
+          "realm": "MEOW-R-central-indo-pacific",
+          "ecoregions": [
+            "MEOW-E146",
+            "MEOW-E147",
+            "MEOW-E148",
+            "MEOW-E149",
+            "MEOW-E150"
+          ]
+        },
+        "MEOW-P36": {
+          "name": "Lord Howe and Norfolk Islands",
+          "realm": "MEOW-R-central-indo-pacific",
+          "ecoregions": [
+            "MEOW-E151"
+          ]
+        },
+        "MEOW-P37": {
+          "name": "Hawaii",
+          "realm": "MEOW-R-eastern-indo-pacific",
+          "ecoregions": [
+            "MEOW-E152"
+          ]
+        },
+        "MEOW-P38": {
+          "name": "Marshall, Gilbert, and Ellis Islands",
+          "realm": "MEOW-R-eastern-indo-pacific",
+          "ecoregions": [
+            "MEOW-E153",
+            "MEOW-E154"
+          ]
+        },
+        "MEOW-P39": {
+          "name": "Central Polynesia",
+          "realm": "MEOW-R-eastern-indo-pacific",
+          "ecoregions": [
+            "MEOW-E155",
+            "MEOW-E156",
+            "MEOW-E157"
+          ]
+        },
+        "MEOW-P40": {
+          "name": "Southeast Polynesia",
+          "realm": "MEOW-R-eastern-indo-pacific",
+          "ecoregions": [
+            "MEOW-E158",
+            "MEOW-E159",
+            "MEOW-E160",
+            "MEOW-E161"
+          ]
+        },
+        "MEOW-P41": {
+          "name": "Marquesas",
+          "realm": "MEOW-R-eastern-indo-pacific",
+          "ecoregions": [
+            "MEOW-E162"
+          ]
+        },
+        "MEOW-P42": {
+          "name": "Easter Island",
+          "realm": "MEOW-R-eastern-indo-pacific",
+          "ecoregions": [
+            "MEOW-E163"
+          ]
+        },
+        "MEOW-P43": {
+          "name": "Tropical East Pacific",
+          "realm": "MEOW-R-tropical-eastern-pacific",
+          "ecoregions": [
+            "MEOW-E164",
+            "MEOW-E165",
+            "MEOW-E166",
+            "MEOW-E167",
+            "MEOW-E168",
+            "MEOW-E169",
+            "MEOW-E170",
+            "MEOW-E171"
+          ]
+        },
+        "MEOW-P44": {
+          "name": "Galapagos",
+          "realm": "MEOW-R-tropical-eastern-pacific",
+          "ecoregions": [
+            "MEOW-E172",
+            "MEOW-E173",
+            "MEOW-E174"
+          ]
+        },
+        "MEOW-P45": {
+          "name": "Warm Temperate Southeastern Pacific",
+          "realm": "MEOW-R-temperate-south-america",
+          "ecoregions": [
+            "MEOW-E175",
+            "MEOW-E176",
+            "MEOW-E177",
+            "MEOW-E178"
+          ]
+        },
+        "MEOW-P46": {
+          "name": "Juan Fernández and Desventuradas",
+          "realm": "MEOW-R-temperate-south-america",
+          "ecoregions": [
+            "MEOW-E179"
+          ]
+        },
+        "MEOW-P47": {
+          "name": "Warm Temperate Southwestern Atlantic",
+          "realm": "MEOW-R-temperate-south-america",
+          "ecoregions": [
+            "MEOW-E180",
+            "MEOW-E181",
+            "MEOW-E182",
+            "MEOW-E183"
+          ]
+        },
+        "MEOW-P48": {
+          "name": "Magellanic",
+          "realm": "MEOW-R-temperate-south-america",
+          "ecoregions": [
+            "MEOW-E184",
+            "MEOW-E185",
+            "MEOW-E186",
+            "MEOW-E187",
+            "MEOW-E188"
+          ]
+        },
+        "MEOW-P49": {
+          "name": "Tristan Gough",
+          "realm": "MEOW-R-temperate-south-america",
+          "ecoregions": [
+            "MEOW-E189"
+          ]
+        },
+        "MEOW-P50": {
+          "name": "Benguela",
+          "realm": "MEOW-R-temperate-southern-africa",
+          "ecoregions": [
+            "MEOW-E190",
+            "MEOW-E191"
+          ]
+        },
+        "MEOW-P51": {
+          "name": "Agulhas",
+          "realm": "MEOW-R-temperate-southern-africa",
+          "ecoregions": [
+            "MEOW-E192",
+            "MEOW-E193"
+          ]
+        },
+        "MEOW-P52": {
+          "name": "Amsterdam–St Paul",
+          "realm": "MEOW-R-temperate-southern-africa",
+          "ecoregions": [
+            "MEOW-E194"
+          ]
+        },
+        "MEOW-P53": {
+          "name": "Northern New Zealand",
+          "realm": "MEOW-R-temperate-australasia",
+          "ecoregions": [
+            "MEOW-E195",
+            "MEOW-E196",
+            "MEOW-E197"
+          ]
+        },
+        "MEOW-P54": {
+          "name": "Southern New Zealand",
+          "realm": "MEOW-R-temperate-australasia",
+          "ecoregions": [
+            "MEOW-E198",
+            "MEOW-E199",
+            "MEOW-E200",
+            "MEOW-E201"
+          ]
+        },
+        "MEOW-P55": {
+          "name": "East Central Australian Shelf",
+          "realm": "MEOW-R-temperate-australasia",
+          "ecoregions": [
+            "MEOW-E202",
+            "MEOW-E203"
+          ]
+        },
+        "MEOW-P56": {
+          "name": "Southeast Australian Shelf",
+          "realm": "MEOW-R-temperate-australasia",
+          "ecoregions": [
+            "MEOW-E204",
+            "MEOW-E205",
+            "MEOW-E206"
+          ]
+        },
+        "MEOW-P57": {
+          "name": "Southwest Australian Shelf",
+          "realm": "MEOW-R-temperate-australasia",
+          "ecoregions": [
+            "MEOW-E207",
+            "MEOW-E208",
+            "MEOW-E209"
+          ]
+        },
+        "MEOW-P58": {
+          "name": "West Central Australian Shelf",
+          "realm": "MEOW-R-temperate-australasia",
+          "ecoregions": [
+            "MEOW-E210",
+            "MEOW-E211"
+          ]
+        },
+        "MEOW-P59": {
+          "name": "Subantarctic Islands",
+          "realm": "MEOW-R-southern-ocean",
+          "ecoregions": [
+            "MEOW-E212",
+            "MEOW-E213",
+            "MEOW-E214",
+            "MEOW-E215",
+            "MEOW-E216",
+            "MEOW-E217",
+            "MEOW-E218"
+          ]
+        },
+        "MEOW-P60": {
+          "name": "Scotia Sea",
+          "realm": "MEOW-R-southern-ocean",
+          "ecoregions": [
+            "MEOW-E219",
+            "MEOW-E220",
+            "MEOW-E221",
+            "MEOW-E222",
+            "MEOW-E223"
+          ]
+        },
+        "MEOW-P61": {
+          "name": "Continental High Antarctic",
+          "realm": "MEOW-R-southern-ocean",
+          "ecoregions": [
+            "MEOW-E224",
+            "MEOW-E225",
+            "MEOW-E226",
+            "MEOW-E227",
+            "MEOW-E228",
+            "MEOW-E229"
+          ]
+        },
+        "MEOW-P62": {
+          "name": "Subantarctic New Zealand",
+          "realm": "MEOW-R-southern-ocean",
+          "ecoregions": [
+            "MEOW-E230",
+            "MEOW-E231",
+            "MEOW-E232"
+          ]
+        }
+      },
+      "ecoregions": {
+        "MEOW-E001": {
+          "name": "North Greenland",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E002": {
+          "name": "North and East Iceland",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E003": {
+          "name": "East Greenland Shelf",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E004": {
+          "name": "West Greenland Shelf",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E005": {
+          "name": "Northern Grand Banks–Southern Labrador",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E006": {
+          "name": "Northern Labrador",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E007": {
+          "name": "Baffin Bay–Davis Strait",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E008": {
+          "name": "Hudson Complex",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E009": {
+          "name": "Lancaster Sound",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E010": {
+          "name": "High Arctic Archipelago",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E011": {
+          "name": "Beaufort–Amundsen–Viscount Melville–Queen Maud",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E012": {
+          "name": "Beaufort Sea—continental coast and shelf",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E013": {
+          "name": "Chukchi Sea",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E014": {
+          "name": "Eastern Bering Sea",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E015": {
+          "name": "East Siberian Sea",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E016": {
+          "name": "Laptev Sea",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E017": {
+          "name": "Kara Sea",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E018": {
+          "name": "North and East Barents Sea",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E019": {
+          "name": "White Sea",
+          "province": "MEOW-P01",
+          "realm": "MEOW-R-arctic"
+        },
+        "MEOW-E020": {
+          "name": "South and West Iceland",
+          "province": "MEOW-P02",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E021": {
+          "name": "Faroe Plateau",
+          "province": "MEOW-P02",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E022": {
+          "name": "Southern Norway",
+          "province": "MEOW-P02",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E023": {
+          "name": "Northern Norway and Finnmark",
+          "province": "MEOW-P02",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E024": {
+          "name": "Baltic Sea",
+          "province": "MEOW-P02",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E025": {
+          "name": "North Sea",
+          "province": "MEOW-P02",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E026": {
+          "name": "Celtic Seas",
+          "province": "MEOW-P02",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E027": {
+          "name": "South European Atlantic Shelf",
+          "province": "MEOW-P03",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E028": {
+          "name": "Saharan Upwelling",
+          "province": "MEOW-P03",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E029": {
+          "name": "Azores Canaries Madeira",
+          "province": "MEOW-P03",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E030": {
+          "name": "Adriatic Sea",
+          "province": "MEOW-P04",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E031": {
+          "name": "Aegean Sea",
+          "province": "MEOW-P04",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E032": {
+          "name": "Levantine Sea",
+          "province": "MEOW-P04",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E033": {
+          "name": "Tunisian Plateau/Gulf of Sidra",
+          "province": "MEOW-P04",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E034": {
+          "name": "Ionian Sea",
+          "province": "MEOW-P04",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E035": {
+          "name": "Western Mediterranean",
+          "province": "MEOW-P04",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E036": {
+          "name": "Alboran Sea",
+          "province": "MEOW-P04",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E037": {
+          "name": "Gulf of St. Lawrence–Eastern Scotian Shelf",
+          "province": "MEOW-P05",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E038": {
+          "name": "Southern Grand Banks–South Newfoundland",
+          "province": "MEOW-P05",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E039": {
+          "name": "Scotian Shelf",
+          "province": "MEOW-P05",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E040": {
+          "name": "Gulf of Maine/Bay of Fundy",
+          "province": "MEOW-P05",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E041": {
+          "name": "Virginian",
+          "province": "MEOW-P05",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E042": {
+          "name": "Carolinian",
+          "province": "MEOW-P06",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E043": {
+          "name": "Northern Gulf of Mexico",
+          "province": "MEOW-P06",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E044": {
+          "name": "Black Sea",
+          "province": "MEOW-P07",
+          "realm": "MEOW-R-temperate-northern-atlantic"
+        },
+        "MEOW-E045": {
+          "name": "Sea of Okhotsk",
+          "province": "MEOW-P08",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E046": {
+          "name": "Kamchatka Shelf and Coast",
+          "province": "MEOW-P08",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E047": {
+          "name": "Oyashio Current",
+          "province": "MEOW-P08",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E048": {
+          "name": "Northeastern Honshu",
+          "province": "MEOW-P08",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E049": {
+          "name": "Sea of Japan",
+          "province": "MEOW-P08",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E050": {
+          "name": "Yellow Sea",
+          "province": "MEOW-P08",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E051": {
+          "name": "Central Kuroshio Current",
+          "province": "MEOW-P09",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E052": {
+          "name": "East China Sea",
+          "province": "MEOW-P09",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E053": {
+          "name": "Aleutian Islands",
+          "province": "MEOW-P10",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E054": {
+          "name": "Gulf of Alaska",
+          "province": "MEOW-P10",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E055": {
+          "name": "North American Pacific Fjordland",
+          "province": "MEOW-P10",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E056": {
+          "name": "Puget Trough/Georgia Basin",
+          "province": "MEOW-P10",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E057": {
+          "name": "Oregon, Washington, Vancouver Coast and Shelf",
+          "province": "MEOW-P10",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E058": {
+          "name": "Northern California",
+          "province": "MEOW-P10",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E059": {
+          "name": "Southern California Bight",
+          "province": "MEOW-P11",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E060": {
+          "name": "Cortezian",
+          "province": "MEOW-P11",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E061": {
+          "name": "Magdalena Transition",
+          "province": "MEOW-P11",
+          "realm": "MEOW-R-temperate-northern-pacific"
+        },
+        "MEOW-E062": {
+          "name": "Bermuda",
+          "province": "MEOW-P12",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E063": {
+          "name": "Bahamian",
+          "province": "MEOW-P12",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E064": {
+          "name": "Eastern Caribbean",
+          "province": "MEOW-P12",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E065": {
+          "name": "Greater Antilles",
+          "province": "MEOW-P12",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E066": {
+          "name": "Southern Caribbean",
+          "province": "MEOW-P12",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E067": {
+          "name": "Southwestern Caribbean",
+          "province": "MEOW-P12",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E068": {
+          "name": "Western Caribbean",
+          "province": "MEOW-P12",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E069": {
+          "name": "Southern Gulf of Mexico",
+          "province": "MEOW-P12",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E070": {
+          "name": "Floridian",
+          "province": "MEOW-P12",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E071": {
+          "name": "Guianan",
+          "province": "MEOW-P13",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E072": {
+          "name": "Amazonia",
+          "province": "MEOW-P13",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E073": {
+          "name": "Sao Pedro and Sao Paulo Islands",
+          "province": "MEOW-P14",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E074": {
+          "name": "Fernando de Noronha and Atoll das Rocas",
+          "province": "MEOW-P14",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E075": {
+          "name": "Northeastern Brazil",
+          "province": "MEOW-P14",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E076": {
+          "name": "Eastern Brazil",
+          "province": "MEOW-P14",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E077": {
+          "name": "Trindade and Martin Vaz Islands",
+          "province": "MEOW-P14",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E078": {
+          "name": "St. Helena and Ascension Islands",
+          "province": "MEOW-P15",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E079": {
+          "name": "Cape Verde",
+          "province": "MEOW-P16",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E080": {
+          "name": "Sahelian Upwelling",
+          "province": "MEOW-P16",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E081": {
+          "name": "Gulf of Guinea West",
+          "province": "MEOW-P17",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E082": {
+          "name": "Gulf of Guinea Upwelling",
+          "province": "MEOW-P17",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E083": {
+          "name": "Gulf of Guinea Central",
+          "province": "MEOW-P17",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E084": {
+          "name": "Gulf of Guinea Islands",
+          "province": "MEOW-P17",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E085": {
+          "name": "Gulf of Guinea South",
+          "province": "MEOW-P17",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E086": {
+          "name": "Angolan",
+          "province": "MEOW-P17",
+          "realm": "MEOW-R-tropical-atlantic"
+        },
+        "MEOW-E087": {
+          "name": "Northern and Central Red Sea",
+          "province": "MEOW-P18",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E088": {
+          "name": "Southern Red Sea",
+          "province": "MEOW-P18",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E089": {
+          "name": "Gulf of Aden",
+          "province": "MEOW-P18",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E090": {
+          "name": "Arabian (Persian) Gulf",
+          "province": "MEOW-P19",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E091": {
+          "name": "Gulf of Oman",
+          "province": "MEOW-P19",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E092": {
+          "name": "Western Arabian Sea",
+          "province": "MEOW-P19",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E093": {
+          "name": "Central Somali Coast",
+          "province": "MEOW-P19",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E094": {
+          "name": "Northern Monsoon Current Coast",
+          "province": "MEOW-P20",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E095": {
+          "name": "East African Coral Coast",
+          "province": "MEOW-P20",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E096": {
+          "name": "Seychelles",
+          "province": "MEOW-P20",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E097": {
+          "name": "Cargados Carajos/Tromelin Island",
+          "province": "MEOW-P20",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E098": {
+          "name": "Mascarene Islands",
+          "province": "MEOW-P20",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E099": {
+          "name": "Southeast Madagascar",
+          "province": "MEOW-P20",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E100": {
+          "name": "Western and Northern Madagascar",
+          "province": "MEOW-P20",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E101": {
+          "name": "Bight of Sofala/Swamp Coast",
+          "province": "MEOW-P20",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E102": {
+          "name": "Delagoa",
+          "province": "MEOW-P20",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E103": {
+          "name": "Western India",
+          "province": "MEOW-P21",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E104": {
+          "name": "South India and Sri Lanka",
+          "province": "MEOW-P21",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E105": {
+          "name": "Maldives",
+          "province": "MEOW-P22",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E106": {
+          "name": "Chagos",
+          "province": "MEOW-P22",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E107": {
+          "name": "Eastern India",
+          "province": "MEOW-P23",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E108": {
+          "name": "Northern Bay of Bengal",
+          "province": "MEOW-P23",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E109": {
+          "name": "Andaman and Nicobar Islands",
+          "province": "MEOW-P24",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E110": {
+          "name": "Andaman Sea Coral Coast",
+          "province": "MEOW-P24",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E111": {
+          "name": "Western Sumatra",
+          "province": "MEOW-P24",
+          "realm": "MEOW-R-western-indo-pacific"
+        },
+        "MEOW-E112": {
+          "name": "Gulf of Tonkin",
+          "province": "MEOW-P25",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E113": {
+          "name": "Southern China",
+          "province": "MEOW-P25",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E114": {
+          "name": "South China Sea Oceanic Islands",
+          "province": "MEOW-P25",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E115": {
+          "name": "Gulf of Thailand",
+          "province": "MEOW-P26",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E116": {
+          "name": "Southern Vietnam",
+          "province": "MEOW-P26",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E117": {
+          "name": "Sunda Shelf/Java Sea",
+          "province": "MEOW-P26",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E118": {
+          "name": "Malacca Strait",
+          "province": "MEOW-P26",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E119": {
+          "name": "Southern Java",
+          "province": "MEOW-P27",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E120": {
+          "name": "Cocos-Keeling/Christmas Island",
+          "province": "MEOW-P27",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E121": {
+          "name": "South Kuroshio",
+          "province": "MEOW-P28",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E122": {
+          "name": "Ogasawara Islands",
+          "province": "MEOW-P29",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E123": {
+          "name": "Mariana Islands",
+          "province": "MEOW-P29",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E124": {
+          "name": "East Caroline Islands",
+          "province": "MEOW-P29",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E125": {
+          "name": "West Caroline Islands",
+          "province": "MEOW-P29",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E126": {
+          "name": "Palawan/North Borneo",
+          "province": "MEOW-P30",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E127": {
+          "name": "Eastern Philippines",
+          "province": "MEOW-P30",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E128": {
+          "name": "Sulawesi Sea/Makassar Strait",
+          "province": "MEOW-P30",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E129": {
+          "name": "Halmahera",
+          "province": "MEOW-P30",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E130": {
+          "name": "Papua",
+          "province": "MEOW-P30",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E131": {
+          "name": "Banda Sea",
+          "province": "MEOW-P30",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E132": {
+          "name": "Lesser Sunda",
+          "province": "MEOW-P30",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E133": {
+          "name": "Northeast Sulawesi",
+          "province": "MEOW-P30",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E134": {
+          "name": "Bismarck Sea",
+          "province": "MEOW-P31",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E135": {
+          "name": "Solomon Archipelago",
+          "province": "MEOW-P31",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E136": {
+          "name": "Solomon Sea",
+          "province": "MEOW-P31",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E137": {
+          "name": "Southeast Papua New Guinea",
+          "province": "MEOW-P31",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E138": {
+          "name": "Gulf of Papua",
+          "province": "MEOW-P32",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E139": {
+          "name": "Arafura Sea",
+          "province": "MEOW-P32",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E140": {
+          "name": "Arnhem Coast to Gulf of Carpentaria",
+          "province": "MEOW-P32",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E141": {
+          "name": "Bonaparte Coast",
+          "province": "MEOW-P32",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E142": {
+          "name": "Torres Strait Northern Great Barrier Reef",
+          "province": "MEOW-P33",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E143": {
+          "name": "Central and Southern Great Barrier Reef",
+          "province": "MEOW-P33",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E144": {
+          "name": "Exmouth to Broome",
+          "province": "MEOW-P34",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E145": {
+          "name": "Ningaloo",
+          "province": "MEOW-P34",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E146": {
+          "name": "Tonga Islands",
+          "province": "MEOW-P35",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E147": {
+          "name": "Fiji Islands",
+          "province": "MEOW-P35",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E148": {
+          "name": "Vanuatu",
+          "province": "MEOW-P35",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E149": {
+          "name": "New Caledonia",
+          "province": "MEOW-P35",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E150": {
+          "name": "Coral Sea",
+          "province": "MEOW-P35",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E151": {
+          "name": "Lord Howe and Norfolk Islands",
+          "province": "MEOW-P36",
+          "realm": "MEOW-R-central-indo-pacific"
+        },
+        "MEOW-E152": {
+          "name": "Hawaii",
+          "province": "MEOW-P37",
+          "realm": "MEOW-R-eastern-indo-pacific"
+        },
+        "MEOW-E153": {
+          "name": "Marshall Islands",
+          "province": "MEOW-P38",
+          "realm": "MEOW-R-eastern-indo-pacific"
+        },
+        "MEOW-E154": {
+          "name": "Gilbert/Ellis Island",
+          "province": "MEOW-P38",
+          "realm": "MEOW-R-eastern-indo-pacific"
+        },
+        "MEOW-E155": {
+          "name": "Line Islands",
+          "province": "MEOW-P39",
+          "realm": "MEOW-R-eastern-indo-pacific"
+        },
+        "MEOW-E156": {
+          "name": "Phoenix/Tokelau/Northern Cook Islands",
+          "province": "MEOW-P39",
+          "realm": "MEOW-R-eastern-indo-pacific"
+        },
+        "MEOW-E157": {
+          "name": "Samoa Islands",
+          "province": "MEOW-P39",
+          "realm": "MEOW-R-eastern-indo-pacific"
+        },
+        "MEOW-E158": {
+          "name": "Tuamotus",
+          "province": "MEOW-P40",
+          "realm": "MEOW-R-eastern-indo-pacific"
+        },
+        "MEOW-E159": {
+          "name": "Rapa-Pitcairn",
+          "province": "MEOW-P40",
+          "realm": "MEOW-R-eastern-indo-pacific"
+        },
+        "MEOW-E160": {
+          "name": "Southern Cook/Austral Islands",
+          "province": "MEOW-P40",
+          "realm": "MEOW-R-eastern-indo-pacific"
+        },
+        "MEOW-E161": {
+          "name": "Society Islands",
+          "province": "MEOW-P40",
+          "realm": "MEOW-R-eastern-indo-pacific"
+        },
+        "MEOW-E162": {
+          "name": "Marquesas",
+          "province": "MEOW-P41",
+          "realm": "MEOW-R-eastern-indo-pacific"
+        },
+        "MEOW-E163": {
+          "name": "Easter Island",
+          "province": "MEOW-P42",
+          "realm": "MEOW-R-eastern-indo-pacific"
+        },
+        "MEOW-E164": {
+          "name": "Revillagigedos",
+          "province": "MEOW-P43",
+          "realm": "MEOW-R-tropical-eastern-pacific"
+        },
+        "MEOW-E165": {
+          "name": "Clipperton",
+          "province": "MEOW-P43",
+          "realm": "MEOW-R-tropical-eastern-pacific"
+        },
+        "MEOW-E166": {
+          "name": "Mexican Tropical Pacific",
+          "province": "MEOW-P43",
+          "realm": "MEOW-R-tropical-eastern-pacific"
+        },
+        "MEOW-E167": {
+          "name": "Chiapas–Nicaragua",
+          "province": "MEOW-P43",
+          "realm": "MEOW-R-tropical-eastern-pacific"
+        },
+        "MEOW-E168": {
+          "name": "Nicoya",
+          "province": "MEOW-P43",
+          "realm": "MEOW-R-tropical-eastern-pacific"
+        },
+        "MEOW-E169": {
+          "name": "Cocos Islands",
+          "province": "MEOW-P43",
+          "realm": "MEOW-R-tropical-eastern-pacific"
+        },
+        "MEOW-E170": {
+          "name": "Panama Bight",
+          "province": "MEOW-P43",
+          "realm": "MEOW-R-tropical-eastern-pacific"
+        },
+        "MEOW-E171": {
+          "name": "Guayaquil",
+          "province": "MEOW-P43",
+          "realm": "MEOW-R-tropical-eastern-pacific"
+        },
+        "MEOW-E172": {
+          "name": "Northern Galapagos Islands",
+          "province": "MEOW-P44",
+          "realm": "MEOW-R-tropical-eastern-pacific"
+        },
+        "MEOW-E173": {
+          "name": "Eastern Galapagos Islands",
+          "province": "MEOW-P44",
+          "realm": "MEOW-R-tropical-eastern-pacific"
+        },
+        "MEOW-E174": {
+          "name": "Western Galapagos Islands",
+          "province": "MEOW-P44",
+          "realm": "MEOW-R-tropical-eastern-pacific"
+        },
+        "MEOW-E175": {
+          "name": "Central Peru",
+          "province": "MEOW-P45",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E176": {
+          "name": "Humboldtian",
+          "province": "MEOW-P45",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E177": {
+          "name": "Central Chile",
+          "province": "MEOW-P45",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E178": {
+          "name": "Araucanian",
+          "province": "MEOW-P45",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E179": {
+          "name": "Juan Fernández and Desventuradas",
+          "province": "MEOW-P46",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E180": {
+          "name": "Southeastern Brazil",
+          "province": "MEOW-P47",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E181": {
+          "name": "Rio Grande",
+          "province": "MEOW-P47",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E182": {
+          "name": "Rio de la Plata",
+          "province": "MEOW-P47",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E183": {
+          "name": "Uruguay–Buenos Aires Shelf",
+          "province": "MEOW-P47",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E184": {
+          "name": "North Patagonian Gulfs",
+          "province": "MEOW-P48",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E185": {
+          "name": "Patagonian Shelf",
+          "province": "MEOW-P48",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E186": {
+          "name": "Malvinas/Falklands",
+          "province": "MEOW-P48",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E187": {
+          "name": "Channels and Fjords of Southern Chile",
+          "province": "MEOW-P48",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E188": {
+          "name": "Chiloense",
+          "province": "MEOW-P48",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E189": {
+          "name": "Tristan Gough",
+          "province": "MEOW-P49",
+          "realm": "MEOW-R-temperate-south-america"
+        },
+        "MEOW-E190": {
+          "name": "Namib",
+          "province": "MEOW-P50",
+          "realm": "MEOW-R-temperate-southern-africa"
+        },
+        "MEOW-E191": {
+          "name": "Namaqua",
+          "province": "MEOW-P50",
+          "realm": "MEOW-R-temperate-southern-africa"
+        },
+        "MEOW-E192": {
+          "name": "Agulhas Bank",
+          "province": "MEOW-P51",
+          "realm": "MEOW-R-temperate-southern-africa"
+        },
+        "MEOW-E193": {
+          "name": "Natal",
+          "province": "MEOW-P51",
+          "realm": "MEOW-R-temperate-southern-africa"
+        },
+        "MEOW-E194": {
+          "name": "Amsterdam–St Paul",
+          "province": "MEOW-P52",
+          "realm": "MEOW-R-temperate-southern-africa"
+        },
+        "MEOW-E195": {
+          "name": "Kermadec Island",
+          "province": "MEOW-P53",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E196": {
+          "name": "Northeastern New Zealand",
+          "province": "MEOW-P53",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E197": {
+          "name": "Three Kings–North Cape",
+          "province": "MEOW-P53",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E198": {
+          "name": "Chatham Island",
+          "province": "MEOW-P54",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E199": {
+          "name": "Central New Zealand",
+          "province": "MEOW-P54",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E200": {
+          "name": "South New Zealand",
+          "province": "MEOW-P54",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E201": {
+          "name": "Snares Island",
+          "province": "MEOW-P54",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E202": {
+          "name": "Tweed-Moreton",
+          "province": "MEOW-P55",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E203": {
+          "name": "Manning-Hawkesbury",
+          "province": "MEOW-P55",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E204": {
+          "name": "Cape Howe",
+          "province": "MEOW-P56",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E205": {
+          "name": "Bassian",
+          "province": "MEOW-P56",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E206": {
+          "name": "Western Bassian",
+          "province": "MEOW-P56",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E207": {
+          "name": "South Australian Gulfs",
+          "province": "MEOW-P57",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E208": {
+          "name": "Great Australian Bight",
+          "province": "MEOW-P57",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E209": {
+          "name": "Leeuwin",
+          "province": "MEOW-P57",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E210": {
+          "name": "Shark Bay",
+          "province": "MEOW-P58",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E211": {
+          "name": "Houtman",
+          "province": "MEOW-P58",
+          "realm": "MEOW-R-temperate-australasia"
+        },
+        "MEOW-E212": {
+          "name": "Macquarie Island",
+          "province": "MEOW-P59",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E213": {
+          "name": "Heard and Macdonald Islands",
+          "province": "MEOW-P59",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E214": {
+          "name": "Kerguelen Islands",
+          "province": "MEOW-P59",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E215": {
+          "name": "Crozet Islands",
+          "province": "MEOW-P59",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E216": {
+          "name": "Prince Edward Islands",
+          "province": "MEOW-P59",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E217": {
+          "name": "Bouvet Island",
+          "province": "MEOW-P59",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E218": {
+          "name": "Peter the First Island",
+          "province": "MEOW-P59",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E219": {
+          "name": "South Sandwich Islands",
+          "province": "MEOW-P60",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E220": {
+          "name": "South Georgia",
+          "province": "MEOW-P60",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E221": {
+          "name": "South Orkney Islands",
+          "province": "MEOW-P60",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E222": {
+          "name": "South Shetland Islands",
+          "province": "MEOW-P60",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E223": {
+          "name": "Antarctic Peninsula",
+          "province": "MEOW-P60",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E224": {
+          "name": "East Antarctic Wilkes Land",
+          "province": "MEOW-P61",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E225": {
+          "name": "East Antarctic Enderby Land",
+          "province": "MEOW-P61",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E226": {
+          "name": "East Antarctic Dronning Maud Land",
+          "province": "MEOW-P61",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E227": {
+          "name": "Weddell Sea",
+          "province": "MEOW-P61",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E228": {
+          "name": "Amundsen/Bellingshausen Sea",
+          "province": "MEOW-P61",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E229": {
+          "name": "Ross Sea",
+          "province": "MEOW-P61",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E230": {
+          "name": "Bounty and Antipodes Islands",
+          "province": "MEOW-P62",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E231": {
+          "name": "Campbell Island",
+          "province": "MEOW-P62",
+          "realm": "MEOW-R-southern-ocean"
+        },
+        "MEOW-E232": {
+          "name": "Auckland Island",
+          "province": "MEOW-P62",
+          "realm": "MEOW-R-southern-ocean"
+        }
+      },
+      "ui_hierarchy": {
+        "levels": [
+          "realm",
+          "province",
+          "ecoregion"
+        ],
+        "storage_level": "ecoregion",
+        "animal_field": "marine_regions"
+      }
+    },
+    "surface_pelagic": {
+      "framework": "Pelagic Provinces of the World (PPOW)",
+      "year": 2012,
+      "scope": "Off-shelf surface pelagic/epipelagic waters, approximately upper 200 m; suitable high-seas framework for wide-ranging pelagic species.",
+      "animal_field": "pelagic_regions",
+      "recommended_storage_level": "province",
+      "id_pattern": "PPOW-P##",
+      "realms": {
+        "PPOW-R-atlantic-warm-water": {
+          "name": "Atlantic Warm Water",
+          "provinces": [
+            "PPOW-P01",
+            "PPOW-P02",
+            "PPOW-P03",
+            "PPOW-P04",
+            "PPOW-P05",
+            "PPOW-P06",
+            "PPOW-P07",
+            "PPOW-P08",
+            "PPOW-P09",
+            "PPOW-P10",
+            "PPOW-P11",
+            "PPOW-P12"
+          ]
+        },
+        "PPOW-R-indo-pacific-warm-water": {
+          "name": "Indo-Pacific Warm Water",
+          "provinces": [
+            "PPOW-P13",
+            "PPOW-P14",
+            "PPOW-P15",
+            "PPOW-P16",
+            "PPOW-P17",
+            "PPOW-P18",
+            "PPOW-P19",
+            "PPOW-P20",
+            "PPOW-P21",
+            "PPOW-P22",
+            "PPOW-P23",
+            "PPOW-P24",
+            "PPOW-P25",
+            "PPOW-P26",
+            "PPOW-P27",
+            "PPOW-P28",
+            "PPOW-P29",
+            "PPOW-P30"
+          ]
+        },
+        "PPOW-R-northern-cold-water": {
+          "name": "Northern Cold Water",
+          "provinces": [
+            "PPOW-P31",
+            "PPOW-P32",
+            "PPOW-P33"
+          ]
+        },
+        "PPOW-R-southern-cold-water": {
+          "name": "Southern Cold Water",
+          "provinces": [
+            "PPOW-P34",
+            "PPOW-P35",
+            "PPOW-P36",
+            "PPOW-P37"
+          ]
+        }
+      },
+      "provinces": {
+        "PPOW-P01": {
+          "name": "Benguela Current",
+          "realm": "PPOW-R-atlantic-warm-water"
+        },
+        "PPOW-P02": {
+          "name": "Black Sea",
+          "realm": "PPOW-R-atlantic-warm-water"
+        },
+        "PPOW-P03": {
+          "name": "Canary Current",
+          "realm": "PPOW-R-atlantic-warm-water"
+        },
+        "PPOW-P04": {
+          "name": "Equatorial Atlantic",
+          "realm": "PPOW-R-atlantic-warm-water"
+        },
+        "PPOW-P05": {
+          "name": "Guinea Current",
+          "realm": "PPOW-R-atlantic-warm-water"
+        },
+        "PPOW-P06": {
+          "name": "Gulf Stream",
+          "realm": "PPOW-R-atlantic-warm-water"
+        },
+        "PPOW-P07": {
+          "name": "Inter American Seas",
+          "realm": "PPOW-R-atlantic-warm-water"
+        },
+        "PPOW-P08": {
+          "name": "Malvinas Current",
+          "realm": "PPOW-R-atlantic-warm-water"
+        },
+        "PPOW-P09": {
+          "name": "Mediterranean",
+          "realm": "PPOW-R-atlantic-warm-water"
+        },
+        "PPOW-P10": {
+          "name": "North Atlantic Current",
+          "realm": "PPOW-R-atlantic-warm-water"
+        },
+        "PPOW-P11": {
+          "name": "North Central Atlantic",
+          "realm": "PPOW-R-atlantic-warm-water"
+        },
+        "PPOW-P12": {
+          "name": "South Central Atlantic",
+          "realm": "PPOW-R-atlantic-warm-water"
+        },
+        "PPOW-P13": {
+          "name": "Agulhas Current",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P14": {
+          "name": "California Current",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P15": {
+          "name": "Eastern Tropical Pacific",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P16": {
+          "name": "Equatorial Pacific",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P17": {
+          "name": "Humboldt Current",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P18": {
+          "name": "Indonesian Through-Flow",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P19": {
+          "name": "Kuroshio-Oyashio Current",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P20": {
+          "name": "Leeuwin Current",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P21": {
+          "name": "North Central Pacific",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P22": {
+          "name": "North Pacific Current",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P23": {
+          "name": "Northern Indian Ocean",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P24": {
+          "name": "Red Sea",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P25": {
+          "name": "Sea of Japan/East Sea",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P26": {
+          "name": "Somali Current",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P27": {
+          "name": "South Central Pacific",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P28": {
+          "name": "South China Sea",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P29": {
+          "name": "Southern Indian Ocean",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P30": {
+          "name": "Southwest Pacific",
+          "realm": "PPOW-R-indo-pacific-warm-water"
+        },
+        "PPOW-P31": {
+          "name": "Arctic",
+          "realm": "PPOW-R-northern-cold-water"
+        },
+        "PPOW-P32": {
+          "name": "Subarctic Atlantic",
+          "realm": "PPOW-R-northern-cold-water"
+        },
+        "PPOW-P33": {
+          "name": "Subarctic Pacific",
+          "realm": "PPOW-R-northern-cold-water"
+        },
+        "PPOW-P34": {
+          "name": "Antarctic",
+          "realm": "PPOW-R-southern-cold-water"
+        },
+        "PPOW-P35": {
+          "name": "Antarctic Polar Front",
+          "realm": "PPOW-R-southern-cold-water"
+        },
+        "PPOW-P36": {
+          "name": "Southern Subtropical Front",
+          "realm": "PPOW-R-southern-cold-water"
+        },
+        "PPOW-P37": {
+          "name": "Subantarctic",
+          "realm": "PPOW-R-southern-cold-water"
+        }
+      },
+      "ui_hierarchy": {
+        "levels": [
+          "realm",
+          "province"
+        ],
+        "storage_level": "province",
+        "animal_field": "pelagic_regions",
+        "note": "PPOW biomes are ecological classes, not geographic parent regions."
+      }
+    },
+    "deep_benthic": {
+      "status": "reserved",
+      "animal_field": "deep_regions",
+      "note": "Reserved for a future deep-benthic framework (e.g. GOODS/Watling-derived bathyal and abyssal provinces). Do not infer deep-benthic distribution from PPOW."
+    }
+  },
+  "geography_field_policy": {
+    "wild_regions": "One Earth bioregion IDs for terrestrial and freshwater occurrence; coastal terrestrial use remains valid.",
+    "marine_regions": "MEOW ecoregion IDs for coastal/shelf marine occurrence.",
+    "pelagic_regions": "PPOW province IDs for off-shelf surface-pelagic occurrence, including high seas.",
+    "deep_regions": "Reserved for deep-benthic occurrence.",
+    "habitat_tags": "Ecology only (e.g. coastal, mangrove, wetland); never substitute habitat tags for geographic units.",
+    "overlap_rule": "For marine animals, prefer MEOW inside coastal/shelf waters and PPOW off-shelf. Amphibious/coastal-breeding species may also retain One Earth land regions for genuine terrestrial life-history use."
+  },
+  "map_hierarchies": {
+    "terrestrial_freshwater": {
+      "framework": "One Earth 2023",
+      "animal_field": "wild_regions",
+      "levels": [
+        {
+          "key": "realm",
+          "collection": "realms",
+          "role": "overview"
+        },
+        {
+          "key": "subrealm",
+          "collection": "subrealms",
+          "role": "middle"
+        },
+        {
+          "key": "bioregion",
+          "collection": "bioregions",
+          "role": "detail"
+        }
+      ],
+      "detail_id_prefixes": [
+        "NA",
+        "NT",
+        "PA",
+        "AT",
+        "IM",
+        "AU",
+        "OC",
+        "AN"
+      ]
+    },
+    "coastal_shelf_marine": {
+      "framework": "MEOW 2007",
+      "animal_field": "marine_regions",
+      "levels": [
+        {
+          "key": "realm",
+          "collection": "marine_frameworks.coastal_shelf.realms",
+          "role": "overview"
+        },
+        {
+          "key": "province",
+          "collection": "marine_frameworks.coastal_shelf.provinces",
+          "role": "middle"
+        },
+        {
+          "key": "ecoregion",
+          "collection": "marine_frameworks.coastal_shelf.ecoregions",
+          "role": "detail"
+        }
+      ],
+      "detail_id_prefixes": [
+        "MEOW-E"
+      ]
+    },
+    "surface_pelagic": {
+      "framework": "PPOW 2012",
+      "animal_field": "pelagic_regions",
+      "levels": [
+        {
+          "key": "realm",
+          "collection": "marine_frameworks.surface_pelagic.realms",
+          "role": "overview"
+        },
+        {
+          "key": "province",
+          "collection": "marine_frameworks.surface_pelagic.provinces",
+          "role": "detail"
+        }
+      ],
+      "detail_id_prefixes": [
+        "PPOW-P"
+      ]
+    }
+  },
+  "map_ui_policy": {
+    "overview": "Show the broadest parent region at world/continental zoom.",
+    "zoom": "Reveal child regions progressively; a fully covered parent must still expand into children when zoomed.",
+    "collapse": "A parent may visually collapse when all of its children are covered.",
+    "hover": "Show only the currently visible geographic unit name.",
+    "storage": "Store animal occurrence at each framework's factual detail level; derive parents from the hierarchy.",
+    "marine_split": "Use MEOW for coastal/shelf waters and PPOW for off-shelf surface-pelagic waters."
+  },
+  "region_fields": {
+    "wild_regions": {
+      "framework": "one_earth",
+      "detail_collection": "bioregions",
+      "id_regex": "^(NA|NT|PA|AT|IM|AU|OC|AN)[0-9]+$"
+    },
+    "marine_regions": {
+      "framework": "meow",
+      "detail_collection": "marine_frameworks.coastal_shelf.ecoregions",
+      "id_regex": "^MEOW-E[0-9]{3}$"
+    },
+    "pelagic_regions": {
+      "framework": "ppow",
+      "detail_collection": "marine_frameworks.surface_pelagic.provinces",
+      "id_regex": "^PPOW-P[0-9]{2}$"
+    },
+    "deep_regions": {
+      "framework": "reserved",
+      "detail_collection": null,
+      "id_regex": null
+    }
+  },
+  "schema_compatibility": {
+    "minimum_reader_version": 8,
+    "breaking_change": false,
+    "notes": "Existing realms/subrealms/bioregions and MEOW/PPOW IDs are preserved. v8.1 centralizes UI rules and adds generic field routing."
   }
 }

@@ -4435,3 +4435,440 @@ body.visiting-real-zoo #result {
     filter: grayscale(1) brightness(.82) !important;
 }
 body.visiting-real-zoo #drawCard img { opacity: .55 !important; filter: grayscale(1) !important; }
+
+
+/* ============================================================
+   V222.6 — MAP COLOUR SCHEMES
+   Presentation belongs here rather than in game.js.
+   JavaScript only sets body[data-zoo-colour-scheme].
+   ============================================================ */
+
+#zooColourSchemeButton{font:inherit;font-size:10px;line-height:1.1;padding:3px 7px;border:1px solid rgba(80,70,55,.35);border-radius:5px;background:#f7f2e7;cursor:pointer;white-space:nowrap}
+#zooColourSchemeMenu{position:fixed;z-index:12050;min-width:132px;padding:6px;background:#fcf7e4;border:1px solid rgba(96,73,67,.38);border-radius:8px;box-shadow:0 5px 18px rgba(0,0,0,.22)}
+#zooColourSchemeMenu button{display:block;width:100%;padding:6px 9px;text-align:left;border:0;border-radius:5px;background:transparent;color:#604943;font:inherit;font-size:11px;cursor:pointer}
+#zooColourSchemeMenu button:hover,#zooColourSchemeMenu button.active{background:#c3dc9b;font-weight:800}
+
+/* Area labels — compact zoo-map wayfinding tags inspired by Burgers' Zoo.
+   Area geometry/colour logic is unchanged; only the label presentation changes. */
+.zoo-theme-area-title,.player-custom-area-name{
+  box-sizing:border-box!important;
+  width:max-content!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:38px!important;
+  padding:6px 13px 6px 42px!important;
+  border:0!important;
+  border-radius:2px!important;
+  background:var(--area-tag-color,#587f50)!important;
+  color:#fff!important;
+  font-size:24px!important;
+  line-height:1.08!important;
+  font-weight:800!important;
+  font-style:normal!important;
+  letter-spacing:0!important;
+  text-shadow:none!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.18)!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  z-index:1005!important;
+}
+.zoo-theme-area-title::before,.player-custom-area-name::before{
+  content:'';
+  position:absolute;
+  left:9px;
+  top:50%;
+  width:23px;
+  height:23px;
+  transform:translateY(-50%);
+  border-radius:50%;
+  background:#fff;
+  box-shadow:inset 0 0 0 6px var(--area-tag-color,#587f50);
+}
+.zoo-theme-area-title.editing,.player-custom-area-name.editing{
+  outline:2px solid rgba(255,255,255,.9)!important;
+  outline-offset:2px;
+}
+.player-custom-area-name .area-colour-button,.zoo-theme-area-title .area-colour-button{
+  margin-left:8px!important;
+  color:#fff!important;
+  background:transparent!important;
+  border:0!important;
+  padding:0 2px!important;
+  vertical-align:middle!important;
+}
+#areaStyleMenu{
+  min-width:210px!important;padding:10px!important;border-radius:9px!important;
+  background:#f4ecd8!important;border:1px solid #a99a7d!important;
+  box-shadow:0 5px 18px rgba(60,45,35,.22)!important;color:#5b5144!important
+}
+#areaStyleMenu strong{display:block;margin-bottom:8px}
+.area-colour-palette{display:grid;grid-template-columns:repeat(4,32px);gap:7px;margin:4px 0 10px}
+.area-colour-swatch{
+  width:32px;height:32px;padding:0!important;border-radius:6px!important;
+  border:2px solid rgba(96,73,67,.28)!important;background:var(--swatch)!important;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.28);cursor:pointer
+}
+.area-colour-swatch:hover{transform:scale(1.08);border-color:#604943!important}
+.area-colour-swatch.active{outline:3px solid #604943;outline-offset:2px}
+#areaStyleMenu select{
+  width:100%;padding:5px 7px;border:1px solid #a99a7d;border-radius:6px;
+  background:#fbf5e6;color:#5b5144;font:inherit
+}
+.area-custom-colour{
+  display:flex;align-items:center;gap:8px;margin:0 0 9px;padding:6px 7px;
+  border:1px solid #a99a7d;border-radius:6px;background:#fbf5e6;
+  cursor:pointer;font-size:12px;font-weight:700
+}
+.area-custom-colour:hover{background:#fff9eb}
+.area-custom-colour input[type="color"]{
+  width:34px;height:26px;padding:1px;border:1px solid #8e8067;border-radius:4px;
+  background:#fff;cursor:pointer
+}
+body[data-zoo-colour-scheme="overloon"]{color:#5b5144;background:#a99b7e!important}
+body[data-zoo-colour-scheme="overloon"] #zooBoard{background:#a99b7e!important}
+body[data-zoo-colour-scheme="overloon"] #zooCanvas{color:#5b5144}
+/* Warm paper/sand chrome: keep the game pieces vivid while the UI reads like a printed zoo map. */
+body[data-zoo-colour-scheme="overloon"] #actionMenu,
+body[data-zoo-colour-scheme="overloon"] header,
+body[data-zoo-colour-scheme="overloon"] .header{background:#e7dcc1!important;color:#5b5144!important;border-color:#a99a7d!important}
+body[data-zoo-colour-scheme="overloon"] #trueSimulationPanel,
+body[data-zoo-colour-scheme="overloon"] #trueTransferProposalPanel,
+body[data-zoo-colour-scheme="overloon"] #outgoingOfferBox,
+body[data-zoo-colour-scheme="overloon"] #incomingOfferBox{background:#f4ecd8!important;color:#5b5144!important;border-color:#a99a7d!important;box-shadow:0 2px 7px rgba(91,81,68,.12)!important}
+body[data-zoo-colour-scheme="overloon"] #actionMenu button,
+body[data-zoo-colour-scheme="overloon"] #trueSimulationPanel button,
+body[data-zoo-colour-scheme="overloon"] #trueTransferProposalPanel button,
+body[data-zoo-colour-scheme="overloon"] #zooColourSchemeButton{background:#fbf5e6!important;color:#5b5144!important;border-color:#a99a7d!important}
+body[data-zoo-colour-scheme="overloon"] #zooColourSchemeMenu{background:#f4ecd8!important;border-color:#a99a7d!important}
+body[data-zoo-colour-scheme="overloon"] #zooColourSchemeMenu button{color:#5b5144!important}
+body[data-zoo-colour-scheme="overloon"] #zooColourSchemeMenu button:hover,
+body[data-zoo-colour-scheme="overloon"] #zooColourSchemeMenu button.active{background:#c7dea0!important}
+#areaToolButton{
+  position:fixed!important;right:18px!important;bottom:20px!important;left:auto!important;top:auto!important;
+  z-index:10120!important
+}
+#trueEnclosureBuilderButton{
+  position:fixed!important;right:18px!important;bottom:102px!important;left:auto!important;top:auto!important;
+  z-index:10121!important
+}
+body.area-tool-active #zooCanvas{cursor:crosshair!important}
+.true-area-paint-cursor{
+  position:absolute;box-sizing:border-box;border:4px dashed rgba(96,73,67,.92);border-radius:4px;
+  background:rgba(255,255,255,.16);pointer-events:none;z-index:10003;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.7),0 0 0 1px rgba(96,73,67,.12)
+}
+.true-area-paint-cursor.existing{border-color:#d84c62;background:rgba(216,76,98,.10)}
+
+
+
+/* ---- Overloon: shared paper UI ------------------------------------------------ */
+body[data-zoo-colour-scheme="overloon"] {
+    --overloon-text:#5b5144;
+    --overloon-paper:#e7dcc1;
+    --overloon-panel:#f4ecd8;
+    --overloon-control:#fbf5e6;
+    --overloon-line:#a99a7d;
+    --overloon-green:#c7dea0;
+    --overloon-overlay:rgba(74,62,47,.56);
+}
+
+/* Modal backdrops */
+body[data-zoo-colour-scheme="overloon"] .game-options-overlay,
+body[data-zoo-colour-scheme="overloon"] .save-load-overlay,
+body[data-zoo-colour-scheme="overloon"] #collectionOverlay,
+body[data-zoo-colour-scheme="overloon"] #generateZooOverlay,
+body[data-zoo-colour-scheme="overloon"] #newZooSavePromptOverlay,
+body[data-zoo-colour-scheme="overloon"] #tradeHistoryOverlay,
+body[data-zoo-colour-scheme="overloon"] #realZooDirectoryOverlay,
+body[data-zoo-colour-scheme="overloon"] #sandboxPickerOverlay,
+body[data-zoo-colour-scheme="overloon"] #trueMarketplaceOverlay,
+body[data-zoo-colour-scheme="overloon"] #truePopulationSelectorBackdrop {
+    background:var(--overloon-overlay) !important;
+}
+
+/* Main paper surfaces: New Zoo, Game Options, Save/Load, Collection,
+   Trade History, All Zoos, Marketplace and smaller editors. */
+body[data-zoo-colour-scheme="overloon"] .game-options-modal,
+body[data-zoo-colour-scheme="overloon"] .save-load-modal,
+body[data-zoo-colour-scheme="overloon"] .collection-window,
+body[data-zoo-colour-scheme="overloon"] #tradeHistoryPanel,
+body[data-zoo-colour-scheme="overloon"] #realZooDirectoryPanel,
+body[data-zoo-colour-scheme="overloon"] #sandboxPickerPanel,
+body[data-zoo-colour-scheme="overloon"] #trueMarketplaceOverlay > div,
+body[data-zoo-colour-scheme="overloon"] #truePopulationSelectorBackdrop > div,
+body[data-zoo-colour-scheme="overloon"] .turn-history-panel,
+body[data-zoo-colour-scheme="overloon"] .mobile-settings-panel,
+body[data-zoo-colour-scheme="overloon"] .area-style-menu,
+body[data-zoo-colour-scheme="overloon"] .enclosure-tag-editor {
+    background:var(--overloon-panel) !important;
+    color:var(--overloon-text) !important;
+    border-color:var(--overloon-line) !important;
+    box-shadow:0 12px 38px rgba(73,57,43,.24) !important;
+}
+
+/* Cards / rows inside paper surfaces */
+body[data-zoo-colour-scheme="overloon"] .save-slot,
+body[data-zoo-colour-scheme="overloon"] .category-option,
+body[data-zoo-colour-scheme="overloon"] #trueMarketplaceOverlay > div > div > div > div,
+body[data-zoo-colour-scheme="overloon"] #tradeHistoryList > *,
+body[data-zoo-colour-scheme="overloon"] .collection-tabs,
+body[data-zoo-colour-scheme="overloon"] .advanced-game-rules {
+    border-color:rgba(169,154,125,.55) !important;
+}
+
+/* Form controls and normal UI buttons */
+body[data-zoo-colour-scheme="overloon"] .game-options-modal button,
+body[data-zoo-colour-scheme="overloon"] .game-options-modal input,
+body[data-zoo-colour-scheme="overloon"] .game-options-modal select,
+body[data-zoo-colour-scheme="overloon"] .save-load-modal button,
+body[data-zoo-colour-scheme="overloon"] .collection-window button,
+body[data-zoo-colour-scheme="overloon"] #tradeHistoryPanel button,
+body[data-zoo-colour-scheme="overloon"] #realZooDirectoryOverlay button,
+body[data-zoo-colour-scheme="overloon"] #sandboxPickerOverlay button,
+body[data-zoo-colour-scheme="overloon"] #sandboxPickerOverlay input,
+body[data-zoo-colour-scheme="overloon"] #sandboxPickerOverlay select,
+body[data-zoo-colour-scheme="overloon"] #trueMarketplaceOverlay button,
+body[data-zoo-colour-scheme="overloon"] #truePopulationSelectorBackdrop button,
+body[data-zoo-colour-scheme="overloon"] #truePopulationSelectorBackdrop input,
+body[data-zoo-colour-scheme="overloon"] .save-load-button,
+body[data-zoo-colour-scheme="overloon"] .game-options-button,
+body[data-zoo-colour-scheme="overloon"] .header-small {
+    background:var(--overloon-control) !important;
+    color:var(--overloon-text) !important;
+    border-color:var(--overloon-line) !important;
+}
+
+body[data-zoo-colour-scheme="overloon"] .game-options-modal input[type="text"],
+body[data-zoo-colour-scheme="overloon"] .game-options-modal input[type="number"],
+body[data-zoo-colour-scheme="overloon"] .game-options-modal select,
+body[data-zoo-colour-scheme="overloon"] #sandboxPickerOverlay input,
+body[data-zoo-colour-scheme="overloon"] #sandboxPickerOverlay select {
+    box-shadow:inset 0 1px 2px rgba(91,81,68,.10) !important;
+}
+
+body[data-zoo-colour-scheme="overloon"] .game-options-modal button:hover,
+body[data-zoo-colour-scheme="overloon"] .save-load-modal button:hover,
+body[data-zoo-colour-scheme="overloon"] .collection-window button:hover,
+body[data-zoo-colour-scheme="overloon"] #tradeHistoryPanel button:hover,
+body[data-zoo-colour-scheme="overloon"] #realZooDirectoryOverlay button:hover,
+body[data-zoo-colour-scheme="overloon"] #sandboxPickerOverlay button:hover,
+body[data-zoo-colour-scheme="overloon"] #trueMarketplaceOverlay button:hover,
+body[data-zoo-colour-scheme="overloon"] #truePopulationSelectorBackdrop button:hover {
+    background:#fff9e9 !important;
+}
+
+/* Tabs / selected states use the map green rather than Classic grey. */
+body[data-zoo-colour-scheme="overloon"] .collection-tabs button.active,
+body[data-zoo-colour-scheme="overloon"] .animal-info-tab.active,
+body[data-zoo-colour-scheme="overloon"] .opponent-name.selected-trade {
+    background:var(--overloon-green) !important;
+    color:var(--overloon-text) !important;
+    border-color:#8fa46d !important;
+}
+
+/* Marketplace cards are generated with inline backgrounds, so the theme needs
+   an !important skin at the first card level. */
+body[data-zoo-colour-scheme="overloon"] #trueMarketplaceOverlay > div > div:nth-child(n+2) > div {
+    background:rgba(251,245,230,.72) !important;
+    border-color:rgba(169,154,125,.58) !important;
+}
+
+/* Keep text hierarchy warm rather than reverting to hard black in inline-built panels. */
+body[data-zoo-colour-scheme="overloon"] #trueMarketplaceOverlay strong,
+body[data-zoo-colour-scheme="overloon"] #truePopulationSelectorBackdrop strong,
+body[data-zoo-colour-scheme="overloon"] #tradeHistoryPanel,
+body[data-zoo-colour-scheme="overloon"] #realZooDirectoryOverlay {
+    color:var(--overloon-text) !important;
+}
+
+
+/* V2.22.9 — True enclosure builder occupied-cell feedback */
+.true-enclosure-blocked-hint{
+  position:absolute;
+  transform:translate(-50%,-115%);
+  z-index:10030;
+  max-width:240px;
+  padding:7px 10px;
+  border:1px solid rgba(112,76,61,.65);
+  border-radius:7px;
+  background:#fbf5e6;
+  color:#604943;
+  box-shadow:0 3px 12px rgba(55,42,34,.22);
+  font-size:12px;
+  font-weight:700;
+  line-height:1.2;
+  white-space:nowrap;
+  pointer-events:none;
+}
+.player-custom-area-name{cursor:grab}
+.player-custom-area-name:active{cursor:grabbing}
+.player-custom-area-name.editing{cursor:text}
+
+
+/* ============================================================
+   V2.22.11 — AREA TAG WAYFINDING LEADERS
+   Nearby tags use a map-pin triangle. Remote tags use only
+   orthogonal, draggable leader routes.
+   ============================================================ */
+.player-custom-area-name.area-tag-arrow-left::after,
+.player-custom-area-name.area-tag-arrow-right::after,
+.player-custom-area-name.area-tag-arrow-top::after,
+.player-custom-area-name.area-tag-arrow-bottom::after{
+  content:"";position:absolute;width:0;height:0;filter:drop-shadow(0 1px 1px rgba(0,0,0,.12));
+}
+.player-custom-area-name.area-tag-arrow-left::after{
+  right:100%;top:50%;transform:translateY(-50%);
+  border-top:12px solid transparent;border-bottom:12px solid transparent;border-right:14px solid var(--area-tag-color,#587f50);
+}
+.player-custom-area-name.area-tag-arrow-right::after{
+  left:100%;top:50%;transform:translateY(-50%);
+  border-top:12px solid transparent;border-bottom:12px solid transparent;border-left:14px solid var(--area-tag-color,#587f50);
+}
+.player-custom-area-name.area-tag-arrow-top::after{
+  left:50%;bottom:100%;transform:translateX(-50%);
+  border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:14px solid var(--area-tag-color,#587f50);
+}
+.player-custom-area-name.area-tag-arrow-bottom::after{
+  left:50%;top:100%;transform:translateX(-50%);
+  border-left:12px solid transparent;border-right:12px solid transparent;border-top:14px solid var(--area-tag-color,#587f50);
+}
+.player-area-leader{
+  position:absolute;z-index:1003;box-sizing:content-box;pointer-events:auto;
+  background:var(--area-tag-color,#587f50);
+}
+.player-area-leader[data-segment-axis="y"]{
+  height:4px!important;margin-top:-2px;cursor:ns-resize;
+  border-top:8px solid transparent;border-bottom:8px solid transparent;background-clip:content-box;
+}
+.player-area-leader[data-segment-axis="x"]{
+  width:4px!important;margin-left:-2px;cursor:ew-resize;
+  border-left:8px solid transparent;border-right:8px solid transparent;background-clip:content-box;
+}
+body.visiting-real-zoo .player-area-leader{pointer-events:none}
+
+
+/* V2.22.12 — manual overlap hierarchy */
+.area-layer-controls{
+  display:grid;grid-template-columns:32px 1fr 32px;gap:6px;align-items:center;
+  margin:8px 0;padding:6px;border-radius:7px;background:rgba(96,73,67,.07);
+}
+.area-layer-controls span{font-size:11px;text-align:center;font-weight:700;opacity:.78}
+.area-layer-controls button{
+  min-width:0;height:28px;padding:0;border:1px solid rgba(96,73,67,.28);
+  border-radius:5px;background:#fcf7e4;color:#604943;font:inherit;font-weight:900;cursor:pointer;
+}
+.area-layer-controls button:hover{background:#f3e8cf}
+
+
+/* V2.22.14 — unified bottom-right tool button states */
+#areaToolButton,
+#trueEnclosureBuilderButton{
+  background:#f4efe2!important;
+  color:#383329!important;
+  box-shadow:0 6px 20px rgba(0,0,0,.25)!important;
+  transform:none;
+  filter:none;
+  outline:none;
+  transition:box-shadow .12s ease, transform .12s ease, background .12s ease, filter .12s ease;
+}
+#areaToolButton.active,
+#trueEnclosureBuilderButton.active{
+  background:#c9c3b6!important;
+  box-shadow:
+    inset 0 4px 8px rgba(0,0,0,.28),
+    0 1px 2px rgba(255,255,255,.45),
+    0 0 0 4px rgba(224,174,45,.72),
+    0 0 16px rgba(224,174,45,.52)!important;
+  transform:translateY(2px);
+  filter:grayscale(.18);
+  outline:none!important;
+}
+
+
+/* V2.22.16 — mode isolation */
+body:not(.true-enclosure-builder-active) #trueEnclosureBuilderButton[style*="display: none"]{
+  display:none!important;
+}
+
+
+/* V2.22.17 — True Area borders above enclosure geometry, below animal cards */
+#zooCanvas .player-custom-area { z-index:auto !important; }
+#zooCanvas .player-custom-area-fill { z-index:0 !important; }
+#zooCanvas .enclosure { z-index:auto; }
+#zooCanvas .enclosure:not(.dragging-enclosure) .enclosure-image { z-index:2; }
+#zooCanvas .player-custom-area-edge-overlay { z-index:12 !important; }
+#zooCanvas .enclosure .slot { z-index:20; }
+#zooCanvas .enclosure .animal-card,
+#zooCanvas .enclosure .enclosure-animal { z-index:21; }
+#zooCanvas .enclosure.dragging-enclosure { z-index:500; }
+
+
+/* V2.22.20 — Classic/Sandbox Area lines:
+   enclosure surface < Area border < animal card */
+body:not(.true-mode) #zooCanvas .player-custom-area { z-index:auto !important; }
+body:not(.true-mode) #zooCanvas .player-custom-area-fill { z-index:0 !important; }
+
+body:not(.true-mode) #zooCanvas .enclosure {
+    z-index:auto !important;
+}
+body:not(.true-mode) #zooCanvas .enclosure-image {
+    position:relative;
+    z-index:20;
+}
+
+/* The Area line intentionally overlays the enclosure-card artwork/border. */
+body:not(.true-mode) #zooCanvas .player-custom-area-edge-overlay {
+    z-index:32 !important;
+}
+
+/* But cards themselves always remain visually untouched above the Area line. */
+body:not(.true-mode) #zooCanvas .slot {
+    /* Preserve the core .slot { position:absolute } placement geometry. */
+    z-index:40;
+}
+body:not(.true-mode) #zooCanvas .animal-card,
+body:not(.true-mode) #zooCanvas .enclosure-animal {
+    z-index:41 !important;
+}
+
+
+/* V2.22.23 — Classic/Sandbox Area visibility + visit-mode inspection */
+/* Give the Area container its own layer above enclosure artwork. Classic fills
+   stay transparent; only the perimeter overlays the enclosure card. Animal
+   cards remain on the existing higher layer. */
+body:not(.true-mode) #zooCanvas .player-custom-area { z-index:31 !important; }
+body:not(.true-mode) #zooCanvas .player-custom-area-fill { background:transparent !important; }
+body:not(.true-mode) #zooCanvas .player-custom-area-edge-overlay { z-index:32 !important; }
+
+/* Hovering the tag makes that Area perimeter easier to trace. */
+#zooCanvas .player-custom-area.area-tag-hover .player-custom-area-edge-overlay {
+    border-top-width:5px !important;
+    border-left-width:5px !important;
+}
+
+/* Area labels remain draggable while visiting. The visit is still read-only:
+   only presentation coordinates change in the visit-layout cache. */
+body.visiting-real-zoo .player-custom-area-name { pointer-events:auto !important; cursor:grab !important; }
+body.visiting-real-zoo .player-custom-area-name:active { cursor:grabbing !important; }
+
+/* Belt-and-braces: no gameplay/action glow animation survives visit mode. */
+body.visiting-real-zoo .exchange-result.result-ready,
+body.visiting-real-zoo .exchange-eligible,
+body.visiting-real-zoo .exchange-glow-return,
+body.visiting-real-zoo .trade-eligible,
+body.visiting-real-zoo .new-placement-glow,
+body.visiting-real-zoo .progression-glow,
+body.visiting-real-zoo [class*="glow"] {
+    animation:none !important;
+    box-shadow:none !important;
+    filter:none !important;
+}
+
+
+/* V2.22.25 — 1080p desktop animal preview is half the established 2K size. */
+@media (min-width: 701px) and (max-height: 1200px) {
+    #hoverPreview:not(.super-zoom) {
+        width: 202.5px;
+        height: 291.6px;
+    }
+}

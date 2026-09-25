@@ -1,0 +1,2063 @@
+{
+  "schema_version": "1.0",
+  "purpose": "Presentation-only aliases for automatically generated Zoo Curator geographic Areas. Never authoritative for animal ranges or map geometry.",
+  "source_geography_file": "zoo-curator-geography.json",
+  "rules": {
+    "canonical_geography_unchanged": true,
+    "area_thresholds": {
+      "realm": 8,
+      "subrealm": 4,
+      "bioregion": 4
+    },
+    "collapse_redundant_parents": true,
+    "note": "area_name is intentionally shorter than the canonical map name where this can be done without changing geographic meaning.",
+    "display_name_target": "Prefer 1–2 words. Three words only when a shorter label would become unclear or geographically misleading.",
+    "bioregion_generation": "Suppress a bioregion Area when it adds no useful player-facing identity beyond its parent. Scientific/map data remains unchanged.",
+    "branching_rule": "A parent-to-bioregion visual layer is useful only where at least two distinct child Area identities can actually branch from that parent.",
+    "hierarchy_visibility": "Render a geographic level only when it adds a distinct useful identity. If parent and child cover the same generated enclosure set, collapse the parent. If a parent has no meaningful child branching, it may be the deepest generated Area."
+  },
+  "realms": {
+    "subarctic-america": {
+      "area_name": "Subarctic America",
+      "canonical_name": "Subarctic America"
+    },
+    "northern-america": {
+      "area_name": "North America",
+      "canonical_name": "Northern America"
+    },
+    "central-america-caribbean": {
+      "area_name": "Central America & Caribbean",
+      "canonical_name": "Central America & Caribbean"
+    },
+    "southern-america": {
+      "area_name": "South America",
+      "canonical_name": "Southern America"
+    },
+    "subarctic-eurasia": {
+      "area_name": "Subarctic Eurasia",
+      "canonical_name": "Subarctic Eurasia"
+    },
+    "western-eurasia": {
+      "area_name": "Europe",
+      "canonical_name": "Western Eurasia"
+    },
+    "central-eurasia": {
+      "area_name": "Central Asia",
+      "canonical_name": "Central Eurasia"
+    },
+    "eastern-eurasia": {
+      "area_name": "East Asia",
+      "canonical_name": "Eastern Eurasia"
+    },
+    "southern-eurasia": {
+      "area_name": "North Africa & Arabia",
+      "canonical_name": "Southern Eurasia"
+    },
+    "afrotropics": {
+      "area_name": "Sub-Saharan Africa",
+      "canonical_name": "Afrotropics"
+    },
+    "indomalaya": {
+      "area_name": "South & Southeast Asia",
+      "canonical_name": "Indomalaya"
+    },
+    "australasia": {
+      "area_name": "Australasia",
+      "canonical_name": "Australasia"
+    },
+    "oceania": {
+      "area_name": "Oceania",
+      "canonical_name": "Oceania"
+    },
+    "antarctica": {
+      "area_name": "Antarctica",
+      "canonical_name": "Antarctica"
+    }
+  },
+  "subrealms": {
+    "greenland": {
+      "area_name": "Greenland",
+      "canonical_name": "Greenland",
+      "realm": "subarctic-america",
+      "branching_bioregions": 0,
+      "generate": true,
+      "bioregion_layer_useful": false,
+      "bioregion_note": "No meaningful multi-branch bioregion Area layer; parent can be the deepest generated identity."
+    },
+    "canadian-tundra": {
+      "area_name": "Canadian Tundra",
+      "canonical_name": "Canadian Tundra",
+      "realm": "subarctic-america",
+      "branching_bioregions": 0,
+      "generate": true,
+      "bioregion_layer_useful": false,
+      "bioregion_note": "No meaningful multi-branch bioregion Area layer; parent can be the deepest generated identity."
+    },
+    "alaska": {
+      "area_name": "Alaska",
+      "canonical_name": "Alaska",
+      "realm": "subarctic-america",
+      "branching_bioregions": 3,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "canadian-boreal-forests": {
+      "area_name": "Canadian Boreal",
+      "canonical_name": "Canadian Boreal Forests",
+      "realm": "subarctic-america",
+      "branching_bioregions": 4,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "northeast-american-forests": {
+      "area_name": "Northeast America",
+      "canonical_name": "Northeast American Forests",
+      "realm": "northern-america",
+      "branching_bioregions": 4,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "southeast-us-savannas-forests": {
+      "area_name": "Southeast US",
+      "canonical_name": "Southeast US Savannas & Forests",
+      "realm": "northern-america",
+      "branching_bioregions": 5,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "great-plains": {
+      "area_name": "Great Plains",
+      "canonical_name": "Great Plains",
+      "realm": "northern-america",
+      "branching_bioregions": 3,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "american-west": {
+      "area_name": "American West",
+      "canonical_name": "American West",
+      "realm": "northern-america",
+      "branching_bioregions": 5,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "mexican-drylands": {
+      "area_name": "Mexican Drylands",
+      "canonical_name": "Mexican Drylands",
+      "realm": "northern-america",
+      "branching_bioregions": 2,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "north-pacific-coast": {
+      "area_name": "Pacific Northwest",
+      "canonical_name": "North Pacific Coast",
+      "realm": "northern-america",
+      "branching_bioregions": 3,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "central-america": {
+      "area_name": "Central America",
+      "canonical_name": "Central America",
+      "realm": "central-america-caribbean",
+      "branching_bioregions": 5,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "caribbean": {
+      "area_name": "Caribbean",
+      "canonical_name": "Caribbean",
+      "realm": "central-america-caribbean",
+      "branching_bioregions": 1,
+      "generate": true,
+      "bioregion_layer_useful": false,
+      "bioregion_note": "No meaningful multi-branch bioregion Area layer; parent can be the deepest generated identity."
+    },
+    "andes-pacific-coast": {
+      "area_name": "Andes",
+      "canonical_name": "Andes Mountains & Pacific Coast",
+      "realm": "southern-america",
+      "branching_bioregions": 8,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "south-american-grasslands": {
+      "area_name": "Southern Grasslands",
+      "canonical_name": "South American Grasslands",
+      "realm": "southern-america",
+      "branching_bioregions": 3,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "brazil-cerrado-atlantic-coast": {
+      "area_name": "Eastern Brazil",
+      "canonical_name": "Brazil Cerrado & Atlantic Coast",
+      "realm": "southern-america",
+      "branching_bioregions": 4,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "amazonia": {
+      "area_name": "Amazonia",
+      "canonical_name": "Amazonia",
+      "realm": "southern-america",
+      "branching_bioregions": 5,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "upper-south-america": {
+      "area_name": "Orinoco Region",
+      "canonical_name": "Upper South America",
+      "realm": "southern-america",
+      "branching_bioregions": 3,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "palearctic-tundra": {
+      "area_name": "Eurasian Tundra",
+      "canonical_name": "Palearctic Tundra",
+      "realm": "subarctic-eurasia",
+      "branching_bioregions": 1,
+      "generate": true,
+      "bioregion_layer_useful": false,
+      "bioregion_note": "No meaningful multi-branch bioregion Area layer; parent can be the deepest generated identity."
+    },
+    "scandinavia-west-boreal-forests": {
+      "area_name": "Scandinavian Boreal",
+      "canonical_name": "Scandinavia & Western Boreal Forests",
+      "realm": "subarctic-eurasia",
+      "branching_bioregions": 3,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "siberia-east-boreal-forests": {
+      "area_name": "Siberian Boreal",
+      "canonical_name": "Siberia & Eastern Boreal Forests",
+      "realm": "subarctic-eurasia",
+      "branching_bioregions": 1,
+      "generate": true,
+      "bioregion_layer_useful": false,
+      "bioregion_note": "No meaningful multi-branch bioregion Area layer; parent can be the deepest generated identity."
+    },
+    "sea-okhotsk-bering-tundra-taiga": {
+      "area_name": "Okhotsk-Bering",
+      "canonical_name": "Sea of Okhotsk & Bering Tundra-Taiga",
+      "realm": "subarctic-eurasia",
+      "branching_bioregions": 2,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "greater-european-mixed-forests": {
+      "area_name": "European Forests",
+      "canonical_name": "Greater European Forests",
+      "realm": "western-eurasia",
+      "branching_bioregions": 3,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "european-mountain-forests": {
+      "area_name": "European Mountains",
+      "canonical_name": "European Mountain Forests",
+      "realm": "western-eurasia",
+      "branching_bioregions": 3,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "black-sea-forests-steppe": {
+      "area_name": "Black Sea",
+      "canonical_name": "Black Sea Forests & Steppe",
+      "realm": "western-eurasia",
+      "branching_bioregions": 2,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "mediterranean": {
+      "area_name": "Mediterranean",
+      "canonical_name": "Mediterranean",
+      "realm": "western-eurasia",
+      "branching_bioregions": 4,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "anglo-celtic-isles": {
+      "area_name": "British Isles",
+      "canonical_name": "Anglo-Celtic Isles",
+      "realm": "western-eurasia",
+      "branching_bioregions": 0,
+      "generate": true,
+      "bioregion_layer_useful": false,
+      "bioregion_note": "No meaningful multi-branch bioregion Area layer; parent can be the deepest generated identity."
+    },
+    "kazakh-steppes-hemiboreal-forests": {
+      "area_name": "Kazakh Steppe",
+      "canonical_name": "Kazakh Steppes & Hemiboreal Forest",
+      "realm": "central-eurasia",
+      "branching_bioregions": 1,
+      "generate": true,
+      "bioregion_layer_useful": false,
+      "bioregion_note": "No meaningful multi-branch bioregion Area layer; parent can be the deepest generated identity."
+    },
+    "caspian-central-asian-deserts": {
+      "area_name": "Central Deserts",
+      "canonical_name": "Caspian Sea & Central Asian Deserts",
+      "realm": "central-eurasia",
+      "branching_bioregions": 2,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "tien-shan-mountains": {
+      "area_name": "Tien Shan",
+      "canonical_name": "Tien Shan Mountains",
+      "realm": "central-eurasia",
+      "branching_bioregions": 1,
+      "generate": true,
+      "bioregion_layer_useful": false,
+      "bioregion_note": "No meaningful multi-branch bioregion Area layer; parent can be the deepest generated identity."
+    },
+    "persian-deserts-forests": {
+      "area_name": "Persian Drylands",
+      "canonical_name": "Persian Deserts & Forests",
+      "realm": "central-eurasia",
+      "branching_bioregions": 4,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "altai-sayan-mountains": {
+      "area_name": "Altai-Sayan",
+      "canonical_name": "Altai-Sayan Mountains",
+      "realm": "central-eurasia",
+      "branching_bioregions": 2,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "east-asian-deserts": {
+      "area_name": "East Asian Deserts",
+      "canonical_name": "East Asian Deserts",
+      "realm": "eastern-eurasia",
+      "branching_bioregions": 3,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "tibetan-plateau": {
+      "area_name": "Tibetan Plateau",
+      "canonical_name": "Tibetan Plateau",
+      "realm": "eastern-eurasia",
+      "branching_bioregions": 2,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "mongolian-grasslands": {
+      "area_name": "Mongolian Grasslands",
+      "canonical_name": "Mongolian Grasslands",
+      "realm": "eastern-eurasia",
+      "branching_bioregions": 1,
+      "generate": true,
+      "bioregion_layer_useful": false,
+      "bioregion_note": "No meaningful multi-branch bioregion Area layer; parent can be the deepest generated identity."
+    },
+    "central-east-asian-forests": {
+      "area_name": "Central China",
+      "canonical_name": "Central East Asian Forests",
+      "realm": "eastern-eurasia",
+      "branching_bioregions": 5,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "northeast-asian-forests": {
+      "area_name": "Northeast Asia",
+      "canonical_name": "Northeast Asian Forests",
+      "realm": "eastern-eurasia",
+      "branching_bioregions": 3,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "japanese-islands": {
+      "area_name": "Japan",
+      "canonical_name": "Japanese Islands",
+      "realm": "eastern-eurasia",
+      "branching_bioregions": 0,
+      "generate": true,
+      "bioregion_layer_useful": false,
+      "bioregion_note": "No meaningful multi-branch bioregion Area layer; parent can be the deepest generated identity."
+    },
+    "north-africa": {
+      "area_name": "North Africa",
+      "canonical_name": "North Africa",
+      "realm": "southern-eurasia",
+      "branching_bioregions": 4,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "greater-arabian-peninsula": {
+      "area_name": "Arabian Peninsula",
+      "canonical_name": "Greater Arabian Peninsula",
+      "realm": "southern-eurasia",
+      "branching_bioregions": 1,
+      "generate": true,
+      "bioregion_layer_useful": false,
+      "bioregion_note": "No meaningful multi-branch bioregion Area layer; parent can be the deepest generated identity."
+    },
+    "southern-afrotropics": {
+      "area_name": "Southern Africa",
+      "canonical_name": "Southern Afrotropics",
+      "realm": "afrotropics",
+      "branching_bioregions": 5,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "sub-equatorial-afrotropics": {
+      "area_name": "Subequatorial Africa",
+      "canonical_name": "Sub-Equatorial Afrotropics",
+      "realm": "afrotropics",
+      "branching_bioregions": 2,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "equatorial-afrotropics": {
+      "area_name": "Equatorial Africa",
+      "canonical_name": "Equatorial Afrotropics",
+      "realm": "afrotropics",
+      "branching_bioregions": 8,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "madagascar-east-african-coast": {
+      "area_name": "Madagascar Coast",
+      "canonical_name": "Madagascar & East African Coast",
+      "realm": "afrotropics",
+      "branching_bioregions": 5,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "sub-saharan-afrotropics": {
+      "area_name": "West Africa",
+      "canonical_name": "Sub-Saharan Afrotropics",
+      "realm": "afrotropics",
+      "branching_bioregions": 2,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "horn-of-africa": {
+      "area_name": "Horn of Africa",
+      "canonical_name": "Horn of Africa",
+      "realm": "afrotropics",
+      "branching_bioregions": 2,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "indian-subcontinent": {
+      "area_name": "Indian Subcontinent",
+      "canonical_name": "Indian Subcontinent",
+      "realm": "indomalaya",
+      "branching_bioregions": 8,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "southeast-asian-forests": {
+      "area_name": "Southeast Asia",
+      "canonical_name": "Southeast Asian Forests",
+      "realm": "indomalaya",
+      "branching_bioregions": 7,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "malaysia-western-indonesia": {
+      "area_name": "Sundaland",
+      "canonical_name": "Malaysia & Western Indonesia",
+      "realm": "indomalaya",
+      "branching_bioregions": 3,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "new-zealand": {
+      "area_name": "New Zealand",
+      "canonical_name": "New Zealand",
+      "realm": "australasia",
+      "branching_bioregions": 2,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "australia": {
+      "area_name": "Australia",
+      "canonical_name": "Australia",
+      "realm": "australasia",
+      "branching_bioregions": 7,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "australasian-islands-eastern-indonesia": {
+      "area_name": "Eastern Australasia",
+      "canonical_name": "Australasian Islands & Eastern Indonesia",
+      "realm": "australasia",
+      "branching_bioregions": 6,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "oceanic-islands": {
+      "area_name": "Pacific Islands",
+      "canonical_name": "Oceanic Islands",
+      "realm": "oceania",
+      "branching_bioregions": 11,
+      "generate": true,
+      "bioregion_layer_useful": true
+    },
+    "antarctic-continent-islands": {
+      "area_name": "Antarctica",
+      "canonical_name": "Antarctic Continent & Islands",
+      "realm": "antarctica",
+      "branching_bioregions": 3,
+      "generate": true,
+      "bioregion_layer_useful": true
+    }
+  },
+  "bioregions": {
+    "NA1": {
+      "area_name": null,
+      "canonical_name": "Greenland",
+      "subrealm": "greenland",
+      "realm": "subarctic-america",
+      "status": "curated",
+      "generate": false,
+      "reason": "Same useful Area identity as Greenland parent."
+    },
+    "NA2": {
+      "area_name": null,
+      "canonical_name": "Canadian Tundra",
+      "subrealm": "canadian-tundra",
+      "realm": "subarctic-america",
+      "status": "curated",
+      "generate": false,
+      "reason": "Same useful Area identity as Canadian Tundra parent."
+    },
+    "NA3": {
+      "area_name": "North Alaska",
+      "canonical_name": "North Alaskan Tundra",
+      "subrealm": "alaska",
+      "realm": "subarctic-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA4": {
+      "area_name": "Alaskan Taiga",
+      "canonical_name": "Greater Alaska Taiga & Tundra",
+      "subrealm": "alaska",
+      "realm": "subarctic-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA5": {
+      "area_name": "Alaska Coast",
+      "canonical_name": "Far Northern Pacific Coast",
+      "subrealm": "alaska",
+      "realm": "subarctic-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA6": {
+      "area_name": "Yukon",
+      "canonical_name": "Greater Yukon",
+      "subrealm": "canadian-boreal-forests",
+      "realm": "subarctic-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA7": {
+      "area_name": "Canadian Taiga",
+      "canonical_name": "Northwest Canadian Taiga, Lakes, & Wetlands",
+      "subrealm": "canadian-boreal-forests",
+      "realm": "subarctic-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA8": {
+      "area_name": "Boreal Plains",
+      "canonical_name": "Mid-Canada Boreal Plains & Foothill Forests",
+      "subrealm": "canadian-boreal-forests",
+      "realm": "subarctic-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA9": {
+      "area_name": "Canadian Shield",
+      "canonical_name": "Canadian Shield & Coastal Taiga-Forests",
+      "subrealm": "canadian-boreal-forests",
+      "realm": "subarctic-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA10": {
+      "area_name": "Northeast Forests",
+      "canonical_name": "Northeastern American Mixed Forests",
+      "subrealm": "northeast-american-forests",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA11": {
+      "area_name": "Great Lakes",
+      "canonical_name": "Northern Great Lakes Forests",
+      "subrealm": "northeast-american-forests",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA12": {
+      "area_name": "Northern Prairies",
+      "canonical_name": "Northern Prairie & Aspen Forests",
+      "subrealm": "great-plains",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA13": {
+      "area_name": "Rocky Mountains",
+      "canonical_name": "Greater Rockies & Mountain Forests",
+      "subrealm": "american-west",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA14": {
+      "area_name": "Northwest Mountains",
+      "canonical_name": "Northwest Intermountain Conifer Forests",
+      "subrealm": "american-west",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA15": {
+      "area_name": "Pacific Coast",
+      "canonical_name": "Pacific Northwest Coastal Forests",
+      "subrealm": "north-pacific-coast",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA16": {
+      "area_name": "Cascades",
+      "canonical_name": "Cascades Mountain Forests & Valleys",
+      "subrealm": "north-pacific-coast",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA17": {
+      "area_name": "Columbia Plateau",
+      "canonical_name": "Columbia Plateau & Blue Mountains",
+      "subrealm": "american-west",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA18": {
+      "area_name": "Great Basin",
+      "canonical_name": "Great Basin & Columbia Steppe",
+      "subrealm": "american-west",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA19": {
+      "area_name": "Colorado Plateau",
+      "canonical_name": "Colorado Plateau & Mountain Forests",
+      "subrealm": "american-west",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA20": {
+      "area_name": "Southern Prairies",
+      "canonical_name": "Southern Prairie Mixed Grasslands",
+      "subrealm": "great-plains",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA21": {
+      "area_name": "Tallgrass Prairie",
+      "canonical_name": "Midwestern Tallgrass Prairie & Forest Transition",
+      "subrealm": "great-plains",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA22": {
+      "area_name": "Ozarks",
+      "canonical_name": "Ozarks Mixed Forests",
+      "subrealm": "southeast-us-savannas-forests",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA23": {
+      "area_name": "Southern Lakes",
+      "canonical_name": "Interior Plateau & Southern Great Lakes Forests",
+      "subrealm": "northeast-american-forests",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA24": {
+      "area_name": "Appalachia",
+      "canonical_name": "Appalachia & Allegheny Interior Forests",
+      "subrealm": "northeast-american-forests",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA25": {
+      "area_name": "Southeast Savannas",
+      "canonical_name": "Southeast Savannas & Riparian Forests",
+      "subrealm": "southeast-us-savannas-forests",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA26": {
+      "area_name": "Bermuda",
+      "canonical_name": "Bermuda",
+      "subrealm": "southeast-us-savannas-forests",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 0 species assigned to NA26; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "NA27": {
+      "area_name": "Gulf Coast",
+      "canonical_name": "Western Gulf Coastal Grasslands",
+      "subrealm": "southeast-us-savannas-forests",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA28": {
+      "area_name": "Southern Prairies",
+      "canonical_name": "Southern Mixed Forests & Blackland Prairies",
+      "subrealm": "southeast-us-savannas-forests",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA29": {
+      "area_name": "Sierra Madre",
+      "canonical_name": "Sierra Madre Forests & Mexican Drylands",
+      "subrealm": "mexican-drylands",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA30": {
+      "area_name": "Baja California",
+      "canonical_name": "Baja California & Southern Deserts",
+      "subrealm": "mexican-drylands",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NA31": {
+      "area_name": "California",
+      "canonical_name": "Greater California",
+      "subrealm": "north-pacific-coast",
+      "realm": "northern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT1": {
+      "area_name": "Chilean Forests",
+      "canonical_name": "Chilean Mixed Forests",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT2": {
+      "area_name": "Patagonia",
+      "canonical_name": "Patagonia Steppe & Low Mountains",
+      "subrealm": "south-american-grasslands",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT3": {
+      "area_name": "Pampas",
+      "canonical_name": "Rio de la Plata Grasslands",
+      "subrealm": "south-american-grasslands",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT4": {
+      "area_name": "Chaco",
+      "canonical_name": "Chaco Grasslands",
+      "subrealm": "south-american-grasslands",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT5": {
+      "area_name": "Andean Grasslands",
+      "canonical_name": "Andean Mountain Grasslands",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT6": {
+      "area_name": "Chilean Matorral",
+      "canonical_name": "Chilean Matorral Shrublands & Savanna",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT7": {
+      "area_name": "Juan Fernández",
+      "canonical_name": "Juan Fernández & Desventuradas Islands",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 3 species assigned to NT7; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "NT8": {
+      "area_name": "Pacific Deserts",
+      "canonical_name": "South American Coastal Deserts",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT9": {
+      "area_name": "Galápagos",
+      "canonical_name": "Galápagos Islands",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT10": {
+      "area_name": "Ecuador Coast",
+      "canonical_name": "Ecuadorean Dry Coastal Forests & Flooded Grasslands",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT11": {
+      "area_name": "Andean Forests",
+      "canonical_name": "Andean Mountain Forests & Valleys",
+      "subrealm": "andes-pacific-coast",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT12": {
+      "area_name": "Pantanal",
+      "canonical_name": "Pantanal Flooded Grasslands & Dry Forests",
+      "subrealm": "brazil-cerrado-atlantic-coast",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT13": {
+      "area_name": "Cerrado",
+      "canonical_name": "Cerrado Savannas",
+      "subrealm": "brazil-cerrado-atlantic-coast",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT14": {
+      "area_name": "Atlantic Forest",
+      "canonical_name": "Brazilian Atlantic Moist Forests",
+      "subrealm": "brazil-cerrado-atlantic-coast",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT15": {
+      "area_name": "Atlantic Dryforest",
+      "canonical_name": "Brazilian Atlantic Dry Forests",
+      "subrealm": "brazil-cerrado-atlantic-coast",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT16": {
+      "area_name": "Amazon Estuary",
+      "canonical_name": "Amazon River Estuary",
+      "subrealm": "amazonia",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT17": {
+      "area_name": "Southern Amazon",
+      "canonical_name": "Southern Amazonian Forests",
+      "subrealm": "amazonia",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT18": {
+      "area_name": "Western Amazon",
+      "canonical_name": "Western Amazonian Forests & Plains",
+      "subrealm": "amazonia",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT19": {
+      "area_name": "Central Amazon",
+      "canonical_name": "Central Amazonian Forests",
+      "subrealm": "amazonia",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT20": {
+      "area_name": "Northern Amazon",
+      "canonical_name": "Northern Amazonian Forests",
+      "subrealm": "amazonia",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT21": {
+      "area_name": "Guiana",
+      "canonical_name": "Guianan Forests & Savanna",
+      "subrealm": "upper-south-america",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT22": {
+      "area_name": "Llanos",
+      "canonical_name": "Llanos & Dry Forests",
+      "subrealm": "upper-south-america",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT23": {
+      "area_name": "Venezuelan Coast",
+      "canonical_name": "Venezuelan Coast",
+      "subrealm": "upper-south-america",
+      "realm": "southern-america",
+      "status": "curated",
+      "generate": true
+    },
+    "NT24": {
+      "area_name": "Panama-Colombia",
+      "canonical_name": "Central American Isthmian & Colombian Coastal Forests",
+      "subrealm": "central-america",
+      "realm": "central-america-caribbean",
+      "status": "curated",
+      "generate": true
+    },
+    "NT25": {
+      "area_name": "Central Forests",
+      "canonical_name": "Central American Mixed Forests",
+      "subrealm": "central-america",
+      "realm": "central-america-caribbean",
+      "status": "curated",
+      "generate": true
+    },
+    "NT26": {
+      "area_name": "Caribbean Islands",
+      "canonical_name": "Caribbean Islands",
+      "subrealm": "caribbean",
+      "realm": "central-america-caribbean",
+      "status": "curated",
+      "generate": true
+    },
+    "NT27": {
+      "area_name": "Yucatán-Veracruz",
+      "canonical_name": "Yucatan & Veracruz Mixed Forests",
+      "subrealm": "central-america",
+      "realm": "central-america-caribbean",
+      "status": "curated",
+      "generate": true
+    },
+    "NT28": {
+      "area_name": "Mexican Forests",
+      "canonical_name": "Mexican Dry & Coniferous Forests",
+      "subrealm": "central-america",
+      "realm": "central-america-caribbean",
+      "status": "curated",
+      "generate": true
+    },
+    "NT29": {
+      "area_name": "Mexican Islands",
+      "canonical_name": "Mexican Subtropical Islands",
+      "subrealm": "central-america",
+      "realm": "central-america-caribbean",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 2 species assigned to NT29; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "PA1": {
+      "area_name": "Russian Arctic",
+      "canonical_name": "Russian Arctic Desert Islands",
+      "subrealm": "palearctic-tundra",
+      "realm": "subarctic-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA2": {
+      "area_name": "Iceland",
+      "canonical_name": "Iceland",
+      "subrealm": "scandinavia-west-boreal-forests",
+      "realm": "subarctic-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA3": {
+      "area_name": "Scandinavian Forests",
+      "canonical_name": "Scandinavian Birch & Coastal Conifer Forests",
+      "subrealm": "scandinavia-west-boreal-forests",
+      "realm": "subarctic-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA4": {
+      "area_name": null,
+      "canonical_name": "Greater Eurasian Tundra",
+      "subrealm": "palearctic-tundra",
+      "realm": "subarctic-eurasia",
+      "status": "curated",
+      "generate": false,
+      "reason": "Same player-facing identity as parent; canonical bioregion remains available for education/map data."
+    },
+    "PA5": {
+      "area_name": "Eastern Tundra",
+      "canonical_name": "East Eurasian Coastal Tundra",
+      "subrealm": "sea-okhotsk-bering-tundra-taiga",
+      "realm": "subarctic-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA6": {
+      "area_name": "Okhotsk Coast",
+      "canonical_name": "Sea of Okhotsk Coastal Taiga, Meadows & Tundra",
+      "subrealm": "sea-okhotsk-bering-tundra-taiga",
+      "realm": "subarctic-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA7": {
+      "area_name": "Siberian Taiga",
+      "canonical_name": "Siberian Boreal Forests & Mountain Tundra",
+      "subrealm": "siberia-east-boreal-forests",
+      "realm": "subarctic-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA8": {
+      "area_name": "Ural Mountains",
+      "canonical_name": "Ural Mountains & West Eurasian Taiga Forests",
+      "subrealm": "scandinavia-west-boreal-forests",
+      "realm": "subarctic-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA9": {
+      "area_name": null,
+      "canonical_name": "Great Britain, Ireland & Faroe Islands",
+      "subrealm": "anglo-celtic-isles",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": false,
+      "reason": "Same player-facing identity as parent; canonical bioregion remains available for education/map data."
+    },
+    "PA10": {
+      "area_name": "Atlantic Europe",
+      "canonical_name": "West European Coastal Mixed Forests",
+      "subrealm": "greater-european-mixed-forests",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA11": {
+      "area_name": "Baltic Forests",
+      "canonical_name": "Baltic Sea & Sarmatic Mixed Forests",
+      "subrealm": "greater-european-mixed-forests",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA12": {
+      "area_name": "Central Europe",
+      "canonical_name": "European Interior Mixed Forests",
+      "subrealm": "greater-european-mixed-forests",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA13": {
+      "area_name": "Alps",
+      "canonical_name": "Alps & Po Basin Mixed Forests",
+      "subrealm": "european-mountain-forests",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA14": {
+      "area_name": "Carpathians",
+      "canonical_name": "Carpathian Mountain & Plains Mixed Forests",
+      "subrealm": "european-mountain-forests",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA15": {
+      "area_name": "Dinaric Balkans",
+      "canonical_name": "Dinaric Mountains & Balkan Mixed Forests",
+      "subrealm": "european-mountain-forests",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA16": {
+      "area_name": "Pontic Steppe",
+      "canonical_name": "Pontic Steppe Grasslands",
+      "subrealm": "black-sea-forests-steppe",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA17": {
+      "area_name": "Caucasus-Anatolia",
+      "canonical_name": "Black Sea, Caucasus-Anatolian Mixed Forests & Steppe",
+      "subrealm": "black-sea-forests-steppe",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA18": {
+      "area_name": "Aegean",
+      "canonical_name": "Aegean Sea & East Mediterranean Mixed Forests",
+      "subrealm": "mediterranean",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA19": {
+      "area_name": "Adriatic",
+      "canonical_name": "Adriatic Sea & Central Mediterranean Mixed Forests",
+      "subrealm": "mediterranean",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA20": {
+      "area_name": "West Mediterranean",
+      "canonical_name": "Balearic Sea & West Mediterranean Mixed Forests",
+      "subrealm": "mediterranean",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA21": {
+      "area_name": "Azores",
+      "canonical_name": "Azores Forest Islands",
+      "subrealm": "mediterranean",
+      "realm": "western-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA22": {
+      "area_name": "Madeira",
+      "canonical_name": "Madeira Evergreen Island",
+      "subrealm": "north-africa",
+      "realm": "southern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA23": {
+      "area_name": "South Mediterranean",
+      "canonical_name": "South Mediterranean Mixed Woodlands & Forests",
+      "subrealm": "north-africa",
+      "realm": "southern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA24": {
+      "area_name": "Northern Sahara",
+      "canonical_name": "Northern Sahara Deserts, Savannas & Marshes",
+      "subrealm": "north-africa",
+      "realm": "southern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA25": {
+      "area_name": "Southern Sahara",
+      "canonical_name": "Southern Sahara Deserts & Mountain Woodlands",
+      "subrealm": "north-africa",
+      "realm": "southern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA26": {
+      "area_name": "Arabian Deserts",
+      "canonical_name": "Red Sea, Arabian Deserts & Salt Marshes",
+      "subrealm": "greater-arabian-peninsula",
+      "realm": "southern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA27": {
+      "area_name": "Zagros-Anatolia",
+      "canonical_name": "Zagros Mountain Forests & East Anatolian Steppe",
+      "subrealm": "persian-deserts-forests",
+      "realm": "central-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA28": {
+      "area_name": "South Caspian",
+      "canonical_name": "South Caspian Coastal & Mountain Mixed Forests",
+      "subrealm": "persian-deserts-forests",
+      "realm": "central-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA29": {
+      "area_name": "Persian Deserts",
+      "canonical_name": "Persian Deserts & Mountain Woodlands",
+      "subrealm": "persian-deserts-forests",
+      "realm": "central-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA30": {
+      "area_name": "Afghan-Balochistan",
+      "canonical_name": "Afghan-Balochistan Drylands, Mountain Meadows & Conifer Forests",
+      "subrealm": "persian-deserts-forests",
+      "realm": "central-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA31": {
+      "area_name": "Tien Shan-Pamir",
+      "canonical_name": "Tian Shan-Pamir Grasslands, Mountain Steppe & Conifer Forests",
+      "subrealm": "tien-shan-mountains",
+      "realm": "central-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA32": {
+      "area_name": "Central Deserts",
+      "canonical_name": "Central Asian Deserts & Riparian Woodlands",
+      "subrealm": "caspian-central-asian-deserts",
+      "realm": "central-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA33": {
+      "area_name": "Caspian-Kopet",
+      "canonical_name": "Caspian Sea, Coastal Deserts & Kopet Dagh Mountain Woodlands",
+      "subrealm": "caspian-central-asian-deserts",
+      "realm": "central-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA34": {
+      "area_name": null,
+      "canonical_name": "Kazakh Forest Steppe & Grasslands",
+      "subrealm": "kazakh-steppes-hemiboreal-forests",
+      "realm": "central-eurasia",
+      "status": "curated",
+      "generate": false,
+      "reason": "Same player-facing identity as parent; canonical bioregion remains available for education/map data."
+    },
+    "PA35": {
+      "area_name": "Siberian Steppe",
+      "canonical_name": "Siberian Hemiboreal Forests & Steppe",
+      "subrealm": "kazakh-steppes-hemiboreal-forests",
+      "realm": "central-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA36": {
+      "area_name": "Sayan Mountains",
+      "canonical_name": "Sayan Mountain Conifer Forests, Alpine Meadows & Steppe",
+      "subrealm": "altai-sayan-mountains",
+      "realm": "central-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA37": {
+      "area_name": "Altai Mountains",
+      "canonical_name": "Altai Mountains & Ermin Valley",
+      "subrealm": "altai-sayan-mountains",
+      "realm": "central-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA38": {
+      "area_name": "Junggar Basin",
+      "canonical_name": "Junggar Semi-Desert & Ermin Valley Steppe",
+      "subrealm": "east-asian-deserts",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA39": {
+      "area_name": "Taklamakan Desert",
+      "canonical_name": "Taklimakan Desert & Lowland Deciduous Forests",
+      "subrealm": "east-asian-deserts",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA40": {
+      "area_name": "Greater Tibet",
+      "canonical_name": "Greater Tibetan Plateau Alpine Meadows & Shrublands",
+      "subrealm": "tibetan-plateau",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA41": {
+      "area_name": "Himalayan-Pamir",
+      "canonical_name": "Himalayan-Pamir Alpine Shrub & Meadows",
+      "subrealm": "tibetan-plateau",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA42": {
+      "area_name": "Ordos Plateau",
+      "canonical_name": "Ordos Plateau Steppe & Mountain Conifer Forests",
+      "subrealm": "mongolian-grasslands",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA43": {
+      "area_name": "Gobi Desert",
+      "canonical_name": "Greater Gobi Desert",
+      "subrealm": "east-asian-deserts",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA44": {
+      "area_name": null,
+      "canonical_name": "Mongolian Grasslands, Alpine Meadows & Forest Steppe",
+      "subrealm": "mongolian-grasslands",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": false,
+      "reason": "Bioregion does not add a clearer zoo-area identity beyond Mongolian Grasslands."
+    },
+    "PA45": {
+      "area_name": "Dzhagdy Mountains",
+      "canonical_name": "Dzhagdy Mountain Conifer Forests",
+      "subrealm": "northeast-asian-forests",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA46": {
+      "area_name": "Manchuria-Ussuri",
+      "canonical_name": "Manchuria-Ussuri Mixed Forests & Meadow Steppes",
+      "subrealm": "northeast-asian-forests",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA47": {
+      "area_name": null,
+      "canonical_name": "Japan Forest Islands",
+      "subrealm": "japanese-islands",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": false,
+      "reason": "Same player-facing identity as parent; canonical bioregion remains available for education/map data."
+    },
+    "PA48": {
+      "area_name": "Korean Peninsula",
+      "canonical_name": "Korean Peninsula Mixed Forests",
+      "subrealm": "northeast-asian-forests",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA49": {
+      "area_name": "Loess Plateau",
+      "canonical_name": "Loess Plateau & Huang He Plain Mixed Forests",
+      "subrealm": "central-east-asian-forests",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA50": {
+      "area_name": "Yangtze Plain",
+      "canonical_name": "Chang Jiang Plain Evergreen Forests",
+      "subrealm": "central-east-asian-forests",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA51": {
+      "area_name": "Sichuan Basin",
+      "canonical_name": "Sichuan Basin & Central Mountain Forests",
+      "subrealm": "central-east-asian-forests",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA52": {
+      "area_name": "Yunnan-Guizhou",
+      "canonical_name": "Guizhou & Yunnan Subtropical Forest Plateaus",
+      "subrealm": "central-east-asian-forests",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": true
+    },
+    "PA53": {
+      "area_name": "Hengduan Mountains",
+      "canonical_name": "Hengduan Mountain Conifer Forests",
+      "subrealm": "central-east-asian-forests",
+      "realm": "eastern-eurasia",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 0 species assigned to PA53; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "AT1": {
+      "area_name": "Tristan Islands",
+      "canonical_name": "Tristan Volcanic Islands",
+      "subrealm": "southern-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT2": {
+      "area_name": "Cape Region",
+      "canonical_name": "South African Cape Shrublands & Mountain Forests",
+      "subrealm": "southern-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT3": {
+      "area_name": "Amsterdam-Paul",
+      "canonical_name": "Amsterdam-Saint Paul Islands",
+      "subrealm": "madagascar-east-african-coast",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT4": {
+      "area_name": "Mascarene Islands",
+      "canonical_name": "Mascarene Tropical Forest Islands",
+      "subrealm": "madagascar-east-african-coast",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT5": {
+      "area_name": "Seychelles-Comoros",
+      "canonical_name": "Seychelles & Comoros Tropical Islands",
+      "subrealm": "madagascar-east-african-coast",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT6": {
+      "area_name": "Madagascar",
+      "canonical_name": "Madagascar Island",
+      "subrealm": "madagascar-east-african-coast",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT7": {
+      "area_name": "Swahili Coast",
+      "canonical_name": "East African Coastal Forests",
+      "subrealm": "madagascar-east-african-coast",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT8": {
+      "area_name": "Southeast Africa",
+      "canonical_name": "Southeast African Subtropical Grasslands",
+      "subrealm": "southern-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT9": {
+      "area_name": "Karoo & Kalahari",
+      "canonical_name": "Greater Karoo & Kalahari Drylands",
+      "subrealm": "southern-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT10": {
+      "area_name": "Namib Coast",
+      "canonical_name": "Southwest African Coastal Drylands",
+      "subrealm": "southern-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT11": {
+      "area_name": "Subequatorial Savanna",
+      "canonical_name": "Greater African Subequatorial Savannas & Mixed Woodlands",
+      "subrealm": "sub-equatorial-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT12": {
+      "area_name": "Albertine-Victoria",
+      "canonical_name": "Victoria Basin & Albertine Rift Forests",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT13": {
+      "area_name": "South Congo",
+      "canonical_name": "South Congolian Forest-Savannas & Coastal Scarp",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT14": {
+      "area_name": "Central Congo",
+      "canonical_name": "Central Congolian Tropical Forests",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT15": {
+      "area_name": "North Congo",
+      "canonical_name": "North Congolian Lowland Forests",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT16": {
+      "area_name": "Mandara-Congo",
+      "canonical_name": "Mandara Mountain & North Congolian Forest-Savannas",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT17": {
+      "area_name": "Guinea Coast",
+      "canonical_name": "Gulf of Guinea Coastal Forests & Mangroves",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT18": {
+      "area_name": "St Helena-Ascension",
+      "canonical_name": "St. Helena & Ascension Islands",
+      "subrealm": "sub-equatorial-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT19": {
+      "area_name": "West Coast",
+      "canonical_name": "West African Coastal Forests & Savanna",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT20": {
+      "area_name": "Sudanian Savanna",
+      "canonical_name": "West Sudanian Savanna",
+      "subrealm": "sub-saharan-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT21": {
+      "area_name": "Turkana-Sudd",
+      "canonical_name": "Lake Turkana-Sudd Grasslands, Bushlands & Forests",
+      "subrealm": "horn-of-africa",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT22": {
+      "area_name": "Aden Coast",
+      "canonical_name": "South Red Sea & Gulf of Aden Coastal Drylands",
+      "subrealm": "horn-of-africa",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT23": {
+      "area_name": "Sahel",
+      "canonical_name": "Sahel Acacia Savannas",
+      "subrealm": "sub-saharan-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": true
+    },
+    "AT24": {
+      "area_name": "Cape Verde",
+      "canonical_name": "Cape Verde Islands",
+      "subrealm": "equatorial-afrotropics",
+      "realm": "afrotropics",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 0 species assigned to AT24; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "IM1": {
+      "area_name": "Indian Islands",
+      "canonical_name": "Central Indian Ocean Islands",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM2": {
+      "area_name": "Indian Coast",
+      "canonical_name": "Indian Tropical Coastal Forests",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM3": {
+      "area_name": "Indian Drylands",
+      "canonical_name": "Indian Dry Deciduous Forests",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM4": {
+      "area_name": "North Drylands",
+      "canonical_name": "North Indomalayan Deserts & Scrub Forest",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM5": {
+      "area_name": "Himalayan Forests",
+      "canonical_name": "Himalayan Mixed Forests & Grasslands",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM6": {
+      "area_name": "Ganges-Sundarbans",
+      "canonical_name": "North Indian Tropical Forests & Sundarbans",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM7": {
+      "area_name": "Deccan-Odisha",
+      "canonical_name": "Northern Deccan & Odisha Tropical Forests",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM8": {
+      "area_name": "Deccan-Sri Lanka",
+      "canonical_name": "Greater Deccan-Sri Lankan Forests & Drylands",
+      "subrealm": "indian-subcontinent",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM9": {
+      "area_name": "Myanmar-Andamans",
+      "canonical_name": "Myanmar Coastal Rainforests & Andaman Sea Islands",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM10": {
+      "area_name": "Arakan",
+      "canonical_name": "Arakan Mountains & Northern Triangle Forests",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM11": {
+      "area_name": "Irrawaddy",
+      "canonical_name": "Irrawaddy & North Indochina Mixed Forests",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM12": {
+      "area_name": "Indochina",
+      "canonical_name": "Indochina Mixed Forests & Peatlands",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM13": {
+      "area_name": "South China",
+      "canonical_name": "South China Subtropical Evergreen & Monsoon Forests",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM14": {
+      "area_name": "Ryukyu Islands",
+      "canonical_name": "Nansei Islands Subtropical Evergreen Forests",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM15": {
+      "area_name": "Philippines-Sulu",
+      "canonical_name": "Philippines & Sulu Sea Tropical Forests",
+      "subrealm": "southeast-asian-forests",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM16": {
+      "area_name": "Borneo",
+      "canonical_name": "Borneo Tropical Forests & Sundaland Heath Forests",
+      "subrealm": "malaysia-western-indonesia",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM17": {
+      "area_name": "Java & Bali",
+      "canonical_name": "Javan-Bali Tropical Rainforests",
+      "subrealm": "malaysia-western-indonesia",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "IM18": {
+      "area_name": "Malaya-Sumatra",
+      "canonical_name": "Peninsular Malaysian & Sumatran Tropical Rainforests",
+      "subrealm": "malaysia-western-indonesia",
+      "realm": "indomalaya",
+      "status": "curated",
+      "generate": true
+    },
+    "AU1": {
+      "area_name": null,
+      "canonical_name": "New Zealand",
+      "subrealm": "new-zealand",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": false,
+      "reason": "New Zealand is already the deepest useful generated Area identity."
+    },
+    "AU2": {
+      "area_name": "Howe-Norfolk",
+      "canonical_name": "Lord Howe & Norfolk Islands",
+      "subrealm": "new-zealand",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU3": {
+      "area_name": "Eastern Australia",
+      "canonical_name": "East Australian Temperate Forests & Mountain Shrublands",
+      "subrealm": "australia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU4": {
+      "area_name": "Southeast Australia",
+      "canonical_name": "East Australian Mediterranean Woodlands & Temperate Savannas",
+      "subrealm": "australia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU5": {
+      "area_name": "Southern Australia",
+      "canonical_name": "South Australian Mediterranean Forests, Woodlands & Scrub",
+      "subrealm": "australia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU6": {
+      "area_name": "Western Coast",
+      "canonical_name": "West Australian Dry Coastal Shrublands",
+      "subrealm": "australia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU7": {
+      "area_name": "Australian Interior",
+      "canonical_name": "Greater Australian Interior Desert & Shrublands",
+      "subrealm": "australia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU8": {
+      "area_name": "Northern Savannas",
+      "canonical_name": "North Australian Tropical Savannas",
+      "subrealm": "australia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU9": {
+      "area_name": "Queensland Tropics",
+      "canonical_name": "Queensland Tropical Rainforests & Savannas",
+      "subrealm": "australia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU10": {
+      "area_name": "New Caledonia",
+      "canonical_name": "Coral Sea & New Caledonia Islands",
+      "subrealm": "australasian-islands-eastern-indonesia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU11": {
+      "area_name": "Vanuatu",
+      "canonical_name": "Vanuatu Islands",
+      "subrealm": "australasian-islands-eastern-indonesia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU12": {
+      "area_name": "Solomon Islands",
+      "canonical_name": "Solomon Islands",
+      "subrealm": "australasian-islands-eastern-indonesia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU13": {
+      "area_name": "New Guinea",
+      "canonical_name": "New Guinea & Surrounding Islands",
+      "subrealm": "australasian-islands-eastern-indonesia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU14": {
+      "area_name": "Sulawesi-Maluku",
+      "canonical_name": "Sulawesi & Maluku Islands",
+      "subrealm": "australasian-islands-eastern-indonesia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU15": {
+      "area_name": "Lesser Sundas",
+      "canonical_name": "Southeast Indonesian Dry Forest Islands",
+      "subrealm": "australasian-islands-eastern-indonesia",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "AU16": {
+      "area_name": "Antipodes",
+      "canonical_name": "Subantarctic Antipodes Islands",
+      "subrealm": "new-zealand",
+      "realm": "australasia",
+      "status": "curated",
+      "generate": true
+    },
+    "OC1": {
+      "area_name": "Rapa Nui",
+      "canonical_name": "Salas y Gómez & Easter Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania",
+      "status": "curated",
+      "generate": true
+    },
+    "OC2": {
+      "area_name": "Marquesas",
+      "canonical_name": "Marquesas Tropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 2 species assigned to OC2; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "OC3": {
+      "area_name": "Southeast Polynesia",
+      "canonical_name": "Southeast Polynesian Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 0 species assigned to OC3; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "OC4": {
+      "area_name": "Central Polynesia",
+      "canonical_name": "Central Polynesian Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 0 species assigned to OC4; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "OC5": {
+      "area_name": "West Polynesia",
+      "canonical_name": "Samoa & West Polynesian Tropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 0 species assigned to OC5; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "OC6": {
+      "area_name": "Fiji-Tonga",
+      "canonical_name": "Fiji & Tongan Tropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 0 species assigned to OC6; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "OC7": {
+      "area_name": "East Micronesia",
+      "canonical_name": "East Micronesian Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 0 species assigned to OC7; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "OC8": {
+      "area_name": "Palau-Carolines",
+      "canonical_name": "Palau & Caroline Tropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 0 species assigned to OC8; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "OC9": {
+      "area_name": "Marianas",
+      "canonical_name": "Guam & Marianas Dry Tropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 0 species assigned to OC9; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "OC10": {
+      "area_name": "Ogasawara",
+      "canonical_name": "Ogasawara Subtropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 0 species assigned to OC10; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "OC11": {
+      "area_name": "Hawaiʻi",
+      "canonical_name": "Hawai’i Tropical Islands",
+      "subrealm": "oceanic-islands",
+      "realm": "oceania",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 0 species assigned to OC11; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "AN1": {
+      "area_name": "Continental Antarctica",
+      "canonical_name": "Continental Antarctica",
+      "subrealm": "antarctic-continent-islands",
+      "realm": "antarctica",
+      "status": "curated",
+      "generate": false,
+      "generation_suppression_reason": "Current Zoo Curator inventory has only 2 species assigned to AN1; fewer than the 4 distinct species required for a generated bioregion Area."
+    },
+    "AN2": {
+      "area_name": "Antarctic Peninsula",
+      "canonical_name": "Antarctic Peninsula & Scotia Sea",
+      "subrealm": "antarctic-continent-islands",
+      "realm": "antarctica",
+      "status": "curated",
+      "generate": true
+    },
+    "AN3": {
+      "area_name": "Subantarctic Islands",
+      "canonical_name": "Subantarctic Indian Ocean Islands",
+      "subrealm": "antarctic-continent-islands",
+      "realm": "antarctica",
+      "status": "curated",
+      "generate": true
+    }
+  },
+  "semantic_audit": {
+    "version": "v4",
+    "principle": "Short display names must not materially broaden or narrow the canonical One Earth unit.",
+    "reviewed_against": "One Earth Bioregions Framework / realm and bioregion descriptions",
+    "source_geography_modified": false,
+    "orinoco_region_note": "Player-facing name for canonical One Earth subrealm 'Upper South America'; chosen to distinguish it clearly from Amazonia while retaining the canonical name separately.",
+    "inventory_viability_pass": {
+      "source_inventory": "asset-inventory(20260925-001251).json",
+      "bioregions_checked": 185,
+      "suppressed_below_four_species": [
+        "AT24",
+        "NA26",
+        "OC10",
+        "OC11",
+        "OC3",
+        "OC4",
+        "OC5",
+        "OC6",
+        "OC7",
+        "OC8",
+        "OC9",
+        "PA53",
+        "AN1",
+        "NT29",
+        "OC2",
+        "NT7"
+      ],
+      "borderline_4_to_7_reviewed": [
+        "AN3",
+        "OC1",
+        "AN2",
+        "NT9"
+      ],
+      "borderline_policy": "Retained. Four or more species makes generation possible; runtime spatial/enclosure rules decide whether an Area actually forms."
+    }
+  },
+  "generation_rules": {
+    "bioregion_inventory_viability": {
+      "minimum_distinct_species_in_inventory": 4,
+      "behavior": "Bioregions below this inventory ceiling remain in the scientific/presentation registry but do not auto-generate as zoo Areas.",
+      "dynamic_runtime_note": "Runtime Area formation still requires the normal spatial/enclosure threshold; inventory viability alone does not create an Area."
+    }
+  }
+}

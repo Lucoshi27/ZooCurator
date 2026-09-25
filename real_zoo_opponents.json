@@ -18879,17 +18879,20 @@
               "Bald Eagle",
               "Banded Mongoose",
               "Barbary Macaque",
+              "Bateleur",
+              "Black Kite",
               "Black Mamba",
-              "Black Vulture",
               "Black-Chested Buzzard-Eagle",
               "Boa Constrictor",
               "Booted Eagle",
               "Brown Bear",
+              "Burmese Python",
               "California Sea Lion",
               "Cape Buffalo",
               "Cheetah",
               "Common Buzzard",
               "Common Eland",
+              "Common Ostrich",
               "Common Waterbuck",
               "De Brazza's Monkey",
               "Domestic Donkey",
@@ -18897,10 +18900,15 @@
               "Eastern Green Mamba",
               "Egyptian Vulture",
               "Emu",
+              "Eurasian Eagle-Owl",
+              "Eurasian Goshawk",
               "European Legless Lizard",
+              "Fallow Deer",
               "Gemsbok",
               "Gila Monster",
               "Golden Eagle",
+              "Grey Wolf",
+              "Griffon Vulture",
               "Grévy's Zebra",
               "Harris's Hawk",
               "Hippopotamus",
@@ -18908,20 +18916,26 @@
               "Indian Crested Porcupine",
               "Indonesian Pit Viper",
               "King Cobra",
+              "Lechwe",
               "Llama",
               "Mexican Beaded Lizard",
+              "Monk Vulture",
               "Monocled Cobra",
               "Mouflon",
+              "Northern White-Faced Owl",
               "Palm-Nut Vulture",
+              "Peregrine Falcon",
+              "Plains Zebra",
+              "Pond Slider",
               "Puff Adder",
               "Pygmy Hippopotamus",
+              "Red Deer",
               "Red Kite",
               "Red-Necked Wallaby",
               "Red-Tailed Hawk",
               "Reticulated Python",
               "Rothschild's Giraffe",
               "Saker Falcon",
-              "Siberian Tiger",
               "Snowy Owl",
               "Somali Wild Ass",
               "South American Sea Lion",
@@ -18930,7 +18944,10 @@
               "Turkey Vulture",
               "Uracoan Rattlesnake",
               "Verreaux's Eagle-Owl",
+              "Watusi",
+              "Western Barn Owl",
               "Western Diamondback Rattlesnake",
+              "Western Gaboon Viper",
               "Western Lowland Gorilla",
               "White Rhinoceros"
             ],
@@ -28087,7 +28104,69 @@
     },
     "Sweden": {
       "Västra Götaland": {
-        "tier_5": []
+        "tier_5": [],
+        "tier_2": [
+          {
+            "name": "Havets Hus",
+            "country": "Sweden",
+            "province": "Västra Götaland",
+            "tier": 2,
+            "preferred_categories": [
+              "Marine Mania"
+            ],
+            "animals": [
+              "Nursehound",
+              "Small-Spotted Catshark"
+            ],
+            "trade_id": 487,
+            "city": "Lysekil",
+            "location": {
+              "country": "Sweden",
+              "province": "Västra Götaland",
+              "city": "Lysekil"
+            }
+          }
+        ],
+        "tier_4": [
+          {
+            "name": "Aquarium Universeum",
+            "country": "Sweden",
+            "province": "Västra Götaland",
+            "tier": 4,
+            "preferred_categories": [
+              "Reptiles",
+              "Marine Mania",
+              "Primates"
+            ],
+            "animals": [
+              "Blacktip Reef Shark",
+              "Brown-Banded Bambooshark",
+              "Central Bearded Dragon",
+              "Common Trumpeter",
+              "Cuvier's Dwarf Caiman",
+              "Epaulette Shark",
+              "Gila Monster",
+              "Goeldi's Monkey",
+              "Green Aracari",
+              "Indonesian Pit Viper",
+              "King Cobra",
+              "Linneaus's Two-Toed Sloth",
+              "Pied Tamarin",
+              "Scarlet Ibis",
+              "Small-Spotted Catshark",
+              "Sunbittern",
+              "Toco Toucan",
+              "Xingu River Ray"
+            ],
+            "trade_id": 488,
+            "city": "Göteborg",
+            "location": {
+              "country": "Sweden",
+              "province": "Västra Götaland",
+              "city": "Göteborg"
+            }
+          }
+        ]
       },
       "Skåne": {
         "tier_4": [
@@ -28105,6 +28184,7 @@
               "African Grey Parrot",
               "Alpaca",
               "Black-Tailed Prairie Dog",
+              "Blue-Fronted Amazon",
               "Blue-and-Yellow Macaw",
               "Chilean Flamingo",
               "Chinese Alligator",
@@ -28114,21 +28194,75 @@
               "Hyacinth Macaw",
               "Kea",
               "Laughing Kookaburra",
+              "Little Corella",
               "Red-Fronted Parrot",
               "Red-Lored Amazon",
               "Red-Necked Wallaby",
               "Red-Tailed Black Cockatoo",
+              "Red-and-Green Macaw",
               "Reticulated Python",
               "Ring-Tailed Lemur",
               "South American Coati",
               "Striped Skunk",
               "Tanimbar Corella",
               "Trumpeter Hornbill",
+              "West African Dwarf Goat",
               "White-Bellied Parrot",
+              "Yellow-Crested Cockatoo",
               "Yellow-Crowned Amazon",
               "Yellow-Naped Amazon"
             ],
             "trade_id": 133,
+            "city": "Helsingborg",
+            "location": {
+              "country": "Sweden",
+              "province": "Skåne",
+              "city": "Helsingborg"
+            }
+          },
+          {
+            "name": "Tropicariet",
+            "country": "Sweden",
+            "province": "Skåne",
+            "tier": 4,
+            "preferred_categories": [
+              "Reptiles",
+              "Primates",
+              "Marine Mania"
+            ],
+            "animals": [
+              "Blacktip Reef Shark",
+              "Brown-Banded Bambooshark",
+              "Caiman Lizard",
+              "Dumeril's Boa",
+              "Dwarf Crocodile",
+              "Dwarf Mongoose",
+              "Egyptian Fruit Bat",
+              "Egyptian Tortoise",
+              "Emerald Tree Boa",
+              "Eyelash Viper",
+              "Golden-Handed Tamarin",
+              "Golden-Headed Lion Tamarin",
+              "Green Aracari",
+              "Grey-Handed Night Monkey",
+              "Ivory-Billed Aracari",
+              "Jackson's Chameleon",
+              "McCord's Snake-Necked Turtle",
+              "Meerkat",
+              "Pygmy Marmoset",
+              "Radiated Tortoise",
+              "Red-Crested Turaco",
+              "Red-Footed Tortoise",
+              "Ring-Tailed Lemur",
+              "Senegal Bushbaby",
+              "Spiny-Tailed Monitor",
+              "Sugar Glider",
+              "Western Diamondback Rattlesnake",
+              "Western Gaboon Viper",
+              "Whitetip Reef Shark",
+              "Yellow-Footed Tortoise"
+            ],
+            "trade_id": 491,
             "city": "Helsingborg",
             "location": {
               "country": "Sweden",
@@ -28556,6 +28690,91 @@
               "country": "Sweden",
               "province": "Västra Götaland",
               "city": "Hunnebostrand"
+            }
+          }
+        ]
+      },
+      "Stockholm": {
+        "tier_4": [
+          {
+            "name": "Skansen-Akvariet",
+            "country": "Sweden",
+            "province": "Stockholm",
+            "tier": 4,
+            "preferred_categories": [
+              "Reptiles",
+              "Primates",
+              "Tropical Birds"
+            ],
+            "animals": [
+              "Alligator Snapping Turtle",
+              "Black-and-Rufous Elephant Shrew",
+              "Blue-Fronted Amazon",
+              "Boa Constrictor",
+              "Brown-Banded Bambooshark",
+              "Cuban Crocodile",
+              "Eastern Diamondback Rattlesnake",
+              "Emerald Tree Boa",
+              "Emperor Tamarin",
+              "Eyelash Viper",
+              "Gila Monster",
+              "Golden Lion Tamarin",
+              "Green Bush Viper",
+              "Hamadryas Baboon",
+              "Hoffmann's Two-Toed Sloth",
+              "King Cobra",
+              "Komodo Dragon",
+              "McCord's Snake-Necked Turtle",
+              "Meerkat",
+              "Mitchell's Water Monitor",
+              "Pancake Tortoise",
+              "Pygmy Marmoset",
+              "Red Titi",
+              "Ring-Tailed Lemur",
+              "Western Gaboon Viper",
+              "White-Faced Saki",
+              "Yellow-Headed Amazon"
+            ],
+            "trade_id": 489,
+            "city": "Stockholm",
+            "location": {
+              "country": "Sweden",
+              "province": "Stockholm",
+              "city": "Stockholm"
+            }
+          },
+          {
+            "name": "Skansen",
+            "country": "Sweden",
+            "province": "Stockholm",
+            "tier": 4,
+            "preferred_categories": [
+              "Ungulates",
+              "Carnivora",
+              "Birds of Prey"
+            ],
+            "animals": [
+              "Brown Bear",
+              "Common Viper",
+              "Eurasian Eagle-Owl",
+              "Eurasian Lynx",
+              "Eurasian Otter",
+              "European Pond Turtle",
+              "Great Grey Owl",
+              "Grey Seal",
+              "Harbour Seal",
+              "Moose",
+              "Reindeer",
+              "Wild Boar",
+              "Wisent",
+              "Wolverine"
+            ],
+            "trade_id": 490,
+            "city": "Stockholm",
+            "location": {
+              "country": "Sweden",
+              "province": "Stockholm",
+              "city": "Stockholm"
             }
           }
         ]

@@ -20023,6 +20023,25 @@ function reconcileLocalMultiplayerRosterFromServerPlayers(serverPlayers){
         const match=/^player-(\d+)$/.exec(String(id||''));
         return match?Number(match[1]):Number.MAX_SAFE_INTEGER;
     };
+    const authoritativeIds=new Set(ordered.map(p=>`player-${Number(p.seat)}`));
+    const authenticatedOwnSeat=Number(localMultiplayerBrowserTransport?.serverSeat)||0;
+    if(authenticatedOwnSeat)authoritativeIds.add(`player-${authenticatedOwnSeat}`);
+    const filtered=localClassicMatch.playerIds.filter(id=>{
+        const value=String(id||'');
+        if(/^joining-/.test(value))return false;
+        return !/^player-\d+$/.test(value) || authoritativeIds.has(value);
+    });
+    if(filtered.length!==localClassicMatch.playerIds.length){
+        localClassicMatch.playerIds=filtered;
+        changed=true;
+    }
+    for(const id of Object.keys(localClassicMatch.players||{})){
+        if(/^joining-/.test(id) ||
+           (/^player-\d+$/.test(id)&&!authoritativeIds.has(id)&&id!==localClassicMatch.activePlayerId)){
+            delete localClassicMatch.players[id];
+            changed=true;
+        }
+    }
     const sorted=[...localClassicMatch.playerIds].sort((a,b)=>seatNumber(a)-seatNumber(b));
     if(sorted.some((id,i)=>id!==localClassicMatch.playerIds[i])){
         localClassicMatch.playerIds=sorted;
@@ -20062,9 +20081,9 @@ function ensureMultiplayerRemoteCursor(seat){
     el.style.setProperty('--multiplayer-player-colour',MULTIPLAYER_PLAYER_COLOURS[(Math.max(1,seat)-1)%MULTIPLAYER_PLAYER_COLOURS.length]);
     const pointer=document.createElement('div');pointer.className='multiplayer-remote-cursor-pointer';
     const label=document.createElement('div');label.className='multiplayer-remote-cursor-label';
-    const localId=localClassicMatch?.playerIds?.[seat-1];label.textContent=localId?localMultiplayerPlayerLabel(localId):`Player ${seat}`;
+    const localId=`player-${seat}`;label.textContent=localClassicMatch?.players?.[localId]?localMultiplayerPlayerLabel(localId):`Player ${seat}`;
     el.append(pointer,label);document.body.appendChild(el);
-    entry={el,x:0,y:0,lastSeen:0};multiplayerRemoteCursors.set(seat,entry);return entry;
+    entry={el,x:0,y:0,lastSeen:0,senderPlayerId:null};multiplayerRemoteCursors.set(seat,entry);return entry;
 }
 function renderMultiplayerRemoteCursors(){
     multiplayerCursorRaf=0;
@@ -20091,6 +20110,12 @@ function receiveMultiplayerCursor(message){
     const target=multiplayerCursorTarget();
     if(!target||String(message?.targetPlayerId||'')!==String(target.playerId||''))return;
     const entry=ensureMultiplayerRemoteCursor(seat);
+    const senderPlayerId=String(message?.senderPlayerId||'');
+    if(entry.senderPlayerId&&senderPlayerId&&entry.senderPlayerId!==senderPlayerId){
+        entry.lastSeen=0;
+        entry.el.style.opacity='0';
+    }
+    entry.senderPlayerId=senderPlayerId||entry.senderPlayerId;
     if(message?.moving===false){entry.lastSeen=0;entry.el.style.opacity='0';return;}
     const x=Number(message.x),y=Number(message.y);if(!Number.isFinite(x)||!Number.isFinite(y))return;
     entry.x=x;entry.y=y;entry.lastSeen=Date.now();
@@ -20111,21 +20136,23 @@ function multiplayerCursorTarget(){
 function sendMultiplayerCursorFromPointer(event){
     const channel=localMultiplayerBrowserChannel,t=localMultiplayerBrowserTransport;
     if(!channel?.serverBacked||!t?.serverAuthenticated||!localClassicMatch||!zooCanvas||!zooBoard)return;
-    if(t.serverViewSubscriptionPending)return;
     const nowMs=performance.now();if(nowMs-multiplayerCursorLastSentAt<50)return; // <=20 Hz
     const boardRect=zooBoard.getBoundingClientRect();
     if(event.clientX<boardRect.left||event.clientX>boardRect.right||event.clientY<boardRect.top||event.clientY>boardRect.bottom)return;
-    // The server owns the socket's current live-view subscription. Cursor packets
-    // identify only the physical sender; they do not impersonate the zoo owner.
+    // Cursor identity is the authenticated socket, while viewTargetPlayerId is
+    // only the zoo currently rendered in this browser. Keeping these separate
+    // makes owner<->visitor routing symmetric and independent of subscription ACKs.
+    const viewTarget=multiplayerCursorTarget();if(!viewTarget)return;
     const rect=zooCanvas.getBoundingClientRect(),zoom=Math.max(.01,Number(state.zoom)||1);
     const x=(event.clientX-rect.left)/zoom,y=(event.clientY-rect.top)/zoom;
     multiplayerCursorLastSentAt=nowMs;
-    try{channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'cursor',x,y,moving:true});}catch(_){}
+    try{channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'cursor',viewTargetPlayerId:viewTarget.playerId,x,y,moving:true});}catch(_){}
 }
 function sendMultiplayerCursorLeave(){
     const channel=localMultiplayerBrowserChannel,t=localMultiplayerBrowserTransport;
-    if(!channel?.serverBacked||!t?.serverAuthenticated||t.serverViewSubscriptionPending)return;
-    try{channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'cursor',x:0,y:0,moving:false});}catch(_){}
+    if(!channel?.serverBacked||!t?.serverAuthenticated)return;
+    const viewTarget=multiplayerCursorTarget();if(!viewTarget)return;
+    try{channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'cursor',viewTargetPlayerId:viewTarget.playerId,x:0,y:0,moving:false});}catch(_){}
 }
 window.addEventListener('pointermove',sendMultiplayerCursorFromPointer,{passive:true});
 zooBoard?.addEventListener('pointerleave',sendMultiplayerCursorLeave,{passive:true});
@@ -20426,8 +20453,25 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 transport.serverAuthenticated=true;
                 transport.serverPlayers=cloneForSave(message.players||[]);
                 const localSeat=multiplayerSeatForLocalPlayerId(localClassicMatch?.activePlayerId);
-                if(localSeat&&transport.serverSeat&&Number(localSeat)!==Number(transport.serverSeat)){
-                    console.warn(`Server seat ${transport.serverSeat} differs from local seat ${localSeat}; server identity wins.`);
+                const authoritativeLocalId=transport.serverSeat?`player-${Number(transport.serverSeat)}`:null;
+                if(authoritativeLocalId&&localClassicMatch){
+                    const previousLocalId=localClassicMatch.activePlayerId;
+                    if(previousLocalId!==authoritativeLocalId){
+                        console.warn(`Server seat ${transport.serverSeat} differs from local identity ${previousLocalId}; remapping local player to ${authoritativeLocalId}.`);
+                        const previous=localClassicMatch.players?.[previousLocalId];
+                        if(!localClassicMatch.players)localClassicMatch.players={};
+                        if(!localClassicMatch.players[authoritativeLocalId]&&previous)
+                            localClassicMatch.players[authoritativeLocalId]=previous;
+                        if(/^joining-/.test(String(previousLocalId||''))){
+                            delete localClassicMatch.players[previousLocalId];
+                            if(Array.isArray(localClassicMatch.playerIds))
+                                localClassicMatch.playerIds=localClassicMatch.playerIds.filter(id=>id!==previousLocalId);
+                        }
+                        if(!localClassicMatch.playerIds.includes(authoritativeLocalId))
+                            localClassicMatch.playerIds.push(authoritativeLocalId);
+                        localClassicMatch.activePlayerId=authoritativeLocalId;
+                        transport.playerId=authoritativeLocalId;
+                    }
                 }
                 reconcileLocalMultiplayerRosterFromServerPlayers(transport.serverPlayers);
                 writeMultiplayerServerIdentity(resolvedMatchId,channel.serverIdentity);

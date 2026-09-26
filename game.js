@@ -20121,6 +20121,15 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 transport.serverProgression=cloneForSave(message);
                 transport.serverProgressionRevision=Number(message.revision)||0;
                 transport.serverProgressionInitSent=true;
+                // Multiplayer progression can change Draw availability without a
+                // local render (for example when the other player completes a
+                // server-authoritative draw). Re-evaluate the deck immediately;
+                // otherwise its old grey/aria-disabled styling can survive until
+                // the next pointer interaction happens to refresh the UI.
+                queueMicrotask(()=>{
+                    if(channel===localMultiplayerBrowserChannel)
+                        refreshDrawAvailabilityState?.();
+                });
             }else if(message.type==='server-presence'){
                 transport.serverPlayers=cloneForSave(message.players||[]);
                 transport.serverRevision=Math.max(Number(transport.serverRevision)||0,Number(message.revision)||0);
@@ -20129,6 +20138,13 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 if(Number.isFinite(Number(message.revision)))
                     transport.serverProgressionRevision=Number(message.revision);
                 resolveMultiplayerServerAction(message);
+                // A committed/rejected server action closes an asynchronous
+                // availability boundary. Do not wait for the user to click the
+                // visually stale deck before restoring its enabled appearance.
+                queueMicrotask(()=>{
+                    if(channel===localMultiplayerBrowserChannel)
+                        refreshDrawAvailabilityState?.();
+                });
             }else if(message.type==='server-error'){
                 transport.serverError=cloneForSave(message);
                 console.warn('Multiplayer server error:',message.code||message.message||'unknown');
@@ -26636,6 +26652,26 @@ async function commitServerAuthoritativeLevelOneDraw(message,destination){
     finalizeClassicProgressionCommit('Server-authoritative Level 1 draw');
     state.nextDrawSpec=null;
     state.nextDrawReadyPromise=null;
+
+    // draw-level1 is already authoritative in server v2, so a peer deliberately
+    // bypasses the legacy host action envelope above. Until personal zoo state is
+    // fully migrated to server v2, however, the host's legacy match replica still
+    // needs the peer's newly committed zoo snapshot. Without this bridge the host
+    // retained Player 2's pre-draw snapshot; its next ordinary sync then imported
+    // that stale snapshot on Player 2 and visibly rolled the draw back.
+    //
+    // Publish the completed peer zoo to the browser authority before considering
+    // the draw locally finished. WebSocket ordering then guarantees the host sees
+    // this replacement before any later action sent by this peer.
+    if(localMultiplayerBrowserTransport?.role==='peer' &&
+       localMultiplayerBrowserTransport.playerId===localClassicMatch?.activePlayerId){
+        const bridge=await sendLocalMultiplayerBrowserAction('replace-player-zoo',{
+            snapshot:exportCurrentGameState()
+        });
+        if(!bridge?.ok){
+            console.warn('Could not bridge server-authoritative draw into host zoo state:',bridge?.reason||'unknown');
+        }
+    }
     return true;
 }
 

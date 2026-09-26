@@ -13683,6 +13683,25 @@ body[data-zoo-colour-scheme="overloon"] .visited-zoo-quick-tab.is-current,
     text-decoration-thickness: 2px;
     text-underline-offset: 3px;
 }
+/* Multiplayer identity colours: the tab underline and live cursor use the same stable seat colour. */
+#visitedZooQuickTabs .multiplayer-zoo-quick-tab {
+    border-bottom: 4px solid var(--multiplayer-player-colour, transparent) !important;
+}
+.multiplayer-remote-cursor {
+    position: fixed; left: 0; top: 0; z-index: 99990; pointer-events: none;
+    transform: translate(-2px,-2px); will-change: left,top;
+    transition: opacity .16s linear;
+}
+.multiplayer-remote-cursor-pointer {
+    width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent;
+    border-bottom: 18px solid var(--multiplayer-player-colour); transform: rotate(-42deg); transform-origin: 50% 85%;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.45));
+}
+.multiplayer-remote-cursor-label {
+    position: absolute; left: 12px; top: 13px; padding: 2px 5px; border-radius: 4px;
+    background: var(--multiplayer-player-colour); color: #fff; font: 700 10px/1.25 Arial,sans-serif;
+    white-space: nowrap; text-shadow: 0 1px 1px rgba(0,0,0,.35); box-shadow: 0 1px 3px rgba(0,0,0,.25);
+}
 .visited-zoo-quick-tab.is-current { background: rgba(232,232,226,.99); }
 .visited-zoo-quick-tab-label { pointer-events: none; }
 .visited-zoo-quick-tab-close {
@@ -13923,6 +13942,7 @@ function renderVisitedZooQuickTabs() {
             tab.type = 'button';
             tab.className = 'visited-zoo-quick-tab multiplayer-zoo-quick-tab';
             tab.dataset.multiplayerPlayerId = playerId;
+            tab.style.setProperty('--multiplayer-player-colour', multiplayerPlayerColour(playerId));
             const viewedId = localClassicMatch.viewingPlayerId || localClassicMatch.activePlayerId;
             const hasZoo=!!localClassicMatch.players?.[playerId]?.snapshot;
             const isViewed = hasZoo && playerId === viewedId;
@@ -14050,19 +14070,15 @@ function renderVisitedZooQuickTabs() {
                 rightOffset+=tab.getBoundingClientRect().width+6;
             }
 
+            // Visited real/AI zoos are additional tabs in the same ordered strip,
+            // not a separate overlay layer. Append them after the multiplayer
+            // roster on the right and advance the same edge offset used by human
+            // player tabs. This guarantees that a visited zoo can never occupy a
+            // player slot, regardless of player count, reconnect order or widths.
             for(const tab of aiTabs){
-                // AI/real-zoo visit tabs continue outward from all multiplayer
-                // tabs, alternating sides so they never sit behind them.
-                const useLeft=leftOffset<=rightOffset;
-                if(useLeft){
-                    tab.style.right=`calc(50% + ${leftOffset}px)`;
-                    tab.style.left='auto';
-                    leftOffset+=tab.getBoundingClientRect().width+6;
-                }else{
-                    tab.style.left=`calc(50% + ${rightOffset}px)`;
-                    tab.style.right='auto';
-                    rightOffset+=tab.getBoundingClientRect().width+6;
-                }
+                tab.style.left=`calc(50% + ${rightOffset}px)`;
+                tab.style.right='auto';
+                rightOffset+=tab.getBoundingClientRect().width+6;
             }
         };
         layoutMultiplayerZooTabs();
@@ -19624,6 +19640,23 @@ function seedLocalClassicMatchPlayer(playerId, snapshot = null) {
 
 
 
+let localMultiplayerSyncMicrotaskPending=false;
+let localMultiplayerSyncScheduleToken=0;
+let localMultiplayerSyncScheduledReason='state-change';
+function scheduleLocalMultiplayerSync(reason='state-change'){
+    if(!localMultiplayerOutboundSink||!localClassicMatch)return false;
+    localMultiplayerSyncScheduledReason=String(reason||localMultiplayerSyncScheduledReason||'state-change');
+    if(localMultiplayerSyncMicrotaskPending)return true;
+    localMultiplayerSyncMicrotaskPending=true;
+    const token=++localMultiplayerSyncScheduleToken;
+    queueMicrotask(()=>{
+        if(token!==localMultiplayerSyncScheduleToken)return;
+        localMultiplayerSyncMicrotaskPending=false;
+        emitLocalMultiplayerSync(localMultiplayerSyncScheduledReason);
+    });
+    return true;
+}
+
 function ensureLocalMultiplayerEventStream(){
     if(!localClassicMatch)return null;
     if(!Array.isArray(localClassicMatch.events))localClassicMatch.events=[];
@@ -19645,7 +19678,7 @@ function recordLocalMultiplayerEvent(type,payload={}){
     // Keep local saves bounded; a future network transport only needs events
     // newer than its acknowledged cursor.
     if(events.length>250)events.splice(0,events.length-250);
-    if(localMultiplayerOutboundSink)queueMicrotask(()=>emitLocalMultiplayerSync(type));
+    if(localMultiplayerOutboundSink)scheduleLocalMultiplayerSync(type);
     // Multiplayer contains meaningful free actions (layout/trade drafting) that
     // do not advance state.turn. Persist them as soon as their shared event is
     // committed rather than waiting for pagehide or the next progression turn.
@@ -19773,9 +19806,23 @@ async function applyLocalMultiplayerSyncPacketToReplica(packet,replica=localMult
             return true;
         }
         if(own && !previousViewingPlayerId && !wasVisitingRealZoo){
+            const transport=localMultiplayerBrowserTransport;
+            // Full importGameState() is one of the most expensive multiplayer
+            // operations. Many packets only change another player, the turn,
+            // trade metadata, or the roster while our own zoo snapshot is
+            // unchanged. Detect that case before rebuilding the whole zoo DOM.
+            let ownSnapshotSignature=null;
+            try{ownSnapshotSignature=JSON.stringify(own);}catch(_){}
+            if(ownSnapshotSignature&&transport.lastImportedOwnSnapshotSignature===ownSnapshotSignature){
+                if(localClassicMatch?.rules?.activeCategories)
+                    applyMultiplayerCategoryRules(localClassicMatch.rules.activeCategories);
+                renderVisitedZooQuickTabs();
+                renderTrade();
+                updateMultiplayerHeaderButtonState?.();
+                return true;
+            }
             // Camera is client-local UI state. Never let the host snapshot move
             // Player 2's viewport every time a turn/sync packet arrives.
-            const transport=localMultiplayerBrowserTransport;
             const hadPeerCamera=Boolean(transport.peerCameraInitialised);
             if(hadPeerCamera){
                 transport.peerCamera={
@@ -19788,6 +19835,7 @@ async function applyLocalMultiplayerSyncPacketToReplica(packet,replica=localMult
             autoResumeWriteSuppressed=true;
             try{
                 await importGameState(imported,{deferRender:false});
+                if(ownSnapshotSignature)transport.lastImportedOwnSnapshotSignature=ownSnapshotSignature;
                 if(localClassicMatch?.rules?.activeCategories)
                     applyMultiplayerCategoryRules(localClassicMatch.rules.activeCategories);
                 createZooNameEditor();
@@ -19863,6 +19911,13 @@ async function applyLocalMultiplayerSyncPacketToReplica(packet,replica=localMult
 }
 function emitLocalMultiplayerSync(reason='state-change'){
     if(!localClassicMatch)return null;
+    // A direct authoritative send supersedes any same-tick scheduled send.
+    // This avoids serialising/broadcasting the entire multiplayer match twice
+    // for one action (recordLocalMultiplayerEvent + action completion).
+    if(localMultiplayerSyncMicrotaskPending){
+        localMultiplayerSyncMicrotaskPending=false;
+        localMultiplayerSyncScheduleToken++;
+    }
     const packet=getLocalMultiplayerSyncPacket(localMultiplayerPeerReplica?.cursor||null);
     if(!packet)return null;
     packet.reason=reason;packet.sentByPlayerId=localClassicMatch.activePlayerId;
@@ -19916,6 +19971,101 @@ function applyMultiplayerCategoryRules(categories){
 let localMultiplayerExternalChannelFactory=null;
 const MULTIPLAYER_RELAY_URL_KEY='zoo-curator-multiplayer-relay-url';
 const DEFAULT_MULTIPLAYER_RELAY_URL='wss://multiplayer.zoocurator.nl';
+const MULTIPLAYER_PLAYER_COLOURS=['#2F80ED','#EB5757','#27AE60','#9B51E0','#F2994A','#00A6A6'];
+const multiplayerRemoteCursors=new Map();
+let multiplayerCursorLastSentAt=0;
+let multiplayerCursorRaf=0;
+function multiplayerSeatForLocalPlayerId(playerId){
+    const index=localClassicMatch?.playerIds?.indexOf(playerId)??-1;
+    return index>=0?index+1:null;
+}
+function multiplayerPlayerColour(playerId){
+    const seat=multiplayerSeatForLocalPlayerId(playerId)||1;
+    return MULTIPLAYER_PLAYER_COLOURS[(seat-1)%MULTIPLAYER_PLAYER_COLOURS.length];
+}
+function multiplayerServerPlayerForLocalId(playerId){
+    const seat=multiplayerSeatForLocalPlayerId(playerId);
+    const players=localMultiplayerBrowserTransport?.serverPlayers||[];
+    return players.find(p=>Number(p.seat)===Number(seat))||null;
+}
+function multiplayerEffectiveViewedLocalPlayerId(){
+    return localClassicMatch?.viewingPlayerId||localClassicMatch?.activePlayerId||null;
+}
+function sendMultiplayerLiveViewSubscription(){
+    const channel=localMultiplayerBrowserChannel,t=localMultiplayerBrowserTransport;
+    if(!channel?.serverBacked||!t?.serverAuthenticated)return false;
+    const viewed=multiplayerEffectiveViewedLocalPlayerId();
+    const own=localClassicMatch?.activePlayerId;
+    const remote=viewed&&viewed!==own?multiplayerServerPlayerForLocalId(viewed):null;
+    try{channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'live-view',targetPlayerId:remote?.playerId||null});return true;}catch(_){return false;}
+}
+function clearMultiplayerRemoteCursors(){
+    for(const entry of multiplayerRemoteCursors.values())entry.el?.remove?.();
+    multiplayerRemoteCursors.clear();
+}
+function ensureMultiplayerRemoteCursor(seat){
+    let entry=multiplayerRemoteCursors.get(seat);
+    if(entry?.el?.isConnected)return entry;
+    const el=document.createElement('div');el.className='multiplayer-remote-cursor';
+    el.style.setProperty('--multiplayer-player-colour',MULTIPLAYER_PLAYER_COLOURS[(Math.max(1,seat)-1)%MULTIPLAYER_PLAYER_COLOURS.length]);
+    const pointer=document.createElement('div');pointer.className='multiplayer-remote-cursor-pointer';
+    const label=document.createElement('div');label.className='multiplayer-remote-cursor-label';
+    const localId=localClassicMatch?.playerIds?.[seat-1];label.textContent=localId?localMultiplayerPlayerLabel(localId):`Player ${seat}`;
+    el.append(pointer,label);document.body.appendChild(el);
+    entry={el,x:0,y:0,lastSeen:0};multiplayerRemoteCursors.set(seat,entry);return entry;
+}
+function renderMultiplayerRemoteCursors(){
+    multiplayerCursorRaf=0;
+    if(!zooCanvas||!localClassicMatch)return;
+    // Use the transformed canvas itself as the coordinate origin. This stays exact
+    // through pan/scroll and zoom and avoids accumulating zooBoard border offsets.
+    const rect=zooCanvas.getBoundingClientRect(),zoom=Math.max(.01,Number(state.zoom)||1),nowMs=Date.now();
+    let hasVisible=false;
+    for(const [seat,entry] of multiplayerRemoteCursors){
+        if(nowMs-entry.lastSeen>1200){entry.el.style.opacity='0';continue;}
+        hasVisible=true;entry.el.style.opacity='1';
+        entry.el.style.left=`${rect.left+entry.x*zoom}px`;
+        entry.el.style.top=`${rect.top+entry.y*zoom}px`;
+    }
+    if(hasVisible)multiplayerCursorRaf=requestAnimationFrame(renderMultiplayerRemoteCursors);
+}
+function receiveMultiplayerCursor(message){
+    const seat=Number(message?.senderSeat)||0;if(!seat||!localClassicMatch)return;
+    const ownSeat=multiplayerSeatForLocalPlayerId(localClassicMatch.activePlayerId);if(seat===ownSeat)return;
+    // Drop delayed cursor packets from a zoo we have already left.
+    const viewed=multiplayerEffectiveViewedLocalPlayerId();
+    const target=multiplayerServerPlayerForLocalId(viewed);
+    if(!target||String(message?.targetPlayerId||'')!==String(target.playerId||''))return;
+    const entry=ensureMultiplayerRemoteCursor(seat);
+    if(message?.moving===false){entry.lastSeen=0;entry.el.style.opacity='0';return;}
+    const x=Number(message.x),y=Number(message.y);if(!Number.isFinite(x)||!Number.isFinite(y))return;
+    entry.x=x;entry.y=y;entry.lastSeen=Date.now();
+    if(!multiplayerCursorRaf)multiplayerCursorRaf=requestAnimationFrame(renderMultiplayerRemoteCursors);
+}
+function multiplayerCursorTarget(){
+    const viewed=multiplayerEffectiveViewedLocalPlayerId();
+    return viewed?multiplayerServerPlayerForLocalId(viewed):null;
+}
+function sendMultiplayerCursorFromPointer(event){
+    const channel=localMultiplayerBrowserChannel,t=localMultiplayerBrowserTransport;
+    if(!channel?.serverBacked||!t?.serverAuthenticated||!localClassicMatch||!zooCanvas||!zooBoard)return;
+    const nowMs=performance.now();if(nowMs-multiplayerCursorLastSentAt<50)return; // <=20 Hz
+    const boardRect=zooBoard.getBoundingClientRect();
+    if(event.clientX<boardRect.left||event.clientX>boardRect.right||event.clientY<boardRect.top||event.clientY>boardRect.bottom)return;
+    const target=multiplayerCursorTarget();if(!target)return;
+    const rect=zooCanvas.getBoundingClientRect(),zoom=Math.max(.01,Number(state.zoom)||1);
+    const x=(event.clientX-rect.left)/zoom,y=(event.clientY-rect.top)/zoom;
+    multiplayerCursorLastSentAt=nowMs;
+    try{channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'cursor',targetPlayerId:target.playerId,x,y,moving:true});}catch(_){}
+}
+function sendMultiplayerCursorLeave(){
+    const channel=localMultiplayerBrowserChannel,t=localMultiplayerBrowserTransport,target=multiplayerCursorTarget();
+    if(!channel?.serverBacked||!t?.serverAuthenticated||!target)return;
+    try{channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'cursor',targetPlayerId:target.playerId,x:0,y:0,moving:false});}catch(_){}
+}
+window.addEventListener('pointermove',sendMultiplayerCursorFromPointer,{passive:true});
+zooBoard?.addEventListener('pointerleave',sendMultiplayerCursorLeave,{passive:true});
+zooBoard?.addEventListener('scroll',()=>{if(!multiplayerCursorRaf&&multiplayerRemoteCursors.size)multiplayerCursorRaf=requestAnimationFrame(renderMultiplayerRemoteCursors);},{passive:true});
 const MULTIPLAYER_SERVER_PROTOCOL='zoo-curator-server-v2';
 const MULTIPLAYER_SERVER_IDENTITY_KEY='zoo-curator-server-identities-v1';
 const multiplayerServerPendingActions=new Map();
@@ -20130,6 +20280,7 @@ function closeLocalMultiplayerBrowserTransport(){
         pending.resolve({type:'action-rejected',code:'TRANSPORT_CLOSED',requestId:id});
     }
     multiplayerServerPendingActions.clear();
+    clearMultiplayerRemoteCursors();
     localMultiplayerBrowserChannel=null;localMultiplayerBrowserTransport=null;
 }
 function announceLocalMultiplayerLeave(){
@@ -20202,7 +20353,9 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 transport.serverSeat=channel.serverIdentity.seat;
                 transport.serverRevision=Number(message.revision)||0;
                 transport.serverAuthenticated=true;
+                transport.serverPlayers=cloneForSave(message.players||[]);
                 writeMultiplayerServerIdentity(resolvedMatchId,channel.serverIdentity);
+                queueMicrotask(()=>sendMultiplayerLiveViewSubscription());
                 // Existing matches replay progression immediately after welcome.
                 // Give that packet one event-loop turn before seat 1 attempts
                 // create-once initialization of a brand-new match.
@@ -20227,6 +20380,10 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
             }else if(message.type==='server-presence'){
                 transport.serverPlayers=cloneForSave(message.players||[]);
                 transport.serverRevision=Math.max(Number(transport.serverRevision)||0,Number(message.revision)||0);
+                renderVisitedZooQuickTabs?.();
+                queueMicrotask(()=>sendMultiplayerLiveViewSubscription());
+            }else if(message.type==='cursor'){
+                receiveMultiplayerCursor(message);
             }else if(message.type==='action-committed'||message.type==='action-rejected'){
                 transport.lastServerAction=cloneForSave(message);
                 if(Number.isFinite(Number(message.revision)))
@@ -20344,7 +20501,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                         if(own)importGameState(own).catch(error=>console.error('Could not return from disconnected multiplayer zoo:',error));
                     }
                     localClassicMatch.revision++;recordLocalMultiplayerEvent('player-disconnected',{playerId:leavingId});
-                    renderVisitedZooQuickTabs();renderTrade();queueMicrotask(()=>emitLocalMultiplayerSync('player-disconnected'));
+                    renderVisitedZooQuickTabs();renderTrade();scheduleLocalMultiplayerSync('player-disconnected');
                 }
                 showGameNotice(uiText('A player disconnected from the multiplayer game.'));
             }
@@ -20910,7 +21067,7 @@ async function applyLocalMultiplayerActionEnvelope(action){
             turn:replacement.state.turn
         });
         renderVisitedZooQuickTabs();
-        queueMicrotask(()=>emitLocalMultiplayerSync('player-zoo-reset'));
+        scheduleLocalMultiplayerSync('player-zoo-reset');
         return {ok:true,revision:localClassicMatch.revision,turn:replacement.state.turn};
     }
     if(action.type==='register-player-zoo'){
@@ -20940,7 +21097,7 @@ async function applyLocalMultiplayerActionEnvelope(action){
             playerId:action.playerId,turn:joinTurn
         });
         renderVisitedZooQuickTabs();
-        queueMicrotask(()=>emitLocalMultiplayerSync('player-zoo-registered'));
+        scheduleLocalMultiplayerSync('player-zoo-registered');
         return {ok:true,revision:localClassicMatch.revision,turn:joinTurn};
     }
     if(action.type==='rename-zoo'){
@@ -21238,6 +21395,8 @@ async function visitLocalClassicMatchPlayer(playerId){
     if(!localClassicMatch.viewingPlayerId)syncActiveZooIntoLocalMatch();
     const target=localClassicMatch.players[playerId];
     localClassicMatch.viewingPlayerId=playerId;
+    sendMultiplayerLiveViewSubscription();
+    clearMultiplayerRemoteCursors();
     clearCompatibilityHoverImmediately();
     clearTradeEligibleGlow();
     removeActionHintOverlay();
@@ -21260,6 +21419,8 @@ async function returnToActiveLocalClassicZoo(){
     const target=localClassicMatch.players?.[ownerId];
     if(!target?.snapshot)return false;
     localClassicMatch.viewingPlayerId=null;
+    sendMultiplayerLiveViewSubscription();
+    clearMultiplayerRemoteCursors();
     autoResumeWriteSuppressed=true;
     try{
         await importGameState(cloneForSave(target.snapshot),{deferRender:false});

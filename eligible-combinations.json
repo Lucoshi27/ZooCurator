@@ -4902,6 +4902,12 @@
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2018"
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed exhibit Canidae / Mustelidae; Versteege 2018 pers. comm.",
+          "note": "Corsac foxes and Asian small-clawed otters were introduced into the same new sloth-bear enclosure."
         }
       ]
     },
@@ -5103,6 +5109,12 @@
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2018"
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed exhibit Canidae / Mustelidae / Ursidae; Versteege 2018 pers. comm.",
+          "note": "Documented shared sloth-bear exhibit; non-breeding male groups were used."
         }
       ]
     },
@@ -6188,6 +6200,12 @@
           "zoo": "Zoo Leipzig",
           "country": "Germany",
           "date": "2018"
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed exhibit Herpestidae/Eupleridae",
+          "note": "Photographically documented mixed exhibit at Safaripark Beekse Bergen."
         }
       ]
     },
@@ -16388,6 +16406,12 @@
           "zoo": "Safaripark Beekse Bergen",
           "country": "Netherlands",
           "date": "2018"
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed exhibit Canidae / Mustelidae / Ursidae; Versteege 2018 pers. comm.",
+          "note": "Documented shared sloth-bear exhibit; non-breeding male groups were used."
         }
       ]
     },
@@ -31304,6 +31328,479 @@
           "zoo": "Lincoln Park Zoo",
           "country": "United States",
           "date": "2019"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Plains Zebra"
+      ],
+      "evidence": [
+        {
+          "zoo": "Toledo Zoo & Aquarium",
+          "country": "United States",
+          "date": "current/historic documented mixed exhibit",
+          "source": "Toledo Zoo Africa exhibit / ZooRope mixed-exhibit record",
+          "note": "Documented African savanna mixed exhibit including Ankole-Watusi cattle and this species."
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Greater Kudu"
+      ],
+      "evidence": [
+        {
+          "zoo": "Toledo Zoo & Aquarium",
+          "country": "United States",
+          "date": "current/historic documented mixed exhibit",
+          "source": "Toledo Zoo Africa exhibit / ZooRope mixed-exhibit record",
+          "note": "Documented African savanna mixed exhibit including Ankole-Watusi cattle and this species."
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Impala"
+      ],
+      "evidence": [
+        {
+          "zoo": "Toledo Zoo & Aquarium",
+          "country": "United States",
+          "date": "current/historic documented mixed exhibit",
+          "source": "Toledo Zoo Africa exhibit / ZooRope mixed-exhibit record",
+          "note": "Documented African savanna mixed exhibit including Ankole-Watusi cattle and this species."
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Dama Gazelle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Toledo Zoo & Aquarium",
+          "country": "United States",
+          "date": "current/historic documented mixed exhibit",
+          "source": "Toledo Zoo Africa exhibit / ZooRope mixed-exhibit record",
+          "note": "Documented African savanna mixed exhibit including Ankole-Watusi cattle and this species."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Blue Wildebeest"
+      ],
+      "evidence": [
+        {
+          "zoo": "Toledo Zoo & Aquarium",
+          "country": "United States",
+          "date": "current/historic documented mixed exhibit",
+          "source": "Toledo Zoo Africa exhibit / ZooRope mixed-exhibit record",
+          "note": "Documented African savanna mixed exhibit including Ankole-Watusi cattle and this species."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Masai Giraffe"
+      ],
+      "evidence": [
+        {
+          "zoo": "Toledo Zoo & Aquarium",
+          "country": "United States",
+          "date": "current/historic documented mixed exhibit",
+          "source": "Toledo Zoo Africa exhibit / ZooRope mixed-exhibit record",
+          "note": "Documented African savanna mixed exhibit including Ankole-Watusi cattle and this species."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Common Ostrich"
+      ],
+      "evidence": [
+        {
+          "zoo": "Toledo Zoo & Aquarium",
+          "country": "United States",
+          "date": "current/historic documented mixed exhibit",
+          "source": "Toledo Zoo Africa exhibit / ZooRope mixed-exhibit record",
+          "note": "Documented African savanna mixed exhibit including Ankole-Watusi cattle and this species."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Common Eland"
+      ],
+      "evidence": [
+        {
+          "zoo": "Monde Sauvage Safari Parc",
+          "country": "Belgium",
+          "date": "current/historic documented mixed exhibit",
+          "source": "ZooRope mixed-exhibit record; Mixed-species exhibits with zoo-housed Hippopotamuses",
+          "note": "Documented large African mixed exhibit at Monde Sauvage including Ankole-Watusi cattle and this species."
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Blesbok"
+      ],
+      "evidence": [
+        {
+          "zoo": "Monde Sauvage Safari Parc",
+          "country": "Belgium",
+          "date": "current/historic documented mixed exhibit",
+          "source": "ZooRope mixed-exhibit record; Mixed-species exhibits with zoo-housed Hippopotamuses",
+          "note": "Documented large African mixed exhibit at Monde Sauvage including Ankole-Watusi cattle and this species."
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "date": "2024-04-06",
+          "source": "ZooChat photographic record",
+          "note": "Photographic record shows Ankole-Watusi cattle sharing the exhibit with blesbok."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Common Waterbuck"
+      ],
+      "evidence": [
+        {
+          "zoo": "Monde Sauvage Safari Parc",
+          "country": "Belgium",
+          "date": "current/historic documented mixed exhibit",
+          "source": "ZooRope mixed-exhibit record; Mixed-species exhibits with zoo-housed Hippopotamuses",
+          "note": "Documented large African mixed exhibit at Monde Sauvage including Ankole-Watusi cattle and this species."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Scimitar Oryx"
+      ],
+      "evidence": [
+        {
+          "zoo": "Monde Sauvage Safari Parc",
+          "country": "Belgium",
+          "date": "current/historic documented mixed exhibit",
+          "source": "ZooRope mixed-exhibit record; Mixed-species exhibits with zoo-housed Hippopotamuses",
+          "note": "Documented large African mixed exhibit at Monde Sauvage including Ankole-Watusi cattle and this species."
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Rothschild's Giraffe"
+      ],
+      "evidence": [
+        {
+          "zoo": "Monde Sauvage Safari Parc",
+          "country": "Belgium",
+          "date": "current/historic documented mixed exhibit",
+          "source": "ZooRope mixed-exhibit record; Mixed-species exhibits with zoo-housed Hippopotamuses",
+          "note": "Documented large African mixed exhibit at Monde Sauvage including Ankole-Watusi cattle and this species."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Monde Sauvage Safari Parc",
+          "country": "Belgium",
+          "date": "current/historic documented mixed exhibit",
+          "source": "ZooRope mixed-exhibit record; Mixed-species exhibits with zoo-housed Hippopotamuses",
+          "note": "Documented large African mixed exhibit at Monde Sauvage including Ankole-Watusi cattle and this species."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Red River Hog"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Duisburg",
+          "country": "Germany",
+          "date": "since 1975",
+          "source": "ZooRope / mixed-pig review",
+          "note": "Zoo Duisburg documented keeping Red River Hog and Ankole-Watusi cattle together since 1975, with management separation at feeding, breeding and overnight."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Hippopotamus"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooSafari de Thoiry",
+          "country": "France",
+          "date": "current/historic documented mixed exhibit",
+          "source": "ZooRope mixed-exhibit Hippopotamidae",
+          "note": "Documented mixed safari exhibit includes Hippopotamus, Ankole-Watusi cattle and other African ungulates."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Cape Buffalo"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooSafari de Thoiry",
+          "country": "France",
+          "date": "current/historic documented mixed exhibit",
+          "source": "ZooRope mixed-exhibit Hippopotamidae",
+          "note": "Documented mixed safari exhibit includes Cape Buffalo and Ankole-Watusi cattle."
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Cheetah"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Pombia",
+          "country": "Italy",
+          "date": "current/historic documented mixed exhibit",
+          "source": "ZooRope mixed-exhibit Felidae/Hyaenidae",
+          "note": "Documented Cheetah + Ankole-Watusi cattle mixed exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Nyala"
+      ],
+      "evidence": [
+        {
+          "zoo": "Toledo Zoo",
+          "country": "United States",
+          "source": "Toledo Zoo Africa exhibit / mixed-species savanna documentation",
+          "note": "Ankole-Watusi cattle and nyala are documented as inhabitants of Toledo Zoo's shared multi-species Africa habitat."
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Common Warthog"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "White Rhinoceros"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "date": "2024-04-06",
+          "source": "ZooChat photographic record",
+          "note": "Photographic record shows Ankole-Watusi cattle sharing the exhibit with white rhinoceros."
+        },
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "Veterinary Challenges of Mixed Species Exhibits",
+          "note": "Published veterinary text documents a white rhinoceros interacting with a newborn Ankole-Watusi calf in the shared exhibit; no injury resulted."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Springbok"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Arabian Oryx"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Black Sable Antelope"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Marabou Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Kori Bustard"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "ZooRope mixed-exhibit review citing HAMMER 2002 / mixed-species exhibit documentation",
+          "note": "Documented 8.7-hectare African mixed exhibit at Safaripark Beekse Bergen; Ankole-Watusi cattle were part of the multi-species assemblage."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Watusi",
+        "Nile Lechwe"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "date": "2024-04-06",
+          "source": "ZooChat photographic record, Safari Resort savanna",
+          "note": "Photographic record shows Ankole-Watusi cattle in the same savanna exhibit with Nile lechwe, Rothschild's giraffe and Grant's zebra."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red Deer",
+        "Highland Cattle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "source": "Beekse Bergen park mapping / mapped shared European hoofstock feature",
+          "note": "Beekse Bergen mapping identifies Highland cattle and red deer together in the same European hoofstock area; both are also listed together in the park's current safari map."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Elephant",
+        "Hamadryas Baboon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "date": "1994 onward",
+          "source": "Deleu, Veenhuizen & Nelissen, Primate Report 65 (2003)",
+          "note": "African elephants and hamadryas baboons were housed together by day in a 1.3-ha outdoor enclosure; study reports the mixed exhibit as successful apart from a one-off Salmonella cross-contamination event."
         }
       ]
     }

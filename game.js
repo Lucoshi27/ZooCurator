@@ -17369,6 +17369,7 @@ function ensureGeneratedEnclosureRotations(enclosures) {
 }
 
 function rotateEmptyEnclosure(enclosure) {
+    if (viewingOtherHumanPlayerZoo()) return false;
     if (!enclosureSupportsRotation(enclosure) || !enclosureIsCompletelyEmpty(enclosure)) return false;
 
     enclosure.rotated180 = !Boolean(enclosure.rotated180);
@@ -17810,7 +17811,7 @@ card.classList.add('sandbox-compatibility-conflict');
     const enclosureEmpty = occupiedEnclosureIds instanceof Set
         ? !occupiedEnclosureIds.has(String(enclosure.id))
         : enclosureIsCompletelyEmpty(enclosure);
-    if (!enclosure.trueBuilt && enclosureSupportsRotation(enclosure) && enclosureEmpty) {
+    if (!viewingOtherHumanPlayerZoo() && !enclosure.trueBuilt && enclosureSupportsRotation(enclosure) && enclosureEmpty) {
         const rotateButton = document.createElement('button');
         rotateButton.type = 'button';
         rotateButton.className = 'enclosure-rotate-button';
@@ -19988,6 +19989,40 @@ function multiplayerServerPlayerForLocalId(playerId){
     const players=localMultiplayerBrowserTransport?.serverPlayers||[];
     return players.find(p=>Number(p.seat)===Number(seat))||null;
 }
+function reconcileLocalMultiplayerRosterFromServerPlayers(serverPlayers){
+    if(!localClassicMatch||!Array.isArray(serverPlayers))return false;
+    if(!localClassicMatch.players)localClassicMatch.players={};
+    if(!Array.isArray(localClassicMatch.playerIds))localClassicMatch.playerIds=[];
+    let changed=false;
+    const ordered=[...serverPlayers]
+        .filter(p=>Number.isInteger(Number(p?.seat))&&Number(p.seat)>0)
+        .sort((a,b)=>Number(a.seat)-Number(b.seat));
+    for(const serverPlayer of ordered){
+        const localId=`player-${Number(serverPlayer.seat)}`;
+        if(!localClassicMatch.players[localId]){
+            localClassicMatch.players[localId]={snapshot:null,connected:serverPlayer.connected!==false,reconnectToken:null};
+            changed=true;
+        }else if(localClassicMatch.players[localId].connected!==(serverPlayer.connected!==false)){
+            localClassicMatch.players[localId].connected=serverPlayer.connected!==false;
+            changed=true;
+        }
+        if(!localClassicMatch.playerIds.includes(localId)){
+            localClassicMatch.playerIds.push(localId);
+            changed=true;
+        }
+    }
+    const seatNumber=id=>{
+        const match=/^player-(\d+)$/.exec(String(id||''));
+        return match?Number(match[1]):Number.MAX_SAFE_INTEGER;
+    };
+    const sorted=[...localClassicMatch.playerIds].sort((a,b)=>seatNumber(a)-seatNumber(b));
+    if(sorted.some((id,i)=>id!==localClassicMatch.playerIds[i])){
+        localClassicMatch.playerIds=sorted;
+        changed=true;
+    }
+    if(changed)renderVisitedZooQuickTabs?.();
+    return changed;
+}
 function multiplayerEffectiveViewedLocalPlayerId(){
     return localClassicMatch?.viewingPlayerId||localClassicMatch?.activePlayerId||null;
 }
@@ -20034,7 +20069,12 @@ function receiveMultiplayerCursor(message){
     const ownSeat=multiplayerSeatForLocalPlayerId(localClassicMatch.activePlayerId);if(seat===ownSeat)return;
     // Drop delayed cursor packets from a zoo we have already left.
     const viewed=multiplayerEffectiveViewedLocalPlayerId();
-    const target=multiplayerServerPlayerForLocalId(viewed);
+    const own=localClassicMatch?.activePlayerId;
+    const t=localMultiplayerBrowserTransport;
+    const target=viewed===own
+        ? ((t?.serverPlayers||[]).find(p=>String(p.playerId)===String(t?.serverPlayerId)) ||
+           (t?.serverPlayers||[]).find(p=>Number(p.seat)===Number(t?.serverSeat)) || null)
+        : multiplayerServerPlayerForLocalId(viewed);
     if(!target||String(message?.targetPlayerId||'')!==String(target.playerId||''))return;
     const entry=ensureMultiplayerRemoteCursor(seat);
     if(message?.moving===false){entry.lastSeen=0;entry.el.style.opacity='0';return;}
@@ -20044,7 +20084,15 @@ function receiveMultiplayerCursor(message){
 }
 function multiplayerCursorTarget(){
     const viewed=multiplayerEffectiveViewedLocalPlayerId();
-    return viewed?multiplayerServerPlayerForLocalId(viewed):null;
+    if(!viewed)return null;
+    const own=localClassicMatch?.activePlayerId;
+    if(viewed===own){
+        const t=localMultiplayerBrowserTransport;
+        const players=t?.serverPlayers||[];
+        return players.find(p=>String(p.playerId)===String(t?.serverPlayerId)) ||
+            players.find(p=>Number(p.seat)===Number(t?.serverSeat)) || null;
+    }
+    return multiplayerServerPlayerForLocalId(viewed);
 }
 function sendMultiplayerCursorFromPointer(event){
     const channel=localMultiplayerBrowserChannel,t=localMultiplayerBrowserTransport;
@@ -20354,6 +20402,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 transport.serverRevision=Number(message.revision)||0;
                 transport.serverAuthenticated=true;
                 transport.serverPlayers=cloneForSave(message.players||[]);
+                reconcileLocalMultiplayerRosterFromServerPlayers(transport.serverPlayers);
                 writeMultiplayerServerIdentity(resolvedMatchId,channel.serverIdentity);
                 queueMicrotask(()=>sendMultiplayerLiveViewSubscription());
                 // Existing matches replay progression immediately after welcome.
@@ -20379,6 +20428,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 });
             }else if(message.type==='server-presence'){
                 transport.serverPlayers=cloneForSave(message.players||[]);
+                reconcileLocalMultiplayerRosterFromServerPlayers(transport.serverPlayers);
                 transport.serverRevision=Math.max(Number(transport.serverRevision)||0,Number(message.revision)||0);
                 renderVisitedZooQuickTabs?.();
                 queueMicrotask(()=>sendMultiplayerLiveViewSubscription());
@@ -21174,6 +21224,17 @@ async function restoreBrowserHostSeatAfterRemoteAction(previousPlayerId){
         createZooNameEditor();
         renderVisitedZooQuickTabs();renderTrade();
         renderExchange();refreshDrawAvailabilityState();
+        const camera=localMultiplayerBrowserTransport?.hostAuthorityCamera;
+        if(camera&&zooBoard){
+            state.zoom=Number(camera.zoom)||1;
+            document.documentElement.style.setProperty('--zoo-zoom',state.zoom);
+            await new Promise(resolve=>requestAnimationFrame(resolve));
+            const maxLeft=Math.max(0,zooBoard.scrollWidth-zooBoard.clientWidth);
+            const maxTop=Math.max(0,zooBoard.scrollHeight-zooBoard.clientHeight);
+            zooBoard.scrollLeft=Math.max(0,Math.min(maxLeft,Number(camera.scrollLeft)||0));
+            zooBoard.scrollTop=Math.max(0,Math.min(maxTop,Number(camera.scrollTop)||0));
+        }
+        if(localMultiplayerBrowserTransport)delete localMultiplayerBrowserTransport.hostAuthorityCamera;
         return true;
     }finally{autoResumeWriteSuppressed=false;}
 }
@@ -21272,6 +21333,13 @@ async function runAuthoritativeClassicActionForPlayer(playerId,classicAction){
     const hostSeat=localMultiplayerBrowserTransport?.role==='host'
         ? localMultiplayerBrowserTransport.playerId
         : null;
+    if(hostSeat && localClassicMatch.activePlayerId===hostSeat && zooBoard){
+        localMultiplayerBrowserTransport.hostAuthorityCamera={
+            scrollLeft:zooBoard.scrollLeft||0,
+            scrollTop:zooBoard.scrollTop||0,
+            zoom:Number(state.zoom)||1
+        };
+    }
     if(localClassicMatch.activePlayerId!==playerId){
         const switched=hostSeat
             ? await loadBrowserAuthoritySeat(playerId)
@@ -21379,6 +21447,11 @@ function localHumanTradeDraft(playerId=localClassicMatch?.activePlayerId){
 function clearLocalHumanTradeDraft(playerId=localClassicMatch?.activePlayerId){
     if(localClassicMatch?.tradeDrafts&&playerId)delete localClassicMatch.tradeDrafts[playerId];
 }
+function viewingOtherHumanPlayerZoo(){
+    return !!(localClassicMatch?.viewingPlayerId &&
+        localClassicMatch.viewingPlayerId!==localClassicMatch.activePlayerId);
+}
+
 async function visitLocalClassicMatchPlayer(playerId){
     if(!localClassicMatch?.players?.[playerId]?.snapshot)return false;
     const ownerId=localClassicMatch.activePlayerId;
@@ -26927,7 +27000,8 @@ async function commitServerAuthoritativeLevelOneDraw(message,destination){
     removePlayerClaimedCardFromOpponents(animal.category,animal.level,animal.filename);
     state.animals.push(animal);
     markPlayerLevelSeen(animal.level);
-    checkEnclosureReward(animal);
+    // Normal Level 1 draws do not award enclosures. Enclosure rewards remain
+    // attached to completed upgrade/category-level achievements.
     // Server v2.3 owns the shared deck/action ordering; the local zoo still owns
     // its personal turn lifecycle until the remaining Classic actions migrate.
     finalizeClassicProgressionCommit('Server-authoritative Level 1 draw');
@@ -27116,8 +27190,8 @@ async function createLevelOneForDrawUnlocked(destination) {
     );
     state.animals.push(animal);
     markPlayerLevelSeen(animal.level);
-    // Level 1 draws no longer receive the generic new-animal yellow glow.
-    checkEnclosureReward(animal);
+    // A Level 1 draw itself is not an enclosure milestone. Enclosure rewards
+    // are granted by the upgrade/progression achievement paths instead.
     finalizeClassicProgressionCommit('Level 1 draw commit');
 
     // Prepare the following card after the successful turn. This also makes
@@ -36403,6 +36477,14 @@ function createZooNameEditor() {
         'Change zoo name'
     );
 
+    const visitingOtherHuman = viewingOtherHumanPlayerZoo();
+    button.disabled = visitingOtherHuman;
+    button.hidden = visitingOtherHuman;
+    if (visitingOtherHuman) {
+        button.title = 'Zoo names are read-only while visiting another player';
+        button.setAttribute('aria-label','Zoo name is read-only while visiting another player');
+    }
+
 
     /*
         Unicode pen icon, so no additional graphic asset is
@@ -36426,6 +36508,7 @@ function createZooNameEditor() {
             event.preventDefault();
             event.stopPropagation();
 
+            if (viewingOtherHumanPlayerZoo()) return;
 
             if (!editing) {
 

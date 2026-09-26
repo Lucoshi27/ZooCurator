@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V2.37.0";
+const ZOO_CURATOR_VERSION = "V2.39.8";
 // Definitive V2 baseline: True-mode systems + current Information-map geography fixes.
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
@@ -3449,7 +3449,9 @@ function renderEnclosureAreaBackgrounds() {
                 const name=title.textContent.replace(/[\r\n]+/g,' ').trim()||group.theme.title;
                 const colour=knownAreaColour(name)||latest.color||current.color||areaOverride?.color||getComputedStyle(title).color;
                 state.generatedAreaOverrides.set(groupKey,{...current,...latest,name,color:colour});
-                title.contentEditable='false'; title.classList.remove('editing'); renderZoo();
+                title.contentEditable='false'; title.classList.remove('editing');
+                if(state.gameMode==='true'&&!state.sandboxMode)refreshTrueAreaVisuals();
+                else renderZoo();
             };
             const editKey=ev=>{if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();title.blur();}};
             title.addEventListener('keydown',editKey);
@@ -3503,8 +3505,8 @@ function displayEnclosureThemes(enclosure) {
     return visible;
 }
 
-function applyEnclosureThemePresentation(element, enclosure) {
-    const themes = displayEnclosureThemes(enclosure);
+function applyEnclosureThemePresentation(element, enclosure, precomputedThemes = null) {
+    const themes = precomputedThemes || displayEnclosureThemes(enclosure);
     if (!themes.length) return;
 
     element.classList.add('themed-enclosure');
@@ -5031,6 +5033,24 @@ function animalsAreCompatible(a, b) {
 
 function enclosureGroupForSlot(enclosure, slotIndex) {
     return getGroups(enclosure).find(group => group.includes(slotIndex)) || null;
+}
+
+function classicMoveStaysInSameLogicalExhibit(drag, animal) {
+    if(
+        state.gameMode==='true' ||
+        state.sandboxMode ||
+        drag?.type!=='animal' ||
+        drag.originalEnclosureId==null ||
+        animal?.enclosureId==null ||
+        String(drag.originalEnclosureId)!==String(animal.enclosureId)
+    ) return false;
+    const enclosure=state.enclosures.find(
+        item=>String(item.id)===String(animal.enclosureId)
+    );
+    if(!enclosure)return false;
+    const fromGroup=enclosureGroupForSlot(enclosure,Number(drag.originalSlotIndex));
+    const toGroup=enclosureGroupForSlot(enclosure,Number(animal.slotIndex));
+    return !!fromGroup&&fromGroup===toGroup;
 }
 
 function animalsInEnclosureGroup(enclosure, group, ignoreAnimalId = null, includeReserved = true) {
@@ -7544,7 +7564,7 @@ function toggleZooColourSchemeMenu(){
     for(const [key,scheme] of Object.entries(ZOO_COLOUR_SCHEMES)){
         const option=document.createElement('button');option.type='button';option.textContent=scheme.label;
         option.classList.toggle('active',activeZooColourScheme()===key);
-        option.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();state.zooColourScheme=key;closeZooColourSchemeMenu();applyZooColourScheme();renderZoo();});
+        option.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();state.zooColourScheme=key;closeZooColourSchemeMenu();applyZooColourScheme();});
         menu.appendChild(option);
     }
     document.body.appendChild(menu);
@@ -7589,8 +7609,12 @@ function updatePrestigeDisplay() {
         element.textContent = `Prestige ${currentZooPrestige()}`;
         return;
     }
-    updateHighestZooPrestige();
-    element.textContent = `Prestige ${currentZooPrestige()}`;
+    const prestige = currentZooPrestige();
+    state.highestZooPrestige = Math.max(
+        Number(state.highestZooPrestige) || 0,
+        prestige
+    );
+    element.textContent = `Prestige ${prestige}`;
     bindPrestigeBreakdownHover(element, () => zooPrestigeBreakdown());
 }
 
@@ -8128,12 +8152,12 @@ window.addEventListener('DOMContentLoaded', () => {
 function setupAnimalCard(
     image,
     animal,
-    location
+    location,
+    renderNow = Date.now()
 ) {
 
-    // All animation/glow decisions for this card belong to one DOM-build
-    // moment. Reuse one timestamp instead of repeatedly querying the clock.
-    const renderNow = Date.now();
+    // Full zoo renders pass one shared frame timestamp so Classic does not
+    // query the clock separately for every animal card.
 
     image.classList.add(
         'animal-card'
@@ -8842,8 +8866,10 @@ function arrangeGeneratedZooForAreas() {
     connectedEnclosureThemeGroups();
 }
 
-function exhibitHusbandryStatus(enclosure, group) {
-    const exhibitSize=enclosureGroupSizeName(group),occupants=animalsInEnclosureGroup(enclosure,group,null,false);
+function exhibitHusbandryStatus(enclosure, group, precomputedOccupants = null) {
+    const exhibitSize=enclosureGroupSizeName(group),occupants=Array.isArray(precomputedOccupants)
+        ? precomputedOccupants
+        : animalsInEnclosureGroup(enclosure,group,null,false);
     if (state.gameOptions?.enforceMinimumExhibitSize === false) {
         const cells=Array.isArray(group)?group.length:1;
         const space={cells,counts:{small:0,medium:0,large:0},supportCells:cells,requiredSupport:0,mediumValid:true,largeValid:true,valid:true};
@@ -9657,18 +9683,24 @@ let marineUnifiedGeoJSONPromise = null;
 async function loadUnifiedMarineGeoJSON(){
     if(marineUnifiedGeoJSONPromise)return marineUnifiedGeoJSONPromise;
     marineUnifiedGeoJSONPromise=(async()=>{
-        try{
-            const response=await fetch(ANIMAL_INFO_UNIFIED_MARINE_GEOJSON_URL,{cache:'default'});
-            if(!response.ok)throw new Error(`HTTP ${response.status}`);
-            const collection=await response.json();
-            if(!collection||!Array.isArray(collection.features))throw new Error('Unified marine GeoJSON is not a FeatureCollection.');
-            return collection;
-        }catch(error){
-            marineUnifiedGeoJSONPromise=null;
-            console.warn('Could not load unified marine geography:',error);
-            return {type:'FeatureCollection',features:[]};
+        const ppow=await loadPpowProvincesGeoJSON();
+        const features=[];
+        for(const feature of ppow?.features||[]){
+            const code=ppowFeatureCode(feature);
+            const parentId=marineParentRegionId(code,'PPOW');
+            if(!code||!parentId||!feature?.geometry)continue;
+            features.push({
+                type:'Feature',
+                properties:{id:parentId,source:'PPOW',ppow_id:code},
+                geometry:feature.geometry
+            });
         }
-    })();
+        return {type:'FeatureCollection',features};
+    })().catch(error=>{
+        marineUnifiedGeoJSONPromise=null;
+        console.warn('Could not derive unified marine geography:',error);
+        return {type:'FeatureCollection',features:[]};
+    });
     return marineUnifiedGeoJSONPromise;
 }
 
@@ -11187,7 +11219,7 @@ async function loadPpowProvincesGeoJSON(){
     if(marinePpowGeoJSONPromise)return marinePpowGeoJSONPromise;
     marinePpowGeoJSONPromise=(async()=>{
         try{
-            const response=await fetch(ANIMAL_INFO_PPOW_GEOJSON_URL,{cache:'default'});
+            const response=await fetch(ANIMAL_INFO_PPOW_WFS_URL,{cache:'default'});
             if(!response.ok)throw new Error(`HTTP ${response.status}`);
             const collection=await response.json();
             if(!collection||!Array.isArray(collection.features))throw new Error('Local PPOW GeoJSON is not a FeatureCollection.');
@@ -11392,12 +11424,33 @@ function mercatorPoint(lon,lat){
 function geoRingToSvgPath(ring){
     return ring.map((p,i)=>{const [x,y]=mercatorPoint(p[0],p[1]);return `${i?'L':'M'}${x.toFixed(2)},${y.toFixed(2)}`;}).join(' ')+' Z';
 }
+const geoGeometrySvgPathCache = new WeakMap();
 function geoGeometryToSvgPath(geometry){
     if(!geometry)return '';
-    if(geometry.type==='Polygon')return geometry.coordinates.map(geoRingToSvgPath).join(' ');
-    if(geometry.type==='MultiPolygon')return geometry.coordinates.flatMap(p=>p.map(geoRingToSvgPath)).join(' ');
-    return '';
+    if(typeof geometry==='object'&&geoGeometrySvgPathCache.has(geometry)){
+        return geoGeometrySvgPathCache.get(geometry);
+    }
+    let path='';
+    if(geometry.type==='Polygon')path=geometry.coordinates.map(geoRingToSvgPath).join(' ');
+    else if(geometry.type==='MultiPolygon')path=geometry.coordinates.flatMap(p=>p.map(geoRingToSvgPath)).join(' ');
+    if(typeof geometry==='object')geoGeometrySvgPathCache.set(geometry,path);
+    return path;
 }
+let animalInfoWorldCompoundPathCache = null;
+let animalInfoWorldCompoundPathSource = null;
+function animalInfoWorldCompoundPath(world){
+    const features=world?.features||[];
+    if(animalInfoWorldCompoundPathSource===features && animalInfoWorldCompoundPathCache!=null){
+        return animalInfoWorldCompoundPathCache;
+    }
+    animalInfoWorldCompoundPathSource=features;
+    animalInfoWorldCompoundPathCache=features
+        .map(feature=>geoGeometryToSvgPath(feature.geometry))
+        .filter(Boolean)
+        .join(' ');
+    return animalInfoWorldCompoundPathCache;
+}
+
 function normalizedMapContinent(value){
     return String(value||'').trim().toLowerCase().replace(/-/g,' ');
 }
@@ -11685,10 +11738,19 @@ function animalRangeMapInteractionLabel(path,svg){
 
 async function renderAnimalRangeMap(animal,record=null){
     const host=document.getElementById('animalRangeMap');if(!host)return;
+    const infoPane=document.getElementById('animalInformationPane');
+    if(infoPane && (infoPane.hidden || infoPane.style.display==='none'))return;
     clearAnimalInfoRegionCardHighlights();
     ensureAnimalRangeMapStyles();
     const renderKey=`${animal?.category||''}|${animal?.level||''}|${animal?.filename||''}`;
+    if (
+        host.dataset.renderKey===renderKey &&
+        (host.querySelector('svg') || host.dataset.loadingKey===renderKey)
+    ) {
+        return;
+    }
     host.dataset.renderKey=renderKey;
+    host.dataset.loadingKey=renderKey;
         // Each animal gets a clean navigation session.
         delete host.dataset.suppressMapClick;
         host.classList.remove('is-region-zoomed','is-panning','has-region-highlight');
@@ -11772,13 +11834,13 @@ async function renderAnimalRangeMap(animal,record=null){
         const ocean=document.createElementNS(ns,'rect');ocean.setAttribute('class','map-ocean');
         ocean.setAttribute('width',String(ANIMAL_MAP_WIDTH));ocean.setAttribute('height',String(ANIMAL_MAP_HEIGHT));svg.append(ocean);
 
+        const worldPathData=animalInfoWorldCompoundPath(world);
         const defs=document.createElementNS(ns,'defs');
         const landClip=document.createElementNS(ns,'clipPath');
         landClip.setAttribute('id',`animal-map-land-${renderKey.replace(/[^a-z0-9_-]/gi,'-')}`);
-        for(const feature of backgroundFeatures){
-            const d=geoGeometryToSvgPath(feature.geometry);if(!d)continue;
+        if(worldPathData){
             const land=document.createElementNS(ns,'path');
-            land.setAttribute('d',d);land.setAttribute('fill-rule','evenodd');
+            land.setAttribute('d',worldPathData);land.setAttribute('fill-rule','evenodd');
             landClip.append(land);
         }
         defs.append(landClip);
@@ -11795,10 +11857,9 @@ async function renderAnimalRangeMap(animal,record=null){
         oceanMaskBase.setAttribute('height',String(ANIMAL_MAP_HEIGHT));
         oceanMaskBase.setAttribute('fill','white');
         oceanOnlyMask.append(oceanMaskBase);
-        for(const feature of world?.features||[]){
-            const d=geoGeometryToSvgPath(feature.geometry);if(!d)continue;
+        if(worldPathData){
             const land=document.createElementNS(ns,'path');
-            land.setAttribute('d',d);land.setAttribute('fill-rule','evenodd');
+            land.setAttribute('d',worldPathData);land.setAttribute('fill-rule','evenodd');
             land.setAttribute('fill','black');
             oceanOnlyMask.append(land);
         }
@@ -11811,9 +11872,8 @@ async function renderAnimalRangeMap(animal,record=null){
         //   MEOW / marine_regions   -> water only
         // Species that genuinely use both environments carry both data fields.
 
-        for(const feature of world?.features||[]){
-            const d=geoGeometryToSvgPath(feature.geometry);if(!d)continue;
-            const path=document.createElementNS(ns,'path');path.setAttribute('d',d);
+        if(worldPathData){
+            const path=document.createElementNS(ns,'path');path.setAttribute('d',worldPathData);
             path.setAttribute('fill-rule','evenodd');path.setAttribute('class','map-country');
             // Countries are intentionally neutral. Geographic range is shown
             // only by the animal's factual geography layers below; the parent
@@ -12029,6 +12089,7 @@ async function renderAnimalRangeMap(animal,record=null){
         if(visibleFirstRegion)svg.insertBefore(hitLayer,visibleFirstRegion);else svg.append(hitLayer);
 
         host.replaceChildren(svg);
+        if(host.dataset.loadingKey===renderKey)delete host.dataset.loadingKey;
         // The host survives animal changes; only install this outer guard once.
         if(host.dataset.mapCardClickGuard!=='1'){
             host.dataset.mapCardClickGuard='1';
@@ -12425,6 +12486,7 @@ async function renderAnimalRangeMap(animal,record=null){
     }catch(error){
         if(host.dataset.renderKey!==renderKey)return;
         clearAnimalInfoRegionCardHighlights();
+        if(host.dataset.loadingKey===renderKey)delete host.dataset.loadingKey;
         host.innerHTML='<div class="animal-range-map-loading">Map unavailable</div>';
         console.warn('Could not load animal information map:',error);
     }
@@ -14724,7 +14786,7 @@ function trueDeletePaintedAreaCell(id,col,row){
         }
     }
     trueRefreshAreaHierarchy();state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
-    writeAutoResumeSnapshot?.(true);renderAll();return true;
+    renderAll();return true;
 }
 function trueRefreshAreaHierarchy(){const areas=state.customAreas||[];for(const area of areas){const ac=trueAreaCells(area);area.lineStyle=areas.some(other=>other!==area&&trueAreaCells(other).length>ac.length&&ac.every(c=>new Set(trueAreaCells(other).map(x=>trueAreaCellKey(x.col,x.row))).has(trueAreaCellKey(c.col,c.row))))?'dotted':'solid';}}
 function trueHouseCellsForEnclosure(enc){
@@ -14870,7 +14932,7 @@ body.true-enclosure-builder-active #zooCanvas .enclosure{cursor:cell!important}
             // Do not rebuild the whole zoo merely to toggle the editor. That was
             // unnecessary and could interfere with the click lifecycle.
             if(!trueEnclosureBuilderActive){trueEnclosureBuilderDrag=null;trueEnclosureBuilderSelectedId=null;trueEnclosureBuilderSelectedCell=null;document.getElementById('trueEnclosureBuilderSelection')?.remove();document.getElementById('trueEnclosurePaintCursor')?.remove();document.getElementById('trueEnclosureBlockedHint')?.remove();}
-            renderZoo();
+            refreshTrueEnclosureBuilderSelection();
         });
     }
     button.style.display='block';button.classList.toggle('active',trueEnclosureBuilderActive);
@@ -15057,7 +15119,7 @@ function setupTrueEnclosureBuilderInteractions(){
         if(!d.moved&&d.targetId!=null){
             const first=[...d.cells.values()][0],same=first&&String(d.previousSelectedId)===String(d.targetId)&&d.previousSelectedCell&&d.previousSelectedCell.col===first.col&&d.previousSelectedCell.row===first.row;
             trueEnclosureBuilderSelectedId=same?null:String(d.targetId);trueEnclosureBuilderSelectedCell=same?null:(first?{col:first.col,row:first.row}:null);
-            renderZoo();return;
+            refreshTrueEnclosureBuilderSelection();return;
         }
         if(d.cells.size&&!d.blocked){commitTruePaintedEnclosureCells([...d.cells.values()],d.targetId);}
     });
@@ -15079,7 +15141,7 @@ function setupTrueEnclosureBuilderInteractions(){
             trueEnclosureBuilderActive=false;trueEnclosureBuilderSelectedId=null;trueEnclosureBuilderSelectedCell=null;trueEnclosureBuilderDrag=null;
             document.body.classList.remove('true-enclosure-builder-active');
             document.getElementById('trueEnclosureBuilderSelection')?.remove();document.getElementById('trueEnclosurePaintCursor')?.remove();
-            ensureTrueEnclosureBuilderUI();renderZoo();
+            ensureTrueEnclosureBuilderUI();refreshTrueEnclosureBuilderSelection();
         });
     }
 }
@@ -15087,7 +15149,7 @@ function setupTrueEnclosureBuilderInteractions(){
 function ensureAreaToolUI(){
     let b=document.getElementById('areaToolButton'),panel=document.getElementById('trueAreaBuilderPanel');
     if(!b){b=document.createElement('button');b.id='areaToolButton';b.type='button';b.title='Area Builder';b.setAttribute('aria-label','Area Builder');b.textContent='▱';document.body.appendChild(b);
-      b.addEventListener('click',()=>{if(state.visitingZoo)return;areaToolActive=!areaToolActive;if(!areaToolActive){document.getElementById('trueAreaPaintCursor')?.remove();trueAreaBuilderSelectedId=null;trueAreaBuilderSelectedCell=null;areaToolDrag=null;document.getElementById('areaToolSelection')?.remove();document.getElementById('areaStyleMenu')?.remove();document.querySelectorAll('.true-area-cell-delete,.area-tag-controls').forEach(el=>el.remove());}if(areaToolActive&&trueEnclosureBuilderActive){trueEnclosureBuilderActive=false;trueEnclosureBuilderSelectedId=null;trueEnclosureBuilderSelectedCell=null;document.getElementById('trueEnclosureBuilderButton')?.classList.remove('active');document.body.classList.remove('true-enclosure-builder-active');const p=document.getElementById('trueEnclosureBuilderPanel');if(p)p.style.display='none';}b.classList.toggle('active',areaToolActive);document.body.classList.toggle('area-tool-active',areaToolActive);ensureAreaToolUI();renderZoo();});}
+      b.addEventListener('click',()=>{if(state.visitingZoo)return;areaToolActive=!areaToolActive;if(!areaToolActive){document.getElementById('trueAreaPaintCursor')?.remove();trueAreaBuilderSelectedId=null;trueAreaBuilderSelectedCell=null;areaToolDrag=null;document.getElementById('areaToolSelection')?.remove();document.getElementById('areaStyleMenu')?.remove();document.querySelectorAll('.true-area-cell-delete,.area-tag-controls').forEach(el=>el.remove());}if(areaToolActive&&trueEnclosureBuilderActive){trueEnclosureBuilderActive=false;trueEnclosureBuilderSelectedId=null;trueEnclosureBuilderSelectedCell=null;document.getElementById('trueEnclosureBuilderButton')?.classList.remove('active');document.body.classList.remove('true-enclosure-builder-active');const p=document.getElementById('trueEnclosureBuilderPanel');if(p)p.style.display='none';}b.classList.toggle('active',areaToolActive);document.body.classList.toggle('area-tool-active',areaToolActive);ensureAreaToolUI();refreshTrueAreaVisuals();});}
     const enabled=!state.visitingZoo;
     Object.assign(b.style,{position:'fixed',right:'18px',bottom:'20px',left:'auto',top:'auto',zIndex:'10120'});
     b.style.display=enabled?'':'none';
@@ -15203,13 +15265,13 @@ function ensureAreaStyleMenu(area, anchor) {
         const sw=document.createElement('button');sw.type='button';sw.className='area-colour-swatch';
         sw.title=name;sw.setAttribute('aria-label',name);sw.style.setProperty('--swatch',value);
         if(cssColourToHex(area.color||'').toLowerCase()===value.toLowerCase())sw.classList.add('active');
-        sw.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();area.color=value;writeAutoResumeSnapshot?.(true);renderZoo();requestAnimationFrame(()=>{const fresh=document.querySelector(`.player-custom-area-name[data-area-id="${CSS.escape(String(area.id))}"]`);if(fresh)ensureAreaStyleMenu(area,fresh);});});
+        sw.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();area.color=value;writeAutoResumeSnapshot?.(true);if(state.gameMode==='true'&&!state.sandboxMode)refreshTrueAreaVisuals();else renderZoo();requestAnimationFrame(()=>{const fresh=document.querySelector(`.player-custom-area-name[data-area-id="${CSS.escape(String(area.id))}"]`);if(fresh)ensureAreaStyleMenu(area,fresh);});});
         palette.appendChild(sw);
     }
     const customWrap=document.createElement('label');customWrap.className='area-custom-colour';customWrap.title='Choose any colour';
     const custom=document.createElement('input');custom.type='color';custom.value=cssColourToHex(area.color||'#477344');custom.setAttribute('aria-label','Choose any Area colour');
     const customText=document.createElement('span');customText.textContent='Custom colour…';
-    custom.addEventListener('input',e=>{e.stopPropagation();area.color=custom.value;writeAutoResumeSnapshot?.(true);renderZoo();});
+    custom.addEventListener('input',e=>{e.stopPropagation();area.color=custom.value;writeAutoResumeSnapshot?.(true);if(state.gameMode==='true'&&!state.sandboxMode)refreshTrueAreaVisuals();else renderZoo();});
     custom.addEventListener('pointerdown',e=>e.stopPropagation());
     customWrap.append(custom,customText);
     const type=document.createElement('select'); type.innerHTML='<option value="area">Area</option><option value="house">House</option>'; type.value=area.type||'area';
@@ -15264,7 +15326,7 @@ function startInlineAreaName(area,label,clickPoint=null){
     sel.removeAllRanges();sel.addRange(caretRange);
     let done=false;
     let key=null;
-    const commit=()=>{if(done)return;done=true;if(key)label.removeEventListener('keydown',key); area.name=label.textContent.replace(/[\r\n]+/g,' ').trim()||nextCustomAreaName(); if(area._generatedGeography&&area._geographicIdentity)generatedAreaCustomNameStore().set(area._geographicIdentity,area.name); area.color=knownAreaColour(area.name)||area.color||randomAreaColour(); label.contentEditable='false'; label.classList.remove('editing'); document.getElementById('areaStyleMenu')?.remove(); renderZoo(); writeAutoResumeSnapshot?.(true);};
+    const commit=()=>{if(done)return;done=true;if(key)label.removeEventListener('keydown',key); area.name=label.textContent.replace(/[\r\n]+/g,' ').trim()||nextCustomAreaName(); if(area._generatedGeography&&area._geographicIdentity)generatedAreaCustomNameStore().set(area._geographicIdentity,area.name); area.color=knownAreaColour(area.name)||area.color||randomAreaColour(); label.contentEditable='false'; label.classList.remove('editing'); document.getElementById('areaStyleMenu')?.remove(); if(state.gameMode==='true'&&!state.sandboxMode)refreshTrueAreaVisuals();else renderZoo(); writeAutoResumeSnapshot?.(true);};
     key=e=>{if(e.key==='Enter'){e.preventDefault();e.stopPropagation();commit();}};
     label.addEventListener('keydown',key); label.addEventListener('blur',commit,{once:true});
     requestAnimationFrame(()=>ensureAreaStyleMenu(area,label));
@@ -16363,10 +16425,78 @@ function setupAreaToolInteractions(){
  // A click on a cell already belonging to an Area only selects it. A click
  // on a different enclosure while an Area is selected commits that enclosure
  // into the selected Area, so click-by-click construction behaves like drag.
- if(!d.moved&&d.targetId!=null&&d.startedOnExisting){trueAreaBuilderSelectedId=String(d.targetId);trueAreaBuilderSelectedCell=[...d.cells.values()][0];renderZoo();return;}
+ if(!d.moved&&d.targetId!=null&&d.startedOnExisting){
+    trueAreaBuilderSelectedId=String(d.targetId);
+    trueAreaBuilderSelectedCell=[...d.cells.values()][0];
+    // Selection itself does not mutate zoo geometry. Refresh only the Area
+    // editing overlays instead of rebuilding every enclosure and animal card.
+    document.getElementById('areaToolSelection')?.remove();
+    renderCustomAreas();
+    return;
+}
  trueCommitPaintedAreaCells([...d.cells.values()],d.targetId);});
  zooCanvas.addEventListener('pointercancel',()=>{areaToolDrag=null;document.getElementById('areaToolSelection')?.remove();hidePaintCursor();});
  zooCanvas.addEventListener('pointerleave',()=>{if(!areaToolDrag)hidePaintCursor();});
+}
+
+function refreshTrueEnclosureBuilderSelection() {
+    document.querySelectorAll('.true-enclosure-delete,.true-enclosure-selected-cell').forEach(node=>node.remove());
+    document.getElementById('trueEnclosureBlockedHint')?.remove();
+    zooCanvas.querySelectorAll('.enclosure.true-builder-selected').forEach(node=>node.classList.remove('true-builder-selected'));
+    if(!trueEnclosureBuilderActive||trueEnclosureBuilderSelectedId==null||!trueEnclosureBuilderSelectedCell)return;
+    const enclosure=(state.enclosures||[]).find(enc=>String(enc.id)===String(trueEnclosureBuilderSelectedId));
+    if(!enclosure?.trueBuilt)return;
+    const element=zooCanvas.querySelector(`.enclosure[data-enclosure-id="${CSS.escape(String(enclosure.id))}"]`);
+    if(!element)return;
+    element.classList.add('true-builder-selected');
+    const selected=trueEnclosureBuilderSelectedCell;
+    const baseCol=Math.round((Number(enclosure.x)||0)/TRUE_ENC_CELL_W),baseRow=Math.round((Number(enclosure.y)||0)/TRUE_ENC_CELL_H);
+    const lx=(selected.col-baseCol)*TRUE_ENC_CELL_W,ly=(selected.row-baseRow)*TRUE_ENC_CELL_H;
+    const occupied=trueEnclosureCellOccupied(enclosure,selected.col,selected.row),sole=trueBuiltWorldCells(enclosure).length===1;
+    const blockedText=sole?'Move the animal before removing this enclosure':'Move the animal before removing this enclosure cell';
+    const mark=document.createElement('div');mark.className='true-enclosure-selected-cell';
+    Object.assign(mark.style,{position:'absolute',left:`${lx+TRUE_ENC_EXTERNAL_GAP/2}px`,top:`${ly+TRUE_ENC_EXTERNAL_GAP/2}px`,width:`${TRUE_ENC_CELL_W-TRUE_ENC_EXTERNAL_GAP}px`,height:`${TRUE_ENC_CELL_H-TRUE_ENC_EXTERNAL_GAP}px`,boxSizing:'border-box',border:'3px solid rgba(205,48,48,.75)',background:'rgba(205,48,48,.07)',pointerEvents:occupied?'auto':'none',zIndex:'250'});
+    const del=document.createElement('button');del.type='button';del.className='true-enclosure-delete';del.textContent='×';
+    del.style.left=`${lx+TRUE_ENC_CELL_W-36}px`;del.style.top=`${ly+8}px`;del.style.right='auto';
+    del.disabled=occupied;del.title=occupied?blockedText:(sole?'Remove this enclosure':'Remove this enclosure cell');
+    if(occupied){
+        del.style.opacity='.38';del.style.cursor='not-allowed';mark.title=blockedText;
+        const show=()=>{document.getElementById('trueEnclosureBlockedHint')?.remove();const hint=document.createElement('div');hint.id='trueEnclosureBlockedHint';hint.className='true-enclosure-blocked-hint';hint.textContent=blockedText;Object.assign(hint.style,{left:`${lx+TRUE_ENC_CELL_W/2}px`,top:`${ly+12}px`});element.appendChild(hint);};
+        const hide=()=>document.getElementById('trueEnclosureBlockedHint')?.remove();
+        mark.addEventListener('pointerenter',show);mark.addEventListener('pointerleave',hide);del.addEventListener('pointerenter',show);del.addEventListener('pointerleave',hide);
+    }
+    del.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();});
+    del.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();if(!del.disabled)trueDeleteBuiltEnclosureCell(enclosure.id,selected.col,selected.row);});
+    element.append(mark,del);
+}
+
+function refreshTrueAreaVisuals() {
+    if(state.gameMode!=='true'||state.sandboxMode)return;
+    // Area selection/style state does not alter animal or enclosure structure.
+    // Rebuild only Area presentation and its controls.
+    document.querySelectorAll(
+        '.true-area-cell-delete,.area-tag-controls,.true-area-delete-control,' +
+        '.true-area-edit-control'
+    ).forEach(node=>node.remove());
+    renderCustomAreas();
+}
+
+function ensureZooEnclosureLayer() {
+    let layer=document.getElementById('zooEnclosureLayer');
+    if(!layer){
+        layer=document.createElement('div');
+        layer.id='zooEnclosureLayer';
+        Object.assign(layer.style,{
+            position:'absolute',
+            left:'0',
+            top:'0',
+            width:'0',
+            height:'0',
+            overflow:'visible'
+        });
+        zooCanvas.appendChild(layer);
+    }
+    return layer;
 }
 
 function renderZoo() {
@@ -16387,7 +16517,10 @@ function renderZoo() {
     const scrollTop =
         zooBoard.scrollTop;
 
-    const workspace = normalizeZooWorkspace();
+    const workspace = profiledZooRenderStage(
+        'zoo.workspace',
+        () => normalizeZooWorkspace()
+    );
     if(state.gameMode==='true'&&!state.sandboxMode){
         // Repair older V2.16.x saves whose workspace normalization left the
         // entire enclosure layout between construction-grid lines.
@@ -16407,11 +16540,10 @@ function renderZoo() {
 
     // The scrollable world now follows the actual zoo instead of remaining a
     // fixed 6000×5000 rectangle. Empty space is symmetrical on every side.
-    zooCanvas.style.width =
-        `${workspace.width}px`;
-
-    zooCanvas.style.height =
-        `${workspace.height}px`;
+    const workspaceWidth=`${workspace.width}px`;
+    const workspaceHeight=`${workspace.height}px`;
+    if(zooCanvas.style.width!==workspaceWidth)zooCanvas.style.width=workspaceWidth;
+    if(zooCanvas.style.height!==workspaceHeight)zooCanvas.style.height=workspaceHeight;
 
     if(state.gameMode==='true'&&!state.sandboxMode) ensureTrueZooGroundsVisual();
 
@@ -16419,26 +16551,136 @@ function renderZoo() {
     // Compatibility legality can inspect enclosure groups and the full animal
     // collection. Calculate the currently glowing destinations once per zoo
     // render instead of repeating that work independently for every slot.
-    const compatibilityGlowKeys = currentCompatibilityGlowKeys();
+    const compatibilityGlowKeys = profiledZooRenderStage(
+        'zoo.compatibility',
+        () => currentCompatibilityGlowKeys()
+    );
+
+    // Shared immutable values for this DOM-build frame. Classic zoos can have
+    // many cards, so avoid repeating document lookups and Date.now() per node.
+    ensureHusbandryUI();
+    const zooRenderNow=Date.now();
+
+    // Rotation controls only need to know whether a physical enclosure contains
+    // any animal. Build that lookup once instead of scanning the full animal
+    // collection again for every rendered enclosure.
+    const enclosureRenderContext = profiledZooRenderStage(
+        'zoo.occupancy-index',
+        () => {
+            const occupiedEnclosureIds=new Set();
+            const visibleAnimalsByEnclosure=new Map();
+            const reservedAnimalsByEnclosure=new Map();
+            const addToSlotIndex=(index,enclosureId,slotIndex,animal)=>{
+                if(enclosureId==null||slotIndex==null)return;
+                const enclosureKey=String(enclosureId);
+                let bySlot=index.get(enclosureKey);
+                if(!bySlot){bySlot=new Map();index.set(enclosureKey,bySlot);}
+                bySlot.set(Number(slotIndex),animal);
+            };
+            for(const animal of state.animals||[]){
+                if(animal?.enclosureId!=null){
+                    const enclosureKey=String(animal.enclosureId);
+                    occupiedEnclosureIds.add(enclosureKey);
+                    addToSlotIndex(visibleAnimalsByEnclosure,animal.enclosureId,animal.slotIndex,animal);
+                }
+                addToSlotIndex(reservedAnimalsByEnclosure,animal?.reservedEnclosureId,animal?.reservedSlotIndex,animal);
+            }
+            return {
+                occupiedEnclosureIds,
+                visibleAnimalsByEnclosure,
+                reservedAnimalsByEnclosure,
+                renderNow:zooRenderNow,
+                husbandryUIReady:true
+            };
+        }
+    );
+    const occupiedEnclosureIds=enclosureRenderContext.occupiedEnclosureIds;
 
     // Draw inferred geography/habitat/facility regions first, underneath cards.
-    renderEnclosureAreaBackgrounds();
-    renderCustomAreas();
+    profiledZooRenderStage('zoo.area-backgrounds', () => renderEnclosureAreaBackgrounds());
+    profiledZooRenderStage('zoo.custom-areas', () => renderCustomAreas());
 
+    profiledZooRenderStage('zoo.enclosure-context', () => {
+        // Broad connected themes have already been reconciled by
+        // renderEnclosureAreaBackgrounds(). Index them once by enclosure rather
+        // than making every enclosure search every connected Area group.
+        const themesByEnclosure=new Map();
+        const addTheme=(enclosureId,theme)=>{
+            const key=String(enclosureId);
+            let list=themesByEnclosure.get(key);
+            if(!list){list=[];themesByEnclosure.set(key,list);}
+            if(theme&&!list.some(item=>item.key===theme.key))list.push(theme);
+        };
+        for(const enclosure of state.enclosures||[]){
+            for(const theme of strictEnclosureThemes(enclosure)){
+                if(theme.layer==='special')addTheme(enclosure.id,theme);
+            }
+        }
+        for(const group of renderedConnectedAreaGroups||[]){
+            for(const enclosure of group.enclosures||[])addTheme(enclosure.id,group.theme);
+        }
+        enclosureRenderContext.themesByEnclosure=themesByEnclosure;
 
-    for (
-        const enclosure
-        of state.enclosures
-    ) {
+        if(state.gameMode==='true'){
+            // These values are immutable for the duration of one zoo render.
+            // Hoist them out of renderEnclosure(), where True enclosures (and
+            // Overloon cells) previously re-read them repeatedly.
+            enclosureRenderContext.colourScheme=activeZooColourScheme();
+            enclosureRenderContext.palette=activeZooPalette();
+            enclosureRenderContext.trueSpatialOwners=trueEnclosureSpatialIndex().owners;
 
-        renderEnclosure(
-            enclosure,
-            compatibilityGlowKeys
-        );
+            // Index house cells by world cell once. The previous path scanned
+            // every custom house and all of its cells independently for every
+            // True enclosure, then repeated that scan for coverage/rendering.
+            const houseByCell=new Map();
+            for(const house of state.customAreas||[]){
+                if(house.type!=='house')continue;
+                for(const cell of trueAreaCells(house)){
+                    const key=trueAreaCellKey(cell.col,cell.row);
+                    let list=houseByCell.get(key);
+                    if(!list){list=[];houseByCell.set(key,list);}
+                    list.push({col:cell.col,row:cell.row,house});
+                }
+            }
+            const houseCellsByEnclosure=new Map();
+            for(const enclosure of state.enclosures||[]){
+                if(!enclosure?.trueBuilt)continue;
+                const hits=[];
+                for(const cell of trueBuiltWorldCells(enclosure)){
+                    const matches=houseByCell.get(trueAreaCellKey(cell.col,cell.row));
+                    if(matches)hits.push(...matches);
+                }
+                if(hits.length)houseCellsByEnclosure.set(String(enclosure.id),hits);
+            }
+            enclosureRenderContext.houseCellsByEnclosure=houseCellsByEnclosure;
+        }
+    });
 
+    profiledZooRenderStage('zoo.enclosures', () => {
+        enclosureRenderContext.deferredRotatedEnclosures=[];
+        const enclosureLayer=ensureZooEnclosureLayer();
+        // The layer has zero geometry and overflow:visible, so it introduces no
+        // new hit-test surface over empty zoo space. Enclosures and their nested
+        // cards keep ordinary pointer behavior and bubbling.
+        const enclosureFragment=document.createDocumentFragment();
+        for (const enclosure of state.enclosures) {
+            renderEnclosure(
+                enclosure,
+                compatibilityGlowKeys,
+                occupiedEnclosureIds,
+                enclosureRenderContext,
+                enclosureFragment
+            );
+        }
+        enclosureLayer.appendChild(enclosureFragment);
+        // Rotated-slot measurements require attached layout, so retain the
+        // existing read-all/write-all phase after the single fragment commit.
+        flushDeferredRotatedEnclosureMirrors(enclosureRenderContext);
+    });
+
+    if(state.gameMode==='true'&&!state.sandboxMode) {
+        profiledZooRenderStage('zoo.true-loose-populations', () => renderTrueLoosePopulationCards());
     }
-
-    if(state.gameMode==='true'&&!state.sandboxMode) renderTrueLoosePopulationCards();
 
     // Preserve the last fully reconciled Area result. Animal pointer-down
     // temporarily removes a card from live location state; the map must not
@@ -16453,18 +16695,20 @@ function renderZoo() {
 
     // Sandbox cards may exist loose on the board until the player drags them
     // into an enclosure. They are deliberately outside normal-game state.
-    if (state.sandboxMode) renderSandboxLooseAnimals();
+    if (state.sandboxMode) {
+        profiledZooRenderStage('zoo.sandbox-loose-animals', () => renderSandboxLooseAnimals());
+    }
 
     // If normalization shifted world coordinates, compensate the scroll
     // position by the same rendered distance. Existing enclosures therefore
     // stay visually stationary while the pannable world grows around them.
-    zooBoard.scrollLeft =
-        Math.max(0, scrollLeft + workspace.dx * state.zoom);
+    const nextScrollLeft=Math.max(0, scrollLeft + workspace.dx * state.zoom);
+    const nextScrollTop=Math.max(0, scrollTop + workspace.dy * state.zoom);
+    if(Math.abs(zooBoard.scrollLeft-nextScrollLeft)>.5)zooBoard.scrollLeft=nextScrollLeft;
+    if(Math.abs(zooBoard.scrollTop-nextScrollTop)>.5)zooBoard.scrollTop=nextScrollTop;
 
-    zooBoard.scrollTop =
-        Math.max(0, scrollTop + workspace.dy * state.zoom);
-
-    refreshAnimalGlowPrecedence(zooCanvas);
+    profiledZooRenderStage('zoo.glow-precedence', () => refreshAnimalGlowPrecedence(zooCanvas));
+    if(state.gameMode==='true'&&!state.sandboxMode)profiledZooRenderStage('zoo.builder-selection',()=>refreshTrueEnclosureBuilderSelection());
 
 }
 
@@ -16542,33 +16786,47 @@ function rotateEmptyEnclosure(enclosure) {
     if (!enclosureSupportsRotation(enclosure) || !enclosureIsCompletelyEmpty(enclosure)) return false;
     enclosure.rotated180 = !Boolean(enclosure.rotated180);
     state.areaPlacementRevision = (Number(state.areaPlacementRevision) || 0) + 1;
-    captureTurnSnapshot();
+    // renderAll() owns the history/autoresume persistence boundary. Avoid
+    // cloning this same visual state twice for one rotation.
     renderAll();
     return true;
 }
 
-function mirrorRotatedEnclosureSlots(element, enclosure) {
-    if (!element || !enclosureSupportsRotation(enclosure) || !enclosure.rotated180) return;
-
-    // Keep the enclosure DOM itself unrotated so animals, controls and drag
-    // geometry remain stable. Instead mirror each slot rectangle through the
-    // card centre. This makes the usable enclosure spaces follow the rotated
-    // artwork exactly while animal cards themselves remain upright.
-    const cardWidth = element.offsetWidth;
-    const cardHeight = element.offsetHeight;
-    if (!(cardWidth > 0 && cardHeight > 0)) return;
-
-    for (const slot of element.querySelectorAll('.slot')) {
-        const left = slot.offsetLeft;
-        const top = slot.offsetTop;
-        const width = slot.offsetWidth;
-        const height = slot.offsetHeight;
-
-        slot.style.left = `${cardWidth - left - width}px`;
-        slot.style.top = `${cardHeight - top - height}px`;
-        slot.style.right = 'auto';
-        slot.style.bottom = 'auto';
+function measureRotatedEnclosureSlots(element, enclosure) {
+    if (!element || !enclosureSupportsRotation(enclosure) || !enclosure.rotated180) return null;
+    const cardWidth=element.offsetWidth,cardHeight=element.offsetHeight;
+    if (!(cardWidth > 0 && cardHeight > 0)) return null;
+    return Array.from(element.querySelectorAll('.slot'),slot=>({
+        slot,
+        left:cardWidth-slot.offsetLeft-slot.offsetWidth,
+        top:cardHeight-slot.offsetTop-slot.offsetHeight
+    }));
+}
+function applyMeasuredRotatedEnclosureSlots(measurements) {
+    for(const item of measurements||[]){
+        item.slot.style.left=`${item.left}px`;
+        item.slot.style.top=`${item.top}px`;
+        item.slot.style.right='auto';
+        item.slot.style.bottom='auto';
     }
+}
+function mirrorRotatedEnclosureSlots(element, enclosure) {
+    // Single-enclosure refreshes still use the immediate path. Full zoo renders
+    // batch every layout read before any mirror write to avoid layout thrashing.
+    applyMeasuredRotatedEnclosureSlots(measureRotatedEnclosureSlots(element,enclosure));
+}
+function flushDeferredRotatedEnclosureMirrors(renderContext) {
+    const pending=renderContext?.deferredRotatedEnclosures;
+    if(!pending?.length)return;
+    const measured=[];
+    // READ PHASE: one browser layout flush can satisfy all enclosure/slot reads.
+    for(const item of pending){
+        const result=measureRotatedEnclosureSlots(item.element,item.enclosure);
+        if(result?.length)measured.push(...result);
+    }
+    // WRITE PHASE: no geometry is read after these mutations begin.
+    applyMeasuredRotatedEnclosureSlots(measured);
+    pending.length=0;
 }
 
 // ============================================================
@@ -16577,14 +16835,17 @@ function mirrorRotatedEnclosureSlots(element, enclosure) {
 
 function renderEnclosure(
     enclosure,
-    compatibilityGlowKeys = null
+    compatibilityGlowKeys = null,
+    occupiedEnclosureIds = null,
+    renderContext = null,
+    renderTarget = zooCanvas
 ) {
 
-    ensureHusbandryUI();
-    // All compatibility-fade decisions in this enclosure belong to the same
-    // render frame. Reading the clock once avoids repeated renderNow calls
-    // for every slot and guarantees a consistent fade boundary across slots.
-    const renderNow = Date.now();
+    // Husbandry UI is ensured once by renderZoo(); retain the fallback for
+    // isolated/targeted enclosure renders.
+    if(!renderContext?.husbandryUIReady) ensureHusbandryUI();
+    // One full Classic render shares a timestamp across every enclosure/card.
+    const renderNow = renderContext?.renderNow ?? Date.now();
 
     const element =
         document.createElement(
@@ -16631,6 +16892,11 @@ function renderEnclosure(
     element.style.top =
         enclosure.y + 'px';
 
+    const renderColourScheme =
+        renderContext?.colourScheme ?? activeZooColourScheme();
+    const renderPalette =
+        renderContext?.palette ?? activeZooPalette();
+
     if(enclosure.trueBuilt){
         const bounds=trueBuiltEnclosureDerived(enclosure);
         element.classList.add('true-built-enclosure');
@@ -16638,8 +16904,8 @@ function renderEnclosure(
         const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
         svg.setAttribute('viewBox',`0 0 ${bounds.w} ${bounds.h}`);
         Object.assign(svg.style,{position:'absolute',inset:'0',width:'100%',height:'100%',overflow:'visible',pointerEvents:'none'});
-        if(activeZooColourScheme()==='overloon'){
-            const world=trueBuiltWorldCells(enclosure),own=new Set(world.map(c=>trueBuilderCellKey(c.col,c.row))),owners=trueEnclosureSpatialIndex().owners;
+        if(renderColourScheme==='overloon'){
+            const world=trueBuiltWorldCells(enclosure),own=new Set(world.map(c=>trueBuilderCellKey(c.col,c.row))),owners=renderContext?.trueSpatialOwners || trueEnclosureSpatialIndex().owners;
             const minCol=Math.min(...world.map(c=>c.col)),minRow=Math.min(...world.map(c=>c.row));
             const otherAt=(col,row)=>{const owner=owners.get(trueBuilderCellKey(col,row));return owner!=null&&String(owner)!==String(enclosure.id);};
             for(const c of world){
@@ -16650,66 +16916,34 @@ function renderEnclosure(
                       li=L?(otherAt(c.col-1,c.row)?0:TRUE_ENC_EXTERNAL_GAP/2):0;
                 const fill=document.createElement('div');
                 Object.assign(fill.style,{position:'absolute',left:`${(c.col-minCol)*TRUE_ENC_CELL_W+li}px`,top:`${(c.row-minRow)*TRUE_ENC_CELL_H+ti}px`,
-                    width:`${TRUE_ENC_CELL_W-li-ri}px`,height:`${TRUE_ENC_CELL_H-ti-bi}px`,background:activeZooPalette().enclosure,pointerEvents:'none',zIndex:'-1'});
+                    width:`${TRUE_ENC_CELL_W-li-ri}px`,height:`${TRUE_ENC_CELL_H-ti-bi}px`,background:renderPalette.enclosure,pointerEvents:'none',zIndex:'-1'});
                 element.appendChild(fill);
             }
         }
         const path=document.createElementNS('http://www.w3.org/2000/svg','path');
         path.setAttribute('d',trueRenderedEnclosurePath(enclosure));
         path.setAttribute('fill','none');
-        path.setAttribute('stroke',activeZooColourScheme()==='overloon'?activeZooPalette().enclosureBorder:'#3f4242');
+        path.setAttribute('stroke',renderColourScheme==='overloon'?renderPalette.enclosureBorder:'#3f4242');
         path.setAttribute('stroke-width','4');
         path.setAttribute('stroke-linecap','square');
         path.setAttribute('stroke-linejoin','miter');
         path.setAttribute('stroke-linecap','square');
         path.setAttribute('vector-effect','non-scaling-stroke');
         svg.appendChild(path);element.appendChild(svg);
-        const houseCoverage=trueEnclosureHouseCoverage(enclosure);
-        if(houseCoverage.covered){
+        const indexedHouseCells=renderContext?.houseCellsByEnclosure?.get(String(enclosure.id));
+        const houseCells=indexedHouseCells || trueHouseCellsForEnclosure(enclosure);
+        if(houseCells.length){
             const baseCol=Math.round((Number(enclosure.x)||0)/TRUE_ENC_CELL_W),baseRow=Math.round((Number(enclosure.y)||0)/TRUE_ENC_CELL_H);
             const seen=new Set();
-            for(const hc of trueHouseCellsForEnclosure(enclosure)){
+            for(const hc of houseCells){
                 const key=trueAreaCellKey(hc.col,hc.row);if(seen.has(key))continue;seen.add(key);
                 const indoor=document.createElement('div');indoor.className='true-indoor-enclosure-cell';
                 Object.assign(indoor.style,{position:'absolute',left:`${(hc.col-baseCol)*TRUE_ENC_CELL_W+TRUE_ENC_EXTERNAL_GAP/2}px`,top:`${(hc.row-baseRow)*TRUE_ENC_CELL_H+TRUE_ENC_EXTERNAL_GAP/2}px`,width:`${TRUE_ENC_CELL_W-TRUE_ENC_EXTERNAL_GAP}px`,height:`${TRUE_ENC_CELL_H-TRUE_ENC_EXTERNAL_GAP}px`,background:'rgba(225,226,224,.92)',boxShadow:'inset 0 0 0 1px rgba(255,255,255,.18)',pointerEvents:'none',zIndex:'0'});
                 element.appendChild(indoor);
             }
         }
-        if(trueEnclosureBuilderActive&&String(trueEnclosureBuilderSelectedId)===String(enclosure.id)){
-            element.classList.add('true-builder-selected');
-            const del=document.createElement('button');del.type='button';del.className='true-enclosure-delete';del.textContent='×';
-            const selected=trueEnclosureBuilderSelectedCell;
-            if(selected){
-                const baseCol=Math.round((Number(enclosure.x)||0)/TRUE_ENC_CELL_W),baseRow=Math.round((Number(enclosure.y)||0)/TRUE_ENC_CELL_H);
-                const lx=(selected.col-baseCol)*TRUE_ENC_CELL_W,ly=(selected.row-baseRow)*TRUE_ENC_CELL_H;
-                del.style.left=`${lx+TRUE_ENC_CELL_W-36}px`;del.style.top=`${ly+8}px`;del.style.right='auto';
-                const occupied=trueEnclosureCellOccupied(enclosure,selected.col,selected.row),sole=trueBuiltWorldCells(enclosure).length===1;
-                const blockedText=sole?'Move the animal before removing this enclosure':'Move the animal before removing this enclosure cell';
-                del.disabled=occupied;del.title=occupied?blockedText:(sole?'Remove this enclosure':'Remove this enclosure cell');
-                if(occupied){del.style.opacity='.38';del.style.cursor='not-allowed';}
-                const mark=document.createElement('div');mark.className='true-enclosure-selected-cell';
-                Object.assign(mark.style,{position:'absolute',left:`${lx+TRUE_ENC_EXTERNAL_GAP/2}px`,top:`${ly+TRUE_ENC_EXTERNAL_GAP/2}px`,width:`${TRUE_ENC_CELL_W-TRUE_ENC_EXTERNAL_GAP}px`,height:`${TRUE_ENC_CELL_H-TRUE_ENC_EXTERNAL_GAP}px`,boxSizing:'border-box',border:'3px solid rgba(205,48,48,.75)',background:'rgba(205,48,48,.07)',pointerEvents:occupied?'auto':'none',zIndex:'250'});
-                if(occupied){
-                    mark.title=blockedText;
-                    const showBlockedHint=()=>{
-                        document.getElementById('trueEnclosureBlockedHint')?.remove();
-                        const hint=document.createElement('div');hint.id='trueEnclosureBlockedHint';hint.className='true-enclosure-blocked-hint';hint.textContent=blockedText;
-                        const er=element.getBoundingClientRect(),z=Math.max(.01,Number(state.zoom)||1);
-                        Object.assign(hint.style,{left:`${lx+TRUE_ENC_CELL_W/2}px`,top:`${ly+12}px`});
-                        element.appendChild(hint);
-                    };
-                    const hideBlockedHint=()=>document.getElementById('trueEnclosureBlockedHint')?.remove();
-                    mark.addEventListener('pointerenter',showBlockedHint);
-                    mark.addEventListener('pointerleave',hideBlockedHint);
-                    del.addEventListener('pointerenter',showBlockedHint);
-                    del.addEventListener('pointerleave',hideBlockedHint);
-                }
-                element.appendChild(mark);
-            }
-            del.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();});
-            del.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();if(selected&&!del.disabled)trueDeleteBuiltEnclosureCell(enclosure.id,selected.col,selected.row);});
-            element.appendChild(del);
-        }
+        // Builder selection is a transient overlay refreshed separately.
+
     }
 
     const enclosureRotated180 =
@@ -16757,33 +16991,46 @@ function renderEnclosure(
         );
     }
 
-    applyEnclosureThemePresentation(element, enclosure);
+    applyEnclosureThemePresentation(
+        element,
+        enclosure,
+        renderContext?.themesByEnclosure?.get(String(enclosure.id)) || null
+    );
 
-    const husbandryProblems = getGroups(enclosure)
-        .map(group => exhibitHusbandryStatus(enclosure, group))
-        .filter(status => status.invalid);
+    const enclosureGroups=getGroups(enclosure);
+    const husbandryStatusBySlot=new Map();
+    const husbandryProblems=[];
+    const visibleAnimalsBySlot =
+        renderContext?.visibleAnimalsByEnclosure?.get(String(enclosure.id)) ||
+        new Map();
+    const reservedAnimalsBySlot =
+        renderContext?.reservedAnimalsByEnclosure?.get(String(enclosure.id)) ||
+        null;
+    for(const group of enclosureGroups){
+        let localOccupants=null;
+        if(renderContext){
+            const seenAnimalIds=new Set();
+            localOccupants=[];
+            for(const slotIndex of group){
+                for(const animal of [visibleAnimalsBySlot.get(Number(slotIndex)),reservedAnimalsBySlot?.get(Number(slotIndex))]){
+                    if(!animal||seenAnimalIds.has(animal.id))continue;
+                    seenAnimalIds.add(animal.id);
+                    localOccupants.push(animal);
+                }
+            }
+        }
+        const status=exhibitHusbandryStatus(enclosure,group,localOccupants);
+        if(status.invalid)husbandryProblems.push(status);
+        for(const slotIndex of group)husbandryStatusBySlot.set(slotIndex,status);
+    }
     if (husbandryProblems.length) element.classList.add('husbandry-too-small');
 
     // Build the visible occupancy lookup once for this enclosure. Previously
     // animalAtSlot(..., includeReserved=false) scanned the entire animal array
     // separately for every slot during every zoo render.
-    const visibleAnimalsBySlot = new Map();
-    for (const animal of state.animals) {
-        if (
-            animal &&
-            animal.enclosureId === enclosure.id &&
-            animal.slotIndex !== null &&
-            animal.slotIndex !== undefined
-        ) {
-            visibleAnimalsBySlot.set(animal.slotIndex, animal);
-        }
-    }
-
     for (
         const slotIndex
-        of getAllSlots(
-            enclosure
-        )
+        of enclosureGroups.flat()
     ) {
 
         const slot =
@@ -16847,22 +17094,20 @@ function renderEnclosure(
             setupAnimalCard(
                 card,
                 animal,
-                'enclosure'
+                'enclosure',
+                renderNow
             );
 
             if(enclosure.trueBuilt){
                 Object.assign(card.style,{position:'absolute',left:'0',top:'0',width:`${ANIMAL_W}px`,height:`${ANIMAL_H}px`,transform:'none',margin:'0'});
             }
 
-            if (animalHasHusbandryProblem(animal)) {
+            const problem=husbandryStatusBySlot.get(slotIndex);
+            if (problem?.invalid) {
                 card.classList.add('husbandry-animal-warning');
-                const group = enclosureGroupForSlot(enclosure, slotIndex);
-                const problem = group ? exhibitHusbandryStatus(enclosure, group) : null;
-                if (problem?.invalid) {
-                    card.addEventListener('mouseenter', () => showHusbandryPopup(card, [problem]));
-                    card.addEventListener('mouseleave', hideHusbandryPopup);
-                    card.addEventListener('pointercancel', hideHusbandryPopup);
-                }
+                card.addEventListener('mouseenter', () => showHusbandryPopup(card, [problem]));
+                card.addEventListener('mouseleave', hideHusbandryPopup);
+                card.addEventListener('pointercancel', hideHusbandryPopup);
             }
 
             if (state.sandboxMode && sandboxAnimalHasCompatibilityConflict(animal)) {
@@ -16907,7 +17152,10 @@ card.classList.add('sandbox-compatibility-conflict');
 
     }
 
-    if (!enclosure.trueBuilt && enclosureSupportsRotation(enclosure) && enclosureIsCompletelyEmpty(enclosure)) {
+    const enclosureEmpty = occupiedEnclosureIds instanceof Set
+        ? !occupiedEnclosureIds.has(String(enclosure.id))
+        : enclosureIsCompletelyEmpty(enclosure);
+    if (!enclosure.trueBuilt && enclosureSupportsRotation(enclosure) && enclosureEmpty) {
         const rotateButton = document.createElement('button');
         rotateButton.type = 'button';
         rotateButton.className = 'enclosure-rotate-button';
@@ -17098,11 +17346,17 @@ card.classList.add('sandbox-compatibility-conflict');
         if (window.matchMedia('(max-width: 700px)').matches) event.preventDefault();
     });
 
-    zooCanvas.appendChild(
+    renderTarget.appendChild(
         element
     );
 
-    mirrorRotatedEnclosureSlots(element, enclosure);
+    if(renderContext?.deferredRotatedEnclosures){
+        if(enclosureSupportsRotation(enclosure)&&enclosure.rotated180){
+            renderContext.deferredRotatedEnclosures.push({element,enclosure});
+        }
+    }else{
+        mirrorRotatedEnclosureSlots(element,enclosure);
+    }
 
 }
 
@@ -17395,7 +17649,9 @@ function startResultDrag(event) {
         startClientX: event.clientX,
         startClientY: event.clientY,
         offsetX: event.clientX - sourceRect.left,
-        offsetY: event.clientY - sourceRect.top
+        offsetY: event.clientY - sourceRect.top,
+        moved: false,
+        maxDistance: 0
     };
 
     moveResultDragImage(event);
@@ -17403,6 +17659,12 @@ function startResultDrag(event) {
 
 function moveResultDragImage(event) {
     if (state.drag?.type !== 'result') return;
+    const distance = Math.hypot(
+        event.clientX - state.drag.startClientX,
+        event.clientY - state.drag.startClientY
+    );
+    state.drag.maxDistance = Math.max(Number(state.drag.maxDistance) || 0, distance);
+    if (state.drag.maxDistance >= 6) state.drag.moved = true;
     state.drag.image.style.left = `${event.clientX - state.drag.offsetX}px`;
     state.drag.image.style.top = `${event.clientY - state.drag.offsetY}px`;
 }
@@ -17445,6 +17707,15 @@ function assertClassicCoreInvariants(context='Classic action') {
 
         if (animal.enclosureId == null || animal.slotIndex == null) {
             throw new Error(`${context}: owned animal ${id} is not placed`);
+        }
+        const enclosure = (state.enclosures || []).find(
+            item => String(item?.id) === String(animal.enclosureId)
+        );
+        if (!enclosure) {
+            throw new Error(`${context}: animal ${id} references missing enclosure ${animal.enclosureId}`);
+        }
+        if (!getAllSlots(enclosure).includes(Number(animal.slotIndex))) {
+            throw new Error(`${context}: animal ${id} references invalid slot ${animal.slotIndex}`);
         }
         const slotKey = `${animal.enclosureId}:${animal.slotIndex}`;
         if (occupied.has(slotKey)) throw new Error(`${context}: duplicate occupied slot ${slotKey}`);
@@ -17577,7 +17848,9 @@ function performClassicGameAction(action) {
     switch (action.type) {
         case CLASSIC_GAME_ACTION.DRAW_LEVEL_1:
             return runClassicProgressionTransaction(
-                () => drawLevelOne()
+                () => action.destination
+                    ? createLevelOneForDraw(action.destination)
+                    : drawLevelOne()
             );
         case CLASSIC_GAME_ACTION.COMPLETE_EXCHANGE:
             return runClassicProgressionTransaction(
@@ -17597,6 +17870,30 @@ function performClassicGameAction(action) {
 // post-turn opponent update exactly once. Keeping those two mutations together
 // is important for eventual server authority and also prevents new Classic
 // actions from accidentally advancing only half of the turn lifecycle.
+function finalizeClassicProgressionCommit(context = 'Classic action') {
+    // Every successful turn-consuming Classic action crosses this boundary
+    // exactly once. Keep secondary lifecycle effects centralized so Draw,
+    // Exchange and Trade cannot silently drift apart as multiplayer authority
+    // is extracted from the browser.
+    const turnBeforeCommit = Number(state.turn);
+    updateCollectionCohabitation();
+    commitClassicTurn();
+
+    if (
+        CLASSIC_INVARIANT_ASSERTIONS &&
+        Number(state.turn) !== turnBeforeCommit + 1
+    ) {
+        throw new Error(
+            `${context}: progression commit advanced turn from ` +
+            `${turnBeforeCommit} to ${state.turn}; expected exactly +1`
+        );
+    }
+
+    assertClassicCoreInvariants(context);
+    renderAll();
+    return true;
+}
+
 function commitClassicTurn() {
     state.turn++;
     updateAutonomousOpponentOffer();
@@ -17735,11 +18032,7 @@ async function completeExchange(destination = null, autoPlace = false) {
     for (const id of exchangedIds) state.suppressedExchangeGlowIds.delete(id);
 
     checkEnclosureReward(newAnimal);
-    updateCollectionCohabitation();
-    commitClassicTurn();
-    assertClassicCoreInvariants('Exchange commit');
-    renderAll();
-    return true;
+    return finalizeClassicProgressionCommit('Exchange commit');
 }
 
 function levelOneDrawDropDestinationAtPoint(clientX, clientY) {
@@ -18021,17 +18314,20 @@ function finishResultDrag(event) {
     const drag = state.drag;
     if (!drag || drag.type !== 'result') return;
 
-    const distance = Math.hypot(
+    const releaseDistance = Math.hypot(
         event.clientX - drag.startClientX,
         event.clientY - drag.startClientY
     );
+    const wasDragged = !!drag.moved ||
+        Math.max(Number(drag.maxDistance) || 0, releaseDistance) >= 6;
 
     drag.image?.remove();
     state.drag = null;
 
-    // clicking the upgrade card auto-places it in a random eligible
-    // enclosure. Dragging the card to a chosen enclosure remains unchanged.
-    if (distance < 6) {
+    // Clicking the upgrade card auto-places it. Once the gesture has crossed
+    // the drag threshold it remains a drag even if the pointer returns close
+    // to its starting point before release.
+    if (!wasDragged) {
         performClassicGameAction({ type:CLASSIC_GAME_ACTION.COMPLETE_EXCHANGE, destination:null, autoPlace:true });
         return;
     }
@@ -19123,7 +19419,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 console.warn('Multiplayer action rejected by host:',message.result.reason||'unknown');
                 // Restore authoritative offer/exchange controls after a rejected
                 // optimistic drag rather than leaving the peer UI stranded.
-                renderAll();renderTrade();renderVisitedZooQuickTabs();
+                renderAll();renderVisitedZooQuickTabs();
             }
             if(message.turnPlayerId&&localClassicMatch){
                 localClassicMatch.turnPlayerId=message.turnPlayerId;
@@ -19559,7 +19855,7 @@ async function applyLocalMultiplayerActionEnvelope(action){
             offerId:offer.id,fromPlayerId:offer.fromPlayerId,toPlayerId:offer.toPlayerId,
             revision:localClassicMatch.revision
         });
-        renderAll();renderTrade();
+        renderAll();
         commitClassicTurn();
         renderVisitedZooQuickTabs();
         return {ok:true,revision:localClassicMatch.revision};
@@ -21774,7 +22070,89 @@ function refreshDrawAvailabilityState() {
     return !drawUnavailable;
 }
 
+// Development-only render profiler. Disabled by default and intentionally
+// independent of saved game state. Enable from the browser console with
+// setZooRenderProfiling(true), play/drag around a representative large zoo,
+// then call zooRenderProfileReport() for aggregate timings.
+let zooRenderProfilingEnabled = false;
+const zooRenderProfile = {
+    renders: 0,
+    startedAt: 0,
+    stages: Object.create(null)
+};
+
+function resetZooRenderProfile() {
+    zooRenderProfile.renders = 0;
+    zooRenderProfile.startedAt = performance.now();
+    zooRenderProfile.stages = Object.create(null);
+}
+
+function recordZooRenderProfileStage(name, milliseconds) {
+    if (!zooRenderProfilingEnabled) return;
+    const bucket = zooRenderProfile.stages[name] || (
+        zooRenderProfile.stages[name] = { calls: 0, totalMs: 0, maxMs: 0 }
+    );
+    bucket.calls++;
+    bucket.totalMs += milliseconds;
+    bucket.maxMs = Math.max(bucket.maxMs, milliseconds);
+}
+
+function profiledZooRenderStage(name, work) {
+    if (!zooRenderProfilingEnabled) return work();
+    const started = performance.now();
+    try {
+        return work();
+    } finally {
+        recordZooRenderProfileStage(name, performance.now() - started);
+    }
+}
+
+function setZooRenderProfiling(enabled = true) {
+    zooRenderProfilingEnabled = !!enabled;
+    if (zooRenderProfilingEnabled) resetZooRenderProfile();
+    return zooRenderProfilingEnabled;
+}
+
+function zooRenderProfileReport() {
+    const rows = Object.entries(zooRenderProfile.stages).map(([stage, data]) => ({
+        stage,
+        calls: data.calls,
+        totalMs: Number(data.totalMs.toFixed(2)),
+        averageMs: Number((data.totalMs / Math.max(1, data.calls)).toFixed(2)),
+        maxMs: Number(data.maxMs.toFixed(2))
+    })).sort((a, b) => b.totalMs - a.totalMs);
+    const report = {
+        enabled: zooRenderProfilingEnabled,
+        renders: zooRenderProfile.renders,
+        elapsedMs: zooRenderProfile.startedAt
+            ? Number((performance.now() - zooRenderProfile.startedAt).toFixed(2))
+            : 0,
+        stages: rows
+    };
+    console.table(rows);
+    return report;
+}
+
+// Keep these console helpers deliberately explicit; they are diagnostics, not
+// gameplay API and are never serialized into saves.
+window.setZooRenderProfiling = setZooRenderProfiling;
+window.resetZooRenderProfile = resetZooRenderProfile;
+window.zooRenderProfileReport = zooRenderProfileReport;
+
+let renderAllInProgress = false;
+let renderAllQueued = false;
+let renderAllQueuedPersist = false;
+
 function renderAll(persist = true) {
+    if (renderAllInProgress) {
+        renderAllQueued = true;
+        renderAllQueuedPersist = renderAllQueuedPersist || !!persist;
+        return;
+    }
+    renderAllInProgress = true;
+    if (zooRenderProfilingEnabled) zooRenderProfile.renders++;
+
+    try {
 
     if(state.gameMode==='true'&&!state.sandboxMode) {
         normaliseTrueEnclosureBuilderState();
@@ -21793,16 +22171,18 @@ function renderAll(persist = true) {
     // Collection identity is evaluated at render boundaries after ownership
     // changes. The 60%/45% hysteresis prevents names oscillating around a
     // threshold as individual animals enter or leave the zoo.
-    updateZooIdentityFromLivingCollection();
-    refreshDrawAvailabilityState();
-    ensureTrueMarketplaceButton();
-    renderTrueSimulationPanel();
-    if (state.gameMode === 'true') restartTrueCalendarTimer(); else stopTrueCalendarTimer();
+    profiledZooRenderStage('identity', () => updateZooIdentityFromLivingCollection());
+    profiledZooRenderStage('draw-availability', () => refreshDrawAvailabilityState());
+    profiledZooRenderStage('true-mode-ui', () => {
+        ensureTrueMarketplaceButton();
+        renderTrueSimulationPanel();
+        if (state.gameMode === 'true') restartTrueCalendarTimer(); else stopTrueCalendarTimer();
+    });
 
 
-    rotateOpponentTradeStocksIfNeeded();
-    refreshExchangeGlowSuppression();
-    renderZoo();
+    profiledZooRenderStage('opponent-stock', () => rotateOpponentTradeStocksIfNeeded());
+    profiledZooRenderStage('exchange-glow-state', () => refreshExchangeGlowSuppression());
+    profiledZooRenderStage('zoo', () => renderZoo());
     // renderZoo() recreates card nodes. Repaint whenever the hint is active,
     // including incoming-box hints and cases where layout/rendering happened
     // without a fresh mouseenter event.
@@ -21813,16 +22193,16 @@ function renderAll(persist = true) {
             }
         });
     }
-    renderExchange();
-    renderTrade();
-    renderProgressTracker();
+    profiledZooRenderStage('exchange-ui', () => renderExchange());
+    profiledZooRenderStage('trade-ui', () => renderTrade());
+    profiledZooRenderStage('progression-ui', () => renderProgressTracker());
     // Prestige is a live value: placement, husbandry, Areas and collection
     // identity can all change it during a normal render.
-    updatePrestigeDisplay();
-    updateTurnDisplay();
+    profiledZooRenderStage('prestige', () => updatePrestigeDisplay());
+    profiledZooRenderStage('turn-ui', () => updateTurnDisplay());
     if (persist) {
-        captureTurnSnapshot();
-        writeAutoResumeSnapshot();
+        profiledZooRenderStage('history-snapshot', () => captureTurnSnapshot());
+        profiledZooRenderStage('autoresume-save', () => writeAutoResumeSnapshot());
     }
 
     // render functions rebuild a number of menu/status nodes. Re-run
@@ -21835,12 +22215,69 @@ function renderAll(persist = true) {
     } else if (!state.loaded) {
         idleGuideSetupWasComplete = false;
     }
+
+    } finally {
+        renderAllInProgress = false;
+        if (renderAllQueued) {
+            const queuedPersist = renderAllQueuedPersist;
+            renderAllQueued = false;
+            renderAllQueuedPersist = false;
+            enqueueMicrotask(() => renderAll(queuedPersist));
+        }
+    }
 }
 
 
 // ============================================================
 // START ANIMAL DRAG
 // ============================================================
+
+function refreshClassicAnimalDragStartVisuals(source, animal, location) {
+    // Classic cards are self-contained DOM nodes. During pointer-down the game
+    // has already preserved any source-slot reservation, so rebuilding every
+    // enclosure merely to show a temporary vacancy is unnecessary.
+    //
+    // True population cards deliberately stay on the full-render path because
+    // their sex-count controls/listeners are attached to the slot host.
+    if(state.gameMode==='true')return false;
+
+    if(location==='enclosure'){
+        const slot=source?.closest?.('.slot');
+        if(slot){
+            const drag=state.drag;
+            if(drag?.type==='animal'){
+                drag.transientSourceNode=source;
+                drag.transientSourceParent=source.parentNode;
+                drag.transientSourceNextSibling=source.nextSibling;
+                drag.transientSourceSlot=slot;
+            }
+            source.remove();
+            slot.classList.add('empty-slot');
+        }
+    }
+
+    // Reconcile only visual state affected by temporarily removing the card.
+    refreshContextualExchangeEligibilityGlows();
+
+    const drag=state.drag;
+    if(drag?.type==='animal'){
+        const now=Date.now();
+        document.querySelectorAll('.animal-card[data-animal-id]').forEach(card=>{
+            const id=Number(card.dataset.animalId);
+            card.classList.remove('exchange-drag-glow');
+            card.style.animationDelay='';
+            if(drag.exchangeGlowIds?.has(id)){
+                card.classList.add('exchange-drag-glow');
+                const elapsed=Math.max(0,now-state.exchangeGlowDragStartedAt);
+                card.style.animationDelay=`${-Math.min(elapsed,2000)}ms`;
+            }
+        });
+    }
+
+    applyCompatibilityDestinationGlowClasses();
+    refreshAnimalGlowPrecedence(zooCanvas);
+    return true;
+}
 
 function startAnimalDrag(
     event,
@@ -22232,8 +22669,17 @@ function startAnimalDrag(
     );
 
 
-    renderZoo();
-    renderExchange();
+    const usedTargetedClassicDragRefresh = profiledZooRenderStage(
+        'drag-start.targeted-classic',
+        () => refreshClassicAnimalDragStartVisuals(source, animal, location)
+    );
+    if(!usedTargetedClassicDragRefresh){
+        profiledZooRenderStage('drag-start.zoo', () => renderZoo());
+    }
+    profiledZooRenderStage('drag-start.exchange-ui', () => renderExchange());
+    if(location==='outgoing'){
+        profiledZooRenderStage('drag-start.trade-ui', () => renderTrade());
+    }
 
 }
 
@@ -23808,13 +24254,67 @@ function finishHumanTradeRequestDrag(event){
 // FINISH ANIMAL DRAG
 // ============================================================
 
-function renderAfterTransientAnimalDrag() {
-    // A cancelled drag/tap can temporarily remove a card from zoo/
-    // exchange/trade DOM, so restore those visual components only. Do NOT
-    // capture turn history or autosave: no gameplay action was committed.
-    renderZoo();
-    renderExchange();
-    renderTrade();
+function renderClassicSameExhibitRelocation(drag, animal) {
+    if(!classicMoveStaysInSameLogicalExhibit(drag,animal))return false;
+    const enclosure=state.enclosures.find(item=>String(item.id)===String(animal.enclosureId));
+    const oldElement=zooCanvas.querySelector(`.enclosure[data-enclosure-id="${CSS.escape(String(enclosure.id))}"]`);
+    if(!oldElement)return false;
+
+    // The logical exhibit contains the same animal set before and after this
+    // move, so generated geography/Area membership cannot change. Rebuild only
+    // this physical enclosure card and then restore global glow precedence.
+    const compatibilityGlowKeys=currentCompatibilityGlowKeys();
+    const occupiedEnclosureIds=new Set(
+        (state.animals||[])
+            .filter(item=>item?.enclosureId!=null)
+            .map(item=>String(item.enclosureId))
+    );
+    const marker=document.createComment('enclosure-relocation-anchor');
+    oldElement.before(marker);
+    oldElement.remove();
+    renderEnclosure(
+        enclosure,
+        compatibilityGlowKeys,
+        occupiedEnclosureIds,
+        null,
+        document.getElementById('zooEnclosureLayer') || zooCanvas
+    );
+    const replacement=zooCanvas.querySelector(
+        `.enclosure[data-enclosure-id="${CSS.escape(String(enclosure.id))}"]`
+    );
+    if(replacement&&marker.parentNode){
+        marker.parentNode.insertBefore(replacement,marker);
+    }
+    marker.remove();
+    refreshAnimalGlowPrecedence(zooCanvas);
+    return true;
+}
+
+function restoreClassicAnimalDragSourceNode(drag) {
+    if(state.gameMode==='true'||drag?.type!=='animal'||drag.location!=='enclosure')return false;
+    const node=drag.transientSourceNode,parent=drag.transientSourceParent;
+    if(!node||!parent?.isConnected)return false;
+    const next=drag.transientSourceNextSibling;
+    if(next?.parentNode===parent)parent.insertBefore(node,next);
+    else parent.appendChild(node);
+    drag.transientSourceSlot?.classList.remove('empty-slot');
+    refreshContextualExchangeEligibilityGlows();
+    applyCompatibilityDestinationGlowClasses();
+    refreshAnimalGlowPrecedence(zooCanvas);
+    return true;
+}
+
+function renderAfterTransientAnimalDrag(drag) {
+    // A cancelled drag/tap commits no gameplay state. Classic enclosure drags
+    // restore the exact card node removed at pointer-down; other origins and
+    // True mode retain the conservative full-zoo reconciliation.
+    const restoredSource=profiledZooRenderStage(
+        'drag-finish.targeted-classic',
+        () => restoreClassicAnimalDragSourceNode(drag)
+    );
+    if(!restoredSource)profiledZooRenderStage('drag-finish.zoo', () => renderZoo());
+    profiledZooRenderStage('drag-finish.exchange-ui', () => renderExchange());
+    profiledZooRenderStage('drag-finish.trade-ui', () => renderTrade());
     enqueueMicrotask(localizeDocument);
 }
 
@@ -23853,7 +24353,7 @@ function finishAnimalDrag(event) {
         prepareExchangeGlowAfterAnimalDrag(drag);
         drag.image?.remove();
         state.drag = null;
-        renderAfterTransientAnimalDrag();
+        renderAfterTransientAnimalDrag(drag);
         return;
     }
 
@@ -23884,7 +24384,7 @@ function finishAnimalDrag(event) {
         prepareExchangeGlowAfterAnimalDrag(drag);
         drag.image?.remove();
         state.drag = null;
-        renderAfterTransientAnimalDrag();
+        renderAfterTransientAnimalDrag(drag);
         return;
     }
 
@@ -23928,13 +24428,31 @@ function finishAnimalDrag(event) {
         return;
     }
 
-    // A successful drop is a real state change and keeps the existing commit
-    // path intact.
+    // A successful drop is a real state change. A relocation inside the same
+    // logical exhibit cannot alter that exhibit's species membership, generated
+    // geography or Area membership, so it can reconcile only that enclosure.
+    // Cross-exhibit moves retain the complete renderAll() path.
     clearExchangeGlowFocusIfIdle();
     prepareExchangeGlowAfterAnimalDrag(drag);
     drag.image?.remove();
+
+    const sameExhibitRelocation=profiledZooRenderStage(
+        'drag-finish.same-exhibit',
+        () => renderClassicSameExhibitRelocation(drag,animal)
+    );
     state.drag = null;
-    checkEnclosure10Unlock();
+    if(sameExhibitRelocation){
+        renderExchange();
+        renderTrade();
+        renderProgressTracker();
+        updatePrestigeDisplay();
+        updateTurnDisplay();
+        captureTurnSnapshot();
+        writeAutoResumeSnapshot();
+        enqueueMicrotask(localizeDocument);
+        return;
+    }
+    // placeAnimal() already performs the enclosure-10 unlock check.
     renderAll();
 }
 
@@ -24249,7 +24767,13 @@ function startPan(event) {
             zooBoard.scrollLeft,
 
         startScrollTop:
-            zooBoard.scrollTop
+            zooBoard.scrollTop,
+
+        pointerId:
+            event.pointerId,
+
+        pointerType:
+            event.pointerType
 
     };
 
@@ -24264,6 +24788,14 @@ function startPan(event) {
 function movePan(event) {
 
     if (!state.pan) {
+        return;
+    }
+
+    // Pan and pinch are mutually exclusive, and a pan belongs to one pointer.
+    if (
+        zooPinch ||
+        (state.pan.pointerId != null && event.pointerId !== state.pan.pointerId)
+    ) {
         return;
     }
 
@@ -24358,6 +24890,16 @@ zooBoard.addEventListener(
         if (pointerIsOnZooScrollbar(event)) {
             // Do not preventDefault and do not start a pan. This gives native
             // scrollbar dragging/clicking absolute priority over zoo panning.
+            return;
+        }
+
+
+        // Capture-phase touch tracking owns the pan/pinch transition. Once a
+        // second finger exists, the bubbling handler may not restart a pan.
+        if (
+            event.pointerType === 'touch' &&
+            (zooPinch || zooTouchPointers.size > 1)
+        ) {
             return;
         }
 
@@ -24495,7 +25037,10 @@ document.addEventListener(
         }
 
 
-        if (state.pan) {
+        if (
+            state.pan &&
+            (state.pan.pointerId == null || event.pointerId === state.pan.pointerId)
+        ) {
 
             finishPan();
 
@@ -24511,12 +25056,36 @@ document.addEventListener(
 
 document.addEventListener(
     'pointercancel',
-    () => {
+    event => {
 
         if (state.drag?.type === 'result') {
             state.drag.image?.remove();
             state.drag = null;
             renderExchange();
+        }
+        else if (state.drag?.type === 'draw-result') {
+            // A cancelled deck gesture has not consumed nextDrawSpec or changed
+            // ownership. Remove only its transient drag image.
+            state.drag.image?.remove();
+            state.drag = null;
+            refreshDrawAvailabilityState();
+        }
+        else if (state.drag?.type === 'trade-result') {
+            // startTradeResultDrag() temporarily releases the outgoing animal's
+            // logical slot reservation so the incoming card can target that
+            // vacancy. Browser/OS pointer cancellation must restore it exactly
+            // like an ordinary invalid drop.
+            const cancelledTradeDrag = state.drag;
+            cancelledTradeDrag.image?.remove();
+            state.drag = null;
+            if (state.outgoingOffer && cancelledTradeDrag.releasedOutgoingReservation) {
+                reserveAnimalZooSlot(
+                    state.outgoingOffer,
+                    cancelledTradeDrag.releasedOutgoingReservation.enclosureId,
+                    cancelledTradeDrag.releasedOutgoingReservation.slotIndex
+                );
+            }
+            renderTrade();
         }
         else         if (
             state.drag?.type ===
@@ -24534,7 +25103,7 @@ document.addEventListener(
             prepareExchangeGlowAfterAnimalDrag(cancelledDrag);
             state.drag = null;
 
-            renderAfterTransientAnimalDrag();
+            renderAfterTransientAnimalDrag(cancelledDrag);
 
         }
         else if (
@@ -24547,7 +25116,12 @@ document.addEventListener(
         }
 
 
-        finishPan();
+        if (
+            state.pan &&
+            (state.pan.pointerId == null || event.pointerId === state.pan.pointerId)
+        ) {
+            finishPan();
+        }
 
     }
 );
@@ -24609,6 +25183,13 @@ function setZoom(
 const zooTouchPointers = new Map();
 let zooPinch = null;
 
+// Prevent Safari's native viewport gesture from competing with the board's
+// pointer-driven pan/pinch implementation. Keep this guarded at top level:
+// required DOM validation intentionally lives inside startGame() so stale or
+// incomplete HTML reaches the normal fatal-error screen instead of aborting
+// the script before startup can report the missing element.
+if (zooBoard) zooBoard.style.touchAction = 'none';
+
 function zooPinchDistance(a, b) {
     return Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
 }
@@ -24624,22 +25205,28 @@ function cancelAnimalDragForPinch() {
     prepareExchangeGlowAfterAnimalDrag(cancelledDrag);
     state.drag.image?.remove();
     state.drag = null;
-    renderAfterTransientAnimalDrag();
+    renderAfterTransientAnimalDrag(cancelledDrag);
 }
 
 function beginZooPinchIfReady() {
-    if (zooTouchPointers.size !== 2) return;
-    const [a, b] = [...zooTouchPointers.values()];
+    if (zooPinch || zooTouchPointers.size < 2) return;
+    const pair = [...zooTouchPointers.entries()].slice(0, 2);
+    const [[pointerA, a], [pointerB, b]] = pair;
     const distance = zooPinchDistance(a, b);
     const midpoint = zooPinchMidpoint(a, b);
     if (!distance) return;
 
-    // The second finger always wins over a one-finger card drag or pan.
+    // The second finger always wins over a one-finger animal drag or pan.
+    // Other card/enclosure drags are left untouched: promoting those to pinch
+    // without their own exact rollback transaction could mutate gameplay.
     cancelAnimalDragForPinch();
+    if (state.drag) return;
     finishPan();
 
     const boardRect = zooBoard.getBoundingClientRect();
     zooPinch = {
+        pointerA,
+        pointerB,
         startDistance: distance,
         startZoom: state.zoom,
         anchorWorldX: (zooBoard.scrollLeft + midpoint.x - boardRect.left) / state.zoom,
@@ -24650,18 +25237,20 @@ function beginZooPinchIfReady() {
 zooBoard.addEventListener('pointerdown', event => {
     if (event.pointerType !== 'touch') return;
     zooTouchPointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY });
-    if (zooTouchPointers.size === 2) beginZooPinchIfReady();
+    if (zooTouchPointers.size >= 2) beginZooPinchIfReady();
 }, { capture: true });
 
 zooBoard.addEventListener('pointermove', event => {
     if (event.pointerType !== 'touch' || !zooTouchPointers.has(event.pointerId)) return;
     zooTouchPointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY });
-    if (!zooPinch || zooTouchPointers.size !== 2) return;
+    if (!zooPinch) return;
+    const a=zooTouchPointers.get(zooPinch.pointerA);
+    const b=zooTouchPointers.get(zooPinch.pointerB);
+    if (!a || !b) return;
 
     event.preventDefault();
     event.stopPropagation();
 
-    const [a, b] = [...zooTouchPointers.values()];
     const distance = zooPinchDistance(a, b);
     const midpoint = zooPinchMidpoint(a, b);
     if (!distance || !zooPinch.startDistance) return;
@@ -24684,25 +25273,38 @@ zooBoard.addEventListener('pointermove', event => {
 function endZooTouchPointer(event) {
     if (event.pointerType !== 'touch') return;
 
+    const endedPinchFinger = Boolean(
+        zooPinch &&
+        (event.pointerId === zooPinch.pointerA || event.pointerId === zooPinch.pointerB)
+    );
     const wasPinching = Boolean(zooPinch);
     zooTouchPointers.delete(event.pointerId);
 
-    // Zooming exists ONLY while exactly two live touch pointers exist.
-    if (zooTouchPointers.size !== 2) {
+    // A third finger does not disturb the active pair. If one of the two pinch
+    // owners leaves, end that pinch; if two touches still remain they may form
+    // a freshly rebased pair below.
+    if (endedPinchFinger) {
         zooPinch = null;
+    }
+    if (!zooPinch && zooTouchPointers.size >= 2) {
+        beginZooPinchIfReady();
     }
 
     // If one finger remains after a pinch, do not keep interpreting its
     // vertical movement as part of the old zoom gesture. Start a completely
     // fresh one-finger pan from its current position instead.
-    if (wasPinching && zooTouchPointers.size === 1) {
+    if (wasPinching && !zooPinch && zooTouchPointers.size === 1) {
         finishPan();
-        const remaining = [...zooTouchPointers.values()][0];
+        const [remainingPointerId, remaining] = [...zooTouchPointers.entries()][0];
+        // This pan is owned by the finger that is still down. The bubbling
+        // pointerup/pointercancel for the finger that just left must not end it.
         state.pan = {
             startClientX: remaining.clientX,
             startClientY: remaining.clientY,
             startScrollLeft: zooBoard.scrollLeft,
             startScrollTop: zooBoard.scrollTop,
+            pointerId: remainingPointerId,
+            pointerType: 'touch',
             touchContinuation: true
         };
         zooBoard.classList.add('panning');
@@ -24884,11 +25486,7 @@ async function createLevelOneForDrawUnlocked(destination) {
     markPlayerLevelSeen(animal.level);
     // Level 1 draws no longer receive the generic new-animal yellow glow.
     checkEnclosureReward(animal);
-    updateCollectionCohabitation();
-
-    commitClassicTurn();
-    assertClassicCoreInvariants('Level 1 draw commit');
-    renderAll();
+    finalizeClassicProgressionCommit('Level 1 draw commit');
 
     // Prepare the following card after the successful turn. This also makes
     // Draw immediately reflect "no cards left" / exact-card compatibility.
@@ -25641,7 +26239,6 @@ function removeSandboxAnimalById(animalId) {
     );
     sandboxHoveredAnimalId = null;
     renderAll();
-    writeAutoResumeSnapshot(true);
     return true;
 }
 
@@ -25663,7 +26260,6 @@ function removeSandboxEnclosureById(enclosureId) {
     sandboxHoveredEnclosureId = null;
     sandboxHoveredAnimalId = null;
     renderAll();
-    writeAutoResumeSnapshot(true);
     return true;
 }
 
@@ -33525,14 +34121,26 @@ function startTradeResultDrag(event) {
         startClientX:event.clientX,
         startClientY:event.clientY,
         offsetX:event.clientX-rect.left,
-        offsetY:event.clientY-rect.top
+        offsetY:event.clientY-rect.top,
+        moved:false,
+        maxDistance:0
     };
     moveTradeResultDragImage(event);
     // No render here. Releasing the outgoing slot reservation is deliberately
     // temporary drag state and has no visible DOM effect. In particular, do
     // not let renderAll() snapshot/autosave this mid-drag state.
 }
-function moveTradeResultDragImage(event){if(state.drag?.type!=='trade-result')return;state.drag.image.style.left=`${event.clientX-state.drag.offsetX}px`;state.drag.image.style.top=`${event.clientY-state.drag.offsetY}px`;}
+function moveTradeResultDragImage(event){
+    if(state.drag?.type!=='trade-result')return;
+    const distance=Math.hypot(
+        event.clientX-state.drag.startClientX,
+        event.clientY-state.drag.startClientY
+    );
+    state.drag.maxDistance=Math.max(Number(state.drag.maxDistance)||0,distance);
+    if(state.drag.maxDistance>=6)state.drag.moved=true;
+    state.drag.image.style.left=`${event.clientX-state.drag.offsetX}px`;
+    state.drag.image.style.top=`${event.clientY-state.drag.offsetY}px`;
+}
 function acceptSelectedTrade(destination=null, autoPlace=false) {
     const offer=selectedTradeOffer();
     if(!offer) return false;
@@ -33543,7 +34151,6 @@ function acceptSelectedTrade(destination=null, autoPlace=false) {
 
     const outgoingForHistory = state.outgoingOffer;
     const truePartialTradeSource = trueTradeSourceAnimal(outgoingForHistory);
-    releaseOutgoingTradeReservation();
     const tradeProfile = state.opponentProfiles[offer.opponentIndex];
     const tradeZooName = tradeProfile?.name || `Zoo ${offer.opponentIndex + 1}`;
 
@@ -33577,6 +34184,11 @@ function acceptSelectedTrade(destination=null, autoPlace=false) {
         // destination. Invalid drags leave the offer untouched.
         return false;
     }
+
+    // The incoming placement succeeded, so the transaction has crossed its
+    // commit boundary. Only now discard the outgoing card's logical slot
+    // reservation. Failed acceptance attempts therefore remain side-effect free.
+    releaseOutgoingTradeReservation();
 
     // In Real Zoo mode, update only this game's in-memory holdings:
     // incoming leaves the real zoo; outgoing joins it and can be offered later.
@@ -33690,19 +34302,17 @@ function acceptSelectedTrade(destination=null, autoPlace=false) {
         incomingLevel: incoming.level
     });
 
-    updateCollectionCohabitation();
-    commitClassicTurn();
-    assertClassicCoreInvariants('Trade commit');
-    renderAll();
-    return true;
+    return finalizeClassicProgressionCommit('Trade commit');
 }
 async function finishTradeResultDrag(event) {
     const drag=state.drag;if(!drag||drag.type!=='trade-result')return;
-    const distance=Math.hypot(event.clientX-drag.startClientX,event.clientY-drag.startClientY);
+    const releaseDistance=Math.hypot(event.clientX-drag.startClientX,event.clientY-drag.startClientY);
+    const wasDragged=!!drag.moved ||
+        Math.max(Number(drag.maxDistance)||0,releaseDistance)>=6;
     const dragRect=drag.image?.getBoundingClientRect?.()||null;
     const incoming=drag.incomingAnimal||selectedTradeOffer()?.animal||null;
     drag.image?.remove();state.drag=null;
-    if(distance<6){
+    if(!wasDragged){
         // A click/very short drag uses auto-placement. The reservation remains
         // released while the destination is chosen.
         const accepted=await performClassicGameAction({ type:CLASSIC_GAME_ACTION.ACCEPT_TRADE, destination:null, autoPlace:true });

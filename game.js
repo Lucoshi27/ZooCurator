@@ -19632,7 +19632,12 @@ function getLocalMultiplayerSyncPacket(cursorId=null){
 let localMultiplayerPeerReplica=null;
 let localMultiplayerOutboundSink=null;
 function createLocalMultiplayerPeerReplica(playerId){
-    if(!localClassicMatch?.players?.[playerId])return null;
+    // A network peer starts with a provisional `joining-*` id before the host
+    // assigns its real multiplayer seat. That provisional id intentionally has
+    // no entry in localClassicMatch.players yet. Requiring an existing player
+    // here prevented the replica from being created, so seat-assignment could
+    // not retarget it and every subsequent host sync was silently ignored.
+    if(!localClassicMatch||!playerId)return null;
     return localMultiplayerPeerReplica={
         protocol:'zoo-curator-classic-multiplayer-v1',playerId,revision:-1,cursor:null,
         turnPlayerId:null,players:{},pendingPlayerTrades:[],events:[],receivedPackets:0
@@ -19929,6 +19934,14 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
                 }
             }
         };
+        // Attach the message listener before sending the v2 hello. A fast local
+        // server can answer hello with server-welcome immediately; attaching
+        // this only after the open promise resolved created a small race where
+        // the authentication packet could be lost before the channel existed.
+        socket.addEventListener('message',event=>{
+            try{deliver(JSON.parse(event.data));}
+            catch(error){console.warn('Ignored invalid multiplayer server message:',error);}
+        });
         await new Promise((resolve,reject)=>{
             const timer=setTimeout(()=>{
                 try{socket.close();}catch(_){}
@@ -19950,10 +19963,6 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
                 clearTimeout(timer);
                 reject(new Error('Could not connect to multiplayer server.'));
             },{once:true});
-        });
-        socket.addEventListener('message',event=>{
-            try{deliver(JSON.parse(event.data));}
-            catch(error){console.warn('Ignored invalid multiplayer server message:',error);}
         });
         socket.addEventListener('close',()=>{
             closed=true;
@@ -20141,6 +20150,16 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
             if(localMultiplayerPeerReplica)localMultiplayerPeerReplica.playerId=assignedId;
             if(message.reconnectToken)writeLocalMultiplayerReconnectIdentity(resolvedMatchId,assignedId,message.reconnectToken);
             transport.lastMessageType='seat-assignment';
+            // A relay normally preserves the host's seat-assignment -> sync
+            // ordering, but don't make joining depend on that timing. If a sync
+            // reached us while the provisional joining-* id was still active,
+            // replay the newest deferred packet now that this tab owns a seat.
+            const deferredSync=transport.pendingPreSeatSync;
+            transport.pendingPreSeatSync=null;
+            if(deferredSync)queueMicrotask(()=>{
+                if(channel===localMultiplayerBrowserChannel&&channel.onmessage)
+                    channel.onmessage({data:deferredSync});
+            });
         }else if(message.type==='action'&&role==='host'){
             const hostSeat=resolvedPlayerId;
             const result=await applyLocalMultiplayerActionEnvelope(cloneForSave(message.action));
@@ -20220,7 +20239,10 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 showGameNotice(uiText('A player disconnected from the multiplayer game.'));
             }
         }else if(message.type==='sync'&&role==='peer'){
-            if(String(transport.playerId||'').startsWith('joining-'))return;
+            if(String(transport.playerId||'').startsWith('joining-')){
+                transport.pendingPreSeatSync=cloneForSave(message);
+                return;
+            }
             const packet=cloneForSave(message.packet);
             const sequence=Number(packet?.transportSequence)||0;
             const syncGeneration=localMultiplayerTransportGeneration;

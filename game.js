@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V2.39.8";
+const ZOO_CURATOR_VERSION = "V2.43.3";
 // Definitive V2 baseline: True-mode systems + current Information-map geography fixes.
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
@@ -16,15 +16,16 @@ const ZOO_REQUIRED_CSS_INTERFACE = 2;
 // ============================================================
 const DESKTOP_UI_REFERENCE_WIDTH = 2560;
 const DESKTOP_UI_REFERENCE_HEIGHT = 1440;
-const DESKTOP_UI_MIN_SCALE = 0.80;
+const DESKTOP_UI_MIN_SCALE = 0.68;
 
 function desktopUiScale() {
     if (window.matchMedia('(max-width: 700px)').matches) return 1;
 
     // Scale perceptually rather than as a raw 1:1 viewport ratio. A literal
     // 1920/2560 = 0.75 made the 1080p HUD noticeably too small even though its
-    // geometry was technically proportional. Keep the compact laptop endpoint,
-    // with ordinary 1920x1080 at 0.92 and 2560x1440 at the true 1.0 reference size.
+    // geometry was technically proportional. Keep a deliberately smaller
+    // compact-laptop endpoint (<=1366px), with ordinary 1920x1080 at 0.92 and
+    // 2560x1440 at the true 1.0 reference size.
     // Desktop HUD scale follows WIDTH, not the browser content height. A short
     // desktop window (devtools open, split-screen, browser chrome, etc.) must not
     // shrink the entire 2K-derived interface. Height is handled by the board and
@@ -33,8 +34,12 @@ function desktopUiScale() {
         1,
         window.innerWidth / DESKTOP_UI_REFERENCE_WIDTH
     );
-    const laptopRatio = 768 / DESKTOP_UI_REFERENCE_HEIGHT;
-    const fullHdRatio = 1080 / DESKTOP_UI_REFERENCE_HEIGHT;
+    // Width endpoints are intentional viewport classes, not physical-screen
+    // guesses. 1366px is the common compact-laptop desktop width; below it
+    // (1280x800 / 1280x720 included) keep the same compact HUD scale rather
+    // than squeezing the 1080p composition into the available width.
+    const laptopRatio = 1366 / DESKTOP_UI_REFERENCE_WIDTH;
+    const fullHdRatio = 1920 / DESKTOP_UI_REFERENCE_WIDTH;
 
     if (viewportRatio <= laptopRatio) return DESKTOP_UI_MIN_SCALE;
     if (viewportRatio <= fullHdRatio) {
@@ -3513,9 +3518,6 @@ function applyEnclosureThemePresentation(element, enclosure, precomputedThemes =
     for (const theme of themes) element.classList.add(theme.className);
 
     const special = themes.find(theme => theme.layer === 'special');
-    const habitat = themes.find(theme => theme.layer === 'habitat');
-    const geography = themes.find(theme => theme.layer === 'geography');
-    const facility = themes.find(theme => theme.layer === 'facility');
 
     // Broad area names are rendered once on the connected outer area border,
     // never repeated inside every enclosure. Single-card specialist facilities
@@ -4741,6 +4743,34 @@ function getAllSlots(enclosure) {
         enclosure
     ).flat();
 
+}
+
+// Classic enclosure artwork has an immutable slot topology per card number.
+// Full rendering can therefore share these arrays across every copy of the
+// same enclosure instead of resolving GROUPS and flattening it repeatedly.
+const CLASSIC_ENCLOSURE_GROUP_CACHE = new Map();
+const CLASSIC_ENCLOSURE_SLOT_CACHE = new Map();
+
+function classicRenderGroups(enclosure) {
+    if (enclosure?.trueBuilt) return getGroups(enclosure);
+    const number=Number(enclosure?.number);
+    let groups=CLASSIC_ENCLOSURE_GROUP_CACHE.get(number);
+    if(!groups){
+        groups=GROUPS[number] || [[0]];
+        CLASSIC_ENCLOSURE_GROUP_CACHE.set(number,groups);
+    }
+    return groups;
+}
+
+function classicRenderSlots(enclosure, groups = null) {
+    if (enclosure?.trueBuilt) return (groups || getGroups(enclosure)).flat();
+    const number=Number(enclosure?.number);
+    let slots=CLASSIC_ENCLOSURE_SLOT_CACHE.get(number);
+    if(!slots){
+        slots=(groups || classicRenderGroups(enclosure)).flat();
+        CLASSIC_ENCLOSURE_SLOT_CACHE.set(number,slots);
+    }
+    return slots;
 }
 
 
@@ -7828,32 +7858,34 @@ function animalImage(animal) {
 // IMAGE ERROR
 // ============================================================
 
+function handleImageAssetError(event) {
+    const image=event.currentTarget;
+    const description=image?.dataset?.assetDescription || 'asset';
+
+    console.error(
+        `Could not load ${description}:`,
+        image.src
+    );
+
+    image.classList.add(
+        'asset-error'
+    );
+
+    image.title =
+        `Missing asset: ${image.src}`;
+}
+
 function attachImageError(
     image,
     description
 ) {
-
+    // Full zoo renders recreate many image nodes. Use one shared listener
+    // function instead of allocating a closure for every animal/enclosure image.
+    image.dataset.assetDescription=String(description || 'asset');
     image.addEventListener(
         'error',
-        () => {
-
-            console.error(
-                `Could not load ${description}:`,
-                image.src
-            );
-
-
-            image.classList.add(
-                'asset-error'
-            );
-
-
-            image.title =
-                `Missing asset: ${image.src}`;
-
-        }
+        handleImageAssetError
     );
-
 }
 
 
@@ -8022,9 +8054,18 @@ function translatedAnimalCardUrl(animal) {
 function applyLocalizedAnimalImage(image,animal) {
     const source=animalImage(animal);
     image.src=source;
+
+    // The replacement token only protects the asynchronous Dutch-card path.
+    // English is synchronous, so avoid per-card key/date/random allocation on
+    // every Classic render. Clearing a stale token also makes reused callers
+    // safe if card DOM reuse is introduced later.
+    if(state.gameOptions.animalLanguage!=='nl'){
+        delete image.dataset.localizedImageToken;
+        return;
+    }
+
     const token=`${animal?.id??''}|${animalCardKey(animal)}|${Date.now()}|${Math.random()}`;
     image.dataset.localizedImageToken=token;
-    if(state.gameOptions.animalLanguage!=='nl')return;
     translatedAnimalCardUrl(animal).then(url=>{
         if(image.dataset.localizedImageToken===token&&state.gameOptions.animalLanguage==='nl')image.src=url;
     });
@@ -8153,11 +8194,14 @@ function setupAnimalCard(
     image,
     animal,
     location,
-    renderNow = Date.now()
+    renderNow = Date.now(),
+    cardRenderContext = null
 ) {
 
-    // Full zoo renders pass one shared frame timestamp so Classic does not
-    // query the clock separately for every animal card.
+    // Full zoo renders pass one shared frame timestamp/context so Classic does
+    // not repeat collection-wide eligibility work for every animal card.
+    const layoutToolEditing = cardRenderContext?.layoutToolEditing ?? trueLayoutToolEditingActive();
+    const visitingActionUI = cardRenderContext?.visitingActionUI ?? visitingAnotherZooForActionUI();
 
     image.classList.add(
         'animal-card'
@@ -8269,7 +8313,7 @@ function setupAnimalCard(
 
         const glowStarted = state.visitingZoo ? 0 : Number(state.newPlacementGlowStartedAt[animal.id] || 0);
         const glowElapsed = glowStarted ? renderNow - glowStarted : Infinity;
-        if (!trueLayoutToolEditingActive() && glowElapsed >= 0 && glowElapsed < 4000) {
+        if (!layoutToolEditing && glowElapsed >= 0 && glowElapsed < 4000) {
             image.classList.add('new-placement-glow');
             // renderZoo() rebuilds DOM nodes; resume instead of restarting.
             image.style.animationDelay = `${-glowElapsed}ms`;
@@ -8280,7 +8324,7 @@ function setupAnimalCard(
 
     const trackerKey = progressionKey(animal.category, animal.level);
     if (
-        !trueLayoutToolEditingActive() &&
+        !layoutToolEditing &&
         (state.progressionGlowHoverKey === trackerKey ||
         state.progressionGlowPinnedKeys.has(trackerKey))
     ) {
@@ -8291,9 +8335,11 @@ function setupAnimalCard(
     }
 
     if (
-        !trueLayoutToolEditingActive() &&
-        !visitingAnotherZooForActionUI() && shouldGlowForExchange(
-            animal
+        !layoutToolEditing &&
+        !visitingActionUI && (
+            cardRenderContext?.exchangeGlowEligibleIds
+                ? cardRenderContext.exchangeGlowEligibleIds.has(animal.id)
+                : shouldGlowForExchange(animal)
         )
     ) {
 
@@ -8313,7 +8359,7 @@ function setupAnimalCard(
     // needed because removing the dragged card can temporarily change which
     // cards are logically exchange-eligible.
     if (
-        !trueLayoutToolEditingActive() &&
+        !layoutToolEditing &&
         state.drag?.type === 'animal' &&
         state.drag.exchangeGlowIds?.has(animal.id)
     ) {
@@ -8327,7 +8373,7 @@ function setupAnimalCard(
         );
         image.style.animationDelay = `${-Math.min(elapsed, 2000)}ms`;
     } else if (
-        !trueLayoutToolEditingActive() &&
+        !layoutToolEditing &&
         renderNow < state.exchangeGlowContinueUntil &&
         state.exchangeGlowContinueIds?.has(animal.id)
     ) {
@@ -8756,9 +8802,12 @@ function enclosureGroupSizeName(group) {
 // best otherwise-legal destination rather than failing the whole zoo.
 const GENERATED_UNDERSIZED_EXHIBIT_CHANCE = 0.01;
 
-function enclosureAnimalSizeSpaceStatus(cellCount, animals) {
+function enclosureAnimalSizeSpaceStatus(cellCount, animals, precomputedSizeByAnimalId = null) {
     const occupants=(animals||[]).filter(Boolean),counts={small:0,medium:0,large:0};
-    for(const animal of occupants)counts[animalEnclosureSize(animal)]+=1;
+    for(const animal of occupants){
+        const size=precomputedSizeByAnimalId?.get(animal.id) || animalEnclosureSize(animal);
+        counts[size]+=1;
+    }
     const cells=Math.max(0,Number(cellCount)||0);
     // Every population occupies one cell. Small populations make their cell
     // available as support space; unused cells do too. Medium populations
@@ -8866,7 +8915,12 @@ function arrangeGeneratedZooForAreas() {
     connectedEnclosureThemeGroups();
 }
 
-function exhibitHusbandryStatus(enclosure, group, precomputedOccupants = null) {
+function exhibitHusbandryStatus(
+    enclosure,
+    group,
+    precomputedOccupants = null,
+    precomputedSizeByAnimalId = null
+) {
     const exhibitSize=enclosureGroupSizeName(group),occupants=Array.isArray(precomputedOccupants)
         ? precomputedOccupants
         : animalsInEnclosureGroup(enclosure,group,null,false);
@@ -8875,9 +8929,13 @@ function exhibitHusbandryStatus(enclosure, group, precomputedOccupants = null) {
         const space={cells,counts:{small:0,medium:0,large:0},supportCells:cells,requiredSupport:0,mediumValid:true,largeValid:true,valid:true};
         return {enclosure,group,exhibitSize,occupants,undersized:[],overcrowded:false,invalid:false,severe:false,space};
     }
-    const space=enclosureAnimalSizeSpaceStatus(Array.isArray(group)?group.length:1,occupants);
+    const space=enclosureAnimalSizeSpaceStatus(Array.isArray(group)?group.length:1,occupants,precomputedSizeByAnimalId);
     const undersized=occupants.filter(animal=>{
-        const size=animalEnclosureSize(animal);
+        // Full renders already resolved enclosure-size metadata for every
+        // animal into precomputedSizeByAnimalId. Reuse it here as well; the
+        // previous code reused the cache for counts, then immediately repeated
+        // the inventory lookup for the undersized list.
+        const size=precomputedSizeByAnimalId?.get(animal.id) || animalEnclosureSize(animal);
         return size==='large'?!space.largeValid:size==='medium'?!space.mediumValid:false;
     });
     const overcrowded=occupants.length>space.cells||!space.valid;
@@ -15238,7 +15296,13 @@ function moveCustomAreaLayer(area,dir){
         if(below){const t=area.zOrder;area.zOrder=below.zOrder;below.zOrder=t;}
         else area.zOrder=Math.min(...(state.customAreas||[]).map(a=>Number(a.zOrder)||0))-1;
     }
-    writeAutoResumeSnapshot?.(true);renderZoo();
+    writeAutoResumeSnapshot?.(true);refreshAreaVisualsAfterEdit();
+}
+
+function refreshAreaVisualsAfterEdit(){
+    if(state.gameMode==='true'&&!state.sandboxMode)refreshTrueAreaVisuals();
+    else if(state.gameMode!=='true' && typeof refreshClassicAreaVisuals==='function')refreshClassicAreaVisuals();
+    else renderZoo();
 }
 
 function ensureAreaStyleMenu(area, anchor) {
@@ -15265,17 +15329,17 @@ function ensureAreaStyleMenu(area, anchor) {
         const sw=document.createElement('button');sw.type='button';sw.className='area-colour-swatch';
         sw.title=name;sw.setAttribute('aria-label',name);sw.style.setProperty('--swatch',value);
         if(cssColourToHex(area.color||'').toLowerCase()===value.toLowerCase())sw.classList.add('active');
-        sw.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();area.color=value;writeAutoResumeSnapshot?.(true);if(state.gameMode==='true'&&!state.sandboxMode)refreshTrueAreaVisuals();else renderZoo();requestAnimationFrame(()=>{const fresh=document.querySelector(`.player-custom-area-name[data-area-id="${CSS.escape(String(area.id))}"]`);if(fresh)ensureAreaStyleMenu(area,fresh);});});
+        sw.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();area.color=value;writeAutoResumeSnapshot?.(true);refreshAreaVisualsAfterEdit();requestAnimationFrame(()=>{const fresh=document.querySelector(`.player-custom-area-name[data-area-id="${CSS.escape(String(area.id))}"]`);if(fresh)ensureAreaStyleMenu(area,fresh);});});
         palette.appendChild(sw);
     }
     const customWrap=document.createElement('label');customWrap.className='area-custom-colour';customWrap.title='Choose any colour';
     const custom=document.createElement('input');custom.type='color';custom.value=cssColourToHex(area.color||'#477344');custom.setAttribute('aria-label','Choose any Area colour');
     const customText=document.createElement('span');customText.textContent='Custom colour…';
-    custom.addEventListener('input',e=>{e.stopPropagation();area.color=custom.value;writeAutoResumeSnapshot?.(true);if(state.gameMode==='true'&&!state.sandboxMode)refreshTrueAreaVisuals();else renderZoo();});
+    custom.addEventListener('input',e=>{e.stopPropagation();area.color=custom.value;writeAutoResumeSnapshot?.(true);refreshAreaVisualsAfterEdit();});
     custom.addEventListener('pointerdown',e=>e.stopPropagation());
     customWrap.append(custom,customText);
     const type=document.createElement('select'); type.innerHTML='<option value="area">Area</option><option value="house">House</option>'; type.value=area.type||'area';
-    type.addEventListener('change',()=>{area.type=type.value;renderZoo();});
+    type.addEventListener('change',()=>{area.type=type.value;refreshAreaVisualsAfterEdit();writeAutoResumeSnapshot?.(true);});
     menu.append(palette,customWrap,type); document.body.appendChild(menu);
     const r=anchor.getBoundingClientRect(); menu.style.left=`${Math.min(innerWidth-220,r.right+8)}px`; menu.style.top=`${Math.min(innerHeight-120,r.top)}px`;
     setTimeout(()=>document.addEventListener('pointerdown',function close(e){if(!menu.contains(e.target)&&e.target!==anchor){menu.remove();document.removeEventListener('pointerdown',close);}},true),0);
@@ -15326,7 +15390,7 @@ function startInlineAreaName(area,label,clickPoint=null){
     sel.removeAllRanges();sel.addRange(caretRange);
     let done=false;
     let key=null;
-    const commit=()=>{if(done)return;done=true;if(key)label.removeEventListener('keydown',key); area.name=label.textContent.replace(/[\r\n]+/g,' ').trim()||nextCustomAreaName(); if(area._generatedGeography&&area._geographicIdentity)generatedAreaCustomNameStore().set(area._geographicIdentity,area.name); area.color=knownAreaColour(area.name)||area.color||randomAreaColour(); label.contentEditable='false'; label.classList.remove('editing'); document.getElementById('areaStyleMenu')?.remove(); if(state.gameMode==='true'&&!state.sandboxMode)refreshTrueAreaVisuals();else renderZoo(); writeAutoResumeSnapshot?.(true);};
+    const commit=()=>{if(done)return;done=true;if(key)label.removeEventListener('keydown',key); area.name=label.textContent.replace(/[\r\n]+/g,' ').trim()||nextCustomAreaName(); if(area._generatedGeography&&area._geographicIdentity)generatedAreaCustomNameStore().set(area._geographicIdentity,area.name); area.color=knownAreaColour(area.name)||area.color||randomAreaColour(); label.contentEditable='false'; label.classList.remove('editing'); document.getElementById('areaStyleMenu')?.remove(); refreshAreaVisualsAfterEdit(); writeAutoResumeSnapshot?.(true);};
     key=e=>{if(e.key==='Enter'){e.preventDefault();e.stopPropagation();commit();}};
     label.addEventListener('keydown',key); label.addEventListener('blur',commit,{once:true});
     requestAnimationFrame(()=>ensureAreaStyleMenu(area,label));
@@ -15497,6 +15561,18 @@ function customAreaLeaderAutomaticRoute(g,area){
 }
 
 function renderCustomAreaLeader(area,label){
+    // Area refreshes are targeted and can happen again before a queued
+    // requestAnimationFrame from the previous render runs. Never let a stale,
+    // detached label clear or recreate the current Area's leader segments.
+    if(!label?.isConnected)return;
+    if(state.gameMode!=='true'){
+        const layer=document.getElementById('classicAreaVisualLayer');
+        if(!layer || label.parentNode!==layer)return;
+        const currentLabel=layer.querySelector(
+            `.player-custom-area-name[data-area-id="${CSS.escape(String(area.id))}"]`
+        );
+        if(currentLabel!==label)return;
+    }
     clearCustomAreaLeader(area.id);
     label.classList.remove('area-tag-arrow-left','area-tag-arrow-right','area-tag-arrow-top','area-tag-arrow-bottom');
     const g=customAreaLeaderGeometry(area,label); if(!g)return;
@@ -15537,7 +15613,14 @@ function renderCustomAreaLeader(area,label){
         }else{
             Object.assign(seg.style,{left:`${a.x}px`,top:`${Math.min(a.y,b.y)}px`,width:'1px',height:`${Math.abs(b.y-a.y)}px`});
         }
-        zooCanvas.insertBefore(seg,label);
+        const leaderParent =
+            state.gameMode==='true'
+                ? zooCanvas
+                : (label.parentNode===document.getElementById('classicAreaVisualLayer')
+                    ? label.parentNode
+                    : ensureClassicAreaVisualLayer());
+        if(label.parentNode===leaderParent)leaderParent.insertBefore(seg,label);
+        else leaderParent.appendChild(seg);
 
         // Any part of the leader can be grabbed. Dragging a vertical section
         // establishes a vertical routing corridor; dragging a horizontal one
@@ -15877,7 +15960,7 @@ function ensureAreaRegionSelector(area,anchor,initialTab=null){
         delete area._habitatOverride;
         area._geographicOverride={level,key};
         area.color=geographySelectionColour(level,key);
-        writeAutoResumeSnapshot?.(true);renderZoo();
+        writeAutoResumeSnapshot?.(true);refreshAreaVisualsAfterEdit();
         requestAnimationFrame(()=>ensureAreaRegionSelector(area,document.querySelector(`.area-tag-controls[data-area-id="${CSS.escape(String(area.id))}"] .area-colour-button`)||anchor,'region'));
     };
     const selectHabitat=key=>{
@@ -15885,7 +15968,7 @@ function ensureAreaRegionSelector(area,anchor,initialTab=null){
         area._habitatOverride=key;
         const def=ENCLOSURE_AREA_THEMES[key];
         area.color=knownAreaColour(def?.title||key)||area.color||randomAreaColour();
-        writeAutoResumeSnapshot?.(true);renderZoo();
+        writeAutoResumeSnapshot?.(true);refreshAreaVisualsAfterEdit();
         requestAnimationFrame(()=>ensureAreaRegionSelector(area,document.querySelector(`.area-tag-controls[data-area-id="${CSS.escape(String(area.id))}"] .area-colour-button`)||anchor,'habitat'));
     };
 
@@ -16004,6 +16087,15 @@ function positionGeographicAreaPreview(popup,label){
     popup.style.top=`${Math.round(top)}px`;
 }
 async function showGeographicAreaPreview(area,label){
+    if(!label?.isConnected)return;
+    const previewLabelIsCurrent=()=>{
+        if(!label.isConnected)return false;
+        if(state.gameMode==='true')return true;
+        const layer=document.getElementById('classicAreaVisualLayer');
+        return !!layer && label.parentNode===layer &&
+            layer.querySelector(`.player-custom-area-name[data-area-id="${CSS.escape(String(area.id))}"]`)===label;
+    };
+    if(!previewLabelIsCurrent())return;
     const habitat=areaHabitatIdentity(area);
     const identity=areaGeographyIdentity(area);
     if(habitat){
@@ -16022,7 +16114,7 @@ async function showGeographicAreaPreview(area,label){
         try{
             await loadZooGeographyData();
             const [world,oneEarthAll]=await Promise.all([loadAnimalInfoWorldGeoJSON(),loadOneEarthBioregionsGeoJSON()]);
-            if(token!==areaGeographyPreviewToken)return;
+            if(token!==areaGeographyPreviewToken||!previewLabelIsCurrent())return;
             const codes=new Set(areaHabitatBioregionCodes(habitat.key).map(c=>String(c).toLowerCase()));
             const features=(oneEarthAll?.features||[]).filter(f=>codes.has(String(oneEarthFeatureCode(f)||'').toLowerCase()));
             if(!features.length)throw new Error(`No One Earth habitat geometry matched ${habitat.key}`);
@@ -16114,11 +16206,11 @@ async function showGeographicAreaPreview(area,label){
             loadZooGeographyData()
         ]);
         const [world]=baseValues;
-        if(token!==areaGeographyPreviewToken)return;
+        if(token!==areaGeographyPreviewToken||!previewLabelIsCurrent())return;
 
         const wantedCodes=new Set(codes.map(normalizeOneEarthCode));
         const oneEarth=await loadOneEarthBioregionsForCodes(wantedCodes);
-        if(token!==areaGeographyPreviewToken)return;
+        if(token!==areaGeographyPreviewToken||!previewLabelIsCurrent())return;
         if(!(oneEarth?.features||[]).length){
             throw new Error('No One Earth geometry available for Area preview');
         }
@@ -16215,7 +16307,75 @@ function resolveAutomaticAreaTagOverlap(label,area){
     label.style.top=`${chosen.y}px`;
     area.labelX=chosen.x; area.labelY=chosen.y;
 }
+function ensureClassicAreaVisualLayer(){
+    if(state.gameMode==='true')return zooCanvas;
+    let layer=document.getElementById('classicAreaVisualLayer');
+    if(!layer){
+        layer=document.createElement('div');
+        layer.id='classicAreaVisualLayer';
+        Object.assign(layer.style,{
+            position:'absolute',
+            left:'0',
+            top:'0',
+            width:'0',
+            height:'0',
+            overflow:'visible'
+        });
+        // Area visuals must remain underneath the enclosure layer. During a
+        // normal full render this is naturally true; targeted refreshes insert
+        // the layer immediately before the existing enclosure layer.
+        const enclosureLayer=document.getElementById('zooEnclosureLayer');
+        if(enclosureLayer?.parentNode===zooCanvas)zooCanvas.insertBefore(layer,enclosureLayer);
+        else zooCanvas.appendChild(layer);
+    }
+    return layer;
+}
+
+function clearClassicAreaVisualLayer(){
+    if(state.gameMode==='true')return;
+    const layer=document.getElementById('classicAreaVisualLayer');
+    if(layer)layer.replaceChildren();
+    // Passes before the dedicated Area layer placed leader segments directly
+    // on zooCanvas. Remove any such legacy/transient segments as part of the
+    // same targeted refresh so they cannot survive as duplicate stale lines.
+    zooCanvas.querySelectorAll(':scope > .player-area-leader').forEach(node=>node.remove());
+}
+
+function refreshClassicAreaVisuals(){
+    if(state.gameMode==='true'){
+        renderZoo();
+        return;
+    }
+
+    // Geographic reconciliation may change which generated Areas exist, so
+    // rebuild only the dedicated Area layer. Enclosures, slots and animal
+    // cards remain mounted and keep their existing listeners/DOM state.
+    clearClassicAreaVisualLayer();
+    renderEnclosureAreaBackgrounds();
+    renderCustomAreas();
+
+    // A stale menu/preview can otherwise remain connected outside the Area
+    // layer after its source Area changed during reconciliation.
+    const activeAreaIds=new Set(
+        [...(generatedModernGeographicAreas||[]),...(state.customAreas||[])]
+            .map(area=>String(area?.id))
+    );
+    const styleMenu=document.getElementById('areaStyleMenu');
+    if(styleMenu?.dataset?.areaId && !activeAreaIds.has(String(styleMenu.dataset.areaId))){
+        styleMenu.remove();
+    }
+
+    // Replacing Area labels does not dispatch pointerleave on the detached
+    // nodes. Never leave hover state or its map preview attached to old DOM;
+    // the current label can re-open it on the next real pointer enter.
+    if(hoveredAreaId!=null){
+        hoveredAreaId=null;
+        hideGeographicAreaPreview(true);
+    }
+}
+
 function renderCustomAreas(){
+    const areaRenderTarget=ensureClassicAreaVisualLayer();
     trueRefreshAreaHierarchy();normaliseCustomAreaZOrder();
     const generated = state.gameMode==='true' ? [] : (generatedModernGeographicAreas||[]);
     const orderedAreas=[...generated,...(state.customAreas||[])].sort((a,b)=>(Number(a.zOrder)||0)-(Number(b.zOrder)||0));
@@ -16313,9 +16473,9 @@ function renderCustomAreas(){
                 box.appendChild(edge);
             }
         }
-        zooCanvas.appendChild(box);
-        if(!area._generatedGeography&&areaToolActive&&String(trueAreaBuilderSelectedId)===String(area.id)&&trueAreaBuilderSelectedCell){const q=trueAreaBuilderSelectedCell,qr=areaCellRenderRect(q),del=document.createElement('button');del.type='button';del.className='true-area-cell-delete';del.textContent='×';del.title='Remove this Area cell';del.style.cssText=`position:absolute;left:${qr.x+qr.w-36}px;top:${qr.y+8}px;width:28px;height:28px;border:2px solid white;border-radius:50%;background:#d33;color:white;font-size:22px;font-weight:900;z-index:10020;cursor:pointer;`;del.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();});del.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();trueDeletePaintedAreaCell(area.id,q.col,q.row);});zooCanvas.appendChild(del);}
-        const label=document.createElement('div');label.className='player-custom-area-name';label.dataset.areaId=area.id;label.textContent=area.name||'';label.style.cssText=`left:${area.labelX}px;top:${area.labelY}px;--area-tag-color:${area.color};z-index:${1004+Math.max(0,Number(area.zOrder)||0)};`;zooCanvas.appendChild(label);
+        areaRenderTarget.appendChild(box);
+        if(!area._generatedGeography&&areaToolActive&&String(trueAreaBuilderSelectedId)===String(area.id)&&trueAreaBuilderSelectedCell){const q=trueAreaBuilderSelectedCell,qr=areaCellRenderRect(q),del=document.createElement('button');del.type='button';del.className='true-area-cell-delete';del.textContent='×';del.title='Remove this Area cell';del.style.cssText=`position:absolute;left:${qr.x+qr.w-36}px;top:${qr.y+8}px;width:28px;height:28px;border:2px solid white;border-radius:50%;background:#d33;color:white;font-size:22px;font-weight:900;z-index:10020;cursor:pointer;`;del.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();});del.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();trueDeletePaintedAreaCell(area.id,q.col,q.row);});areaRenderTarget.appendChild(del);}
+        const label=document.createElement('div');label.className='player-custom-area-name';label.dataset.areaId=area.id;label.textContent=area.name||'';label.style.cssText=`left:${area.labelX}px;top:${area.labelY}px;--area-tag-color:${area.color};z-index:${1004+Math.max(0,Number(area.zOrder)||0)};`;areaRenderTarget.appendChild(label);
         resolveAutomaticAreaTagOverlap(label,area);
         label.addEventListener('mouseenter',()=>{
             hoveredAreaId=area.id;box.classList.add('area-tag-hover');
@@ -16361,13 +16521,13 @@ function renderCustomAreas(){
                 if(area._generatedGeography){const suppressionKey=generatedGeographicSuppressionKey(area);if(suppressionKey)suppressedGeneratedGeographicAreaStore().add(suppressionKey);}
                 else{state.customAreas=(state.customAreas||[]).filter(a=>String(a.id)!==String(area.id));if(String(trueAreaBuilderSelectedId)===String(area.id)){trueAreaBuilderSelectedId=null;trueAreaBuilderSelectedCell=null;}}
                 writeAutoResumeSnapshot?.(true);
-                renderZoo();
+                refreshAreaVisualsAfterEdit();
             });
             controls.append(styleButton,removeButton);
-            zooCanvas.appendChild(controls);
+            areaRenderTarget.appendChild(controls);
 
             const placeControls=()=>{
-                if(!label.isConnected||!controls.isConnected)return;
+                if(!label.isConnected||!controls.isConnected||label.parentNode!==controls.parentNode)return;
                 // label/controls live in zooCanvas world coordinates; canvas zoom scales
                 // both together, so dividing their layout dimensions by zoom creates a gap.
                 const x=(Number.parseFloat(label.style.left)||0)+label.offsetWidth+10;
@@ -16378,7 +16538,15 @@ function renderCustomAreas(){
             controls._placeBesideAreaTag=placeControls;
             requestAnimationFrame(placeControls);
         }
-        if(area._new){delete area._new;requestAnimationFrame(()=>startInlineAreaName(area,document.querySelector(`.player-custom-area-name[data-area-id="${CSS.escape(String(area.id))}"]`)));}
+        if(area._new){
+            delete area._new;
+            requestAnimationFrame(()=>{
+                const currentLabel=document.querySelector(
+                    `.player-custom-area-name[data-area-id="${CSS.escape(String(area.id))}"]`
+                );
+                if(currentLabel?.isConnected)startInlineAreaName(area,currentLabel);
+            });
+        }
     }
 }
 // V2.22.68 — Removed the obsolete per-enclosure/per-exhibit free-text tag editor.
@@ -16431,7 +16599,8 @@ function setupAreaToolInteractions(){
     // Selection itself does not mutate zoo geometry. Refresh only the Area
     // editing overlays instead of rebuilding every enclosure and animal card.
     document.getElementById('areaToolSelection')?.remove();
-    renderCustomAreas();
+    if(state.gameMode==='true')refreshTrueAreaVisuals();
+    else refreshClassicAreaVisuals();
     return;
 }
  trueCommitPaintedAreaCells([...d.cells.values()],d.targetId);});
@@ -16570,6 +16739,9 @@ function renderZoo() {
             const occupiedEnclosureIds=new Set();
             const visibleAnimalsByEnclosure=new Map();
             const reservedAnimalsByEnclosure=new Map();
+            // Husbandry rendering otherwise resolves inventory metadata again
+            // for the same animal whenever its logical exhibit is evaluated.
+            const animalSizeById=new Map();
             const addToSlotIndex=(index,enclosureId,slotIndex,animal)=>{
                 if(enclosureId==null||slotIndex==null)return;
                 const enclosureKey=String(enclosureId);
@@ -16577,7 +16749,12 @@ function renderZoo() {
                 if(!bySlot){bySlot=new Map();index.set(enclosureKey,bySlot);}
                 bySlot.set(Number(slotIndex),animal);
             };
+            const husbandrySizeRulesEnabled =
+                state.gameOptions?.enforceMinimumExhibitSize !== false;
             for(const animal of state.animals||[]){
+                if(husbandrySizeRulesEnabled && animal?.id!=null){
+                    animalSizeById.set(animal.id,animalEnclosureSize(animal));
+                }
                 if(animal?.enclosureId!=null){
                     const enclosureKey=String(animal.enclosureId);
                     occupiedEnclosureIds.add(enclosureKey);
@@ -16585,16 +16762,86 @@ function renderZoo() {
                 }
                 addToSlotIndex(reservedAnimalsByEnclosure,animal?.reservedEnclosureId,animal?.reservedSlotIndex,animal);
             }
+
+            // Husbandry status is immutable during this render. Compute it once
+            // per logical exhibit from the occupancy indexes, rather than
+            // rebuilding occupant arrays and status maps inside renderEnclosure.
+            const husbandryStatusByEnclosure=new Map();
+            const husbandryProblemEnclosureIds=new Set();
+            for(const enclosure of state.enclosures||[]){
+                const enclosureKey=String(enclosure.id);
+                const visible=visibleAnimalsByEnclosure.get(enclosureKey) || new Map();
+                const reserved=reservedAnimalsByEnclosure.get(enclosureKey) || null;
+                const bySlot=new Map();
+                for(const group of classicRenderGroups(enclosure)){
+                    const seenAnimalIds=new Set();
+                    const occupants=[];
+                    for(const slotIndex of group){
+                        for(const animal of [visible.get(Number(slotIndex)),reserved?.get(Number(slotIndex))]){
+                            if(!animal||seenAnimalIds.has(animal.id))continue;
+                            seenAnimalIds.add(animal.id);
+                            occupants.push(animal);
+                        }
+                    }
+                    const status=exhibitHusbandryStatus(
+                        enclosure,
+                        group,
+                        occupants,
+                        animalSizeById
+                    );
+                    if(status.invalid) husbandryProblemEnclosureIds.add(enclosureKey);
+                    for(const slotIndex of group) bySlot.set(Number(slotIndex),status);
+                }
+                husbandryStatusByEnclosure.set(enclosureKey,bySlot);
+            }
             return {
                 occupiedEnclosureIds,
                 visibleAnimalsByEnclosure,
                 reservedAnimalsByEnclosure,
+                animalSizeById,
+                husbandryStatusByEnclosure,
+                husbandryProblemEnclosureIds,
                 renderNow:zooRenderNow,
                 husbandryUIReady:true
             };
         }
     );
     const occupiedEnclosureIds=enclosureRenderContext.occupiedEnclosureIds;
+
+    // Classic exchange eligibility used to rebuild exchangeGroupCounts() once
+    // per rendered animal through shouldGlowForExchange(). Build the complete
+    // visible glow set once for this render instead.
+    if(state.gameMode!=='true'){
+        const exchangeGlowEligibleIds=new Set();
+        const exchangeGlowActive =
+            state.exchangeEligibilityHoverActive &&
+            !state.outgoingOfferHoverSuppressesExchangeGlow &&
+            state.gameOptions.showEligibilityGlows !== false;
+        if(exchangeGlowActive){
+            const counts=exchangeGroupCounts();
+            const focusKey=activeExchangeGlowFocusKey();
+            const eligibleKeys=new Set();
+            for(const [key,count] of counts){
+                if(count<3)continue;
+                const parts=String(key).split('|');
+                const level=Number(parts.pop());
+                const category=parts.join('|');
+                if(hasNextLevelInventory(category,level) && (!focusKey || key===focusKey))
+                    eligibleKeys.add(key);
+            }
+            for(const animal of state.animals||[]){
+                if(
+                    eligibleKeys.has(exchangeGroupKey(animal)) &&
+                    !state.suppressedExchangeGlowIds.has(animal.id)
+                ) exchangeGlowEligibleIds.add(animal.id);
+            }
+        }
+        enclosureRenderContext.cardRenderContext={
+            layoutToolEditing:false,
+            visitingActionUI:visitingAnotherZooForActionUI(),
+            exchangeGlowEligibleIds
+        };
+    }
 
     // Draw inferred geography/habitat/facility regions first, underneath cards.
     profiledZooRenderStage('zoo.area-backgrounds', () => renderEnclosureAreaBackgrounds());
@@ -16611,9 +16858,15 @@ function renderZoo() {
             if(!list){list=[];themesByEnclosure.set(key,list);}
             if(theme&&!list.some(item=>item.key===theme.key))list.push(theme);
         };
-        for(const enclosure of state.enclosures||[]){
-            for(const theme of strictEnclosureThemes(enclosure)){
-                if(theme.layer==='special')addTheme(enclosure.id,theme);
+        // Legacy automatic enclosure themes are retired in Classic:
+        // strictEnclosureThemes() is intentionally empty there. Avoid calling
+        // it once per enclosure during every full Classic render. Connected
+        // Area themes are already the authoritative broad-theme source.
+        if(state.gameMode==='true'){
+            for(const enclosure of state.enclosures||[]){
+                for(const theme of strictEnclosureThemes(enclosure)){
+                    if(theme.layer==='special')addTheme(enclosure.id,theme);
+                }
             }
         }
         for(const group of renderedConnectedAreaGroups||[]){
@@ -16784,11 +17037,30 @@ function ensureGeneratedEnclosureRotations(enclosures) {
 
 function rotateEmptyEnclosure(enclosure) {
     if (!enclosureSupportsRotation(enclosure) || !enclosureIsCompletelyEmpty(enclosure)) return false;
+
     enclosure.rotated180 = !Boolean(enclosure.rotated180);
     state.areaPlacementRevision = (Number(state.areaPlacementRevision) || 0) + 1;
-    // renderAll() owns the history/autoresume persistence boundary. Avoid
-    // cloning this same visual state twice for one rotation.
-    renderAll();
+
+    // Rotation changes only this empty Classic enclosure's artwork/slot
+    // geometry. Use the shared atomic enclosure refresh so occupancy,
+    // reservation and rotated-slot handling cannot drift from other targeted
+    // Classic refresh paths.
+    stableConnectedAreaGroups=null;
+    stableConnectedAreaGroupsSignature='';
+    invalidateConnectedAreaReconciliation();
+
+    if(state.gameMode!=='true' && refreshClassicEnclosureCards([enclosure.id])){
+        // The dedicated Area layer must be cleared before rebuilding. Directly
+        // calling renderEnclosureAreaBackgrounds()/renderCustomAreas() here
+        // appended duplicate borders, labels and controls after each rotation.
+        refreshClassicAreaVisuals();
+        captureTurnSnapshot();
+        writeAutoResumeSnapshot();
+        enqueueMicrotask(localizeDocument);
+    }else{
+        // Defensive fallback for isolated/stale DOM callers and True mode.
+        renderAll();
+    }
     return true;
 }
 
@@ -16892,12 +17164,13 @@ function renderEnclosure(
     element.style.top =
         enclosure.y + 'px';
 
-    const renderColourScheme =
-        renderContext?.colourScheme ?? activeZooColourScheme();
-    const renderPalette =
-        renderContext?.palette ?? activeZooPalette();
-
     if(enclosure.trueBuilt){
+        // Colour scheme/palette are True-mode presentation data. Classic
+        // enclosures must not resolve them on every render.
+        const renderColourScheme =
+            renderContext?.colourScheme ?? activeZooColourScheme();
+        const renderPalette =
+            renderContext?.palette ?? activeZooPalette();
         const bounds=trueBuiltEnclosureDerived(enclosure);
         element.classList.add('true-built-enclosure');
         Object.assign(element.style,{width:`${bounds.w}px`,height:`${bounds.h}px`,background:'transparent',border:'0',boxShadow:'none',overflow:'visible'});
@@ -16994,23 +17267,58 @@ function renderEnclosure(
     applyEnclosureThemePresentation(
         element,
         enclosure,
-        renderContext?.themesByEnclosure?.get(String(enclosure.id)) || null
+        renderContext?.themesByEnclosure?.has(String(enclosure.id))
+            ? renderContext.themesByEnclosure.get(String(enclosure.id))
+            : null
     );
 
-    const enclosureGroups=getGroups(enclosure);
-    const husbandryStatusBySlot=new Map();
-    const husbandryProblems=[];
-    const visibleAnimalsBySlot =
-        renderContext?.visibleAnimalsByEnclosure?.get(String(enclosure.id)) ||
-        new Map();
-    const reservedAnimalsBySlot =
-        renderContext?.reservedAnimalsByEnclosure?.get(String(enclosure.id)) ||
+    const enclosureGroups=classicRenderGroups(enclosure);
+    const enclosureSlots=classicRenderSlots(enclosure,enclosureGroups);
+    const enclosureKey=String(enclosure.id);
+    // Full render supplies indexed occupancy. Targeted enclosure refreshes do
+    // not, so reconstruct THIS enclosure's tiny slot maps from authoritative
+    // animal state instead of treating every slot as empty. This keeps targeted
+    // same-/cross-exhibit refreshes visually identical to a full render.
+    let visibleAnimalsBySlot =
+        renderContext?.visibleAnimalsByEnclosure?.get(enclosureKey) ||
         null;
-    for(const group of enclosureGroups){
-        let localOccupants=null;
-        if(renderContext){
+    let reservedAnimalsBySlot =
+        renderContext?.reservedAnimalsByEnclosure?.get(enclosureKey) ||
+        null;
+    if(!visibleAnimalsBySlot){
+        visibleAnimalsBySlot=new Map();
+        reservedAnimalsBySlot=new Map();
+        for(const animal of state.animals||[]){
+            if(
+                animal?.enclosureId!=null &&
+                String(animal.enclosureId)===enclosureKey &&
+                animal.slotIndex!=null
+            ){
+                visibleAnimalsBySlot.set(Number(animal.slotIndex),animal);
+            }
+            if(
+                animal?.reservedEnclosureId!=null &&
+                String(animal.reservedEnclosureId)===enclosureKey &&
+                animal.reservedSlotIndex!=null
+            ){
+                reservedAnimalsBySlot.set(Number(animal.reservedSlotIndex),animal);
+            }
+        }
+        if(!reservedAnimalsBySlot.size)reservedAnimalsBySlot=null;
+    }
+
+    let husbandryStatusBySlot =
+        renderContext?.husbandryStatusByEnclosure?.get(enclosureKey) || null;
+    let hasHusbandryProblems =
+        renderContext?.husbandryProblemEnclosureIds?.has(enclosureKey) || false;
+
+    // Targeted/direct renders do not necessarily have the full zoo render
+    // context, so retain the original exact calculation as a fallback.
+    if(!husbandryStatusBySlot){
+        husbandryStatusBySlot=new Map();
+        for(const group of enclosureGroups){
             const seenAnimalIds=new Set();
-            localOccupants=[];
+            const localOccupants=[];
             for(const slotIndex of group){
                 for(const animal of [visibleAnimalsBySlot.get(Number(slotIndex)),reservedAnimalsBySlot?.get(Number(slotIndex))]){
                     if(!animal||seenAnimalIds.has(animal.id))continue;
@@ -17018,19 +17326,29 @@ function renderEnclosure(
                     localOccupants.push(animal);
                 }
             }
+            const status=exhibitHusbandryStatus(
+                enclosure,
+                group,
+                localOccupants,
+                renderContext?.animalSizeById || null
+            );
+            if(status.invalid) hasHusbandryProblems=true;
+            for(const slotIndex of group) husbandryStatusBySlot.set(Number(slotIndex),status);
         }
-        const status=exhibitHusbandryStatus(enclosure,group,localOccupants);
-        if(status.invalid)husbandryProblems.push(status);
-        for(const slotIndex of group)husbandryStatusBySlot.set(slotIndex,status);
     }
-    if (husbandryProblems.length) element.classList.add('husbandry-too-small');
+    if (hasHusbandryProblems) element.classList.add('husbandry-too-small');
 
-    // Build the visible occupancy lookup once for this enclosure. Previously
+// Build the visible occupancy lookup once for this enclosure. Previously
     // animalAtSlot(..., includeReserved=false) scanned the entire animal array
     // separately for every slot during every zoo render.
+    // Build all slots in a detached fragment, then attach them to the
+    // enclosure in one child-list mutation. Full Classic rendering already
+    // batches enclosures themselves, so this batches the inner DOM level too.
+    const slotFragment=document.createDocumentFragment();
+
     for (
         const slotIndex
-        of enclosureGroups.flat()
+        of enclosureSlots
     ) {
 
         const slot =
@@ -17095,7 +17413,8 @@ function renderEnclosure(
                 card,
                 animal,
                 'enclosure',
-                renderNow
+                renderNow,
+                renderContext?.cardRenderContext || null
             );
 
             if(enclosure.trueBuilt){
@@ -17146,11 +17465,14 @@ card.classList.add('sandbox-compatibility-conflict');
         }
 
 
-        element.appendChild(
+        slotFragment.appendChild(
             slot
         );
 
     }
+
+
+    element.appendChild(slotFragment);
 
     const enclosureEmpty = occupiedEnclosureIds instanceof Set
         ? !occupiedEnclosureIds.has(String(enclosure.id))
@@ -24254,40 +24576,306 @@ function finishHumanTradeRequestDrag(event){
 // FINISH ANIMAL DRAG
 // ============================================================
 
-function renderClassicSameExhibitRelocation(drag, animal) {
-    if(!classicMoveStaysInSameLogicalExhibit(drag,animal))return false;
-    const enclosure=state.enclosures.find(item=>String(item.id)===String(animal.enclosureId));
-    const oldElement=zooCanvas.querySelector(`.enclosure[data-enclosure-id="${CSS.escape(String(enclosure.id))}"]`);
-    if(!oldElement)return false;
+function refreshClassicEnclosureCards(enclosureIds) {
+    if(state.gameMode==='true'||state.sandboxMode)return false;
+    const ids=[...new Set((enclosureIds||[]).filter(id=>id!=null).map(String))];
+    if(!ids.length)return false;
 
-    // The logical exhibit contains the same animal set before and after this
-    // move, so generated geography/Area membership cannot change. Rebuild only
-    // this physical enclosure card and then restore global glow precedence.
-    const compatibilityGlowKeys=currentCompatibilityGlowKeys();
-    const occupiedEnclosureIds=new Set(
-        (state.animals||[])
-            .filter(item=>item?.enclosureId!=null)
-            .map(item=>String(item.enclosureId))
-    );
-    const marker=document.createComment('enclosure-relocation-anchor');
-    oldElement.before(marker);
-    oldElement.remove();
-    renderEnclosure(
-        enclosure,
-        compatibilityGlowKeys,
-        occupiedEnclosureIds,
-        null,
-        document.getElementById('zooEnclosureLayer') || zooCanvas
-    );
-    const replacement=zooCanvas.querySelector(
-        `.enclosure[data-enclosure-id="${CSS.escape(String(enclosure.id))}"]`
-    );
-    if(replacement&&marker.parentNode){
-        marker.parentNode.insertBefore(replacement,marker);
+    const layer=document.getElementById('zooEnclosureLayer');
+    if(!layer)return false;
+
+    // Validate the entire requested refresh set before touching live DOM.
+    // Previously a missing second enclosure could leave the first one removed
+    // until the caller's full-render fallback repaired the board.
+    const targets=[];
+    for(const id of ids){
+        const enclosure=state.enclosures.find(item=>String(item.id)===id);
+        const oldElement=layer.querySelector(
+            `.enclosure[data-enclosure-id="${CSS.escape(id)}"]`
+        );
+        if(!enclosure||!oldElement)return false;
+        targets.push({id,enclosure,oldElement});
     }
-    marker.remove();
+
+    const targetIdSet=new Set(ids);
+    const targetAnimals=[];
+    const occupiedEnclosureIds=new Set();
+    for(const animal of state.animals||[]){
+        if(animal?.enclosureId!=null){
+            const key=String(animal.enclosureId);
+            occupiedEnclosureIds.add(key);
+            if(targetIdSet.has(key))targetAnimals.push(animal);
+        }else if(
+            animal?.reservedEnclosureId!=null &&
+            targetIdSet.has(String(animal.reservedEnclosureId))
+        ){
+            // A reserved animal has no live enclosure, so it has not already
+            // been added through the branch above.
+            targetAnimals.push(animal);
+        }
+        if(animal?.reservedEnclosureId!=null)
+            occupiedEnclosureIds.add(String(animal.reservedEnclosureId));
+    }
+
+    // A targeted rebuild only consumes compatibility classes for the enclosure
+    // cards it is replacing. Do not scan every enclosure/slot in the zoo just
+    // to compute keys that cannot be used by this render.
+    const compatibilityGlowKeys=new Set();
+    const compatibilityCandidates=compatibilityHintAnimals();
+    if(!visitingAnotherZooForActionUI() && !trueLayoutToolEditingActive()){
+        for(const target of targets){
+            for(const slotIndex of getAllSlots(target.enclosure)){
+                if(slotIsCompatibilityMatch(
+                    target.enclosure,
+                    slotIndex,
+                    compatibilityCandidates
+                )){
+                    compatibilityGlowKeys.add(
+                        slotCompatibilityGlowKey(target.enclosure.id,slotIndex)
+                    );
+                }
+            }
+        }
+    }
+    const renderNow=Date.now();
+
+    // Match the card-level context of a complete Classic render. Passing null
+    // here made targeted cards independently recalculate layout/visit state and
+    // exchange eligibility, which could differ from their untouched neighbours
+    // during hover/fade transitions.
+    const exchangeGlowEligibleIds=new Set();
+    const exchangeGlowActive =
+        state.exchangeEligibilityHoverActive &&
+        !state.outgoingOfferHoverSuppressesExchangeGlow &&
+        state.gameOptions.showEligibilityGlows !== false;
+    if(exchangeGlowActive){
+        // Only cards in the replacement enclosures can consume this context.
+        // First collect their exchange groups, then count only those groups
+        // while scanning zoo animals. This preserves the global "3 matching
+        // animals" rule without constructing eligibility for untouched cards.
+        const targetExchangeAnimals=targetAnimals;
+        const relevantKeys=new Set(targetExchangeAnimals.map(exchangeGroupKey));
+        const focusKey=activeExchangeGlowFocusKey();
+        if(focusKey){
+            for(const key of [...relevantKeys])if(key!==focusKey)relevantKeys.delete(key);
+        }
+        if(relevantKeys.size){
+            const counts=new Map([...relevantKeys].map(key=>[key,0]));
+            for(const animal of state.animals||[]){
+                const key=exchangeGroupKey(animal);
+                if(counts.has(key))counts.set(key,counts.get(key)+1);
+            }
+            const eligibleKeys=new Set();
+            for(const [key,count] of counts){
+                if(count<3)continue;
+                const parts=String(key).split('|');
+                const level=Number(parts.pop());
+                const category=parts.join('|');
+                if(hasNextLevelInventory(category,level))eligibleKeys.add(key);
+            }
+            for(const animal of targetExchangeAnimals){
+                if(
+                    eligibleKeys.has(exchangeGroupKey(animal)) &&
+                    !state.suppressedExchangeGlowIds.has(animal.id)
+                ) exchangeGlowEligibleIds.add(animal.id);
+            }
+        }
+    }
+    const cardRenderContext={
+        layoutToolEditing:false,
+        visitingActionUI:visitingAnotherZooForActionUI(),
+        exchangeGlowEligibleIds
+    };
+
+    // Exchange/Outgoing cards keep their source slot reserved. The occupancy
+    // set above includes both visible and reserved locations, so a targeted
+    // refresh cannot expose the empty-enclosure rotation control prematurely.
+
+    // A full render indexes the already-reconciled connected Area themes before
+    // building enclosure cards. Do the same for the small targeted set instead
+    // of making each rebuilt enclosure call displayEnclosureThemes(), which can
+    // fall back to another connected-Area reconciliation.
+    const themesByEnclosure=new Map();
+    const currentAreaSignature=areaRenderStateSignature();
+    const currentConnectedGroups=(
+        renderedConnectedAreaGroups &&
+        renderedConnectedAreaGroupsSignature===currentAreaSignature
+    ) ? renderedConnectedAreaGroups : null;
+    if(currentConnectedGroups){
+        for(const group of currentConnectedGroups||[]){
+            const theme=group?.theme;
+            if(!theme)continue;
+            for(const enclosure of group.enclosures||[]){
+                const key=String(enclosure.id);
+                if(!targetIdSet.has(key))continue;
+                let list=themesByEnclosure.get(key);
+                if(!list){list=[];themesByEnclosure.set(key,list);}
+                if(!list.some(item=>item.key===theme.key))list.push(theme);
+            }
+        }
+    }
+
+    // Build the same husbandry indexes as a full render, but only for the
+    // enclosure cards being replaced. This avoids repeated inventory metadata
+    // lookups and repeated group-occupant reconstruction inside renderEnclosure.
+    const visibleAnimalsByEnclosure=new Map();
+    const reservedAnimalsByEnclosure=new Map();
+    const animalSizeById=new Map();
+    const addTargetAnimal=(index,enclosureId,slotIndex,animal)=>{
+        if(enclosureId==null||slotIndex==null)return;
+        const key=String(enclosureId);
+        if(!targetIdSet.has(key))return;
+        let bySlot=index.get(key);
+        if(!bySlot){bySlot=new Map();index.set(key,bySlot);}
+        bySlot.set(Number(slotIndex),animal);
+    };
+    const husbandrySizeRulesEnabled=
+        state.gameOptions?.enforceMinimumExhibitSize !== false;
+    for(const animal of targetAnimals){
+        addTargetAnimal(
+            visibleAnimalsByEnclosure,
+            animal?.enclosureId,
+            animal?.slotIndex,
+            animal
+        );
+        addTargetAnimal(
+            reservedAnimalsByEnclosure,
+            animal?.reservedEnclosureId,
+            animal?.reservedSlotIndex,
+            animal
+        );
+        if(
+            husbandrySizeRulesEnabled &&
+            animal?.id!=null &&
+            (
+                targetIdSet.has(String(animal?.enclosureId)) ||
+                targetIdSet.has(String(animal?.reservedEnclosureId))
+            )
+        ){
+            animalSizeById.set(animal.id,animalEnclosureSize(animal));
+        }
+    }
+
+    const husbandryStatusByEnclosure=new Map();
+    const husbandryProblemEnclosureIds=new Set();
+    for(const target of targets){
+        const key=target.id;
+        const visible=visibleAnimalsByEnclosure.get(key) || new Map();
+        const reserved=reservedAnimalsByEnclosure.get(key) || null;
+        const bySlot=new Map();
+        for(const group of classicRenderGroups(target.enclosure)){
+            const seenAnimalIds=new Set();
+            const occupants=[];
+            for(const slotIndex of group){
+                for(const animal of [
+                    visible.get(Number(slotIndex)),
+                    reserved?.get(Number(slotIndex))
+                ]){
+                    if(!animal||seenAnimalIds.has(animal.id))continue;
+                    seenAnimalIds.add(animal.id);
+                    occupants.push(animal);
+                }
+            }
+            const status=exhibitHusbandryStatus(
+                target.enclosure,
+                group,
+                occupants,
+                animalSizeById
+            );
+            if(status.invalid)husbandryProblemEnclosureIds.add(key);
+            for(const slotIndex of group)bySlot.set(Number(slotIndex),status);
+        }
+        husbandryStatusByEnclosure.set(key,bySlot);
+    }
+
+    const targetedRenderContext={
+        renderNow,
+        husbandryUIReady:true,
+        cardRenderContext,
+        themesByEnclosure,
+        visibleAnimalsByEnclosure,
+        reservedAnimalsByEnclosure,
+        animalSizeById,
+        husbandryStatusByEnclosure,
+        husbandryProblemEnclosureIds
+    };
+    for(const id of ids){
+        if(!themesByEnclosure.has(id) && currentConnectedGroups)themesByEnclosure.set(id,[]);
+    }
+    ensureHusbandryUI();
+
+    // Build every replacement off-DOM first. If rendering unexpectedly throws,
+    // the existing live enclosure nodes are still intact.
+    const replacements=[];
+    try{
+        for(const target of targets){
+            const fragment=document.createDocumentFragment();
+            renderEnclosure(
+                target.enclosure,
+                compatibilityGlowKeys,
+                occupiedEnclosureIds,
+                targetedRenderContext,
+                fragment
+            );
+            const replacement=fragment.firstElementChild;
+            if(!replacement)return false;
+            replacements.push({...target,fragment,replacement});
+        }
+    }catch(error){
+        console.error('Targeted enclosure refresh failed before commit',error);
+        return false;
+    }
+
+    // Commit only after every requested replacement has rendered successfully.
+    // replaceWith preserves each enclosure's exact position among layer children.
+    for(const item of replacements){
+        item.oldElement.replaceWith(item.fragment);
+        if(item.enclosure.rotated180){
+            mirrorRotatedEnclosureSlots(item.replacement,item.enclosure);
+        }
+    }
     refreshAnimalGlowPrecedence(zooCanvas);
     return true;
+}
+
+function renderClassicCrossExhibitRelocation(drag, animal) {
+    if(
+        state.gameMode==='true' ||
+        state.sandboxMode ||
+        drag?.type!=='animal' ||
+        drag.originalEnclosureId==null ||
+        animal?.enclosureId==null
+    ) return false;
+
+    // Same logical-exhibit moves use the narrower existing path. This helper
+    // is for moves whose resident species set can change in source/destination.
+    if(classicMoveStaysInSameLogicalExhibit(drag,animal))return false;
+
+    const sourceId=String(drag.originalEnclosureId);
+    const destinationId=String(animal.enclosureId);
+
+    // Species membership may alter generated geography and Area qualification.
+    // Reconcile that dependency FIRST: enclosure theme presentation reads the
+    // connected-Area result, so rebuilding cards before this step could leave
+    // source/destination cards styled from the old species arrangement.
+    stableConnectedAreaGroups=null;
+    stableConnectedAreaGroupsSignature='';
+    invalidateConnectedAreaReconciliation();
+    refreshClassicAreaVisuals();
+
+    // Now rebuild the two affected enclosure/card subtrees against the freshly
+    // reconciled Area/theme state. Failure remains safe: the caller falls back
+    // to a complete render, which reconstructs both layers from state.
+    if(!refreshClassicEnclosureCards([sourceId,destinationId]))return false;
+    return true;
+}
+
+function renderClassicSameExhibitRelocation(drag, animal) {
+    if(!classicMoveStaysInSameLogicalExhibit(drag,animal))return false;
+    // Use the same targeted renderer as cross-exhibit/trade refreshes so
+    // occupancy, reservations, husbandry and rotated-card handling have one
+    // implementation instead of two subtly different paths.
+    return refreshClassicEnclosureCards([animal.enclosureId]);
 }
 
 function restoreClassicAnimalDragSourceNode(drag) {
@@ -24452,7 +25040,27 @@ function finishAnimalDrag(event) {
         enqueueMicrotask(localizeDocument);
         return;
     }
-    // placeAnimal() already performs the enclosure-10 unlock check.
+
+    const crossExhibitRelocation=profiledZooRenderStage(
+        'drag-finish.cross-exhibit',
+        () => renderClassicCrossExhibitRelocation(drag,animal)
+    );
+    if(crossExhibitRelocation){
+        // placeAnimal() already performed collection/cohabitation and the
+        // enclosure-10 unlock check. Refresh only UI that can change because
+        // of the move; the rest of the zoo DOM remains mounted.
+        renderExchange();
+        renderTrade();
+        renderProgressTracker();
+        updatePrestigeDisplay();
+        updateTurnDisplay();
+        captureTurnSnapshot();
+        writeAutoResumeSnapshot();
+        enqueueMicrotask(localizeDocument);
+        return;
+    }
+
+    // True/Sandbox/defensive DOM failures retain the conservative path.
     renderAll();
 }
 
@@ -24720,12 +25328,15 @@ function finishEnclosureDrag() {
 
     if(moved){
         // Enclosure position participates in the geographic Area signature.
-        // Re-render only after placement, so the Area follows cheaply during
-        // dragging and is authoritatively regenerated at its final topology.
+        // The enclosure DOM has already been moved directly during the drag;
+        // only geography/Area membership and visuals need reconciliation now.
+        // Keeping the existing enclosure/card subtree mounted avoids a complete
+        // Classic zoo DOM rebuild on every enclosure drop.
         stableConnectedAreaGroups=null;
         stableConnectedAreaGroupsSignature='';
         invalidateConnectedAreaReconciliation();
-        renderZoo();
+        if(state.gameMode==='true')renderZoo();
+        else refreshClassicAreaVisuals();
         writeAutoResumeSnapshot?.(true);
     }
 
@@ -31601,14 +32212,38 @@ function positionOpponentTradeArea() {
     area.style.setProperty('--trade-card-gap', `${cardGap}px`);
 
     let left = opponentRect.left - gapBeforeOpponents - visualAreaWidth;
+
+    // Compact laptops do not have enough horizontal room for the desktop
+    // "anchor backwards from Other Zoos" rule: at 1280px that pushes the offer
+    // pair over Upgrade. Keep the same vertical composition, but centre the pair
+    // in the actual free band between the last action card and Other Zoos.
+    // 1080p/2K retain the established desktop anchor unchanged.
+    if(window.innerWidth <= 1366){
+        const lastAction = resultBox || exchange2 || exchange1 || drawCard;
+        const actionRect = lastAction?.getBoundingClientRect();
+        if(actionRect){
+            const bandLeft = actionRect.right + (8 * scale);
+            const bandRight = opponentRect.left - (8 * scale);
+            const bandWidth = bandRight - bandLeft;
+            if(bandWidth >= visualAreaWidth){
+                left = bandLeft + ((bandWidth - visualAreaWidth) / 2);
+            }else{
+                // If an unusually narrow laptop/header combination cannot fit
+                // the pair perfectly, prioritise not covering the action cards.
+                left = bandLeft;
+            }
+        }
+    }
     left = Math.max(screenPadding, Math.min(left, window.innerWidth - visualAreaWidth - screenPadding));
 
     area.classList.remove('laptop-trade-below-header');
     area.style.position = 'fixed';
     area.style.left = `${Math.round(left)}px`;
     area.style.right = 'auto';
-    // Centre the trade pair inside the full desktop header. This gives it the
-    // same visible clearance above and below, independent of the centre cards.
+    // Centre the trade pair inside the full desktop header at every desktop
+    // scale. Keeping this same normalized relationship is what makes compact
+    // laptop layouts match the established 1080p composition rather than
+    // top-aligning the taller offer cells with the action-card row.
     const visualTradeHeight = cardHeight * tradeScale;
     const headerRect = document.getElementById('actionMenu')?.getBoundingClientRect();
     const alignedTop = headerRect
@@ -32911,6 +33546,21 @@ function tryDropOnOutgoingOffer(event, animal) {
     return true;
 }
 
+function refreshClassicOutgoingOfferSelectionVisuals(animal, sourceEnclosureId) {
+    if(state.gameMode==='true'||state.sandboxMode)return false;
+    if(sourceEnclosureId==null)return false;
+
+    // The offered card keeps its source slot reserved, so exhibit membership,
+    // geography and Area qualification are unchanged. Rebuild only its source
+    // enclosure to hide the physical card while preserving occupied-slot and
+    // husbandry semantics.
+    if(!refreshClassicEnclosureCards([sourceEnclosureId]))return false;
+    refreshContextualExchangeEligibilityGlows();
+    applyCompatibilityDestinationGlowClasses();
+    refreshAnimalGlowPrecedence(zooCanvas);
+    return true;
+}
+
 function autoSelectOutgoingOfferAnimal() {
     // True requires an explicit population split; never bypass it with the Classic random-card shortcut.
     if (trueModeAllowsDuplicateSpecies()) return false;
@@ -32943,6 +33593,7 @@ function autoSelectOutgoingOfferAnimal() {
     // Preserve the zoo slot exactly as if the player had dragged this card
     // into Outgoing Offer manually. It remains logically occupied until the
     // incoming card is picked up/accepted.
+    const sourceEnclosureId=animal.enclosureId;
     reserveAnimalZooSlot(animal, animal.enclosureId, animal.slotIndex);
 
     state.outgoingOffer = animal; 
@@ -32951,7 +33602,9 @@ function autoSelectOutgoingOfferAnimal() {
 
     noteNewCardAction();
     refreshDrawAvailabilityState();
-    renderZoo();
+    if(!refreshClassicOutgoingOfferSelectionVisuals(animal,sourceEnclosureId)){
+        renderZoo();
+    }
 
     // install the exact VERIFIED live offers captured above. Do not call
     // predictedPlayerTradeOffers() or materializeLockedPlayerTradeOffers()

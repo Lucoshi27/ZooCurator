@@ -1,0 +1,803 @@
+{
+  "format": "ZooCuratorRealZooLayout",
+  "version": 1,
+  "zoo": {
+    "name": "Koninklijke Burgers' Zoo",
+    "country": "Netherlands",
+    "province": "Gelderland"
+  },
+  "createdAt": "2026-09-26T19:45:20.833Z",
+  "enclosures": [
+    {
+      "id": 137,
+      "number": 9,
+      "x": 6020,
+      "y": 6233.333499999999,
+      "rotated180": false
+    },
+    {
+      "id": 138,
+      "number": 3,
+      "x": 6020,
+      "y": 5746.666799999999,
+      "rotated180": false
+    },
+    {
+      "id": 139,
+      "number": 2,
+      "x": 6020,
+      "y": 5260.000099999999,
+      "rotated180": false
+    },
+    {
+      "id": 143,
+      "number": 9,
+      "x": 5650,
+      "y": 5746.666799999999,
+      "rotated180": false
+    },
+    {
+      "id": 145,
+      "number": 4,
+      "x": 5280,
+      "y": 5746.666799999999,
+      "rotated180": false
+    },
+    {
+      "id": 147,
+      "number": 9,
+      "x": 6020,
+      "y": 4773.3333999999995,
+      "rotated180": true
+    },
+    {
+      "id": 149,
+      "number": 3,
+      "x": 6390,
+      "y": 4773.3333999999995,
+      "rotated180": false
+    },
+    {
+      "id": 151,
+      "number": 2,
+      "x": 6390,
+      "y": 5260.000099999999,
+      "rotated180": false
+    },
+    {
+      "id": 152,
+      "number": 8,
+      "x": 5650,
+      "y": 4773.3333999999995,
+      "rotated180": false
+    },
+    {
+      "id": 153,
+      "number": 3,
+      "x": 6390,
+      "y": 4286.6667,
+      "rotated180": false
+    },
+    {
+      "id": 157,
+      "number": 9,
+      "x": 5650,
+      "y": 4286.6667,
+      "rotated180": false
+    },
+    {
+      "id": 159,
+      "number": 8,
+      "x": 5280,
+      "y": 4286.6667,
+      "rotated180": false
+    },
+    {
+      "id": 161,
+      "number": 10,
+      "x": 5280,
+      "y": 4773.3333999999995,
+      "rotated180": false
+    },
+    {
+      "id": 162,
+      "number": 3,
+      "x": 4910,
+      "y": 4773.3333999999995,
+      "rotated180": false
+    },
+    {
+      "id": 163,
+      "number": 10,
+      "x": 4540,
+      "y": 5260.000099999999,
+      "rotated180": false
+    },
+    {
+      "id": 164,
+      "number": 3,
+      "x": 4540,
+      "y": 4773.3333999999995,
+      "rotated180": false
+    },
+    {
+      "id": 167,
+      "number": 5,
+      "x": 5650,
+      "y": 5260.000099999999,
+      "rotated180": false
+    },
+    {
+      "id": 168,
+      "number": 10,
+      "x": 4170,
+      "y": 5260.000099999999,
+      "rotated180": false
+    },
+    {
+      "id": 170,
+      "number": 10,
+      "x": 3800,
+      "y": 5260.000099999999,
+      "rotated180": false
+    },
+    {
+      "id": 171,
+      "number": 9,
+      "x": 4170,
+      "y": 4773.3333999999995,
+      "rotated180": false
+    },
+    {
+      "id": 173,
+      "number": 4,
+      "x": 5280,
+      "y": 5260.000099999999,
+      "rotated180": false
+    },
+    {
+      "id": 174,
+      "number": 10,
+      "x": 4910,
+      "y": 5260.000099999999,
+      "rotated180": false
+    },
+    {
+      "id": 176,
+      "number": 8,
+      "x": 4910,
+      "y": 5746.666799999999,
+      "rotated180": false
+    },
+    {
+      "id": 179,
+      "number": 4,
+      "x": 6020,
+      "y": 3800,
+      "rotated180": true
+    },
+    {
+      "id": 180,
+      "number": 4,
+      "x": 6020,
+      "y": 4286.6667,
+      "rotated180": false
+    }
+  ],
+  "animals": [
+    {
+      "name": "Aardvark",
+      "enclosureId": 173,
+      "slotIndex": 3
+    },
+    {
+      "name": "African Lion",
+      "enclosureId": 171,
+      "slotIndex": 0
+    },
+    {
+      "name": "African Penguin",
+      "enclosureId": 137,
+      "slotIndex": 3
+    },
+    {
+      "name": "Asian Elephant",
+      "enclosureId": 137,
+      "slotIndex": 0
+    },
+    {
+      "name": "Asian Small-Clawed Otter",
+      "enclosureId": 145,
+      "slotIndex": 3
+    },
+    {
+      "name": "Asian Water Monitor",
+      "enclosureId": 180,
+      "slotIndex": 3
+    },
+    {
+      "name": "Binturong",
+      "enclosureId": 149,
+      "slotIndex": 0
+    },
+    {
+      "name": "Black Hornbill",
+      "enclosureId": 179,
+      "slotIndex": 2
+    },
+    {
+      "name": "Black Lemur",
+      "enclosureId": 138,
+      "slotIndex": 3
+    },
+    {
+      "name": "Black Vulture",
+      "enclosureId": 179,
+      "slotIndex": 0
+    },
+    {
+      "name": "Black-Tailed Prairie Dog",
+      "enclosureId": 143,
+      "slotIndex": 1
+    },
+    {
+      "name": "Blacktip Reef Shark",
+      "enclosureId": 161,
+      "slotIndex": 2
+    },
+    {
+      "name": "Blue Wildebeest",
+      "enclosureId": 163,
+      "slotIndex": 0
+    },
+    {
+      "name": "Bluespotted Ribbontail Ray",
+      "enclosureId": 162,
+      "slotIndex": 2
+    },
+    {
+      "name": "Bolivian Squirrel Monkey",
+      "enclosureId": 138,
+      "slotIndex": 0
+    },
+    {
+      "name": "Burrowing Owl",
+      "enclosureId": 167,
+      "slotIndex": 1
+    },
+    {
+      "name": "Capybara",
+      "enclosureId": 145,
+      "slotIndex": 1
+    },
+    {
+      "name": "Cheetah",
+      "enclosureId": 164,
+      "slotIndex": 0
+    },
+    {
+      "name": "Chimpanzee",
+      "enclosureId": 157,
+      "slotIndex": 0
+    },
+    {
+      "name": "Collared Peccary",
+      "enclosureId": 167,
+      "slotIndex": 0
+    },
+    {
+      "name": "Common Hog Deer",
+      "enclosureId": 151,
+      "slotIndex": 0
+    },
+    {
+      "name": "Common Waterbuck",
+      "enclosureId": 168,
+      "slotIndex": 3
+    },
+    {
+      "name": "Epaulette Shark",
+      "enclosureId": 162,
+      "slotIndex": 3
+    },
+    {
+      "name": "Galah",
+      "enclosureId": 179,
+      "slotIndex": 3
+    },
+    {
+      "name": "Gila Monster",
+      "enclosureId": 167,
+      "slotIndex": 3
+    },
+    {
+      "name": "Golden-Cheeked Gibbon",
+      "enclosureId": 152,
+      "slotIndex": 2
+    },
+    {
+      "name": "Great White Pelican",
+      "enclosureId": 163,
+      "slotIndex": 1
+    },
+    {
+      "name": "Green Iguana",
+      "enclosureId": 173,
+      "slotIndex": 1
+    },
+    {
+      "name": "Green Tree Python",
+      "enclosureId": 147,
+      "slotIndex": 3
+    },
+    {
+      "name": "Grey Reef Shark",
+      "enclosureId": 161,
+      "slotIndex": 3
+    },
+    {
+      "name": "Indian Star Tortoise",
+      "enclosureId": 180,
+      "slotIndex": 2
+    },
+    {
+      "name": "Javan Banteng",
+      "enclosureId": 152,
+      "slotIndex": 3
+    },
+    {
+      "name": "Madagascar Ibis",
+      "enclosureId": 174,
+      "slotIndex": 2
+    },
+    {
+      "name": "Meerkat",
+      "enclosureId": 139,
+      "slotIndex": 2
+    },
+    {
+      "name": "Monk Vulture",
+      "enclosureId": 179,
+      "slotIndex": 1
+    },
+    {
+      "name": "North American Porcupine",
+      "enclosureId": 143,
+      "slotIndex": 2
+    },
+    {
+      "name": "Ocellated Eagle Ray",
+      "enclosureId": 162,
+      "slotIndex": 1
+    },
+    {
+      "name": "Peacock-Eye Stingray",
+      "enclosureId": 173,
+      "slotIndex": 0
+    },
+    {
+      "name": "Plains Zebra",
+      "enclosureId": 168,
+      "slotIndex": 0
+    },
+    {
+      "name": "Pond Slider",
+      "enclosureId": 174,
+      "slotIndex": 3
+    },
+    {
+      "name": "Red Titi",
+      "enclosureId": 153,
+      "slotIndex": 0
+    },
+    {
+      "name": "Red-Crested Turaco",
+      "enclosureId": 174,
+      "slotIndex": 0
+    },
+    {
+      "name": "Red-Footed Tortoise",
+      "enclosureId": 173,
+      "slotIndex": 2
+    },
+    {
+      "name": "Reeve's Muntjac",
+      "enclosureId": 152,
+      "slotIndex": 0
+    },
+    {
+      "name": "Reticulated Python",
+      "enclosureId": 157,
+      "slotIndex": 3
+    },
+    {
+      "name": "Ring-Tailed Lemur",
+      "enclosureId": 138,
+      "slotIndex": 2
+    },
+    {
+      "name": "Ringtail",
+      "enclosureId": 167,
+      "slotIndex": 2
+    },
+    {
+      "name": "Rodriguez Flying Fox",
+      "enclosureId": 176,
+      "slotIndex": 0
+    },
+    {
+      "name": "Rothschild's Giraffe",
+      "enclosureId": 163,
+      "slotIndex": 3
+    },
+    {
+      "name": "Scarlet Ibis",
+      "enclosureId": 176,
+      "slotIndex": 3
+    },
+    {
+      "name": "Siamang",
+      "enclosureId": 152,
+      "slotIndex": 1
+    },
+    {
+      "name": "South American Coati",
+      "enclosureId": 138,
+      "slotIndex": 1
+    },
+    {
+      "name": "Sumatran Tiger",
+      "enclosureId": 147,
+      "slotIndex": 0
+    },
+    {
+      "name": "Sun Bear",
+      "enclosureId": 149,
+      "slotIndex": 1
+    },
+    {
+      "name": "Sunbittern",
+      "enclosureId": 176,
+      "slotIndex": 1
+    },
+    {
+      "name": "Swamp Wallaby",
+      "enclosureId": 180,
+      "slotIndex": 0
+    },
+    {
+      "name": "Turkey Vulture",
+      "enclosureId": 143,
+      "slotIndex": 0
+    },
+    {
+      "name": "West Indian Manatee",
+      "enclosureId": 153,
+      "slotIndex": 3
+    },
+    {
+      "name": "Western Diamondback Rattlesnake",
+      "enclosureId": 143,
+      "slotIndex": 3
+    },
+    {
+      "name": "Western Lowland Gorilla",
+      "enclosureId": 159,
+      "slotIndex": 1
+    },
+    {
+      "name": "White Rhinoceros",
+      "enclosureId": 170,
+      "slotIndex": 0
+    },
+    {
+      "name": "Yellow-Spotted Amazon River Turtle",
+      "enclosureId": 145,
+      "slotIndex": 0
+    },
+    {
+      "name": "Zebra Shark",
+      "enclosureId": 161,
+      "slotIndex": 0
+    },
+    {
+      "name": "Sri Lankan Leopard",
+      "enclosureId": 139,
+      "slotIndex": 0
+    },
+    {
+      "name": "Gemsbok",
+      "enclosureId": 170,
+      "slotIndex": 3
+    },
+    {
+      "name": "Asian Leaf Turtle",
+      "enclosureId": 176,
+      "slotIndex": 2
+    }
+  ],
+  "customAreas": [
+    {
+      "id": "custom-1790451431265-x7o9",
+      "name": "Desert",
+      "color": "#b79332",
+      "type": "area",
+      "lineStyle": "solid",
+      "zOrder": 0,
+      "cells": [
+        {
+          "col": 32,
+          "row": 23
+        },
+        {
+          "col": 33,
+          "row": 23
+        },
+        {
+          "col": 33,
+          "row": 24
+        },
+        {
+          "col": 32,
+          "row": 24
+        },
+        {
+          "col": 33,
+          "row": 25
+        }
+      ],
+      "geometry": {
+        "x": 5658,
+        "y": 5268.000099999999,
+        "w": 334,
+        "h": 937.3333999999995
+      },
+      "enclosureIds": [
+        143,
+        167
+      ],
+      "labelX": 5690,
+      "labelY": 6267,
+      "_geographicOverride": {
+        "level": "bioregion",
+        "key": "NA30"
+      }
+    },
+    {
+      "id": "custom-1790451438645-bzvo",
+      "name": "Bush",
+      "color": "#26764e",
+      "type": "area",
+      "lineStyle": "solid",
+      "zOrder": 1,
+      "cells": [
+        {
+          "col": 31,
+          "row": 23
+        },
+        {
+          "col": 29,
+          "row": 23
+        },
+        {
+          "col": 30,
+          "row": 24
+        },
+        {
+          "col": 31,
+          "row": 24
+        },
+        {
+          "col": 31,
+          "row": 25
+        },
+        {
+          "col": 31,
+          "row": 26
+        },
+        {
+          "col": 30,
+          "row": 26
+        },
+        {
+          "col": 29,
+          "row": 25
+        }
+      ],
+      "geometry": {
+        "x": 4918,
+        "y": 5268.000099999999,
+        "w": 704,
+        "h": 937.3333999999995
+      },
+      "enclosureIds": [
+        145,
+        173,
+        174,
+        176
+      ],
+      "labelX": 5117.34,
+      "labelY": 6269.33,
+      "_habitatOverride": "rainforest"
+    },
+    {
+      "id": "custom-1790451467371-kjnb",
+      "name": "Safari",
+      "color": "#c28b24",
+      "type": "area",
+      "lineStyle": "solid",
+      "zOrder": 2,
+      "cells": [
+        {
+          "col": 26,
+          "row": 21
+        },
+        {
+          "col": 26,
+          "row": 20
+        },
+        {
+          "col": 25,
+          "row": 21
+        },
+        {
+          "col": 24,
+          "row": 21
+        },
+        {
+          "col": 24,
+          "row": 23
+        },
+        {
+          "col": 22,
+          "row": 23
+        },
+        {
+          "col": 26,
+          "row": 23
+        }
+      ],
+      "geometry": {
+        "x": 3808,
+        "y": 4781.3333999999995,
+        "w": 1074,
+        "h": 937.3333999999995
+      },
+      "enclosureIds": [
+        163,
+        164,
+        168,
+        170,
+        171
+      ],
+      "labelX": 4273.5,
+      "labelY": 4697.33,
+      "_geographicOverride": {
+        "level": "bioregion",
+        "key": "AT21"
+      }
+    },
+    {
+      "id": "custom-1790451504067-jinj",
+      "name": "Rimba",
+      "color": "#31885d",
+      "type": "area",
+      "lineStyle": "solid",
+      "zOrder": 3,
+      "cells": [
+        {
+          "col": 37,
+          "row": 20
+        },
+        {
+          "col": 37,
+          "row": 21
+        },
+        {
+          "col": 35,
+          "row": 21
+        },
+        {
+          "col": 33,
+          "row": 21
+        }
+      ],
+      "geometry": {
+        "x": 5658,
+        "y": 4781.3333999999995,
+        "w": 1074,
+        "h": 450.66669999999976
+      },
+      "enclosureIds": [
+        147,
+        149,
+        152
+      ],
+      "labelX": 6805.5,
+      "labelY": 4878.33,
+      "_geographicOverride": {
+        "level": "bioregion",
+        "key": "IM18"
+      }
+    },
+    {
+      "id": "custom-1790451529189-jgay",
+      "name": "Ocean",
+      "color": "#397fa8",
+      "type": "area",
+      "lineStyle": "solid",
+      "zOrder": 4,
+      "cells": [
+        {
+          "col": 31,
+          "row": 21
+        },
+        {
+          "col": 29,
+          "row": 20
+        },
+        {
+          "col": 29,
+          "row": 21
+        }
+      ],
+      "geometry": {
+        "x": 4918,
+        "y": 4781.3333999999995,
+        "w": 704,
+        "h": 450.66669999999976
+      },
+      "enclosureIds": [
+        161,
+        162
+      ],
+      "labelX": 4976,
+      "labelY": 4691.33,
+      "_habitatOverride": "aquatic"
+    },
+    {
+      "id": "custom-1790451555118-5g3v",
+      "name": "Mangrove",
+      "color": "#477344",
+      "type": "area",
+      "lineStyle": "solid",
+      "zOrder": 5,
+      "cells": [
+        {
+          "col": 37,
+          "row": 18
+        },
+        {
+          "col": 37,
+          "row": 19
+        }
+      ],
+      "geometry": {
+        "x": 6398,
+        "y": 4294.6667,
+        "w": 334,
+        "h": 450.66669999999976
+      },
+      "enclosureIds": [
+        153
+      ],
+      "labelX": 6796,
+      "labelY": 4390.67,
+      "_geographicOverride": {
+        "level": "bioregion",
+        "key": "NT25"
+      }
+    }
+  ],
+  "generatedAreaMembership": {},
+  "generatedAreaOverrides": {},
+  "areaLabelPositions": {},
+  "suppressedGeneratedAreas": {},
+  "prestige": {
+    "original": 883,
+    "current": 1261,
+    "area_bonus_percent": 22.75,
+    "combination_bonus_percent": 20,
+    "husbandry_penalty_percent": 0
+  }
+}

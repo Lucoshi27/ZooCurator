@@ -21812,7 +21812,7 @@
             "IM14"
           ]
         },
-        "Mediterranean Turtle": {
+        "Mediterranean Turtle.png": {
           "scientific_name": "Mauremys leprosa",
           "enclosure_size": "small",
           "tags": [
@@ -22035,6 +22035,28 @@
         }
       },
       "4": {
+        "Asian Leaf Turtle.png": {
+          "scientific_name": "Cyclemys dentata",
+          "enclosure_size": "small",
+          "tags": [
+            "rainforest",
+            "wetland",
+            "riverine",
+            "semi-aquatic",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM13",
+            "IM15",
+            "IM16",
+            "IM17",
+            "IM18"
+          ]
+        },
         "Bell's Hinge-Back Tortoise.png": {
           "scientific_name": "Kinixys belliana",
           "enclosure_size": "small",

@@ -19985,8 +19985,13 @@ function multiplayerPlayerColour(playerId){
     return MULTIPLAYER_PLAYER_COLOURS[(seat-1)%MULTIPLAYER_PLAYER_COLOURS.length];
 }
 function multiplayerServerPlayerForLocalId(playerId){
+    const t=localMultiplayerBrowserTransport;
+    const players=t?.serverPlayers||[];
+    if(playerId&&playerId===localClassicMatch?.activePlayerId){
+        return players.find(p=>String(p.playerId)===String(t?.serverPlayerId)) ||
+            players.find(p=>Number(p.seat)===Number(t?.serverSeat)) || null;
+    }
     const seat=multiplayerSeatForLocalPlayerId(playerId);
-    const players=localMultiplayerBrowserTransport?.serverPlayers||[];
     return players.find(p=>Number(p.seat)===Number(seat))||null;
 }
 function reconcileLocalMultiplayerRosterFromServerPlayers(serverPlayers){
@@ -20066,7 +20071,9 @@ function renderMultiplayerRemoteCursors(){
 }
 function receiveMultiplayerCursor(message){
     const seat=Number(message?.senderSeat)||0;if(!seat||!localClassicMatch)return;
-    const ownSeat=multiplayerSeatForLocalPlayerId(localClassicMatch.activePlayerId);if(seat===ownSeat)return;
+    const ownSeat=Number(localMultiplayerBrowserTransport?.serverSeat)||
+        multiplayerSeatForLocalPlayerId(localClassicMatch.activePlayerId);
+    if(seat===ownSeat)return;
     // Drop delayed cursor packets from a zoo we have already left.
     const viewed=multiplayerEffectiveViewedLocalPlayerId();
     const own=localClassicMatch?.activePlayerId;
@@ -20243,11 +20250,17 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
                 clearTimeout(timer);
                 for(const message of queued.splice(0))socket.send(message);
                 const savedIdentity=readMultiplayerServerIdentity(matchId);
+                const desiredSeat=(()=>{
+                    const id=localClassicMatch?.activePlayerId;
+                    const match=/^player-(\d+)$/.exec(String(id||''));
+                    return match?Number(match[1]):null;
+                })();
                 socket.send(JSON.stringify({
                     protocol:MULTIPLAYER_SERVER_PROTOCOL,
                     type:'hello',
                     playerId:savedIdentity?.playerId||null,
-                    reconnectToken:savedIdentity?.reconnectToken||null
+                    reconnectToken:savedIdentity?.reconnectToken||null,
+                    desiredSeat
                 }));
                 resolve();
             },{once:true});
@@ -20402,6 +20415,10 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 transport.serverRevision=Number(message.revision)||0;
                 transport.serverAuthenticated=true;
                 transport.serverPlayers=cloneForSave(message.players||[]);
+                const localSeat=multiplayerSeatForLocalPlayerId(localClassicMatch?.activePlayerId);
+                if(localSeat&&transport.serverSeat&&Number(localSeat)!==Number(transport.serverSeat)){
+                    console.warn(`Server seat ${transport.serverSeat} differs from local seat ${localSeat}; server identity wins.`);
+                }
                 reconcileLocalMultiplayerRosterFromServerPlayers(transport.serverPlayers);
                 writeMultiplayerServerIdentity(resolvedMatchId,channel.serverIdentity);
                 queueMicrotask(()=>sendMultiplayerLiveViewSubscription());

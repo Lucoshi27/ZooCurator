@@ -19977,6 +19977,8 @@ const multiplayerRemoteCursors=new Map();
 let multiplayerCursorLastSentAt=0;
 let multiplayerCursorRaf=0;
 function multiplayerSeatForLocalPlayerId(playerId){
+    const explicit=/^player-(\d+)$/.exec(String(playerId||''));
+    if(explicit)return Number(explicit[1]);
     const index=localClassicMatch?.playerIds?.indexOf(playerId)??-1;
     return index>=0?index+1:null;
 }
@@ -19991,7 +19993,8 @@ function multiplayerServerPlayerForLocalId(playerId){
         return players.find(p=>String(p.playerId)===String(t?.serverPlayerId)) ||
             players.find(p=>Number(p.seat)===Number(t?.serverSeat)) || null;
     }
-    const seat=multiplayerSeatForLocalPlayerId(playerId);
+    const explicit=/^player-(\d+)$/.exec(String(playerId||''));
+    const seat=explicit?Number(explicit[1]):multiplayerSeatForLocalPlayerId(playerId);
     return players.find(p=>Number(p.seat)===Number(seat))||null;
 }
 function reconcileLocalMultiplayerRosterFromServerPlayers(serverPlayers){
@@ -20037,7 +20040,16 @@ function sendMultiplayerLiveViewSubscription(){
     const viewed=multiplayerEffectiveViewedLocalPlayerId();
     const own=localClassicMatch?.activePlayerId;
     const remote=viewed&&viewed!==own?multiplayerServerPlayerForLocalId(viewed):null;
-    try{channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'live-view',targetPlayerId:remote?.playerId||null});return true;}catch(_){return false;}
+    const requestedTarget=remote?.playerId||null;
+    const subscriptionSequence=++t.serverViewSubscriptionSequence;
+    t.serverViewSubscriptionPending=true;
+    try{
+        channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'live-view',targetPlayerId:requestedTarget,subscriptionSequence});
+        return true;
+    }catch(_){
+        t.serverViewSubscriptionPending=false;
+        return false;
+    }
 }
 function clearMultiplayerRemoteCursors(){
     for(const entry of multiplayerRemoteCursors.values())entry.el?.remove?.();
@@ -20074,14 +20086,9 @@ function receiveMultiplayerCursor(message){
     const ownSeat=Number(localMultiplayerBrowserTransport?.serverSeat)||
         multiplayerSeatForLocalPlayerId(localClassicMatch.activePlayerId);
     if(seat===ownSeat)return;
-    // Drop delayed cursor packets from a zoo we have already left.
-    const viewed=multiplayerEffectiveViewedLocalPlayerId();
-    const own=localClassicMatch?.activePlayerId;
-    const t=localMultiplayerBrowserTransport;
-    const target=viewed===own
-        ? ((t?.serverPlayers||[]).find(p=>String(p.playerId)===String(t?.serverPlayerId)) ||
-           (t?.serverPlayers||[]).find(p=>Number(p.seat)===Number(t?.serverSeat)) || null)
-        : multiplayerServerPlayerForLocalId(viewed);
+    // The server only relays cursors between sockets subscribed to the same zoo.
+    // targetPlayerId describes that zoo, never the cursor's identity.
+    const target=multiplayerCursorTarget();
     if(!target||String(message?.targetPlayerId||'')!==String(target.playerId||''))return;
     const entry=ensureMultiplayerRemoteCursor(seat);
     if(message?.moving===false){entry.lastSeen=0;entry.el.style.opacity='0';return;}
@@ -20104,19 +20111,21 @@ function multiplayerCursorTarget(){
 function sendMultiplayerCursorFromPointer(event){
     const channel=localMultiplayerBrowserChannel,t=localMultiplayerBrowserTransport;
     if(!channel?.serverBacked||!t?.serverAuthenticated||!localClassicMatch||!zooCanvas||!zooBoard)return;
+    if(t.serverViewSubscriptionPending)return;
     const nowMs=performance.now();if(nowMs-multiplayerCursorLastSentAt<50)return; // <=20 Hz
     const boardRect=zooBoard.getBoundingClientRect();
     if(event.clientX<boardRect.left||event.clientX>boardRect.right||event.clientY<boardRect.top||event.clientY>boardRect.bottom)return;
-    const target=multiplayerCursorTarget();if(!target)return;
+    // The server owns the socket's current live-view subscription. Cursor packets
+    // identify only the physical sender; they do not impersonate the zoo owner.
     const rect=zooCanvas.getBoundingClientRect(),zoom=Math.max(.01,Number(state.zoom)||1);
     const x=(event.clientX-rect.left)/zoom,y=(event.clientY-rect.top)/zoom;
     multiplayerCursorLastSentAt=nowMs;
-    try{channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'cursor',targetPlayerId:target.playerId,x,y,moving:true});}catch(_){}
+    try{channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'cursor',x,y,moving:true});}catch(_){}
 }
 function sendMultiplayerCursorLeave(){
-    const channel=localMultiplayerBrowserChannel,t=localMultiplayerBrowserTransport,target=multiplayerCursorTarget();
-    if(!channel?.serverBacked||!t?.serverAuthenticated||!target)return;
-    try{channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'cursor',targetPlayerId:target.playerId,x:0,y:0,moving:false});}catch(_){}
+    const channel=localMultiplayerBrowserChannel,t=localMultiplayerBrowserTransport;
+    if(!channel?.serverBacked||!t?.serverAuthenticated||t.serverViewSubscriptionPending)return;
+    try{channel.postMessage({protocol:MULTIPLAYER_SERVER_PROTOCOL,type:'cursor',x:0,y:0,moving:false});}catch(_){}
 }
 window.addEventListener('pointermove',sendMultiplayerCursorFromPointer,{passive:true});
 zooBoard?.addEventListener('pointerleave',sendMultiplayerCursorLeave,{passive:true});
@@ -20390,6 +20399,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
         serverBacked:channel.serverBacked===true,
         serverAuthenticated:false,serverPlayerId:null,serverSeat:null,
         serverRevision:0,serverProgressionRevision:0,serverProgression:null,
+        serverViewTargetPlayerId:null,serverViewSubscriptionPending:false,serverViewSubscriptionSequence:0,
         serverProgressionInitSent:false
     };
     channel.onmessage=async event=>{
@@ -20429,6 +20439,12 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     if(channel===localMultiplayerBrowserChannel)
                         initialiseAuthoritativeMultiplayerProgressionIfHost();
                 },0);
+            }else if(message.type==='live-view-subscribed'){
+                const ackSequence=Number(message.subscriptionSequence)||0;
+                if(!ackSequence||ackSequence===Number(transport.serverViewSubscriptionSequence)){
+                    transport.serverViewTargetPlayerId=message.targetPlayerId?String(message.targetPlayerId):null;
+                    transport.serverViewSubscriptionPending=false;
+                }
             }else if(message.type==='progression-state'){
                 channel.serverProgression=cloneForSave(message);
                 transport.serverProgression=cloneForSave(message);

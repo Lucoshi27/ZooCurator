@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V2.43.3";
+const ZOO_CURATOR_VERSION = "V2.43.4";
 // Definitive V2 baseline: True-mode systems + current Information-map geography fixes.
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
@@ -93,7 +93,7 @@ const scheduleDesktopUiScaleRefresh=()=>{
         refreshDesktopUiScale();
         refreshDesktopPeripheralHeaderScale();
         fitProgressTrackerAroundActions?.();
-        positionOpponentTradeArea?.();
+        positionOpponentTradeArea?.(true);
     });
 };
 window.addEventListener('resize', scheduleDesktopUiScaleRefresh, { passive: true });
@@ -32164,7 +32164,22 @@ function fitProgressTrackerAroundActions() {
     tracker.classList.add('laptop-header-fitted');
 }
 
-function positionOpponentTradeArea() {
+let opponentTradePositionRaf=0;
+function positionOpponentTradeArea(immediate=false) {
+    // Firefox Responsive Design Mode can report intermediate header geometry
+    // while a reload/viewport resize is still settling. Coalesce ordinary
+    // requests to the next animation frame so every caller measures the same
+    // post-layout geometry. The RAF callback uses immediate=true to avoid
+    // rescheduling itself.
+    if(!immediate){
+        if(opponentTradePositionRaf)cancelAnimationFrame(opponentTradePositionRaf);
+        opponentTradePositionRaf=requestAnimationFrame(()=>{
+            opponentTradePositionRaf=0;
+            positionOpponentTradeArea(true);
+        });
+        return;
+    }
+
     const area = document.getElementById('opponentTradeArea');
     if (!area) return;
 

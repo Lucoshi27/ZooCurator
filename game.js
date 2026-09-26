@@ -13970,10 +13970,11 @@ function renderVisitedZooQuickTabs() {
             );
             const label = document.createElement('span');
             label.className = 'visited-zoo-quick-tab-label';
+            const isHostPlayer=playerId==='player-1';
             label.textContent = `${ownsTurn ? '● ' : ''}${zooName}`;
             tab.title = hasZoo
-                ? `${isViewed?'Viewing':'Visit'} ${zooName}${isOwnZoo?' — your zoo':''}${ownsTurn?' — current turn':''}`
-                : `Waiting for ${playerId.replace('player-','Player ')} to create their zoo`;
+                ? `${isViewed?'Viewing':'Visit'} ${zooName}${isHostPlayer?' — host':''}${isOwnZoo?' — your zoo':''}${ownsTurn?' — current turn':''}`
+                : `Waiting for ${playerId.replace('player-','Player ')} to create their zoo${isHostPlayer?' — host':''}`;
             if(hasZoo&&localClassicMatch.players?.[playerId]?.connected===false){
                 tab.classList.add('is-disconnected-player');
                 tab.title += ' — disconnected';
@@ -13982,7 +13983,15 @@ function renderVisitedZooQuickTabs() {
                 tab.classList.add('is-pending-player');
                 tab.disabled=true;
             }
-            tab.appendChild(label);
+            if(isHostPlayer){
+                const hostMarker=document.createElement('span');
+                hostMarker.className='multiplayer-host-indicator';
+                hostMarker.textContent=' HOST';
+                hostMarker.setAttribute('aria-label','Host');
+                hostMarker.style.cssText='font-size:8px;font-weight:900;opacity:.65;margin-left:3px;vertical-align:1px;';
+                tab.appendChild(label);
+                tab.appendChild(hostMarker);
+            }else tab.appendChild(label);
             tab.addEventListener('click', async () => {
                 if (!localClassicMatch || !hasZoo) return;
                 const viewedId=localClassicMatch.viewingPlayerId||localClassicMatch.activePlayerId;
@@ -20474,7 +20483,23 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     }
                 }
                 reconcileLocalMultiplayerRosterFromServerPlayers(transport.serverPlayers);
+                if(role==='peer'&&transport.serverSeat){
+                    // With server-backed seat assignment there is no legacy
+                    // seat-assignment packet. Bind the peer replica directly to
+                    // the authenticated local player id.
+                    const authenticatedLocalId=`player-${Number(transport.serverSeat)}`;
+                    if(localMultiplayerPeerReplica)
+                        localMultiplayerPeerReplica.playerId=authenticatedLocalId;
+                }
                 writeMultiplayerServerIdentity(resolvedMatchId,channel.serverIdentity);
+                if(role==='peer'&&transport.pendingPreSeatSync){
+                    const deferredSync=transport.pendingPreSeatSync;
+                    transport.pendingPreSeatSync=null;
+                    queueMicrotask(()=>{
+                        if(channel===localMultiplayerBrowserChannel&&channel.onmessage)
+                            channel.onmessage({data:deferredSync});
+                    });
+                }
                 queueMicrotask(()=>sendMultiplayerLiveViewSubscription());
                 // Existing matches replay progression immediately after welcome.
                 // Give that packet one event-loop turn before seat 1 attempts
@@ -20504,11 +20529,29 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                         refreshDrawAvailabilityState?.();
                 });
             }else if(message.type==='server-presence'){
+                const previousServerPlayers=Array.isArray(transport.serverPlayers)?transport.serverPlayers:[];
+                const previousConnectedIds=new Set(previousServerPlayers.filter(p=>p?.connected!==false).map(p=>String(p.playerId||'')));
                 transport.serverPlayers=cloneForSave(message.players||[]);
                 reconcileLocalMultiplayerRosterFromServerPlayers(transport.serverPlayers);
                 transport.serverRevision=Math.max(Number(transport.serverRevision)||0,Number(message.revision)||0);
                 renderVisitedZooQuickTabs?.();
                 queueMicrotask(()=>sendMultiplayerLiveViewSubscription());
+                if(role==='host'){
+                    // On server-backed multiplayer the old browser hello/seat handshake
+                    // is intentionally disabled. Presence is now the authoritative join
+                    // signal: when a newly connected authenticated peer appears, send
+                    // the full host snapshot that lets it finish joining.
+                    const ownServerId=String(transport.serverPlayerId||'');
+                    const newlyConnectedPeer=transport.serverPlayers.some(p=>
+                        p?.connected!==false &&
+                        String(p.playerId||'')!==ownServerId &&
+                        !previousConnectedIds.has(String(p.playerId||''))
+                    );
+                    if(newlyConnectedPeer)queueMicrotask(()=>{
+                        if(channel===localMultiplayerBrowserChannel&&localMultiplayerBrowserTransport?.role==='host')
+                            emitLocalMultiplayerSync('server-peer-joined');
+                    });
+                }
             }else if(message.type==='cursor'){
                 receiveMultiplayerCursor(message);
             }else if(message.type==='action-committed'||message.type==='action-rejected'){
@@ -20633,7 +20676,11 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 showGameNotice(uiText('A player disconnected from the multiplayer game.'));
             }
         }else if(message.type==='sync'&&role==='peer'){
-            if(String(transport.playerId||'').startsWith('joining-')){
+            if(channel.serverBacked===true&&!transport.serverAuthenticated){
+                transport.pendingPreSeatSync=cloneForSave(message);
+                return;
+            }
+            if(channel.serverBacked!==true&&String(transport.playerId||'').startsWith('joining-')){
                 transport.pendingPreSeatSync=cloneForSave(message);
                 return;
             }
@@ -20657,6 +20704,11 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 if(applied&&sequence)after.lastAppliedSyncSequence=sequence;
             }).catch(error=>console.error('Multiplayer peer sync failed:',error));
         }else if(message.type==='hello'&&role==='host'){
+            // The authenticated multiplayer server owns player identity and seat
+            // allocation. The old browser-relay hello handshake must never create
+            // pending seats on a server-backed channel; doing so races server-welcome
+            // and produces phantom Player 2 / Player 3 tabs.
+            if(channel.serverBacked===true)return;
             const provisionalId=String(message.senderPlayerId||'');
             let assignedId=transport.peerSeats?.[provisionalId];
             const reconnectId=String(message.reconnectPlayerId||''),token=String(message.reconnectToken||'');
@@ -20688,11 +20740,16 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
         });
     }else{
         createLocalMultiplayerPeerReplica(resolvedPlayerId);
-        const reconnectIdentity=readLocalMultiplayerReconnectIdentity(resolvedMatchId);
-        channel.postMessage({protocol:'zoo-curator-browser-transport-v1',matchId:resolvedMatchId,
-            senderPlayerId:resolvedPlayerId,type:'hello',
-            reconnectPlayerId:reconnectIdentity?.playerId||null,reconnectToken:reconnectIdentity?.token||null});
-        localMultiplayerBrowserTransport.sent++;
+        // Legacy browser-relay channels still need their own seat handshake.
+        // Server-backed WebSockets get the authoritative seat from server-welcome,
+        // so sending this second hello would create a duplicate pending player.
+        if(channel.serverBacked!==true){
+            const reconnectIdentity=readLocalMultiplayerReconnectIdentity(resolvedMatchId);
+            channel.postMessage({protocol:'zoo-curator-browser-transport-v1',matchId:resolvedMatchId,
+                senderPlayerId:resolvedPlayerId,type:'hello',
+                reconnectPlayerId:reconnectIdentity?.playerId||null,reconnectToken:reconnectIdentity?.token||null});
+            localMultiplayerBrowserTransport.sent++;
+        }
     }
     return true;
 }
@@ -20743,12 +20800,22 @@ async function hostCurrentLocalMultiplayerInBrowser(){
 }
 async function joinLocalMultiplayerInBrowser(matchId,playerId=null){
     if(!matchId)return false;
+    const requestedMatchId=String(matchId);
+    const activeTransport=localMultiplayerBrowserTransport;
+    if(activeTransport?.role==='host' &&
+       String(activeTransport.matchId||'')===requestedMatchId &&
+       localClassicMatch){
+        // Joining the match this tab is already hosting used to replace the host
+        // zoo with a provisional peer shell. Never destroy the active host state.
+        showGameNotice?.('This browser is already hosting that multiplayer game.');
+        return false;
+    }
     const previousMatch=localClassicMatch;
-    // The peer needs a temporary shell only until the host's hello response
+    // The peer needs a temporary shell only until the host/server response
     // supplies the authoritative player snapshots.
     const provisionalPlayerId=playerId||`joining-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`;
     localClassicMatch={
-        mode:'classic-multiplayer',matchId:String(matchId),
+        mode:'classic-multiplayer',matchId:requestedMatchId,
         playerIds:[],activePlayerId:provisionalPlayerId,
         turnPlayerId:'player-1',viewingPlayerId:null,revision:-1,rules:null,
         players:{},
@@ -20756,13 +20823,13 @@ async function joinLocalMultiplayerInBrowser(matchId,playerId=null){
         pendingPlayerTrades:[],tradeDrafts:{},events:[],nextEventSequence:1
     };
     const ok=await enableLocalMultiplayerBrowserTransport({
-        role:'peer',playerId:provisionalPlayerId,matchId:String(matchId)
+        role:'peer',playerId:provisionalPlayerId,matchId:requestedMatchId
     });
     if(!ok){
         localClassicMatch=previousMatch;
         renderVisitedZooQuickTabs();
     }
-    if(ok)writeActiveMultiplayerSession(String(matchId),'peer');
+    if(ok)writeActiveMultiplayerSession(requestedMatchId,'peer');
     updateMultiplayerHeaderButtonState();
     return ok;
 }

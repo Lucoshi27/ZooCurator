@@ -13922,6 +13922,7 @@ function renderVisitedZooQuickTabs() {
             const tab = document.createElement('button');
             tab.type = 'button';
             tab.className = 'visited-zoo-quick-tab multiplayer-zoo-quick-tab';
+            tab.dataset.multiplayerPlayerId = playerId;
             const viewedId = localClassicMatch.viewingPlayerId || localClassicMatch.activePlayerId;
             const hasZoo=!!localClassicMatch.players?.[playerId]?.snapshot;
             const isViewed = hasZoo && playerId === viewedId;
@@ -14015,23 +14016,42 @@ function renderVisitedZooQuickTabs() {
 
     if(localClassicMatch){
         const ownTab=strip.querySelector('.multiplayer-zoo-quick-tab.is-own-zoo');
-        const otherHuman=strip.querySelector('.multiplayer-zoo-quick-tab.is-other-player');
+        const otherHumans=[...strip.querySelectorAll('.multiplayer-zoo-quick-tab.is-other-player')];
         const aiTabs=[...strip.querySelectorAll('.ai-zoo-quick-tab')];
         const layoutMultiplayerZooTabs=()=>{
             if(!ownTab?.isConnected)return;
             const ownWidth=ownTab.getBoundingClientRect().width;
-            const humanWidth=otherHuman?.getBoundingClientRect().width||0;
             const ownIndex=localClassicMatch.playerIds.indexOf(localClassicMatch.activePlayerId);
-            const otherIndex=localClassicMatch.playerIds.findIndex(id=>id!==localClassicMatch.activePlayerId);
-            const humanOnLeft=otherHuman&&otherIndex<ownIndex;
             let leftOffset=ownWidth/2+6;
             let rightOffset=ownWidth/2+6;
-            if(otherHuman){
-                if(humanOnLeft)leftOffset+=humanWidth+6;
-                else rightOffset+=humanWidth+6;
+
+            // Every remote human needs its own slot. The old two-player layout
+            // gave every player on the same side the identical CSS anchor, so a
+            // third player could sit directly behind the first remote player's
+            // tab on clients whose own seat was at an end of the player order.
+            // Reflow the complete roster from the local player's tab outwards.
+            const leftHumans=[];
+            const rightHumans=[];
+            for(const tab of otherHumans){
+                const playerId=tab.dataset.multiplayerPlayerId||'';
+                const playerIndex=localClassicMatch.playerIds.indexOf(playerId);
+                (playerIndex>=0&&playerIndex<ownIndex?leftHumans:rightHumans).push({tab,playerIndex});
             }
+            leftHumans.sort((a,b)=>b.playerIndex-a.playerIndex);
+            rightHumans.sort((a,b)=>a.playerIndex-b.playerIndex);
+            for(const {tab} of leftHumans){
+                tab.style.right=`calc(50% + ${leftOffset}px)`;
+                tab.style.left='auto';
+                leftOffset+=tab.getBoundingClientRect().width+6;
+            }
+            for(const {tab} of rightHumans){
+                tab.style.left=`calc(50% + ${rightOffset}px)`;
+                tab.style.right='auto';
+                rightOffset+=tab.getBoundingClientRect().width+6;
+            }
+
             for(const tab of aiTabs){
-                // AI/real-zoo visit tabs continue outward from the multiplayer
+                // AI/real-zoo visit tabs continue outward from all multiplayer
                 // tabs, alternating sides so they never sit behind them.
                 const useLeft=leftOffset<=rightOffset;
                 if(useLeft){
@@ -18408,7 +18428,23 @@ function performClassicGameAction(action) {
        localMultiplayerBrowserTransport?.role==='peer' &&
        localMultiplayerBrowserTransport.playerId===localClassicMatch.activePlayerId &&
        !performClassicGameAction.authorityExecuting){
-        return sendLocalMultiplayerBrowserAction('classic-turn-action',{
+        // The authoritative host executes Player 2's progression action and
+        // sends a fresh zoo snapshot back. Zoo snapshots contain historical
+        // zoom/scroll data for Save/Load, but a network action must never move
+        // the camera of the browser that initiated it. Capture the peer's view
+        // before sending and restore it after the action round-trip. Updating
+        // peerCamera up front also makes any intervening sync packet use this
+        // exact local view rather than the host-side snapshot camera.
+        const peerActionView={
+            scrollLeft:zooBoard?.scrollLeft||0,
+            scrollTop:zooBoard?.scrollTop||0,
+            zoom:Number(state.zoom)||1
+        };
+        if(localMultiplayerBrowserTransport){
+            localMultiplayerBrowserTransport.peerCamera={...peerActionView};
+            localMultiplayerBrowserTransport.peerCameraInitialised=true;
+        }
+        const actionPromise=sendLocalMultiplayerBrowserAction('classic-turn-action',{
             action:{
                 type:action.type,
                 destination:multiplayerDestinationToWire(action.destination),
@@ -18432,6 +18468,25 @@ function performClassicGameAction(action) {
                     autonomousAI:Boolean(state.autonomousTradeOffer)
                 }
             }
+        });
+        return Promise.resolve(actionPromise).then(async result=>{
+            // Wait until the authoritative sync/import has had a chance to
+            // render before restoring the local-only camera. Two paints cover
+            // importGameState's own deferred scroll restoration as well.
+            await new Promise(resolve=>requestAnimationFrame(resolve));
+            await new Promise(resolve=>requestAnimationFrame(resolve));
+            if(localMultiplayerBrowserTransport?.role==='peer'){
+                state.zoom=peerActionView.zoom;
+                document.documentElement.style.setProperty('--zoo-zoom',state.zoom);
+                await new Promise(resolve=>requestAnimationFrame(resolve));
+                const maxLeft=Math.max(0,zooBoard.scrollWidth-zooBoard.clientWidth);
+                const maxTop=Math.max(0,zooBoard.scrollHeight-zooBoard.clientHeight);
+                zooBoard.scrollLeft=Math.max(0,Math.min(maxLeft,peerActionView.scrollLeft));
+                zooBoard.scrollTop=Math.max(0,Math.min(maxTop,peerActionView.scrollTop));
+                localMultiplayerBrowserTransport.peerCamera={...peerActionView};
+                localMultiplayerBrowserTransport.peerCameraInitialised=true;
+            }
+            return result;
         });
     }
     if(localClassicMatch &&
@@ -19759,8 +19814,47 @@ async function applyLocalMultiplayerSyncPacketToReplica(packet,replica=localMult
             }finally{
                 autoResumeWriteSuppressed=false;
             }
+        }else if(own && previousViewingPlayerId && !wasVisitingRealZoo){
+            // A peer may be actively looking at the other HUMAN zoo. The old
+            // path deliberately avoided importing `own` while visiting, but it
+            // also meant the displayed remote zoo stayed frozen at the snapshot
+            // from the moment the visit began. Host sync packets already carry
+            // the newest snapshot for every player, so refresh the zoo that is
+            // actually on screen instead of waiting for a page reload.
+            const viewed=localClassicMatch.players?.[previousViewingPlayerId]?.snapshot;
+            if(viewed){
+                // Camera/zoom belong to the spectator, not to the remote zoo.
+                const spectatorView={
+                    scrollLeft:zooBoard.scrollLeft,
+                    scrollTop:zooBoard.scrollTop,
+                    zoom:Number(state.zoom)||1
+                };
+                const imported=cloneForSave(viewed);
+                if(imported?.view)delete imported.view;
+                autoResumeWriteSuppressed=true;
+                try{
+                    await importGameState(imported,{deferRender:false});
+                    if(localClassicMatch?.rules?.activeCategories)
+                        applyMultiplayerCategoryRules(localClassicMatch.rules.activeCategories);
+                    createZooNameEditor();
+                    renderVisitedZooQuickTabs();renderTrade();
+                    showHumanZooVisitReturnButton();
+                    state.zoom=spectatorView.zoom;
+                    document.documentElement.style.setProperty('--zoo-zoom',state.zoom);
+                    await new Promise(resolve=>requestAnimationFrame(resolve));
+                    const maxLeft=Math.max(0,zooBoard.scrollWidth-zooBoard.clientWidth);
+                    const maxTop=Math.max(0,zooBoard.scrollHeight-zooBoard.clientHeight);
+                    zooBoard.scrollLeft=Math.max(0,Math.min(maxLeft,spectatorView.scrollLeft));
+                    zooBoard.scrollTop=Math.max(0,Math.min(maxTop,spectatorView.scrollTop));
+                }finally{
+                    autoResumeWriteSuppressed=false;
+                }
+            }else{
+                renderVisitedZooQuickTabs();
+                renderTrade();
+            }
         }else if(own){
-            // Background sync while visiting: refresh shared chrome only.
+            // AI/real-zoo visits remain independent from human multiplayer sync.
             renderVisitedZooQuickTabs();
             renderTrade();
         }
@@ -21318,6 +21412,19 @@ function clearAutoResumeSnapshot() {
     lastAutoResumeTurn = null;
 }
 
+function multiplayerOwnedGameStateForResume() {
+    // A human-zoo visit temporarily imports the OTHER player's zoo into the
+    // global `state` object. Auto-resume must never persist that presentation
+    // state as this browser's owned zoo, otherwise refreshing while spectating
+    // can make the peer reconnect as a copy of the zoo they were viewing.
+    if (localClassicMatch?.viewingPlayerId &&
+        localClassicMatch.viewingPlayerId !== localClassicMatch.activePlayerId) {
+        const owned = localClassicMatch.players?.[localClassicMatch.activePlayerId]?.snapshot;
+        if (owned?.state) return cloneForSave(owned);
+    }
+    return exportCurrentGameState();
+}
+
 function writeAutoResumeSnapshot(force = false) {
     if (
         !state.loaded ||
@@ -21326,7 +21433,9 @@ function writeAutoResumeSnapshot(force = false) {
         state.historyViewTurn !== null
     ) return false;
 
-    const turn = Number(state.turn) || 0;
+    const resumeGame = multiplayerOwnedGameStateForResume();
+    const resumeTurn = Number(resumeGame?.state?.turn);
+    const turn = Number.isFinite(resumeTurn) ? resumeTurn : (Number(state.turn) || 0);
     if (!force && lastAutoResumeTurn === turn) return false;
 
     try {
@@ -21335,8 +21444,8 @@ function writeAutoResumeSnapshot(force = false) {
             gameVersion: ZOO_CURATOR_VERSION,
             savedAt: new Date().toISOString(),
             turn,
-            zooName: state.zooName,
-            game: serialiseSpecial(exportCurrentGameState()),
+            zooName: resumeGame?.state?.zooName || state.zooName,
+            game: serialiseSpecial(resumeGame),
             // Multiplayer lives above ordinary zoo state, so persist the
             // complete match container separately. Without this, refresh
             // restored only whichever zoo happened to be open.
@@ -21478,10 +21587,21 @@ function restoreAutoResumeSnapshot() {
                     localClassicMatch.rules.turnMode==='simultaneous'?'simultaneous':'alternating';
                 pendingMultiplayerSetup=cloneForSave(localClassicMatch.rules);
                 applyMultiplayerCategoryRules(localClassicMatch.rules.activeCategories);
-                // Keep the active seat snapshot consistent with the authoritative
-                // match rule immediately after resume.
-                syncActiveZooIntoLocalMatch();
             }
+
+            // The auto-resume `game` field in older builds could contain the
+            // remote human zoo that happened to be on screen at refresh time.
+            // The match container already knows which seat this browser owns;
+            // make that seat authoritative before any call can synchronise the
+            // global state back into the match. This also repairs those older
+            // contaminated resume records on their next successful reconnect.
+            const resumeOwner=localClassicMatch.players?.[localClassicMatch.activePlayerId]?.snapshot;
+            if(resumeOwner?.state){
+                importGameState(cloneForSave(resumeOwner),{deferRender:true});
+                if(localClassicMatch.rules?.activeCategories)
+                    applyMultiplayerCategoryRules(localClassicMatch.rules.activeCategories);
+            }
+            syncActiveZooIntoLocalMatch();
             // A restored network match is reconnected after startup. Do not
             // enable the legacy same-tab peer simulator here: it can consume
             // authoritative syncs and mutate the restored match before the

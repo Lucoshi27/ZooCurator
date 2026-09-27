@@ -20365,12 +20365,18 @@ async function authorizeHumanTradeWithServer(type,payload={}){
     if(!operation)return {ok:true,legacy:true};
     const wire={operation};
     if(operation==='offer'){
+        const requestedLocalId=payload.requestedPlayerId;
+        const requestedServerPlayer=multiplayerServerPlayerForLocalId(requestedLocalId);
+        if(!requestedServerPlayer?.playerId)
+            return {ok:false,reason:'trade-target-not-connected'};
         wire.tradeId=payload.tradeId;
-        wire.toPlayerId=payload.requestedPlayerId;
+        wire.toPlayerId=requestedServerPlayer.playerId;
         wire.offeredAnimalId=payload.offeredAnimalId;
         wire.requestedAnimalId=payload.requestedAnimalId;
-        wire.offeredTransferId=payload.offeredTransferId;
-        wire.requestedTransferId=payload.requestedTransferId;
+        wire.offeredTransferId=payload.offeredTransferId ??
+            nextDirectTradeAnimalId(localClassicMatch?.players?.[requestedLocalId]?.snapshot);
+        wire.requestedTransferId=payload.requestedTransferId ??
+            nextDirectTradeAnimalId(localClassicMatch?.players?.[localClassicMatch?.activePlayerId]?.snapshot);
     }else{
         wire.tradeId=payload.offerId;
         if((operation==='accept'||operation==='claim')&&payload.destination)wire.destination=payload.destination;
@@ -20383,9 +20389,24 @@ async function authorizeHumanTradeWithServer(type,payload={}){
 }
 
 
+function multiplayerLocalPlayerIdForServerId(serverPlayerId){
+    const serverPlayer=(localMultiplayerBrowserTransport?.serverPlayers||[])
+        .find(p=>String(p?.playerId||'')===String(serverPlayerId||''));
+    return serverPlayer?.seat?`player-${Number(serverPlayer.seat)}`:null;
+}
+function normaliseAuthoritativeHumanTradeForLocalUI(trade){
+    if(!trade)return trade;
+    const copy=cloneForSave(trade);
+    copy.fromServerPlayerId=trade.fromPlayerId;
+    copy.toServerPlayerId=trade.toPlayerId;
+    copy.fromPlayerId=multiplayerLocalPlayerIdForServerId(trade.fromPlayerId)||trade.fromPlayerId;
+    copy.toPlayerId=multiplayerLocalPlayerIdForServerId(trade.toPlayerId)||trade.toPlayerId;
+    return copy;
+}
+
 function applyAuthoritativeHumanTradeMessage(message){
     if(!localClassicMatch||message?.action!=='human-trade'||message?.type!=='action-committed')return false;
-    const incoming=message.trade;
+    const incoming=normaliseAuthoritativeHumanTradeForLocalUI(message.trade);
     if(!incoming?.id)return false;
 
     if(!Array.isArray(localClassicMatch.pendingPlayerTrades))
@@ -20401,11 +20422,12 @@ function applyAuthoritativeHumanTradeMessage(message){
     // produced by the transaction. Keep replicas current without asking the
     // browser host to replay ownership mutations.
     for(const update of (Array.isArray(message.zooUpdates)?message.zooUpdates:[])){
-        const player=localClassicMatch.players?.[update.playerId];
+        const localUpdatePlayerId=multiplayerLocalPlayerIdForServerId(update.playerId);
+        const player=localClassicMatch.players?.[localUpdatePlayerId];
         if(player&&update.zoo){
             player.snapshot=cloneForSave(update.zoo);
             player.lastServerZooRevision=Number(update.revision)||0;
-            if(update.playerId===localMultiplayerBrowserTransport?.serverPlayerId){
+            if(String(update.playerId)===String(localMultiplayerBrowserTransport?.serverPlayerId)){
                 localMultiplayerBrowserTransport.durableZooRevision=Number(update.revision)||0;
                 localMultiplayerBrowserTransport.durableOwnZooSnapshot=cloneForSave(update.zoo);
                 localMultiplayerBrowserTransport.durableZooQueuedSnapshot=null;
@@ -20418,8 +20440,9 @@ function applyAuthoritativeHumanTradeMessage(message){
     }
 
     if(incoming.status==='accepted-awaiting-sender-claim'){
-        const senderZoo=(message.zooUpdates||[]).find(u=>u.playerId===incoming.fromPlayerId)?.zoo
-            ||localClassicMatch.players?.[incoming.fromPlayerId]?.snapshot;
+        const senderZoo=(message.zooUpdates||[]).find(
+                u=>String(u.playerId)===String(incoming.fromServerPlayerId)
+            )?.zoo || localClassicMatch.players?.[incoming.fromPlayerId]?.snapshot;
         const transferred=(senderZoo?.state?.animals||[]).find(
             a=>String(a?.id)===String(incoming.requestedTransferId)
         );
@@ -35500,7 +35523,9 @@ function tryDropOnOutgoingOffer(event, animal) {
                     tradeId,
                     offeredAnimalId:animal.id,
                     requestedPlayerId:draft.requestedPlayerId,
-                    requestedAnimalId:requested.id
+                    requestedAnimalId:requested.id,
+                    offeredTransferId:nextDirectTradeAnimalId(localClassicMatch.players[draft.requestedPlayerId]?.snapshot),
+                    requestedTransferId:nextDirectTradeAnimalId(localClassicMatch.players[fromId]?.snapshot)
                 });
                 return true;
             }

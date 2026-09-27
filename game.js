@@ -14619,6 +14619,23 @@ function trueEntrancePointAtPerimeter(u,b){
     if(q.side==='bottom')return{x:b.x+b.w*q.t,y:b.y+b.h};
     return{x:b.x,y:b.y+b.h*q.t};
 }
+function trueEntranceHasInteriorAccess(spec,b){
+    const p=trueEntrancePointAtPerimeter(trueEntrancePerimeterPosition(spec,b),b);
+    const occupied=trueEnclosureSpatialIndex().occupied;
+    const col=Math.floor(p.x/TRUE_ENC_CELL_W),row=Math.floor(p.y/TRUE_ENC_CELL_H);
+    const inward=spec.side==='top'?{col,row:row+1}:spec.side==='bottom'?{col,row:row-1}:spec.side==='left'?{col:col+1,row}:{col:col-1,row};
+    if(occupied.has(trueBuilderCellKey(inward.col,inward.row)))return false;
+    const minCol=Math.floor(b.x/TRUE_ENC_CELL_W),maxCol=Math.ceil((b.x+b.w)/TRUE_ENC_CELL_W)-1;
+    const minRow=Math.floor(b.y/TRUE_ENC_CELL_H),maxRow=Math.ceil((b.y+b.h)/TRUE_ENC_CELL_H)-1;
+    return inward.col>minCol&&inward.col<maxCol&&inward.row>minRow&&inward.row<maxRow;
+}
+function trueNearestAccessibleEntranceSpec(u,b){
+    const P=2*(b.w+b.h),step=Math.min(TRUE_ENC_CELL_W,TRUE_ENC_CELL_H)/4;
+    for(let d=0;d<=P/2;d+=step)for(const cu of d?[u-d,u+d]:[u]){
+        const spec=trueEntranceSpecFromPerimeter(cu,b);if(trueEntranceHasInteriorAccess(spec,b))return spec;
+    }
+    return trueEntranceSpecFromPerimeter(u,b);
+}
 function trueClosestPerimeterPosition(x,y,b){
     const candidates=[
       {d:Math.abs(y-b.y),u:Math.max(0,Math.min(b.w,x-b.x))},
@@ -14652,9 +14669,9 @@ function ensureTrueZooEntranceDrag(){
     });
     zooCanvas.addEventListener('pointermove',e=>{
         if(!drag||e.pointerId!==drag.pointerId)return;const b=trueZooGroundsBounds();if(!b)return;
-        const p=world(e),u=trueClosestPerimeterPosition(p.x,p.y,b);state.trueEnclosureBuilder.zooEntrance=trueEntranceSpecFromPerimeter(u,b);ensureTrueZooGroundsVisual();
+        const p=world(e),u=trueClosestPerimeterPosition(p.x,p.y,b);state.trueEnclosureBuilder.zooEntrance=trueNearestAccessibleEntranceSpec(u,b);ensureTrueZooGroundsVisual();
     });
-    const stop=e=>{if(drag&&e.pointerId===drag.pointerId)drag=null;};
+    const stop=e=>{if(!drag||e.pointerId!==drag.pointerId)return;drag=null;state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;syncActiveZooIntoLocalMatch?.();};
     zooCanvas.addEventListener('pointerup',stop);zooCanvas.addEventListener('pointercancel',stop);
 }
 
@@ -14677,7 +14694,7 @@ function ensureTrueZooGroundsVisual(){
         layer.id='trueZooGroundsLayer';
         Object.assign(layer.style,{
             position:'absolute',left:'0',top:'0',
-            pointerEvents:'auto',zIndex:'0',overflow:'hidden'
+            pointerEvents:'none',zIndex:'140',overflow:'hidden'
         });
         zooCanvas.prepend(layer);
     }
@@ -14857,86 +14874,82 @@ function trueRenderedEnclosurePath(enclosure){
     const own=new Set(world.map(c=>trueBuilderCellKey(c.col,c.row)));
     const owners=trueEnclosureSpatialIndex().owners;
     const w=TRUE_ENC_CELL_W,h=TRUE_ENC_CELL_H,inset=TRUE_ENC_EXTERNAL_GAP/2;
-
     const otherAt=(col,row)=>{
         const owner=owners.get(trueBuilderCellKey(col,row));
         return owner!=null&&String(owner)!==String(enclosure.id);
     };
-    // Build one orthogonal perimeter from the occupied-cell union. A vertex is
-    // emitted only when the fence actually changes direction. This removes the
-    // old per-cell "connector" notches: rectangles have 4 corners, an L has 6,
-    // and a T has 8.
-    const edges=[];
+
+    // Build the occupied-cell union first, without per-cell offsets. Straight
+    // walls therefore remain continuous when a neighbour starts halfway along.
+    const raw=[];
     for(const c of world){
         const T=!own.has(trueBuilderCellKey(c.col,c.row-1)),
               R=!own.has(trueBuilderCellKey(c.col+1,c.row)),
               B=!own.has(trueBuilderCellKey(c.col,c.row+1)),
               L=!own.has(trueBuilderCellKey(c.col-1,c.row));
-        const ti=T?(otherAt(c.col,c.row-1)?0:inset):0,
-              ri=R?(otherAt(c.col+1,c.row)?0:inset):0,
-              bi=B?(otherAt(c.col,c.row+1)?0:inset):0,
-              li=L?(otherAt(c.col-1,c.row)?0:inset):0;
         const x=(c.col-minCol)*w,y=(c.row-minRow)*h;
-        // Offset each exposed run as a whole. Endpoints deliberately extend to
-        // the neighbouring run's coordinate; no tiny orthogonal step is added
-        // merely because two adjacent cells have different outside-gap states.
-        if(T)edges.push({x1:x+(L?li:0),y1:y+ti,x2:x+w-(R?ri:0),y2:y+ti});
-        if(R)edges.push({x1:x+w-ri,y1:y+(T?ti:0),x2:x+w-ri,y2:y+h-(B?bi:0)});
-        if(B)edges.push({x1:x+w-(R?ri:0),y1:y+h-bi,x2:x+(L?li:0),y2:y+h-bi});
-        if(L)edges.push({x1:x+li,y1:y+h-(B?bi:0),x2:x+li,y2:y+(T?ti:0)});
+        if(T)raw.push({axis:'h',fixed:y,a:x,b:x+w,side:'T',cell:c});
+        if(R)raw.push({axis:'v',fixed:x+w,a:y,b:y+h,side:'R',cell:c});
+        if(B)raw.push({axis:'h',fixed:y+h,a:x,b:x+w,side:'B',cell:c});
+        if(L)raw.push({axis:'v',fixed:x,a:y,b:y+h,side:'L',cell:c});
     }
 
-    // Merge collinear touching/overlapping runs. This is the key simplification:
-    // cell boundaries disappear completely before SVG path generation.
     const groups=new Map();
-    for(const e of edges){
-        const horizontal=Math.abs(e.y1-e.y2)<.01;
-        const fixed=horizontal?e.y1:e.x1;
-        const a=horizontal?Math.min(e.x1,e.x2):Math.min(e.y1,e.y2);
-        const b=horizontal?Math.max(e.x1,e.x2):Math.max(e.y1,e.y2);
-        const key=`${horizontal?'h':'v'}:${fixed.toFixed(3)}`;
+    for(const e of raw){
+        const key=e.axis+':'+e.fixed.toFixed(3)+':'+e.side;
         if(!groups.has(key))groups.set(key,[]);
-        groups.get(key).push({axis:horizontal?'h':'v',fixed,a,b});
+        groups.get(key).push(e);
     }
     const merged=[];
     for(const list of groups.values()){
         list.sort((a,b)=>a.a-b.a||a.b-b.b);
         let cur=null;
         for(const e of list){
-            if(!cur){cur={...e};continue;}
-            if(e.a<=cur.b+.01)cur.b=Math.max(cur.b,e.b);
-            else{merged.push(cur);cur={...e};}
+            if(!cur){cur={axis:e.axis,fixed:e.fixed,a:e.a,b:e.b,side:e.side,cells:[e.cell]};continue;}
+            if(e.a<=cur.b+.01){cur.b=Math.max(cur.b,e.b);cur.cells.push(e.cell);}
+            else{merged.push(cur);cur={axis:e.axis,fixed:e.fixed,a:e.a,b:e.b,side:e.side,cells:[e.cell]};}
         }
         if(cur)merged.push(cur);
     }
 
-    // Connect only genuine endpoints that are within the normal gap distance.
-    // At a shared-fence transition, extend the incident run to the intersection
-    // instead of drawing a separate little connector segment/corner.
+    // Offset each complete straight wall once. If any portion directly borders
+    // another enclosure, keep the WHOLE wall on the shared grid line. This
+    // removes the non-connecting step visible between the penguin enclosures.
+    for(const e of merged){
+        const shared=e.cells.some(c=>
+            e.side==='T'?otherAt(c.col,c.row-1):
+            e.side==='R'?otherAt(c.col+1,c.row):
+            e.side==='B'?otherAt(c.col,c.row+1):
+                         otherAt(c.col-1,c.row)
+        );
+        if(shared)continue;
+        if(e.side==='T'||e.side==='L')e.fixed+=inset;
+        else e.fixed-=inset;
+    }
+
+    // Extend only the existing orthogonal runs to their intersection. Never add
+    // a connector segment: rectangle/L/T outlines remain 4/6/8 corners.
     const H=merged.filter(e=>e.axis==='h'),V=merged.filter(e=>e.axis==='v');
     const eps=inset+.1;
-    for(const hRun of H){
-        for(const vRun of V){
-            const ix=vRun.fixed,iy=hRun.fixed;
-            const hx=ix<hRun.a?hRun.a-ix:ix>hRun.b?ix-hRun.b:0;
-            const vy=iy<vRun.a?vRun.a-iy:iy>vRun.b?iy-vRun.b:0;
-            if(hx<=eps&&vy<=eps){
-                const hEnd=Math.min(Math.abs(ix-hRun.a),Math.abs(ix-hRun.b))<=eps;
-                const vEnd=Math.min(Math.abs(iy-vRun.a),Math.abs(iy-vRun.b))<=eps;
-                if(hEnd&&vEnd){
-                    if(Math.abs(ix-hRun.a)<=eps)hRun.a=ix;
-                    if(Math.abs(ix-hRun.b)<=eps)hRun.b=ix;
-                    if(Math.abs(iy-vRun.a)<=eps)vRun.a=iy;
-                    if(Math.abs(iy-vRun.b)<=eps)vRun.b=iy;
-                }
-            }
-        }
+    for(const hRun of H)for(const vRun of V){
+        const ix=vRun.fixed,iy=hRun.fixed;
+        const hx=ix<hRun.a?hRun.a-ix:ix>hRun.b?ix-hRun.b:0;
+        const vy=iy<vRun.a?vRun.a-iy:iy>vRun.b?iy-vRun.b:0;
+        if(hx>eps||vy>eps)continue;
+        const hEnd=Math.min(Math.abs(ix-hRun.a),Math.abs(ix-hRun.b))<=eps;
+        const vEnd=Math.min(Math.abs(iy-vRun.a),Math.abs(iy-vRun.b))<=eps;
+        if(!hEnd||!vEnd)continue;
+        if(Math.abs(ix-hRun.a)<=eps)hRun.a=ix;
+        if(Math.abs(ix-hRun.b)<=eps)hRun.b=ix;
+        if(Math.abs(iy-vRun.a)<=eps)vRun.a=iy;
+        if(Math.abs(iy-vRun.b)<=eps)vRun.b=iy;
     }
 
     return merged.map(e=>e.axis==='h'
-        ?`M${e.a},${e.fixed}L${e.b},${e.fixed}`
-        :`M${e.fixed},${e.a}L${e.fixed},${e.b}`).join('');
+        ?'M'+e.a+','+e.fixed+'L'+e.b+','+e.fixed
+        :'M'+e.fixed+','+e.a+'L'+e.fixed+','+e.b).join('');
 }
+
 function trueBuiltWorldCells(enclosure, atCol=null, atRow=null){
     const baseCol=atCol==null?Math.round((Number(enclosure.x)||0)/TRUE_ENC_CELL_W):atCol;
     const baseRow=atRow==null?Math.round((Number(enclosure.y)||0)/TRUE_ENC_CELL_H):atRow;
@@ -14947,49 +14960,34 @@ function trueBuiltWorldCells(enclosure, atCol=null, atRow=null){
     return cells.map(c=>({col:baseCol+(c.col-minCol),row:baseRow+(c.row-minRow)}));
 }
 function repairTrueBuiltEnclosureGeometry(){
-    if(state.gameMode!=='true'||state.sandboxMode) return false;
+    if(state.gameMode!=='true'||state.sandboxMode)return false;
     const b=normaliseTrueEnclosureBuilderState();
-    if(Number(b.geometryVersion)>=2) return false;
-
-    const enclosures=(state.enclosures||[]).filter(e=>e?.trueBuilt)
-        .slice().sort((a,b)=>(Number(a.y)||0)-(Number(b.y)||0)||(Number(a.x)||0)-(Number(b.x)||0)||(Number(a.id)||0)-(Number(b.id)||0));
-    const occupied=new Set();
-    let changed=false;
-
-    const freeAt=(enc,col,row)=>trueBuiltWorldCells(enc,col,row).every(c=>!occupied.has(trueBuilderCellKey(c.col,c.row)));
-    const reserve=(enc,col,row)=>trueBuiltWorldCells(enc,col,row).forEach(c=>occupied.add(trueBuilderCellKey(c.col,c.row)));
-
+    if(Number(b.geometryVersion)>=3)return false;
+    const enclosures=(state.enclosures||[]).filter(e=>e?.trueBuilt).slice()
+      .sort((a,b)=>(Number(a.y)||0)-(Number(b.y)||0)||(Number(a.x)||0)-(Number(b.x)||0)||(Number(a.id)||0)-(Number(b.id)||0));
+    if(!enclosures.length){b.geometryVersion=3;return false;}
+    const dims=enc=>{const c=trueCanonicalCellList(enc.cells||[]);return{w:Math.max(...c.map(x=>x.col))-Math.min(...c.map(x=>x.col))+1,h:Math.max(...c.map(x=>x.row))-Math.min(...c.map(x=>x.row))+1};};
+    const total=enclosures.reduce((n,e)=>{const d=dims(e);return n+d.w*d.h;},0);
+    const target=Math.max(6,Math.ceil(Math.sqrt(total*2))+3),spineCol=1,startCol=3;
+    let row=2,col=startCol,shelfH=0,maxCol=startCol,maxRow=2,changed=false;
     for(const enc of enclosures){
-        const preferredCol=Math.max(0,Math.round((Number(enc.x)||0)/TRUE_ENC_CELL_W));
-        const preferredRow=Math.max(0,Math.round((Number(enc.y)||0)/TRUE_ENC_CELL_H));
-        let col=preferredCol,row=preferredRow;
-
-        if(!freeAt(enc,col,row)){
-            let found=null;
-            // Search outward from the original position. This is a one-time
-            // migration only; normal builder placement remains O(number of cells).
-            for(let radius=1;radius<=40&&!found;radius++){
-                for(let dy=-radius;dy<=radius&&!found;dy++){
-                    for(let dx=-radius;dx<=radius;dx++){
-                        if(Math.max(Math.abs(dx),Math.abs(dy))!==radius) continue;
-                        const c=preferredCol+dx,r=preferredRow+dy;
-                        if(c<0||r<0) continue;
-                        if(freeAt(enc,c,r)){found={col:c,row:r};break;}
-                    }
-                }
-            }
-            if(found){col=found.col;row=found.row;}
-        }
-
+        const d=dims(enc);
+        if(col>startCol&&col+d.w>target){row+=shelfH+1;col=startCol;shelfH=0;}
         const nx=col*TRUE_ENC_CELL_W,ny=row*TRUE_ENC_CELL_H;
-        if(Math.abs((Number(enc.x)||0)-nx)>.01||Math.abs((Number(enc.y)||0)-ny)>.01) changed=true;
-        enc.x=nx;enc.y=ny;reserve(enc,col,row);
+        if((Number(enc.x)||0)!==nx||(Number(enc.y)||0)!==ny)changed=true;
+        enc.x=nx;enc.y=ny;maxCol=Math.max(maxCol,col+d.w-1);maxRow=Math.max(maxRow,row+d.h-1);
+        shelfH=Math.max(shelfH,d.h);col+=d.w+1;trueInvalidateEnclosureGeometry(enc);
     }
-
-    b.geometryVersion=2;
-    if(changed) state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
+    // col 0/outer row are deliberately unused: perimeter-only walking does not
+    // satisfy access. Gate -> interior spine -> branch aisle -> enclosure side.
+    b.zooGrounds={x:0,y:0,w:(maxCol+2)*TRUE_ENC_CELL_W,h:(maxRow+2)*TRUE_ENC_CELL_H};
+    b.zooGroundsVersion=3;
+    b.zooEntrance={side:'top',t:((spineCol+.5)*TRUE_ENC_CELL_W)/b.zooGrounds.w};
+    b.geometryVersion=3;trueInvalidateEnclosureGeometry();
+    if(changed)state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
     return changed;
 }
+
 function normaliseTrueEnclosureArchitecture(){
     if(state.gameMode!=='true'||state.sandboxMode)return false;
     const b=normaliseTrueEnclosureBuilderState();
@@ -17560,7 +17558,7 @@ function renderEnclosure(
         const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
         svg.setAttribute('viewBox',`0 0 ${bounds.w} ${bounds.h}`);
         Object.assign(svg.style,{position:'absolute',inset:'0',width:'100%',height:'100%',overflow:'visible',pointerEvents:'none'});
-        if(renderColourScheme==='overloon'){
+        {
             const world=trueBuiltWorldCells(enclosure),own=new Set(world.map(c=>trueBuilderCellKey(c.col,c.row))),owners=renderContext?.trueSpatialOwners || trueEnclosureSpatialIndex().owners;
             const minCol=Math.min(...world.map(c=>c.col)),minRow=Math.min(...world.map(c=>c.row));
             const otherAt=(col,row)=>{const owner=owners.get(trueBuilderCellKey(col,row));return owner!=null&&String(owner)!==String(enclosure.id);};
@@ -17571,8 +17569,10 @@ function renderEnclosure(
                       bi=B?(otherAt(c.col,c.row+1)?0:TRUE_ENC_EXTERNAL_GAP/2):0,
                       li=L?(otherAt(c.col-1,c.row)?0:TRUE_ENC_EXTERNAL_GAP/2):0;
                 const fill=document.createElement('div');
+                const grass=['#C3DC9B','#BDD793','#C9E2A5','#B8D28D','#C6DFA0'];
+                const grassColour=grass[Math.abs(Number(enclosure.id)||0)%grass.length];
                 Object.assign(fill.style,{position:'absolute',left:`${(c.col-minCol)*TRUE_ENC_CELL_W+li}px`,top:`${(c.row-minRow)*TRUE_ENC_CELL_H+ti}px`,
-                    width:`${TRUE_ENC_CELL_W-li-ri}px`,height:`${TRUE_ENC_CELL_H-ti-bi}px`,background:renderPalette.enclosure,pointerEvents:'none',zIndex:'-1'});
+                    width:`${TRUE_ENC_CELL_W-li-ri}px`,height:`${TRUE_ENC_CELL_H-ti-bi}px`,background:grassColour,pointerEvents:'none',zIndex:'-1'});
                 element.appendChild(fill);
             }
         }
@@ -19830,7 +19830,18 @@ async function applyLocalMultiplayerSyncPacketToReplica(packet,replica=localMult
     replica.revision=revision;replica.turnPlayerId=packet.turnPlayerId||replica.turnPlayerId;
     replica.rules=cloneForSave(packet.rules||replica.rules||null);
     replica.playerIds=Array.isArray(packet.playerIds)?[...packet.playerIds]:Object.keys(packet.players||{});
-    replica.players=cloneForSave(packet.players||{});
+    const incomingPlayers=cloneForSave(packet.players||{});
+    if(localMultiplayerBrowserChannel?.serverBacked===true){
+        const previousPlayers=replica.players||{};
+        for(const [id,incoming] of Object.entries(incomingPlayers)){
+            const previous=previousPlayers[id];
+            if(previous?.snapshot)incoming.snapshot=cloneForSave(previous.snapshot);
+        }
+        const ownDurable=localMultiplayerBrowserTransport?.durableOwnZooSnapshot;
+        if(ownDurable&&incomingPlayers[replica.playerId])
+            incomingPlayers[replica.playerId].snapshot=cloneForSave(ownDurable);
+    }
+    replica.players=incomingPlayers;
     replica.pendingPlayerTrades=cloneForSave(packet.pendingPlayerTrades||[]).filter(offer=>
         directHumanTradeHasParticipant(offer,replica.playerId)
     );
@@ -19855,6 +19866,10 @@ async function applyLocalMultiplayerSyncPacketToReplica(packet,replica=localMult
         // A sync updates match data; it must not eject the peer from a zoo
         // they are currently inspecting.
         const previousViewingPlayerId=localClassicMatch?.viewingPlayerId||null;
+        const previousPrivateVisitState=localClassicMatch?.privateVisitState||null;
+        const previousTradeDrafts=localClassicMatch?.tradeDrafts||{};
+        const durableOwnSnapshot=localMultiplayerBrowserTransport?.durableOwnZooSnapshot
+            ?cloneForSave(localMultiplayerBrowserTransport.durableOwnZooSnapshot):null;
         const wasVisitingRealZoo=!!state.visitingZoo;
         localClassicMatch={
             mode:'classic-multiplayer',
@@ -19868,10 +19883,13 @@ async function applyLocalMultiplayerSyncPacketToReplica(packet,replica=localMult
             awaitingLocalZooSetup:localClassicMatch?.awaitingLocalZooSetup,
             players:cloneForSave(replica.players),
             pendingPlayerTrades:cloneForSave(replica.pendingPlayerTrades||[]),
-            tradeDrafts:localClassicMatch?.tradeDrafts||{},
+            tradeDrafts:previousTradeDrafts,
+            privateVisitState:previousPrivateVisitState,
             events:cloneForSave(replica.events||[]),
             nextEventSequence:Math.max(1,...(replica.events||[]).map(e=>Number(String(e.id||'').split(':').at(-1))||0))+1
         };
+        if(durableOwnSnapshot&&localClassicMatch.players?.[replica.playerId])
+            localClassicMatch.players[replica.playerId].snapshot=durableOwnSnapshot;
         if(localClassicMatch.rules?.activeCategories){
             pendingMultiplayerSetup={
                 gameMode:localClassicMatch.rules.gameMode==='true'?'true':'classic',
@@ -20357,6 +20375,7 @@ function applyAuthoritativeHumanTradeMessage(message){
             player.lastServerZooRevision=Number(update.revision)||0;
             if(update.playerId===localMultiplayerBrowserTransport?.serverPlayerId){
                 localMultiplayerBrowserTransport.durableZooRevision=Number(update.revision)||0;
+                localMultiplayerBrowserTransport.durableOwnZooSnapshot=cloneForSave(update.zoo);
                 localMultiplayerBrowserTransport.durableZooQueuedSnapshot=null;
                 localMultiplayerBrowserTransport.durableZooQueuedSignature='';
                 try{
@@ -20734,7 +20753,8 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
         durableZooCommitPending:false,durableZooCommitBaseRevision:0,durableZooQueuedSnapshot:null,
         durableZooQueuedSignature:'',durableZooCommitWaiters:[],
         durableZooCommitTimer:null,durableZooScheduledSnapshot:null,durableZooScheduledSignature:'',
-        durableZooLastRequestedSignature:''
+        durableZooLastRequestedSignature:'',durableOwnZooSnapshot:null,
+        awaitingAuthoritativeZooCorrection:false,lastImportedViewedZooSignature:''
     };
     channel.onmessage=async event=>{
         // Ignore late events from a channel that has already been replaced.
@@ -20824,8 +20844,18 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 const ownServerId=String(transport.serverPlayerId||'');
                 const zoo=message.zoo;
                 const zooRevision=Math.max(0,Number(message.revision)||0);
+                if(zoo&&typeof zoo==='object'&&!Array.isArray(zoo)){
+                    const serverPlayer=transport.serverPlayers?.find(p=>String(p?.playerId||'')===serverPlayerId);
+                    const localTargetId=serverPlayer?.seat?`player-${Number(serverPlayer.seat)}`:null;
+                    if(localTargetId&&localClassicMatch?.players?.[localTargetId])
+                        localClassicMatch.players[localTargetId].snapshot=cloneForSave(zoo);
+                    if(localTargetId&&localMultiplayerPeerReplica?.players?.[localTargetId])
+                        localMultiplayerPeerReplica.players[localTargetId].snapshot=cloneForSave(zoo);
+                }
                 if(serverPlayerId===ownServerId&&zoo&&typeof zoo==='object'&&!Array.isArray(zoo)){
                     transport.durableZooRevision=zooRevision;
+                    if(message.authoritativeCorrection===true)transport.awaitingAuthoritativeZooCorrection=false;
+                    transport.durableOwnZooSnapshot=cloneForSave(zoo);
                     const ownPlayer=localClassicMatch?.players?.[transport.playerId];
                     if(ownPlayer)ownPlayer.snapshot=cloneForSave(zoo);
                     try{transport.durableZooLastRequestedSignature=JSON.stringify(zoo);}catch(_){}
@@ -20845,7 +20875,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     // Only force a full own-zoo restore for an authenticated reconnect.
                     // Viewer zoo-state packets remain display data and must never overwrite
                     // the local player's zoo.
-                    if((transport.serverReturning===true||message.authoritativeTrade===true)&&!localClassicMatch?.viewingPlayerId){
+                    if((transport.serverReturning===true||message.authoritativeTrade===true||message.authoritativeCorrection===true)&&!localClassicMatch?.viewingPlayerId){
                         autoResumeWriteSuppressed=true;
                         try{
                             await importGameState(cloneForSave(zoo),{deferRender:false});
@@ -20863,6 +20893,31 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                         renderTrade();
                     }
                 }
+                if(serverPlayerId!==ownServerId&&zoo&&typeof zoo==='object'&&!Array.isArray(zoo)){
+                    const serverPlayer=transport.serverPlayers?.find(p=>String(p?.playerId||'')===serverPlayerId);
+                    const localTargetId=serverPlayer?.seat?`player-${Number(serverPlayer.seat)}`:null;
+                    if(localTargetId&&String(localClassicMatch?.viewingPlayerId||'')===localTargetId){
+                        let signature='';
+                        try{signature=JSON.stringify(zoo);}catch(_){}
+                        if(!signature||transport.lastImportedViewedZooSignature!==signature){
+                            const savedView={zoom:state.zoom,scrollLeft:zooBoard?.scrollLeft||0,scrollTop:zooBoard?.scrollTop||0};
+                            autoResumeWriteSuppressed=true;
+                            try{await importGameState(cloneForSave(zoo),{deferRender:false});}
+                            finally{autoResumeWriteSuppressed=false;}
+                            transport.lastImportedViewedZooSignature=signature;
+                            state.zoom=savedView.zoom;
+                            document.documentElement.style.setProperty('--zoo-zoom',state.zoom);
+                            requestAnimationFrame(()=>{
+                                if(zooBoard){
+                                    zooBoard.scrollLeft=savedView.scrollLeft;
+                                    zooBoard.scrollTop=savedView.scrollTop;
+                                }
+                            });
+                            renderVisitedZooQuickTabs();
+                            renderTrade();
+                        }
+                    }
+                }
             }else if(message.type==='zoo-state-rejected'){
                 const currentRevision=Math.max(0,Number(message.currentRevision)||0);
                 transport.durableZooRevision=currentRevision;
@@ -20871,12 +20926,16 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 transport.durableZooQueuedSnapshot=null;
                 transport.durableZooQueuedSignature='';
                 transport.durableZooLastRequestedSignature='';
+                transport.awaitingAuthoritativeZooCorrection=true;
                 settleDurableZooCommitWaiters(false);
                 console.warn('Durable multiplayer zoo state rejected:',message.code||'unknown');
             }else if(message.type==='live-view-subscribed'){
                 const ackSequence=Number(message.subscriptionSequence)||0;
                 if(!ackSequence||ackSequence===Number(transport.serverViewSubscriptionSequence)){
-                    transport.serverViewTargetPlayerId=message.targetPlayerId?String(message.targetPlayerId):null;
+                    const nextViewTarget=message.targetPlayerId?String(message.targetPlayerId):null;
+                    if(nextViewTarget!==transport.serverViewTargetPlayerId)
+                        transport.lastImportedViewedZooSignature='';
+                    transport.serverViewTargetPlayerId=nextViewTarget;
                     transport.serverViewSubscriptionPending=false;
                 }
             }else if(message.type==='progression-state'){
@@ -20912,7 +20971,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                         String(p.playerId||'')!==ownServerId &&
                         !previousConnectedIds.has(String(p.playerId||''))
                     );
-                    if(newlyConnectedPeer)queueMicrotask(()=>{
+                    if(newlyConnectedPeer&&channel.serverBacked!==true)queueMicrotask(()=>{
                         if(channel===localMultiplayerBrowserChannel&&localMultiplayerBrowserTransport?.role==='host')
                             emitLocalMultiplayerSync('server-peer-joined');
                     });

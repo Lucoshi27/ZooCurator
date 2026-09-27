@@ -3103,9 +3103,16 @@ function renderEnclosureAreaBackgrounds() {
                     : connectedEnclosureThemeGroups()
               )
     );
-    // Reuse this exact reconciliation while enclosure DOM is built. Previously
-    // every enclosure ran another state-mutating reconciliation in one render.
-    renderedConnectedAreaGroups = connectedGroups;
+    // Reuse the exact *visible* reconciliation while enclosure DOM is built.
+    // For handcrafted real-zoo layouts, procedural groups can be suppressed by
+    // areaEvolutionEligibleGeneratedGroups(). The old code stored the raw
+    // inferred groups here first, so enclosure cards were recoloured for Areas
+    // that were not actually rendered (notably Burgers' Zoo).
+    const visibleConnectedGroups =
+        state.gameMode==='true'
+            ? connectedGroups
+            : areaEvolutionEligibleGeneratedGroups(connectedGroups);
+    renderedConnectedAreaGroups = visibleConnectedGroups;
     renderedConnectedAreaGroupsSignature = areaRenderStateSignature();
 
     // Classic/Sandbox no longer use the legacy generated-Area SVG/title/leader
@@ -3114,7 +3121,7 @@ function renderEnclosureAreaBackgrounds() {
     // keeps generated and hand-built Areas on one visual architecture.
     if(state.gameMode!=='true'){
         generatedModernGeographicAreas=mergeCompletelyOverlappingAreaGroups(
-                areaEvolutionEligibleGeneratedGroups(connectedGroups)
+                visibleConnectedGroups
             )
             .filter(g=>g?.theme?.layer==='geography'||g?.theme?.geographicLevel)
             .filter(g=>!suppressedGeneratedGeographicAreaStore().has(generatedGeographicSuppressionKey(g)))
@@ -3595,8 +3602,44 @@ function displayEnclosureThemes(enclosure) {
     return visible;
 }
 
+function customAreaPresentationForEnclosure(enclosure){
+    if(state.gameMode==='true'||enclosure?.id==null)return null;
+    const id=String(enclosure.id);
+    const matches=(state.customAreas||[]).filter(area=>
+        area?.type!=='house' &&
+        (area.enclosureIds||[]).some(enclosureId=>String(enclosureId)===id)
+    );
+    if(!matches.length)return null;
+    matches.sort((a,b)=>
+        (Number(b.zOrder)||0)-(Number(a.zOrder)||0) ||
+        (a.enclosureIds?.length||Infinity)-(b.enclosureIds?.length||Infinity) ||
+        String(a.id||'').localeCompare(String(b.id||''))
+    );
+    return matches[0];
+}
+
+function applyCustomAreaEnclosurePresentation(element,enclosure){
+    const area=customAreaPresentationForEnclosure(enclosure);
+    if(!area)return false;
+    const colour=String(area.color||knownAreaColour(area.name)||'#587f50');
+    element.classList.add('custom-area-enclosure');
+    element.style.setProperty('--enclosure-custom-area-color',colour);
+    const image=element.querySelector('.enclosure-image');
+    if(image){
+        // Tint the actual card artwork from the authored Area colour instead of
+        // borrowing an inferred habitat/geography filter. An inset overlay keeps
+        // printed enclosure detail readable and works for arbitrary user colours.
+        image.style.boxShadow=`inset 0 0 0 999px color-mix(in srgb, ${colour} 24%, transparent)`;
+    }
+    return true;
+}
+
 function applyEnclosureThemePresentation(element, enclosure, precomputedThemes = null) {
-    const themes = precomputedThemes || displayEnclosureThemes(enclosure);
+    const customAreaOwnsColour=applyCustomAreaEnclosurePresentation(element,enclosure);
+    const rawThemes = precomputedThemes || displayEnclosureThemes(enclosure);
+    const themes = customAreaOwnsColour
+        ? rawThemes.filter(theme=>theme.layer==='special')
+        : rawThemes;
     if (!themes.length) return;
 
     element.classList.add('themed-enclosure');
@@ -14809,117 +14852,90 @@ function normaliseTrueBuiltEnclosureOccupancy(){
 
 function trueRenderedEnclosurePath(enclosure){
     const world=trueBuiltWorldCells(enclosure);
+    if(!world.length)return '';
     const minCol=Math.min(...world.map(c=>c.col)),minRow=Math.min(...world.map(c=>c.row));
     const own=new Set(world.map(c=>trueBuilderCellKey(c.col,c.row)));
     const owners=trueEnclosureSpatialIndex().owners;
     const w=TRUE_ENC_CELL_W,h=TRUE_ENC_CELL_H,inset=TRUE_ENC_EXTERNAL_GAP/2;
-    const raw=[],vertexPoints=new Map();
 
     const otherAt=(col,row)=>{
         const owner=owners.get(trueBuilderCellKey(col,row));
         return owner!=null&&String(owner)!==String(enclosure.id);
     };
-    // Shared corners are decided from the two INCIDENT sides of this cell,
-    // never from arbitrary occupancy around the vertex. A diagonal-only
-    // enclosure therefore cannot collapse the normal outside gap.
-    const incidentShared=(sideExposed,sideInset)=>
-        sideExposed && sideInset===0;
-    const remember=(vx,vy,x,y)=>{
-        const key=`${vx},${vy}`;
-        if(!vertexPoints.has(key))vertexPoints.set(key,[]);
-        const pts=vertexPoints.get(key);
-        if(!pts.some(p=>Math.abs(p.x-x)<.01&&Math.abs(p.y-y)<.01))pts.push({x,y});
-    };
-    const addH=(y,x1,x2,v1,v2)=>{
-        raw.push({axis:'h',fixed:y,a:Math.min(x1,x2),b:Math.max(x1,x2)});
-        remember(v1.x,v1.y,x1,y); remember(v2.x,v2.y,x2,y);
-    };
-    const addV=(x,y1,y2,v1,v2)=>{
-        raw.push({axis:'v',fixed:x,a:Math.min(y1,y2),b:Math.max(y1,y2)});
-        remember(v1.x,v1.y,x,y1); remember(v2.x,v2.y,x,y2);
-    };
-
+    // Build one orthogonal perimeter from the occupied-cell union. A vertex is
+    // emitted only when the fence actually changes direction. This removes the
+    // old per-cell "connector" notches: rectangles have 4 corners, an L has 6,
+    // and a T has 8.
+    const edges=[];
     for(const c of world){
-        const lx=(c.col-minCol)*w,ly=(c.row-minRow)*h;
         const T=!own.has(trueBuilderCellKey(c.col,c.row-1)),
               R=!own.has(trueBuilderCellKey(c.col+1,c.row)),
               B=!own.has(trueBuilderCellKey(c.col,c.row+1)),
               L=!own.has(trueBuilderCellKey(c.col-1,c.row));
-        // Each exposed CELL edge decides independently whether it meets a
-        // neighbouring enclosure. This prevents a neighbour touching one half
-        // of a long enclosure from dragging the entire side five pixels over.
         const ti=T?(otherAt(c.col,c.row-1)?0:inset):0,
               ri=R?(otherAt(c.col+1,c.row)?0:inset):0,
               bi=B?(otherAt(c.col,c.row+1)?0:inset):0,
               li=L?(otherAt(c.col-1,c.row)?0:inset):0;
-
-        const topShared=incidentShared(T,ti),
-              rightShared=incidentShared(R,ri),
-              bottomShared=incidentShared(B,bi),
-              leftShared=incidentShared(L,li),
-              tlShared=topShared||leftShared,
-              trShared=topShared||rightShared,
-              brShared=bottomShared||rightShared,
-              blShared=bottomShared||leftShared;
-        if(T)addH(ly+ti,lx+(L&&!tlShared?li:0),lx+w-(R&&!trShared?ri:0),
-            {x:c.col,y:c.row},{x:c.col+1,y:c.row});
-        if(R)addV(lx+w-ri,ly+(T&&!trShared?ti:0),ly+h-(B&&!brShared?bi:0),
-            {x:c.col+1,y:c.row},{x:c.col+1,y:c.row+1});
-        if(B)addH(ly+h-bi,lx+(L&&!blShared?li:0),lx+w-(R&&!brShared?ri:0),
-            {x:c.col,y:c.row+1},{x:c.col+1,y:c.row+1});
-        if(L)addV(lx+li,ly+(T&&!tlShared?ti:0),ly+h-(B&&!blShared?bi:0),
-            {x:c.col,y:c.row},{x:c.col,y:c.row+1});
+        const x=(c.col-minCol)*w,y=(c.row-minRow)*h;
+        // Offset each exposed run as a whole. Endpoints deliberately extend to
+        // the neighbouring run's coordinate; no tiny orthogonal step is added
+        // merely because two adjacent cells have different outside-gap states.
+        if(T)edges.push({x1:x+(L?li:0),y1:y+ti,x2:x+w-(R?ri:0),y2:y+ti});
+        if(R)edges.push({x1:x+w-ri,y1:y+(T?ti:0),x2:x+w-ri,y2:y+h-(B?bi:0)});
+        if(B)edges.push({x1:x+w-(R?ri:0),y1:y+h-bi,x2:x+(L?li:0),y2:y+h-bi});
+        if(L)edges.push({x1:x+li,y1:y+h-(B?bi:0),x2:x+li,y2:y+(T?ti:0)});
     }
 
-    // Close every logical corner explicitly. This is what fixes both the
-    // concave inside corner of L-shaped exhibits and the short transition where
-    // a shared/snapped fence changes back to a normally inset outside fence.
-    const connectors=[];
-    for(const pts of vertexPoints.values()){
-        if(pts.length<2)continue;
-        // Perimeters are normally degree 2. If a junction contributes more
-        // points, connect nearest neighbours only so we never draw across a cell.
-        const unused=pts.slice();
-        while(unused.length>1){
-            const a=unused.shift();
-            let best=0,bestD=Infinity;
-            for(let i=0;i<unused.length;i++){
-                const b=unused[i],d=(a.x-b.x)**2+(a.y-b.y)**2;
-                if(d<bestD){bestD=d;best=i;}
-            }
-            const b=unused.splice(best,1)[0];
-            if(bestD>0.001&&bestD<=inset*inset*2+0.1){
-                // Fence corners are orthogonal. A diagonal stitch was visible at
-                // concave/L-shaped corners (e.g. the bearded-dragon test).
-                if(Math.abs(a.x-b.x)<.01||Math.abs(a.y-b.y)<.01)
-                    connectors.push(`M${a.x},${a.y}L${b.x},${b.y}`);
-                else
-                    connectors.push(`M${a.x},${a.y}H${b.x}V${b.y}`);
-            }
-        }
-    }
-
+    // Merge collinear touching/overlapping runs. This is the key simplification:
+    // cell boundaries disappear completely before SVG path generation.
     const groups=new Map();
-    for(const s of raw){
-        const k=`${s.axis}:${s.fixed}`;
-        if(!groups.has(k))groups.set(k,[]);
-        groups.get(k).push(s);
+    for(const e of edges){
+        const horizontal=Math.abs(e.y1-e.y2)<.01;
+        const fixed=horizontal?e.y1:e.x1;
+        const a=horizontal?Math.min(e.x1,e.x2):Math.min(e.y1,e.y2);
+        const b=horizontal?Math.max(e.x1,e.x2):Math.max(e.y1,e.y2);
+        const key=`${horizontal?'h':'v'}:${fixed.toFixed(3)}`;
+        if(!groups.has(key))groups.set(key,[]);
+        groups.get(key).push({axis:horizontal?'h':'v',fixed,a,b});
     }
     const merged=[];
     for(const list of groups.values()){
         list.sort((a,b)=>a.a-b.a||a.b-b.b);
         let cur=null;
-        for(const s of list){
-            if(!cur){cur={...s};continue;}
-            if(s.a<=cur.b+0.01)cur.b=Math.max(cur.b,s.b);
-            else{merged.push(cur);cur={...s};}
+        for(const e of list){
+            if(!cur){cur={...e};continue;}
+            if(e.a<=cur.b+.01)cur.b=Math.max(cur.b,e.b);
+            else{merged.push(cur);cur={...e};}
         }
         if(cur)merged.push(cur);
     }
-    const lines=merged.map(s=>s.axis==='h'
-        ?`M${s.a},${s.fixed}L${s.b},${s.fixed}`
-        :`M${s.fixed},${s.a}L${s.fixed},${s.b}`);
-    return lines.concat(connectors).join('');
+
+    // Connect only genuine endpoints that are within the normal gap distance.
+    // At a shared-fence transition, extend the incident run to the intersection
+    // instead of drawing a separate little connector segment/corner.
+    const H=merged.filter(e=>e.axis==='h'),V=merged.filter(e=>e.axis==='v');
+    const eps=inset+.1;
+    for(const hRun of H){
+        for(const vRun of V){
+            const ix=vRun.fixed,iy=hRun.fixed;
+            const hx=ix<hRun.a?hRun.a-ix:ix>hRun.b?ix-hRun.b:0;
+            const vy=iy<vRun.a?vRun.a-iy:iy>vRun.b?iy-vRun.b:0;
+            if(hx<=eps&&vy<=eps){
+                const hEnd=Math.min(Math.abs(ix-hRun.a),Math.abs(ix-hRun.b))<=eps;
+                const vEnd=Math.min(Math.abs(iy-vRun.a),Math.abs(iy-vRun.b))<=eps;
+                if(hEnd&&vEnd){
+                    if(Math.abs(ix-hRun.a)<=eps)hRun.a=ix;
+                    if(Math.abs(ix-hRun.b)<=eps)hRun.b=ix;
+                    if(Math.abs(iy-vRun.a)<=eps)vRun.a=iy;
+                    if(Math.abs(iy-vRun.b)<=eps)vRun.b=iy;
+                }
+            }
+        }
+    }
+
+    return merged.map(e=>e.axis==='h'
+        ?`M${e.a},${e.fixed}L${e.b},${e.fixed}`
+        :`M${e.fixed},${e.a}L${e.fixed},${e.b}`).join('');
 }
 function trueBuiltWorldCells(enclosure, atCol=null, atRow=null){
     const baseCol=atCol==null?Math.round((Number(enclosure.x)||0)/TRUE_ENC_CELL_W):atCol;

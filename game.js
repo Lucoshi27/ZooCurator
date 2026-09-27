@@ -20775,7 +20775,11 @@ function receiveMultiplayerLiveLayout(message){
  if(payload.ended){entry?.el?.remove?.();multiplayerRemoteAnimalDrags.delete(key);return true;}
  const animal=(state.animals||[]).find(a=>String(a?.id)===String(payload.animalId)),x=Number(payload.x),y=Number(payload.y);if(!animal||!Number.isFinite(x)||!Number.isFinite(y))return false;
  if(!entry){const el=document.createElement('img');el.className='dragging-animal multiplayer-live-animal-drag';applyLocalizedAnimalImage(el,animal);Object.assign(el.style,{position:'fixed',pointerEvents:'none',zIndex:'9998',opacity:'.72'});document.body.appendChild(el);entry={el,sequence:0};multiplayerRemoteAnimalDrags.set(key,entry);}
- const seq=Number(message.sequence)||0;if(seq&&seq<=entry.sequence)return false;entry.sequence=seq;const r=zooCanvas.getBoundingClientRect(),z=Math.max(.01,Number(state.zoom)||1);entry.el.style.left=`${r.left+x*z-entry.el.offsetWidth/2}px`;entry.el.style.top=`${r.top+y*z-entry.el.offsetHeight/2}px`;return true;
+ const seq=Number(message.sequence)||0;if(seq&&seq<=entry.sequence)return false;entry.sequence=seq;const r=zooCanvas.getBoundingClientRect(),z=Math.max(.01,Number(state.zoom)||1);
+ // A remote drag is a board card, not the local full-size drag/preview asset.
+ // Size it from world card dimensions at the spectator's zoom.
+ entry.el.style.width=`${ANIMAL_W*z}px`;entry.el.style.height=`${ANIMAL_H*z}px`;
+ entry.el.style.left=`${r.left+x*z-(ANIMAL_W*z)/2}px`;entry.el.style.top=`${r.top+y*z-(ANIMAL_H*z)/2}px`;return true;
 }
 function multiplayerCursorTarget(){
     const viewed=multiplayerEffectiveViewedLocalPlayerId();
@@ -21204,14 +21208,18 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
             serverProgression:null,
             postMessage(data){
                 if(closed)return;
-                const encoded=JSON.stringify(data);
+                // Multiplayer snapshots contain Sets/Maps (reward ledgers, Areas,
+                // collection state, etc.). Plain JSON.stringify turns those into
+                // {}, which can make a peer re-award milestones after the next
+                // authoritative import. Use the same lossless wire shape as saves.
+                const encoded=JSON.stringify(serialiseSpecial(data));
                 if(socket.readyState===WebSocket.OPEN)socket.send(encoded);
                 else if(socket.readyState===WebSocket.CONNECTING)queued.push(encoded);
             },
             postServerMessage(data){
                 if(closed)return false;
                 const message={...data,protocol:MULTIPLAYER_SERVER_PROTOCOL};
-                const encoded=JSON.stringify(message);
+                const encoded=JSON.stringify(serialiseSpecial(message));
                 if(socket.readyState===WebSocket.OPEN)socket.send(encoded);
                 else if(socket.readyState===WebSocket.CONNECTING)queued.push(encoded);
                 return true;
@@ -21231,7 +21239,7 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
         // the authentication packet could be lost before the channel existed.
         socket.addEventListener('message',event=>{
             try{
-                const message=JSON.parse(event.data);
+                const message=deserialiseSpecial(JSON.parse(event.data));
                 if(message?.protocol===MULTIPLAYER_SERVER_PROTOCOL&&message?.type==='server-superseded')
                     superseded=true;
                 deliver(message);
@@ -21551,10 +21559,27 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     // Viewer zoo-state packets remain display data and must never overwrite
                     // the local player's zoo.
                     if((transport.serverReturning===true||message.authoritativeTrade===true||message.authoritativeDraw===true||message.authoritativeExchange===true||message.authoritativeMove===true||message.authoritativeCorrection===true)&&!localClassicMatch?.viewingPlayerId){
+                        // The server owns gameplay state, never this browser's camera.
+                        const localCamera={
+                            zoom:Number(state.zoom)||1,
+                            scrollLeft:zooBoard?.scrollLeft||0,
+                            scrollTop:zooBoard?.scrollTop||0
+                        };
+                        const authoritativeImport=cloneForSave(zoo);
+                        if(authoritativeImport?.view)delete authoritativeImport.view;
                         autoResumeWriteSuppressed=true;
                         try{
-                            await importGameState(cloneForSave(zoo),{deferRender:false});
+                            await importGameState(authoritativeImport,{deferRender:false});
                         }finally{autoResumeWriteSuppressed=false;}
+                        state.zoom=localCamera.zoom;
+                        document.documentElement.style.setProperty('--zoo-zoom',state.zoom);
+                        await new Promise(resolve=>requestAnimationFrame(resolve));
+                        if(zooBoard){
+                            const maxLeft=Math.max(0,zooBoard.scrollWidth-zooBoard.clientWidth);
+                            const maxTop=Math.max(0,zooBoard.scrollHeight-zooBoard.clientHeight);
+                            zooBoard.scrollLeft=Math.max(0,Math.min(maxLeft,localCamera.scrollLeft));
+                            zooBoard.scrollTop=Math.max(0,Math.min(maxTop,localCamera.scrollTop));
+                        }
                         if(localClassicMatch?.activePlayerId===transport.playerId){
                             syncActiveZooIntoLocalMatch();
                             try{
@@ -21593,8 +21618,10 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                         try{signature=JSON.stringify(zoo);}catch(_){}
                         if(!signature||transport.lastImportedViewedZooSignature!==signature){
                             const savedView={zoom:state.zoom,scrollLeft:zooBoard?.scrollLeft||0,scrollTop:zooBoard?.scrollTop||0};
+                            const viewedImport=cloneForSave(zoo);
+                            if(viewedImport?.view)delete viewedImport.view;
                             autoResumeWriteSuppressed=true;
-                            try{await importGameState(cloneForSave(zoo),{deferRender:false});}
+                            try{await importGameState(viewedImport,{deferRender:false});}
                             finally{autoResumeWriteSuppressed=false;}
                             transport.lastImportedViewedZooSignature=signature;
                             state.zoom=savedView.zoom;
@@ -22917,7 +22944,9 @@ async function visitLocalClassicMatchPlayer(playerId){
     setExchangeEligibilityHover(false);
     autoResumeWriteSuppressed=true;
     try{
-        await importGameState(cloneForSave(target.snapshot),{deferRender:false});
+        const visitSnapshot=cloneForSave(target.snapshot);
+        if(visitSnapshot?.view)delete visitSnapshot.view;
+        await importGameState(visitSnapshot,{deferRender:false});
         centerInitialView();
         createZooNameEditor();
         renderVisitedZooQuickTabs();renderTrade();
@@ -23604,6 +23633,21 @@ function importGameState(saveData, { deferRender = false } = {}) {
         throw new Error(uiText('This save file does not contain a valid Zoo Curator game.'));
     }
 
+    // Named saves written by the old plain-JSON path flattened every Set/Map to
+    // an empty object. Remember that corruption before cloneForSave/normalisers
+    // turn it into an indistinguishable empty runtime collection.
+    const legacyFlattenedCollection = key => {
+        const value = saveData.state?.[key];
+        return value && typeof value === 'object' && !Array.isArray(value) &&
+            !(value instanceof Set) && !(value instanceof Map) &&
+            value.__zooType == null && Object.keys(value).length === 0;
+    };
+    const legacyProgressRewardsFlattened =
+        legacyFlattenedCollection('awardedProgressMilestones');
+    const legacyGeneratedAreasFlattened =
+        legacyFlattenedCollection('generatedAreaMembership') ||
+        legacyFlattenedCollection('establishedGeographicAreas');
+
     exitHistoryView(false);
     state.suppressHistoryCapture = true;
 
@@ -23671,6 +23715,38 @@ function importGameState(saveData, { deferRender = false } = {}) {
     if (!state.activeCategories.size) {
         state.activeCategories = new Set(Object.keys(FOLDERS));
     }
+
+    // Do NOT replay years of progression rewards when loading a save whose
+    // awarded-milestone Set was destroyed by the old JSON writer. The animals
+    // already encode which milestones have been passed; mark those milestones
+    // as historically awarded without creating any enclosure cards.
+    if (legacyProgressRewardsFlattened) {
+        state.awardedProgressMilestones = progressionRewardKeysForMilestones(
+            state.gameOptions?.enclosureRewardMilestones || []
+        );
+        state.awardedLevel2Milestones = new Set(
+            [...state.awardedProgressMilestones]
+                .map(key => String(key).split('|'))
+                .filter(([levelText]) => Number(levelText) === 2)
+                .map(([, milestoneText]) => Number(milestoneText))
+        );
+    }
+
+    // A loaded zoo must never inherit generated-Area reconciliation from the
+    // zoo that happened to be open before it. Old lossy saves have no retained
+    // Area maps, so force a clean derivation from their surviving animals,
+    // enclosure positions and geographic/tag data on the first render.
+    invalidateConnectedAreaReconciliation();
+    renderedConnectedAreaGroups = [];
+    renderedConnectedAreaGroupsSignature = '';
+    stableConnectedAreaGroups = [];
+    stableConnectedAreaGroupsSignature = '';
+    generatedModernGeographicAreas = [];
+    if (legacyGeneratedAreasFlattened) {
+        state.generatedAreaMembership = new Map();
+        state.establishedGeographicAreas = new Map();
+    }
+
     if(!state.sandboxMode)ensureLifetimePlaythroughId();
     relinkLoadedPlayerReferences();
     repairLoadedNextId();

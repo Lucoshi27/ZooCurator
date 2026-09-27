@@ -14694,7 +14694,7 @@ function ensureTrueZooGroundsVisual(){
         layer.id='trueZooGroundsLayer';
         Object.assign(layer.style,{
             position:'absolute',left:'0',top:'0',
-            pointerEvents:'none',zIndex:'140',overflow:'hidden'
+            pointerEvents:'none',zIndex:'0',overflow:'hidden'
         });
         zooCanvas.prepend(layer);
     }
@@ -14747,7 +14747,12 @@ function ensureTrueZooGroundsVisual(){
     const handle=document.createElement('div');handle.id='trueZooEntranceHandle';handle.title='Drag to move zoo entrance';
     Object.assign(handle.style,{position:'absolute',left:`${center.x-bounds.x-15}px`,top:`${center.y-bounds.y-15}px`,width:'30px',height:'30px',borderRadius:'50%',background:'rgba(255,255,255,.01)',cursor:'grab',pointerEvents:'auto',zIndex:'3'});
     const marker=document.createElement('div');Object.assign(marker.style,{position:'absolute',left:'9px',top:'9px',width:'12px',height:'12px',borderRadius:'50%',background:activeZooColourScheme()==='overloon'?activeZooPalette().perimeter:'#454747',border:`2px solid ${activeZooColourScheme()==='overloon'?activeZooPalette().grounds:'#f2efe6'}`,boxSizing:'border-box',pointerEvents:'none'});handle.appendChild(marker);
-    border.style.pointerEvents='none';layer.appendChild(border);layer.appendChild(handle);
+    border.style.pointerEvents='none';layer.appendChild(border);
+    document.getElementById('trueZooEntranceHandle')?.remove();
+    handle.style.left=`${center.x-15}px`;
+    handle.style.top=`${center.y-15}px`;
+    handle.style.zIndex='160';
+    zooCanvas.appendChild(handle);
     ensureTrueZooEntranceDrag();
 }
 function trueWorldCellInsideZooGrounds(col,row){
@@ -14927,22 +14932,27 @@ function trueRenderedEnclosurePath(enclosure){
         else e.fixed-=inset;
     }
 
-    // Extend only the existing orthogonal runs to their intersection. Never add
-    // a connector segment: rectangle/L/T outlines remain 4/6/8 corners.
+    // Snap every near orthogonal junction exactly together. This includes a
+    // true corner (endpoint-to-endpoint) AND a T junction where one wall ends
+    // against the middle of another wall. The latter was the remaining tiny
+    // gap visible beside the macaw enclosure. We only lengthen existing runs;
+    // no dog-leg/connector geometry is introduced.
     const H=merged.filter(e=>e.axis==='h'),V=merged.filter(e=>e.axis==='v');
     const eps=inset+.1;
     for(const hRun of H)for(const vRun of V){
         const ix=vRun.fixed,iy=hRun.fixed;
-        const hx=ix<hRun.a?hRun.a-ix:ix>hRun.b?ix-hRun.b:0;
-        const vy=iy<vRun.a?vRun.a-iy:iy>vRun.b?iy-vRun.b:0;
-        if(hx>eps||vy>eps)continue;
-        const hEnd=Math.min(Math.abs(ix-hRun.a),Math.abs(ix-hRun.b))<=eps;
-        const vEnd=Math.min(Math.abs(iy-vRun.a),Math.abs(iy-vRun.b))<=eps;
-        if(!hEnd||!vEnd)continue;
-        if(Math.abs(ix-hRun.a)<=eps)hRun.a=ix;
-        if(Math.abs(ix-hRun.b)<=eps)hRun.b=ix;
-        if(Math.abs(iy-vRun.a)<=eps)vRun.a=iy;
-        if(Math.abs(iy-vRun.b)<=eps)vRun.b=iy;
+        const hContains=ix>=hRun.a-eps&&ix<=hRun.b+eps;
+        const vContains=iy>=vRun.a-eps&&iy<=vRun.b+eps;
+        if(!hContains||!vContains)continue;
+        const hAtA=Math.abs(ix-hRun.a)<=eps,hAtB=Math.abs(ix-hRun.b)<=eps;
+        const vAtA=Math.abs(iy-vRun.a)<=eps,vAtB=Math.abs(iy-vRun.b)<=eps;
+        // At least one run must actually terminate at this junction. Otherwise
+        // two unrelated crossing walls would be treated as connected.
+        if(!(hAtA||hAtB||vAtA||vAtB))continue;
+        if(hAtA)hRun.a=ix;
+        if(hAtB)hRun.b=ix;
+        if(vAtA)vRun.a=iy;
+        if(vAtB)vRun.b=iy;
     }
 
     return merged.map(e=>e.axis==='h'

@@ -8366,7 +8366,9 @@ function localizeDocument() {
     uiLocalisationBusy=true;
     try {
         const dutch=state?.gameOptions?.animalLanguage==='nl';
-        if (drawCard) drawCard.dataset.label = dutch ? 'TREK KAART' : 'DRAW CARD';
+        if (drawCard) drawCard.dataset.label = multiplayerVisitTheirOfferMode?.()
+            ? (dutch?'HUN AANBOD':'THEIR OFFER')
+            : (dutch?'TREK KAART':'DRAW CARD');
         const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
         const nodes=[];
         while(walker.nextNode())nodes.push(walker.currentNode);
@@ -15046,16 +15048,44 @@ function trueGeneratedLayoutHasStraightSightlines(enclosures,entranceCell,bounds
         ));
     });
 }
+function trueGeneratedLayoutHasInteriorAccess(enclosures,entranceCol,bounds){
+    if(!bounds||bounds.cols<3||bounds.rows<2)return false;
+    const occupied=new Set();
+    for(const enc of enclosures)for(const c of trueBuiltWorldCells(enc))
+        occupied.add(trueBuilderCellKey(c.col,c.row));
+
+    // The gate itself may be on the perimeter, but circulation after the gate
+    // must use the zoo interior. This is the same topology the enclosure tool
+    // uses: an exhibit is accessible when at least one side touches reachable
+    // interior circulation.
+    const start={col:entranceCol,row:1};
+    const inside=c=>c.col>=0&&c.col<bounds.cols&&c.row>=0&&c.row<bounds.rows;
+    const free=c=>inside(c)&&!occupied.has(trueBuilderCellKey(c.col,c.row));
+    if(!free(start))return false;
+    const reachable=new Set(),queue=[start];
+    while(queue.length){
+        const c=queue.shift(),k=trueBuilderCellKey(c.col,c.row);
+        if(reachable.has(k)||!free(c))continue;
+        reachable.add(k);
+        for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]])
+            queue.push({col:c.col+dc,row:c.row+dr});
+    }
+    return enclosures.every(enc=>trueBuiltWorldCells(enc).some(c=>
+        [[1,0],[-1,0],[0,1],[0,-1]].some(([dc,dr])=>
+            reachable.has(trueBuilderCellKey(c.col+dc,c.row+dr))
+        )
+    ));
+}
 function repairTrueBuiltEnclosureGeometry(){
     if(state.gameMode!=='true'||state.sandboxMode)return false;
     const b=normaliseTrueEnclosureBuilderState();
-    // v8: varied compact starts; every entrance ray must genuinely enter the interior. Never force the old repeated rectangular
+    // v10: varied compact starts; circulation is flood-filled across the grounds and every exhibit must remain entrance-connected. Never force the old repeated rectangular
     // shelf. Startup footprint is at most 6 columns x 4 rows AND at most
     // 20 usable cells; partial/L-shaped occupancy is explicitly allowed.
-    if(Number(b.geometryVersion)>=8)return false;
+    if(Number(b.geometryVersion)>=10)return false;
     const enclosures=(state.enclosures||[]).filter(e=>e?.trueBuilt).slice()
       .sort((a,b)=>(Number(a.y)||0)-(Number(b.y)||0)||(Number(a.x)||0)-(Number(b.x)||0)||(Number(a.id)||0)-(Number(b.id)||0));
-    if(!enclosures.length){b.geometryVersion=8;return false;}
+    if(!enclosures.length){b.geometryVersion=10;return false;}
 
     const dims=enc=>{
         const c=trueCanonicalCellList(enc.cells||[]);
@@ -15118,7 +15148,8 @@ function repairTrueBuiltEnclosureGeometry(){
                         p.enc.x=p.col*TRUE_ENC_CELL_W;
                         p.enc.y=p.row*TRUE_ENC_CELL_H;
                     }
-                    if(!trueGeneratedLayoutHasStraightSightlines(enclosures,{col:entranceCol,row:0},{cols,rows}))return false;
+                    if(!trueGeneratedLayoutHasStraightSightlines(enclosures,{col:entranceCol,row:0},{cols,rows}) ||
+                       !trueGeneratedLayoutHasInteriorAccess(enclosures,entranceCol,{cols,rows}))return false;
                     chosen={cols,rows,entranceCol,placed:placed.map(p=>({...p}))};
                     return true;
                 }
@@ -15135,9 +15166,11 @@ function repairTrueBuiltEnclosureGeometry(){
                     keys.forEach(k=>used.add(k));
                     placed.push({enc,col:at.col,row:at.row});
                     enc.x=at.col*TRUE_ENC_CELL_W;enc.y=at.row*TRUE_ENC_CELL_H;
+                    const partial=placed.map(p=>p.enc);
                     if(trueGeneratedLayoutHasStraightSightlines(
-                        placed.map(p=>p.enc),{col:entranceCol,row:0},{cols,rows}
-                    )&&placeNext(index+1))return true;
+                        partial,{col:entranceCol,row:0},{cols,rows}
+                    )&&trueGeneratedLayoutHasInteriorAccess(partial,entranceCol,{cols,rows})
+                      &&placeNext(index+1))return true;
                     placed.pop();keys.forEach(k=>used.delete(k));
                 }
                 return false;
@@ -15168,8 +15201,8 @@ function repairTrueBuiltEnclosureGeometry(){
         initialiseTrueZooGroundsFromCurrentLayout(true);
         b.startingGroundsCells=null;
     }
-    b.zooGroundsVersion=8;
-    b.geometryVersion=8;
+    b.zooGroundsVersion=10;
+    b.geometryVersion=10;
     trueInvalidateEnclosureGeometry();
     if(changed)state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
     return changed;
@@ -15606,62 +15639,86 @@ function trueBuilderAccessReport(candidateCells=[],exceptId=null){
     const grounds=trueZooGroundsBounds();
     if(!grounds)return {ok:true,blockedCells:[]};
 
-    // Build the hypothetical enclosure occupancy after this paint operation.
-    const occupied=trueBuilderOccupiedWorldCells(exceptId);
-    for(const c of candidateCells||[])occupied.add(trueBuilderCellKey(c.col,c.row));
-    if(exceptId!=null){
-        const target=(state.enclosures||[]).find(e=>e?.trueBuilt&&String(e.id)===String(exceptId));
-        for(const c of trueBuiltWorldCells(target||{}))occupied.add(trueBuilderCellKey(c.col,c.row));
-    }
-
     const minCol=Math.ceil(grounds.x/TRUE_ENC_CELL_W);
     const maxCol=Math.floor((grounds.x+grounds.w)/TRUE_ENC_CELL_W)-1;
     const minRow=Math.ceil(grounds.y/TRUE_ENC_CELL_H);
     const maxRow=Math.floor((grounds.y+grounds.h)/TRUE_ENC_CELL_H)-1;
     if(maxCol-minCol<2||maxRow-minRow<2)return {ok:false,blockedCells:[...(candidateCells||[])]};
 
-    // Perimeter-only circulation does not count. Reachability begins one cell
-    // inside the entrance and is restricted to the interior ring.
     const spec=trueZooEntranceSpec(grounds);
     const p=trueEntrancePointAtPerimeter(trueEntrancePerimeterPosition(spec,grounds),grounds);
-    let start={
-        col:Math.floor(p.x/TRUE_ENC_CELL_W),
-        row:Math.floor(p.y/TRUE_ENC_CELL_H)
+    let startCell={col:Math.floor(p.x/TRUE_ENC_CELL_W),row:Math.floor(p.y/TRUE_ENC_CELL_H)};
+    if(spec.side==='top')startCell.row=minRow+1;
+    else if(spec.side==='bottom')startCell.row=maxRow-1;
+    else if(spec.side==='left')startCell.col=minCol+1;
+    else startCell.col=maxCol-1;
+    startCell.col=Math.max(minCol+1,Math.min(maxCol-1,startCell.col));
+    startCell.row=Math.max(minRow+1,Math.min(maxRow-1,startCell.row));
+
+    // Circulation may use every unoccupied grounds cell, including cells beside
+    // the perimeter. The only forbidden "perimeter route" is leaving the zoo;
+    // excluding the whole outer ring here was what made harmless edge builds red.
+    const inGrounds=c=>c.col>=minCol&&c.col<=maxCol&&c.row>=minRow&&c.row<=maxRow;
+
+    const analyse=(occupied,enclosures)=>{
+        const free=c=>inGrounds(c)&&!occupied.has(trueBuilderCellKey(c.col,c.row));
+        if(!free(startCell))return {reachable:new Set(),blocked:[...enclosures]};
+        const reachable=new Set(),queue=[startCell];
+        while(queue.length){
+            const c=queue.shift(),k=trueBuilderCellKey(c.col,c.row);
+            if(reachable.has(k)||!free(c))continue;
+            reachable.add(k);
+            for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]])
+                queue.push({col:c.col+dc,row:c.row+dr});
+        }
+        const blocked=enclosures.filter(enc=>{
+            const cells=enc.cells||[];
+            return !cells.some(c=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dc,dr])=>
+                reachable.has(trueBuilderCellKey(c.col+dc,c.row+dr))
+            ));
+        });
+        return {reachable,blocked};
     };
-    if(spec.side==='top')start.row=minRow+1;
-    else if(spec.side==='bottom')start.row=maxRow-1;
-    else if(spec.side==='left')start.col=minCol+1;
-    else start.col=maxCol-1;
-    start.col=Math.max(minCol+1,Math.min(maxCol-1,start.col));
-    start.row=Math.max(minRow+1,Math.min(maxRow-1,start.row));
 
-    const inside=c=>c.col>minCol&&c.col<maxCol&&c.row>minRow&&c.row<maxRow;
-    const free=c=>inside(c)&&!occupied.has(trueBuilderCellKey(c.col,c.row));
-    if(!free(start))return {ok:false,blockedCells:[...(candidateCells||[])]};
-
-    const reachable=new Set(),queue=[start];
-    while(queue.length){
-        const c=queue.shift(),k=trueBuilderCellKey(c.col,c.row);
-        if(reachable.has(k)||!free(c))continue;
-        reachable.add(k);
-        for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]])queue.push({col:c.col+dc,row:c.row+dr});
-    }
-
-    const hypothetical=[];
+    const existing=[];
+    const baseOccupied=new Set();
     for(const enc of state.enclosures||[]){
         if(!enc?.trueBuilt)continue;
         if(exceptId!=null&&String(enc.id)===String(exceptId))continue;
-        hypothetical.push(...trueBuiltWorldCells(enc));
+        const cells=trueBuiltWorldCells(enc);
+        existing.push({id:String(enc.id),cells});
+        for(const c of cells)baseOccupied.add(trueBuilderCellKey(c.col,c.row));
     }
-    hypothetical.push(...(candidateCells||[]));
-    const blocked=[];
-    for(const c of hypothetical){
-        const hasAccess=[[1,0],[-1,0],[0,1],[0,-1]].some(([dc,dr])=>
-            reachable.has(trueBuilderCellKey(c.col+dc,c.row+dr))
-        );
-        if(!hasAccess)blocked.push(c);
-    }
-    return {ok:blocked.length===0,blockedCells:blocked};
+
+    const before=analyse(baseOccupied,existing);
+    const beforeBlockedIds=new Set(before.blocked.map(enc=>enc.id));
+
+    const afterOccupied=new Set(baseOccupied);
+    for(const c of candidateCells||[])afterOccupied.add(trueBuilderCellKey(c.col,c.row));
+    const candidate={id:'__candidate__',cells:[...(candidateCells||[])]};
+    const after=analyse(afterOccupied,[...existing,candidate]);
+
+    // A build is illegal if:
+    //  1. the new enclosure itself has no entrance-connected accessible side; or
+    //  2. ANY previously accessible enclosure becomes cut off.
+    // This deliberately checks enclosure identity, not individual cells. The old
+    // cell-key comparison missed exactly the screenshot case: the middle build
+    // severed circulation to the two left-hand enclosures, but those blocked
+    // cells were not the newly placed cells and slipped through the comparison.
+    const candidateBlocked=after.blocked.some(enc=>enc.id==='__candidate__');
+    const newlyCutOff=after.blocked.filter(enc=>
+        enc.id!=='__candidate__'&&!beforeBlockedIds.has(enc.id)
+    );
+    const blockedCells=[
+        ...(candidateBlocked?(candidateCells||[]):[]),
+        ...newlyCutOff.flatMap(enc=>enc.cells||[])
+    ];
+    return {
+        ok:!candidateBlocked&&!newlyCutOff.length,
+        blockedCells,
+        cutOffEnclosureIds:newlyCutOff.map(enc=>enc.id),
+        preExistingBlockedEnclosureIds:[...beforeBlockedIds]
+    };
 }
 function convertCurrentTrueZooToBuiltEnclosures(){
     if(state.gameMode!=='true'||state.sandboxMode)return false;
@@ -25642,6 +25699,22 @@ function visitingAnotherZooForActionUI(){
     );
 }
 
+function multiplayerVisitTheirOfferMode(){
+    return !!(localClassicMatch?.viewingPlayerId &&
+        localClassicMatch.viewingPlayerId!==localClassicMatch.activePlayerId &&
+        !state.sandboxMode && state.gameMode!=='true');
+}
+function resetDrawCardFromTheirOfferMode(){
+    if(!drawCard)return;
+    drawCard.dataset.multiplayerTheirOffer='false';
+    drawCard.dataset.label=state.gameOptions.animalLanguage==='nl'?'TREK KAART':'DRAW CARD';
+    drawCard.title='';
+    const image=drawCard.querySelector('img');
+    if(image){
+        image.style.removeProperty('opacity');
+        image.style.removeProperty('filter');
+    }
+}
 function refreshDrawAvailabilityState() {
     if (!drawCard) return false;
 
@@ -25651,12 +25724,9 @@ function refreshDrawAvailabilityState() {
         return false;
     }
     if(visitingAnotherZooForActionUI()){
-        const humanVisit=!!(localClassicMatch?.viewingPlayerId &&
-            localClassicMatch.viewingPlayerId!==localClassicMatch.activePlayerId);
-        if(humanVisit){
-            // While inspecting another human zoo the normal deck becomes the
-            // request target. The requested card is only a reference: the
-            // animal itself remains physically in the visited zoo.
+        if(multiplayerVisitTheirOfferMode()){
+            // The draw-card POSITION is temporarily an empty THEIR OFFER drop
+            // target only while another human zoo is actually on screen.
             drawCard.style.display='';
             drawCard.dataset.multiplayerTheirOffer='true';
             drawCard.dataset.label=state.gameOptions.animalLanguage==='nl'?'HUN AANBOD':'THEIR OFFER';
@@ -25665,29 +25735,20 @@ function refreshDrawAvailabilityState() {
             drawCard.style.cursor='default';
             const image=drawCard.querySelector('img');
             if(image){
-                const draft=localHumanTradeDraft(localClassicMatch.activePlayerId);
-                const requested=draft?.requestedPlayerId===localClassicMatch.viewingPlayerId
-                    ? directTradeAnimal(draft.requestedPlayerId,draft.requestedAnimalId)
-                    : null;
-                if(requested){
-                    applyLocalizedAnimalImage(image,requested);
-                    image.style.setProperty('opacity','1','important');
-                    image.style.setProperty('filter','','important');
-                }else{
-                    image.removeAttribute('src');
-                    image.style.setProperty('opacity','0','important');
-                }
+                image.removeAttribute('src');
+                image.style.setProperty('opacity','0','important');
+                image.style.setProperty('filter','none','important');
             }
             drawCard.title='Drag an animal from this zoo here to request it in a trade.';
         }else{
+            resetDrawCardFromTheirOfferMode();
             drawCard.style.display='none';
             drawCard.setAttribute('aria-disabled','true');
         }
         if(actionHintOverlay?.dataset?.hintTarget==='drawCard')removeActionHintOverlay();
         return false;
     }
-    drawCard.dataset.multiplayerTheirOffer='false';
-    drawCard.dataset.label=state.gameOptions.animalLanguage === 'nl' ? 'TREK KAART' : 'DRAW CARD';
+    resetDrawCardFromTheirOfferMode();
     drawCard.style.display = '';
 
     const noOpenSpace = !nextLevelOneHasEligibleDestination();
@@ -27906,7 +27967,11 @@ async function finishHumanTradeRequestDrag(event){
     // The requested animal never left the visited zoo. Return home immediately;
     // THEIR OFFER now follows the visitor and becomes the right-hand trade card.
     await returnToActiveLocalClassicZoo();
-    renderTrade();refreshDrawAvailabilityState();
+    resetDrawCardFromTheirOfferMode();
+    selectedMultiplayerPublicListingPlayerId=null;
+    selectedHumanTradeProposalId=null;
+    refreshDrawAvailabilityState();
+    renderTrade();
 }
 
 // ============================================================
@@ -38828,6 +38893,7 @@ function renderDirectHumanTradeCards(){
     // selected from the opponent zoo; YOUR OFFER remains empty until the player
     // returns home and drags a card into it.
     if(!offer&&draft){
+        resetDrawCardFromTheirOfferMode();
         const requested=directTradeAnimal(draft.requestedPlayerId,draft.requestedAnimalId);
         outgoingOfferBox.classList.remove('trade-filled','trade-locked');
         incomingOfferBox.classList.toggle('trade-filled',Boolean(requested));
@@ -39052,7 +39118,14 @@ function renderTrade() {
             setupAnimalCard(out,publicOwnAnimal,'outgoing');
             out.classList.add('trade-card');
             out.draggable=false;
-            out.style.pointerEvents='none';
+            out.style.pointerEvents='auto';
+            out.style.cursor='grab';
+            out.title='Drag this animal back into your zoo to remove it from YOUR OFFER.';
+            out.addEventListener('pointerdown',event=>{
+                if(event.button!==0)return;
+                event.preventDefault();event.stopPropagation();
+                startAnimalDrag(event,publicOwnAnimal,'outgoing');
+            });
             outgoingOfferBox.appendChild(out);
         }else outgoingOfferBox.innerHTML='<span>YOUR<br>OFFER</span>';
         const d=document.getElementById('declineOpponentOffer');if(d)d.style.display='none';
@@ -39062,7 +39135,11 @@ function renderTrade() {
     // Local two-player Classic uses the same physical trade-card area as the
     // single-player trade system. Human offers take visual priority while the
     // multiplayer match is active; AI trade state remains untouched underneath.
-    if (localClassicMatch && (selectedHumanTradeProposalId||activeDirectHumanTrade()?.status==='accepted-awaiting-sender-claim') && renderDirectHumanTradeCards()) {
+    if (localClassicMatch && (
+        activeDirectHumanTradeDraft() ||
+        selectedHumanTradeProposalId ||
+        activeDirectHumanTrade()?.status==='accepted-awaiting-sender-claim'
+    ) && renderDirectHumanTradeCards()) {
         const aiDecline=document.getElementById('declineOpponentOffer');
         if(aiDecline)aiDecline.style.display='none';
         const area=document.getElementById('opponentTradeArea');

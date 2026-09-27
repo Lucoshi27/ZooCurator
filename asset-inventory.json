@@ -4625,6 +4625,19 @@
             "AT23"
           ]
         },
+        "Blesbok.png": {
+          "scientific_name": "Damaliscus pygargus phillipsi",
+          "enclosure_size": "medium",
+          "tags": [
+            "grassland",
+            "savanna"
+          ],
+          "wild_regions": [
+            "AT20",
+            "AT21",
+            "AT22"
+          ]
+        },
         "Blue Duiker.png": {
           "scientific_name": "Philantomba monticola",
           "enclosure_size": "small",
@@ -4890,6 +4903,24 @@
           ],
           "wild_regions": [
             "IM14"
+          ]
+        },
+        "Sumatran Rhinoceros.png": {
+          "scientific_name": "Dicerorhinus sumatrensis",
+          "enclosure_size": "large",
+          "tags": [
+            "rainforest",
+            "mountain"
+          ],
+          "wild_regions": [
+            "IM6",
+            "IM7",
+            "IM8",
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM13",
+            "IM15"
           ]
         },
         "Yellow-Backed Duiker.png": {
@@ -5892,6 +5923,23 @@
             "AT6"
           ]
         },
+        "Bald Uakari.png": {
+          "scientific_name": "Cacajao calvus",
+          "enclosure_size": "small",
+          "tags": [
+            "rainforest",
+            "wetland",
+            "riverine"
+          ],
+          "wild_regions": [
+            "NT12",
+            "NT13",
+            "NT14",
+            "NT16",
+            "NT17",
+            "NT18"
+          ]
+        },
         "Blue-Eyed Black Lemur.png": {
           "scientific_name": "Eulemur flavifrons",
           "enclosure_size": "small",
@@ -5963,6 +6011,18 @@
             "IM11"
           ]
         },
+        "Eastern Gorilla.png": {
+          "scientific_name": "Gorilla beringei",
+          "enclosure_size": "large",
+          "tags": [
+            "rainforest",
+            "mountain"
+          ],
+          "wild_regions": [
+            "AT12",
+            "AT15"
+          ]
+        },
         "Golden Snub-Nosed Monkey.png": {
           "scientific_name": "Rhinopithecus roxellana",
           "enclosure_size": "medium",
@@ -5986,18 +6046,6 @@
           ],
           "wild_regions": [
             "IM13"
-          ]
-        },
-        "Eastern Gorilla.png": {
-          "scientific_name": "Gorilla beringei",
-          "enclosure_size": "large",
-          "tags": [
-            "rainforest",
-            "mountain"
-          ],
-          "wild_regions": [
-            "AT12",
-            "AT15"
           ]
         },
         "Red-Shanked Douc.png": {
@@ -7310,6 +7358,19 @@
             "AU16"
           ]
         },
+        "Coruro.png": {
+          "scientific_name": "Spalacopus cyanus",
+          "enclosure_size": "small",
+          "tags": [
+            "grassland",
+            "shrubland",
+            "mountain"
+          ],
+          "wild_regions": [
+            "NT2",
+            "NT3"
+          ]
+        },
         "Dusky Pademelon.png": {
           "scientific_name": "Thylogale brunii",
           "enclosure_size": "small",
@@ -7626,6 +7687,27 @@
             "NT10"
           ]
         },
+        "Chinese Bamboo Rat.png": {
+          "scientific_name": "Rhizomys sinensis",
+          "enclosure_size": "small",
+          "tags": [
+            "rainforest",
+            "dry-forest",
+            "temperate-forest",
+            "mountain",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "PA41",
+            "PA42",
+            "PA43",
+            "IM1",
+            "IM2",
+            "IM3",
+            "IM4",
+            "IM5"
+          ]
+        },
         "Chinese Pangolin.png": {
           "scientific_name": "Manis pentadactyla",
           "enclosure_size": "small",
@@ -7649,6 +7731,18 @@
             "IM13"
           ]
         },
+        "Grizzled Giant Squirrel.png": {
+          "scientific_name": "Ratufa macroura",
+          "enclosure_size": "small",
+          "tags": [
+            "rainforest",
+            "dry-forest"
+          ],
+          "wild_regions": [
+            "IM3",
+            "IM4"
+          ]
+        },
         "Matschie's Tree-Kangaroo.png": {
           "scientific_name": "Dendrolagus matschiei",
           "enclosure_size": "small",
@@ -7658,6 +7752,18 @@
           ],
           "wild_regions": [
             "IM18"
+          ]
+        },
+        "Panay Cloudrunner.png": {
+          "scientific_name": "Crateromys heaneyi",
+          "enclosure_size": "small",
+          "tags": [
+            "rainforest",
+            "mountain",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "IM12"
           ]
         },
         "Platypus.png": {
@@ -7683,6 +7789,60 @@
             "AU16"
           ]
         },
+        "Red and White Giant Flying Squirrel.png": {
+          "scientific_name": "Petaurista alborufus",
+          "enclosure_size": "small",
+          "tags": [
+            "temperate-forest",
+            "rainforest",
+            "mountain",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "PA41",
+            "PA42",
+            "PA43",
+            "IM1",
+            "IM2",
+            "IM3"
+          ]
+        },
+        "Silky Anteater.png": {
+          "scientific_name": "Cyclopes didactylus",
+          "enclosure_size": "small",
+          "tags": [
+            "rainforest",
+            "mangrove",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "NT12",
+            "NT13",
+            "NT14",
+            "NT16",
+            "NT17",
+            "NT18",
+            "NT19",
+            "NT20",
+            "NT21",
+            "NT22",
+            "NT23",
+            "NT24",
+            "NT25"
+          ]
+        },
+        "Southern Giant Slender-Tailed Cloud Rat.png": {
+          "scientific_name": "Phloeomys cumingi",
+          "enclosure_size": "small",
+          "tags": [
+            "rainforest",
+            "mountain",
+            "nocturnal"
+          ],
+          "wild_regions": [
+            "IM12"
+          ]
+        },
         "Tasmanian Devil.png": {
           "scientific_name": "Sarcophilus harrisii",
           "enclosure_size": "small",
@@ -7694,6 +7854,16 @@
           ],
           "wild_regions": [
             "AU16"
+          ]
+        },
+        "White-Striped Dorcopsis.png": {
+          "scientific_name": "Dorcopsis hageni",
+          "enclosure_size": "small",
+          "tags": [
+            "rainforest"
+          ],
+          "wild_regions": [
+            "AU1"
           ]
         }
       }
@@ -23002,6 +23172,24 @@
           ],
           "wild_regions": [
             "NT22"
+          ]
+        },
+        "Perentie.png": {
+          "scientific_name": "Varanus giganteus",
+          "enclosure_size": "medium",
+          "tags": [
+            "desert",
+            "grassland",
+            "shrubland",
+            "rocky"
+          ],
+          "wild_regions": [
+            "AU2",
+            "AU3",
+            "AU4",
+            "AU5",
+            "AU6",
+            "AU7"
           ]
         },
         "Red-Headed River Turtle.png": {

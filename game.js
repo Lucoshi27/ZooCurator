@@ -5041,6 +5041,23 @@ function hasPendingPlayerAction() {
 function releaseOutgoingTradeReservation() {
     if (state.outgoingOffer) clearAnimalZooReservation(state.outgoingOffer);
 }
+function clearOrphanedZooSlotReservations(){
+    const legitimate=new Set();
+    if(state.outgoingOffer?.id!=null)legitimate.add(String(state.outgoingOffer.id));
+    for(const animal of (state.exchange||[])){
+        if(animal?.id!=null)legitimate.add(String(animal.id));
+    }
+    if(state.drag?.type==='animal'&&state.drag?.animal?.id!=null)
+        legitimate.add(String(state.drag.animal.id));
+    let changed=false;
+    for(const animal of (state.animals||[])){
+        if(animal?.reservedEnclosureId==null&&animal?.reservedSlotIndex==null)continue;
+        if(legitimate.has(String(animal.id)))continue;
+        clearAnimalZooReservation(animal);
+        changed=true;
+    }
+    return changed;
+}
 
 function animalAtSlot(
     enclosureId,
@@ -6092,6 +6109,14 @@ function placeAnimal(
     // reservations alone never reach this point, so temporarily lifting a card
     // out and returning it without placing elsewhere does not revive a deleted Area.
     state.areaPlacementRevision = (Number(state.areaPlacementRevision) || 0) + 1;
+
+    // Placement changes logical zoo capacity. Keep Draw L1 availability tied to
+    // the shared placement primitive so every caller (drag relocation, trade,
+    // exchange, scripted placement) gets the same immediate capacity refresh.
+    // Defer until the current drag/action has cleared its transient state;
+    // refreshing synchronously here would still see state.drag and could leave
+    // Draw incorrectly disabled.
+    enqueueMicrotask(()=>refreshDrawAvailabilityState?.());
     return true;
 
 }
@@ -21260,6 +21285,8 @@ async function authorizeHumanTradeWithServer(type,payload={}){
         wire.toPlayerId=requestedServerPlayerId;
         wire.offeredAnimalId=payload.offeredAnimalId;
         wire.requestedAnimalId=payload.requestedAnimalId;
+        if(payload.requestedAnimalIdentity)
+            wire.requestedAnimalIdentity=cloneForSave(payload.requestedAnimalIdentity);
         // Transfer IDs are deliberately omitted. The authoritative server
         // allocates them atomically only if/when this proposal is accepted.
     }else{
@@ -22905,6 +22932,13 @@ function validateLocalMultiplayerActionEnvelope(action){
 async function applyLocalMultiplayerActionEnvelope(action){
     const valid=validateLocalMultiplayerActionEnvelope(action);
     if(!valid.ok)return {ok:false,reason:valid.reason};
+    // Human trades in server-backed matches are committed by the durable server
+    // and applied by applyAuthoritativeHumanTradeMessage(). Replaying the same
+    // operation through this legacy browser-authority executor can double-move
+    // cards, reject against the already-mutated zoo, or overwrite a newer
+    // durable snapshot.
+    if(serverAuthoritativeMultiplayerActive()&&SERVER_HUMAN_TRADE_ACTIONS.has(action.type))
+        return {ok:false,reason:'server-authority-required'};
     localMultiplayerProcessedActionIds.add(action.id);
     if(localMultiplayerProcessedActionIds.size>500){
         const keep=[...localMultiplayerProcessedActionIds].slice(-250);
@@ -23063,6 +23097,7 @@ async function applyLocalMultiplayerActionEnvelope(action){
         draft.requestedServerPlayerId=action.payload?.requestedServerPlayerId||
             multiplayerServerPlayerForLocalId(requestedPlayerId)?.playerId||null;
         draft.requestedAnimalId=requestedAnimalId;
+        draft.requestedAnimalIdentity=cloneForSave(action.payload?.requestedAnimalIdentity||null);
         cancelAITradingForHumanTrade();
         syncActiveZooIntoLocalMatch();
         localClassicMatch.revision++;
@@ -23431,7 +23466,9 @@ async function runAuthoritativeClassicActionForPlayer(playerId,classicAction){
                 if(p.reservedEnclosureId==null)delete animal.reservedEnclosureId;else animal.reservedEnclosureId=p.reservedEnclosureId;
                 if(p.reservedSlotIndex==null)delete animal.reservedSlotIndex;else animal.reservedSlotIndex=p.reservedSlotIndex;
             }
+            clearOrphanedZooSlotReservations();
             renderAll();
+            refreshDrawAvailabilityState();
         }
         // commitClassicTurn() has already changed the authoritative turn owner.
         // Save the remote zoo, then put the host UI back on its own seat without
@@ -23832,9 +23869,11 @@ function persistCurrentCameraForReload() {
     // describe the exact view the player is leaving, rather than the camera
     // from the last gameplay action.
     if (!state.loaded || state.visitingZoo || state.historyViewTurn !== null) return;
-    if(localMultiplayerBrowserTransport?.role==='host'&&localClassicMatch){
-        syncActiveZooIntoLocalMatch();
-        writeActiveMultiplayerSession(localClassicMatch.matchId,'host');
+    if(localMultiplayerBrowserTransport&&localClassicMatch){
+        const transport=localMultiplayerBrowserTransport;
+        if(transport.role==='host')syncActiveZooIntoLocalMatch();
+        if(transport.matchId&&(transport.role==='host'||transport.role==='peer'))
+            writeActiveMultiplayerSession(transport.matchId,transport.role);
     }
     writeAutoResumeSnapshot(true);
 }
@@ -25752,12 +25791,21 @@ function resetDrawCardFromTheirOfferMode(){
     drawCard.title='';
     const image=drawCard.querySelector('img');
     if(image){
+        // THEIR OFFER deliberately removes the Draw card image while visiting
+        // another human zoo. Returning home must restore the asset as well as
+        // its styling; otherwise the Draw slot remains permanently blank.
+        if(!image.getAttribute('src'))
+            image.src='assets/animals/carnivora/1/Back.png';
         image.style.removeProperty('opacity');
         image.style.removeProperty('filter');
     }
 }
 function refreshDrawAvailabilityState() {
     if (!drawCard) return false;
+
+    // Repair reservation residue before capacity is evaluated. Legitimate
+    // Exchange/Outgoing/active-drag reservations are preserved.
+    clearOrphanedZooSlotReservations();
 
     if (state.gameMode === 'true') {
         drawCard.style.display = 'none';
@@ -25776,7 +25824,9 @@ function refreshDrawAvailabilityState() {
             drawCard.style.cursor='default';
             const image=drawCard.querySelector('img');
             if(image){
-                image.removeAttribute('src');
+                // Keep Back.png loaded; THEIR OFFER only needs it visually
+                // hidden. Removing src made the normal Draw state depend on a
+                // later repair and caused blank cards after returning home.
                 image.style.setProperty('opacity','0','important');
                 image.style.setProperty('filter','none','important');
             }
@@ -26074,6 +26124,11 @@ function startAnimalDrag(
             requestedServerPlayerId:
                 multiplayerServerPlayerForLocalId(requestedPlayerId)?.playerId||null,
             requestedAnimalId:authoritativeRequested?.id??animal.id,
+            requestedAnimalIdentity:{
+                category:String((authoritativeRequested||animal)?.category||''),
+                level:Number((authoritativeRequested||animal)?.level)||0,
+                filename:String((authoritativeRequested||animal)?.filename||'')
+            },
             offsetX:event.clientX-rect.left,offsetY:event.clientY-rect.top,
             startClientX:event.clientX,startClientY:event.clientY,maxDistance:0
         };
@@ -27999,7 +28054,10 @@ async function finishHumanTradeRequestDrag(event){
             requestedPlayerId:drag.requestedPlayerId,
             requestedServerPlayerId:drag.requestedServerPlayerId||
                 multiplayerServerPlayerForLocalId(drag.requestedPlayerId)?.playerId||null,
-            requestedAnimalId:drag.requestedAnimalId??drag.animal.id
+            requestedAnimalId:drag.requestedAnimalId??drag.animal.id,
+            requestedAnimalIdentity:cloneForSave(drag.requestedAnimalIdentity||{
+                category:drag.animal?.category,level:drag.animal?.level,filename:drag.animal?.filename
+            })
         });
         staged=!!result?.ok;
     }else{
@@ -28008,6 +28066,9 @@ async function finishHumanTradeRequestDrag(event){
         draft.requestedServerPlayerId=drag.requestedServerPlayerId||
             multiplayerServerPlayerForLocalId(drag.requestedPlayerId)?.playerId||null;
         draft.requestedAnimalId=drag.requestedAnimalId??drag.animal.id;
+        draft.requestedAnimalIdentity=cloneForSave(drag.requestedAnimalIdentity||{
+            category:drag.animal?.category,level:drag.animal?.level,filename:drag.animal?.filename
+        });
         cancelAITradingForHumanTrade();
         localClassicMatch.revision++;
         recordLocalMultiplayerEvent('trade-draft-staged',{
@@ -28524,6 +28585,11 @@ function finishAnimalDrag(event) {
     if(sameExhibitRelocation){
         renderExchange();
         renderTrade();
+        // Moving an animal can change whether the next L1 card has any legal
+        // destination (especially when consolidating animals into a medium
+        // combination exhibit). The optimized relocation path bypasses
+        // renderAll(), so explicitly recompute the draw-card disabled state.
+        refreshDrawAvailabilityState();
         renderProgressTracker();
         updatePrestigeDisplay();
         updateTurnDisplay();
@@ -28543,6 +28609,11 @@ function finishAnimalDrag(event) {
         // of the move; the rest of the zoo DOM remains mounted.
         renderExchange();
         renderTrade();
+        // Moving an animal can change whether the next L1 card has any legal
+        // destination (especially when consolidating animals into a medium
+        // combination exhibit). The optimized relocation path bypasses
+        // renderAll(), so explicitly recompute the draw-card disabled state.
+        refreshDrawAvailabilityState();
         renderProgressTracker();
         updatePrestigeDisplay();
         updateTurnDisplay();
@@ -29191,6 +29262,7 @@ document.addEventListener(
                 );
             }
             renderTrade();
+            refreshDrawAvailabilityState();
         }
         else if(state.drag?.type==='direct-human-trade-result'){
             // Accept-drag temporarily removes this player's offered animal from
@@ -29208,6 +29280,7 @@ document.addEventListener(
             }
             renderTrade();
             renderAnimals?.();
+            refreshDrawAvailabilityState();
         }
         else if(state.drag?.type==='direct-human-trade-sender-claim'){
             // Claim drag has not changed ownership/placement yet; cancellation
@@ -31856,16 +31929,30 @@ function ensureGenerateZooUI() {
     const zooSize = overlay.querySelector('#newZooSize');
     const zooSizeValue = overlay.querySelector('#newZooSizeValue');
     const zooSizeNote = overlay.querySelector('#newZooSizeNote');
-    function realZooSliderPosition(record) {
-        if(state.realZooDataLoadState!=='ready') return 50;
-        const all = (state.realZooData?.zoos || [])
-            .filter(item => item?.name && Array.isArray(item.animals) && item.animals.length)
+    let realZooSliderRankingCache=null;
+    let realZooSliderRankingSource=null;
+    function realZooSliderRanking() {
+        const source=state.realZooData?.zoos||[];
+        if(realZooSliderRankingCache&&realZooSliderRankingSource===source)
+            return realZooSliderRankingCache;
+        const records=source
+            .filter(item=>item?.name&&Array.isArray(item.animals)&&item.animals.length)
             .slice()
-            .sort((a, b) => realZooPrestige(a) - realZooPrestige(b) || String(a.name).localeCompare(String(b.name)));
-        if (all.length <= 1) return 50;
-        const key = realZooHoldingKey(record);
-        const index = Math.max(0, all.findIndex(item => realZooHoldingKey(item) === key));
-        return Math.round(index * 100 / (all.length - 1));
+            .sort((a,b)=>realZooPrestige(a)-realZooPrestige(b)||
+                String(a.name).localeCompare(String(b.name),'en',{sensitivity:'base'}));
+        const denominator=Math.max(1,records.length-1);
+        const positions=new Map();
+        records.forEach((record,index)=>{
+            positions.set(realZooHoldingKey(record),
+                records.length<=1?50:Math.round(index*100/denominator));
+        });
+        realZooSliderRankingSource=source;
+        realZooSliderRankingCache={records,positions};
+        return realZooSliderRankingCache;
+    }
+    function realZooSliderPosition(record) {
+        if(state.realZooDataLoadState!=='ready'||!record)return 50;
+        return realZooSliderRanking().positions.get(realZooHoldingKey(record))??50;
     }
 
     function syncRealZooStartingSize(record) {
@@ -31877,16 +31964,23 @@ function ensureGenerateZooUI() {
 
     function selectRealZooNearestStartingSize() {
         if(state.realZooDataLoadState!=='ready')return;
-        const records=(state.realZooData?.zoos||[])
-            .filter(record=>record?.name&&Array.isArray(record.animals)&&record.animals.length)
-            .slice();
+        const ranking=realZooSliderRanking();
+        const records=ranking.records;
         if(!records.length)return;
         const target=Math.max(0,Math.min(100,Number(zooSize.value)||0));
-        const chosen=records.sort((a,b)=>
-            Math.abs(realZooSliderPosition(a)-target)-Math.abs(realZooSliderPosition(b)-target)||
-            String(a.name).localeCompare(String(b.name),'en',{sensitivity:'base'})
-        )[0];
+        // Ranking is already ordered by starting-size/prestige. Convert the
+        // slider directly to an index instead of sorting the entire zoo
+        // database and re-sorting it once again for every comparator call.
+        const chosen=records[Math.max(0,Math.min(
+            records.length-1,
+            Math.round(target*(records.length-1)/100)
+        ))];
         if(!chosen)return;
+        const chosenKey=realZooHoldingKey(chosen);
+        if(chosenKey===realZooName.value){
+            updateZooSizePreview();
+            return;
+        }
         const chosenCountry=String(chosen.country||country.value||'');
         if(chosenCountry&&normaliseGeographyPart(chosenCountry)!==normaliseGeographyPart(country.value)){
             const realCountries=[...new Set(records.map(record=>record.country).filter(Boolean))]
@@ -37687,32 +37781,35 @@ function tryDropOnOutgoingOffer(event, animal) {
         const fromId=localClassicMatch.activePlayerId;
         const draft=localHumanTradeDraft(fromId);
         if(draft?.requestedAnimalId&&draft?.requestedPlayerId){
-            const requested=directTradeAnimal(draft.requestedPlayerId,draft.requestedAnimalId);
-            if(!requested)return false;
-            const offeredKey=animalCardKey(animal),requestedKey=animalCardKey(requested);
-            const fromOthers=(state.animals||[]).filter(a=>String(a.id)!==String(animal.id));
-            const targetAnimals=localClassicMatch.players[draft.requestedPlayerId]?.snapshot?.state?.animals||[];
-            const duplicate=offeredKey===requestedKey||
-                fromOthers.some(a=>animalCardKey(a)===requestedKey)||
-                targetAnimals.some(a=>String(a.id)!==String(requested.id)&&animalCardKey(a)===offeredKey);
-            if(duplicate)return false;
+            const serverTrade=serverAuthoritativeMultiplayerActive();
+
+            // In server-backed multiplayer the draft already contains the exact
+            // authoritative animal ID captured while visiting the other zoo.
+            // Never resolve that ID back through a browser replica here: a stale
+            // replica can either make the request disappear or substitute a
+            // locally regenerated ID, recreating REQUESTED_ANIMAL_NOT_OWNED.
+            const requested=serverTrade
+                ? null
+                : directTradeAnimal(draft.requestedPlayerId,draft.requestedAnimalId);
+            if(!serverTrade&&!requested)return false;
+
+            if(!serverTrade){
+                const offeredKey=animalCardKey(animal),requestedKey=animalCardKey(requested);
+                const fromOthers=(state.animals||[]).filter(a=>String(a.id)!==String(animal.id));
+                const targetAnimals=localClassicMatch.players[draft.requestedPlayerId]?.snapshot?.state?.animals||[];
+                const duplicate=offeredKey===requestedKey||
+                    fromOthers.some(a=>animalCardKey(a)===requestedKey)||
+                    targetAnimals.some(a=>String(a.id)!==String(requested.id)&&animalCardKey(a)===offeredKey);
+                if(duplicate)return false;
+            }
 
             // Restore the physical card: a proposal is only a reservation.
             restoreDraggedAnimal();
-            if(localMultiplayerPeerReplica?.playerId===fromId ||
-               (localMultiplayerBrowserTransport?.role==='peer'&&localMultiplayerBrowserTransport.playerId===fromId)){
-                const tradeId=`player-trade-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
-                dispatchLocalMultiplayerAction(fromId,'send-human-trade-offer',{
-                    tradeId,
-                    offeredAnimalId:animal.id,
-                    requestedPlayerId:draft.requestedPlayerId,
-                    requestedAnimalId:requested.id,
-                    offeredTransferId:nextDirectTradeAnimalId(localClassicMatch.players[draft.requestedPlayerId]?.snapshot),
-                    requestedTransferId:nextDirectTradeAnimalId(localClassicMatch.players[fromId]?.snapshot)
-                });
-                return true;
-            }
-            if(serverAuthoritativeMultiplayerActive()){
+
+            // Server authority must win over the legacy peer/host routing.
+            // A server-backed Player 2 is also `role==='peer'`; the old order
+            // therefore sent that player down the legacy branch first.
+            if(serverTrade){
                 const tradeId=`player-trade-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
                 dispatchLocalMultiplayerAction(fromId,'send-human-trade-offer',{
                     tradeId,
@@ -37720,7 +37817,8 @@ function tryDropOnOutgoingOffer(event, animal) {
                     requestedPlayerId:draft.requestedPlayerId,
                     requestedServerPlayerId:draft.requestedServerPlayerId||
                         multiplayerServerPlayerForLocalId(draft.requestedPlayerId)?.playerId||null,
-                    requestedAnimalId:requested.id
+                    requestedAnimalId:draft.requestedAnimalId,
+                    requestedAnimalIdentity:cloneForSave(draft.requestedAnimalIdentity||null)
                 }).then(result=>{
                     if(result?.ok===false){
                         multiplayerDiagnostic('human-trade-offer-rejected',{
@@ -37733,6 +37831,19 @@ function tryDropOnOutgoingOffer(event, animal) {
                     console.warn('Could not send human trade proposal:',error);
                     showGameNotice?.('Could not send the trade proposal.');
                     renderTrade();
+                });
+                return true;
+            }
+            if(localMultiplayerPeerReplica?.playerId===fromId ||
+               (localMultiplayerBrowserTransport?.role==='peer'&&localMultiplayerBrowserTransport.playerId===fromId)){
+                const tradeId=`player-trade-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+                dispatchLocalMultiplayerAction(fromId,'send-human-trade-offer',{
+                    tradeId,
+                    offeredAnimalId:animal.id,
+                    requestedPlayerId:draft.requestedPlayerId,
+                    requestedAnimalId:requested.id,
+                    offeredTransferId:nextDirectTradeAnimalId(localClassicMatch.players[draft.requestedPlayerId]?.snapshot),
+                    requestedTransferId:nextDirectTradeAnimalId(localClassicMatch.players[fromId]?.snapshot)
                 });
                 return true;
             }
@@ -38990,8 +39101,10 @@ function renderDirectHumanTradeCards(){
         cancelDraft.type='button';cancelDraft.textContent='Cancel request';
         cancelDraft.style.cssText='position:static;margin:0';
         cancelDraft.onclick=async()=>{
-            if(localMultiplayerBrowserTransport?.role==='peer'&&
-               localMultiplayerBrowserTransport.playerId===activeId){
+            if(serverAuthoritativeMultiplayerActive()||
+               localMultiplayerPeerReplica?.playerId===activeId||
+               (localMultiplayerBrowserTransport?.role==='peer'&&
+                localMultiplayerBrowserTransport.playerId===activeId)){
                 await dispatchLocalMultiplayerAction(activeId,'cancel-human-trade-draft',{});
                 return;
             }
@@ -39082,10 +39195,9 @@ function renderDirectHumanTradeCards(){
         const cancel=document.createElement('button');
         cancel.type='button';cancel.textContent='Cancel offer';cancel.style.cssText='flex:0 0 auto;position:static;margin:0';
         cancel.onclick=async()=>{
-            if(localMultiplayerPeerReplica?.playerId===activeId ||
+            if(serverAuthoritativeMultiplayerActive()||
+               localMultiplayerPeerReplica?.playerId===activeId ||
                (localMultiplayerBrowserTransport?.role==='peer'&&localMultiplayerBrowserTransport.playerId===activeId)){
-                await dispatchLocalMultiplayerAction(activeId,'cancel-human-trade',{offerId:offer.id});
-            }else if(serverAuthoritativeMultiplayerActive()){
                 await dispatchLocalMultiplayerAction(activeId,'cancel-human-trade',{offerId:offer.id});
             }else{
                 offer.status='cancelled';offer.cancelledRevision=++localClassicMatch.revision;
@@ -39106,10 +39218,9 @@ function renderDirectHumanTradeCards(){
         decline.textContent='Decline';
         decline.style.pointerEvents='auto';
         decline.onclick=async()=>{
-            if(localMultiplayerPeerReplica?.playerId===activeId ||
+            if(serverAuthoritativeMultiplayerActive()||
+               localMultiplayerPeerReplica?.playerId===activeId ||
                (localMultiplayerBrowserTransport?.role==='peer'&&localMultiplayerBrowserTransport.playerId===activeId)){
-                await dispatchLocalMultiplayerAction(activeId,'decline-human-trade',{offerId:offer.id});
-            }else if(serverAuthoritativeMultiplayerActive()){
                 await dispatchLocalMultiplayerAction(activeId,'decline-human-trade',{offerId:offer.id});
             }else{
                 declineDirectHumanTradeOffer(offer.id,activeId);
@@ -39489,6 +39600,10 @@ function acceptSelectedTrade(destination=null, autoPlace=false) {
         relation.lastInteractionDate=normaliseTrueCalendarState().date;
     }
     state.autonomousTradeOffer=null;
+    // Accepted AI trade is now fully settled. No non-exchange/non-offer card may
+    // still reserve a former slot; such an orphan makes visually empty exhibits
+    // count as occupied and leaves Draw L1 incorrectly disabled.
+    clearOrphanedZooSlotReservations();
     if (isRealOpponentMode()) clearRealOpponentDisplay();
     if (state.gameMode !== 'true') scheduleNextAutonomousOpponentOffer();
 
@@ -40752,15 +40867,32 @@ async function startGame() {
         // Explicit "Leave Multiplayer" clears this marker, so it never drags a
         // player back into a session they intentionally left.
         const reconnectSession=readActiveMultiplayerSession();
-        if(!localClassicMatch&&reconnectSession?.role==='peer'&&
+        if(reconnectSession?.role==='peer'&&
            readLocalMultiplayerReconnectIdentity(reconnectSession.matchId)){
             const reconnectRelay=String(reconnectSession.relayUrl||'').trim();
             if(reconnectRelay)configureWebSocketMultiplayer(reconnectRelay);
+
+            // A peer auto-resume normally restores localClassicMatch as well as
+            // its reconnect token. The old `!localClassicMatch` guard therefore
+            // skipped reconnection precisely on a normal Player 2 reload.
+            // Preserve the restored owned zoo, then let join() create its
+            // provisional transport shell; the authenticated server welcome
+            // remaps it back onto the durable seat.
+            const restoredPeerMatch=localClassicMatch
+                ? cloneForSave(localClassicMatch) : null;
+            if(localClassicMatch){
+                localClassicMatch=null;
+                disableLocalMultiplayerPeerSimulation();
+            }
             queueMicrotask(async()=>{
                 const ok=await joinLocalMultiplayerInBrowser(reconnectSession.matchId);
                 if(ok){
                     showMultiplayerToast('Reconnected to multiplayer.');
                 }else{
+                    // If the network is temporarily unavailable, retain the
+                    // restored match rather than throwing Player 2's zoo away.
+                    if(!localClassicMatch&&restoredPeerMatch)
+                        localClassicMatch=restoredPeerMatch;
                     showMultiplayerToast('Multiplayer reconnect unavailable.');
                 }
             });

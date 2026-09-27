@@ -21286,6 +21286,15 @@ function applyAuthoritativeHumanTradeMessage(message){
     }
     Object.assign(offer,cloneForSave(incoming));
     if(message.recovered===true)offer.recoveredFromServer=true;
+    // The visit-selected request is only a draft. Once the server accepts the
+    // real proposal, do not let that draft reappear underneath it.
+    if(incoming.status==='pending'){
+        if(incoming.fromPlayerId===localClassicMatch.activePlayerId)
+            clearLocalHumanTradeDraft(incoming.fromPlayerId);
+        if(incoming.toPlayerId===localClassicMatch.activePlayerId &&
+           !selectedHumanTradeProposalId)
+            selectedHumanTradeProposalId=incoming.id;
+    }
 
     // The server response already contains the exact durable zoo revisions
     // produced by the transaction. Keep replicas current without asking the
@@ -38549,7 +38558,8 @@ function activeDirectHumanTrade(){
     const ownerId=localClassicMatch.activePlayerId;
     const active=pendingDirectHumanTrades().filter(o=>(o.status==='pending'||o.status==='accepted-awaiting-sender-claim')&&directHumanTradeHasParticipant(o,ownerId));
     return active.find(o=>String(o.id)===String(selectedHumanTradeProposalId))||
-        active.find(o=>o.status==='accepted-awaiting-sender-claim')||null;
+        active.find(o=>o.status==='accepted-awaiting-sender-claim')||
+        active.find(o=>o.status==='pending')||null;
 }
 function activeDirectHumanTradeDraft(){
     if(!localClassicMatch)return null;
@@ -39104,13 +39114,16 @@ function renderTrade() {
     }
     removeTrueTransferProposalPanel();
 
-    if(serverAuthoritativeMultiplayerActive()&&selectedMultiplayerPublicListingPlayerId&&renderSelectedMultiplayerPublicListing()){
+    if(serverAuthoritativeMultiplayerActive()&&
+       !activeDirectHumanTrade()&&!activeDirectHumanTradeDraft()&&
+       selectedMultiplayerPublicListingPlayerId&&renderSelectedMultiplayerPublicListing()){
         // Human rows render the server-owned public listing in YOUR OFFER.
         // A private AI negotiation may simultaneously have a DIFFERENT
         // state.outgoingOffer; keep that untouched underneath for its AI row.
         const publicOwn=ownServerTradeListing();
-        const publicOwnAnimal=publicOwn?.animal||
-            (state.animals||[]).find(a=>String(a?.id)===String(publicOwn?.animalId));
+        const publicOwnAnimal=(state.animals||[]).find(
+                a=>String(a?.id)===String(publicOwn?.animalId)
+            )||publicOwn?.animal;
         outgoingOfferBox.innerHTML='';
         outgoingOfferBox.classList.toggle('trade-filled',Boolean(publicOwnAnimal));
         if(publicOwnAnimal){
@@ -39137,8 +39150,8 @@ function renderTrade() {
     // multiplayer match is active; AI trade state remains untouched underneath.
     if (localClassicMatch && (
         activeDirectHumanTradeDraft() ||
-        selectedHumanTradeProposalId ||
-        activeDirectHumanTrade()?.status==='accepted-awaiting-sender-claim'
+        activeDirectHumanTrade() ||
+        selectedHumanTradeProposalId
     ) && renderDirectHumanTradeCards()) {
         const aiDecline=document.getElementById('declineOpponentOffer');
         if(aiDecline)aiDecline.style.display='none';

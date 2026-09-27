@@ -13566,7 +13566,10 @@ function trueUndoBuilderEdit(){
     state.enclosures=trueBuilderClone(u.enclosures);state.animals=trueBuilderClone(u.animals||state.animals||[]);state.customAreas=trueBuilderClone(u.customAreas);state.nextId=u.nextId;state.areaPlacementRevision=(Number(u.areaPlacementRevision)||0)+1;
     trueEnclosureBuilderDrag=null;areaToolDrag=null;trueEnclosureBuilderSelectedId=null;trueEnclosureBuilderSelectedCell=null;
     document.getElementById('trueEnclosureBuilderSelection')?.remove();document.getElementById('areaToolSelection')?.remove();
-    normaliseTrueBuiltEnclosureOccupancy();renderAll();return true;
+    normaliseTrueBuiltEnclosureOccupancy();
+    renderAll();
+    syncActiveZooIntoLocalMatch?.();
+    return true;
 }
 
 const TRUE_ENC_CELL_W = 175;
@@ -13970,7 +13973,9 @@ function renderVisitedZooQuickTabs() {
             );
             const label = document.createElement('span');
             label.className = 'visited-zoo-quick-tab-label';
-            const isHostPlayer=playerId==='player-1';
+            const serverPlayer=multiplayerServerPlayerForLocalId(playerId);
+            const isHostPlayer=serverPlayer?.host===true ||
+                (!serverPlayer && playerId==='player-1');
             label.textContent = `${ownsTurn ? '● ' : ''}${zooName}`;
             tab.title = hasZoo
                 ? `${isViewed?'Viewing':'Visit'} ${zooName}${isHostPlayer?' — host':''}${isOwnZoo?' — your zoo':''}${ownsTurn?' — current turn':''}`
@@ -14814,6 +14819,11 @@ function trueRenderedEnclosurePath(enclosure){
         const owner=owners.get(trueBuilderCellKey(col,row));
         return owner!=null&&String(owner)!==String(enclosure.id);
     };
+    // Shared corners are decided from the two INCIDENT sides of this cell,
+    // never from arbitrary occupancy around the vertex. A diagonal-only
+    // enclosure therefore cannot collapse the normal outside gap.
+    const incidentShared=(sideExposed,sideInset)=>
+        sideExposed && sideInset===0;
     const remember=(vx,vy,x,y)=>{
         const key=`${vx},${vy}`;
         if(!vertexPoints.has(key))vertexPoints.set(key,[]);
@@ -14843,13 +14853,21 @@ function trueRenderedEnclosurePath(enclosure){
               bi=B?(otherAt(c.col,c.row+1)?0:inset):0,
               li=L?(otherAt(c.col-1,c.row)?0:inset):0;
 
-        if(T)addH(ly+ti,lx+(L?li:0),lx+w-(R?ri:0),
+        const topShared=incidentShared(T,ti),
+              rightShared=incidentShared(R,ri),
+              bottomShared=incidentShared(B,bi),
+              leftShared=incidentShared(L,li),
+              tlShared=topShared||leftShared,
+              trShared=topShared||rightShared,
+              brShared=bottomShared||rightShared,
+              blShared=bottomShared||leftShared;
+        if(T)addH(ly+ti,lx+(L&&!tlShared?li:0),lx+w-(R&&!trShared?ri:0),
             {x:c.col,y:c.row},{x:c.col+1,y:c.row});
-        if(R)addV(lx+w-ri,ly+(T?ti:0),ly+h-(B?bi:0),
+        if(R)addV(lx+w-ri,ly+(T&&!trShared?ti:0),ly+h-(B&&!brShared?bi:0),
             {x:c.col+1,y:c.row},{x:c.col+1,y:c.row+1});
-        if(B)addH(ly+h-bi,lx+(L?li:0),lx+w-(R?ri:0),
+        if(B)addH(ly+h-bi,lx+(L&&!blShared?li:0),lx+w-(R&&!brShared?ri:0),
             {x:c.col,y:c.row+1},{x:c.col+1,y:c.row+1});
-        if(L)addV(lx+li,ly+(T?ti:0),ly+h-(B?bi:0),
+        if(L)addV(lx+li,ly+(T&&!tlShared?ti:0),ly+h-(B&&!blShared?bi:0),
             {x:c.col,y:c.row},{x:c.col,y:c.row+1});
     }
 
@@ -15402,7 +15420,11 @@ function commitTruePaintedEnclosureCells(worldCells,targetId=null){
         const minCol=Math.min(...worldCells.map(c=>c.col)),minRow=Math.min(...worldCells.map(c=>c.row));
         state.enclosures.push({id:state.nextId++,trueBuilt:true,cells:trueCanonicalCellList(worldCells.map(c=>({col:c.col-minCol,row:c.row-minRow}))),x:minCol*TRUE_ENC_CELL_W,y:minRow*TRUE_ENC_CELL_H,sourceEnclosureNumber:1});
     }
-    state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;normaliseTrueBuiltEnclosureOccupancy();renderAll();return true;
+    state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
+    normaliseTrueBuiltEnclosureOccupancy();
+    renderAll();
+    syncActiveZooIntoLocalMatch?.();
+    return true;
 }
 function trueDeleteBuiltEnclosureCell(enclosureId,worldCol,worldRow){
     const enc=(state.enclosures||[]).find(e=>e?.trueBuilt&&String(e.id)===String(enclosureId));if(!enc)return false;
@@ -15439,7 +15461,9 @@ function trueDeleteBuiltEnclosureCell(enclosureId,worldCol,worldRow){
     state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
     trueEnclosureBuilderSelectedId=null;trueEnclosureBuilderSelectedCell=null;
     document.getElementById('trueEnclosureBuilderSelection')?.remove();document.getElementById('trueEnclosurePaintCursor')?.remove();
-    renderAll();return true;
+    renderAll();
+    syncActiveZooIntoLocalMatch?.();
+    return true;
 }
 
 function trueLayoutToolEditingActive(){
@@ -18445,6 +18469,11 @@ function performClassicGameAction(action) {
        !performClassicGameAction.authorityExecuting){
         return requestServerAuthoritativeLevelOneDraw(action.destination||null);
     }
+    if(action.type===CLASSIC_GAME_ACTION.COMPLETE_EXCHANGE&&
+       serverAuthoritativeMultiplayerActive()&&
+       !performClassicGameAction.authorityExecuting){
+        return requestServerAuthoritativeExchange(action.destination??null,!!action.autoPlace);
+    }
 
     // In local network simulation Player 2 is treated as the remote client.
     // Its UI sends the action across the same serialized authority channel a
@@ -19568,6 +19597,31 @@ function getLocalClassicMatchSnapshot() {
     return cloneForSave(localClassicMatch);
 }
 
+function scheduleDurableOwnZooStateCommit(snapshot=null,delayMs=180){
+    const t=localMultiplayerBrowserTransport;
+    if(!serverAuthoritativeMultiplayerActive()||!t?.serverAuthenticated)return false;
+    if(localClassicMatch?.viewingPlayerId)return false;
+    if(t.playerId!==localClassicMatch?.activePlayerId)return false;
+    const zoo=cloneForSave(snapshot||exportCurrentGameState());
+    let signature='';
+    try{signature=JSON.stringify(zoo);}catch(_){return false;}
+    if(signature===t.durableZooLastRequestedSignature)return false;
+    t.durableZooScheduledSnapshot=zoo;
+    t.durableZooScheduledSignature=signature;
+    if(t.durableZooCommitTimer)clearTimeout(t.durableZooCommitTimer);
+    t.durableZooCommitTimer=setTimeout(()=>{
+        t.durableZooCommitTimer=null;
+        const queued=t.durableZooScheduledSnapshot;
+        const queuedSignature=t.durableZooScheduledSignature;
+        t.durableZooScheduledSnapshot=null;
+        t.durableZooScheduledSignature='';
+        if(!queued)return;
+        t.durableZooLastRequestedSignature=queuedSignature;
+        commitOwnZooStateToServer(queued,{scheduledSignature:queuedSignature});
+    },Math.max(0,Number(delayMs)||0));
+    return true;
+}
+
 function syncActiveZooIntoLocalMatch() {
     if (!localClassicMatch) return false;
     if (localClassicMatch.viewingPlayerId &&
@@ -19580,6 +19634,12 @@ function syncActiveZooIntoLocalMatch() {
        localClassicMatch.awaitingLocalZooSetup &&
        !player.snapshot)return false;
     player.snapshot = exportCurrentGameState();
+    scheduleDurableOwnZooStateCommit(player.snapshot);
+    const transport=localMultiplayerBrowserTransport;
+    if(transport?.role==='peer'&&
+       transport.playerId===localClassicMatch.activePlayerId){
+        try{transport.lastImportedOwnSnapshotSignature=JSON.stringify(player.snapshot);}catch(_){}
+    }
     return true;
 }
 
@@ -19755,9 +19815,20 @@ async function applyLocalMultiplayerSyncPacketToReplica(packet,replica=localMult
     replica.rules=cloneForSave(packet.rules||replica.rules||null);
     replica.playerIds=Array.isArray(packet.playerIds)?[...packet.playerIds]:Object.keys(packet.players||{});
     replica.players=cloneForSave(packet.players||{});
-    replica.pendingPlayerTrades=cloneForSave(packet.pendingPlayerTrades||[]);
+    replica.pendingPlayerTrades=cloneForSave(packet.pendingPlayerTrades||[]).filter(offer=>
+        directHumanTradeHasParticipant(offer,replica.playerId)
+    );
     const known=new Set(replica.events.map(e=>e.id));
-    for(const event of packet.events||[])if(event?.id&&!known.has(event.id)){replica.events.push(cloneForSave(event));known.add(event.id);}
+    for(const event of packet.events||[]){
+        if(!event?.id||known.has(event.id))continue;
+        if(String(event.type||'').startsWith('trade-')){
+            const payload=event.payload||{};
+            const from=payload.fromPlayerId||payload.playerId||null;
+            const to=payload.toPlayerId||null;
+            if(from!==replica.playerId&&to!==replica.playerId)continue;
+        }
+        replica.events.push(cloneForSave(event));known.add(event.id);
+    }
     if(replica.events.length>250)replica.events.splice(0,replica.events.length-250);
     replica.cursor=packet.cursor||replica.cursor;replica.receivedPackets++;
 
@@ -19919,6 +19990,15 @@ async function applyLocalMultiplayerSyncPacketToReplica(packet,replica=localMult
     }
     return true;
 }
+function persistHumanTradeBoundary(reason='human-trade-state'){
+    if(!localClassicMatch)return null;
+    // Host/server-backed compatibility sync contains the canonical trade ledger
+    // while human trades are being migrated to dedicated server transactions.
+    // Force it at lifecycle boundaries so a service restart cannot replay an
+    // earlier pending/accepted state.
+    return emitLocalMultiplayerSync(reason);
+}
+
 function emitLocalMultiplayerSync(reason='state-change'){
     if(!localClassicMatch)return null;
     // A direct authoritative send supersedes any same-tick scheduled send.
@@ -19960,7 +20040,7 @@ let localMultiplayerBrowserChannel=null;
 let localMultiplayerBrowserTransport=null;
 let pendingMultiplayerSetup={
     gameMode:'classic',
-    turnMode:'alternating',
+    turnMode:'simultaneous',
     activeCategories:Object.keys(FOLDERS)
 };
 function multiplayerMatchRules(){
@@ -20201,6 +20281,163 @@ function sendMultiplayerServerAction(type,payload={}){
     t.sent++;t.lastMessageType=type;
     return promise;
 }
+
+
+const SERVER_HUMAN_TRADE_ACTIONS=new Set([
+    'send-human-trade-offer','accept-human-trade','claim-human-trade',
+    'decline-human-trade','cancel-human-trade'
+]);
+async function authorizeHumanTradeWithServer(type,payload={}){
+    if(!serverAuthoritativeMultiplayerActive())return {ok:true,legacy:true};
+    const operation={
+        'send-human-trade-offer':'offer',
+        'accept-human-trade':'accept',
+        'claim-human-trade':'claim',
+        'decline-human-trade':'decline',
+        'cancel-human-trade':'cancel'
+    }[type];
+    if(!operation)return {ok:true,legacy:true};
+    const wire={operation};
+    if(operation==='offer'){
+        wire.tradeId=payload.tradeId;
+        wire.toPlayerId=payload.requestedPlayerId;
+        wire.offeredAnimalId=payload.offeredAnimalId;
+        wire.requestedAnimalId=payload.requestedAnimalId;
+        wire.offeredTransferId=payload.offeredTransferId;
+        wire.requestedTransferId=payload.requestedTransferId;
+    }else{
+        wire.tradeId=payload.offerId;
+        if((operation==='accept'||operation==='claim')&&payload.destination)wire.destination=payload.destination;
+    }
+    const response=await sendMultiplayerServerAction('human-trade',wire);
+    if(response?.type!=='action-committed'||response?.action!=='human-trade'){
+        return {ok:false,reason:response?.code||'server-trade-rejected'};
+    }
+    return {ok:true,response};
+}
+
+
+function applyAuthoritativeHumanTradeMessage(message){
+    if(!localClassicMatch||message?.action!=='human-trade'||message?.type!=='action-committed')return false;
+    const incoming=message.trade;
+    if(!incoming?.id)return false;
+
+    if(!Array.isArray(localClassicMatch.pendingPlayerTrades))
+        localClassicMatch.pendingPlayerTrades=[];
+    let offer=localClassicMatch.pendingPlayerTrades.find(o=>String(o?.id)===String(incoming.id));
+    if(!offer){
+        offer={id:incoming.id};
+        localClassicMatch.pendingPlayerTrades.push(offer);
+    }
+    Object.assign(offer,cloneForSave(incoming));
+
+    // The server response already contains the exact durable zoo revisions
+    // produced by the transaction. Keep replicas current without asking the
+    // browser host to replay ownership mutations.
+    for(const update of (Array.isArray(message.zooUpdates)?message.zooUpdates:[])){
+        const player=localClassicMatch.players?.[update.playerId];
+        if(player&&update.zoo){
+            player.snapshot=cloneForSave(update.zoo);
+            player.lastServerZooRevision=Number(update.revision)||0;
+            if(update.playerId===localMultiplayerBrowserTransport?.serverPlayerId){
+                localMultiplayerBrowserTransport.durableZooRevision=Number(update.revision)||0;
+                localMultiplayerBrowserTransport.durableZooQueuedSnapshot=null;
+                localMultiplayerBrowserTransport.durableZooQueuedSignature='';
+                try{
+                    localMultiplayerBrowserTransport.durableZooLastRequestedSignature=JSON.stringify(update.zoo);
+                }catch(_){}
+            }
+        }
+    }
+
+    if(incoming.status==='accepted-awaiting-sender-claim'){
+        const senderZoo=(message.zooUpdates||[]).find(u=>u.playerId===incoming.fromPlayerId)?.zoo
+            ||localClassicMatch.players?.[incoming.fromPlayerId]?.snapshot;
+        const transferred=(senderZoo?.state?.animals||[]).find(
+            a=>String(a?.id)===String(incoming.requestedTransferId)
+        );
+        offer.senderClaimAnimal=transferred?cloneForSave(transferred):offer.senderClaimAnimal||null;
+    }else if(incoming.status==='completed'){
+        offer.senderClaimAnimal=null;
+        resumeAITradingAfterHumanTrade?.();
+    }else if(incoming.status==='declined'||incoming.status==='cancelled'){
+        resumeAITradingAfterHumanTrade?.();
+    }
+
+    localClassicMatch.revision=Math.max(
+        Number(localClassicMatch.revision)||0,
+        Number(message.revision)||0
+    );
+    pruneTerminalDirectHumanTrades?.();
+    renderTrade?.();
+    renderVisitedZooQuickTabs?.();
+    return true;
+}
+
+function commitOwnZooStateToServer(snapshot=null,options={}){
+    const t=localMultiplayerBrowserTransport;
+    const channel=localMultiplayerBrowserChannel;
+    if(!serverAuthoritativeMultiplayerActive()||!channel?.postServerMessage)return false;
+    const activeId=localClassicMatch?.activePlayerId;
+    if(!activeId||t.playerId!==activeId)return false;
+    const zoo=cloneForSave(snapshot||exportCurrentGameState());
+    let signature=String(options?.scheduledSignature||'');
+    if(!signature){try{signature=JSON.stringify(zoo);}catch(_){}}
+    if(t.durableZooCommitTimer){
+        clearTimeout(t.durableZooCommitTimer);
+        t.durableZooCommitTimer=null;
+        t.durableZooScheduledSnapshot=null;
+        t.durableZooScheduledSignature='';
+    }
+    if(signature)t.durableZooLastRequestedSignature=signature;
+
+    // Coalesce while a commit is awaiting its authoritative revision. Sending
+    // multiple snapshots against the same base revision creates avoidable CAS
+    // failures and was a source of trade/update races.
+    if(t.durableZooCommitPending){
+        t.durableZooQueuedSnapshot=zoo;
+        t.durableZooQueuedSignature=signature;
+        return true;
+    }
+    t.durableZooCommitPending=true;
+    t.durableZooCommitBaseRevision=Math.max(0,Number(t.durableZooRevision)||0);
+    channel.postServerMessage({
+        type:'zoo-state-commit',
+        baseRevision:t.durableZooCommitBaseRevision,
+        zoo
+    });
+    t.sent++;t.lastMessageType='zoo-state-commit';
+    return true;
+}
+function flushQueuedOwnZooStateCommit(){
+    const t=localMultiplayerBrowserTransport;
+    if(!t||t.durableZooCommitPending)return false;
+    const queued=t.durableZooQueuedSnapshot;
+    const queuedSignature=t.durableZooQueuedSignature||'';
+    t.durableZooQueuedSnapshot=null;
+    t.durableZooQueuedSignature='';
+    return queued?commitOwnZooStateToServer(queued,{scheduledSignature:queuedSignature}):false;
+}
+function settleDurableZooCommitWaiters(ok=true){
+    const t=localMultiplayerBrowserTransport;
+    if(!t)return;
+    const waiters=Array.isArray(t.durableZooCommitWaiters)?t.durableZooCommitWaiters.splice(0):[];
+    for(const resolve of waiters){try{resolve(ok);}catch(_){}}
+}
+function awaitDurableZooCommitIdle(timeoutMs=5000){
+    const t=localMultiplayerBrowserTransport;
+    if(!serverAuthoritativeMultiplayerActive()||!t?.durableZooCommitPending)
+        return Promise.resolve(true);
+    return new Promise(resolve=>{
+        if(!Array.isArray(t.durableZooCommitWaiters))t.durableZooCommitWaiters=[];
+        let done=false;
+        const finish=value=>{if(done)return;done=true;resolve(value);};
+        t.durableZooCommitWaiters.push(finish);
+        setTimeout(()=>finish(false),Math.max(250,Number(timeoutMs)||5000));
+    });
+}
+
+
 function readMultiplayerServerIdentity(matchId){
     try{
         const all=JSON.parse(localStorage.getItem(MULTIPLAYER_SERVER_IDENTITY_KEY)||'{}');
@@ -20246,7 +20483,7 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
         const socket=new WebSocket(socketUrl.toString());
         const queued=[];
         const inboundQueue=[];
-        let handler=null,closed=false;
+        let handler=null,closed=false,superseded=false;
         const deliver=data=>{
             if(handler)handler({data});
             else inboundQueue.push(data);
@@ -20283,8 +20520,12 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
         // this only after the open promise resolved created a small race where
         // the authentication packet could be lost before the channel existed.
         socket.addEventListener('message',event=>{
-            try{deliver(JSON.parse(event.data));}
-            catch(error){console.warn('Ignored invalid multiplayer server message:',error);}
+            try{
+                const message=JSON.parse(event.data);
+                if(message?.protocol===MULTIPLAYER_SERVER_PROTOCOL&&message?.type==='server-superseded')
+                    superseded=true;
+                deliver(message);
+            }catch(error){console.warn('Ignored invalid multiplayer server message:',error);}
         });
         await new Promise((resolve,reject)=>{
             const timer=setTimeout(()=>{
@@ -20295,16 +20536,18 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
                 clearTimeout(timer);
                 for(const message of queued.splice(0))socket.send(message);
                 const savedIdentity=readMultiplayerServerIdentity(matchId);
-                const desiredSeat=(()=>{
-                    const id=localClassicMatch?.activePlayerId;
-                    const match=/^player-(\d+)$/.exec(String(id||''));
-                    return match?Number(match[1]):null;
-                })();
+                const activeIdentity=String(localClassicMatch?.activePlayerId||'');
+                const seatMatch=/^player-(\d+)$/.exec(activeIdentity);
+                const desiredSeat=seatMatch?Number(seatMatch[1]):null;
+                const isProvisionalJoin=/^joining-/.test(activeIdentity);
+                // A fresh Join must not silently reuse an old host/player token
+                // stored by this browser for the same match code.
+                const reconnectIdentity=!isProvisionalJoin&&savedIdentity?savedIdentity:null;
                 socket.send(JSON.stringify({
                     protocol:MULTIPLAYER_SERVER_PROTOCOL,
                     type:'hello',
-                    playerId:savedIdentity?.playerId||null,
-                    reconnectToken:savedIdentity?.reconnectToken||null,
+                    playerId:reconnectIdentity?.playerId||null,
+                    reconnectToken:reconnectIdentity?.reconnectToken||null,
                     desiredSeat
                 }));
                 resolve();
@@ -20317,6 +20560,11 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
         socket.addEventListener('close',()=>{
             closed=true;
             queued.length=0;
+            if(!superseded)deliver({
+                protocol:MULTIPLAYER_SERVER_PROTOCOL,
+                type:'server-disconnected',
+                matchId:String(matchId||'')
+            });
         });
         return channel;
     };
@@ -20365,8 +20613,35 @@ let localMultiplayerBrowserSyncSequence=0;
 let localMultiplayerPeerApplyChain=Promise.resolve();
 const localMultiplayerPendingActions=new Map();
 let localMultiplayerTransportGeneration=0;
+let localMultiplayerReconnectTimer=null;
+let localMultiplayerReconnectAttempt=0;
+function cancelAutomaticMultiplayerReconnect(){
+    if(localMultiplayerReconnectTimer){clearTimeout(localMultiplayerReconnectTimer);localMultiplayerReconnectTimer=null;}
+    localMultiplayerReconnectAttempt=0;
+}
+function scheduleAutomaticMultiplayerReconnect(transport){
+    if(!transport?.serverBacked||transport.serverSuperseded||!localClassicMatch)return false;
+    if(localMultiplayerReconnectTimer)return true;
+    const matchId=transport.matchId;
+    const role=transport.role;
+    const playerId=transport.playerId;
+    const attempt=++localMultiplayerReconnectAttempt;
+    const delay=Math.min(10000,1000*Math.pow(2,Math.min(3,attempt-1)));
+    localMultiplayerReconnectTimer=setTimeout(async()=>{
+        localMultiplayerReconnectTimer=null;
+        if(!localClassicMatch||transport.serverSuperseded)return;
+        const ok=await enableLocalMultiplayerBrowserTransport({role,playerId,matchId});
+        if(!ok){
+            scheduleAutomaticMultiplayerReconnect({
+                serverBacked:true,serverSuperseded:false,role,playerId,matchId
+            });
+        }
+    },delay);
+    return true;
+}
 function multiplayerBrowserChannelName(matchId){return `zoo-curator-classic:${String(matchId||'local')}`;}
-function closeLocalMultiplayerBrowserTransport(){
+function closeLocalMultiplayerBrowserTransport({preserveReconnect=false}={}){
+    if(!preserveReconnect)cancelAutomaticMultiplayerReconnect();
     localMultiplayerTransportGeneration++;
     // Detach future peer sync work. In-flight async work is invalidated by the
     // transport-generation/channel guards in the sync handler.
@@ -20414,7 +20689,8 @@ function ensureLocalClassicMatchId(){
 }
 async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null,matchId=null}={}){
     if(!localClassicMatch)return false;
-    closeLocalMultiplayerBrowserTransport();
+    closeLocalMultiplayerBrowserTransport({preserveReconnect:true});
+    if(localMultiplayerReconnectTimer){clearTimeout(localMultiplayerReconnectTimer);localMultiplayerReconnectTimer=null;}
     const generation=++localMultiplayerTransportGeneration;
     const resolvedMatchId=matchId||ensureLocalClassicMatchId();
     const resolvedPlayerId=playerId||localClassicMatch.activePlayerId;
@@ -20433,10 +20709,16 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
         peerSeats:role==='host'?{}:null,
         lastAppliedSyncSequence:0,peerCameraInitialised:false,peerCamera:null,
         serverBacked:channel.serverBacked===true,
-        serverAuthenticated:false,serverPlayerId:null,serverSeat:null,
+        serverAuthenticated:false,serverPlayerId:null,serverSeat:null,serverReturning:false,
+        serverDisconnected:false,serverSuperseded:false,
         serverRevision:0,serverProgressionRevision:0,serverProgression:null,
         serverViewTargetPlayerId:null,serverViewSubscriptionPending:false,serverViewSubscriptionSequence:0,
-        serverProgressionInitSent:false
+        serverProgressionInitSent:false,
+        durableZooRevision:0,
+        durableZooCommitPending:false,durableZooCommitBaseRevision:0,durableZooQueuedSnapshot:null,
+        durableZooQueuedSignature:'',durableZooCommitWaiters:[],
+        durableZooCommitTimer:null,durableZooScheduledSnapshot:null,durableZooScheduledSignature:'',
+        durableZooLastRequestedSignature:''
     };
     channel.onmessage=async event=>{
         // Ignore late events from a channel that has already been replaced.
@@ -20460,6 +20742,19 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 transport.serverSeat=channel.serverIdentity.seat;
                 transport.serverRevision=Number(message.revision)||0;
                 transport.serverAuthenticated=true;
+                transport.serverDisconnected=false;
+                localMultiplayerReconnectAttempt=0;
+                transport.serverSuperseded=false;
+                transport.serverReturning=message.returning===true;
+                if(transport.durableZooCommitPending)settleDurableZooCommitWaiters(false);
+                transport.durableZooCommitPending=false;
+                transport.durableZooQueuedSnapshot=null;
+                transport.durableZooQueuedSignature='';
+                if(transport.durableZooCommitTimer)clearTimeout(transport.durableZooCommitTimer);
+                transport.durableZooCommitTimer=null;
+                transport.durableZooScheduledSnapshot=null;
+                transport.durableZooScheduledSignature='';
+                transport.durableZooLastRequestedSignature='';
                 transport.serverPlayers=cloneForSave(message.players||[]);
                 const localSeat=multiplayerSeatForLocalPlayerId(localClassicMatch?.activePlayerId);
                 const authoritativeLocalId=transport.serverSeat?`player-${Number(transport.serverSeat)}`:null;
@@ -20508,6 +20803,60 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     if(channel===localMultiplayerBrowserChannel)
                         initialiseAuthoritativeMultiplayerProgressionIfHost();
                 },0);
+            }else if(message.type==='zoo-state'){
+                const serverPlayerId=String(message.playerId||'');
+                const ownServerId=String(transport.serverPlayerId||'');
+                const zoo=message.zoo;
+                const zooRevision=Math.max(0,Number(message.revision)||0);
+                if(serverPlayerId===ownServerId&&zoo&&typeof zoo==='object'&&!Array.isArray(zoo)){
+                    transport.durableZooRevision=zooRevision;
+                    const ownPlayer=localClassicMatch?.players?.[transport.playerId];
+                    if(ownPlayer)ownPlayer.snapshot=cloneForSave(zoo);
+                    try{transport.durableZooLastRequestedSignature=JSON.stringify(zoo);}catch(_){}
+                    if(message.commitAck===true){
+                        transport.durableZooCommitPending=false;
+                        transport.durableZooCommitBaseRevision=zooRevision;
+                        settleDurableZooCommitWaiters(true);
+                        queueMicrotask(()=>flushQueuedOwnZooStateCommit());
+                    }else if(message.authoritativeTrade===true){
+                        // A server transaction advanced the durable zoo while a
+                        // normal snapshot may still be in flight. The stale
+                        // commit will be rejected by CAS; don't let its queued
+                        // pre-trade copy overwrite the authoritative result.
+                        transport.durableZooQueuedSnapshot=null;
+                        transport.durableZooQueuedSignature='';
+                    }
+                    // Only force a full own-zoo restore for an authenticated reconnect.
+                    // Viewer zoo-state packets remain display data and must never overwrite
+                    // the local player's zoo.
+                    if((transport.serverReturning===true||message.authoritativeTrade===true)&&!localClassicMatch?.viewingPlayerId){
+                        autoResumeWriteSuppressed=true;
+                        try{
+                            await importGameState(cloneForSave(zoo),{deferRender:false});
+                        }finally{autoResumeWriteSuppressed=false;}
+                        if(localClassicMatch?.activePlayerId===transport.playerId){
+                            syncActiveZooIntoLocalMatch();
+                            try{
+                                transport.lastImportedOwnSnapshotSignature=JSON.stringify(
+                                    localClassicMatch.players?.[transport.playerId]?.snapshot||zoo
+                                );
+                            }catch(_){}
+                        }
+                        transport.serverReturning=false;
+                        renderVisitedZooQuickTabs();
+                        renderTrade();
+                    }
+                }
+            }else if(message.type==='zoo-state-rejected'){
+                const currentRevision=Math.max(0,Number(message.currentRevision)||0);
+                transport.durableZooRevision=currentRevision;
+                transport.durableZooCommitPending=false;
+                transport.durableZooCommitBaseRevision=currentRevision;
+                transport.durableZooQueuedSnapshot=null;
+                transport.durableZooQueuedSignature='';
+                transport.durableZooLastRequestedSignature='';
+                settleDurableZooCommitWaiters(false);
+                console.warn('Durable multiplayer zoo state rejected:',message.code||'unknown');
             }else if(message.type==='live-view-subscribed'){
                 const ackSequence=Number(message.subscriptionSequence)||0;
                 if(!ackSequence||ackSequence===Number(transport.serverViewSubscriptionSequence)){
@@ -20556,6 +20905,8 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 receiveMultiplayerCursor(message);
             }else if(message.type==='action-committed'||message.type==='action-rejected'){
                 transport.lastServerAction=cloneForSave(message);
+                if(message.type==='action-committed'&&message.action==='human-trade')
+                    applyAuthoritativeHumanTradeMessage(message);
                 if(Number.isFinite(Number(message.revision)))
                     transport.serverProgressionRevision=Number(message.revision);
                 resolveMultiplayerServerAction(message);
@@ -20566,9 +20917,42 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     if(channel===localMultiplayerBrowserChannel)
                         refreshDrawAvailabilityState?.();
                 });
+            }else if(message.type==='server-superseded'){
+                transport.serverAuthenticated=false;
+                transport.serverDisconnected=true;
+                transport.serverSuperseded=true;
+                cancelAutomaticMultiplayerReconnect();
+                clearMultiplayerRemoteCursors();
+                setLocalMultiplayerOutboundSink(null);
+                showGameNotice?.('This multiplayer player reconnected in another tab or window. This connection is now read-only.');
+            }else if(message.type==='server-disconnected'){
+                if(transport.serverSuperseded)return;
+                if(transport.serverAuthenticated){
+                    transport.serverAuthenticated=false;
+                    transport.serverDisconnected=true;
+                    clearMultiplayerRemoteCursors();
+                    setLocalMultiplayerOutboundSink(null);
+                    showGameNotice?.('Multiplayer server connection lost. Your zoo is preserved; reconnecting automatically…');
+                    scheduleAutomaticMultiplayerReconnect(transport);
+                }
             }else if(message.type==='server-error'){
                 transport.serverError=cloneForSave(message);
                 console.warn('Multiplayer server error:',message.code||message.message||'unknown');
+                if(role==='peer'&&!transport.serverAuthenticated){
+                    const reason=String(message.message||message.code||'Could not join multiplayer game.');
+                    queueMicrotask(()=>{
+                        if(channel!==localMultiplayerBrowserChannel)return;
+                        closeLocalMultiplayerBrowserTransport();
+                        if(localClassicMatch&&/^joining-/.test(String(localClassicMatch.activePlayerId||''))){
+                            localClassicMatch=null;
+                            localMultiplayerPeerReplica=null;
+                            renderVisitedZooQuickTabs?.();
+                        }
+                        clearActiveMultiplayerSession?.();
+                        updateMultiplayerHeaderButtonState?.();
+                        showGameNotice?.(`Could not join multiplayer game: ${reason}`);
+                    });
+                }
             }
             updateMultiplayerHeaderButtonState?.();
             return;
@@ -20650,7 +21034,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 localClassicMatch=null;
                 pendingMultiplayerSetup={
                     gameMode:'classic',
-                    turnMode:'alternating',
+                    turnMode:'simultaneous',
                     activeCategories:[...state.activeCategories]
                 };
                 renderVisitedZooQuickTabs();
@@ -20685,7 +21069,8 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 return;
             }
             const packet=cloneForSave(message.packet);
-            const sequence=Number(packet?.transportSequence)||0;
+            const isServerReplay=message.serverReplay===true;
+            const sequence=isServerReplay?0:(Number(packet?.transportSequence)||0);
             const syncGeneration=localMultiplayerTransportGeneration;
             const syncChannel=channel;
             localMultiplayerPeerApplyChain=localMultiplayerPeerApplyChain.then(async()=>{
@@ -20694,6 +21079,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                    syncChannel!==localMultiplayerBrowserChannel ||
                    !before||before.role!=='peer')return;
                 if(sequence&&sequence<=before.lastAppliedSyncSequence)return;
+                if(isServerReplay&&before.lastAppliedSyncSequence>0)return;
                 const applied=await applyLocalMultiplayerSyncPacketToReplica(packet);
                 // importGameState is asynchronous. The user may have left the
                 // match while it was awaiting assets/rendering.
@@ -20802,12 +21188,12 @@ async function joinLocalMultiplayerInBrowser(matchId,playerId=null){
     if(!matchId)return false;
     const requestedMatchId=String(matchId);
     const activeTransport=localMultiplayerBrowserTransport;
-    if(activeTransport?.role==='host' &&
-       String(activeTransport.matchId||'')===requestedMatchId &&
-       localClassicMatch){
-        // Joining the match this tab is already hosting used to replace the host
-        // zoo with a provisional peer shell. Never destroy the active host state.
-        showGameNotice?.('This browser is already hosting that multiplayer game.');
+    if(activeTransport&&localClassicMatch){
+        const sameMatch=String(activeTransport.matchId||'')===requestedMatchId;
+        const roleLabel=activeTransport.role==='host'?'hosting':'connected to';
+        showGameNotice?.(sameMatch
+            ? `This browser is already ${roleLabel} that multiplayer game.`
+            : 'Leave the current multiplayer game before joining another one.');
         return false;
     }
     const previousMatch=localClassicMatch;
@@ -20855,7 +21241,7 @@ function ensureMultiplayerLobbyOverlay(){
                 <span>Turns</span>
                 <select id="multiplayerTurnMode">
                     <option value="alternating">Alternating</option>
-                    <option value="simultaneous">Simultaneous</option>
+                    <option value="simultaneous" selected>Simultaneous</option>
                 </select>
             </label>
             <div class="advanced-options-note">Alternating shares one turn order. Simultaneous lets every zoo progress independently in real time.</div>
@@ -21066,6 +21452,7 @@ async function applyLocalMultiplayerActionEnvelope(action){
         }
         const offer=pendingDirectHumanTrades().find(o=>
             o.id===action.payload?.offerId&&
+            directHumanTradeHasParticipant(o,action.playerId)&&
             o.fromPlayerId===action.playerId&&
             o.status==='accepted-awaiting-sender-claim'
         );
@@ -21095,8 +21482,11 @@ async function applyLocalMultiplayerActionEnvelope(action){
             revision:localClassicMatch.revision
         });
         renderAll();
+        resumeAITradingAfterHumanTrade();
         commitClassicTurn();
         renderVisitedZooQuickTabs();
+        commitOwnZooStateToServer(exportCurrentGameState());
+        persistHumanTradeBoundary('human-trade-completed');
         return {ok:true,revision:localClassicMatch.revision};
     }
     if(action.type==='accept-human-trade'){
@@ -21107,7 +21497,7 @@ async function applyLocalMultiplayerActionEnvelope(action){
             if(!switched)return {ok:false,reason:'seat'};
         }
         const offer=pendingDirectHumanTrades().find(o=>
-            o.id===action.payload?.offerId&&o.toPlayerId===action.playerId&&o.status==='pending'
+            o.id===action.payload?.offerId&&directHumanTradeHasParticipant(o,action.playerId)&&o.toPlayerId===action.playerId&&o.status==='pending'
         );
         if(!offer)return {ok:false,reason:'offer'};
         const destination=multiplayerDestinationFromWire(action.payload?.destination);
@@ -21143,9 +21533,11 @@ async function applyLocalMultiplayerActionEnvelope(action){
             return {ok:false,reason:'duplicate-species'};
         }
         const offer={
-            id:`player-trade-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+            id:String(action.payload?.tradeId||`player-trade-${Date.now()}-${Math.random().toString(36).slice(2,7)}`),
             fromPlayerId:action.playerId,toPlayerId:draft.requestedPlayerId,
             offeredAnimalId:offered.id,requestedAnimalId:requested.id,
+            offeredTransferId:action.payload?.offeredTransferId??nextDirectTradeAnimalId(localClassicMatch.players[draft.requestedPlayerId]?.snapshot),
+            requestedTransferId:action.payload?.requestedTransferId??nextDirectTradeAnimalId(localClassicMatch.players[action.playerId]?.snapshot),
             status:'pending',createdRevision:localClassicMatch.revision
         };
         pendingDirectHumanTrades().push(offer);
@@ -21155,7 +21547,25 @@ async function applyLocalMultiplayerActionEnvelope(action){
             offerId:offer.id,fromPlayerId:offer.fromPlayerId,toPlayerId:offer.toPlayerId
         });
         renderTrade();renderVisitedZooQuickTabs();
+        persistHumanTradeBoundary('human-trade-offered');
         return {ok:true,revision:localClassicMatch.revision,offerId:offer.id};
+    }
+    if(action.type==='cancel-human-trade-draft'){
+        if(localClassicMatch.activePlayerId!==action.playerId){
+            const switched=localMultiplayerBrowserTransport?.role==='host'
+                ? await loadBrowserAuthoritySeat(action.playerId)
+                : await switchLocalClassicMatchPlayer(action.playerId);
+            if(!switched)return {ok:false,reason:'seat'};
+        }
+        const draft=localHumanTradeDraft(action.playerId);
+        if(!draft?.requestedPlayerId||!draft?.requestedAnimalId)return {ok:false,reason:'trade-draft'};
+        clearLocalHumanTradeDraft(action.playerId);
+        localClassicMatch.revision++;
+        resumeAITradingAfterHumanTrade();
+        recordLocalMultiplayerEvent('trade-draft-cancelled',{playerId:action.playerId});
+        renderTrade();renderVisitedZooQuickTabs();
+        persistHumanTradeBoundary('human-trade-draft-cancelled');
+        return {ok:true,revision:localClassicMatch.revision};
     }
     if(action.type==='stage-human-trade-request'){
         if(localClassicMatch.activePlayerId!==action.playerId){
@@ -21173,6 +21583,8 @@ async function applyLocalMultiplayerActionEnvelope(action){
         if(ownAnimals.some(a=>animalCardKey(a)===animalCardKey(requested)))return {ok:false,reason:'duplicate-species'};
         const draft=localHumanTradeDraft(action.playerId);
         draft.requestedPlayerId=requestedPlayerId;draft.requestedAnimalId=requestedAnimalId;
+        cancelAITradingForHumanTrade();
+        syncActiveZooIntoLocalMatch();
         localClassicMatch.revision++;
         recordLocalMultiplayerEvent('trade-draft-staged',{playerId:action.playerId,requestedPlayerId,requestedAnimalId});
         renderTrade();
@@ -21313,18 +21725,21 @@ async function applyLocalMultiplayerActionEnvelope(action){
         return {ok:true,revision:localClassicMatch.revision};
     }
     if(action.type==='decline-human-trade'){
-        const offer=pendingDirectHumanTrades().find(o=>o.id===action.payload?.offerId&&o.toPlayerId===action.playerId&&o.status==='pending');
+        const offer=pendingDirectHumanTrades().find(o=>o.id===action.payload?.offerId&&directHumanTradeHasParticipant(o,action.playerId)&&o.toPlayerId===action.playerId&&o.status==='pending');
         if(!offer)return {ok:false,reason:'offer'};
         declineDirectHumanTradeOffer(offer.id,action.playerId);
         recordLocalMultiplayerEvent('trade-declined',{offerId:offer.id,playerId:action.playerId});
+        persistHumanTradeBoundary('human-trade-declined');
         return {ok:true,revision:localClassicMatch.revision};
     }
     if(action.type==='cancel-human-trade'){
-        const offer=pendingDirectHumanTrades().find(o=>o.id===action.payload?.offerId&&o.fromPlayerId===action.playerId&&o.status==='pending');
+        const offer=pendingDirectHumanTrades().find(o=>o.id===action.payload?.offerId&&directHumanTradeHasParticipant(o,action.playerId)&&o.fromPlayerId===action.playerId&&o.status==='pending');
         if(!offer)return {ok:false,reason:'offer'};
         offer.status='cancelled';offer.cancelledRevision=++localClassicMatch.revision;
+        resumeAITradingAfterHumanTrade();
         recordLocalMultiplayerEvent('trade-cancelled',{offerId:offer.id,playerId:action.playerId});
         renderTrade();renderVisitedZooQuickTabs();
+        persistHumanTradeBoundary('human-trade-cancelled');
         return {ok:true,revision:localClassicMatch.revision};
     }
     return {ok:false,reason:'unsupported-action'};
@@ -21547,6 +21962,18 @@ async function runAuthoritativeClassicActionForPlayer(playerId,classicAction){
 }
 
 async function dispatchLocalMultiplayerAction(playerId,type,payload={}){
+    if(SERVER_HUMAN_TRADE_ACTIONS.has(type)&&serverAuthoritativeMultiplayerActive()){
+        const authorized=await authorizeHumanTradeWithServer(type,payload);
+        if(!authorized.ok)return authorized;
+        // Server + SQLite are the authority. Do not replay the same trade
+        // through the browser-host action envelope.
+        return {
+            ok:true,
+            authoritative:true,
+            revision:Number(authorized.response?.revision)||0,
+            trade:cloneForSave(authorized.response?.trade||null)
+        };
+    }
     if(localMultiplayerBrowserTransport?.role==='peer' &&
        localMultiplayerBrowserTransport.playerId===playerId){
         return sendLocalMultiplayerBrowserAction(type,payload);
@@ -21609,8 +22036,20 @@ async function visitLocalClassicMatchPlayer(playerId){
     // the owner's snapshot and makes Return load the AI zoo. Restore the real
     // player zoo before entering the human-player visit layer.
     if(state.visitingZoo)await returnFromZooVisit();
-    if(!localClassicMatch.viewingPlayerId)syncActiveZooIntoLocalMatch();
+    const wasViewingHuman=!!localClassicMatch.viewingPlayerId;
+    if(!wasViewingHuman)syncActiveZooIntoLocalMatch();
     const target=localClassicMatch.players[playerId];
+    // Capture the owner's private AI-trade state only when leaving their own
+    // zoo. Switching directly P2 -> P3 must not replace it with P2's state.
+    if(!wasViewingHuman&&!localClassicMatch.privateVisitState){
+        localClassicMatch.privateVisitState={
+            autonomousTradeOffer:cloneForSave(state.autonomousTradeOffer||null),
+            tradeOffers:cloneForSave(state.tradeOffers||[]),
+            selectedTradeOpponent:state.selectedTradeOpponent,
+            outgoingOffer:cloneForSave(state.outgoingOffer||null),
+            nextAutonomousOfferTurn:state.nextAutonomousOfferTurn
+        };
+    }
     localClassicMatch.viewingPlayerId=playerId;
     sendMultiplayerLiveViewSubscription();
     clearMultiplayerRemoteCursors();
@@ -21641,6 +22080,19 @@ async function returnToActiveLocalClassicZoo(){
     autoResumeWriteSuppressed=true;
     try{
         await importGameState(cloneForSave(target.snapshot),{deferRender:false});
+        const privateVisitState=localClassicMatch.privateVisitState;
+        if(privateVisitState){
+            if(!humanTradeBlocksAITrading()){
+                state.autonomousTradeOffer=cloneForSave(privateVisitState.autonomousTradeOffer);
+                state.tradeOffers=cloneForSave(privateVisitState.tradeOffers||[]);
+                state.selectedTradeOpponent=privateVisitState.selectedTradeOpponent;
+                state.outgoingOffer=cloneForSave(privateVisitState.outgoingOffer);
+                state.nextAutonomousOfferTurn=privateVisitState.nextAutonomousOfferTurn;
+            }else{
+                cancelAITradingForHumanTrade();
+            }
+            delete localClassicMatch.privateVisitState;
+        }
         centerInitialView();
         createZooNameEditor();
         renderVisitedZooQuickTabs();renderTrade();
@@ -21696,7 +22148,7 @@ function destroyLocalClassicMatchContainer() {
     hideZooVisitReturnButton();
     pendingMultiplayerSetup={
         gameMode:'classic',
-        turnMode:'alternating',
+        turnMode:'simultaneous',
         activeCategories:[...state.activeCategories]
     };
     renderVisitedZooQuickTabs();
@@ -25661,6 +26113,8 @@ function finishHumanTradeRequestDrag(event){
     const draft=localHumanTradeDraft(ownerId);
     draft.requestedPlayerId=drag.requestedPlayerId;
     draft.requestedAnimalId=drag.animal.id;
+    cancelAITradingForHumanTrade();
+    syncActiveZooIntoLocalMatch();
     localClassicMatch.revision++;
     recordLocalMultiplayerEvent('trade-draft-staged',{
         playerId:ownerId,requestedPlayerId:drag.requestedPlayerId,requestedAnimalId:drag.animal.id
@@ -27162,10 +27616,12 @@ async function commitServerAuthoritativeLevelOneDraw(message,destination){
     // Publish the completed peer zoo to the browser authority before considering
     // the draw locally finished. WebSocket ordering then guarantees the host sees
     // this replacement before any later action sent by this peer.
+    const committedDrawSnapshot=exportCurrentGameState();
+    commitOwnZooStateToServer(committedDrawSnapshot);
     if(localMultiplayerBrowserTransport?.role==='peer' &&
        localMultiplayerBrowserTransport.playerId===localClassicMatch?.activePlayerId){
         const bridge=await sendLocalMultiplayerBrowserAction('replace-player-zoo',{
-            snapshot:exportCurrentGameState()
+            snapshot:committedDrawSnapshot
         });
         if(!bridge?.ok){
             console.warn('Could not bridge server-authoritative draw into host zoo state:',bridge?.reason||'unknown');
@@ -27211,6 +27667,76 @@ function initialiseAuthoritativeMultiplayerProgressionIfHost(){
     return true;
 }
 
+
+async function requestServerAuthoritativeExchange(destination=null,autoPlace=false){
+    if(!serverAuthoritativeMultiplayerActive())return null;
+    if(hasPendingPlayerAction()||!state.result)return false;
+
+    const sources=(state.exchange||[]).filter(Boolean);
+    if(sources.length!==2)return false;
+    const resultSpec={
+        category:state.result.category,
+        level:Number(state.result.level)||0,
+        filename:cleanFilename(state.result.filename)
+    };
+    const prospective={
+        id:state.nextId,category:resultSpec.category,level:resultSpec.level,
+        filename:resultSpec.filename,enclosureId:null,slotIndex:null
+    };
+
+    let chosen=destination;
+    if(autoPlace&&!chosen)chosen=randomEligibleDestinationForAnimal(prospective);
+    if(!chosen?.enclosure||chosen.slotIndex==null||
+       !canPlace(prospective,chosen.enclosure,chosen.slotIndex))return false;
+
+    // Commit and ACK the exact pre-exchange zoo before validation. WebSocket
+    // ordering alone was insufficient once zoo-state commits became CAS-based:
+    // a rejected stale commit could otherwise be followed by Exchange against
+    // an older durable zoo.
+    syncActiveZooIntoLocalMatch();
+    commitOwnZooStateToServer(exportCurrentGameState());
+    if(!await awaitDurableZooCommitIdle()){
+        console.warn('Authoritative Exchange paused because the durable zoo changed.');
+        return false;
+    }
+
+    const response=await sendMultiplayerServerAction('exchange',{
+        sourceIds:sources.map(animal=>animal.id),
+        result:resultSpec
+    });
+    if(response?.type!=='action-committed'||response?.action!=='exchange'){
+        if(response?.code)console.warn('Authoritative Exchange rejected:',response.code);
+        return false;
+    }
+    const t=localMultiplayerBrowserTransport;
+    if(String(response.playerId||'')!==String(t?.serverPlayerId||''))return false;
+    if(Number(response.zooRevision)!==Number(t?.durableZooRevision)){
+        console.warn('Authoritative Exchange used an unexpected durable zoo revision.',{
+            server:response.zooRevision,client:t?.durableZooRevision
+        });
+        return false;
+    }
+
+    performClassicGameAction.authorityExecuting=true;
+    let committed=false;
+    try{committed=await completeExchange(chosen,autoPlace);}
+    finally{performClassicGameAction.authorityExecuting=false;}
+    if(!committed){
+        console.error('Server committed Exchange but local placement failed after prevalidation.');
+        showGameNotice?.('Exchange was accepted by the server, but the local zoo could not finish the placement.');
+        return false;
+    }
+
+    const snapshot=exportCurrentGameState();
+    commitOwnZooStateToServer(snapshot);
+    if(localMultiplayerBrowserTransport?.role==='peer' &&
+       localMultiplayerBrowserTransport.playerId===localClassicMatch?.activePlayerId){
+        const bridge=await sendLocalMultiplayerBrowserAction('replace-player-zoo',{snapshot});
+        if(!bridge?.ok)console.warn('Could not bridge authoritative Exchange into host zoo state:',bridge?.reason||'unknown');
+    }
+    return true;
+}
+
 async function requestServerAuthoritativeLevelOneDraw(destination=null){
     if(!serverAuthoritativeMultiplayerActive())return null;
     if(state.drawCommitInProgress||hasPendingPlayerAction())return false;
@@ -27241,6 +27767,10 @@ async function requestServerAuthoritativeLevelOneDraw(destination=null){
     state.drawCommitInProgress=true;
     refreshDrawAvailabilityState();
     try{
+        if(!await awaitDurableZooCommitIdle()){
+            console.warn('Authoritative Draw paused because the durable zoo changed.');
+            return false;
+        }
         const result=await sendMultiplayerServerAction('draw-level1',{
             destination:multiplayerDestinationToWire(chosen)
         });
@@ -31871,6 +32401,7 @@ function generateRealZooTradeOffers(outgoing, pendingEmergencyTrade = null) {
 }
 
 function createRealAutonomousOpponentOffer() {
+    if (localClassicMatch && humanTradeBlocksAITrading()) return false;
     if (state.outgoingOffer || state.autonomousTradeOffer) return false;
 
     // The same slider controls spontaneous real-zoo offers.
@@ -31967,8 +32498,16 @@ function createRealAutonomousOpponentOffer() {
 // ============================================================
 // DIRECT HUMAN TRADES — V2.22.88
 // ============================================================
+function pruneTerminalDirectHumanTrades(){
+    if(!localClassicMatch||!Array.isArray(localClassicMatch.pendingPlayerTrades))return;
+    const terminal=new Set(['accepted','completed','declined','cancelled','invalid']);
+    const active=localClassicMatch.pendingPlayerTrades.filter(o=>!terminal.has(o?.status));
+    const finished=localClassicMatch.pendingPlayerTrades.filter(o=>terminal.has(o?.status)).slice(-8);
+    localClassicMatch.pendingPlayerTrades=[...finished,...active];
+}
 function pendingDirectHumanTrades(){
     if(!localClassicMatch)return [];
+    pruneTerminalDirectHumanTrades();
     if(!Array.isArray(localClassicMatch.pendingPlayerTrades))localClassicMatch.pendingPlayerTrades=[];
     return localClassicMatch.pendingPlayerTrades;
 }
@@ -32072,14 +32611,24 @@ async function createDirectHumanTradeOffer(){
 function incomingDirectHumanTrade(){
     return pendingDirectHumanTrades().find(o=>o.status==='pending'&&o.toPlayerId===localClassicMatch?.activePlayerId)||null;
 }
+
+function nextDirectTradeAnimalId(snapshot){
+    const animals=Array.isArray(snapshot?.state?.animals)?snapshot.state.animals:[];
+    const used=new Set(animals.map(animal=>String(animal?.id)));
+    let next=Math.max(1,Number(snapshot?.state?.nextId)||1);
+    while(used.has(String(next)))next++;
+    if(snapshot?.state)snapshot.state.nextId=Math.max(Number(snapshot.state.nextId)||1,next+1);
+    return next;
+}
 function removeDirectTradeAnimal(snapshot,id){
     const list=snapshot?.state?.animals;if(!Array.isArray(list))return null;
     const i=list.findIndex(a=>String(a?.id)===String(id));return i<0?null:list.splice(i,1)[0];
 }
-function addDirectTradeAnimal(snapshot,animal,placementSource=null){
+function addDirectTradeAnimal(snapshot,animal,placementSource=null,newId=null){
     if(!snapshot?.state||!animal)return false;
     if(!Array.isArray(snapshot.state.animals))snapshot.state.animals=[];
     const copy=cloneForSave(animal);
+    if(newId!=null)copy.id=newId;
 
     // Human trades exchange cards, but Zoo Curator's normal board renderer only
     // displays animals that occupy a valid enclosure slot. Put the incoming
@@ -32105,13 +32654,16 @@ async function acceptDirectHumanTradeOffer(id,destination=null,{skipActiveSync=f
     if(!localClassicUsesSimultaneousTurns()&&localClassicMatch.turnPlayerId!==localClassicMatch.activePlayerId)return false;
     if(!skipActiveSync)syncActiveZooIntoLocalMatch();
     const offer=pendingDirectHumanTrades().find(o=>o.id===id&&o.status==='pending');
-    if(!offer||offer.toPlayerId!==localClassicMatch.activePlayerId)return false;
+    if(!offer||!directHumanTradeHasParticipant(offer,localClassicMatch.activePlayerId)||
+       offer.toPlayerId!==localClassicMatch.activePlayerId)return false;
     const fromSnap=localClassicMatch.players[offer.fromPlayerId].snapshot;
     const toSnap=localClassicMatch.players[offer.toPlayerId].snapshot;
     const offeredNow=directTradeAnimal(offer.fromPlayerId,offer.offeredAnimalId);
     const requestedNow=directTradeAnimal(offer.toPlayerId,offer.requestedAnimalId);
     if(!offeredNow||!requestedNow){
-        offer.status='invalid';renderVisitedZooQuickTabs();return false;
+        offer.status='invalid';
+        resumeAITradingAfterHumanTrade();
+        renderVisitedZooQuickTabs();renderTrade();return false;
     }
 
     const offeredKey=animalCardKey(offeredNow), requestedKey=animalCardKey(requestedNow);
@@ -32121,6 +32673,7 @@ async function acceptDirectHumanTradeOffer(id,destination=null,{skipActiveSync=f
         .filter(a=>String(a.id)!==String(offer.requestedAnimalId)).map(animalCardKey));
     if(offeredKey===requestedKey || fromOtherKeys.has(requestedKey) || toOtherKeys.has(offeredKey)){
         offer.status='invalid';
+        resumeAITradingAfterHumanTrade();
         renderTrade();renderVisitedZooQuickTabs();
         return false;
     }
@@ -32139,15 +32692,19 @@ async function acceptDirectHumanTradeOffer(id,destination=null,{skipActiveSync=f
             x:offered.x??null,
             y:offered.y??null
         };
-        addDirectTradeAnimal(toSnap,offered,receiverPlacement);
+        addDirectTradeAnimal(toSnap,offered,receiverPlacement,offer.offeredTransferId??nextDirectTradeAnimalId(toSnap));
     }else{
-        addDirectTradeAnimal(toSnap,offered,requested);
+        addDirectTradeAnimal(toSnap,offered,requested,offer.offeredTransferId??nextDirectTradeAnimalId(toSnap));
     }
     // Phase 1 of a human trade: the accepting zoo receives its animal now,
     // while the other animal remains physically in the trade box for the
     // sender to claim later. Store both the card and its former placement so
     // no zoo snapshot needs to contain an invisible/unplaced animal.
     offer.senderClaimAnimal=cloneForSave(requested);
+    offer.senderClaimAnimal.id=offer.requestedTransferId??nextDirectTradeAnimalId(fromSnap);
+    offer.senderClaimAnimal.enclosureId=null;offer.senderClaimAnimal.slotIndex=null;
+    offer.senderClaimAnimal.x=null;offer.senderClaimAnimal.y=null;
+    addDirectTradeAnimal(fromSnap,offer.senderClaimAnimal,null,offer.senderClaimAnimal.id);
     offer.senderVacatedPlacement={
         enclosureId:offered.enclosureId??null,
         slotIndex:offered.slotIndex??null,
@@ -32168,12 +32725,20 @@ async function acceptDirectHumanTradeOffer(id,destination=null,{skipActiveSync=f
     syncActiveZooIntoLocalMatch();
     renderTrade();
     renderVisitedZooQuickTabs();
+    persistHumanTradeBoundary('human-trade-accepted-awaiting-claim');
+    // Persist the accepting player's post-trade zoo independently too.
+    if(!serverAuthoritativeMultiplayerActive())commitOwnZooStateToServer(exportCurrentGameState());
     return true;
+}
+function resumeAITradingAfterHumanTrade(){
+    if(state.gameMode==='true'||state.sandboxMode||humanTradeBlocksAITrading())return;
+    scheduleNextAutonomousOpponentOffer();
 }
 function declineDirectHumanTradeOffer(id,playerId=localClassicMatch?.activePlayerId){
     const offer=pendingDirectHumanTrades().find(o=>o.id===id&&o.status==='pending');
-    if(!offer||offer.toPlayerId!==playerId)return false;
+    if(!offer||!directHumanTradeHasParticipant(offer,playerId)||offer.toPlayerId!==playerId)return false;
     offer.status='declined';offer.declinedRevision=++localClassicMatch.revision;
+    resumeAITradingAfterHumanTrade();
     renderVisitedZooQuickTabs();renderTrade();return true;
 }
 function renderDirectHumanTradeControls(strip){
@@ -33786,6 +34351,7 @@ function clearAutonomousOpponentOffer(resetTimer = true) {
 
 function createAutonomousOpponentOffer() {
     if (state.gameMode === 'true') return false;
+    if (localClassicMatch && humanTradeBlocksAITrading()) return false;
     if (isRealOpponentMode()) return createRealAutonomousOpponentOffer();
     if (state.outgoingOffer || state.autonomousTradeOffer) return false;
 
@@ -33829,6 +34395,10 @@ function createAutonomousOpponentOffer() {
 
 function updateAutonomousOpponentOffer() {
     if (state.sandboxMode) return;
+    if (localClassicMatch && humanTradeBlocksAITrading()) {
+        cancelAITradingForHumanTrade();
+        return;
+    }
     if (state.autonomousTradeOffer) {
         if (!state.autonomousTradeOffer.marketplaceRequest && state.turn >= state.autonomousTradeOffer.expiresTurn) {
             clearAutonomousOpponentOffer(true);
@@ -34766,8 +35336,24 @@ function tryDropOnOutgoingOffer(event, animal) {
             restoreDraggedAnimal();
             if(localMultiplayerPeerReplica?.playerId===fromId ||
                (localMultiplayerBrowserTransport?.role==='peer'&&localMultiplayerBrowserTransport.playerId===fromId)){
+                const tradeId=`player-trade-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
                 dispatchLocalMultiplayerAction(fromId,'send-human-trade-offer',{
-                    offeredAnimalId:animal.id
+                    tradeId,
+                    offeredAnimalId:animal.id,
+                    requestedPlayerId:draft.requestedPlayerId,
+                    requestedAnimalId:requested.id,
+                    offeredTransferId:nextDirectTradeAnimalId(localClassicMatch.players[draft.requestedPlayerId]?.snapshot),
+                    requestedTransferId:nextDirectTradeAnimalId(localClassicMatch.players[fromId]?.snapshot)
+                });
+                return true;
+            }
+            if(serverAuthoritativeMultiplayerActive()){
+                const tradeId=`player-trade-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+                dispatchLocalMultiplayerAction(fromId,'send-human-trade-offer',{
+                    tradeId,
+                    offeredAnimalId:animal.id,
+                    requestedPlayerId:draft.requestedPlayerId,
+                    requestedAnimalId:requested.id
                 });
                 return true;
             }
@@ -35618,13 +36204,44 @@ function renderTrueTransferProposal() {
 }
 
 
+
+function cancelAITradingForHumanTrade(){
+    // Human-to-human trading is exclusive. Once a player stages or receives a
+    // human trade, all AI trading for this player's zoo is cancelled and no new
+    // AI offer may start until the human trade has resolved/cancelled.
+    if(state.outgoingOffer){
+        const outgoing=state.outgoingOffer;
+        if(outgoing.reservedEnclosureId!=null&&outgoing.reservedSlotIndex!=null){
+            outgoing.enclosureId=outgoing.reservedEnclosureId;
+            outgoing.slotIndex=outgoing.reservedSlotIndex;
+            clearAnimalZooReservation(outgoing);
+        }
+        state.outgoingOffer=null;
+        setOutgoingOfferExchangeGlowSuppression(false);
+    }
+    state.tradeOffers=[];
+    state.selectedTradeOpponent=null;
+    if(state.autonomousTradeOffer){
+        // Cancel, don't preserve, the current AI offer. A fresh one may be
+        // scheduled only after the human trade is gone.
+        state.autonomousTradeOffer=null;
+    }
+    clearTradeEligibleGlow();
+}
+function humanTradeBlocksAITrading(){
+    return !!(activeDirectHumanTrade()||activeDirectHumanTradeDraft());
+}
+
+function directHumanTradeHasParticipant(offer,playerId){
+    return !!offer&&!!playerId&&
+        (offer.fromPlayerId===playerId||offer.toPlayerId===playerId);
+}
 function activeDirectHumanTrade(){
     if(!localClassicMatch)return null;
     const ownerId=localClassicMatch.activePlayerId;
     return pendingDirectHumanTrades().find(o=>
-        (o.status==='pending'||o.status==='accepted-awaiting-sender-claim')&&(
-            o.fromPlayerId===ownerId||o.toPlayerId===ownerId
-        )
+        (o.status==='pending'||o.status==='accepted-awaiting-sender-claim')&&
+        directHumanTradeHasParticipant(o,ownerId)
     )||null;
 }
 function activeDirectHumanTradeDraft(){
@@ -35689,11 +36306,12 @@ async function finishDirectHumanTradeResultDrag(event){
         : null;
     if(!destination){restore();return;}
 
-    if(localMultiplayerPeerReplica?.playerId===localClassicMatch?.activePlayerId ||
+    if(serverAuthoritativeMultiplayerActive()||
+       localMultiplayerPeerReplica?.playerId===localClassicMatch?.activePlayerId ||
        (localMultiplayerBrowserTransport?.role==='peer'&&
         localMultiplayerBrowserTransport.playerId===localClassicMatch?.activePlayerId)){
         // The drag temporarily freed the recipient's outgoing slot. Restore it
-        // before asking authority to perform the actual exchange.
+        // before authority validates and commits the exchange.
         restore();
         const result=await dispatchLocalMultiplayerAction(
             localClassicMatch.activePlayerId,'accept-human-trade',{
@@ -35704,7 +36322,6 @@ async function finishDirectHumanTradeResultDrag(event){
         if(result?.ok===false)renderTrade();
         return;
     }
-
     const accepted=await acceptDirectHumanTradeOffer(
         drag.humanTradeOfferId,destination,{skipActiveSync:true}
     );
@@ -35752,14 +36369,17 @@ async function finishDirectHumanTradeSenderClaimDrag(event){
         ? (resultDropDestinationFromDrag(event,incoming,dragRect)||resultDropDestination(event,incoming))
         : null;
     const offer=pendingDirectHumanTrades().find(o=>o.id===drag.humanTradeOfferId);
-    if(!offer||offer.status!=='accepted-awaiting-sender-claim')return;
+    if(!offer||!directHumanTradeHasParticipant(offer,localClassicMatch?.activePlayerId)||
+       offer.fromPlayerId!==localClassicMatch?.activePlayerId||
+       offer.status!=='accepted-awaiting-sender-claim')return;
     if(!destination){renderTrade();return;}
 
     // Re-check duplicates at the actual claim boundary too.
     const incomingKey=animalCardKey(incoming);
     if((state.animals||[]).some(a=>animalCardKey(a)===incomingKey)){renderTrade();return;}
 
-    if(localMultiplayerPeerReplica?.playerId===localClassicMatch?.activePlayerId ||
+    if(serverAuthoritativeMultiplayerActive()||
+       localMultiplayerPeerReplica?.playerId===localClassicMatch?.activePlayerId ||
        (localMultiplayerBrowserTransport?.role==='peer'&&
         localMultiplayerBrowserTransport.playerId===localClassicMatch?.activePlayerId)){
         const result=await dispatchLocalMultiplayerAction(
@@ -35784,12 +36404,10 @@ async function finishDirectHumanTradeSenderClaimDrag(event){
     // live state instead of importing its saved snapshot: importGameState()
     // also restores snapshot scroll coordinates, which caused the camera jump
     // immediately after dropping the newly acquired animal.
-    const liveCopy=cloneForSave(incoming);
-    liveCopy.enclosureId=placement.enclosureId;
-    liveCopy.slotIndex=placement.slotIndex;
-    liveCopy.x=placement.x;
-    liveCopy.y=placement.y;
-    state.animals.push(liveCopy);
+    const liveCopy=(state.animals||[]).find(a=>String(a?.id)===String(incoming?.id));
+    if(!liveCopy){renderTrade();return;}
+    liveCopy.enclosureId=placement.enclosureId;liveCopy.slotIndex=placement.slotIndex;
+    liveCopy.x=placement.x;liveCopy.y=placement.y;
     repairLoadedNextId();
 
     offer.senderClaimAnimal=null;
@@ -35803,9 +36421,12 @@ async function finishDirectHumanTradeSenderClaimDrag(event){
         revision:localClassicMatch.revision
     });
     renderAll();
+    resumeAITradingAfterHumanTrade();
     renderTrade();
     commitClassicTurn();
     renderVisitedZooQuickTabs();
+    if(!serverAuthoritativeMultiplayerActive())commitOwnZooStateToServer(exportCurrentGameState());
+    persistHumanTradeBoundary('human-trade-completed');
 }
 
 function directHumanTradeCard(animal,role='incoming'){
@@ -35859,6 +36480,7 @@ function ensureDirectHumanTradeActions(){
 }
 function clearDirectHumanTradeActions(){
     document.getElementById('directHumanTradeActions')?.remove();
+    document.getElementById('declineHumanTradeOffer')?.remove();
 }
 function renderDirectHumanTradeCards(){
     if(!localClassicMatch||!outgoingOfferBox||!incomingOfferBox)return false;
@@ -35870,6 +36492,7 @@ function renderDirectHumanTradeCards(){
     // charge of these same boxes.
     if(!offer&&!draft)return false;
 
+    cancelAITradingForHumanTrade();
     outgoingOfferBox.style.display='';
     incomingOfferBox.style.display='';
     outgoingOfferBox.innerHTML='';
@@ -35889,6 +36512,23 @@ function renderDirectHumanTradeCards(){
         if(card)incomingOfferBox.appendChild(card);
         outgoingOfferBox.title='Return to your zoo and drag an animal here to send the trade.';
         incomingOfferBox.title='Your requested animal. This is private until you send the trade.';
+        const actions=ensureDirectHumanTradeActions();
+        const cancelDraft=document.createElement('button');
+        cancelDraft.type='button';cancelDraft.textContent='Cancel request';
+        cancelDraft.style.cssText='position:static;margin:0';
+        cancelDraft.onclick=async()=>{
+            if(localMultiplayerBrowserTransport?.role==='peer'&&
+               localMultiplayerBrowserTransport.playerId===activeId){
+                await dispatchLocalMultiplayerAction(activeId,'cancel-human-trade-draft',{});
+                return;
+            }
+            clearLocalHumanTradeDraft(activeId);
+            resumeAITradingAfterHumanTrade();
+            localClassicMatch.revision++;
+            recordLocalMultiplayerEvent('trade-draft-cancelled',{playerId:activeId});
+            renderTrade();renderVisitedZooQuickTabs();
+        };
+        actions.appendChild(cancelDraft);
         return true;
     }
 
@@ -35972,8 +36612,11 @@ function renderDirectHumanTradeCards(){
             if(localMultiplayerPeerReplica?.playerId===activeId ||
                (localMultiplayerBrowserTransport?.role==='peer'&&localMultiplayerBrowserTransport.playerId===activeId)){
                 await dispatchLocalMultiplayerAction(activeId,'cancel-human-trade',{offerId:offer.id});
+            }else if(serverAuthoritativeMultiplayerActive()){
+                await dispatchLocalMultiplayerAction(activeId,'cancel-human-trade',{offerId:offer.id});
             }else{
                 offer.status='cancelled';offer.cancelledRevision=++localClassicMatch.revision;
+                resumeAITradingAfterHumanTrade();
                 recordLocalMultiplayerEvent('trade-cancelled',{offerId:offer.id,playerId:activeId});
                 renderTrade();renderVisitedZooQuickTabs();
             }
@@ -35981,28 +36624,53 @@ function renderDirectHumanTradeCards(){
         actions.append(status,cancel);
     }else{
         // Match ordinary AI offers: acceptance is performed by dragging the
-        // incoming card into the zoo. The only explicit action is Decline.
+        // incoming card into the zoo. Put Decline in the same trade-area
+        // position used by incoming AI offers, beneath the cards.
         const decline=document.createElement('button');
+        decline.id='declineHumanTradeOffer';
         decline.type='button';
         decline.className='decline-opponent-offer';
         decline.textContent='Decline';
-        decline.style.cssText='position:static;margin:0;pointer-events:auto';
+        decline.style.pointerEvents='auto';
         decline.onclick=async()=>{
             if(localMultiplayerPeerReplica?.playerId===activeId ||
                (localMultiplayerBrowserTransport?.role==='peer'&&localMultiplayerBrowserTransport.playerId===activeId)){
+                await dispatchLocalMultiplayerAction(activeId,'decline-human-trade',{offerId:offer.id});
+            }else if(serverAuthoritativeMultiplayerActive()){
                 await dispatchLocalMultiplayerAction(activeId,'decline-human-trade',{offerId:offer.id});
             }else{
                 declineDirectHumanTradeOffer(offer.id,activeId);
                 recordLocalMultiplayerEvent('trade-declined',{offerId:offer.id,playerId:activeId});
             }
         };
-        actions.appendChild(decline);
+        ensureTradeAreaLayout();
+        const tradeArea=document.getElementById('opponentTradeArea');
+        if(tradeArea)tradeArea.appendChild(decline);
+        else incomingOfferBox.parentElement?.appendChild(decline);
     }
     return true;
 }
 
 function renderTrade() {
     if (!outgoingOfferBox || !incomingOfferBox) return;
+
+    const viewingOtherHumanZoo=!!localClassicMatch?.viewingPlayerId &&
+        localClassicMatch.viewingPlayerId!==localClassicMatch.activePlayerId;
+    if(viewingOtherHumanZoo){
+        // AI offers are private per player. Importing another human zoo for
+        // spectator view must never expose controls that can decline/accept
+        // that player's AI offer.
+        clearDirectHumanTradeActions?.();
+        outgoingOfferBox.onclick=null;
+        outgoingOfferBox.style.display='none';
+        incomingOfferBox.style.display='none';
+        const decline=document.getElementById('declineOpponentOffer');
+        if(decline)decline.style.display='none';
+        renderOpponentTradeState();
+        const area=document.getElementById('opponentTradeArea');
+        if(area)area.style.display='none';
+        return;
+    }
 
     pruneUnavailableIncomingTradeOffers();
 
@@ -36046,6 +36714,8 @@ function renderTrade() {
     // single-player trade system. Human offers take visual priority while the
     // multiplayer match is active; AI trade state remains untouched underneath.
     if (localClassicMatch && renderDirectHumanTradeCards()) {
+        const aiDecline=document.getElementById('declineOpponentOffer');
+        if(aiDecline)aiDecline.style.display='none';
         const area=document.getElementById('opponentTradeArea');
         if(area)area.style.display='';
         renderOpponentTradeState();

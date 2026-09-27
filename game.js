@@ -15000,11 +15000,18 @@ function repairTrueBuiltEnclosureGeometry(){
     if(!enclosures.length){b.geometryVersion=3;return false;}
     const dims=enc=>{const c=trueCanonicalCellList(enc.cells||[]);return{w:Math.max(...c.map(x=>x.col))-Math.min(...c.map(x=>x.col))+1,h:Math.max(...c.map(x=>x.row))-Math.min(...c.map(x=>x.row))+1};};
     const total=enclosures.reduce((n,e)=>{const d=dims(e);return n+d.w*d.h;},0);
-    const target=Math.max(6,Math.ceil(Math.sqrt(total*2))+3),spineCol=1,startCol=3;
-    let row=2,col=startCol,shelfH=0,maxCol=startCol,maxRow=2,changed=false;
+    // Generated True zoos start inside a landscape perimeter no larger than
+    // seven construction cells wide by four high. Keep an interior access
+    // spine/aisle rather than producing the old tall, narrow grounds.
+    const maxGroundCols=7,maxGroundRows=4,spineCol=1,startCol=2;
+    const target=Math.max(startCol+1,maxGroundCols-1);
+    let row=1,col=startCol,shelfH=0,maxCol=startCol,maxRow=1,changed=false;
     for(const enc of enclosures){
         const d=dims(enc);
         if(col>startCol&&col+d.w>target){row+=shelfH+1;col=startCol;shelfH=0;}
+        // Standard generated starts fit the 7×4 perimeter. Oversized legacy
+        // starts are left representable rather than overlapping enclosures.
+        if(row+d.h>maxGroundRows-1&&total<=maxGroundCols*maxGroundRows){row=Math.max(1,maxGroundRows-1-d.h);}
         const nx=col*TRUE_ENC_CELL_W,ny=row*TRUE_ENC_CELL_H;
         if((Number(enc.x)||0)!==nx||(Number(enc.y)||0)!==ny)changed=true;
         enc.x=nx;enc.y=ny;maxCol=Math.max(maxCol,col+d.w-1);maxRow=Math.max(maxRow,row+d.h-1);
@@ -15012,7 +15019,11 @@ function repairTrueBuiltEnclosureGeometry(){
     }
     // col 0/outer row are deliberately unused: perimeter-only walking does not
     // satisfy access. Gate -> interior spine -> branch aisle -> enclosure side.
-    b.zooGrounds={x:0,y:0,w:(maxCol+2)*TRUE_ENC_CELL_W,h:(maxRow+2)*TRUE_ENC_CELL_H};
+    b.zooGrounds={
+        x:0,y:0,
+        w:Math.min(maxGroundCols,Math.max(4,maxCol+1))*TRUE_ENC_CELL_W,
+        h:Math.min(maxGroundRows,Math.max(3,maxRow+1))*TRUE_ENC_CELL_H
+    };
     b.zooGroundsVersion=3;
     b.zooEntrance={side:'top',t:((spineCol+.5)*TRUE_ENC_CELL_W)/b.zooGrounds.w};
     b.geometryVersion=3;trueInvalidateEnclosureGeometry();
@@ -15278,6 +15289,67 @@ function trueBuilderCanPlaceWorldCells(cells,exceptId=null){
     const occupied=trueBuilderOccupiedWorldCells(exceptId);
     return cells.every(c=>!occupied.has(trueBuilderCellKey(c.col,c.row)));
 }
+function trueBuilderAccessReport(candidateCells=[],exceptId=null){
+    const grounds=trueZooGroundsBounds();
+    if(!grounds)return {ok:true,blockedCells:[]};
+
+    // Build the hypothetical enclosure occupancy after this paint operation.
+    const occupied=trueBuilderOccupiedWorldCells(exceptId);
+    for(const c of candidateCells||[])occupied.add(trueBuilderCellKey(c.col,c.row));
+    if(exceptId!=null){
+        const target=(state.enclosures||[]).find(e=>e?.trueBuilt&&String(e.id)===String(exceptId));
+        for(const c of trueBuiltWorldCells(target||{}))occupied.add(trueBuilderCellKey(c.col,c.row));
+    }
+
+    const minCol=Math.ceil(grounds.x/TRUE_ENC_CELL_W);
+    const maxCol=Math.floor((grounds.x+grounds.w)/TRUE_ENC_CELL_W)-1;
+    const minRow=Math.ceil(grounds.y/TRUE_ENC_CELL_H);
+    const maxRow=Math.floor((grounds.y+grounds.h)/TRUE_ENC_CELL_H)-1;
+    if(maxCol-minCol<2||maxRow-minRow<2)return {ok:false,blockedCells:[...(candidateCells||[])]};
+
+    // Perimeter-only circulation does not count. Reachability begins one cell
+    // inside the entrance and is restricted to the interior ring.
+    const spec=trueZooEntranceSpec(grounds);
+    const p=trueEntrancePointAtPerimeter(trueEntrancePerimeterPosition(spec,grounds),grounds);
+    let start={
+        col:Math.floor(p.x/TRUE_ENC_CELL_W),
+        row:Math.floor(p.y/TRUE_ENC_CELL_H)
+    };
+    if(spec.side==='top')start.row=minRow+1;
+    else if(spec.side==='bottom')start.row=maxRow-1;
+    else if(spec.side==='left')start.col=minCol+1;
+    else start.col=maxCol-1;
+    start.col=Math.max(minCol+1,Math.min(maxCol-1,start.col));
+    start.row=Math.max(minRow+1,Math.min(maxRow-1,start.row));
+
+    const inside=c=>c.col>minCol&&c.col<maxCol&&c.row>minRow&&c.row<maxRow;
+    const free=c=>inside(c)&&!occupied.has(trueBuilderCellKey(c.col,c.row));
+    if(!free(start))return {ok:false,blockedCells:[...(candidateCells||[])]};
+
+    const reachable=new Set(),queue=[start];
+    while(queue.length){
+        const c=queue.shift(),k=trueBuilderCellKey(c.col,c.row);
+        if(reachable.has(k)||!free(c))continue;
+        reachable.add(k);
+        for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]])queue.push({col:c.col+dc,row:c.row+dr});
+    }
+
+    const hypothetical=[];
+    for(const enc of state.enclosures||[]){
+        if(!enc?.trueBuilt)continue;
+        if(exceptId!=null&&String(enc.id)===String(exceptId))continue;
+        hypothetical.push(...trueBuiltWorldCells(enc));
+    }
+    hypothetical.push(...(candidateCells||[]));
+    const blocked=[];
+    for(const c of hypothetical){
+        const hasAccess=[[1,0],[-1,0],[0,1],[0,-1]].some(([dc,dr])=>
+            reachable.has(trueBuilderCellKey(c.col+dc,c.row+dr))
+        );
+        if(!hasAccess)blocked.push(c);
+    }
+    return {ok:blocked.length===0,blockedCells:blocked};
+}
 function convertCurrentTrueZooToBuiltEnclosures(){
     if(state.gameMode!=='true'||state.sandboxMode)return false;
     const b=normaliseTrueEnclosureBuilderState();
@@ -15450,14 +15522,15 @@ function commitTruePaintedEnclosureCells(worldCells,targetId=null){
             progressed=false;
             for(let i=pending.length-1;i>=0;i--){const c=pending[i];if([[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>connected.has(trueBuilderCellKey(c.col+dx,c.row+dy)))){connected.add(trueBuilderCellKey(c.col,c.row));pending.splice(i,1);progressed=true;}}
         }
-        if(pending.length||!trueBuilderCanPlaceWorldCells(additions,target.id))return false;
+        if(pending.length||!trueBuilderCanPlaceWorldCells(additions,target.id)||
+           !trueBuilderAccessReport([...trueBuiltWorldCells(target),...additions],target.id).ok)return false;
         truePushBuilderUndo('enclosure-add');
         const residentCells=trueCaptureResidentWorldCells(target);
         const merged=[...trueBuiltWorldCells(target),...additions],minCol=Math.min(...merged.map(c=>c.col)),minRow=Math.min(...merged.map(c=>c.row));
         target.x=minCol*TRUE_ENC_CELL_W;target.y=minRow*TRUE_ENC_CELL_H;target.cells=trueCanonicalCellList(merged.map(c=>({col:c.col-minCol,row:c.row-minRow})));trueInvalidateEnclosureGeometry(target);
         trueRestoreResidentWorldCells(target,residentCells);
     }else{
-        if(!trueBuilderCanPlaceWorldCells(worldCells))return false;
+        if(!trueBuilderCanPlaceWorldCells(worldCells)||!trueBuilderAccessReport(worldCells).ok)return false;
         // A newly painted enclosure must be one orthogonally connected shape.
         const keys=new Set(worldCells.map(c=>trueBuilderCellKey(c.col,c.row))),seen=new Set(),stack=[worldCells[0]];
         while(stack.length){const c=stack.pop(),k=trueBuilderCellKey(c.col,c.row);if(seen.has(k))continue;seen.add(k);for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nk=trueBuilderCellKey(c.col+dx,c.row+dy);if(keys.has(nk)&&!seen.has(nk))stack.push({col:c.col+dx,row:c.row+dy});}}
@@ -15532,15 +15605,18 @@ function setupTrueEnclosureBuilderInteractions(){
         document.getElementById('trueEnclosureBuilderSelection')?.remove();
         const layer=document.createElement('div');layer.id='trueEnclosureBuilderSelection';Object.assign(layer.style,{position:'absolute',inset:'0',pointerEvents:'none',zIndex:'9999'});zooCanvas.appendChild(layer);
         const occupied=trueBuilderOccupiedWorldCells(drag.targetId),painted=[...drag.cells.values()];
-        const invalid=drag.blocked||painted.some(c=>occupied.has(trueBuilderCellKey(c.col,c.row))||!trueWorldCellInsideZooGrounds(c.col,c.row));
+        let invalid=drag.blocked||painted.some(c=>occupied.has(trueBuilderCellKey(c.col,c.row))||!trueWorldCellInsideZooGrounds(c.col,c.row));
         let worldCells=[...painted];
         if(drag.targetId!=null){const target=(state.enclosures||[]).find(e=>String(e.id)===String(drag.targetId));if(target)worldCells=[...trueBuiltWorldCells(target),...painted];}
         worldCells=[...new Map(worldCells.map(c=>[trueBuilderCellKey(c.col,c.row),c])).values()];if(!worldCells.length)return;
+        const access=trueBuilderAccessReport(worldCells,drag.targetId);
+        if(!access.ok)invalid=true;
         const minC=Math.min(...worldCells.map(c=>c.col)),minR=Math.min(...worldCells.map(c=>c.row)),maxC=Math.max(...worldCells.map(c=>c.col)),maxR=Math.max(...worldCells.map(c=>c.row));
         const fake={cells:worldCells.map(c=>({col:c.col-minC,row:c.row-minR}))},derived=trueBuiltEnclosureDerived(fake);
         const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');Object.assign(svg.style,{position:'absolute',left:`${minC*TRUE_ENC_CELL_W}px`,top:`${minR*TRUE_ENC_CELL_H}px`,width:`${(maxC-minC+1)*TRUE_ENC_CELL_W}px`,height:`${(maxR-minR+1)*TRUE_ENC_CELL_H}px`,overflow:'visible'});
         const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',derived.path);path.setAttribute('fill','none');path.setAttribute('stroke',invalid?'#b13d3d':drag.targetId!=null?'#d94b4b':'#3f4242');path.setAttribute('stroke-width','4');path.setAttribute('stroke-linejoin','miter');path.setAttribute('stroke-linecap','square');path.setAttribute('vector-effect','non-scaling-stroke');svg.appendChild(path);layer.appendChild(svg);
-        for(const c of painted){const q=document.createElement('div');Object.assign(q.style,{position:'absolute',left:`${c.col*TRUE_ENC_CELL_W+TRUE_ENC_EXTERNAL_GAP/2}px`,top:`${c.row*TRUE_ENC_CELL_H+TRUE_ENC_EXTERNAL_GAP/2}px`,width:`${TRUE_ENC_CELL_W-TRUE_ENC_EXTERNAL_GAP}px`,height:`${TRUE_ENC_CELL_H-TRUE_ENC_EXTERNAL_GAP}px`,background:invalid?'rgba(177,61,61,.12)':'rgba(245,241,231,.18)',pointerEvents:'none'});layer.appendChild(q);}
+        for(const c of painted){const q=document.createElement('div');Object.assign(q.style,{position:'absolute',left:`${c.col*TRUE_ENC_CELL_W+TRUE_ENC_EXTERNAL_GAP/2}px`,top:`${c.row*TRUE_ENC_CELL_H+TRUE_ENC_EXTERNAL_GAP/2}px`,width:`${TRUE_ENC_CELL_W-TRUE_ENC_EXTERNAL_GAP}px`,height:`${TRUE_ENC_CELL_H-TRUE_ENC_EXTERNAL_GAP}px`,background:invalid?'rgba(177,61,61,.20)':'rgba(195,220,155,.34)',pointerEvents:'none'});layer.appendChild(q);}
+        if(!access.ok)for(const c of access.blockedCells){const q=document.createElement('div');Object.assign(q.style,{position:'absolute',left:`${c.col*TRUE_ENC_CELL_W+TRUE_ENC_EXTERNAL_GAP/2}px`,top:`${c.row*TRUE_ENC_CELL_H+TRUE_ENC_EXTERNAL_GAP/2}px`,width:`${TRUE_ENC_CELL_W-TRUE_ENC_EXTERNAL_GAP}px`,height:`${TRUE_ENC_CELL_H-TRUE_ENC_EXTERNAL_GAP}px`,background:'rgba(210,35,35,.30)',boxShadow:'inset 0 0 0 3px rgba(190,20,20,.72)',pointerEvents:'none'});layer.appendChild(q);}
     };
     zooCanvas.addEventListener('pointerdown',e=>{
         if(!trueEnclosureBuilderActive||state.gameMode!=='true'||state.sandboxMode||state.visitingZoo||e.button!==0)return;
@@ -17589,7 +17665,7 @@ function renderEnclosure(
         Object.assign(element.style,{width:`${bounds.w}px`,height:`${bounds.h}px`,background:'transparent',border:'0',boxShadow:'none',overflow:'visible'});
         const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
         svg.setAttribute('viewBox',`0 0 ${bounds.w} ${bounds.h}`);
-        Object.assign(svg.style,{position:'absolute',inset:'0',width:'100%',height:'100%',overflow:'visible',pointerEvents:'none'});
+        Object.assign(svg.style,{position:'absolute',inset:'0',width:'100%',height:'100%',overflow:'visible',pointerEvents:'none',zIndex:'2'});
         {
             const world=trueBuiltWorldCells(enclosure),own=new Set(world.map(c=>trueBuilderCellKey(c.col,c.row))),owners=renderContext?.trueSpatialOwners || trueEnclosureSpatialIndex().owners;
             const minCol=Math.min(...world.map(c=>c.col)),minRow=Math.min(...world.map(c=>c.row));
@@ -17604,7 +17680,7 @@ function renderEnclosure(
                 const grass=['#C3DC9B','#BDD793','#C9E2A5','#B8D28D','#C6DFA0'];
                 const grassColour=grass[Math.abs(Number(enclosure.id)||0)%grass.length];
                 Object.assign(fill.style,{position:'absolute',left:`${(c.col-minCol)*TRUE_ENC_CELL_W+li}px`,top:`${(c.row-minRow)*TRUE_ENC_CELL_H+ti}px`,
-                    width:`${TRUE_ENC_CELL_W-li-ri}px`,height:`${TRUE_ENC_CELL_H-ti-bi}px`,background:grassColour,pointerEvents:'none',zIndex:'-1'});
+                    width:`${TRUE_ENC_CELL_W-li-ri}px`,height:`${TRUE_ENC_CELL_H-ti-bi}px`,background:grassColour,pointerEvents:'none',zIndex:'0'});
                 element.appendChild(fill);
             }
         }
@@ -20228,6 +20304,7 @@ function sendMultiplayerLiveViewSubscription(){
 function clearMultiplayerRemoteCursors(){
     for(const entry of multiplayerRemoteCursors.values())entry.el?.remove?.();
     multiplayerRemoteCursors.clear();
+    clearMultiplayerRemoteAnimalDrags?.();
 }
 function ensureMultiplayerRemoteCursor(seat){
     let entry=multiplayerRemoteCursors.get(seat);
@@ -20276,6 +20353,29 @@ function receiveMultiplayerCursor(message){
     entry.x=x;entry.y=y;entry.lastSeen=Date.now();
     if(!multiplayerCursorRaf)multiplayerCursorRaf=requestAnimationFrame(renderMultiplayerRemoteCursors);
 }
+const multiplayerRemoteAnimalDrags=new Map();
+let multiplayerLiveLayoutLastSentAt=0;
+let multiplayerLiveLayoutSequence=0;
+function clearMultiplayerRemoteAnimalDrags(){for(const entry of multiplayerRemoteAnimalDrags.values())entry.el?.remove?.();multiplayerRemoteAnimalDrags.clear();}
+function sendMultiplayerLiveAnimalDrag(event,ended=false){
+ const channel=localMultiplayerBrowserChannel,t=localMultiplayerBrowserTransport,drag=state.drag;
+ if(!channel?.serverBacked||!t?.serverAuthenticated||!localClassicMatch||!drag||drag.type!=='animal')return false;
+ if(localClassicMatch.viewingPlayerId&&localClassicMatch.viewingPlayerId!==localClassicMatch.activePlayerId)return false;
+ const nowMs=performance.now();if(!ended&&nowMs-multiplayerLiveLayoutLastSentAt<66)return false;multiplayerLiveLayoutLastSentAt=nowMs;
+ const rect=zooCanvas?.getBoundingClientRect?.(),zoom=Math.max(.01,Number(state.zoom)||1);
+ const x=rect&&event?(event.clientX-rect.left)/zoom:null,y=rect&&event?(event.clientY-rect.top)/zoom:null;
+ return channel.postServerMessage({type:'live-layout',sequence:++multiplayerLiveLayoutSequence,payload:{kind:'animal-drag',animalId:drag.animal?.id??null,x,y,ended:!!ended}});
+}
+function receiveMultiplayerLiveLayout(message){
+ if(!localClassicMatch||message?.payload?.kind!=='animal-drag')return false;
+ const senderLocalId=multiplayerLocalPlayerIdForServerId(message.senderPlayerId),viewed=multiplayerEffectiveViewedLocalPlayerId();
+ if(!senderLocalId||senderLocalId!==viewed)return false;
+ const key=String(message.senderPlayerId||''),payload=message.payload||{};let entry=multiplayerRemoteAnimalDrags.get(key);
+ if(payload.ended){entry?.el?.remove?.();multiplayerRemoteAnimalDrags.delete(key);return true;}
+ const animal=(state.animals||[]).find(a=>String(a?.id)===String(payload.animalId)),x=Number(payload.x),y=Number(payload.y);if(!animal||!Number.isFinite(x)||!Number.isFinite(y))return false;
+ if(!entry){const el=document.createElement('img');el.className='dragging-animal multiplayer-live-animal-drag';applyLocalizedAnimalImage(el,animal);Object.assign(el.style,{position:'fixed',pointerEvents:'none',zIndex:'9998',opacity:'.72'});document.body.appendChild(el);entry={el,sequence:0};multiplayerRemoteAnimalDrags.set(key,entry);}
+ const seq=Number(message.sequence)||0;if(seq&&seq<=entry.sequence)return false;entry.sequence=seq;const r=zooCanvas.getBoundingClientRect(),z=Math.max(.01,Number(state.zoom)||1);entry.el.style.left=`${r.left+x*z-entry.el.offsetWidth/2}px`;entry.el.style.top=`${r.top+y*z-entry.el.offsetHeight/2}px`;return true;
+}
 function multiplayerCursorTarget(){
     const viewed=multiplayerEffectiveViewedLocalPlayerId();
     if(!viewed)return null;
@@ -20315,6 +20415,10 @@ zooBoard?.addEventListener('scroll',()=>{if(!multiplayerCursorRaf&&multiplayerRe
 const MULTIPLAYER_SERVER_PROTOCOL='zoo-curator-server-v2';
 const MULTIPLAYER_SERVER_IDENTITY_KEY='zoo-curator-server-identities-v1';
 const multiplayerServerPendingActions=new Map();
+let multiplayerPublicTradeListings=[];
+let selectedMultiplayerPublicListingPlayerId=null;
+let selectedHumanTradeProposalId=null;
+const pendingHumanTradeActionIds=new Set();
 function serverAuthoritativeMultiplayerActive(){
     const t=localMultiplayerBrowserTransport;
     return !!(t?.serverBacked&&t.serverAuthenticated&&localMultiplayerBrowserChannel?.postServerMessage);
@@ -20373,10 +20477,8 @@ async function authorizeHumanTradeWithServer(type,payload={}){
         wire.toPlayerId=requestedServerPlayer.playerId;
         wire.offeredAnimalId=payload.offeredAnimalId;
         wire.requestedAnimalId=payload.requestedAnimalId;
-        wire.offeredTransferId=payload.offeredTransferId ??
-            nextDirectTradeAnimalId(localClassicMatch?.players?.[requestedLocalId]?.snapshot);
-        wire.requestedTransferId=payload.requestedTransferId ??
-            nextDirectTradeAnimalId(localClassicMatch?.players?.[localClassicMatch?.activePlayerId]?.snapshot);
+        // Transfer IDs are deliberately omitted. The authoritative server
+        // allocates them atomically only if/when this proposal is accepted.
     }else{
         wire.tradeId=payload.offerId;
         if((operation==='accept'||operation==='claim')&&payload.destination)wire.destination=payload.destination;
@@ -20417,6 +20519,7 @@ function applyAuthoritativeHumanTradeMessage(message){
         localClassicMatch.pendingPlayerTrades.push(offer);
     }
     Object.assign(offer,cloneForSave(incoming));
+    if(message.recovered===true)offer.recoveredFromServer=true;
 
     // The server response already contains the exact durable zoo revisions
     // produced by the transaction. Keep replicas current without asking the
@@ -20432,11 +20535,67 @@ function applyAuthoritativeHumanTradeMessage(message){
                 localMultiplayerBrowserTransport.durableOwnZooSnapshot=cloneForSave(update.zoo);
                 localMultiplayerBrowserTransport.durableZooQueuedSnapshot=null;
                 localMultiplayerBrowserTransport.durableZooQueuedSignature='';
+                // Do NOT clear durableZooCommitPending here. If an ordinary
+                // zoo-state commit was already sent, its ACK/rejection is still
+                // in flight and remains the only event allowed to settle that
+                // request. The authoritative trade revision makes an older CAS
+                // commit stale; its rejection closes the pending request.
+                localMultiplayerBrowserTransport.durableZooQueuedSnapshot=null;
+                localMultiplayerBrowserTransport.durableZooQueuedSignature='';
                 try{
                     localMultiplayerBrowserTransport.durableZooLastRequestedSignature=JSON.stringify(update.zoo);
                 }catch(_){}
             }
         }
+    }
+
+    // If this transaction changed the zoo currently owned/rendered by this
+    // browser, apply that authoritative snapshot immediately. Merely updating
+    // localClassicMatch.players[].snapshot is not enough: `state` would still
+    // contain the pre-trade animals until a later visit/reload.
+    const ownServerId=String(localMultiplayerBrowserTransport?.serverPlayerId||'');
+    const ownUpdate=(message.zooUpdates||[]).find(
+        u=>String(u?.playerId||'')===ownServerId
+    );
+    if(ownUpdate?.zoo &&
+       localClassicMatch.activePlayerId===multiplayerLocalPlayerIdForServerId(ownUpdate.playerId) &&
+       (!localClassicMatch.viewingPlayerId ||
+        localClassicMatch.viewingPlayerId===localClassicMatch.activePlayerId)){
+        const authoritativeOwnZoo=cloneForSave(ownUpdate.zoo);
+        const authoritativeOwnRevision=Math.max(0,Number(ownUpdate.revision)||0);
+        enqueueMicrotask(async()=>{
+            const transport=localMultiplayerBrowserTransport;
+            // The action packet and zoo-state packet can arrive back-to-back.
+            // Never let a queued import of revision N overwrite N+1.
+            if(Math.max(0,Number(transport?.durableZooRevision)||0)>authoritativeOwnRevision)
+                return;
+            autoResumeWriteSuppressed=true;
+            try{await importGameState(authoritativeOwnZoo,{deferRender:false});}
+            finally{autoResumeWriteSuppressed=false;}
+            // importGameState can yield. If newer authority arrived while it
+            // was importing, immediately restore the newest durable snapshot.
+            if(Math.max(0,Number(transport?.durableZooRevision)||0)>authoritativeOwnRevision){
+                const latest=transport?.durableOwnZooSnapshot;
+                if(latest?.state){
+                    autoResumeWriteSuppressed=true;
+                    try{await importGameState(cloneForSave(latest),{deferRender:false});}
+                    finally{autoResumeWriteSuppressed=false;}
+                }
+                return;
+            }
+            const ownedIds=new Set((state.animals||[]).map(a=>String(a?.id)));
+            if(state.outgoingOffer&&!ownedIds.has(String(state.outgoingOffer.id))){
+                state.outgoingOffer=null;
+                state.tradeOffers=[];
+                state.selectedTradeOpponent=null;
+            }
+            if(Array.isArray(state.exchange))
+                state.exchange=state.exchange.map(a=>a&&!ownedIds.has(String(a.id))?null:a);
+            if(state.result&&!ownedIds.has(String(state.result.id)))state.result=null;
+            localClassicMatch.players[localClassicMatch.activePlayerId].snapshot=cloneForSave(exportCurrentGameState());
+            renderTrade?.();
+            renderVisitedZooQuickTabs?.();
+        });
     }
 
     if(incoming.status==='accepted-awaiting-sender-claim'){
@@ -20450,7 +20609,10 @@ function applyAuthoritativeHumanTradeMessage(message){
     }else if(incoming.status==='completed'){
         offer.senderClaimAnimal=null;
         resumeAITradingAfterHumanTrade?.();
-    }else if(incoming.status==='declined'||incoming.status==='cancelled'){
+    }else if(incoming.status==='declined'||incoming.status==='cancelled'||incoming.status==='invalid'){
+        offer.senderClaimAnimal=null;
+        if(String(selectedHumanTradeProposalId||'')===String(incoming.id))
+            selectedHumanTradeProposalId=null;
         resumeAITradingAfterHumanTrade?.();
     }
 
@@ -20514,17 +20676,46 @@ function settleDurableZooCommitWaiters(ok=true){
     const waiters=Array.isArray(t.durableZooCommitWaiters)?t.durableZooCommitWaiters.splice(0):[];
     for(const resolve of waiters){try{resolve(ok);}catch(_){}}
 }
-function awaitDurableZooCommitIdle(timeoutMs=5000){
+async function awaitDurableZooCommitIdle(timeoutMs=5000){
     const t=localMultiplayerBrowserTransport;
-    if(!serverAuthoritativeMultiplayerActive()||!t?.durableZooCommitPending)
-        return Promise.resolve(true);
-    return new Promise(resolve=>{
-        if(!Array.isArray(t.durableZooCommitWaiters))t.durableZooCommitWaiters=[];
-        let done=false;
-        const finish=value=>{if(done)return;done=true;resolve(value);};
-        t.durableZooCommitWaiters.push(finish);
-        setTimeout(()=>finish(false),Math.max(250,Number(timeoutMs)||5000));
-    });
+    if(!serverAuthoritativeMultiplayerActive()||!t)return true;
+    const deadline=Date.now()+Math.max(250,Number(timeoutMs)||5000);
+
+    // A debounced snapshot is just as real as an in-flight one. Promote it now
+    // so a trade/listing cannot overtake local changes that were waiting for
+    // the normal commit timer.
+    if(t.durableZooCommitTimer){
+        clearTimeout(t.durableZooCommitTimer);
+        t.durableZooCommitTimer=null;
+        const scheduled=t.durableZooScheduledSnapshot;
+        const signature=t.durableZooScheduledSignature||'';
+        t.durableZooScheduledSnapshot=null;
+        t.durableZooScheduledSignature='';
+        if(scheduled)commitOwnZooStateToServer(scheduled,{scheduledSignature:signature});
+    }
+
+    while(true){
+        // ACK handling normally schedules this flush in a microtask. Do it
+        // synchronously at the authority boundary so the waiter continuation
+        // can never overtake a queued second snapshot.
+        if(!t.durableZooCommitPending&&t.durableZooQueuedSnapshot)
+            flushQueuedOwnZooStateCommit();
+
+        if(!t.durableZooCommitPending&&!t.durableZooQueuedSnapshot)
+            return true;
+
+        const remaining=deadline-Date.now();
+        if(remaining<=0)return false;
+        const ok=await new Promise(resolve=>{
+            if(!Array.isArray(t.durableZooCommitWaiters))t.durableZooCommitWaiters=[];
+            let done=false;
+            const finish=value=>{if(done)return;done=true;resolve(value);};
+            t.durableZooCommitWaiters.push(finish);
+            setTimeout(()=>finish(false),Math.max(1,remaining));
+        });
+        if(!ok)return false;
+        // Loop: the completed commit may have exposed another queued snapshot.
+    }
 }
 
 
@@ -20930,7 +21121,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     // Only force a full own-zoo restore for an authenticated reconnect.
                     // Viewer zoo-state packets remain display data and must never overwrite
                     // the local player's zoo.
-                    if((transport.serverReturning===true||message.authoritativeTrade===true||message.authoritativeCorrection===true)&&!localClassicMatch?.viewingPlayerId){
+                    if((transport.serverReturning===true||message.authoritativeTrade===true||message.authoritativeDraw===true||message.authoritativeExchange===true||message.authoritativeMove===true||message.authoritativeCorrection===true)&&!localClassicMatch?.viewingPlayerId){
                         autoResumeWriteSuppressed=true;
                         try{
                             await importGameState(cloneForSave(zoo),{deferRender:false});
@@ -20951,7 +21142,24 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 if(serverPlayerId!==ownServerId&&zoo&&typeof zoo==='object'&&!Array.isArray(zoo)){
                     const serverPlayer=transport.serverPlayers?.find(p=>String(p?.playerId||'')===serverPlayerId);
                     const localTargetId=serverPlayer?.seat?`player-${Number(serverPlayer.seat)}`:null;
-                    if(localTargetId&&String(localClassicMatch?.viewingPlayerId||'')===localTargetId){
+                    if(localTargetId&&String(localClassicMatch?.viewingPlayerId||'')===localTargetId&&
+                       message.authoritativeMove===true&&message.animalId!=null&&message.destination){
+                        // High-frequency ordinary relocation: the visitor is
+                        // already looking at this zoo, so update the one card in
+                        // place. Full importGameState caused a visible flicker,
+                        // rebuilt every enclosure and disturbed live drag/cursor
+                        // presentation for a move that changes only two fields.
+                        const moved=(state.animals||[]).find(a=>String(a?.id)===String(message.animalId));
+                        const enclosure=(state.enclosures||[]).find(e=>
+                            String(e?.id)===String(message.destination?.enclosureId));
+                        const slotIndex=Number(message.destination?.slotIndex);
+                        if(moved&&enclosure&&getAllSlots(enclosure).includes(slotIndex)){
+                            moved.enclosureId=enclosure.id;
+                            moved.slotIndex=slotIndex;
+                            renderAll();
+                            try{transport.lastImportedViewedZooSignature=JSON.stringify(zoo);}catch(_){}
+                        }
+                    }else if(localTargetId&&String(localClassicMatch?.viewingPlayerId||'')===localTargetId){
                         let signature='';
                         try{signature=JSON.stringify(zoo);}catch(_){}
                         if(!signature||transport.lastImportedViewedZooSignature!==signature){
@@ -20993,6 +21201,13 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     transport.serverViewTargetPlayerId=nextViewTarget;
                     transport.serverViewSubscriptionPending=false;
                 }
+            }else if(message.type==='trade-listings'){
+                multiplayerPublicTradeListings=Array.isArray(message.listings)?cloneForSave(message.listings):[];
+                reconcilePublicTradeProposalsWithListings();
+                if(selectedMultiplayerPublicListingPlayerId &&
+                   !multiplayerPublicTradeListings.some(x=>String(x?.playerId)===String(selectedMultiplayerPublicListingPlayerId)))
+                    selectedMultiplayerPublicListingPlayerId=null;
+                renderTrade?.();
             }else if(message.type==='progression-state'){
                 channel.serverProgression=cloneForSave(message);
                 transport.serverProgression=cloneForSave(message);
@@ -21033,6 +21248,8 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 }
             }else if(message.type==='cursor'){
                 receiveMultiplayerCursor(message);
+            }else if(message.type==='live-layout'){
+                receiveMultiplayerLiveLayout(message);
             }else if(message.type==='action-committed'||message.type==='action-rejected'){
                 transport.lastServerAction=cloneForSave(message);
                 if(message.type==='action-committed'&&message.action==='human-trade')
@@ -21877,14 +22094,16 @@ async function applyLocalMultiplayerActionEnvelope(action){
 
 function multiplayerDestinationToWire(destination){
     if(!destination?.enclosure||destination.slotIndex==null)return null;
-    return {enclosureId:destination.enclosure.id,slotIndex:Number(destination.slotIndex)};
+    const slotIndex=Number(destination.slotIndex);
+    if(!Number.isInteger(slotIndex)||!getAllSlots(destination.enclosure).includes(slotIndex))return null;
+    return {enclosureId:destination.enclosure.id,slotIndex};
 }
 function multiplayerDestinationFromWire(payload){
     if(!payload||payload.enclosureId==null||payload.slotIndex==null)return null;
     const enclosure=(state.enclosures||[]).find(e=>String(e.id)===String(payload.enclosureId));
     if(!enclosure)return null;
     const slotIndex=Number(payload.slotIndex);
-    if(!Number.isInteger(slotIndex)||slotIndex<0)return null;
+    if(!Number.isInteger(slotIndex)||!getAllSlots(enclosure).includes(slotIndex))return null;
     return {enclosure,slotIndex};
 }
 async function loadBrowserAuthoritySeat(playerId){
@@ -22093,6 +22312,13 @@ async function runAuthoritativeClassicActionForPlayer(playerId,classicAction){
 
 async function dispatchLocalMultiplayerAction(playerId,type,payload={}){
     if(SERVER_HUMAN_TRADE_ACTIONS.has(type)&&serverAuthoritativeMultiplayerActive()){
+        // A human-trade transaction must start from the latest durable zoo
+        // revision. Otherwise a just-moved/listed card can still be sitting in
+        // a queued ordinary zoo commit while the trade reaches SQLite first.
+        // Serialize that boundary rather than letting the later stale-CAS
+        // correction fight an already accepted ownership transfer.
+        const durableReady=await awaitDurableZooCommitIdle(5000);
+        if(!durableReady)return {ok:false,reason:'zoo-state-sync-timeout'};
         const authorized=await authorizeHumanTradeWithServer(type,payload);
         if(!authorized.ok)return authorized;
         // Server + SQLite are the authority. Do not replay the same trade
@@ -22128,16 +22354,52 @@ async function simulateLocalPeerClassicAction(type,{destination=null,autoPlace=f
     });
 }
 async function sendLocalMultiplayerAnimalMove(playerId,animalId,destination){
+    if(serverAuthoritativeMultiplayerActive()&&
+       playerId===localClassicMatch?.activePlayerId){
+        const wireDestination=multiplayerDestinationToWire(destination);
+        const response=await sendMultiplayerServerAction('move-animal',{
+            animalId,destination:wireDestination
+        });
+        const t=localMultiplayerBrowserTransport;
+        if(response?.type!=='action-committed'||response?.action!=='move-animal'){
+            if(response?.code)console.warn('Multiplayer animal move rejected:',response.code);
+            // The card was left optimistically at the drop target. A rejection
+            // must restore the last server-authoritative zoo, not merely render
+            // the optimistic local state again.
+            if(t?.durableOwnZooSnapshot?.state){
+                autoResumeWriteSuppressed=true;
+                try{await importGameState(cloneForSave(t.durableOwnZooSnapshot),{deferRender:false});}
+                finally{autoResumeWriteSuppressed=false;}
+                syncActiveZooIntoLocalMatch();
+            }else renderAll();
+            return {ok:false,reason:response?.code||'move-rejected'};
+        }
+        if(String(response.playerId||'')!==String(t?.serverPlayerId||'')||
+           !response.zoo?.state)return {ok:false,reason:'move-response'};
+
+        t.durableZooRevision=Number(response.zooRevision)||0;
+        t.durableOwnZooSnapshot=cloneForSave(response.zoo);
+        t.durableZooQueuedSnapshot=null;t.durableZooQueuedSignature='';
+
+        // The player already sees the valid optimistic drop. Do not tear down
+        // and rebuild the whole zoo after every ordinary relocation. Reconcile
+        // only the authoritative destination and stored seat snapshot.
+        const live=(state.animals||[]).find(a=>String(a?.id)===String(animalId));
+        if(live&&response.destination){
+            live.enclosureId=response.destination.enclosureId;
+            live.slotIndex=Number(response.destination.slotIndex);
+        }
+        if(localClassicMatch?.players?.[playerId])
+            localClassicMatch.players[playerId].snapshot=cloneForSave(response.zoo);
+        renderVisitedZooQuickTabs();
+        return {ok:true,authoritative:true,revision:t.durableZooRevision};
+    }
     return dispatchLocalMultiplayerAction(playerId,'move-animal',{
         animalId,
         destination:multiplayerDestinationToWire(destination),
-        // Selecting an AI-trade outgoing card is a free local preparation step.
-        // Authority needs to know about that reservation before it can validate
-        // moving another zoo animal through the newly-created vacancy.
         outgoingOfferId:state.outgoingOffer?.id??null
     });
 }
-
 
 function localHumanTradeDraft(playerId=localClassicMatch?.activePlayerId){
     if(!localClassicMatch||!playerId)return null;
@@ -24715,6 +24977,7 @@ function moveAnimalDragImage(
             state.drag.offsetY
         ) +
         'px';
+    sendMultiplayerLiveAnimalDrag?.(event,false);
 
 }
 
@@ -26596,6 +26859,7 @@ function renderAfterTransientAnimalDrag(drag) {
 function finishAnimalDrag(event) {
     const drag = state.drag;
     if (!drag || drag.type !== 'animal') return;
+    sendMultiplayerLiveAnimalDrag?.(event,true);
     const animal = drag.animal;
     const clickDistance = Math.hypot(event.clientX-drag.startClientX, event.clientY-drag.startClientY);
 
@@ -26663,6 +26927,9 @@ function finishAnimalDrag(event) {
         return;
     }
 
+    if(drag.originalWasOutgoing && String(state.outgoingOffer?.id||'')!==String(animal.id) && serverAuthoritativeMultiplayerActive())
+        withdrawMultiplayerTradeListing();
+
     beginCompatibilityGlowFade(drag.compatibilityGlowKeys);
 
     // For the simulated remote seat, ordinary zoo relocation is now a real
@@ -26684,21 +26951,28 @@ function finishAnimalDrag(event) {
             enclosure:state.enclosures.find(e=>String(e.id)===String(animal.enclosureId)),
             slotIndex:animal.slotIndex
         };
-        if(preDropReservations){
-            const before=new Map(preDropReservations.map(p=>[String(p.id),p]));
-            for(const current of state.animals||[]){
-                const p=before.get(String(current.id));if(!p)continue;
-                current.enclosureId=p.enclosureId;current.slotIndex=p.slotIndex;
-                if(p.reservedEnclosureId==null)delete current.reservedEnclosureId;
-                else current.reservedEnclosureId=p.reservedEnclosureId;
-                if(p.reservedSlotIndex==null)delete current.reservedSlotIndex;
-                else current.reservedSlotIndex=p.reservedSlotIndex;
+        // Server-backed play is optimistic for this free layout action: leave
+        // the already-validated card where the player dropped it instead of
+        // visibly snapping it back while waiting for a network round-trip.
+        // Legacy browser-host simulation still restores before authority runs.
+        if(!serverAuthoritativeMultiplayerActive()){
+            if(preDropReservations){
+                const before=new Map(preDropReservations.map(p=>[String(p.id),p]));
+                for(const current of state.animals||[]){
+                    const p=before.get(String(current.id));if(!p)continue;
+                    current.enclosureId=p.enclosureId;current.slotIndex=p.slotIndex;
+                    if(p.reservedEnclosureId==null)delete current.reservedEnclosureId;
+                    else current.reservedEnclosureId=p.reservedEnclosureId;
+                    if(p.reservedSlotIndex==null)delete current.reservedSlotIndex;
+                    else current.reservedSlotIndex=p.reservedSlotIndex;
+                }
+            }else{
+                animal.enclosureId=drag.originalEnclosureId;
+                animal.slotIndex=drag.originalSlotIndex;
             }
-        }else{
-            animal.enclosureId=drag.originalEnclosureId;
-            animal.slotIndex=drag.originalSlotIndex;
         }
         drag.image?.remove();state.drag=null;
+        if(serverAuthoritativeMultiplayerActive())renderAll();
         sendLocalMultiplayerAnimalMove(localClassicMatch.activePlayerId,animal.id,destination);
         return;
     }
@@ -27242,6 +27516,7 @@ document.addEventListener(
         if (state.drag?.type === 'draw-result') { moveDrawDragImage(event); return; }
         if (state.drag?.type === 'direct-human-trade-sender-claim') { moveDirectHumanTradeSenderClaimDrag(event); return; }
         if (state.drag?.type === 'human-trade-request') { moveHumanTradeRequestDrag(event); return; }
+        if (state.drag?.type === 'public-human-trade-proposal') { movePublicTradeListingDrag(event); return; }
         if (state.drag?.type === 'direct-human-trade-result') { moveDirectHumanTradeResultDrag(event); return; }
         if (state.drag?.type === 'trade-result') { moveTradeResultDragImage(event); return; }
 
@@ -27301,6 +27576,7 @@ document.addEventListener(
         if (state.drag?.type === 'draw-result') { finishDrawDrag(event); return; }
         if (state.drag?.type === 'direct-human-trade-sender-claim') { finishDirectHumanTradeSenderClaimDrag(event); return; }
         if (state.drag?.type === 'human-trade-request') { finishHumanTradeRequestDrag(event); return; }
+        if (state.drag?.type === 'public-human-trade-proposal') { await finishPublicTradeListingDrag(event); return; }
         if (state.drag?.type === 'direct-human-trade-result') { finishDirectHumanTradeResultDrag(event); return; }
         if (state.drag?.type === 'trade-result') { await finishTradeResultDrag(event); return; }
 
@@ -27383,6 +27659,38 @@ document.addEventListener(
                     cancelledTradeDrag.releasedOutgoingReservation.slotIndex
                 );
             }
+            renderTrade();
+        }
+        else if(state.drag?.type==='direct-human-trade-result'){
+            // Accept-drag temporarily removes this player's offered animal from
+            // its enclosure so the incoming animal can target the same slot.
+            // Pointer cancellation (lost pointer, browser gesture, touch cancel)
+            // must put it back or the live zoo appears to lose the animal.
+            const cancelled=state.drag;
+            cancelled.image?.remove();
+            state.drag=null;
+            const released=cancelled.releasedRequestedPlacement;
+            const animal=(state.animals||[]).find(a=>String(a?.id)===String(released?.animalId));
+            if(animal&&released){
+                animal.enclosureId=released.enclosureId;
+                animal.slotIndex=released.slotIndex;
+            }
+            renderTrade();
+            renderAnimals?.();
+        }
+        else if(state.drag?.type==='direct-human-trade-sender-claim'){
+            // Claim drag has not changed ownership/placement yet; cancellation
+            // only needs to discard the transient card and restore the accepted
+            // blue claim state.
+            state.drag.image?.remove();
+            state.drag=null;
+            renderTrade();
+        }
+        else if(state.drag?.type==='public-human-trade-proposal'){
+            // Proposal drag is ephemeral. A cancelled pointer must never submit
+            // a proposal and must never leave the floating card behind.
+            state.drag.image?.remove();
+            state.drag=null;
             renderTrade();
         }
         else         if (
@@ -27707,58 +28015,50 @@ function drawSafeDestinationsForAnimal(animal) {
 
 
 async function commitServerAuthoritativeLevelOneDraw(message,destination){
+    const t=localMultiplayerBrowserTransport;
+    const zoo=message?.zoo;
     const raw=message?.card;
     const category=String(raw?.category||'').trim();
     const filename=cleanFilename(raw?.fileName||raw?.filename||'');
-    if(!category||!filename||!destination?.enclosure||destination.slotIndex==null)return false;
-    const spec={category,level:1,filename};
-    if(!isDrawSafeDestinationForAnimal(spec,destination.enclosure,destination.slotIndex)){
-        console.error('Server-authoritative draw destination became invalid before commit.',{message,destination});
-        showGameNotice?.(uiText('The draw was accepted by the server, but its destination is no longer available.'));
-        return false;
-    }
-    await preloadAnimalAsset(spec);
-    const animal={
-        id:state.nextId,category,level:1,filename,
-        enclosureId:null,slotIndex:null
-    };
-    if(!placeAnimal(animal,destination.enclosure,destination.slotIndex))return false;
-    state.nextId++;
-    ensureAnimalLineage(animal,state.zooName||'Your Zoo');
-    removePlayerClaimedCardFromOpponents(animal.category,animal.level,animal.filename);
-    state.animals.push(animal);
-    markPlayerLevelSeen(animal.level);
-    // Normal Level 1 draws do not award enclosures. Enclosure rewards remain
-    // attached to completed upgrade/category-level achievements.
-    // Server v2.3 owns the shared deck/action ordering; the local zoo still owns
-    // its personal turn lifecycle until the remaining Classic actions migrate.
-    finalizeClassicProgressionCommit('Server-authoritative Level 1 draw');
+    if(!category||!filename||!zoo?.state||!Array.isArray(zoo.state.animals))return false;
+    if(String(message.playerId||'')!==String(t?.serverPlayerId||''))return false;
+
+    // The server has already consumed the unique shared card AND inserted it
+    // into this zoo in one SQLite transaction. Import that exact durable result;
+    // never manufacture a second local copy of the animal.
+    t.durableZooRevision=Math.max(0,Number(message.zooRevision)||0);
+    t.durableOwnZooSnapshot=cloneForSave(zoo);
+    t.durableZooQueuedSnapshot=null;
+    t.durableZooQueuedSignature='';
+    autoResumeWriteSuppressed=true;
+    try{
+        await importGameState(cloneForSave(zoo),{deferRender:false});
+    }finally{autoResumeWriteSuppressed=false;}
+
+    ensureAnimalLineage(message.animal||{
+        id:null,category,level:1,filename
+    },state.zooName||'Your Zoo');
+    removePlayerClaimedCardFromOpponents(category,1,filename);
+    markPlayerLevelSeen(1);
     state.nextDrawSpec=null;
     state.nextDrawReadyPromise=null;
 
-    // draw-level1 is already authoritative in server v2, so a peer deliberately
-    // bypasses the legacy host action envelope above. Until personal zoo state is
-    // fully migrated to server v2, however, the host's legacy match replica still
-    // needs the peer's newly committed zoo snapshot. Without this bridge the host
-    // retained Player 2's pre-draw snapshot; its next ordinary sync then imported
-    // that stale snapshot on Player 2 and visibly rolled the draw back.
-    //
-    // Publish the completed peer zoo to the browser authority before considering
-    // the draw locally finished. WebSocket ordering then guarantees the host sees
-    // this replacement before any later action sent by this peer.
+    // Preserve the established per-player action lifecycle (AI-offer timing,
+    // history, turn UI), but ownership itself is no longer dependent on this
+    // browser surviving after the server accepted the draw.
+    finalizeClassicProgressionCommit('Server-authoritative Level 1 draw');
+
     const committedDrawSnapshot=exportCurrentGameState();
     commitOwnZooStateToServer(committedDrawSnapshot);
-    if(localMultiplayerBrowserTransport?.role==='peer' &&
-       localMultiplayerBrowserTransport.playerId===localClassicMatch?.activePlayerId){
+    if(t?.role==='peer'&&t.playerId===localClassicMatch?.activePlayerId){
         const bridge=await sendLocalMultiplayerBrowserAction('replace-player-zoo',{
             snapshot:committedDrawSnapshot
         });
-        if(!bridge?.ok){
-            console.warn('Could not bridge server-authoritative draw into host zoo state:',bridge?.reason||'unknown');
-        }
+        if(!bridge?.ok)console.warn('Could not bridge authoritative Draw into host zoo state:',bridge?.reason||'unknown');
     }
     return true;
 }
+
 
 function buildAuthoritativeMultiplayerLevelOneDeck(){
     // Preserve Zoo Curator's normal category-first/species-second probability
@@ -27800,10 +28100,6 @@ function initialiseAuthoritativeMultiplayerProgressionIfHost(){
 
 async function requestServerAuthoritativeExchange(destination=null,autoPlace=false){
     if(!serverAuthoritativeMultiplayerActive())return null;
-
-    // The selected exchange cards and prepared result are the operation being
-    // completed here, not a conflicting action. Only an unrelated outgoing
-    // trade should block this final Exchange placement.
     if(state.outgoingOffer||!state.result)return false;
 
     const sources=(state.exchange||[]).filter(Boolean);
@@ -27817,22 +28113,14 @@ async function requestServerAuthoritativeExchange(destination=null,autoPlace=fal
         id:state.nextId,category:resultSpec.category,level:resultSpec.level,
         filename:resultSpec.filename,enclosureId:null,slotIndex:null
     };
-
     let chosen=destination;
     if(autoPlace&&!chosen)chosen=randomEligibleDestinationForAnimal(prospective);
     if(!chosen?.enclosure||chosen.slotIndex==null||
        !canPlace(prospective,chosen.enclosure,chosen.slotIndex))return false;
 
-    // Keep the two source reservations until commit so Draw/full-zoo capacity
-    // stays protected. canPlace() ignores reservations for physical placement,
-    // therefore either just-vacated source exhibit remains a legal destination
-    // exactly as in single-player.
-
-
-    // Commit and ACK the exact pre-exchange zoo before validation. WebSocket
-    // ordering alone was insufficient once zoo-state commits became CAS-based:
-    // a rejected stale commit could otherwise be followed by Exchange against
-    // an older durable zoo.
+    // Commit the exact pre-exchange zoo first. The server then removes the two
+    // source cards, inserts the upgraded card at this destination and advances
+    // progression in one SQLite transaction.
     syncActiveZooIntoLocalMatch();
     commitOwnZooStateToServer(exportCurrentGameState());
     if(!await awaitDurableZooCommitIdle()){
@@ -27842,7 +28130,8 @@ async function requestServerAuthoritativeExchange(destination=null,autoPlace=fal
 
     const response=await sendMultiplayerServerAction('exchange',{
         sourceIds:sources.map(animal=>animal.id),
-        result:resultSpec
+        result:resultSpec,
+        destination:multiplayerDestinationToWire(chosen)
     });
     if(response?.type!=='action-committed'||response?.action!=='exchange'){
         if(response?.code)console.warn('Authoritative Exchange rejected:',response.code);
@@ -27850,27 +28139,39 @@ async function requestServerAuthoritativeExchange(destination=null,autoPlace=fal
     }
     const t=localMultiplayerBrowserTransport;
     if(String(response.playerId||'')!==String(t?.serverPlayerId||''))return false;
-    if(Number(response.zooRevision)!==Number(t?.durableZooRevision)){
-        console.warn('Authoritative Exchange used an unexpected durable zoo revision.',{
-            server:response.zooRevision,client:t?.durableZooRevision
-        });
-        return false;
-    }
+    if(!response.zoo?.state||!Array.isArray(response.zoo.state.animals))return false;
 
-    performClassicGameAction.authorityExecuting=true;
-    let committed=false;
-    try{committed=await completeExchange(chosen,autoPlace);}
-    finally{performClassicGameAction.authorityExecuting=false;}
-    if(!committed){
-        console.error('Server committed Exchange but local placement failed after prevalidation.');
-        showGameNotice?.('Exchange was accepted by the server, but the local zoo could not finish the placement.');
-        return false;
-    }
+    // Ownership is already committed. Import the exact durable result rather
+    // than calling completeExchange(), which would create/remove cards a second
+    // time and reintroduce the disconnect window this server path eliminates.
+    t.durableZooRevision=Math.max(0,Number(response.zooRevision)||0);
+    t.durableOwnZooSnapshot=cloneForSave(response.zoo);
+    t.durableZooQueuedSnapshot=null;
+    t.durableZooQueuedSignature='';
+    autoResumeWriteSuppressed=true;
+    try{
+        await importGameState(cloneForSave(response.zoo),{deferRender:false});
+    }finally{autoResumeWriteSuppressed=false;}
 
+    const resultAnimal=(state.animals||[]).find(a=>
+        String(a?.id)===String(response.resultAnimal?.id));
+    if(resultAnimal){
+        ensureAnimalLineage(resultAnimal,state.zooName||'Your Zoo');
+        removePlayerClaimedCardFromOpponents(
+            resultAnimal.category,resultAnimal.level,resultAnimal.filename);
+        markPlayerLevelSeen(resultAnimal.level);
+        if(autoPlace)markNewPlacementGlow(resultAnimal);
+        checkEnclosureReward(resultAnimal);
+    }
+    state.exchange=[null,null];
+    state.result=null;
+    state.exchangeGlowFocusKey=null;
+    for(const source of sources)state.suppressedExchangeGlowIds.delete(source.id);
+
+    finalizeClassicProgressionCommit('Server-authoritative Exchange');
     const snapshot=exportCurrentGameState();
     commitOwnZooStateToServer(snapshot);
-    if(localMultiplayerBrowserTransport?.role==='peer' &&
-       localMultiplayerBrowserTransport.playerId===localClassicMatch?.activePlayerId){
+    if(t?.role==='peer'&&t.playerId===localClassicMatch?.activePlayerId){
         const bridge=await sendLocalMultiplayerBrowserAction('replace-player-zoo',{snapshot});
         if(!bridge?.ok)console.warn('Could not bridge authoritative Exchange into host zoo state:',bridge?.reason||'unknown');
     }
@@ -32665,6 +32966,258 @@ function createRealAutonomousOpponentOffer() {
 
 
 
+// Public multiplayer trade board. Each zoo owns one listing; listings and AI
+// offers coexist and proposals are pairwise, so simultaneous players never
+// seize a single global trade slot.
+function reconcilePublicTradeProposalsWithListings(){
+    if(!localClassicMatch||!Array.isArray(localClassicMatch.pendingPlayerTrades))return;
+    const byServerPlayer=new Map(multiplayerPublicTradeListings.map(x=>[String(x?.playerId||''),String(x?.animalId??'')]));
+    for(const offer of localClassicMatch.pendingPlayerTrades){
+        if(offer?.status!=='pending')continue;
+        const fromServer=offer.fromServerPlayerId||
+            multiplayerServerPlayerForLocalId(offer.fromPlayerId)?.playerId;
+        const toServer=offer.toServerPlayerId||
+            multiplayerServerPlayerForLocalId(offer.toPlayerId)?.playerId;
+        if(!fromServer||!toServer)continue;
+        if(byServerPlayer.get(String(fromServer))!==String(offer.offeredAnimalId)||
+           byServerPlayer.get(String(toServer))!==String(offer.requestedAnimalId)){
+            offer.status='invalid';
+        }
+    }
+    if(selectedHumanTradeProposalId&&!localClassicMatch.pendingPlayerTrades.some(o=>
+        String(o?.id)===String(selectedHumanTradeProposalId)&&o?.status==='pending'))
+        selectedHumanTradeProposalId=null;
+}
+
+function ownServerTradeListing(){
+    const id=String(localMultiplayerBrowserTransport?.serverPlayerId||'');
+    return multiplayerPublicTradeListings.find(x=>String(x?.playerId||'')===id)||null;
+}
+function otherServerTradeListings(){
+    const id=String(localMultiplayerBrowserTransport?.serverPlayerId||'');
+    return multiplayerPublicTradeListings.filter(x=>{
+        if(String(x?.playerId||'')===id)return false;
+        const localId=multiplayerLocalPlayerIdForServerId(x?.playerId);
+        const snapshot=localClassicMatch?.players?.[localId]?.snapshot;
+        const animals=snapshot?.state?.animals;
+        // If an authoritative replica says the card has left that zoo, hide a
+        // stale listing immediately rather than offering an impossible trade.
+        if(Array.isArray(animals)&&!animals.some(a=>String(a?.id)===String(x?.animalId)))return false;
+        return true;
+    });
+}
+async function publishMultiplayerTradeListing(animal){
+    if(!serverAuthoritativeMultiplayerActive()||!animal?.id)return false;
+    const animalId=String(animal.id);
+    const durableReady=await awaitDurableZooCommitIdle(5000);
+    if(!durableReady){
+        showGameNotice?.('Could not publish that multiplayer trade offer while the zoo was still syncing.');
+        renderTrade?.();
+        return false;
+    }
+    const r=await sendMultiplayerServerAction('trade-listing',{operation:'publish',animalId:animal.id});
+    const ok=r?.type==='action-committed';
+    if(!ok){
+        // Never leave the board/UI implying that a rejected publication became
+        // authoritative. A newer successful replacement listing is preserved.
+        const current=ownServerTradeListing();
+        if(!current||String(current.animalId)===animalId){
+            multiplayerPublicTradeListings=multiplayerPublicTradeListings.filter(
+                x=>String(x?.playerId||'')!==String(localMultiplayerBrowserTransport?.serverPlayerId||'')
+            );
+            showGameNotice?.('Could not publish that multiplayer trade offer.');
+            renderTrade?.();
+        }
+    }
+    return ok;
+}
+async function withdrawMultiplayerTradeListing(){
+    if(!serverAuthoritativeMultiplayerActive())return false;
+    const r=await sendMultiplayerServerAction('trade-listing',{operation:'withdraw'});
+    return r?.type==='action-committed';
+}
+function proposalsForPublicListing(listing){
+    const active=localClassicMatch?.activePlayerId;
+    const otherLocal=multiplayerLocalPlayerIdForServerId(listing?.playerId);
+    const own=ownServerTradeListing();
+    if(!active||!otherLocal||!listing?.animalId||!own?.animalId)return [];
+    const ownAnimalId=String(own.animalId),otherAnimalId=String(listing.animalId);
+    return pendingDirectHumanTrades().filter(o=>{
+        if(o.status!=='pending')return false;
+        if(o.fromPlayerId===active&&o.toPlayerId===otherLocal)
+            return String(o.offeredAnimalId)===ownAnimalId &&
+                   String(o.requestedAnimalId)===otherAnimalId;
+        if(o.toPlayerId===active&&o.fromPlayerId===otherLocal)
+            return String(o.offeredAnimalId)===otherAnimalId &&
+                   String(o.requestedAnimalId)===ownAnimalId;
+        return false;
+    });
+}
+function proposalForPublicListing(listing){
+    const proposals=proposalsForPublicListing(listing);
+    return proposals.find(o=>String(o.id)===String(selectedHumanTradeProposalId))||
+        proposals.find(o=>o.toPlayerId===localClassicMatch?.activePlayerId)||
+        proposals[0]||null;
+}
+async function proposePublicMultiplayerTrade(listing){
+    const own=ownServerTradeListing();
+    if(!own?.animalId||!listing?.animalId||String(own.playerId)===String(listing.playerId))return false;
+    // Deliberately NO level comparison here. Human players may negotiate any
+    // level combination (L1 for L5 included); same-level is an AI-only rule.
+    const toLocal=multiplayerLocalPlayerIdForServerId(listing.playerId);
+    if(!toLocal)return false;
+    const tradeId=`player-trade-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+    const result=await dispatchLocalMultiplayerAction(localClassicMatch.activePlayerId,'send-human-trade-offer',{
+        tradeId,offeredAnimalId:own.animalId,requestedPlayerId:toLocal,requestedAnimalId:listing.animalId
+    });
+    if(result?.ok)showGameNotice?.(`Trade proposed to ${listing.zooName||'the other zoo'}.`);
+    return !!result?.ok;
+}
+function startPublicTradeListingDrag(event,listing){
+    if(!listing?.animal||state.drag||state.pan)return;
+    event.preventDefault();event.stopPropagation();
+    const rect=event.currentTarget.getBoundingClientRect(),image=document.createElement('img');
+    image.className='dragging-animal';applyLocalizedAnimalImage(image,listing.animal);
+    image.style.width=`${rect.width}px`;image.style.height=`${rect.height}px`;image.style.pointerEvents='none';document.body.appendChild(image);
+    state.drag={
+        type:'public-human-trade-proposal',image,listing:cloneForSave(listing),
+        offsetX:event.clientX-rect.left,offsetY:event.clientY-rect.top,
+        startClientX:event.clientX,startClientY:event.clientY,maxDistance:0
+    };
+    image.style.left=`${event.clientX-state.drag.offsetX}px`;image.style.top=`${event.clientY-state.drag.offsetY}px`;
+}
+function movePublicTradeListingDrag(event){
+    const drag=state.drag;if(drag?.type!=='public-human-trade-proposal')return;
+    drag.maxDistance=Math.max(Number(drag.maxDistance)||0,
+        Math.hypot(event.clientX-drag.startClientX,event.clientY-drag.startClientY));
+    drag.image.style.left=`${event.clientX-drag.offsetX}px`;
+    drag.image.style.top=`${event.clientY-drag.offsetY}px`;
+}
+async function finishPublicTradeListingDrag(event){
+    const drag=state.drag;if(drag?.type!=='public-human-trade-proposal')return;
+    const listing=drag.listing;
+    const target=document.elementFromPoint(event.clientX,event.clientY);
+    const droppedOnOwnOffer=!!(outgoingOfferBox&&target&&
+        (target===outgoingOfferBox||outgoingOfferBox.contains(target)));
+    const deliberate=(Number(drag.maxDistance)||0)>=6;
+    drag.image?.remove();state.drag=null;
+    // Proposal gesture mirrors the visual trade: drag THEIR OFFER onto YOUR
+    // OFFER. A click/release on the incoming card must never silently send one.
+    if(!deliberate||!droppedOnOwnOffer||!ownServerTradeListing()){renderTrade();return;}
+    await proposePublicMultiplayerTrade(listing);renderTrade();
+}
+function renderMultiplayerPublicTradeRows(){
+    const container=document.getElementById('opponentZoos');if(!container)return;
+    let host=document.getElementById('multiplayerPublicTradeRows');
+    if(!host){host=document.createElement('div');host.id='multiplayerPublicTradeRows';host.style.cssText='display:contents';container.appendChild(host);}
+    host.innerHTML='';
+
+    const appendRow=(listing,proposal=null)=>{
+        const row=document.createElement('div');
+        const template=document.getElementById('opponentName1');
+        row.className=template?.className||'opponent-name';
+        row.classList.add('wants-trade');
+        const selected=String(selectedMultiplayerPublicListingPlayerId||'')===String(listing.playerId)&&
+            String(selectedHumanTradeProposalId||'')===String(proposal?.id||'');
+        if(selected)row.classList.add('selected-trade');
+        if(proposal?.toPlayerId===localClassicMatch?.activePlayerId)
+            row.classList.add('human-trade-proposal-incoming');
+        row.style.display='';
+        row.dataset.humanTradePlayerId=String(listing.playerId);
+        if(proposal)row.dataset.humanTradeProposalId=String(proposal.id);
+        row.textContent=listing.zooName||`Player ${listing.seat||''}`;
+        const bar=document.createElement('div');bar.className='opponent-preference-bar';
+        const seg=document.createElement('span');seg.className='opponent-preference-segment';
+        seg.style.background=multiplayerPlayerColour(multiplayerLocalPlayerIdForServerId(listing.playerId));
+        bar.appendChild(seg);row.appendChild(bar);
+        row.onclick=()=>{
+            selectedMultiplayerPublicListingPlayerId=listing.playerId;
+            selectedHumanTradeProposalId=proposal?.id||null;
+            const aiDecline=document.getElementById('declineOpponentOffer');
+            if(aiDecline)aiDecline.style.display='none';
+            renderTrade();
+        };
+        host.appendChild(row);
+    };
+
+    for(const listing of otherServerTradeListings()){
+        const incoming=proposalsForPublicListing(listing)
+            .filter(o=>o.toPlayerId===localClassicMatch?.activePlayerId);
+        // Each incoming proposal gets its own normal zoo row, exactly like
+        // several simultaneous AI zoos. If there is no incoming proposal, keep
+        // one row for the public listing so this player can initiate a trade.
+        if(incoming.length)incoming.forEach(proposal=>appendRow(listing,proposal));
+        else appendRow(listing,null);
+    }
+}
+function renderSelectedMultiplayerPublicListing(){
+    const listing=otherServerTradeListings().find(x=>String(x.playerId)===String(selectedMultiplayerPublicListingPlayerId));
+    if(!listing)return false;
+    outgoingOfferBox.style.display='';incomingOfferBox.style.display='';
+    incomingOfferBox.innerHTML='';incomingOfferBox.classList.add('trade-filled');
+    const proposal=proposalForPublicListing(listing);
+    const proposalAnimal=proposal?.toPlayerId===localClassicMatch?.activePlayerId
+        ? directTradeAnimal(proposal.fromPlayerId,proposal.offeredAnimalId)
+        : listing.animal;
+    const img=directHumanTradeCard(proposalAnimal||listing.animal,'incoming');
+    if(img){
+        if(proposal&&proposal.toPlayerId===localClassicMatch?.activePlayerId){
+            img.style.cursor='grab';img.title=`${listing.zooName||'This zoo'} offers this for your listed animal — drag into your zoo to accept.`;
+            img.addEventListener('pointerdown',e=>{if(e.button===0)startDirectHumanTradeResultDrag(e,proposal);});
+        }else{
+            img.style.cursor=ownServerTradeListing()?'grab':'not-allowed';
+            img.title=ownServerTradeListing()?`Drag this card onto YOUR OFFER to propose your listed animal for this ${listing.zooName||'zoo'} animal.`:'Put one of your animals in YOUR OFFER first.';
+            if(ownServerTradeListing())img.addEventListener('pointerdown',e=>{if(e.button===0)startPublicTradeListingDrag(e,listing);});
+        }
+        incomingOfferBox.appendChild(img);
+    }
+
+    // Incoming human proposals use the same decline button styling/position as
+    // AI offers. Declining this proposal does not remove either public listing.
+    const oldHumanDecline=document.getElementById('declineHumanTradeOffer');
+    if(oldHumanDecline)oldHumanDecline.remove();
+    const oldHumanCancel=document.getElementById('cancelHumanTradeOffer');
+    if(oldHumanCancel)oldHumanCancel.remove();
+    if(proposal&&proposal.toPlayerId===localClassicMatch?.activePlayerId){
+        const decline=document.createElement('button');
+        decline.id='declineHumanTradeOffer';
+        decline.type='button';
+        decline.className='decline-opponent-offer';
+        decline.textContent='Decline';
+        decline.style.pointerEvents='auto';
+        decline.onclick=async()=>{
+            await dispatchLocalMultiplayerAction(
+                localClassicMatch.activePlayerId,'decline-human-trade',{offerId:proposal.id}
+            );
+            if(String(selectedHumanTradeProposalId||'')===String(proposal.id))
+                selectedHumanTradeProposalId=null;
+            renderTrade();
+        };
+        ensureTradeAreaLayout();
+        const tradeArea=document.getElementById('opponentTradeArea');
+        if(tradeArea)tradeArea.appendChild(decline);
+    }else if(proposal&&proposal.fromPlayerId===localClassicMatch?.activePlayerId){
+        const cancel=document.createElement('button');
+        cancel.id='cancelHumanTradeOffer';
+        cancel.type='button';
+        cancel.className='decline-opponent-offer';
+        cancel.textContent='Cancel';
+        cancel.style.pointerEvents='auto';
+        cancel.onclick=async()=>{
+            await dispatchLocalMultiplayerAction(
+                localClassicMatch.activePlayerId,'cancel-human-trade',{offerId:proposal.id}
+            );
+            if(String(selectedHumanTradeProposalId||'')===String(proposal.id))
+                selectedHumanTradeProposalId=null;
+            renderTrade();
+        };
+        ensureTradeAreaLayout();
+        const tradeArea=document.getElementById('opponentTradeArea');
+        if(tradeArea)tradeArea.appendChild(cancel);
+    }
+    return true;
+}
+
 // ============================================================
 // DIRECT HUMAN TRADES — V2.22.88
 // ============================================================
@@ -35523,9 +36076,7 @@ function tryDropOnOutgoingOffer(event, animal) {
                     tradeId,
                     offeredAnimalId:animal.id,
                     requestedPlayerId:draft.requestedPlayerId,
-                    requestedAnimalId:requested.id,
-                    offeredTransferId:nextDirectTradeAnimalId(localClassicMatch.players[draft.requestedPlayerId]?.snapshot),
-                    requestedTransferId:nextDirectTradeAnimalId(localClassicMatch.players[fromId]?.snapshot)
+                    requestedAnimalId:requested.id
                 });
                 return true;
             }
@@ -35586,12 +36137,20 @@ function tryDropOnOutgoingOffer(event, animal) {
     }
 
     if (state.autonomousTradeOffer) {
-        if (!outgoingFitsAutonomousOffer(animal)) return false;
+        // AI offers keep their same-level acceptance rule, but a connected
+        // human player may publicly list ANY animal here. The public listing
+        // must not be rejected merely because the currently displayed AI offer
+        // wants a different level. This allows e.g. L1 <-> L5 human proposals
+        // while the AI offer remains available as a separate choice.
+        const fitsAI=outgoingFitsAutonomousOffer(animal);
+        if (!fitsAI && !serverAuthoritativeMultiplayerActive()) return false;
         state.outgoingOffer = animal;
         if (state.drag?.type === 'animal' && state.drag.animal?.id === animal.id) {
             reserveAnimalZooSlot(animal, state.drag.originalEnclosureId, state.drag.originalSlotIndex);
-        } animal.enclosureId = null; animal.slotIndex = null;
+        }
+        animal.enclosureId = null; animal.slotIndex = null;
         noteNewCardAction();
+        if(serverAuthoritativeMultiplayerActive())publishMultiplayerTradeListing(animal);
         renderTrade(); return true;
     }
     // startAnimalDrag() captured the rescue before removing the animal from
@@ -35610,6 +36169,10 @@ function tryDropOnOutgoingOffer(event, animal) {
     animal.slotIndex = null;
 
     noteNewCardAction();
+    // Multiplayer listings are public and independent from AI offers.
+    // Publishing is intentionally fire-and-forget for the local drag UI; the
+    // server broadcast updates every player's Other Zoos list immediately.
+    if(serverAuthoritativeMultiplayerActive())publishMultiplayerTradeListing(animal);
 
     // If this card started this same drag in Outgoing Offer, putting it back
     // is not a new trade attempt. Restore the exact offers that were visible
@@ -36378,31 +36941,11 @@ function renderTrueTransferProposal() {
 
 
 function cancelAITradingForHumanTrade(){
-    // Human-to-human trading is exclusive. Once a player stages or receives a
-    // human trade, all AI trading for this player's zoo is cancelled and no new
-    // AI offer may start until the human trade has resolved/cancelled.
-    if(state.outgoingOffer){
-        const outgoing=state.outgoingOffer;
-        if(outgoing.reservedEnclosureId!=null&&outgoing.reservedSlotIndex!=null){
-            outgoing.enclosureId=outgoing.reservedEnclosureId;
-            outgoing.slotIndex=outgoing.reservedSlotIndex;
-            clearAnimalZooReservation(outgoing);
-        }
-        state.outgoingOffer=null;
-        setOutgoingOfferExchangeGlowSuppression(false);
-    }
-    state.tradeOffers=[];
-    state.selectedTradeOpponent=null;
-    if(state.autonomousTradeOffer){
-        // Cancel, don't preserve, the current AI offer. A fresh one may be
-        // scheduled only after the human trade is gone.
-        state.autonomousTradeOffer=null;
-    }
-    clearTradeEligibleGlow();
+    // Public human listings/proposals coexist with private AI offers. Kept as
+    // a compatibility no-op for older call sites.
+    return false;
 }
-function humanTradeBlocksAITrading(){
-    return !!(activeDirectHumanTrade()||activeDirectHumanTradeDraft());
-}
+function humanTradeBlocksAITrading(){ return false; }
 
 function directHumanTradeHasParticipant(offer,playerId){
     return !!offer&&!!playerId&&
@@ -36411,10 +36954,9 @@ function directHumanTradeHasParticipant(offer,playerId){
 function activeDirectHumanTrade(){
     if(!localClassicMatch)return null;
     const ownerId=localClassicMatch.activePlayerId;
-    return pendingDirectHumanTrades().find(o=>
-        (o.status==='pending'||o.status==='accepted-awaiting-sender-claim')&&
-        directHumanTradeHasParticipant(o,ownerId)
-    )||null;
+    const active=pendingDirectHumanTrades().filter(o=>(o.status==='pending'||o.status==='accepted-awaiting-sender-claim')&&directHumanTradeHasParticipant(o,ownerId));
+    return active.find(o=>String(o.id)===String(selectedHumanTradeProposalId))||
+        active.find(o=>o.status==='accepted-awaiting-sender-claim')||null;
 }
 function activeDirectHumanTradeDraft(){
     if(!localClassicMatch)return null;
@@ -36485,13 +37027,18 @@ async function finishDirectHumanTradeResultDrag(event){
         // The drag temporarily freed the recipient's outgoing slot. Restore it
         // before authority validates and commits the exchange.
         restore();
-        const result=await dispatchLocalMultiplayerAction(
-            localClassicMatch.activePlayerId,'accept-human-trade',{
-                offerId:drag.humanTradeOfferId,
-                destination:multiplayerDestinationToWire(destination)
-            }
-        );
-        if(result?.ok===false)renderTrade();
+        const actionKey=`accept:${drag.humanTradeOfferId}`;
+        if(pendingHumanTradeActionIds.has(actionKey)){restore();return;}
+        pendingHumanTradeActionIds.add(actionKey);
+        try{
+            const result=await dispatchLocalMultiplayerAction(
+                localClassicMatch.activePlayerId,'accept-human-trade',{
+                    offerId:drag.humanTradeOfferId,
+                    destination:multiplayerDestinationToWire(destination)
+                }
+            );
+            if(result?.ok===false)renderTrade();
+        }finally{pendingHumanTradeActionIds.delete(actionKey);}
         return;
     }
     const accepted=await acceptDirectHumanTradeOffer(
@@ -36554,13 +37101,18 @@ async function finishDirectHumanTradeSenderClaimDrag(event){
        localMultiplayerPeerReplica?.playerId===localClassicMatch?.activePlayerId ||
        (localMultiplayerBrowserTransport?.role==='peer'&&
         localMultiplayerBrowserTransport.playerId===localClassicMatch?.activePlayerId)){
-        const result=await dispatchLocalMultiplayerAction(
-            localClassicMatch.activePlayerId,'claim-human-trade',{
-                offerId:offer.id,
-                destination:multiplayerDestinationToWire(destination)
-            }
-        );
-        if(result?.ok===false)renderTrade();
+        const actionKey=`claim:${offer.id}`;
+        if(pendingHumanTradeActionIds.has(actionKey)){renderTrade();return;}
+        pendingHumanTradeActionIds.add(actionKey);
+        try{
+            const result=await dispatchLocalMultiplayerAction(
+                localClassicMatch.activePlayerId,'claim-human-trade',{
+                    offerId:offer.id,
+                    destination:multiplayerDestinationToWire(destination)
+                }
+            );
+            if(result?.ok===false)renderTrade();
+        }finally{pendingHumanTradeActionIds.delete(actionKey);}
         return;
     }
 
@@ -36846,6 +37398,8 @@ function renderTrade() {
 
     pruneUnavailableIncomingTradeOffers();
 
+    if(serverAuthoritativeMultiplayerActive())renderMultiplayerPublicTradeRows();
+
     // A blue eligibility glow is meaningful only while the player is choosing
     // an outgoing card. Once trade state becomes occupied, kill any active
     // work/fade immediately so a stale blue card cannot survive a trade render.
@@ -36882,10 +37436,21 @@ function renderTrade() {
     }
     removeTrueTransferProposalPanel();
 
+    if(serverAuthoritativeMultiplayerActive()&&selectedMultiplayerPublicListingPlayerId&&renderSelectedMultiplayerPublicListing()){
+        // YOUR OFFER remains the player's own listing/AI outgoing card; only
+        // THEIR OFFER switches to the selected human zoo. AI state remains live
+        // underneath and can be selected again via its normal zoo row.
+        outgoingOfferBox.innerHTML='';outgoingOfferBox.classList.toggle('trade-filled',Boolean(state.outgoingOffer));
+        if(state.outgoingOffer){const out=document.createElement('img');setupAnimalCard(out,state.outgoingOffer,'outgoing');out.classList.add('trade-card');outgoingOfferBox.appendChild(out);}
+        else outgoingOfferBox.innerHTML='<span>YOUR<br>OFFER</span>';
+        const d=document.getElementById('declineOpponentOffer');if(d)d.style.display='none';
+        renderOpponentTradeState();return;
+    }
+
     // Local two-player Classic uses the same physical trade-card area as the
     // single-player trade system. Human offers take visual priority while the
     // multiplayer match is active; AI trade state remains untouched underneath.
-    if (localClassicMatch && renderDirectHumanTradeCards()) {
+    if (localClassicMatch && (selectedHumanTradeProposalId||activeDirectHumanTrade()?.status==='accepted-awaiting-sender-claim') && renderDirectHumanTradeCards()) {
         const aiDecline=document.getElementById('declineOpponentOffer');
         if(aiDecline)aiDecline.style.display='none';
         const area=document.getElementById('opponentTradeArea');
@@ -37166,8 +37731,19 @@ function acceptSelectedTrade(destination=null, autoPlace=false) {
 
     return finalizeClassicProgressionCommit('Trade commit');
 }
+async function withdrawConsumedPublicListingAfterAITrade(previousListing){
+    if(!serverAuthoritativeMultiplayerActive()||!previousListing?.animalId)return false;
+    const current=ownServerTradeListing();
+    // Do not let a late AI completion remove a newer replacement listing.
+    if(!current||String(current.animalId)!==String(previousListing.animalId))return false;
+    try{return await withdrawMultiplayerTradeListing();}
+    catch(error){console.warn('Could not withdraw consumed multiplayer listing:',error);return false;}
+}
+
 async function finishTradeResultDrag(event) {
     const drag=state.drag;if(!drag||drag.type!=='trade-result')return;
+    const publicListingBeforeAITrade=serverAuthoritativeMultiplayerActive()
+        ? cloneForSave(ownServerTradeListing()) : null;
     const releaseDistance=Math.hypot(event.clientX-drag.startClientX,event.clientY-drag.startClientY);
     const wasDragged=!!drag.moved ||
         Math.max(Number(drag.maxDistance)||0,releaseDistance)>=6;
@@ -37178,6 +37754,7 @@ async function finishTradeResultDrag(event) {
         // A click/very short drag uses auto-placement. The reservation remains
         // released while the destination is chosen.
         const accepted=await performClassicGameAction({ type:CLASSIC_GAME_ACTION.ACCEPT_TRADE, destination:null, autoPlace:true });
+        if(accepted)await withdrawConsumedPublicListingAfterAITrade(publicListingBeforeAITrade);
         if(!accepted && state.outgoingOffer && drag.releasedOutgoingReservation) {
             reserveAnimalZooSlot(state.outgoingOffer,drag.releasedOutgoingReservation.enclosureId,drag.releasedOutgoingReservation.slotIndex);
             renderTrade();
@@ -37197,6 +37774,7 @@ async function finishTradeResultDrag(event) {
 
     if(destination) {
         const accepted=await performClassicGameAction({ type:CLASSIC_GAME_ACTION.ACCEPT_TRADE, destination });
+        if(accepted)await withdrawConsumedPublicListingAfterAITrade(publicListingBeforeAITrade);
         if(!accepted && state.outgoingOffer && drag.releasedOutgoingReservation) {
             reserveAnimalZooSlot(state.outgoingOffer,drag.releasedOutgoingReservation.enclosureId,drag.releasedOutgoingReservation.slotIndex);
             renderTrade();
@@ -37245,7 +37823,8 @@ function setupOpponentTradeClicks() {
             // First click selects the offer so players can compare alternatives.
             // A second click on the already-selected real zoo visits it.
             if (state.selectedTradeOpponent !== i) {
-                state.selectedTradeOpponent = i;
+                selectedMultiplayerPublicListingPlayerId=null;selectedHumanTradeProposalId=null;
+            state.selectedTradeOpponent = i;
                 renderTrade();
                 return;
             }

@@ -14990,42 +14990,187 @@ function trueBuiltWorldCells(enclosure, atCol=null, atRow=null){
     // Normalize local coordinates before mapping them into the world grid.
     return cells.map(c=>({col:baseCol+(c.col-minCol),row:baseRow+(c.row-minRow)}));
 }
+function trueGeneratedSightlineClear(from,to,occupied,targetKeys,bounds=null){
+    // Supercover the segment through construction cells. A sightline may end
+    // inside its target exhibit, but may not cross any other exhibit first.
+    //
+    // The approach ray must also be an INTERIOR route. It may enter through the
+    // entrance itself, but after that it cannot run along the outermost row or
+    // column of the zoo grounds before reaching the target. This prevents a
+    // nominally "visible" exhibit from being reached by skimming/snaking around
+    // the perimeter instead of looking into the zoo.
+    const dx=to.x-from.x,dy=to.y-from.y;
+    const steps=Math.max(1,Math.ceil(Math.max(Math.abs(dx),Math.abs(dy))*8));
+    let enteredInterior=false;
+    for(let i=1;i<steps;i++){
+        const t=i/steps;
+        const px=from.x+dx*t,py=from.y+dy*t;
+        const col=Math.floor(px),row=Math.floor(py);
+        const key=trueBuilderCellKey(col,row);
+        if(occupied.has(key)&&!targetKeys.has(key))return false;
+        if(bounds){
+            const inside=col>=0&&col<bounds.cols&&row>=0&&row<bounds.rows;
+            if(!inside)continue; // short segment from the gate into the grounds
+            const perimeter=col===0||col===bounds.cols-1||row===0||row===bounds.rows-1;
+            if(!perimeter)enteredInterior=true;
+            // Once inside the grounds, any non-target sample on the perimeter
+            // invalidates the ray. The target itself may of course touch an edge.
+            if(perimeter&&!targetKeys.has(key))return false;
+        }
+    }
+    // A target on the boundary is not enough by itself: the route must genuinely
+    // enter the zoo interior first. This rejects disconnected rows of exhibits
+    // that merely face the same outside edge as the gate.
+    return !bounds||enteredInterior;
+}
+function trueGeneratedLayoutHasStraightSightlines(enclosures,entranceCell,bounds=null){
+    const occupied=new Set();
+    const worlds=new Map();
+    for(const enc of enclosures){
+        const cells=trueBuiltWorldCells(enc);
+        worlds.set(enc,cells);
+        for(const c of cells)occupied.add(trueBuilderCellKey(c.col,c.row));
+    }
+    // EntranceCell identifies the boundary opening. For a top entrance the
+    // actual gate lies on y=0, centred on its column — not one cell above the
+    // zoo. Using the real boundary point keeps validation identical to what the
+    // player sees after zooGrounds/zooEntrance are rendered.
+    const from=bounds
+        ? {x:entranceCell.col+.5,y:0.001}
+        : {x:entranceCell.col+.5,y:entranceCell.row+.5};
+    return enclosures.every(enc=>{
+        const cells=worlds.get(enc)||[];
+        const targetKeys=new Set(cells.map(c=>trueBuilderCellKey(c.col,c.row)));
+        return cells.some(c=>trueGeneratedSightlineClear(
+            from,{x:c.col+.5,y:c.row+.5},occupied,targetKeys,bounds
+        ));
+    });
+}
 function repairTrueBuiltEnclosureGeometry(){
     if(state.gameMode!=='true'||state.sandboxMode)return false;
     const b=normaliseTrueEnclosureBuilderState();
-    if(Number(b.geometryVersion)>=3)return false;
+    // v8: varied compact starts; every entrance ray must genuinely enter the interior. Never force the old repeated rectangular
+    // shelf. Startup footprint is at most 6 columns x 4 rows AND at most
+    // 20 usable cells; partial/L-shaped occupancy is explicitly allowed.
+    if(Number(b.geometryVersion)>=8)return false;
     const enclosures=(state.enclosures||[]).filter(e=>e?.trueBuilt).slice()
       .sort((a,b)=>(Number(a.y)||0)-(Number(b.y)||0)||(Number(a.x)||0)-(Number(b.x)||0)||(Number(a.id)||0)-(Number(b.id)||0));
-    if(!enclosures.length){b.geometryVersion=3;return false;}
-    const dims=enc=>{const c=trueCanonicalCellList(enc.cells||[]);return{w:Math.max(...c.map(x=>x.col))-Math.min(...c.map(x=>x.col))+1,h:Math.max(...c.map(x=>x.row))-Math.min(...c.map(x=>x.row))+1};};
-    const total=enclosures.reduce((n,e)=>{const d=dims(e);return n+d.w*d.h;},0);
-    // Generated True zoos start inside a landscape perimeter no larger than
-    // seven construction cells wide by four high. Keep an interior access
-    // spine/aisle rather than producing the old tall, narrow grounds.
-    const maxGroundCols=7,maxGroundRows=4,spineCol=1,startCol=2;
-    const target=Math.max(startCol+1,maxGroundCols-1);
-    let row=1,col=startCol,shelfH=0,maxCol=startCol,maxRow=1,changed=false;
-    for(const enc of enclosures){
-        const d=dims(enc);
-        if(col>startCol&&col+d.w>target){row+=shelfH+1;col=startCol;shelfH=0;}
-        // Standard generated starts fit the 7×4 perimeter. Oversized legacy
-        // starts are left representable rather than overlapping enclosures.
-        if(row+d.h>maxGroundRows-1&&total<=maxGroundCols*maxGroundRows){row=Math.max(1,maxGroundRows-1-d.h);}
-        const nx=col*TRUE_ENC_CELL_W,ny=row*TRUE_ENC_CELL_H;
-        if((Number(enc.x)||0)!==nx||(Number(enc.y)||0)!==ny)changed=true;
-        enc.x=nx;enc.y=ny;maxCol=Math.max(maxCol,col+d.w-1);maxRow=Math.max(maxRow,row+d.h-1);
-        shelfH=Math.max(shelfH,d.h);col+=d.w+1;trueInvalidateEnclosureGeometry(enc);
-    }
-    // col 0/outer row are deliberately unused: perimeter-only walking does not
-    // satisfy access. Gate -> interior spine -> branch aisle -> enclosure side.
-    b.zooGrounds={
-        x:0,y:0,
-        w:Math.min(maxGroundCols,Math.max(4,maxCol+1))*TRUE_ENC_CELL_W,
-        h:Math.min(maxGroundRows,Math.max(3,maxRow+1))*TRUE_ENC_CELL_H
+    if(!enclosures.length){b.geometryVersion=8;return false;}
+
+    const dims=enc=>{
+        const c=trueCanonicalCellList(enc.cells||[]);
+        return{
+            w:Math.max(...c.map(x=>x.col))-Math.min(...c.map(x=>x.col))+1,
+            h:Math.max(...c.map(x=>x.row))-Math.min(...c.map(x=>x.row))+1
+        };
     };
-    b.zooGroundsVersion=3;
-    b.zooEntrance={side:'top',t:((spineCol+.5)*TRUE_ENC_CELL_W)/b.zooGrounds.w};
-    b.geometryVersion=3;trueInvalidateEnclosureGeometry();
+    const original=enclosures.map(enc=>({enc,x:Number(enc.x)||0,y:Number(enc.y)||0}));
+    const zooSeed=String(state.zooName||state.playerZooName||'Zoo Curator');
+    let seed=2166136261;
+    for(let i=0;i<zooSeed.length;i++){seed^=zooSeed.charCodeAt(i);seed=Math.imul(seed,16777619);}
+    const rand=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+
+    // Different zoos try different legal envelopes first. The envelope is only
+    // a maximum construction footprint: unused cells remain unused, so an L,
+    // stepped fan or other non-rectangular occupied layout is valid.
+    const envelopes=[];
+    for(let rows=2;rows<=4;rows++)for(let cols=3;cols<=6;cols++){
+        if(cols*rows<=20)envelopes.push({cols,rows});
+    }
+    envelopes.sort((a,c)=>(rand()-.5)||(a.cols*a.rows-c.cols*c.rows));
+
+    let chosen=null;
+    for(const envelope of envelopes){
+        if(chosen)break;
+        const {cols,rows}=envelope;
+        const entranceCols=[...Array(cols).keys()].sort((a,c)=>
+            Math.abs(a-(cols-1)/2)-Math.abs(c-(cols-1)/2)||(rand()-.5)
+        );
+        for(const entranceCol of entranceCols){
+            const candidates=[];
+            for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){
+                // Entrance cell itself remains open; other cells in that column
+                // are allowed when their direct ray does not block another exhibit.
+                if(row===0&&col===entranceCol)continue;
+                candidates.push({col,row});
+            }
+            candidates.sort((a,c)=>{
+                const da=Math.hypot(a.col-entranceCol,a.row+.75);
+                const dc=Math.hypot(c.col-entranceCol,c.row+.75);
+                return da-dc||(rand()-.5);
+            });
+
+            const placed=[],used=new Set();
+            const entranceHasInteriorAccess=()=>{
+                const gateKey=trueBuilderCellKey(entranceCol,0);
+                if(used.has(gateKey))return false;
+                // A valid startup gate must open into the zoo, not merely onto
+                // the outer border. At least one inward cell immediately behind
+                // it must remain free so every visibility ray starts from a
+                // genuinely accessible entrance.
+                if(rows<2)return false;
+                return !used.has(trueBuilderCellKey(entranceCol,1));
+            };
+            const placeNext=index=>{
+                if(index>=enclosures.length){
+                    if(!entranceHasInteriorAccess())return false;
+                    for(const p of placed){
+                        p.enc.x=p.col*TRUE_ENC_CELL_W;
+                        p.enc.y=p.row*TRUE_ENC_CELL_H;
+                    }
+                    if(!trueGeneratedLayoutHasStraightSightlines(enclosures,{col:entranceCol,row:0},{cols,rows}))return false;
+                    chosen={cols,rows,entranceCol,placed:placed.map(p=>({...p}))};
+                    return true;
+                }
+                const enc=enclosures[index],d=dims(enc);
+                for(const at of candidates){
+                    if(at.col+d.w>cols||at.row+d.h>rows)continue;
+                    const keys=[];let free=true;
+                    for(let r=0;r<d.h&&free;r++)for(let c=0;c<d.w;c++){
+                        const cc=at.col+c,rr=at.row+r,key=trueBuilderCellKey(cc,rr);
+                        if(used.has(key)||((rr===0||rr===1)&&cc===entranceCol)){free=false;break;}
+                        keys.push(key);
+                    }
+                    if(!free)continue;
+                    keys.forEach(k=>used.add(k));
+                    placed.push({enc,col:at.col,row:at.row});
+                    enc.x=at.col*TRUE_ENC_CELL_W;enc.y=at.row*TRUE_ENC_CELL_H;
+                    if(trueGeneratedLayoutHasStraightSightlines(
+                        placed.map(p=>p.enc),{col:entranceCol,row:0},{cols,rows}
+                    )&&placeNext(index+1))return true;
+                    placed.pop();keys.forEach(k=>used.delete(k));
+                }
+                return false;
+            };
+            if(placeNext(0))break;
+        }
+    }
+
+    let changed=false;
+    if(chosen){
+        for(const p of chosen.placed){
+            const nx=p.col*TRUE_ENC_CELL_W,ny=p.row*TRUE_ENC_CELL_H;
+            const before=original.find(x=>x.enc===p.enc);
+            if(!before||before.x!==nx||before.y!==ny)changed=true;
+            p.enc.x=nx;p.enc.y=ny;trueInvalidateEnclosureGeometry(p.enc);
+        }
+        // Grounds follow the chosen legal envelope, never exceeding 6x4/20.
+        b.zooGrounds={x:0,y:0,w:chosen.cols*TRUE_ENC_CELL_W,h:chosen.rows*TRUE_ENC_CELL_H};
+        b.zooEntrance={side:'top',t:((chosen.entranceCol+.5)*TRUE_ENC_CELL_W)/b.zooGrounds.w};
+        b.startingGroundsCells=chosen.placed.flatMap(p=>
+            trueBuiltWorldCells(p.enc,p.col,p.row).map(c=>trueBuilderCellKey(c.col,c.row))
+        );
+    }else{
+        // Do not invent an oversized startup grid. Restore legacy geometry if a
+        // pathological imported layout cannot fit the startup constraints.
+        for(const p of original){p.enc.x=p.x;p.enc.y=p.y;}
+        b.zooGrounds=null;
+        initialiseTrueZooGroundsFromCurrentLayout(true);
+        b.startingGroundsCells=null;
+    }
+    b.zooGroundsVersion=8;
+    b.geometryVersion=8;
+    trueInvalidateEnclosureGeometry();
     if(changed)state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
     return changed;
 }
@@ -18019,12 +18164,27 @@ function renderEnclosure(
             const world=trueBuiltWorldCells(enclosure),own=new Set(world.map(c=>trueBuilderCellKey(c.col,c.row))),owners=renderContext?.trueSpatialOwners || trueEnclosureSpatialIndex().owners;
             const minCol=Math.min(...world.map(c=>c.col)),minRow=Math.min(...world.map(c=>c.row));
             const otherAt=(col,row)=>{const owner=owners.get(trueBuilderCellKey(col,row));return owner!=null&&String(owner)!==String(enclosure.id);};
+            const exposedWallShared=(cell,side)=>{
+                // Border rendering keeps an entire straight exposed wall on the
+                // grid line when ANY part of that wall touches another enclosure.
+                // The grass fill must make the identical decision or a beige
+                // strip appears between the extended wall and its old inset.
+                const sameLine=world.filter(o=>
+                    side==='T'||side==='B' ? o.row===cell.row : o.col===cell.col
+                );
+                return sameLine.some(o=>
+                    side==='T'?otherAt(o.col,o.row-1):
+                    side==='R'?otherAt(o.col+1,o.row):
+                    side==='B'?otherAt(o.col,o.row+1):
+                               otherAt(o.col-1,o.row)
+                );
+            };
             for(const c of world){
                 const T=!own.has(trueBuilderCellKey(c.col,c.row-1)),R=!own.has(trueBuilderCellKey(c.col+1,c.row)),B=!own.has(trueBuilderCellKey(c.col,c.row+1)),L=!own.has(trueBuilderCellKey(c.col-1,c.row));
-                const ti=T?(otherAt(c.col,c.row-1)?0:TRUE_ENC_EXTERNAL_GAP/2):0,
-                      ri=R?(otherAt(c.col+1,c.row)?0:TRUE_ENC_EXTERNAL_GAP/2):0,
-                      bi=B?(otherAt(c.col,c.row+1)?0:TRUE_ENC_EXTERNAL_GAP/2):0,
-                      li=L?(otherAt(c.col-1,c.row)?0:TRUE_ENC_EXTERNAL_GAP/2):0;
+                const ti=T?(exposedWallShared(c,'T')?0:TRUE_ENC_EXTERNAL_GAP/2):0,
+                      ri=R?(exposedWallShared(c,'R')?0:TRUE_ENC_EXTERNAL_GAP/2):0,
+                      bi=B?(exposedWallShared(c,'B')?0:TRUE_ENC_EXTERNAL_GAP/2):0,
+                      li=L?(exposedWallShared(c,'L')?0:TRUE_ENC_EXTERNAL_GAP/2):0;
                 const fill=document.createElement('div');
                 const grass=['#C3DC9B','#BDD793','#C9E2A5','#B8D28D','#C6DFA0'];
                 const grassColour=grass[Math.abs(Number(enclosure.id)||0)%grass.length];
@@ -20888,12 +21048,18 @@ let multiplayerLiveLayoutSequence=0;
 function clearMultiplayerRemoteAnimalDrags(){for(const entry of multiplayerRemoteAnimalDrags.values())entry.el?.remove?.();multiplayerRemoteAnimalDrags.clear();}
 function sendMultiplayerLiveAnimalDrag(event,ended=false){
  const channel=localMultiplayerBrowserChannel,t=localMultiplayerBrowserTransport,drag=state.drag;
- if(!channel?.serverBacked||!t?.serverAuthenticated||!localClassicMatch||!drag||drag.type!=='animal')return false;
- if(localClassicMatch.viewingPlayerId&&localClassicMatch.viewingPlayerId!==localClassicMatch.activePlayerId)return false;
+ if(!channel?.serverBacked||!t?.serverAuthenticated||!localClassicMatch||!drag||
+    !['animal','human-trade-request'].includes(drag.type))return false;
+ const visitingRequest=drag.type==='human-trade-request';
+ if(!visitingRequest&&localClassicMatch.viewingPlayerId&&localClassicMatch.viewingPlayerId!==localClassicMatch.activePlayerId)return false;
  const nowMs=performance.now();if(!ended&&nowMs-multiplayerLiveLayoutLastSentAt<66)return false;multiplayerLiveLayoutLastSentAt=nowMs;
  const rect=zooCanvas?.getBoundingClientRect?.(),zoom=Math.max(.01,Number(state.zoom)||1);
  const x=rect&&event?(event.clientX-rect.left)/zoom:null,y=rect&&event?(event.clientY-rect.top)/zoom:null;
- return channel.postServerMessage({type:'live-layout',sequence:++multiplayerLiveLayoutSequence,payload:{kind:'animal-drag',animalId:drag.animal?.id??null,x,y,ended:!!ended}});
+ return channel.postServerMessage({
+    type:'live-layout',sequence:++multiplayerLiveLayoutSequence,
+    targetPlayerId:visitingRequest?multiplayerServerPlayerForLocalId(drag.requestedPlayerId)?.playerId:undefined,
+    payload:{kind:'animal-drag',animalId:drag.animal?.id??null,x,y,ended:!!ended,tradeRequest:visitingRequest}
+ });
 }
 function receiveMultiplayerLiveLayout(message){
  if(!localClassicMatch||message?.payload?.kind!=='animal-drag')return false;
@@ -25485,11 +25651,43 @@ function refreshDrawAvailabilityState() {
         return false;
     }
     if(visitingAnotherZooForActionUI()){
-        drawCard.style.display='none';
-        drawCard.setAttribute('aria-disabled','true');
+        const humanVisit=!!(localClassicMatch?.viewingPlayerId &&
+            localClassicMatch.viewingPlayerId!==localClassicMatch.activePlayerId);
+        if(humanVisit){
+            // While inspecting another human zoo the normal deck becomes the
+            // request target. The requested card is only a reference: the
+            // animal itself remains physically in the visited zoo.
+            drawCard.style.display='';
+            drawCard.dataset.multiplayerTheirOffer='true';
+            drawCard.dataset.label=state.gameOptions.animalLanguage==='nl'?'HUN AANBOD':'THEIR OFFER';
+            drawCard.setAttribute('aria-disabled','false');
+            drawCard.classList.remove('draw-no-space');
+            drawCard.style.cursor='default';
+            const image=drawCard.querySelector('img');
+            if(image){
+                const draft=localHumanTradeDraft(localClassicMatch.activePlayerId);
+                const requested=draft?.requestedPlayerId===localClassicMatch.viewingPlayerId
+                    ? directTradeAnimal(draft.requestedPlayerId,draft.requestedAnimalId)
+                    : null;
+                if(requested){
+                    applyLocalizedAnimalImage(image,requested);
+                    image.style.setProperty('opacity','1','important');
+                    image.style.setProperty('filter','','important');
+                }else{
+                    image.removeAttribute('src');
+                    image.style.setProperty('opacity','0','important');
+                }
+            }
+            drawCard.title='Drag an animal from this zoo here to request it in a trade.';
+        }else{
+            drawCard.style.display='none';
+            drawCard.setAttribute('aria-disabled','true');
+        }
         if(actionHintOverlay?.dataset?.hintTarget==='drawCard')removeActionHintOverlay();
         return false;
     }
+    drawCard.dataset.multiplayerTheirOffer='false';
+    drawCard.dataset.label=state.gameOptions.animalLanguage === 'nl' ? 'TREK KAART' : 'DRAW CARD';
     drawCard.style.display = '';
 
     const noOpenSpace = !nextLevelOneHasEligibleDestination();
@@ -25767,10 +25965,12 @@ function startAnimalDrag(
             type:'human-trade-request',
             image:ghost,animal,
             requestedPlayerId:localClassicMatch.viewingPlayerId,
-            offsetX:event.clientX-rect.left,offsetY:event.clientY-rect.top
+            offsetX:event.clientX-rect.left,offsetY:event.clientY-rect.top,
+            startClientX:event.clientX,startClientY:event.clientY,maxDistance:0
         };
         ghost.style.left=`${event.clientX-state.drag.offsetX}px`;
         ghost.style.top=`${event.clientY-state.drag.offsetY}px`;
+        sendMultiplayerLiveAnimalDrag?.(event,false);
         return;
     }
 
@@ -26052,6 +26252,14 @@ function startAnimalDrag(
         originalWasOutgoing:
             state.outgoingOffer?.id === animal.id,
 
+        // Multiplayer public listings are server-owned and may be displayed in
+        // YOUR OFFER without state.outgoingOffer pointing at the same card.
+        // Remember that separately so dragging the listed card back into its
+        // zoo can restore the reserved source slot atomically.
+        originalWasPublicTradeListing:
+            serverAuthoritativeMultiplayerActive() &&
+            String(ownServerTradeListing()?.animalId||'')===String(animal.id),
+
         // Preserve the exact active negotiation while an outgoing card is
         // being dragged. removeAnimalFromLocations() temporarily clears the
         // outgoing slot and its offers; dropping the same card back into the
@@ -26089,7 +26297,7 @@ function startAnimalDrag(
     // This keeps draw availability, full-zoo checks and placement logic stable
     // while the card is merely following the cursor.
     if (
-        location === 'enclosure' &&
+        (location === 'enclosure' || state.drag.originalWasPublicTradeListing) &&
         state.drag.originalEnclosureId !== null &&
         state.drag.originalSlotIndex !== null
     ) {
@@ -26227,6 +26435,16 @@ function restoreDraggedAnimal() {
         } else {
             generateOpponentTradeOffers(animal);
         }
+        return;
+    }
+
+    if(drag.originalWasPublicTradeListing){
+        // The server listing still exists, so a cancelled drag remains an offer.
+        // Preserve its source reservation until an actual zoo placement commits.
+        if(drag.originalEnclosureId!=null&&drag.originalSlotIndex!=null){
+            reserveAnimalZooSlot(animal,drag.originalEnclosureId,drag.originalSlotIndex);
+        }
+        renderTrade();
         return;
     }
 
@@ -27639,41 +27857,56 @@ function prepareExchangeGlowAfterAnimalDrag(drag) {
 
 function moveHumanTradeRequestDrag(event){
     const drag=state.drag;if(drag?.type!=='human-trade-request')return;
+    drag.maxDistance=Math.max(Number(drag.maxDistance)||0,
+        Math.hypot(event.clientX-drag.startClientX,event.clientY-drag.startClientY));
     drag.image.style.left=`${event.clientX-drag.offsetX}px`;
     drag.image.style.top=`${event.clientY-drag.offsetY}px`;
+    sendMultiplayerLiveAnimalDrag?.(event,false);
 }
-function finishHumanTradeRequestDrag(event){
+async function finishHumanTradeRequestDrag(event){
     const drag=state.drag;if(drag?.type!=='human-trade-request')return;
+    sendMultiplayerLiveAnimalDrag?.(event,true);
     const target=elementUnderPointer(event);
-    const dropped=target&&(target===incomingOfferBox||incomingOfferBox.contains(target));
+    const dropped=target&&drawCard&&(target===drawCard||drawCard.contains(target));
+    const deliberate=(Number(drag.maxDistance)||0)>=6 ||
+        Math.hypot(event.clientX-drag.startClientX,event.clientY-drag.startClientY)>=6;
     drag.image?.remove();state.drag=null;
-    if(!dropped)return;
+    if(!dropped||!deliberate){refreshDrawAvailabilityState();return;}
 
     const ownerId=localClassicMatch?.activePlayerId;
     if(!ownerId||drag.requestedPlayerId===ownerId)return;
     const ownerAnimals=localClassicMatch.players?.[ownerId]?.snapshot?.state?.animals||[];
     const requestedKey=animalCardKey(drag.animal);
-    // Don't even stage a request for a species the requesting zoo already owns.
-    if(ownerAnimals.some(a=>animalCardKey(a)===requestedKey))return;
+    if(ownerAnimals.some(a=>animalCardKey(a)===requestedKey)){
+        showGameNotice?.('Your zoo already has this species.');
+        refreshDrawAvailabilityState();
+        return;
+    }
 
+    let staged=false;
     if(localMultiplayerPeerReplica?.playerId===ownerId ||
        (localMultiplayerBrowserTransport?.role==='peer'&&localMultiplayerBrowserTransport.playerId===ownerId)){
-        dispatchLocalMultiplayerAction(ownerId,'stage-human-trade-request',{
+        const result=await dispatchLocalMultiplayerAction(ownerId,'stage-human-trade-request',{
             requestedPlayerId:drag.requestedPlayerId,
             requestedAnimalId:drag.animal.id
         });
-        return;
+        staged=!!result?.ok;
+    }else{
+        const draft=localHumanTradeDraft(ownerId);
+        draft.requestedPlayerId=drag.requestedPlayerId;
+        draft.requestedAnimalId=drag.animal.id;
+        cancelAITradingForHumanTrade();
+        localClassicMatch.revision++;
+        recordLocalMultiplayerEvent('trade-draft-staged',{
+            playerId:ownerId,requestedPlayerId:drag.requestedPlayerId,requestedAnimalId:drag.animal.id
+        });
+        staged=true;
     }
-    const draft=localHumanTradeDraft(ownerId);
-    draft.requestedPlayerId=drag.requestedPlayerId;
-    draft.requestedAnimalId=drag.animal.id;
-    cancelAITradingForHumanTrade();
-    syncActiveZooIntoLocalMatch();
-    localClassicMatch.revision++;
-    recordLocalMultiplayerEvent('trade-draft-staged',{
-        playerId:ownerId,requestedPlayerId:drag.requestedPlayerId,requestedAnimalId:drag.animal.id
-    });
-    renderTrade();
+    if(!staged){refreshDrawAvailabilityState();renderTrade();return;}
+    // The requested animal never left the visited zoo. Return home immediately;
+    // THEIR OFFER now follows the visitor and becomes the right-hand trade card.
+    await returnToActiveLocalClassicZoo();
+    renderTrade();refreshDrawAvailabilityState();
 }
 
 // ============================================================
@@ -28088,8 +28321,27 @@ function finishAnimalDrag(event) {
         return;
     }
 
-    if(drag.originalWasOutgoing && String(state.outgoingOffer?.id||'')!==String(animal.id) && serverAuthoritativeMultiplayerActive())
-        withdrawMultiplayerTradeListing();
+    if(serverAuthoritativeMultiplayerActive() &&
+       (drag.originalWasPublicTradeListing || drag.originalWasOutgoing) &&
+       animal.enclosureId!=null){
+        // Keep the card logically occupying its destination while the async
+        // listing withdrawal is in flight. Otherwise the durable zoo snapshot
+        // can briefly contain enclosureId=null, freeing the old slot; a later
+        // server zoo-state then resurrects the card in YOUR OFFER.
+        clearAnimalZooSlotReservation(animal);
+        withdrawMultiplayerTradeListing().then(ok=>{
+            if(!ok){
+                multiplayerDiagnostic('trade-listing-takeback-withdraw-failed',{
+                    animalId:animal.id,enclosureId:animal.enclosureId,slotIndex:animal.slotIndex
+                });
+            }
+            scheduleLocalMultiplayerSync?.('trade-listing-takeback');
+            renderTrade();
+        }).catch(error=>{
+            console.warn('Could not withdraw taken-back multiplayer listing:',error);
+            scheduleLocalMultiplayerSync?.('trade-listing-takeback-recovery');
+        });
+    }
 
     beginCompatibilityGlowFade(drag.compatibilityGlowKeys);
 
@@ -28736,7 +28988,7 @@ document.addEventListener(
 
         if (state.drag?.type === 'draw-result') { finishDrawDrag(event); return; }
         if (state.drag?.type === 'direct-human-trade-sender-claim') { finishDirectHumanTradeSenderClaimDrag(event); return; }
-        if (state.drag?.type === 'human-trade-request') { finishHumanTradeRequestDrag(event); return; }
+        if (state.drag?.type === 'human-trade-request') { await finishHumanTradeRequestDrag(event); return; }
         if (state.drag?.type === 'public-human-trade-proposal') { await finishPublicTradeListingDrag(event); return; }
         if (state.drag?.type === 'direct-human-trade-result') { finishDirectHumanTradeResultDrag(event); return; }
         if (state.drag?.type === 'trade-result') { await finishTradeResultDrag(event); return; }
@@ -29540,6 +29792,7 @@ async function drawLevelOne() {
 // ============================================================
 
 function startDrawDrag(event) {
+    if(drawCard?.dataset?.multiplayerTheirOffer==='true')return;
     if (state.gameMode === 'true') return;
     if (state.drag || state.pan) return;
     const rect = drawCard.getBoundingClientRect();
@@ -38290,12 +38543,15 @@ async function finishDirectHumanTradeResultDrag(event){
         const animal=state.animals.find(a=>String(a.id)===String(released?.animalId));
         if(animal&&released){animal.enclosureId=released.enclosureId;animal.slotIndex=released.slotIndex;}
     };
+    const serverTrade=serverAuthoritativeMultiplayerActive();
     const destination=incoming
-        ? (resultDropDestinationFromDrag(event,incoming,dragRect)||resultDropDestination(event,incoming))
+        ? (serverTrade
+            ? authoritativeHumanTradeDropDestination(event,dragRect)
+            : (resultDropDestinationFromDrag(event,incoming,dragRect)||resultDropDestination(event,incoming)))
         : null;
-    if(!destination){restore();return;}
+    if(!destination){restore();renderTrade();return;}
 
-    if(serverAuthoritativeMultiplayerActive()||
+    if(serverTrade||
        localMultiplayerPeerReplica?.playerId===localClassicMatch?.activePlayerId ||
        (localMultiplayerBrowserTransport?.role==='peer'&&
         localMultiplayerBrowserTransport.playerId===localClassicMatch?.activePlayerId)){
@@ -38312,7 +38568,15 @@ async function finishDirectHumanTradeResultDrag(event){
                     destination:multiplayerDestinationToWire(destination,incoming)
                 }
             );
-            if(result?.ok===false)renderTrade();
+            if(result?.ok===false){
+                multiplayerDiagnostic('human-trade-accept-rejected',{
+                    offerId:drag.humanTradeOfferId,
+                    reason:result?.reason||'server-rejected',
+                    destination:multiplayerDestinationToWire(destination,incoming)
+                });
+                showGameNotice?.(`Trade placement rejected: ${result?.reason||'server rejected the placement'}.`);
+                renderTrade();
+            }
         }finally{pendingHumanTradeActionIds.delete(actionKey);}
         return;
     }
@@ -38366,7 +38630,7 @@ function moveDirectHumanTradeSenderClaimDrag(event){
     drag.image.style.left=`${event.clientX-drag.offsetX}px`;
     drag.image.style.top=`${event.clientY-drag.offsetY}px`;
 }
-function authoritativeHumanTradeClaimDestination(event,dragRect=null){
+function authoritativeHumanTradeDropDestination(event,dragRect=null){
     // Claim placement is ultimately validated against the server's current zoo.
     // Do not let a briefly stale local compatibility/occupancy snapshot prevent
     // the claim request from ever reaching that authority.
@@ -38400,7 +38664,7 @@ async function finishDirectHumanTradeSenderClaimDrag(event){
     const serverClaim=serverAuthoritativeMultiplayerActive();
     const destination=incoming
         ? (serverClaim
-            ? authoritativeHumanTradeClaimDestination(event,dragRect)
+            ? authoritativeHumanTradeDropDestination(event,dragRect)
             : (resultDropDestinationFromDrag(event,incoming,dragRect)||resultDropDestination(event,incoming)))
         : null;
     const offer=pendingDirectHumanTrades().find(o=>o.id===drag.humanTradeOfferId);
@@ -38438,7 +38702,15 @@ async function finishDirectHumanTradeSenderClaimDrag(event){
                     destination:multiplayerDestinationToWire(destination,incoming)
                 }
             );
-            if(result?.ok===false)renderTrade();
+            if(result?.ok===false){
+                multiplayerDiagnostic('human-trade-claim-rejected',{
+                    offerId:offer.id,
+                    reason:result?.reason||'server-rejected',
+                    destination:multiplayerDestinationToWire(destination,incoming)
+                });
+                showGameNotice?.(`Trade collection rejected: ${result?.reason||'server rejected the placement'}.`);
+                renderTrade();
+            }
         }finally{pendingHumanTradeActionIds.delete(actionKey);}
         return;
     }
@@ -38563,7 +38835,7 @@ function renderDirectHumanTradeCards(){
         incomingOfferBox.innerHTML='';
         const card=directHumanTradeCard(requested,'incoming');
         if(card)incomingOfferBox.appendChild(card);
-        outgoingOfferBox.title='Return to your zoo and drag an animal here to send the trade.';
+        outgoingOfferBox.title='Drag one of your animals here to offer it for the animal in THEIR OFFER.';
         incomingOfferBox.title='Your requested animal. This is private until you send the trade.';
         const actions=ensureDirectHumanTradeActions();
         const cancelDraft=document.createElement('button');
@@ -38722,6 +38994,7 @@ function renderTrade() {
         renderOpponentTradeState();
         const area=document.getElementById('opponentTradeArea');
         if(area)area.style.display='none';
+        refreshDrawAvailabilityState();
         return;
     }
 

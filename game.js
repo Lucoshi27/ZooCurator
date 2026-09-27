@@ -15187,6 +15187,20 @@ function repairTrueBuiltEnclosureGeometry(){
                 if(--searchBudget<0)return false;
                 if(index>=enclosures.length){
                     if(!entranceHasInteriorAccess())return false;
+
+                    // The generated enclosure footprint must actually meet every
+                    // side of its rectangular zoo perimeter. Previously the
+                    // envelope was anchored at 0,0, so top/left happened to meet
+                    // the perimeter while unused trailing columns/rows left the
+                    // right and bottom walls floating away from the zoo. Keep the
+                    // entrance cell open, but require occupied cells elsewhere on
+                    // all four sides before accepting a generated layout.
+                    const touchesTop=[...used].some(k=>Number(k.split(',')[1])===0);
+                    const touchesBottom=[...used].some(k=>Number(k.split(',')[1])===rows-1);
+                    const touchesLeft=[...used].some(k=>Number(k.split(',')[0])===0);
+                    const touchesRight=[...used].some(k=>Number(k.split(',')[0])===cols-1);
+                    if(!touchesTop||!touchesBottom||!touchesLeft||!touchesRight)return false;
+
                     for(const p of placed){
                         p.enc.x=p.col*TRUE_ENC_CELL_W;
                         p.enc.y=p.row*TRUE_ENC_CELL_H;
@@ -19255,7 +19269,8 @@ function performClassicGameAction(action) {
                         filename:cleanFilename(selectedTradeOffer().animal.filename),
                         opponentIndex:selectedTradeOffer().opponentIndex
                     } : null,
-                    autonomousAI:Boolean(state.autonomousTradeOffer)
+                    autonomousAI:Boolean(state.autonomousTradeOffer),
+                    frozenAITradeOffer:action.prepared?.frozenAITradeOffer||null
                 }
             }
         });
@@ -19330,7 +19345,11 @@ function performClassicGameAction(action) {
             );
         case CLASSIC_GAME_ACTION.ACCEPT_TRADE:
             return runClassicProgressionTransaction(
-                () => acceptSelectedTrade(action.destination ?? null, !!action.autoPlace)
+                () => acceptSelectedTrade(
+                    action.destination ?? null,
+                    !!action.autoPlace,
+                    action.prepared?.frozenAITradeOffer||action.frozenAITradeOffer||null
+                )
             );
         default:
             console.warn('Unknown Classic game action ignored:', action.type);
@@ -23514,6 +23533,8 @@ async function runAuthoritativeClassicActionForPlayer(playerId,classicAction){
         if(hostSeat)await restoreBrowserHostSeatAfterRemoteAction(hostSeat);
         return false;
     }
+    if(action.type===CLASSIC_GAME_ACTION.ACCEPT_TRADE&&action.prepared?.frozenAITradeOffer)
+        action.frozenAITradeOffer=cloneForSave(action.prepared.frozenAITradeOffer);
     delete action.prepared;
     if(action.destinationWire){
         action.destination=multiplayerDestinationFromWire(action.destinationWire);
@@ -23600,10 +23621,29 @@ async function sendLocalMultiplayerAnimalMove(playerId,animalId,destination){
        playerId===localClassicMatch?.activePlayerId){
         const movingAnimal=(state.animals||[]).find(a=>String(a?.id)===String(animalId));
         const wireDestination=multiplayerDestinationToWire(destination,movingAnimal);
+        const t=localMultiplayerBrowserTransport;
+
+        // Layout edits (especially enclosure moves) are persisted through the
+        // debounced whole-zoo CAS stream. Do not let a server-authoritative
+        // animal move overtake one of those commits: the destination enclosure
+        // may not exist at its new position on the server yet, and the action
+        // itself advances the durable revision. That race previously produced
+        // a stale-commit rejection/correction immediately after an otherwise
+        // valid drag, disproportionately affecting P2.
+        if(!await awaitDurableZooCommitIdle()){
+            console.warn('Multiplayer animal move paused because the durable zoo is still synchronising.');
+            if(t?.durableOwnZooSnapshot?.state){
+                autoResumeWriteSuppressed=true;
+                try{await importGameState(cloneForSave(t.durableOwnZooSnapshot),{deferRender:false});}
+                finally{autoResumeWriteSuppressed=false;}
+                syncActiveZooIntoLocalMatch();
+            }else renderAll();
+            return {ok:false,reason:'zoo-sync'};
+        }
+
         const response=await sendMultiplayerServerAction('move-animal',{
             animalId,destination:wireDestination
         });
-        const t=localMultiplayerBrowserTransport;
         if(response?.type!=='action-committed'||response?.action!=='move-animal'){
             if(response?.code)console.warn('Multiplayer animal move rejected:',response.code);
             // The card was left optimistically at the drop target. A rejection
@@ -32073,22 +32113,38 @@ function ensureGenerateZooUI() {
             return;
         }
         const chosenCountry=String(chosen.country||country.value||'');
-        if(chosenCountry&&normaliseGeographyPart(chosenCountry)!==normaliseGeographyPart(country.value)){
+        const countryChanged=chosenCountry&&
+            normaliseGeographyPart(chosenCountry)!==normaliseGeographyPart(country.value);
+        if(countryChanged){
             const realCountries=[...new Set(records.map(record=>record.country).filter(Boolean))]
                 .sort((a,b)=>String(a).localeCompare(String(b),'en',{sensitivity:'base'}));
             refreshCountries(chosenCountry,realCountries);
             country.value=chosenCountry;
             countryTrigger.textContent=`${countryFlagEmoji(chosenCountry)} ${chosenCountry}`;
-        }
-        const countryRecords=realZooRecordsForCountry(country.value);
-        realZooName.innerHTML='';
-        for(const record of countryRecords){
-            const option=document.createElement('option');
-            option.value=realZooHoldingKey(record);
-            option.textContent=record.name;
-            realZooName.appendChild(option);
+
+            // Rebuild the hidden real-zoo selector only when the slider actually
+            // crosses into another country. The previous code destroyed and
+            // recreated every option on every animation frame while dragging,
+            // which made the Starting Size control lock up on the full database.
+            const countryRecords=realZooRecordsForCountry(chosenCountry);
+            realZooName.innerHTML='';
+            for(const record of countryRecords){
+                const option=document.createElement('option');
+                option.value=realZooHoldingKey(record);
+                option.textContent=record.name;
+                realZooName.appendChild(option);
+            }
         }
         realZooName.value=realZooHoldingKey(chosen);
+        // Defensive recovery for an out-of-date selector without making the
+        // normal slider path pay the DOM rebuild cost.
+        if(realZooName.value!==realZooHoldingKey(chosen)){
+            const option=document.createElement('option');
+            option.value=realZooHoldingKey(chosen);
+            option.textContent=chosen.name;
+            realZooName.appendChild(option);
+            realZooName.value=realZooHoldingKey(chosen);
+        }
         applySelectedRealZoo({syncSlider:false});
     }
 
@@ -39554,6 +39610,9 @@ function startTradeResultDrag(event) {
         type:'trade-result',
         image,
         incomingAnimal:offer.animal,
+        // Freeze the exact card/offer picked up. Multiplayer presence/listing
+        // packets can rerender the trade UI while the pointer is down.
+        tradeOfferSnapshot:cloneForSave(offer),
         releasedOutgoingReservation:releasedReservation,
         startClientX:event.clientX,
         startClientY:event.clientY,
@@ -39578,8 +39637,8 @@ function moveTradeResultDragImage(event){
     state.drag.image.style.left=`${event.clientX-state.drag.offsetX}px`;
     state.drag.image.style.top=`${event.clientY-state.drag.offsetY}px`;
 }
-function acceptSelectedTrade(destination=null, autoPlace=false) {
-    const offer=selectedTradeOffer();
+function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=null) {
+    const offer=offerOverride||selectedTradeOffer();
     if(!offer) return false;
     const incoming=offer.animal;
     const autonomous = Boolean(state.autonomousTradeOffer);
@@ -39767,7 +39826,10 @@ async function finishTradeResultDrag(event) {
     if(!wasDragged){
         // A click/very short drag uses auto-placement. The reservation remains
         // released while the destination is chosen.
-        const accepted=await performClassicGameAction({ type:CLASSIC_GAME_ACTION.ACCEPT_TRADE, destination:null, autoPlace:true });
+        const accepted=await performClassicGameAction({
+            type:CLASSIC_GAME_ACTION.ACCEPT_TRADE,destination:null,autoPlace:true,
+            prepared:{frozenAITradeOffer:drag.tradeOfferSnapshot}
+        });
         if(accepted)await withdrawConsumedPublicListingAfterAITrade(publicListingBeforeAITrade);
         if(!accepted && state.outgoingOffer && drag.releasedOutgoingReservation) {
             reserveAnimalZooSlot(state.outgoingOffer,drag.releasedOutgoingReservation.enclosureId,drag.releasedOutgoingReservation.slotIndex);
@@ -39788,7 +39850,10 @@ async function finishTradeResultDrag(event) {
         : null;
 
     if(destination) {
-        const accepted=await performClassicGameAction({ type:CLASSIC_GAME_ACTION.ACCEPT_TRADE, destination });
+        const accepted=await performClassicGameAction({
+            type:CLASSIC_GAME_ACTION.ACCEPT_TRADE,destination,
+            prepared:{frozenAITradeOffer:drag.tradeOfferSnapshot}
+        });
         if(accepted)await withdrawConsumedPublicListingAfterAITrade(publicListingBeforeAITrade);
         if(!accepted && state.outgoingOffer && drag.releasedOutgoingReservation) {
             reserveAnimalZooSlot(state.outgoingOffer,drag.releasedOutgoingReservation.enclosureId,drag.releasedOutgoingReservation.slotIndex);

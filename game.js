@@ -15,7 +15,6 @@ const ZOO_REQUIRED_CSS_INTERFACE = 2;
 // Mobile remains a separate purpose-built layout.
 // ============================================================
 const DESKTOP_UI_REFERENCE_WIDTH = 2560;
-const DESKTOP_UI_REFERENCE_HEIGHT = 1440;
 const DESKTOP_UI_MIN_SCALE = 0.68;
 
 function desktopUiScale() {
@@ -155,8 +154,6 @@ const ENCLOSURE_ROOT = 'assets/Enclosures/';
 const ANIMAL_W = 135;
 const ANIMAL_H = 194.4;
 
-const HAND_W = 270;
-const HAND_H = 388.8;
 
 const ENCLOSURE_W = 350;
 const ENCLOSURE_H = 466.6667;
@@ -2461,7 +2458,6 @@ const ENCLOSURE_AREA_THEMES = Object.freeze({
 
 const ENCLOSURE_AREA_TAGS = new Set(Object.keys(ENCLOSURE_AREA_THEMES));
 
-const DERIVED_TROPICAL_HOUSE_THEME = ENCLOSURE_AREA_THEMES['tropical-house'];
 const TROPICAL_HOUSE_GEOGRAPHY_TAGS = new Set([
     'amazon','pantanal','atlantic-forest','guiana-shield','congo','madagascar',
     'southeast-asia','sundaland','borneo','sumatra','java','philippines',
@@ -2500,21 +2496,6 @@ function animalsInWholeEnclosure(enclosure) {
 // dragging/trading do NOT count here: a theme must reflect animals physically
 // present in the enclosure right now.
 
-function commonEnclosureTags(enclosure) {
-    const animals = animalsInWholeEnclosure(enclosure);
-    if (!animals.length) return new Set();
-
-    let common = new Set(animalInventoryTags(
-        animals[0].category, animals[0].level, animals[0].filename
-    ));
-    for (let i = 1; i < animals.length && common.size; i++) {
-        const tags = new Set(animalInventoryTags(
-            animals[i].category, animals[i].level, animals[i].filename
-        ));
-        common = new Set([...common].filter(tag => tags.has(tag)));
-    }
-    return new Set([...common].filter(tag => ENCLOSURE_AREA_TAGS.has(tag)));
-}
 
 function normalizeGeneratedAreaMembership(value) {
     if (value instanceof Map) return new Map([...value.entries()].map(([key, ids]) => [
@@ -2614,8 +2595,6 @@ function enclosuresAreAreaAdjacent(a, b) {
 }
 
 let connectedAreaReconciliationCache={signature:'',groups:null};
-const AREA_PERF_DEBUG=false;
-let areaPerfStats={reconciliations:0,totalMs:0,lastMs:0};
 
 function invalidateConnectedAreaReconciliation(){
     connectedAreaReconciliationCache={signature:'',groups:null};
@@ -4509,13 +4488,6 @@ function closeCollectionMenu() {
     if (collectionTooltip) collectionTooltip.style.display = 'none';
 }
 
-function showCollectionTooltip(event, record) {
-    const text = collectionHoverText(record);
-    if (!collectionTooltip || !text) return;
-    collectionTooltip.textContent = text;
-    collectionTooltip.style.display = 'block';
-    moveCollectionTooltip(event);
-}
 
 function moveCollectionTooltip(event) {
     if (!collectionTooltip || collectionTooltip.style.display === 'none') return;
@@ -9821,8 +9793,6 @@ const MARINE_PPOW_REALMS = Object.freeze({"PPOW-R-atlantic-warm-water":"Atlantic
 
 // Ocean layers use their own blue language so they remain visually distinct from
 // the continent/terrestrial realm palette.
-const MARINE_MEOW_COLOUR = '#3A9FC4';
-const MARINE_PPOW_COLOUR = '#3977B7';
 
 const MARINE_SUBREGION_BLUE_PALETTE = Object.freeze([
     '#2F78A8','#357FB0','#3A86B8','#408DC0','#4694C8',
@@ -15082,20 +15052,6 @@ function normaliseTrueEnclosureArchitecture(){
     return changed;
 }
 
-function trueSnapWorldPoint(x,y){
-    // True enclosure cells are absolute world-grid coordinates everywhere else
-    // (canonicalisation, collision index, Zoo Grounds and save/load). Keep the
-    // builder on that same coordinate system.
-    return {col:Math.round(x/TRUE_ENC_CELL_W),row:Math.round(y/TRUE_ENC_CELL_H)};
-}
-function trueSharedEdgeScore(cells,enc){
-    const target=new Set(trueBuiltWorldCells(enc).map(c=>trueBuilderCellKey(c.col,c.row)));let score=0;
-    for(const c of cells){
-        if(target.has(trueBuilderCellKey(c.col,c.row)))continue;
-        for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]])if(target.has(trueBuilderCellKey(c.col+dc,c.row+dr)))score++;
-    }
-    return score;
-}
 function areaGridCellSize(){
     // True keeps its construction grid. Classic/Sandbox use the actual 2×2
     // logical subdivision of an enclosure card. Do NOT include the inter-card
@@ -23647,6 +23603,7 @@ function importGameState(saveData, { deferRender = false } = {}) {
     const legacyGeneratedAreasFlattened =
         legacyFlattenedCollection('generatedAreaMembership') ||
         legacyFlattenedCollection('establishedGeographicAreas');
+    const rebuildLegacyGeneratedAreas = legacyGeneratedAreasFlattened;
 
     exitHistoryView(false);
     state.suppressHistoryCapture = true;
@@ -23745,6 +23702,55 @@ function importGameState(saveData, { deferRender = false } = {}) {
     if (legacyGeneratedAreasFlattened) {
         state.generatedAreaMembership = new Map();
         state.establishedGeographicAreas = new Map();
+
+        // The old lossy named-save writer also exposed a second legacy failure:
+        // mature zoos could retain valid card coordinates with entire empty grid
+        // columns/rows between occupied columns/rows. Classic gameplay cannot
+        // create those disconnected holes, and generated Areas depend on physical
+        // adjacency. Compact ONLY this unmistakably corrupted legacy-save shape.
+        //
+        // Preserve every enclosure id, card number, animal enclosureId/slotIndex
+        // and the relative ordering of rows/columns; only remove wholly empty
+        // grid bands. That restores the topology without inventing/reassigning
+        // animals or enclosure cards.
+        const legacyEnclosures = Array.isArray(state.enclosures) ? state.enclosures : [];
+        if (legacyEnclosures.length > 1) {
+            const stepX = ENCLOSURE_W + ENCLOSURE_GAP;
+            const stepY = ENCLOSURE_H + ENCLOSURE_GAP;
+            const xs = [...new Set(legacyEnclosures.map(e => Number(e?.x)).filter(Number.isFinite))]
+                .sort((a,b) => a-b);
+            const ys = [...new Set(legacyEnclosures.map(e => Number(e?.y)).filter(Number.isFinite))]
+                .sort((a,b) => a-b);
+
+            const hasGridSizedGap = values => values.some(
+                (value,index) => index > 0 &&
+                    value - values[index-1] > Math.max(stepX, stepY) * 1.45
+            );
+
+            if (hasGridSizedGap(xs) || hasGridSizedGap(ys)) {
+                const originX = xs[0];
+                const originY = ys[0];
+                const xIndex = new Map(xs.map((value,index) => [value,index]));
+                const yIndex = new Map(ys.map((value,index) => [value,index]));
+
+                for (const enclosure of legacyEnclosures) {
+                    const xi = xIndex.get(Number(enclosure.x));
+                    const yi = yIndex.get(Number(enclosure.y));
+                    if (Number.isInteger(xi)) enclosure.x = originX + xi * stepX;
+                    if (Number.isInteger(yi)) enclosure.y = originY + yi * stepY;
+                }
+
+                // Geometry changed, so Area recognition must see the repaired
+                // connected footprint rather than any pre-import cache.
+                state.areaPlacementRevision = (Number(state.areaPlacementRevision) || 0) + 1;
+                invalidateConnectedAreaReconciliation();
+                renderedConnectedAreaGroups = [];
+                renderedConnectedAreaGroupsSignature = '';
+                stableConnectedAreaGroups = [];
+                stableConnectedAreaGroupsSignature = '';
+                generatedModernGeographicAreas = [];
+            }
+        }
     }
 
     if(!state.sandboxMode)ensureLifetimePlaythroughId();
@@ -23801,6 +23807,19 @@ function importGameState(saveData, { deferRender = false } = {}) {
     }
 
     renderAll();
+
+    // Old named saves lost the Maps that say which generated Areas were already
+    // established. After the repaired enclosure topology has rendered once,
+    // run the existing Area generator again against the live zoo. This is a
+    // one-shot migration only; healthy saves retain their stored memberships.
+    if (rebuildLegacyGeneratedAreas && state.gameOptions?.autoGeneratedAreasZones !== false) {
+        invalidateConnectedAreaReconciliation();
+        try {
+            generatedGeographicAreaGroups();
+        } catch (error) {
+            console.warn('Legacy generated-Area reconstruction could not complete:', error);
+        }
+    }
 
     requestAnimationFrame(() => {
         if (saveData.view) {
@@ -24437,6 +24456,109 @@ function saveFileSlug(value) {
         .replace(/^-+|-+$/g, '') || 'Zoo-Curator-Save';
 }
 
+
+function normaliseImportedSavePayload(raw) {
+    const decoded = deserialiseSpecial(raw);
+
+    // Current single-save download format.
+    if (decoded?.format === 'ZooCuratorSave' && decoded.save?.game) {
+        return decoded.save;
+    }
+
+    // Also accept a raw named-save record.
+    if (decoded?.game?.state) {
+        return decoded;
+    }
+
+    // Accept a raw exported game snapshot and wrap it as a named save.
+    if (decoded?.state && Array.isArray(decoded.state.enclosures) && Array.isArray(decoded.state.animals)) {
+        return {
+            id: `import-${Date.now()}`,
+            name: decoded.state.zooName || 'Imported Zoo',
+            zooName: decoded.state.zooName || 'Imported Zoo',
+            turn: decoded.state.sandboxMode ? '∞' : decoded.state.turn,
+            animalCount: decoded.state.animals.length,
+            enclosureCount: decoded.state.enclosures.length,
+            savedAt: new Date().toISOString(),
+            game: decoded
+        };
+    }
+
+    // Older "all saves" exports were arrays. Importing a file should be
+    // deterministic: accept it only when it contains exactly one usable save.
+    if (Array.isArray(decoded)) {
+        const usable = decoded.filter(item => item?.game?.state);
+        if (usable.length === 1) return usable[0];
+        if (usable.length > 1) {
+            throw new Error('This file contains multiple Zoo Curator saves. Please import a single-zoo save file.');
+        }
+    }
+
+    throw new Error('This is not a recognised Zoo Curator save file.');
+}
+
+async function importSaveFile(file) {
+    if (!file) return false;
+    let raw;
+    try {
+        raw = JSON.parse(await file.text());
+    } catch (error) {
+        showGameNotice('Could not read that save file. Zoo Curator save files must contain valid JSON.');
+        return false;
+    }
+
+    let record;
+    try {
+        record = normaliseImportedSavePayload(raw);
+    } catch (error) {
+        showGameNotice(error?.message || 'That file is not a recognised Zoo Curator save.');
+        return false;
+    }
+
+    // Validate the minimum portable game shape before writing anything into
+    // browser storage. Old lossy saves are intentionally allowed through:
+    // importGameState contains the one-time Set/Map/layout/Area migrations.
+    const game = record?.game;
+    if (!game?.state || !Array.isArray(game.state.enclosures) || !Array.isArray(game.state.animals)) {
+        showGameNotice('That save is incomplete: its zoo enclosure/animal state is missing.');
+        return false;
+    }
+
+    const slots = loadSaveSlots();
+    const imported = cloneForSave(record);
+    imported.id = `save-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    imported.name = imported.name || imported.zooName || game.state.zooName || 'Imported Zoo';
+    imported.zooName = imported.zooName || game.state.zooName || imported.name;
+    imported.turn = game.state.sandboxMode ? '∞' : (game.state.turn ?? imported.turn ?? 1);
+    imported.animalCount = game.state.animals.length;
+    imported.enclosureCount = game.state.enclosures.length;
+    imported.savedAt = new Date().toISOString();
+    imported.importedFromFile = file.name || 'Zoo Curator save';
+
+    slots.unshift(imported);
+    writeSaveSlots(slots);
+    renderSaveSlots();
+    showGameNotice(`Imported ${imported.zooName}. You can now load it from Saved Games.`);
+    return true;
+}
+
+function chooseSaveFileToImport() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,.txt,application/json,text/plain';
+    input.hidden = true;
+    document.body.appendChild(input);
+    input.addEventListener('change', async () => {
+        try {
+            await importSaveFile(input.files?.[0]);
+        } finally {
+            input.remove();
+        }
+    }, { once:true });
+    input.addEventListener('cancel', () => input.remove(), { once:true });
+    input.click();
+}
+
 function downloadSaveRecord(record) {
     if (!record?.game) return false;
     const payload = {
@@ -24632,6 +24754,7 @@ function ensureSaveLoadUI() {
             <div class="save-load-footer">
                 <span style="flex:1 1 auto;"></span>
                 <button type="button" id="saveRealZooTemplate" hidden>Save Real Zoo Template</button>
+                <button type="button" id="importSaveFile">Import Save File</button>
                 <button type="button" id="downloadCurrentGame">Download Current Zoo</button>
                 <button type="button" id="saveCurrentGame">Save Current Game</button>
                 <button type="button" id="closeSaveLoad">Close</button>
@@ -24641,6 +24764,9 @@ function ensureSaveLoadUI() {
     document.body.appendChild(overlay);
 
     button.addEventListener('click', openSaveLoadMenu);
+    overlay.querySelector('#importSaveFile').addEventListener(
+        'click', chooseSaveFileToImport
+    );
     overlay.querySelector('#downloadCurrentGame').addEventListener(
         'click', downloadCurrentGame
     );
@@ -29072,7 +29198,6 @@ if (drawCard) drawCard.dataset.label = state.gameOptions.animalLanguage === 'nl'
 
 
 // hint rings belong to the game layer, below every modal/menu layer.
-const MENU_SAFE_HINT_Z = 9000;
 
 // ============================================================
 // TURN-AWARE HINT POLICY
@@ -30374,27 +30499,6 @@ function realZooPlanFreeSpaces(plans) {
     }, 0);
 }
 
-function addRealZooExpansionPlans(plans, animalCount) {
-    const target = realZooTargetFreeSpaces(animalCount);
-    let free = realZooPlanFreeSpaces(plans);
-    if (free >= target) return plans;
-
-    // Enclosures 6/7 are the smallest standalone cards (3 actual slots), so
-    // prefer them when only a little extra safety room is required. Insert the
-    // cards through the layout rather than collecting them in one empty block.
-    let insertOrdinal = 0;
-    while (free < target) {
-        const missing = target - free;
-        const number = missing <= 3 ? randomItem([6,7]) : randomItem([1,2,3,4,5,6,7,8,9]);
-        const emptyPlan = { number, units: [] };
-        const fraction = (insertOrdinal + 1) / (Math.ceil((target - free) / 3) + insertOrdinal + 1);
-        const index = Math.max(0, Math.min(plans.length, Math.round(fraction * plans.length)));
-        plans.splice(index, 0, emptyPlan);
-        free += enclosureSlotCapacity(number);
-        insertOrdinal += 1;
-    }
-    return plans;
-}
 
 function realZooPlannedCards(units, allowHugeEnclosure = false) {
     // Real zoos should not default to Enclosure 5 for every four singleton
@@ -39624,9 +39728,36 @@ async function startGame() {
         const resumedPreviousZoo = restoreAutoResumeSnapshot();
 
         if (!resumedPreviousZoo) {
-            // assignZooNames already has built-in fallback names when the
-            // external zoo-name pool has not arrived yet.
+            // A genuinely new player should start with the same kind of
+            // randomized fictional identity offered by New Zoo, rather than
+            // briefly creating the generic "Wildlife Park" fallback. Load the
+            // identity database here only for first-ever zoo creation; returning
+            // players still resume immediately from their saved zoo.
+            try {
+                state.zooNamesData = await loadJson(
+                    `zoo-names.json?v=${encodeURIComponent(ZOO_CURATOR_VERSION)}`,
+                    'Generating your zoo...',
+                    5000
+                );
+            } catch (error) {
+                console.warn('Zoo identity data unavailable during first start; using built-in fallback:', error);
+            }
+
+            // Keep opponent-name setup in its established path, then replace the
+            // player's identity with a full New-Zoo-style random country,
+            // location, prefix/type and name when the identity data is available.
             assignZooNames();
+            if (state.zooNamesData) {
+                const identity = generateZooSetupIdentity('', false);
+                state.zooCountry = identity.country || '';
+                state.zooLocation = identity.location || '';
+                state.zooProvince = identity.province || '';
+                state.zooName = identity.zooName || state.zooName;
+                state.zooType = identity.zooType || 'general';
+                state.zooNameWasStartupFallback = false;
+                createZooNameEditor();
+            }
+
             createStartingZoo();
             assignOpponentProfiles();
         } else {

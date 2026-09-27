@@ -21284,6 +21284,8 @@ async function authorizeHumanTradeWithServer(type,payload={}){
         wire.tradeId=payload.tradeId;
         wire.toPlayerId=requestedServerPlayerId;
         wire.offeredAnimalId=payload.offeredAnimalId;
+        if(payload.offeredAnimalIdentity)
+            wire.offeredAnimalIdentity=cloneForSave(payload.offeredAnimalIdentity);
         wire.requestedAnimalId=payload.requestedAnimalId;
         if(payload.requestedAnimalIdentity)
             wire.requestedAnimalIdentity=cloneForSave(payload.requestedAnimalIdentity);
@@ -21299,7 +21301,8 @@ async function authorizeHumanTradeWithServer(type,payload={}){
             multiplayerDiagnostic?.('human-trade-requested-animal-ownership-mismatch',{
                 requestedLocalId:payload.requestedPlayerId,
                 requestedServerPlayerId:wire.toPlayerId,
-                requestedAnimalId:wire.requestedAnimalId
+                requestedAnimalId:wire.requestedAnimalId,
+                requestedAnimalIdentity:cloneForSave(wire.requestedAnimalIdentity||null)
             });
         }
         return {ok:false,reason:response?.code||'server-trade-rejected'};
@@ -32021,7 +32024,12 @@ function ensureGenerateZooUI() {
         const records=source
             .filter(item=>item?.name&&Array.isArray(item.animals)&&item.animals.length)
             .slice()
-            .sort((a,b)=>realZooPrestige(a)-realZooPrestige(b)||
+            // "Starting Size" is the size of the starting collection, not zoo
+            // prestige. Sorting thousands of records through realZooPrestige()
+            // was both semantically wrong and expensive because prestige can
+            // consult mutable session holdings/layout summaries. Keep this
+            // picker completely data-local and deterministic.
+            .sort((a,b)=>a.animals.length-b.animals.length||
                 String(a.name).localeCompare(String(b.name),'en',{sensitivity:'base'}));
         const denominator=Math.max(1,records.length-1);
         const positions=new Map();
@@ -32051,8 +32059,8 @@ function ensureGenerateZooUI() {
         const records=ranking.records;
         if(!records.length)return;
         const target=Math.max(0,Math.min(100,Number(zooSize.value)||0));
-        // Ranking is already ordered by starting-size/prestige. Convert the
-        // slider directly to an index instead of sorting the entire zoo
+        // Ranking is already ordered by recorded starting collection size.
+        // Convert the slider directly to an index instead of sorting the entire zoo
         // database and re-sorting it once again for every comparator call.
         const chosen=records[Math.max(0,Math.min(
             records.length-1,
@@ -32848,9 +32856,25 @@ function ensureGenerateZooUI() {
                     if(!registration?.ok)throw new Error('The host could not register this zoo.');
                     state.turn=Number(registration.turn)||state.turn;
                     localClassicMatch.awaitingLocalZooSetup=false;
+
+                    // The legacy browser-host registration above updates the
+                    // shared/local match, but the durable multiplayer server
+                    // owns trade eligibility. Previously P2's newly generated
+                    // zoo was never committed here, leaving SQLite at the
+                    // pre-registration revision while P1 could already see the
+                    // newer zoo through browser sync/live presentation.
+                    if(serverAuthoritativeMultiplayerActive()){
+                        const durableRegistration=cloneForSave(registrationSnapshot);
+                        durableRegistration.state.turn=state.turn;
+                        if(!commitOwnZooStateToServer(durableRegistration))
+                            throw new Error('The multiplayer server could not store this zoo.');
+                        if(!await awaitDurableZooCommitIdle())
+                            throw new Error('The multiplayer zoo could not finish synchronising.');
+                    }
+
                     // Keep the freshly-created zoo on screen. The host now
-                    // broadcasts the authoritative registered snapshot
-                    // immediately; do not overwrite/fill the local seat here.
+                    // broadcasts the registered snapshot immediately; do not
+                    // overwrite/fill the local seat here.
                     renderAll();
                     renderVisitedZooQuickTabs();
                     writeAutoResumeSnapshot(true);
@@ -37897,6 +37921,13 @@ function tryDropOnOutgoingOffer(event, animal) {
                 dispatchLocalMultiplayerAction(fromId,'send-human-trade-offer',{
                     tradeId,
                     offeredAnimalId:animal.id,
+                    offeredAnimalIdentity:{
+                        category:String(animal?.category||''),
+                        level:Number(animal?.level)||0,
+                        filename:String(animal?.filename||''),
+                        enclosureId:animal?.enclosureId??null,
+                        slotIndex:Number.isFinite(Number(animal?.slotIndex))?Number(animal.slotIndex):null
+                    },
                     requestedPlayerId:draft.requestedPlayerId,
                     requestedServerPlayerId:draft.requestedServerPlayerId||
                         multiplayerServerPlayerForLocalId(draft.requestedPlayerId)?.playerId||null,

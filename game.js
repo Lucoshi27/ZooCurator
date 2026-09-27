@@ -27777,7 +27777,11 @@ function initialiseAuthoritativeMultiplayerProgressionIfHost(){
 
 async function requestServerAuthoritativeExchange(destination=null,autoPlace=false){
     if(!serverAuthoritativeMultiplayerActive())return null;
-    if(hasPendingPlayerAction()||!state.result)return false;
+
+    // The selected exchange cards and prepared result are the operation being
+    // completed here, not a conflicting action. Only an unrelated outgoing
+    // trade should block this final Exchange placement.
+    if(state.outgoingOffer||!state.result)return false;
 
     const sources=(state.exchange||[]).filter(Boolean);
     if(sources.length!==2)return false;
@@ -27795,6 +27799,12 @@ async function requestServerAuthoritativeExchange(destination=null,autoPlace=fal
     if(autoPlace&&!chosen)chosen=randomEligibleDestinationForAnimal(prospective);
     if(!chosen?.enclosure||chosen.slotIndex==null||
        !canPlace(prospective,chosen.enclosure,chosen.slotIndex))return false;
+
+    // Keep the two source reservations until commit so Draw/full-zoo capacity
+    // stays protected. canPlace() ignores reservations for physical placement,
+    // therefore either just-vacated source exhibit remains a legal destination
+    // exactly as in single-player.
+
 
     // Commit and ACK the exact pre-exchange zoo before validation. WebSocket
     // ordering alone was insufficient once zoo-state commits became CAS-based:
@@ -30731,6 +30741,19 @@ function ensureGenerateZooUI() {
                         localClassicMatch.rules?.activeCategories||pendingMultiplayerSetup.activeCategories
                     );
                     const replacementSnapshot=exportCurrentGameState();
+                    // Match the old authoritative reset semantics: generating a
+                    // fresh zoo must not rewind this player's multiplayer turn,
+                    // change the match mode, or escape the match category rules.
+                    const previousPlayerSnapshot=localClassicMatch.players?.[localClassicMatch.activePlayerId]?.snapshot;
+                    replacementSnapshot.state.turn=Math.max(
+                        Number(previousPlayerSnapshot?.state?.turn)||1,
+                        Number(replacementSnapshot.state?.turn)||1
+                    );
+                    replacementSnapshot.state.gameMode=localClassicMatch.rules?.gameMode==='true'?'true':'classic';
+                    replacementSnapshot.state.sandboxMode=false;
+                    replacementSnapshot.state.activeCategories=[
+                        ...(localClassicMatch.rules?.activeCategories||replacementSnapshot.state.activeCategories||[])
+                    ];
                     let replacement={ok:false};
                     if(serverAuthoritativeMultiplayerActive()){
                         // Deliberate New Zoo replacement uses the player's own
@@ -30739,7 +30762,8 @@ function ensureGenerateZooUI() {
                             throw new Error('The multiplayer zoo is still synchronising. Please try again.');
                         const player=localClassicMatch?.players?.[localClassicMatch.activePlayerId];
                         if(player)player.snapshot=cloneForSave(replacementSnapshot);
-                        commitOwnZooStateToServer(replacementSnapshot);
+                        if(!commitOwnZooStateToServer(replacementSnapshot))
+                            throw new Error('The multiplayer server could not accept this zoo reset.');
                         const committed=await awaitDurableZooCommitIdle();
                         replacement={ok:committed,turn:Number(replacementSnapshot.state?.turn)||state.turn};
                     }else{

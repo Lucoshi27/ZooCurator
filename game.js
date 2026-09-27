@@ -22062,6 +22062,9 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 transport.serverRevision=Number(message.revision)||0;
                 transport.serverAuthenticated=true;
                 transport.serverDisconnected=false;
+                // Authentication alone does not mean the durable zoo has been
+                // restored yet. Keep the reload fallback until this connection
+                // receives its first authoritative own zoo-state.
                 localMultiplayerReconnectAttempt=0;
                 transport.serverSuperseded=false;
                 transport.serverReturning=message.returning===true;
@@ -22203,6 +22206,9 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                         localMultiplayerPeerReplica.players[localTargetId].snapshot=cloneForSave(zoo);
                 }
                 if(serverPlayerId===ownServerId&&zoo&&typeof zoo==='object'&&!Array.isArray(zoo)){
+                    // The durable owned zoo has now crossed the wire; the local
+                    // reload fallback is no longer needed.
+                    transport.reconnectFallbackMatch=null;
                     transport.durableZooRevision=zooRevision;
                     if(message.authoritativeCorrection===true)transport.awaitingAuthoritativeZooCorrection=false;
                     transport.durableOwnZooSnapshot=cloneForSave(zoo);
@@ -22464,6 +22470,14 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 if(transport.serverAuthenticated){
                     transport.serverAuthenticated=false;
                     transport.serverDisconnected=true;
+                    if(transport.reconnectFallbackMatch&&
+                       /^joining-/.test(String(localClassicMatch?.activePlayerId||''))){
+                        const fallback=cloneForSave(transport.reconnectFallbackMatch);
+                        localClassicMatch=fallback;
+                        localClassicMatch.viewingPlayerId=null;
+                        transport.playerId=localClassicMatch.activePlayerId;
+                        renderVisitedZooQuickTabs?.();
+                    }
                     clearMultiplayerRemoteCursors();
                     setLocalMultiplayerOutboundSink(null);
                     showGameNotice?.('Multiplayer server connection lost. Your zoo is preserved; reconnecting automatically…');
@@ -22474,15 +22488,28 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 console.warn('Multiplayer server error:',message.code||message.message||'unknown');
                 if(role==='peer'&&!transport.serverAuthenticated){
                     const reason=String(message.message||message.code||'Could not join multiplayer game.');
+                    const reconnectFallback=transport.reconnectFallbackMatch
+                        ? cloneForSave(transport.reconnectFallbackMatch) : null;
                     queueMicrotask(()=>{
                         if(channel!==localMultiplayerBrowserChannel)return;
-                        closeLocalMultiplayerBrowserTransport();
-                        if(localClassicMatch&&/^joining-/.test(String(localClassicMatch.activePlayerId||''))){
-                            localClassicMatch=null;
+                        closeLocalMultiplayerBrowserTransport({preserveReconnect:!!reconnectFallback});
+                        if(reconnectFallback){
+                            // An automatic reload reconnect can fail after the
+                            // WebSocket itself opened (bad network/server auth).
+                            // Do not throw away the already-restored P2 zoo just
+                            // because join() had returned before authentication.
+                            localClassicMatch=reconnectFallback;
+                            localClassicMatch.viewingPlayerId=null;
                             localMultiplayerPeerReplica=null;
                             renderVisitedZooQuickTabs?.();
+                        }else{
+                            if(localClassicMatch&&/^joining-/.test(String(localClassicMatch.activePlayerId||''))){
+                                localClassicMatch=null;
+                                localMultiplayerPeerReplica=null;
+                                renderVisitedZooQuickTabs?.();
+                            }
+                            clearActiveMultiplayerSession?.();
                         }
-                        clearActiveMultiplayerSession?.();
                         updateMultiplayerHeaderButtonState?.();
                         showGameNotice?.(`Could not join multiplayer game: ${reason}`);
                     });
@@ -26176,7 +26203,10 @@ function startAnimalDrag(
             requestedAnimalIdentity:{
                 category:String((authoritativeRequested||animal)?.category||''),
                 level:Number((authoritativeRequested||animal)?.level)||0,
-                filename:String((authoritativeRequested||animal)?.filename||'')
+                filename:String((authoritativeRequested||animal)?.filename||''),
+                enclosureId:(authoritativeRequested||animal)?.enclosureId??null,
+                slotIndex:Number.isFinite(Number((authoritativeRequested||animal)?.slotIndex))
+                    ? Number((authoritativeRequested||animal).slotIndex) : null
             },
             offsetX:event.clientX-rect.left,offsetY:event.clientY-rect.top,
             startClientX:event.clientX,startClientY:event.clientY,maxDistance:0
@@ -28105,7 +28135,9 @@ async function finishHumanTradeRequestDrag(event){
                 multiplayerServerPlayerForLocalId(drag.requestedPlayerId)?.playerId||null,
             requestedAnimalId:drag.requestedAnimalId??drag.animal.id,
             requestedAnimalIdentity:cloneForSave(drag.requestedAnimalIdentity||{
-                category:drag.animal?.category,level:drag.animal?.level,filename:drag.animal?.filename
+                category:drag.animal?.category,level:drag.animal?.level,filename:drag.animal?.filename,
+                enclosureId:drag.animal?.enclosureId??null,
+                slotIndex:Number.isFinite(Number(drag.animal?.slotIndex))?Number(drag.animal.slotIndex):null
             })
         });
         staged=!!result?.ok;
@@ -28116,7 +28148,9 @@ async function finishHumanTradeRequestDrag(event){
             multiplayerServerPlayerForLocalId(drag.requestedPlayerId)?.playerId||null;
         draft.requestedAnimalId=drag.requestedAnimalId??drag.animal.id;
         draft.requestedAnimalIdentity=cloneForSave(drag.requestedAnimalIdentity||{
-            category:drag.animal?.category,level:drag.animal?.level,filename:drag.animal?.filename
+            category:drag.animal?.category,level:drag.animal?.level,filename:drag.animal?.filename,
+            enclosureId:drag.animal?.enclosureId??null,
+            slotIndex:Number.isFinite(Number(drag.animal?.slotIndex))?Number(drag.animal.slotIndex):null
         });
         cancelAITradingForHumanTrade();
         localClassicMatch.revision++;
@@ -40932,7 +40966,8 @@ async function startGame() {
         // player back into a session they intentionally left.
         const reconnectSession=readActiveMultiplayerSession();
         if(reconnectSession?.role==='peer'&&
-           readLocalMultiplayerReconnectIdentity(reconnectSession.matchId)){
+           (readMultiplayerServerIdentity(reconnectSession.matchId)||
+            readLocalMultiplayerReconnectIdentity(reconnectSession.matchId))){
             const reconnectRelay=String(reconnectSession.relayUrl||'').trim();
             if(reconnectRelay)configureWebSocketMultiplayer(reconnectRelay);
 
@@ -40951,7 +40986,12 @@ async function startGame() {
             queueMicrotask(async()=>{
                 const ok=await joinLocalMultiplayerInBrowser(reconnectSession.matchId);
                 if(ok){
-                    showMultiplayerToast('Reconnected to multiplayer.');
+                    // Channel-open is not yet server authentication. Keep the
+                    // restored zoo available until server-welcome proves the
+                    // reconnect token was accepted.
+                    if(localMultiplayerBrowserTransport&&restoredPeerMatch)
+                        localMultiplayerBrowserTransport.reconnectFallbackMatch=cloneForSave(restoredPeerMatch);
+                    showMultiplayerToast('Reconnecting to multiplayer…');
                 }else{
                     // join() creates a provisional joining-* match before the
                     // socket handshake. On failure that shell may still exist,

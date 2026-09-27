@@ -2480,10 +2480,6 @@ function animalQualifiesForTropicalHouse(animal) {
     return [...TROPICAL_HOUSE_GEOGRAPHY_TAGS].some(tag => tags.has(tag));
 }
 
-function enclosureQualifiesForTropicalHouse(enclosure) {
-    const occupants = animalsInWholeEnclosure(enclosure);
-    return occupants.length > 0 && occupants.every(animal => animalQualifiesForTropicalHouse(animal));
-}
 
 const ENCLOSURE_AREA_ADJACENCY_TOLERANCE = 8;
 
@@ -2503,23 +2499,6 @@ function animalsInWholeEnclosure(enclosure) {
 // presenting themselves as completed themed areas. Reserved origin slots used while
 // dragging/trading do NOT count here: a theme must reflect animals physically
 // present in the enclosure right now.
-function enclosureCardIsFullyOccupiedForTheme(enclosure) {
-    if (!enclosure) return false;
-
-    const groups = GROUPS[enclosure.number] || [];
-    if (groups.length) {
-        return groups.every(group =>
-            group.some(slotIndex => Boolean(animalAtSlot(enclosure.id, slotIndex, null, false)))
-        );
-    }
-
-    // Defensive fallback for any enclosure card without a GROUPS definition:
-    // each physical slot is treated as its own enclosure.
-    const slots = getAllSlots(enclosure);
-    return slots.length > 0 && slots.every(slotIndex =>
-        Boolean(animalAtSlot(enclosure.id, slotIndex, null, false))
-    );
-}
 
 function commonEnclosureTags(enclosure) {
     const animals = animalsInWholeEnclosure(enclosure);
@@ -2537,75 +2516,6 @@ function commonEnclosureTags(enclosure) {
     return new Set([...common].filter(tag => ENCLOSURE_AREA_TAGS.has(tag)));
 }
 
-function specialEnclosureTheme(enclosure) {
-    const animals = animalsInWholeEnclosure(enclosure);
-    if (!animals.length) return null;
-    const common = commonEnclosureTags(enclosure);
-    const names = animals.map(animal => animalDisplayName(animal).toLowerCase());
-
-    const allCategory = category => animals.every(animal => animal.category === category);
-    const allNames = pattern => names.every(name => pattern.test(name));
-    const marineBirdName = /penguin|flamingo|pelican|spoonbill|puffin/;
-    const allBirds = animals.every(animal =>
-        ['Other Birds', 'Tropical Birds', 'Birds of Prey'].includes(animal.category) ||
-        (animal.category === 'Marine Mania' &&
-            marineBirdName.test(animalDisplayName(animal).toLowerCase()))
-    );
-
-    const special = (key, title, className = key) => ({
-        key: `special-${key}`,
-        title,
-        className: `theme-${className}`,
-        layer: 'special'
-    });
-
-
-    // Micro-geographic specials are data-driven. They are reserved for recognizable
-    // places with 2–3 strongly representative cards; 4+ belongs in the normal
-    // geographic Region system instead. At least two eligible species must actually
-    // share this enclosure card before the Special is shown.
-    const geographicSpecials = state.inventory?.tagDefinitions?.geographyHierarchy?.geographic_specials || [];
-    const occupantNames = new Set(animals.map(animal => animalDisplayName(animal).trim().toLowerCase()));
-    for (const definition of geographicSpecials) {
-        const eligible = new Set((definition?.eligible_animals || []).map(name => String(name).trim().toLowerCase()));
-        const matching = [...occupantNames].filter(name => eligible.has(name));
-        if (matching.length >= 2 && occupantNames.size === matching.length) {
-            return special(`geography-${definition.tag}`, definition.name, 'subregion');
-        }
-    }
-
-    // Unique historic-style small-cat facility. Keep this deliberately narrower
-    // than Carnivora: every occupant must be one of the game's small felids.
-    const smallCatName = /(?:wild cat|caracal|lynx|leopard cat|ocelot|pallas(?:'s)? cat|serval|bobcat|fishing cat|geoffroy(?:'s)? cat|jungle cat|margay|jaguarundi|oncilla|rusty-spotted cat|sand cat|andean mountain cat|asian golden cat|black-footed cat|chinese mountain cat|flat-headed cat|kodkod|marbled cat|pampas cat)/;
-    const allSmallCats = allCategory('Carnivora') && allNames(smallCatName);
-
-    // Highly specific houses/complexes take precedence over broad taxonomic houses.
-    if (common.has('petting-zoo')) return special('petting-zoo', 'Petting Zoo');
-    if (allSmallCats) return { ...special('kattenrotonde', '"Kattenrotonde"'), italicTitle: true };
-    if (allNames(/crocodile|alligator|caiman|gharial/)) return special('crocodile-house', 'Crocodile House');
-    if (allNames(/penguin/)) return special('penguin-coast', 'Penguin Coast');
-    if (allNames(/flamingo/)) return special('flamingo-lagoon', 'Flamingo Lagoon');
-    if (allNames(/bear|panda/) && common.has('forest')) return special('bear-forest', 'Bear Forest');
-    if (allNames(/otter/)) return special('otter-river', 'Otter River');
-    if (allNames(/seal|sea lion/)) return special('seal-coast', 'Seal Coast');
-    if (allNames(/lemur/)) return special('lemur-forest', 'Lemur Forest');
-    if (allNames(/kangaroo|wallaby|pademelon|quokka/)) return special('australian-walkabout', 'Australian Walkabout');
-    if (allNames(/camel|alpaca|llama|guanaco|vicuña|vicuna/)) return special('camelid-paddocks', 'Camelid Paddocks');
-
-    // Broad real-world zoo building types.
-
-    // Aquarium is deliberately narrower than the generic "aquatic" habitat:
-    // aquatic Marine Mania animals qualify, but seals/sea lions/penguins and
-    // other shore animals keep their own facility identities above.
-    const aquariumName = /shark|ray|sawfish|smooth-hound|nursehound/;
-    if (
-        allCategory('Marine Mania') &&
-        common.has('aquatic') &&
-        names.every(name => aquariumName.test(name))
-    ) return special('aquarium', 'Aquarium');
-
-    return null;
-}
 function normalizeGeneratedAreaMembership(value) {
     if (value instanceof Map) return new Map([...value.entries()].map(([key, ids]) => [
         key, geographicMembershipSet(ids)
@@ -2648,23 +2558,6 @@ function enclosureCanRetainGeneratedTheme(enclosure, key) {
     );
 }
 
-function enclosureThemes(enclosure) {
-    const themes = strictEnclosureThemes(enclosure);
-    state.generatedAreaMembership = normalizeGeneratedAreaMembership(state.generatedAreaMembership);
-
-    // IMPORTANT: this is deliberately read-only. The old implementation
-    // deleted membership while merely asking for an enclosure's themes. That
-    // made Area state depend on render/call order and allowed stale components
-    // to resurrect themselves during the same recalculation.
-    for (const [key, rawIds] of state.generatedAreaMembership.entries()) {
-        const ids = rawIds instanceof Set ? rawIds : new Set(rawIds || []);
-        if (!ids.has(enclosure.id) || themes.some(theme => theme.key === key)) continue;
-        if (!enclosureCanRetainGeneratedTheme(enclosure, key)) continue;
-        const def = ENCLOSURE_AREA_THEMES[key];
-        if (def) themes.push({ key, ...def });
-    }
-    return themes;
-}
 
 
 // V2.14.4 — True Areas are exhibit clusters, not legacy enclosure-card chains.
@@ -3637,9 +3530,6 @@ function customAreasForEnclosure(enclosure){
         (a.enclosureIds?.length||Infinity)-(b.enclosureIds?.length||Infinity) ||
         String(a.id||'').localeCompare(String(b.id||''))
     );
-}
-function customAreaPresentationForEnclosure(enclosure){
-    return customAreasForEnclosure(enclosure)[0]||null;
 }
 
 function applyCustomAreaEnclosurePresentation(element,enclosure){
@@ -5185,9 +5075,6 @@ function animalOccupiesZooSlot(animal, enclosureId, slotIndex) {
 }
 function hasPendingPlayerAction() {
     return state.exchange.some(Boolean) || Boolean(state.result) || Boolean(state.outgoingOffer);
-}
-function releaseExchangeReservations() {
-    for (const animal of state.exchange.filter(Boolean)) clearAnimalZooReservation(animal);
 }
 function releaseOutgoingTradeReservation() {
     if (state.outgoingOffer) clearAnimalZooReservation(state.outgoingOffer);
@@ -7749,10 +7636,6 @@ function trueTransferLegForActivity(item){
     const animal=leg?(state.animals||[]).find(a=>String(a.trueIncomingTransferId)===String(t.id)&&String(a.trueIncomingTransferLegId)===String(leg.legId)):null;
     return {transfer:t,leg,animal};
 }
-function trueIncomingLegHasArrived(t,leg){
-    if(!t||!leg)return false;
-    return !!(state.animals||[]).find(a=>String(a.trueIncomingTransferId)===String(t.id)&&String(a.trueIncomingTransferLegId)===String(leg.legId));
-}
 
 function startTrueArrivalOverlayDrag(event,animal,sourceEl){
     if(event.button!==0||!animal?.trueArrivalPending||state.drag||state.pan)return;
@@ -8959,19 +8842,6 @@ function trueAnimalPopulationTotal(animal) {
     return population ? population.males + population.females + population.unknown : 0;
 }
 
-function trueSpeciesPopulationInZoo(animal) {
-    if (!animal || !trueModeAllowsDuplicateSpecies()) return null;
-    const key = animalCardKey(animal);
-    const total = { males: 0, females: 0, unknown: 0 };
-    for (const candidate of state.animals || []) {
-        if (candidate?.enclosureId == null || animalCardKey(candidate) !== key) continue;
-        const population = normaliseTrueAnimalPopulation(candidate);
-        total.males += population.males;
-        total.females += population.females;
-        total.unknown += population.unknown;
-    }
-    return total;
-}
 
 function updateTruePopulationHover(animal) {
     if (!hoverPreview) return;
@@ -9324,13 +9194,6 @@ function allHusbandryProblems() {
     return result;
 }
 
-function animalHasHusbandryProblem(animal) {
-    if (!animal || animal.enclosureId == null) return false;
-    const enclosure = state.enclosures.find(e => e.id === animal.enclosureId);
-    if (!enclosure) return false;
-    const group = enclosureGroupForSlot(enclosure, animal.slotIndex);
-    return group ? exhibitHusbandryStatus(enclosure, group).invalid : false;
-}
 
 function scientificNameForAnimal(animal) {
     const entry = inventoryEntryForAnimal(animal);
@@ -9870,43 +9733,7 @@ function inventoryTagsForAnimal(animal) {
     return [];
 }
 
-function continentFromInventoryTags(animal) {
-    const labels = new Map([
-        ['africa', 'Africa'],
-        ['asia', 'Asia'],
-        ['europe', 'Europe'],
-        ['north-america', 'North America'],
-        ['south-america', 'South America'],
-        ['oceania', 'Oceania'],
-        ['antarctica', 'Antarctica']
-    ]);
 
-    const tags = inventoryTagsForAnimal(animal)
-        .map(tag => String(tag).trim().toLowerCase());
-
-    return [...labels.entries()]
-        .filter(([tag]) => tags.includes(tag))
-        .map(([, label]) => label)
-        .join(', ');
-}
-
-function informationRegionForAnimal(animal) {
-    const tags = inventoryTagsForAnimal(animal)
-        .map(tag => String(tag).trim().toLowerCase());
-    const subregions = [];
-
-    for (const tag of tags) {
-        const theme = ENCLOSURE_AREA_THEMES[tag];
-        if (!theme || theme.layer !== 'subregion') continue;
-        subregions.push(
-            String(theme.title || tag)
-                .replace(/\s+(Area|House)$/i, '')
-                .trim()
-        );
-    }
-
-    return [...new Set(subregions)].join(', ') || '/';
-}
 
 function informationHabitatForAnimal(animal) {
     const tags = inventoryTagsForAnimal(animal)
@@ -10707,12 +10534,6 @@ function geographicLogicalCellSet(units){
 function geographicCellSetSignature(units){
     return [...geographicLogicalCellSet(units)].sort().join('||');
 }
-function geographicCellSetIsStrictSuperset(a,b){
-    const A=geographicLogicalCellSet(a),B=geographicLogicalCellSet(b);
-    if(A.size<=B.size)return false;
-    for(const k of B)if(!A.has(k))return false;
-    return true;
-}
 function geographicUnitRect(unit){
     const enc=unit._geoPhysicalEnclosure||unit;
     if(state.gameMode==='true')return trueAreaEnclosureRect(enc);
@@ -10864,12 +10685,6 @@ function geographicInfillEnclosures(component){
     });
 }
 
-function geographicGroupAncestorKeys(group){
-    const level=group.theme.geographicLevel,key=group.theme.geographicKey,entry=group._geoEntry||{};
-    if(level==='bioregion')return new Set([entry.subrealm,entry.realm].filter(Boolean));
-    if(level==='subregion')return new Set([entry.realm].filter(Boolean));
-    return new Set();
-}
 function geographicCandidateSupport(unit,candidate,level){
     const candidateKey=level==='bioregion'
         ? normalizeOneEarthCode(candidate?.key)
@@ -11158,16 +10973,6 @@ function geographicAnimalSpeciesKey(animal){
     const entry=inventoryEntryForAnimal(animal)||{};
     return String(entry.scientific_name||entry.scientificName||animal?.scientific_name||
         animal?.fileName||animal?.filename||animal?.name||'').trim().toLowerCase();
-}
-function geographicComponentDistinctSpecies(component){
-    const out=new Set();
-    for(const unit of component||[]){
-        for(const animal of animalsInGeographicExhibit(unit)){
-            const key=geographicAnimalSpeciesKey(animal);
-            if(key)out.add(key);
-        }
-    }
-    return out;
 }
 function geographicDistinctiveSpeciesKeys(unit,target,siblings,level){
     if(!geographicUnitDistinctiveForSibling(unit,target,siblings,level))return new Set();
@@ -11737,13 +11542,6 @@ function marineRegionLabel(code){
     const key=String(code||'').trim().toUpperCase();
     return MARINE_MEOW_ECOREGIONS[key]?.name||MARINE_PPOW_PROVINCES[key]?.name||key;
 }
-function marineRegionParentLabel(code){
-    const key=String(code||'').trim().toUpperCase();
-    const eco=MARINE_MEOW_ECOREGIONS[key];
-    if(eco)return MARINE_MEOW_PROVINCES[eco.province]?.name||'';
-    const pel=MARINE_PPOW_PROVINCES[key];
-    return pel ? (MARINE_PPOW_REALMS[pel.realm]||'') : '';
-}
 function normalizeMarineName(value){
     return String(value||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
         .replace(/[–—]/g,'-').replace(/\s+/g,' ').trim().toLowerCase();
@@ -11871,11 +11669,6 @@ function collapsedFullSubrealms(regionKeys){
 function geographyParentForFactualRegion(regionKey){
     const factual=factualRegionMeta(regionKey);
     return factual.zoo_region ? zooRegionMeta(factual.zoo_region) : null;
-}
-function geographyHoverLabel(regionKey){
-    const factual=factualRegionMeta(regionKey);
-    const parent=geographyParentForFactualRegion(regionKey);
-    return parent?.label ? `${factual.label}, ${parent.label}` : factual.label;
 }
 
 
@@ -15111,7 +14904,6 @@ function trueEnclosureSpatialIndex(){
     return trueEnclosureSpatialCache={revision,signature,occupied,owners};
 }
 function trueBuilderUsedSpaces(){return (state.enclosures||[]).reduce((n,e)=>n+(e?.trueBuilt?Math.max(1,e.cells?.length||1):0),0);}
-function trueBuilderRemainingSpaces(){const b=normaliseTrueEnclosureBuilderState();return Math.max(0,(Number(b.totalSpaces)||0)-trueBuilderUsedSpaces());}
 function normaliseTrueBuiltEnclosureOccupancy(){
     if(state.gameMode!=='true'||state.sandboxMode) return false;
     let changed=false;
@@ -15296,17 +15088,6 @@ function trueSnapWorldPoint(x,y){
     // builder on that same coordinate system.
     return {col:Math.round(x/TRUE_ENC_CELL_W),row:Math.round(y/TRUE_ENC_CELL_H)};
 }
-function trueDrawRectCells(x0,y0,x1,y1){
-    const a=trueSnapWorldPoint(x0,y0),b=trueSnapWorldPoint(x1,y1);
-    let c0=Math.min(a.col,b.col),c1=Math.max(a.col,b.col),r0=Math.min(a.row,b.row),r1=Math.max(a.row,b.row);
-    if(c0===c1)c1=c0+1;if(r0===r1)r1=r0+1;
-    const cells=[];for(let r=r0;r<r1;r++)for(let c=c0;c<c1;c++)cells.push({col:c,row:r});return cells;
-}
-function trueCellsBounds(cells){
-    if(!cells?.length)return null;
-    const minC=Math.min(...cells.map(c=>c.col)),maxC=Math.max(...cells.map(c=>c.col)),minR=Math.min(...cells.map(c=>c.row)),maxR=Math.max(...cells.map(c=>c.row));
-    return {x:minC*TRUE_ENC_CELL_W,y:minR*TRUE_ENC_CELL_H,w:(maxC-minC+1)*TRUE_ENC_CELL_W,h:(maxR-minR+1)*TRUE_ENC_CELL_H};
-}
 function trueSharedEdgeScore(cells,enc){
     const target=new Set(trueBuiltWorldCells(enc).map(c=>trueBuilderCellKey(c.col,c.row)));let score=0;
     for(const c of cells){
@@ -15314,11 +15095,6 @@ function trueSharedEdgeScore(cells,enc){
         for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]])if(target.has(trueBuilderCellKey(c.col+dc,c.row+dr)))score++;
     }
     return score;
-}
-function trueChooseAddTarget(cells,cursorX,cursorY){
-    let best=null,bestScore=0,bestD=Infinity;
-    for(const enc of state.enclosures||[]){if(!enc?.trueBuilt)continue;const score=trueSharedEdgeScore(cells,enc);if(score<=0)continue;const d=Math.hypot(enc.x+trueEnclosureWidth(enc)/2-cursorX,enc.y+trueEnclosureHeight(enc)/2-cursorY);if(score>bestScore||(score===bestScore&&d<bestD)){best=enc;bestScore=score;bestD=d;}}
-    return best;
 }
 function areaGridCellSize(){
     // True keeps its construction grid. Classic/Sandbox use the actual 2×2
@@ -15522,8 +15298,6 @@ function trueAreaRect(area){
     const minX=Math.min(...es.map(e=>e.x)),minY=Math.min(...es.map(e=>e.y)),maxX=Math.max(...es.map(e=>e.x+trueEnclosureWidth(e))),maxY=Math.max(...es.map(e=>e.y+trueEnclosureHeight(e)));
     return {x:minX,y:minY,w:maxX-minX,h:maxY-minY};
 }
-function trueRectContains(a,b,eps=2){return a&&b&&b.x>=a.x-eps&&b.y>=a.y-eps&&b.x+b.w<=a.x+a.w+eps&&b.y+b.h<=a.y+a.h+eps&&!(Math.abs(a.x-b.x)<eps&&Math.abs(a.y-b.y)<eps&&Math.abs(a.w-b.w)<eps&&Math.abs(a.h-b.h)<eps);}
-function trueRectIntersects(a,b){return a&&b&&a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
 function trueAreaCellKey(c,r){return `${c},${r}`;}
 function trueAreaCells(area){
     if(Array.isArray(area?.cells)&&area.cells.length)return area.cells.map(c=>({col:Number(c.col)||0,row:Number(c.row)||0}));
@@ -15642,14 +15416,7 @@ function trueHouseCellsForEnclosure(enc){
     for(const house of state.customAreas||[]){if(house.type!=='house')continue;for(const c of trueAreaCells(house))if(encKeys.has(trueAreaCellKey(c.col,c.row)))out.push({col:c.col,row:c.row,house});}
     return out;
 }
-function trueHouseAtEnclosure(enc){const hits=trueHouseCellsForEnclosure(enc);return hits.length?hits[0].house:null;}
-function trueEnclosureHouseCoverage(enc){const total=trueBuiltWorldCells(enc).length,hits=trueHouseCellsForEnclosure(enc),covered=new Set(hits.map(c=>trueAreaCellKey(c.col,c.row))).size;return{covered,total,partial:covered>0&&covered<total,full:total>0&&covered===total};}
 
-function trueBuilderPresetCells(preset,horizontal=true){
-    if(preset==='large')return[{col:0,row:0},{col:1,row:0},{col:0,row:1},{col:1,row:1}];
-    if(preset==='medium')return horizontal?[{col:0,row:0},{col:1,row:0}]:[{col:0,row:0},{col:0,row:1}];
-    return[{col:0,row:0}];
-}
 function trueBuilderCellKey(x,y){return `${Math.round(x)},${Math.round(y)}`;}
 function trueBuilderOccupiedWorldCells(exceptId=null){
     if(exceptId==null)return new Set(trueEnclosureSpatialIndex().occupied);
@@ -15763,11 +15530,6 @@ function convertCurrentTrueZooToBuiltEnclosures(){
     normaliseTrueEnclosureArchitecture();
     normaliseTrueDevelopment();
     return true;
-}
-function nearestTrueBuiltEnclosure(x,y){
-    let best=null,bestD=Infinity;
-    for(const enc of state.enclosures||[]){if(!enc?.trueBuilt)continue;const d=Math.hypot((enc.x+trueEnclosureWidth(enc)/2)-x,(enc.y+trueEnclosureHeight(enc)/2)-y);if(d<bestD){bestD=d;best=enc;}}
-    return best;
 }
 function ensureTrueEnclosureBuilderUI(){
     const enabled=state.gameMode==='true'&&!state.sandboxMode&&!state.visitingZoo;
@@ -16092,36 +15854,6 @@ function ensureAreaToolUI(){
     const pr=panel.getBoundingClientRect();panel.style.left=`${Math.max(8,Math.min(innerWidth-pr.width-8,r.left-pr.width-12))}px`;panel.style.top=`${Math.max(8,r.top-pr.height-14)}px`;
 }
 
-function areaOpenLabelPosition(enclosures, width=420, height=72) {
-    const cards=(state.enclosures||[]).map(e=>({x:e.x,y:e.y,w:trueEnclosureWidth(e),h:trueEnclosureHeight(e)}));
-    const labels=[...(state.customAreas||[])].filter(a=>Number.isFinite(a.labelX)&&Number.isFinite(a.labelY)).map(a=>({x:a.labelX,y:a.labelY,w:width,h:height}));
-    for(const pos of (state.areaLabelPositions instanceof Map?state.areaLabelPositions.values():[])){
-        if(Number.isFinite(pos?.x)&&Number.isFinite(pos?.y)) labels.push({x:pos.x,y:pos.y,w:width,h:height});
-    }
-    const minX=Math.min(...enclosures.map(e=>e.x)), maxX=Math.max(...enclosures.map(e=>e.x+trueEnclosureWidth(e)));
-    const minY=Math.min(...enclosures.map(e=>e.y)), maxY=Math.max(...enclosures.map(e=>e.y+trueEnclosureHeight(e)));
-    const overlaps=(r,c)=>r.x<c.x+c.w&&r.x+r.w>c.x&&r.y<c.y+c.h&&r.y+r.h>c.y;
-    // Search outward until a genuinely clear title rectangle exists. There is
-    // deliberately no overlapping fallback: the zoo canvas has ample open space.
-    for(let ring=0;ring<240;ring++){
-        const gap=24+ring*48;
-        const candidates=[
-            {x:maxX+gap,y:minY},{x:minX-width-gap,y:minY},
-            {x:minX,y:maxY+gap},{x:minX,y:minY-height-gap},
-            {x:maxX+gap,y:maxY-height},{x:minX-width-gap,y:maxY-height},
-            {x:maxX+gap,y:(minY+maxY-height)/2},{x:minX-width-gap,y:(minY+maxY-height)/2}
-        ];
-        const clear=candidates.find(c=>{const r={x:c.x,y:c.y,w:width,h:height};return !cards.some(card=>overlaps(r,card))&&!labels.some(label=>overlaps(r,label));});
-        if(clear) return clear;
-    }
-    // Practically unreachable; still place beyond the complete zoo bounds.
-    const allMaxX=Math.max(
-        ...cards.map(c=>c.x+c.w),
-        ...labels.map(c=>c.x+c.w),
-        maxX
-    );
-    return {x:allMaxX+96,y:minY};
-}
 function cssColourToHex(value) {
     const raw=String(value||'').trim();
     if(/^#[0-9a-f]{6}$/i.test(raw)) return raw;
@@ -16239,7 +15971,6 @@ function knownAreaColour(name){
     ];
     return rules.find(([k])=>n===k||n.includes(k))?.[1]||null;
 }
-function areaById(id){ return (state.customAreas||[]).find(a=>String(a.id)===String(id)); }
 function nextCustomAreaName(){ let i=1,names=new Set((state.customAreas||[]).map(a=>a.name)); while(names.has(`Area ${i}`))i++; return `Area ${i}`; }
 function startInlineAreaName(area,label,clickPoint=null){
     if(!area||!label||state.visitingZoo)return;
@@ -19524,26 +19255,6 @@ function levelOneDrawDropDestinationAtPoint(clientX, clientY) {
 }
 
 
-function levelOneDrawDropDestination(event, dragRect = null) {
-    const points = [[event.clientX, event.clientY]];
-
-    if (dragRect) {
-        points.push(
-            [dragRect.left + dragRect.width * 0.50, dragRect.top + dragRect.height * 0.50],
-            [dragRect.left + dragRect.width * 0.25, dragRect.top + dragRect.height * 0.25],
-            [dragRect.left + dragRect.width * 0.75, dragRect.top + dragRect.height * 0.25],
-            [dragRect.left + dragRect.width * 0.25, dragRect.top + dragRect.height * 0.75],
-            [dragRect.left + dragRect.width * 0.75, dragRect.top + dragRect.height * 0.75]
-        );
-    }
-
-    for (const [x, y] of points) {
-        const destination = levelOneDrawDropDestinationAtPoint(x, y);
-        if (destination) return destination;
-    }
-
-    return null;
-}
 
 
 function resultDropDestinationAtPoint(clientX, clientY, prospectiveAnimal) {
@@ -20404,9 +20115,6 @@ function createLocalClassicMatchFromSnapshots(playerOneSnapshot, playerTwoSnapsh
     return localClassicMatch;
 }
 
-function hasLocalClassicMatch() {
-    return !!localClassicMatch;
-}
 
 function getLocalClassicMatchSnapshot() {
     if (!localClassicMatch) return null;
@@ -23109,17 +22817,6 @@ async function simulateLocalPeerAction(type,payload={}){
     if(!playerId)return {ok:false,reason:'no-peer'};
     return applyLocalMultiplayerActionEnvelope(cloneForSave(createLocalMultiplayerActionEnvelope(playerId,type,payload)));
 }
-async function simulateLocalPeerClassicAction(type,{destination=null,autoPlace=false}={}){
-    const playerId=localMultiplayerPeerReplica?.playerId;
-    if(!playerId)return {ok:false,reason:'no-peer'};
-    return simulateLocalPeerAction('classic-turn-action',{
-        action:{
-            type,
-            destination:multiplayerDestinationToWire(destination),
-            autoPlace:!!autoPlace
-        }
-    });
-}
 async function sendLocalMultiplayerAnimalMove(playerId,animalId,destination){
     if(serverAuthoritativeMultiplayerActive()&&
        playerId===localClassicMatch?.activePlayerId){
@@ -23965,6 +23662,15 @@ function importGameState(saveData, { deferRender = false } = {}) {
     // .has(), .add(), spread syntax, .entries(), etc. This keeps older saves
     // compatible with newer state fields such as progressionGlowPinnedKeys.
     normaliseLoadedGameCollections();
+
+    // Recovery for named saves written by builds that stored Set/Map values
+    // with plain JSON.stringify. In those saves activeCategories became {},
+    // which normalises to an empty Set and makes every draw look illegal.
+    // An intentionally category-restricted multiplayer game restores its rules
+    // separately, so an empty ordinary save is never a meaningful category set.
+    if (!state.activeCategories.size) {
+        state.activeCategories = new Set(Object.keys(FOLDERS));
+    }
     if(!state.sandboxMode)ensureLifetimePlaythroughId();
     relinkLoadedPlayerReferences();
     repairLoadedNextId();
@@ -24039,7 +23745,9 @@ function importGameState(saveData, { deferRender = false } = {}) {
 
 function loadSaveSlots() {
     try {
-        const parsed = JSON.parse(localStorage.getItem(SAVE_STORAGE_KEY) || '[]');
+        const parsed = deserialiseSpecial(
+            JSON.parse(localStorage.getItem(SAVE_STORAGE_KEY) || '[]')
+        );
         return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
         console.warn('Could not read saved games:', error);
@@ -24048,7 +23756,11 @@ function loadSaveSlots() {
 }
 
 function writeSaveSlots(slots) {
-    localStorage.setItem(SAVE_STORAGE_KEY, JSON.stringify(slots));
+    // Named saves contain Sets and Maps (active categories, generated Areas,
+    // collection/progression state, etc.). Plain JSON.stringify turns those
+    // collections into {}, silently corrupting the save. Use the same tagged
+    // representation as auto-resume so a named save is a lossless snapshot.
+    localStorage.setItem(SAVE_STORAGE_KEY, JSON.stringify(serialiseSpecial(slots)));
 }
 
 function realZooTemplateSlug(name) {
@@ -24642,6 +24354,64 @@ async function deleteSavedGame(slotId) {
     renderSaveSlots();
 }
 
+function saveFileSlug(value) {
+    return String(value || 'Zoo-Curator-Save')
+        .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'Zoo-Curator-Save';
+}
+
+function downloadSaveRecord(record) {
+    if (!record?.game) return false;
+    const payload = {
+        format: 'ZooCuratorSave',
+        version: 1,
+        game_version: typeof ZOO_CURATOR_VERSION !== 'undefined' ? ZOO_CURATOR_VERSION : null,
+        exportedAt: new Date().toISOString(),
+        save: record
+    };
+    // Downloads must preserve the same Set/Map values as browser saves.
+    const blob = new Blob([JSON.stringify(serialiseSpecial(payload), null, 2) + '\n'], { type:'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const date = new Date().toISOString().slice(0, 10);
+    link.download = `ZooCurator_${saveFileSlug(record.zooName || record.name)}_${date}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return true;
+}
+
+function downloadSavedGame(slotId) {
+    const record = loadSaveSlots().find(slot => slot.id === slotId);
+    if (!record) {
+        showGameNotice('That saved game could not be found.');
+        return;
+    }
+    downloadSaveRecord(record);
+}
+
+function downloadCurrentGame() {
+    if (state.historyViewTurn !== null) {
+        showGameNotice(uiText('Return to the current turn before downloading the save file.'));
+        return;
+    }
+    captureTurnSnapshot();
+    const record = {
+        id: `export-${Date.now()}`,
+        name: state.zooName || 'Zoo Curator Save',
+        zooName: state.zooName,
+        turn: state.sandboxMode ? '∞' : state.turn,
+        animalCount: state.animals.length,
+        enclosureCount: state.enclosures.length,
+        savedAt: new Date().toISOString(),
+        game: exportCurrentGameState()
+    };
+    downloadSaveRecord(record);
+}
+
 function formatSaveDate(iso) {
     try {
         return new Intl.DateTimeFormat(undefined, {
@@ -24679,6 +24449,7 @@ function renderSaveSlots() {
             </div>
             <div class="save-slot-actions">
                 <button type="button" data-action="load">Load</button>
+                <button type="button" data-action="download">Download</button>
                 <button type="button" data-action="overwrite">Overwrite</button>
                 <button type="button" data-action="delete">Delete</button>
             </div>
@@ -24692,6 +24463,9 @@ function renderSaveSlots() {
 
         row.querySelector('[data-action="load"]').addEventListener(
             'click', () => loadSavedGame(slot.id)
+        );
+        row.querySelector('[data-action="download"]').addEventListener(
+            'click', () => downloadSavedGame(slot.id)
         );
         row.querySelector('[data-action="overwrite"]').addEventListener(
             'click', () => saveCurrentGame(slot.id)
@@ -24782,6 +24556,7 @@ function ensureSaveLoadUI() {
             <div class="save-load-footer">
                 <span style="flex:1 1 auto;"></span>
                 <button type="button" id="saveRealZooTemplate" hidden>Save Real Zoo Template</button>
+                <button type="button" id="downloadCurrentGame">Download Current Zoo</button>
                 <button type="button" id="saveCurrentGame">Save Current Game</button>
                 <button type="button" id="closeSaveLoad">Close</button>
             </div>
@@ -24790,6 +24565,9 @@ function ensureSaveLoadUI() {
     document.body.appendChild(overlay);
 
     button.addEventListener('click', openSaveLoadMenu);
+    overlay.querySelector('#downloadCurrentGame').addEventListener(
+        'click', downloadCurrentGame
+    );
     overlay.querySelector('#saveCurrentGame').addEventListener(
         'click', () => saveCurrentGame()
     );
@@ -26051,7 +25829,6 @@ function trueDevelopmentShouldEvaluateToday(){
 // ============================================================
 // TRUE TRANSFERS & ARRIVALS
 // ============================================================
-function trueAnimalIsPhysicallyPlaced(animal){return !!animal&&animal.enclosureId!=null&&!animal.trueArrivalPending;}
 function normaliseTrueTransfers(){
     if(!Array.isArray(state.trueTransfers)) state.trueTransfers=[];
     if(!Number.isFinite(Number(state.trueTransferNextId))){
@@ -26188,7 +25965,6 @@ function trueTransferProcessDay(){
         }
     }
 }
-function truePendingArrivalAnimals(){return (state.animals||[]).filter(a=>a?.trueArrivalPending&&a.enclosureId==null);}
 function trueTransferAfterPlacement(animal){
     if(!animal?.trueArrivalPending||animal.enclosureId==null)return;
     const t=normaliseTrueTransfers().find(x=>Number(x.id)===Number(animal.trueIncomingTransferId));if(t)trueTransferFinish(t,animal);
@@ -26205,35 +25981,6 @@ function trueTransferMergeArrivalIntoTarget(animal,target){
 // TRUE POPULATION GROUP MOVES
 // ============================================================
 
-async function truePopulationSelection(source, actionLabel='Move'){
-    if(state.gameMode!=='true'||state.sandboxMode) return null;
-    const physical=normaliseTrueAnimalPopulation(source);
-    if(!physical) return null;
-    const p=(source?.trueTransferReservation||source?.trueTransferReservations?.length) ? trueTransferAvailableCounts(source) : physical;
-
-    // A one-animal population has nothing to split.
-    if(trueAnimalPopulationTotal(source)<=1) return {...p};
-
-    const read=async(label,max)=>{
-        if(max<=0) return 0;
-        const raw=await showGamePrompt(`${actionLabel}: ${label} (0–${max})`, String(max), { title:actionLabel });
-        if(raw===null) return null;
-        const n=Number(raw);
-        if(!Number.isInteger(n)||n<0||n>max){
-            showGameNotice(`Enter a whole number from 0 to ${max}.`);
-            return await read(label,max);
-        }
-        return n;
-    };
-    const males=await read('males',p.males); if(males===null)return null;
-    const females=await read('females',p.females); if(females===null)return null;
-    const unknown=await read('unknown sex',p.unknown); if(unknown===null)return null;
-    if(males+females+unknown<=0) return null;
-    return {males,females,unknown};
-}
-function truePopulationEquals(a,b){
-    return ['males','females','unknown'].every(k=>(Number(a?.[k])||0)===(Number(b?.[k])||0));
-}
 function trueSubtractPopulation(animal,part){
     const p=normaliseTrueAnimalPopulation(animal);
     for(const k of ['males','females','unknown']) p[k]=Math.max(0,p[k]-(Number(part?.[k])||0));
@@ -26241,14 +25988,6 @@ function trueSubtractPopulation(animal,part){
 function trueAddPopulation(animal,part){
     const p=normaliseTrueAnimalPopulation(animal);
     for(const k of ['males','females','unknown']) p[k]+=(Number(part?.[k])||0);
-}
-function trueRestoreDragSourceWithPopulation(drag,animal){
-    const enclosure=state.enclosures.find(e=>String(e.id)===String(drag.originalEnclosureId));
-    if(!enclosure) return false;
-    animal.enclosureId=enclosure.id;
-    animal.slotIndex=drag.originalSlotIndex;
-    clearAnimalZooReservation(animal);
-    return true;
 }
 function trueSplitDraggedPopulationToSlot(animal,enclosure,slotIndex){
     // V2.14: ordinary dragging always moves the complete population.
@@ -32634,12 +32373,6 @@ const REAL_ZOO_GEOGRAPHY_PRESTIGE_CURVE = Object.freeze([
     { prestige: 700, weights: [22, 21, 20, 21, 20] }
 ]);
 
-function rawZooCollectionPrestige() {
-    return (state.animals || []).reduce((total, animal) => {
-        if (!animal || animal.enclosureId === null) return total;
-        return total + (ZOO_PRESTIGE_BY_LEVEL[Number(animal.level)] || 0);
-    }, 0);
-}
 function diminishedCategoryPrestige(raw) {
     const value = Math.max(0, Number(raw) || 0);
     return Math.min(value, 200)
@@ -32744,10 +32477,6 @@ function prestigeAreaBonusDetails() {
     };
 }
 
-function prestigeAreaGroups() {
-    const details = prestigeAreaBonusDetails();
-    return details.recognised.length + details.custom.length;
-}
 
 function prestigeCombinationBonusUnits() {
     let units = 0;
@@ -34196,9 +33925,6 @@ async function createDirectHumanTradeOffer(){
     renderVisitedZooQuickTabs();
     renderTrade();
     return true;
-}
-function incomingDirectHumanTrade(){
-    return pendingDirectHumanTrades().find(o=>o.status==='pending'&&o.toPlayerId===localClassicMatch?.activePlayerId)||null;
 }
 
 function nextDirectTradeAnimalId(snapshot){
@@ -36306,13 +36032,6 @@ function truePlayerCountryName() {
     ).trim();
 }
 
-function trueZooInterestSummary(profile) {
-    const favourites=(Array.isArray(profile?.favourites)?profile.favourites:[]).filter(Boolean);
-    if(favourites.length) return favourites.slice(0,3).join(', ');
-    const types=(Array.isArray(profile?.zooTypes)?profile.zooTypes:[]).filter(t=>t&&t!=='general');
-    if(types.length) return types.slice(0,2).map(t=>String(t).replace(/[-_]/g,' ')).join(', ');
-    return 'General collection';
-}
 
 
 function truePlayerZooTypes() {

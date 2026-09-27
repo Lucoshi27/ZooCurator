@@ -21445,12 +21445,42 @@ function applyAuthoritativeHumanTradeMessage(message){
                 if(aiPlayerIds.some(id=>!ownedIds.has(String(id))))
                     state.autonomousTradeOffer=null;
             }
+            // importGameState also restores the snapshot's multiplayer-adjacent
+            // transient UI. Re-assert the server trade object after that import
+            // so an older zoo snapshot cannot resurrect a pending/cancelled
+            // proposal or hide an accepted sender-claim card.
+            if(!Array.isArray(localClassicMatch.pendingPlayerTrades))
+                localClassicMatch.pendingPlayerTrades=[];
+            let liveOffer=localClassicMatch.pendingPlayerTrades.find(
+                o=>String(o?.id)===String(incoming.id)
+            );
+            if(!liveOffer){
+                liveOffer={id:incoming.id};
+                localClassicMatch.pendingPlayerTrades.push(liveOffer);
+            }
+            const preservedClaim=offer.senderClaimAnimal?cloneForSave(offer.senderClaimAnimal):null;
+            Object.assign(liveOffer,cloneForSave(incoming));
+            if(preservedClaim&&incoming.status==='accepted-awaiting-sender-claim')
+                liveOffer.senderClaimAnimal=preservedClaim;
+            if(incoming.status==='completed'||incoming.status==='declined'||
+               incoming.status==='cancelled'||incoming.status==='invalid')
+                liveOffer.senderClaimAnimal=null;
+
+            clearOrphanedZooSlotReservations?.();
+            refreshDrawAvailabilityState?.();
             localClassicMatch.players[localClassicMatch.activePlayerId].snapshot=cloneForSave(exportCurrentGameState());
             renderTrade?.();
             renderVisitedZooQuickTabs?.();
             transport?.authoritativeHumanTradeImportKeys?.delete(importKey);
         });
         }
+    }
+
+    if(incoming.status==='accepted-awaiting-sender-claim'||
+       incoming.status==='completed'||incoming.status==='declined'||
+       incoming.status==='cancelled'||incoming.status==='invalid'){
+        pendingHumanTradeActionIds.delete(`accept:${incoming.id}`);
+        pendingHumanTradeActionIds.delete(`claim:${incoming.id}`);
     }
 
     if(incoming.status==='accepted-awaiting-sender-claim'){
@@ -21465,6 +21495,8 @@ function applyAuthoritativeHumanTradeMessage(message){
             : directHumanTradeSenderClaimAnimal(offer)||offer.senderClaimAnimal||null;
     }else if(incoming.status==='completed'){
         offer.senderClaimAnimal=null;
+        if(String(selectedHumanTradeProposalId||'')===String(incoming.id))
+            selectedHumanTradeProposalId=null;
         resumeAITradingAfterHumanTrade?.();
     }else if(incoming.status==='declined'||incoming.status==='cancelled'||incoming.status==='invalid'){
         offer.senderClaimAnimal=null;
@@ -21706,9 +21738,19 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
                 const seatMatch=/^player-(\d+)$/.exec(activeIdentity);
                 const desiredSeat=seatMatch?Number(seatMatch[1]):null;
                 const isProvisionalJoin=/^joining-/.test(activeIdentity);
-                // A fresh Join must not silently reuse an old host/player token
-                // stored by this browser for the same match code.
-                const reconnectIdentity=!isProvisionalJoin&&savedIdentity?savedIdentity:null;
+                // A fresh manual Join must not silently reuse an old token.
+                // Automatic reload recovery, however, intentionally enters
+                // join() through a provisional joining-* shell. Recognise the
+                // persisted active peer session so that path still presents its
+                // reconnect token and reclaims the existing durable seat.
+                const activeSession=readActiveMultiplayerSession?.();
+                const explicitPeerReconnect=!!(
+                    isProvisionalJoin&&savedIdentity&&
+                    activeSession?.role==='peer'&&
+                    String(activeSession?.matchId||'')===String(matchId||'')
+                );
+                const reconnectIdentity=(!isProvisionalJoin||explicitPeerReconnect)&&savedIdentity
+                    ? savedIdentity : null;
                 socket.send(JSON.stringify({
                     protocol:MULTIPLAYER_SERVER_PROTOCOL,
                     type:'hello',
@@ -23864,17 +23906,23 @@ function writeAutoResumeSnapshot(force = false) {
 }
 
 function persistCurrentCameraForReload() {
-    // Camera movement is deliberately not a game turn. Force-refresh the
-    // auto-resume record here so its view.scrollLeft/scrollTop and saved zoom
-    // describe the exact view the player is leaving, rather than the camera
-    // from the last gameplay action.
-    if (!state.loaded || state.visitingZoo || state.historyViewTurn !== null) return;
+    // The reconnect breadcrumb is session state, not camera state. Persist it
+    // even while visiting another zoo or viewing history; the old early return
+    // could otherwise make a perfectly valid P2 session look abandoned on
+    // reload from a visited zoo.
     if(localMultiplayerBrowserTransport&&localClassicMatch){
         const transport=localMultiplayerBrowserTransport;
-        if(transport.role==='host')syncActiveZooIntoLocalMatch();
+        if(transport.role==='host'&&!state.visitingZoo&&state.historyViewTurn===null)
+            syncActiveZooIntoLocalMatch();
         if(transport.matchId&&(transport.role==='host'||transport.role==='peer'))
             writeActiveMultiplayerSession(transport.matchId,transport.role);
     }
+
+    // Camera movement is deliberately not a game turn. Only persist the current
+    // camera when it belongs to the owned live zoo. Multiplayer auto-resume
+    // snapshots written elsewhere already use multiplayerOwnedGameStateForResume
+    // and therefore cannot turn a visited zoo into the player's own zoo.
+    if (!state.loaded || state.visitingZoo || state.historyViewTurn !== null) return;
     writeAutoResumeSnapshot(true);
 }
 
@@ -25794,8 +25842,9 @@ function resetDrawCardFromTheirOfferMode(){
         // THEIR OFFER deliberately removes the Draw card image while visiting
         // another human zoo. Returning home must restore the asset as well as
         // its styling; otherwise the Draw slot remains permanently blank.
-        if(!image.getAttribute('src'))
-            image.src='assets/animals/carnivora/1/Back.png';
+        const canonicalBack=animalBackPath('Carnivora',1);
+        if(!image.getAttribute('src')||!/\/Carnivora\/1\/Back\.png(?:$|[?#])/i.test(image.src))
+            image.src=canonicalBack;
         image.style.removeProperty('opacity');
         image.style.removeProperty('filter');
     }
@@ -29991,7 +30040,7 @@ function startDrawDrag(event) {
     const image = document.createElement('img');
     image.className = 'dragging-animal dragging-result';
     image.style.pointerEvents = 'none';
-    image.src = source?.src || 'assets/animals/carnivora/1/Back.png';
+    image.src = source?.src || animalBackPath('Carnivora',1);
     image.style.width = `${rect.width}px`;
     image.style.height = `${rect.height}px`;
     document.body.appendChild(image);
@@ -39101,8 +39150,19 @@ function renderDirectHumanTradeCards(){
         cancelDraft.type='button';cancelDraft.textContent='Cancel request';
         cancelDraft.style.cssText='position:static;margin:0';
         cancelDraft.onclick=async()=>{
-            if(serverAuthoritativeMultiplayerActive()||
-               localMultiplayerPeerReplica?.playerId===activeId||
+            // A visit request is only a local draft until SEND creates a durable
+            // server trade. In server-backed play, cancelling it must therefore
+            // stay local. Routing this through the legacy peer/host envelope
+            // could switch the host authority seat and mutate the wrong browser.
+            if(serverAuthoritativeMultiplayerActive()){
+                clearLocalHumanTradeDraft(activeId);
+                resumeAITradingAfterHumanTrade();
+                localClassicMatch.revision++;
+                recordLocalMultiplayerEvent('trade-draft-cancelled',{playerId:activeId});
+                renderTrade();renderVisitedZooQuickTabs();
+                return;
+            }
+            if(localMultiplayerPeerReplica?.playerId===activeId||
                (localMultiplayerBrowserTransport?.role==='peer'&&
                 localMultiplayerBrowserTransport.playerId===activeId)){
                 await dispatchLocalMultiplayerAction(activeId,'cancel-human-trade-draft',{});
@@ -39647,6 +39707,7 @@ async function finishTradeResultDrag(event) {
         if(!accepted && state.outgoingOffer && drag.releasedOutgoingReservation) {
             reserveAnimalZooSlot(state.outgoingOffer,drag.releasedOutgoingReservation.enclosureId,drag.releasedOutgoingReservation.slotIndex);
             renderTrade();
+            refreshDrawAvailabilityState();
         }
         return;
     }
@@ -39667,6 +39728,7 @@ async function finishTradeResultDrag(event) {
         if(!accepted && state.outgoingOffer && drag.releasedOutgoingReservation) {
             reserveAnimalZooSlot(state.outgoingOffer,drag.releasedOutgoingReservation.enclosureId,drag.releasedOutgoingReservation.slotIndex);
             renderTrade();
+            refreshDrawAvailabilityState();
         }
     } else {
         // Cancelled/invalid drop: the trade has not happened, so put the
@@ -39677,8 +39739,10 @@ async function finishTradeResultDrag(event) {
                 drag.releasedOutgoingReservation.enclosureId,
                 drag.releasedOutgoingReservation.slotIndex
             );
+            refreshDrawAvailabilityState();
         }
-        // Invalid/cancelled drop changed no visible state, so no render/save.
+        // Invalid/cancelled drop changed no ownership, but restoring the
+        // reservation does change logical Draw capacity.
     }
 }
 function setupOpponentTradeClicks() {
@@ -40889,10 +40953,15 @@ async function startGame() {
                 if(ok){
                     showMultiplayerToast('Reconnected to multiplayer.');
                 }else{
-                    // If the network is temporarily unavailable, retain the
-                    // restored match rather than throwing Player 2's zoo away.
-                    if(!localClassicMatch&&restoredPeerMatch)
+                    // join() creates a provisional joining-* match before the
+                    // socket handshake. On failure that shell may still exist,
+                    // so testing !localClassicMatch loses the restored P2 zoo.
+                    if(restoredPeerMatch){
                         localClassicMatch=restoredPeerMatch;
+                        localClassicMatch.viewingPlayerId=null;
+                        disableLocalMultiplayerPeerSimulation();
+                        renderVisitedZooQuickTabs();
+                    }
                     showMultiplayerToast('Multiplayer reconnect unavailable.');
                 }
             });

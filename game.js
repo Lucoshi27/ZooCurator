@@ -13579,6 +13579,11 @@ function processTrueRealZooManagementBudget(maxChecks=8) {
 }
 
 const realZooVisitLayouts = new Map();
+// Exact live prestige is deliberately cached separately from visit geometry.
+// createStartingZoo()/True-world resets are reused while materialising another
+// real zoo and may clear/rebuild layout caches; that must never make a zoo that
+// was already visited fall back to its static database prestige.
+const realZooLivePrestige = new Map();
 const REAL_ZOO_VISIT_LAYOUT_KEYS = [
     'animals','enclosures','nextId','enclosure10Unlocked','areaLabelPositions',
     'customAreas','generatedAreaMembership','generatedAreaOverrides','suppressedGeneratedAreas',
@@ -14224,12 +14229,16 @@ function captureRealZooVisitLayout(recordOrName) {
     data.viewZoom=Math.max(0.01,Number(state.zoom)||1);
     // Cache the exact live score as well as geometry. This lets All Zoos and
     // future visits use current prestige instead of the raw collection total.
-    { const b=zooPrestigeBreakdown(); data.prestige={original:Math.ceil(b.base),current:Math.ceil(b.current),area_bonus_percent:b.areaBonusPercent,combination_bonus_percent:b.combinationUnits,husbandry_penalty_percent:b.husbandryPenaltyPercent}; }
+    { const b=zooPrestigeBreakdown(); data.prestige={original:Math.ceil(b.base),current:Math.ceil(b.current),area_bonus_percent:b.areaBonusPercent,combination_bonus_percent:b.combinationUnits,curation_bonus_percent:b.curationPercent,identity_bonus_percent:b.identityPercent,husbandry_penalty_percent:b.husbandryPenaltyPercent}; }
     realZooVisitLayouts.set(key,data);
+    realZooLivePrestige.set(key,cloneForSave(data.prestige));
     if(state.gameMode==='true') trueWorldStoreLiveLayout(recordOrName,data);
 }
 function restoreRealZooVisitLayout(record, layout) {
     if(!layout) return false;
+    const key=realZooVisitLayoutKey(record);
+    if(key&&layout.prestige&&Number.isFinite(Number(layout.prestige.current)))
+        realZooLivePrestige.set(key,cloneForSave(layout.prestige));
     for(const field of REAL_ZOO_VISIT_LAYOUT_KEYS) {
         if(Object.prototype.hasOwnProperty.call(layout,field)) state[field]=cloneForSave(layout[field]);
     }
@@ -14385,7 +14394,19 @@ async function visitRealZoo(record) {
         } else {
             state.generatedAreaMembership=new Map();
             state.areaLabelPositions=new Map();
+            // createRealZooFromRecord() reuses createStartingZoo(), whose new-game
+            // reset clears realZooVisitLayouts. During a VISIT that would erase
+            // every previously materialised zoo's live prestige/layout, so All
+            // Zoos fell back to the static pregenerated prestige as soon as a
+            // different uncached zoo was opened. Preserve the visit cache across
+            // this temporary generation reset; a genuine New Zoo still clears it.
+            const preservedVisitLayouts=new Map(realZooVisitLayouts);
+            const preservedLivePrestige=new Map(realZooLivePrestige);
             createRealZooFromRecord({...record,animals:holdings});
+            for(const [key,value] of preservedVisitLayouts)
+                if(!realZooVisitLayouts.has(key)) realZooVisitLayouts.set(key,value);
+            for(const [key,value] of preservedLivePrestige)
+                realZooLivePrestige.set(key,value);
         }
         state.realZooSessionHoldings=sessionHoldings;
         state.realZooTradeDirtyZoos=dirty;
@@ -14499,6 +14520,7 @@ function abandonZooVisitForNewGame() {
     document.getElementById('trueEnclosureBuilderPanel')?.remove();
     document.getElementById('trueEnclosureBuilderSelection')?.remove();
     realZooVisitLayouts.clear();
+    realZooLivePrestige.clear();
     visitedZooQuickTabs=[];
     document.getElementById('visitedZooQuickTabs')?.remove();
     document.body.classList.remove('visiting-real-zoo','area-tool-active');
@@ -30708,13 +30730,26 @@ function ensureGenerateZooUI() {
                     applyMultiplayerCategoryRules(
                         localClassicMatch.rules?.activeCategories||pendingMultiplayerSetup.activeCategories
                     );
-                    const replacement=await submitCurrentMultiplayerAction('replace-player-zoo',{
-                        snapshot:exportCurrentGameState()
-                    });
+                    const replacementSnapshot=exportCurrentGameState();
+                    let replacement={ok:false};
+                    if(serverAuthoritativeMultiplayerActive()){
+                        // Deliberate New Zoo replacement uses the player's own
+                        // durable CAS stream; it is not a progression action.
+                        if(!await awaitDurableZooCommitIdle())
+                            throw new Error('The multiplayer zoo is still synchronising. Please try again.');
+                        const player=localClassicMatch?.players?.[localClassicMatch.activePlayerId];
+                        if(player)player.snapshot=cloneForSave(replacementSnapshot);
+                        commitOwnZooStateToServer(replacementSnapshot);
+                        const committed=await awaitDurableZooCommitIdle();
+                        replacement={ok:committed,turn:Number(replacementSnapshot.state?.turn)||state.turn};
+                    }else{
+                        replacement=await submitCurrentMultiplayerAction('replace-player-zoo',{
+                            snapshot:replacementSnapshot
+                        });
+                    }
                     if(!replacement?.ok)throw new Error('The multiplayer game could not reset this zoo.');
                     state.turn=Number(replacement.turn)||state.turn;
                     pendingMultiplayerZooReset=false;
-                    if(localMultiplayerBrowserTransport?.role==='host')syncActiveZooIntoLocalMatch();
                     renderAll();
                     renderVisitedZooQuickTabs();
                     writeAutoResumeSnapshot(true);
@@ -30771,6 +30806,7 @@ function ensureGenerateZooUI() {
             overlay.classList.remove('visible');
             resumeHintGlowsAfterMenu();
         } catch (error) {
+            if(resettingMultiplayerZoo)pendingMultiplayerZooReset=false;
             console.error('New zoo generation failed:', error);
             showGameNotice(`Zoo generation failed: ${error?.message || error}`);
         } finally {
@@ -31864,6 +31900,8 @@ function realZooStoredPrestigeSummary(record) {
     // A materialised/visited zoo has the newest exact score. Prefer that over
     // the static template so All Zoos reflects current prestige after changes.
     const liveKey=realZooVisitLayoutKey(record);
+    const exactLive=liveKey ? realZooLivePrestige.get(liveKey) : null;
+    if(exactLive && Number.isFinite(Number(exactLive.current))) return exactLive;
     const live=liveKey ? (realZooVisitLayouts.get(liveKey) || (state.gameMode==='true' ? trueWorldZooState(record,{create:false})?.liveLayout : null)) : null;
     if(live?.prestige) return live.prestige;
     // Handcrafted committed/local templates override the one-time generated

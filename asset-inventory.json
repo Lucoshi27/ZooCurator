@@ -3973,21 +3973,6 @@
             "NA27",
             "NA28"
           ]
-        },
-        "Mountain Zebra.png": {
-          "scientific_name": "Equus zebra hartmannae",
-          "enclosure_size": "medium",
-          "tags": [
-            "desert",
-            "grassland",
-            "shrubland",
-            "mountain",
-            "rocky"
-          ],
-          "wild_regions": [
-            "AT9",
-            "AT10"
-          ]
         }
       },
       "4": {
@@ -4291,6 +4276,21 @@
             "PA38",
             "PA39",
             "PA40"
+          ]
+        },
+        "Mountain Zebra.png": {
+          "scientific_name": "Equus zebra hartmannae",
+          "enclosure_size": "medium",
+          "tags": [
+            "desert",
+            "grassland",
+            "shrubland",
+            "mountain",
+            "rocky"
+          ],
+          "wild_regions": [
+            "AT9",
+            "AT10"
           ]
         },
         "Musk Ox.png": {

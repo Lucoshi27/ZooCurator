@@ -21175,6 +21175,11 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
             postServerMessage(data){
                 if(closed)return false;
                 const message={...data,protocol:MULTIPLAYER_SERVER_PROTOCOL};
+                multiplayerDiagnostic('server-message-sent',{
+                    type:message.type||null,requestId:message.requestId||null,
+                    baseRevision:Number(message.baseRevision)||null,
+                    hasZoo:!!message.zoo
+                });
                 const encoded=JSON.stringify(serialiseSpecial(message));
                 if(socket.readyState===WebSocket.OPEN)socket.send(encoded);
                 else if(socket.readyState===WebSocket.CONNECTING)queued.push(encoded);
@@ -21208,6 +21213,7 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
             },7000);
             socket.addEventListener('open',()=>{
                 clearTimeout(timer);
+                multiplayerDiagnostic('websocket-open',{url:socketUrl.origin});
                 for(const message of queued.splice(0))socket.send(message);
                 const savedIdentity=readMultiplayerServerIdentity(matchId);
                 const activeIdentity=String(localClassicMatch?.activePlayerId||'');
@@ -21228,10 +21234,12 @@ function createWebSocketMultiplayerChannelFactory(relayUrl){
             },{once:true});
             socket.addEventListener('error',()=>{
                 clearTimeout(timer);
+                multiplayerDiagnostic('websocket-error',{readyState:socket.readyState});
                 reject(new Error('Could not connect to multiplayer server.'));
             },{once:true});
         });
-        socket.addEventListener('close',()=>{
+        socket.addEventListener('close',event=>{
+            multiplayerDiagnostic('websocket-close',{code:event?.code||0,reason:event?.reason||'',wasClean:event?.wasClean===true,superseded});
             closed=true;
             queued.length=0;
             if(!superseded)deliver({
@@ -21284,6 +21292,97 @@ zooBoard?.addEventListener('scroll',captureBrowserPeerCamera,{passive:true});
 zooBoard?.addEventListener('wheel',()=>requestAnimationFrame(captureBrowserPeerCamera),{passive:true});
 window.addEventListener('pointerup',()=>requestAnimationFrame(captureBrowserPeerCamera),{passive:true});
 let localMultiplayerBrowserSyncSequence=0;
+
+// Multiplayer join diagnostics. Deliberately keep zoo snapshots, reconnect
+// tokens and animal inventories out of this log: it is meant to be safe to
+// paste into a bug report.
+const multiplayerDiagnosticLog=[];
+function multiplayerDiagnostic(event,details={}){
+    const entry={
+        at:new Date().toISOString(),
+        event:String(event||'event'),
+        role:localMultiplayerBrowserTransport?.role||null,
+        matchId:localMultiplayerBrowserTransport?.matchId||localClassicMatch?.matchId||null,
+        localPlayerId:localClassicMatch?.activePlayerId||null,
+        serverPlayerId:localMultiplayerBrowserTransport?.serverPlayerId||null,
+        serverSeat:localMultiplayerBrowserTransport?.serverSeat||null,
+        authenticated:localMultiplayerBrowserTransport?.serverAuthenticated===true,
+        ...details
+    };
+    multiplayerDiagnosticLog.push(entry);
+    if(multiplayerDiagnosticLog.length>250)multiplayerDiagnosticLog.splice(0,multiplayerDiagnosticLog.length-250);
+    console.log('[Zoo Curator Multiplayer]',entry.event,entry);
+    return entry;
+}
+function zooMultiplayerDiagnostics(){
+    const t=localMultiplayerBrowserTransport;
+    const players=(t?.serverPlayers||[]).map(p=>({
+        playerId:String(p?.playerId||''),
+        seat:Number(p?.seat)||null,
+        connected:p?.connected!==false,
+        zooName:p?.zooName||null,
+        hasZoo:Boolean(
+            localClassicMatch?.players?.[`player-${Number(p?.seat)}`]?.snapshot
+        )
+    }));
+    const localPlayers=Object.fromEntries(Object.entries(localClassicMatch?.players||{}).map(([id,p])=>[
+        id,{connected:p?.connected!==false,hasSnapshot:!!p?.snapshot,
+            zooName:p?.snapshot?.state?.zooName||p?.snapshot?.zooName||null}
+    ]));
+    const report={
+        generatedAt:new Date().toISOString(),
+        transport:t?{
+            role:t.role,matchId:t.matchId,playerId:t.playerId,
+            serverBacked:t.serverBacked===true,serverAuthenticated:t.serverAuthenticated===true,
+            serverDisconnected:t.serverDisconnected===true,serverSuperseded:t.serverSuperseded===true,
+            serverPlayerId:t.serverPlayerId||null,serverSeat:t.serverSeat||null,
+            serverRevision:Number(t.serverRevision)||0,
+            sent:Number(t.sent)||0,received:Number(t.received)||0,
+            lastMessageType:t.lastMessageType||null,
+            pendingPreSeatSync:!!t.pendingPreSeatSync,
+            durableZooRevision:Number(t.durableZooRevision)||0,
+            durableZooCommitPending:t.durableZooCommitPending===true,
+            hasDurableOwnZoo:!!t.durableOwnZooSnapshot
+        }:null,
+        match:localClassicMatch?{
+            matchId:localClassicMatch.matchId,activePlayerId:localClassicMatch.activePlayerId,
+            turnPlayerId:localClassicMatch.turnPlayerId,
+            awaitingLocalZooSetup:localClassicMatch.awaitingLocalZooSetup===true,
+            playerIds:[...(localClassicMatch.playerIds||[])],
+            players:localPlayers
+        }:null,
+        serverPlayers:players,
+        peerReplica:localMultiplayerPeerReplica?{
+            playerId:localMultiplayerPeerReplica.playerId,
+            revision:localMultiplayerPeerReplica.revision,
+            receivedPackets:localMultiplayerPeerReplica.receivedPackets,
+            playerIds:[...(localMultiplayerPeerReplica.playerIds||[])],
+            snapshotSeats:Object.fromEntries(Object.entries(localMultiplayerPeerReplica.players||{})
+                .map(([id,p])=>[id,!!p?.snapshot]))
+        }:null,
+        pendingBrowserActions:[...localMultiplayerPendingActions.entries()].map(([id,p])=>({id,type:p.type})),
+        pendingServerActions:[...multiplayerServerPendingActions.entries()].map(([id,p])=>({id,type:p.type})),
+        recentEvents:multiplayerDiagnosticLog.slice(-80)
+    };
+    console.log('[Zoo Curator Multiplayer] DIAGNOSTIC REPORT');
+    console.log(report);
+    console.table(players);
+    console.table(report.recentEvents);
+    return report;
+}
+window.zooMultiplayerDiagnostics=zooMultiplayerDiagnostics;
+window.copyZooMultiplayerDiagnostics=async function(){
+    const text=JSON.stringify(zooMultiplayerDiagnostics(),null,2);
+    try{
+        await navigator.clipboard.writeText(text);
+        console.log('[Zoo Curator Multiplayer] Diagnostic report copied to clipboard.');
+        return text;
+    }catch(error){
+        console.warn('[Zoo Curator Multiplayer] Could not copy automatically; use zooMultiplayerDiagnostics() instead.',error);
+        return text;
+    }
+};
+
 let localMultiplayerPeerApplyChain=Promise.resolve();
 const localMultiplayerPendingActions=new Map();
 let localMultiplayerTransportGeneration=0;
@@ -21368,8 +21467,13 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
     const generation=++localMultiplayerTransportGeneration;
     const resolvedMatchId=matchId||ensureLocalClassicMatchId();
     const resolvedPlayerId=playerId||localClassicMatch.activePlayerId;
+    multiplayerDiagnostic('transport-opening',{requestedRole:role,requestedPlayerId:resolvedPlayerId});
     const channel=await createLocalMultiplayerChannel(resolvedMatchId);
-    if(!channel)return false;
+    if(!channel){
+        multiplayerDiagnostic('transport-open-failed',{requestedRole:role,requestedPlayerId:resolvedPlayerId});
+        return false;
+    }
+    multiplayerDiagnostic('transport-channel-created',{requestedRole:role,requestedPlayerId:resolvedPlayerId,serverBacked:channel.serverBacked===true});
     // A second Host/Join click may have started while an async external
     // transport was opening. Only the newest attempt may become active.
     if(generation!==localMultiplayerTransportGeneration){
@@ -21407,6 +21511,16 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
         if(message.protocol===MULTIPLAYER_SERVER_PROTOCOL){
             transport.received++;
             transport.lastMessageType=message.type;
+            multiplayerDiagnostic('server-message',{
+                type:message.type||null,
+                playerId:message.playerId||null,
+                seat:Number(message.seat)||null,
+                revision:Number(message.revision)||0,
+                playerCount:Array.isArray(message.players)?message.players.length:null,
+                hasZoo:!!message.zoo,
+                action:message.action||null,
+                code:message.code||null
+            });
             if(message.type==='server-welcome'){
                 channel.serverIdentity={
                     playerId:String(message.playerId||''),
@@ -21461,6 +21575,14 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     if(localMultiplayerPeerReplica)
                         localMultiplayerPeerReplica.playerId=authenticatedLocalId;
                 }
+                multiplayerDiagnostic('server-welcome-applied',{
+                    assignedPlayerId:transport.serverPlayerId,
+                    assignedSeat:transport.serverSeat,
+                    returning:transport.serverReturning===true,
+                    roster:(transport.serverPlayers||[]).map(p=>({
+                        playerId:p?.playerId||null,seat:Number(p?.seat)||null,connected:p?.connected!==false
+                    }))
+                });
                 writeMultiplayerServerIdentity(resolvedMatchId,channel.serverIdentity);
                 if(role==='peer'&&transport.pendingPreSeatSync){
                     const deferredSync=transport.pendingPreSeatSync;
@@ -21479,6 +21601,13 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                         initialiseAuthoritativeMultiplayerProgressionIfHost();
                 },0);
             }else if(message.type==='zoo-state'){
+                multiplayerDiagnostic('zoo-state-received',{
+                    playerId:message.playerId||null,revision:Number(message.revision)||0,
+                    commitAck:message.commitAck===true,authoritativeCorrection:message.authoritativeCorrection===true,
+                    zooName:message.zoo?.state?.zooName||message.zoo?.zooName||null,
+                    enclosureCount:Array.isArray(message.zoo?.state?.enclosures)?message.zoo.state.enclosures.length:null,
+                    animalCount:Array.isArray(message.zoo?.state?.animals)?message.zoo.state.animals.length:null
+                });
                 const serverPlayerId=String(message.playerId||'');
                 const ownServerId=String(transport.serverPlayerId||'');
                 const zoo=message.zoo;
@@ -21652,6 +21781,12 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     }
                 }
                 reconcileLocalMultiplayerRosterFromServerPlayers(transport.serverPlayers);
+                multiplayerDiagnostic('server-presence-applied',{
+                    roster:(transport.serverPlayers||[]).map(p=>({
+                        playerId:p?.playerId||null,seat:Number(p?.seat)||null,connected:p?.connected!==false
+                    })),
+                    localSeats:Object.fromEntries(Object.entries(localClassicMatch?.players||{}).map(([id,p])=>[id,!!p?.snapshot]))
+                });
                 transport.serverRevision=Math.max(Number(transport.serverRevision)||0,Number(message.revision)||0);
                 renderVisitedZooQuickTabs?.();
                 queueMicrotask(()=>sendMultiplayerLiveViewSubscription());
@@ -21955,9 +22090,15 @@ function sendLocalMultiplayerBrowserAction(type,payload={}){
         const timeout=setTimeout(()=>{
             if(!localMultiplayerPendingActions.has(action.id))return;
             localMultiplayerPendingActions.delete(action.id);
+            multiplayerDiagnostic('browser-action-timeout',{actionId:action.id,actionType:type});
             resolve({ok:false,reason:'timeout',actionId:action.id});
         },5000);
         localMultiplayerPendingActions.set(action.id,{resolve,timeout,type});
+    });
+    multiplayerDiagnostic('browser-action-sent',{
+        actionId:action.id,actionType:type,
+        hasSnapshot:!!payload?.snapshot,
+        snapshotZooName:payload?.snapshot?.state?.zooName||null
     });
     localMultiplayerBrowserChannel.postMessage({protocol:'zoo-curator-browser-transport-v1',
         matchId:t.matchId,senderPlayerId:t.playerId,type:'action',action:cloneForSave(action)});
@@ -31826,8 +31967,20 @@ function ensureGenerateZooUI() {
 
                 if(joiningMultiplayerSeat){
                     applyMultiplayerCategoryRules(pendingMultiplayerSetup.activeCategories);
+                    const registrationSnapshot=exportCurrentGameState();
+                    multiplayerDiagnostic('register-player-zoo-start',{
+                        zooName:registrationSnapshot?.state?.zooName||null,
+                        enclosureCount:registrationSnapshot?.state?.enclosures?.length||0,
+                        animalCount:registrationSnapshot?.state?.animals?.length||0,
+                        serverBacked:localMultiplayerBrowserChannel?.serverBacked===true,
+                        authenticated:localMultiplayerBrowserTransport?.serverAuthenticated===true
+                    });
                     const registration=await sendLocalMultiplayerBrowserAction('register-player-zoo',{
-                        snapshot:exportCurrentGameState()
+                        snapshot:registrationSnapshot
+                    });
+                    multiplayerDiagnostic('register-player-zoo-result',{
+                        ok:registration?.ok===true,reason:registration?.reason||null,
+                        turn:registration?.turn||null
                     });
                     if(!registration?.ok)throw new Error('The host could not register this zoo.');
                     state.turn=Number(registration.turn)||state.turn;

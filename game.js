@@ -19848,7 +19848,7 @@ function multiplayerActivityPlayerName(playerId){
     if(id&&id===localId)return 'Your zoo';
     const serverPlayer=(localMultiplayerBrowserTransport?.serverPlayers||[])
         .find(player=>String(player?.playerId||'')===id);
-    const localPlayerId=serverPlayer ? multiplayerLocalPlayerIdForServerPlayer(serverPlayer.playerId) : id;
+    const localPlayerId=serverPlayer ? multiplayerLocalPlayerIdForServerId(serverPlayer.playerId) : id;
     const snapshot=localClassicMatch?.players?.[localPlayerId]?.snapshot;
     return String(snapshot?.state?.zooName||snapshot?.zooName||serverPlayer?.zooName||
         (serverPlayer?.seat ? `Player ${serverPlayer.seat}` : 'Another zoo'));
@@ -19900,11 +19900,9 @@ function ensureProgressTrackerFlipStyles(){
     const style=document.createElement('style');
     style.id='progressTrackerFlipStyles';
     style.textContent=`
-#progressTracker{perspective:1200px}
-#progressTracker .progress-tracker-shell{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .32s ease}
-#progressTracker.activity-face .progress-tracker-shell{transform:rotateY(180deg)}
-#progressTracker .progress-tracker-face{backface-visibility:hidden;-webkit-backface-visibility:hidden}
-#progressTracker .progress-tracker-back{position:absolute;inset:0;transform:rotateY(180deg);overflow:hidden;box-sizing:border-box;background:inherit;border-radius:inherit}
+#progressTracker .progress-tracker-shell{position:relative;width:100%;height:100%}
+#progressTracker .progress-tracker-face{width:100%;height:100%;box-sizing:border-box}
+#progressTracker .progress-tracker-back{overflow:hidden;box-sizing:border-box;background:inherit;border-radius:inherit}
 #progressTracker .progress-tracker-flip{position:absolute;right:4px;top:4px;z-index:4;width:24px;height:24px;border:1px solid rgba(255,255,255,.45);border-radius:50%;background:rgba(20,20,20,.72);color:#fff;cursor:pointer;font:700 15px/20px sans-serif;padding:0}
 #progressTracker .progress-tracker-back-title{font-weight:700;text-align:center;padding:6px 34px 5px 8px}
 #progressTracker .multiplayer-activity-list{height:calc(100% - 30px);overflow:auto;padding:2px 8px 8px;box-sizing:border-box}
@@ -19964,6 +19962,16 @@ function renderProgressTracker() {
 
     const shell=document.createElement('div');
     shell.className='progress-tracker-shell';
+    if(multiplayerProgressTrackerFace==='activity'){
+        shell.appendChild(buildMultiplayerActivityFace());
+        tracker.appendChild(shell);
+        ensureCollectionCategoryLinks();
+        enqueueMicrotask(() => {
+            fitProgressTrackerAroundActions();
+            positionOpponentTradeArea();
+        });
+        return;
+    }
     const front=document.createElement('div');
     front.className='progress-tracker-face progress-tracker-front';
 
@@ -20038,7 +20046,6 @@ function renderProgressTracker() {
     front.appendChild(table);
     front.appendChild(buildProgressTrackerFlipButton('Show activity'));
     shell.appendChild(front);
-    shell.appendChild(buildMultiplayerActivityFace());
     tracker.appendChild(shell);
 
     // V220.63: the tracker does not exist yet when the early UI bootstrap calls

@@ -15164,7 +15164,45 @@ function classicAreaUnionBoundarySegments(area,pad=0){
         const right=xi<xs.length-1&&occupied(x,xs[xi+1],y0,y1);
         if(left!==right)segs.push([{x,y:y0},{x,y:y1}]);
     }
-    return segs;
+    // Merge collinear fragments before rendering. The union extractor works
+    // on every rectangle breakpoint, so a visually straight side can otherwise
+    // become several independent DOM borders. With an 8px CSS border each
+    // fragment has its own cap/join, producing the doubled/thick corner knots
+    // visible where Areas turn or meet.
+    const mergeAxisSegments=(segments,horizontal)=>{
+        const groups=new Map();
+        for(const [p0,p1] of segments){
+            const fixed=horizontal?p0.y:p0.x;
+            const a=horizontal?Math.min(p0.x,p1.x):Math.min(p0.y,p1.y);
+            const b=horizontal?Math.max(p0.x,p1.x):Math.max(p0.y,p1.y);
+            const key=(Math.round(fixed*100)/100).toFixed(2);
+            if(!groups.has(key))groups.set(key,{fixed,ranges:[]});
+            groups.get(key).ranges.push([a,b]);
+        }
+        const merged=[];
+        for(const {fixed,ranges} of groups.values()){
+            ranges.sort((a,b)=>a[0]-b[0]);
+            let [lo,hi]=ranges[0]||[];
+            if(lo==null)continue;
+            for(let i=1;i<ranges.length;i++){
+                const [a,b]=ranges[i];
+                if(a<=hi+.05)hi=Math.max(hi,b);
+                else{
+                    merged.push(horizontal
+                        ? [{x:lo,y:fixed},{x:hi,y:fixed}]
+                        : [{x:fixed,y:lo},{x:fixed,y:hi}]);
+                    [lo,hi]=[a,b];
+                }
+            }
+            merged.push(horizontal
+                ? [{x:lo,y:fixed},{x:hi,y:fixed}]
+                : [{x:fixed,y:lo},{x:fixed,y:hi}]);
+        }
+        return merged;
+    };
+    const horizontal=segs.filter(([a,b])=>Math.abs(a.y-b.y)<.01);
+    const vertical=segs.filter(([a,b])=>Math.abs(a.x-b.x)<.01);
+    return [...mergeAxisSegments(horizontal,true),...mergeAxisSegments(vertical,false)];
 }
 
 
@@ -15189,45 +15227,108 @@ function classicAreaSegmentsConflict(aSegments,bSegments,eps=.75){
     }
     return false;
 }
-function classicAreaParallelTrackDepth(area,orderedAreas,basePad,trackStep){
-    const peers=orderedAreas||[];
-    const idx=Math.max(0,peers.indexOf(area));
-    const assigned=[];
-    for(let i=0;i<=idx;i++){
-        const current=peers[i];
-        let depth=0;
-        // Always test the complete candidate lane against every already assigned
-        // visible perimeter. If a collision moves us outward, restart from the
-        // first peer: the new lane may coincide with a border that the previous
-        // lane did not touch.
-        while(depth<=i){
-            const candidate=classicAreaUnionBoundarySegments(current,basePad+depth*trackStep);
-            const conflict=assigned.some(peer=>
-                classicAreaSegmentsConflict(candidate,peer.segments)
-            );
-            if(!conflict)break;
-            depth++;
-        }
-        assigned.push({
-            depth,
-            segments:classicAreaUnionBoundarySegments(current,basePad+depth*trackStep)
-        });
-    }
-    return assigned[idx]?.depth||0;
-}
-
 const CLASSIC_AREA_BORDER_WIDTH=8;
 const CLASSIC_AREA_TRACK_GAP=3;
 function classicAreaTrackGeometry(area,orderedAreas=null){
     if(state.gameMode==='true')return null;
-    const peers=orderedAreas||[...(generatedModernGeographicAreas||[]),...(state.customAreas||[])];
+    // Never move an entire Area away from its enclosures just because one edge
+    // overlaps another Area. Global depth produced the giant Safari/Ocean/Bush
+    // rectangles. All Areas use the same close base track; individual shared
+    // edge spans are offset locally during rendering.
     const basePad=Math.max(
         CLASSIC_AREA_BORDER_WIDTH/2+2,
         ENCLOSURE_GAP/2+CLASSIC_AREA_BORDER_WIDTH/2
     );
-    const trackStep=CLASSIC_AREA_BORDER_WIDTH+CLASSIC_AREA_TRACK_GAP;
-    const depth=classicAreaParallelTrackDepth(area,peers,basePad,trackStep);
-    return {pad:basePad+depth*trackStep,depth,basePad,trackStep};
+    return {pad:basePad,depth:0,basePad,trackStep:CLASSIC_AREA_BORDER_WIDTH+CLASSIC_AREA_TRACK_GAP};
+}
+function classicAreaLocalBoundarySegments(area,orderedAreas){
+    const track=classicAreaTrackGeometry(area,orderedAreas);
+    const basePad=track?.basePad||0;
+    const step=track?.trackStep||11;
+    const own=classicAreaUnionBoundarySegments(area,basePad);
+    const idx=Math.max(0,(orderedAreas||[]).indexOf(area));
+    if(idx<=0)return own;
+
+    // Earlier Areas reserve only the spans they actually occupy. Split this
+    // Area's edge at overlap endpoints and offset just those pieces. This keeps
+    // every non-conflicting edge on the normal close track.
+    const earlier=(orderedAreas||[]).slice(0,idx).map(peer=>
+        classicAreaUnionBoundarySegments(peer,basePad)
+    );
+    const eps=.5;
+    const out=[];
+    for(const [p0,p1] of own){
+        const horizontal=Math.abs(p0.y-p1.y)<eps;
+        const fixed=horizontal?p0.y:p0.x;
+        const lo=horizontal?Math.min(p0.x,p1.x):Math.min(p0.y,p1.y);
+        const hi=horizontal?Math.max(p0.x,p1.x):Math.max(p0.y,p1.y);
+        const cuts=new Set([lo,hi]);
+        for(const segs of earlier)for(const [q0,q1] of segs){
+            const qh=Math.abs(q0.y-q1.y)<eps;
+            if(qh!==horizontal)continue;
+            const qfixed=horizontal?q0.y:q0.x;
+            if(Math.abs(qfixed-fixed)>eps)continue;
+            const qlo=horizontal?Math.min(q0.x,q1.x):Math.min(q0.y,q1.y);
+            const qhi=horizontal?Math.max(q0.x,q1.x):Math.max(q0.y,q1.y);
+            const a=Math.max(lo,qlo),b=Math.min(hi,qhi);
+            if(b-a>eps){cuts.add(a);cuts.add(b);}
+        }
+        const points=[...cuts].sort((a,b)=>a-b);
+        for(let i=0;i<points.length-1;i++){
+            const a=points[i],b=points[i+1];
+            if(b-a<=eps)continue;
+            const mid=(a+b)/2;
+            let depth=0;
+            for(const segs of earlier){
+                const occupied=segs.some(([q0,q1])=>{
+                    const qh=Math.abs(q0.y-q1.y)<eps;
+                    if(qh!==horizontal)return false;
+                    const qfixed=horizontal?q0.y:q0.x;
+                    if(Math.abs(qfixed-fixed)>eps)return false;
+                    const qlo=horizontal?Math.min(q0.x,q1.x):Math.min(q0.y,q1.y);
+                    const qhi=horizontal?Math.max(q0.x,q1.x):Math.max(q0.y,q1.y);
+                    return mid>qlo-eps&&mid<qhi+eps;
+                });
+                if(occupied)depth++;
+            }
+            // Offset toward the TRUE outside of this exact union edge.
+            // Bounding-box proximity is wrong for concave/notched Areas: an
+            // interior-facing edge can be nearer the opposite side of the
+            // overall bounds, which put the parallel lane through the Area.
+            // Sample immediately on both sides of this boundary and move into
+            // the unoccupied side instead.
+            let delta=0;
+            if(depth){
+                const cards=[];
+                for(const c of trueAreaCells(area)){
+                    const u=classicAreaUnitForCell(c);
+                    const enc=u?._geoPhysicalEnclosure||u?.unit?._geoPhysicalEnclosure;
+                    if(enc?.id!=null&&!cards.some(e=>String(e.id)===String(enc.id)))cards.push(enc);
+                }
+                const occupiedPoint=(x,y)=>cards.some(enc=>
+                    x>=Number(enc.x)-basePad-.01&&x<=Number(enc.x)+ENCLOSURE_W+basePad+.01&&
+                    y>=Number(enc.y)-basePad-.01&&y<=Number(enc.y)+ENCLOSURE_H+basePad+.01
+                );
+                const sample=Math.max(1,CLASSIC_AREA_BORDER_WIDTH);
+                if(horizontal){
+                    const above=occupiedPoint(mid,fixed-sample);
+                    const below=occupiedPoint(mid,fixed+sample);
+                    const sign=above&&!below?1:(!above&&below?-1:0);
+                    delta=sign*depth*step;
+                    out.push([{x:a,y:fixed+delta},{x:b,y:fixed+delta}]);
+                }else{
+                    const left=occupiedPoint(fixed-sample,mid);
+                    const right=occupiedPoint(fixed+sample,mid);
+                    const sign=left&&!right?1:(!left&&right?-1:0);
+                    delta=sign*depth*step;
+                    out.push([{x:fixed+delta,y:a},{x:fixed+delta,y:b}]);
+                }
+            }else{
+                out.push(horizontal?[{x:a,y:fixed},{x:b,y:fixed}]:[{x:fixed,y:a},{x:fixed,y:b}]);
+            }
+        }
+    }
+    return out;
 }
 function classicAreaDisplayRect(area,orderedAreas=null){
     if(state.gameMode==='true')return null;
@@ -17121,28 +17222,44 @@ function renderCustomAreas(){
             // every internal card seam. Half the normal gutter is enough to
             // connect genuinely adjacent cards into one footprint.
             const track=classicAreaTrackGeometry(area,orderedAreas);
-            const overlappingEarlierTracks=track?.depth||0;
-            // First track sits outside the card edge, centred in the normal
-            // inter-card gutter. Only Areas whose *actual union perimeter*
-            // conflicts with an earlier track step farther outward. The exact
-            // same geometry is now shared by labels/leaders and the visible
-            // stroke, so a thick border can never have its tag point at the
-            // obsolete thin-border position.
-            const unionPad=track?.pad||Math.max(
-                CLASSIC_AREA_BORDER_WIDTH/2+2,
-                ENCLOSURE_GAP/2+CLASSIC_AREA_BORDER_WIDTH/2
-            );
+            const overlappingEarlierTracks=0;
             const dotted=area.lineStyle==='dotted'||classicAreaIsNested(area,orderedAreas);
             const classicBorderStyle=dotted?'dashed':'solid';
-            for(const [a,b] of classicAreaUnionBoundarySegments(area,unionPad)){
+            for(const [a,b] of classicAreaLocalBoundarySegments(area,orderedAreas)){
                 const edge=document.createElement('div');
                 edge.className='player-custom-area-edge player-custom-area-edge-overlay';
                 edge.dataset.areaTrack=String(overlappingEarlierTracks);
-                const common='position:absolute;pointer-events:none;box-sizing:border-box;z-index:12;border-radius:4px;';
-                if(Math.abs(a.y-b.y)<0.01){
-                    edge.style.cssText=common+`left:${Math.min(a.x,b.x)}px;top:${a.y}px;width:${Math.abs(b.x-a.x)}px;height:0;border-top:${CLASSIC_AREA_BORDER_WIDTH}px ${classicBorderStyle} ${area.color};`;
+                const half=CLASSIC_AREA_BORDER_WIDTH/2;
+                const common='position:absolute;pointer-events:none;box-sizing:border-box;z-index:12;';
+                if(classicBorderStyle==='solid'){
+                    // Solid Area outlines are filled centerline rectangles.
+                    // Extend both ends by half the stroke width so perpendicular
+                    // pieces overlap into one clean square corner rather than
+                    // leaving a gap or stacking two rounded CSS border joins.
+                    if(Math.abs(a.y-b.y)<0.01){
+                        edge.style.cssText=common+
+                            `left:${Math.min(a.x,b.x)-half}px;top:${a.y-half}px;`+
+                            `width:${Math.abs(b.x-a.x)+CLASSIC_AREA_BORDER_WIDTH}px;`+
+                            `height:${CLASSIC_AREA_BORDER_WIDTH}px;background:${area.color};`;
+                    }else{
+                        edge.style.cssText=common+
+                            `left:${a.x-half}px;top:${Math.min(a.y,b.y)-half}px;`+
+                            `width:${CLASSIC_AREA_BORDER_WIDTH}px;`+
+                            `height:${Math.abs(b.y-a.y)+CLASSIC_AREA_BORDER_WIDTH}px;background:${area.color};`;
+                    }
+                }else if(Math.abs(a.y-b.y)<0.01){
+                    // Keep generated/nested dotted styling, but use butt ends;
+                    // border-radius on every fragment was the source of the
+                    // bulbous overlapping corner artefacts.
+                    edge.style.cssText=common+
+                        `left:${Math.min(a.x,b.x)}px;top:${a.y-half}px;`+
+                        `width:${Math.abs(b.x-a.x)}px;height:${CLASSIC_AREA_BORDER_WIDTH}px;`+
+                        `border-top:${CLASSIC_AREA_BORDER_WIDTH}px dashed ${area.color};`;
                 }else{
-                    edge.style.cssText=common+`left:${a.x}px;top:${Math.min(a.y,b.y)}px;width:0;height:${Math.abs(b.y-a.y)}px;border-left:${CLASSIC_AREA_BORDER_WIDTH}px ${classicBorderStyle} ${area.color};`;
+                    edge.style.cssText=common+
+                        `left:${a.x-half}px;top:${Math.min(a.y,b.y)}px;`+
+                        `width:${CLASSIC_AREA_BORDER_WIDTH}px;height:${Math.abs(b.y-a.y)}px;`+
+                        `border-left:${CLASSIC_AREA_BORDER_WIDTH}px dashed ${area.color};`;
                 }
                 box.appendChild(edge);
             }
@@ -17171,6 +17288,7 @@ function renderCustomAreas(){
         if(!area._generatedGeography&&areaToolActive&&String(trueAreaBuilderSelectedId)===String(area.id)&&trueAreaBuilderSelectedCell){const q=trueAreaBuilderSelectedCell,qr=areaCellRenderRect(q),del=document.createElement('button');del.type='button';del.className='true-area-cell-delete';del.textContent='×';del.title='Remove this Area cell';del.style.cssText=`position:absolute;left:${qr.x+qr.w-36}px;top:${qr.y+8}px;width:28px;height:28px;border:2px solid white;border-radius:50%;background:#d33;color:white;font-size:22px;font-weight:900;z-index:10020;cursor:pointer;`;del.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();});del.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();trueDeletePaintedAreaCell(area.id,q.col,q.row);});areaRenderTarget.appendChild(del);}
         const label=document.createElement('div');label.className='player-custom-area-name';label.dataset.areaId=area.id;label.textContent=area.name||'';label.style.cssText=`left:${area.labelX}px;top:${area.labelY}px;--area-tag-color:${area.color};z-index:${1004+Math.max(0,Number(area.zOrder)||0)};`;areaRenderTarget.appendChild(label);
         resolveAutomaticAreaTagOverlap(label,area);
+        let areaTagPreviewTimer=null;
         label.addEventListener('mouseenter',()=>{
             hoveredAreaId=area.id;box.classList.add('area-tag-hover');
             if(state.gameMode!=='true'){
@@ -17180,9 +17298,20 @@ function renderCustomAreas(){
                 ).forEach(node=>node.classList.add('area-leader-hover'));
             }
             const q=document.getElementById('trueAreaPaintCursor');if(q)q.style.display='none';
-            if(areaGeographyIdentity(area)||areaHabitatIdentity(area))showGeographicAreaPreview(area,label);
+            if(areaGeographyIdentity(area)||areaHabitatIdentity(area)){
+                clearTimeout(areaTagPreviewTimer);
+                areaTagPreviewTimer=setTimeout(()=>{
+                    // Require an intentional continuous hover. A quick pass over
+                    // an Area tag must never flash the map/species popup.
+                    if(hoveredAreaId===area.id&&label.matches(':hover')){
+                        showGeographicAreaPreview(area,label);
+                    }
+                },1000);
+            }
         });
         label.addEventListener('mouseleave',()=>{
+            clearTimeout(areaTagPreviewTimer);
+            areaTagPreviewTimer=null;
             if(hoveredAreaId===area.id)hoveredAreaId=null;box.classList.remove('area-tag-hover');
             if(state.gameMode!=='true'){
                 setClassicAreaCardHover(area.id,false);
@@ -20324,10 +20453,35 @@ async function applyLocalMultiplayerSyncPacketToReplica(packet,replica=localMult
     if(replica.events.length>250)replica.events.splice(0,replica.events.length-250);
     replica.cursor=packet.cursor||replica.cursor;replica.receivedPackets++;
 
-    // A real peer tab owns only its assigned seat. Materialise the authoritative
-    // match received from the host, then display that seat's latest snapshot.
-    if(localMultiplayerBrowserTransport?.role==='peer'&&replica.playerId&&replica.players?.[replica.playerId]){
+    // A real peer tab owns only its assigned seat. The host sync can legitimately
+    // predate the server assigning this peer's seat, so that packet may contain
+    // only player-1. Previously we required replica.players[replica.playerId] to
+    // already exist before materialising the match. That deadlocked a fresh join:
+    // the New Zoo setup never opened, therefore player-2 could never register a
+    // zoo, therefore no later sync could ever contain player-2.
+    if(localMultiplayerBrowserTransport?.role==='peer'&&replica.playerId){
         const currentMatchId=localMultiplayerBrowserTransport.matchId;
+        if(!replica.players)replica.players={};
+        if(!replica.players[replica.playerId]){
+            replica.players[replica.playerId]={
+                snapshot:null,
+                connected:true,
+                reconnectToken:null
+            };
+        }
+        if(!Array.isArray(replica.playerIds))replica.playerIds=[];
+        if(!replica.playerIds.includes(replica.playerId)){
+            replica.playerIds.push(replica.playerId);
+            replica.playerIds.sort((a,b)=>{
+                const seat=id=>Number(/^player-(\d+)$/.exec(String(id||''))?.[1])||Number.MAX_SAFE_INTEGER;
+                return seat(a)-seat(b);
+            });
+        }
+        multiplayerDiagnostic('peer-seat-materialised',{
+            playerId:replica.playerId,
+            hasSnapshot:!!replica.players[replica.playerId]?.snapshot,
+            replicaPlayerIds:[...replica.playerIds]
+        });
         // A sync updates match data; it must not eject the peer from a zoo
         // they are currently inspecting.
         const previousViewingPlayerId=localClassicMatch?.viewingPlayerId||null;
@@ -21322,7 +21476,9 @@ function zooMultiplayerDiagnostics(){
         connected:p?.connected!==false,
         zooName:p?.zooName||null,
         hasZoo:Boolean(
-            localClassicMatch?.players?.[`player-${Number(p?.seat)}`]?.snapshot
+            localClassicMatch?.players?.[`player-${Number(p?.seat)}`]?.snapshot ||
+            localMultiplayerPeerReplica?.players?.[`player-${Number(p?.seat)}`]?.snapshot ||
+            (Number(p?.seat)===Number(t?.serverSeat) && t?.durableOwnZooSnapshot)
         )
     }));
     const localPlayers=Object.fromEntries(Object.entries(localClassicMatch?.players||{}).map(([id,p])=>[
@@ -21583,6 +21739,21 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                         playerId:p?.playerId||null,seat:Number(p?.seat)||null,connected:p?.connected!==false
                     }))
                 });
+                if(transport.role==='peer'&&transport.serverSeat){
+                    clearTimeout(transport._joinSetupWatchdog);
+                    transport._joinSetupWatchdog=setTimeout(()=>{
+                        if(localClassicMatch?.awaitingLocalZooSetup &&
+                           !localClassicMatch?.players?.[`player-${transport.serverSeat}`]?.snapshot){
+                            multiplayerDiagnostic('join-setup-stalled',{
+                                seat:transport.serverSeat,
+                                replicaHasSeat:!!localMultiplayerPeerReplica?.players?.[`player-${transport.serverSeat}`],
+                                replicaPlayerIds:[...(localMultiplayerPeerReplica?.playerIds||[])],
+                                serverPlayerCount:(transport.serverPlayers||[]).length
+                            });
+                            console.warn('[Zoo Curator Multiplayer] Join setup is still waiting after authentication. Run zooMultiplayerDiagnostics().');
+                        }
+                    },4000);
+                }
                 writeMultiplayerServerIdentity(resolvedMatchId,channel.serverIdentity);
                 if(role==='peer'&&transport.pendingPreSeatSync){
                     const deferredSync=transport.pendingPreSeatSync;
@@ -21781,6 +21952,24 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     }
                 }
                 reconcileLocalMultiplayerRosterFromServerPlayers(transport.serverPlayers);
+                if(localMultiplayerPeerReplica){
+                    if(!localMultiplayerPeerReplica.players)localMultiplayerPeerReplica.players={};
+                    if(!Array.isArray(localMultiplayerPeerReplica.playerIds))localMultiplayerPeerReplica.playerIds=[];
+                    for(const serverPlayer of transport.serverPlayers||[]){
+                        const localId=multiplayerLocalPlayerIdForServerId(serverPlayer?.playerId);
+                        if(!localId)continue;
+                        if(!localMultiplayerPeerReplica.players[localId]){
+                            localMultiplayerPeerReplica.players[localId]={snapshot:null,connected:serverPlayer?.connected!==false,reconnectToken:null};
+                        }else{
+                            localMultiplayerPeerReplica.players[localId].connected=serverPlayer?.connected!==false;
+                        }
+                        if(!localMultiplayerPeerReplica.playerIds.includes(localId))localMultiplayerPeerReplica.playerIds.push(localId);
+                    }
+                    localMultiplayerPeerReplica.playerIds.sort((a,b)=>{
+                        const seat=id=>Number(/^player-(\d+)$/.exec(String(id||''))?.[1])||Number.MAX_SAFE_INTEGER;
+                        return seat(a)-seat(b);
+                    });
+                }
                 multiplayerDiagnostic('server-presence-applied',{
                     roster:(transport.serverPlayers||[]).map(p=>({
                         playerId:p?.playerId||null,seat:Number(p?.seat)||null,connected:p?.connected!==false

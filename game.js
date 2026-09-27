@@ -2456,8 +2456,6 @@ const ENCLOSURE_AREA_THEMES = Object.freeze({
     'petting-zoo':   { title: 'Petting Zoo',         className: 'theme-petting-zoo',   layer: 'facility' }
 });
 
-const ENCLOSURE_AREA_TAGS = new Set(Object.keys(ENCLOSURE_AREA_THEMES));
-
 const TROPICAL_HOUSE_GEOGRAPHY_TAGS = new Set([
     'amazon','pantanal','atlantic-forest','guiana-shield','congo','madagascar',
     'southeast-asia','sundaland','borneo','sumatra','java','philippines',
@@ -3115,14 +3113,6 @@ function renderEnclosureAreaBackgrounds() {
         const stepX = ENCLOSURE_W + ENCLOSURE_GAP;
         const stepY = ENCLOSURE_H + ENCLOSURE_GAP;
         const tolerance = ENCLOSURE_AREA_ADJACENCY_TOLERANCE;
-        const neighbourAt = (enclosure, side) => group.enclosures.some(other => {
-            if (other.id === enclosure.id) return false;
-            const dx = other.x - enclosure.x, dy = other.y - enclosure.y;
-            if (side === 'left') return Math.abs(dx + stepX) <= tolerance && Math.abs(dy) <= tolerance;
-            if (side === 'right') return Math.abs(dx - stepX) <= tolerance && Math.abs(dy) <= tolerance;
-            if (side === 'up') return Math.abs(dy + stepY) <= tolerance && Math.abs(dx) <= tolerance;
-            return Math.abs(dy - stepY) <= tolerance && Math.abs(dx) <= tolerance;
-        });
         const areaRects=group.enclosures.map(generatedAreaUnitRect);
         const minX = Math.min(...areaRects.map(r => r.x - pad));
         const minY = Math.min(...areaRects.map(r => r.y - pad));
@@ -15206,27 +15196,6 @@ function classicAreaUnionBoundarySegments(area,pad=0){
 }
 
 
-function classicAreaSegmentsConflict(aSegments,bSegments,eps=.75){
-    for(const [a0,a1] of aSegments||[]){
-        const ah=Math.abs(a0.y-a1.y)<eps;
-        for(const [b0,b1] of bSegments||[]){
-            const bh=Math.abs(b0.y-b1.y)<eps;
-            if(ah!==bh)continue;
-            if(ah){
-                if(Math.abs(a0.y-b0.y)>=eps)continue;
-                const overlap=Math.min(Math.max(a0.x,a1.x),Math.max(b0.x,b1.x))-
-                    Math.max(Math.min(a0.x,a1.x),Math.min(b0.x,b1.x));
-                if(overlap>eps)return true;
-            }else{
-                if(Math.abs(a0.x-b0.x)>=eps)continue;
-                const overlap=Math.min(Math.max(a0.y,a1.y),Math.max(b0.y,b1.y))-
-                    Math.max(Math.min(a0.y,a1.y),Math.min(b0.y,b1.y));
-                if(overlap>eps)return true;
-            }
-        }
-    }
-    return false;
-}
 const CLASSIC_AREA_BORDER_WIDTH=8;
 const CLASSIC_AREA_TRACK_GAP=3;
 function classicAreaTrackGeometry(area,orderedAreas=null){
@@ -21012,8 +20981,13 @@ async function authorizeHumanTradeWithServer(type,payload={}){
 
 
 function multiplayerLocalPlayerIdForServerId(serverPlayerId){
-    const serverPlayer=(localMultiplayerBrowserTransport?.serverPlayers||[])
-        .find(p=>String(p?.playerId||'')===String(serverPlayerId||''));
+    const wanted=String(serverPlayerId||'');
+    if(!wanted)return null;
+    const transport=localMultiplayerBrowserTransport;
+    if(wanted===String(transport?.serverPlayerId||'')&&Number(transport?.serverSeat)>0)
+        return `player-${Number(transport.serverSeat)}`;
+    const serverPlayer=(transport?.serverPlayers||[])
+        .find(p=>String(p?.playerId||'')===wanted);
     return serverPlayer?.seat?`player-${Number(serverPlayer.seat)}`:null;
 }
 function normaliseAuthoritativeHumanTradeForLocalUI(trade){
@@ -21138,7 +21112,9 @@ function applyAuthoritativeHumanTradeMessage(message){
         const transferred=(senderZoo?.state?.animals||[]).find(
             a=>String(a?.id)===String(incoming.requestedTransferId)
         );
-        offer.senderClaimAnimal=transferred?cloneForSave(transferred):offer.senderClaimAnimal||null;
+        offer.senderClaimAnimal=transferred
+            ? cloneForSave(transferred)
+            : directHumanTradeSenderClaimAnimal(offer)||offer.senderClaimAnimal||null;
     }else if(incoming.status==='completed'){
         offer.senderClaimAnimal=null;
         resumeAITradingAfterHumanTrade?.();
@@ -21814,7 +21790,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     // Only force a full own-zoo restore for an authenticated reconnect.
                     // Viewer zoo-state packets remain display data and must never overwrite
                     // the local player's zoo.
-                    if((transport.serverReturning===true||message.authoritativeTrade===true||message.authoritativeDraw===true||message.authoritativeExchange===true||message.authoritativeMove===true||message.authoritativeCorrection===true)&&!localClassicMatch?.viewingPlayerId){
+                    if((transport.serverReturning===true||message.authoritativeTrade===true||message.authoritativeDraw===true||message.authoritativeExchange===true||message.authoritativeCorrection===true)&&!localClassicMatch?.viewingPlayerId){
                         // The server owns gameplay state, never this browser's camera.
                         const localCamera={
                             zoom:Number(state.zoom)||1,
@@ -29191,7 +29167,17 @@ async function requestServerAuthoritativeExchange(destination=null,autoPlace=fal
     // source cards, inserts the upgraded card at this destination and advances
     // progression in one SQLite transaction.
     syncActiveZooIntoLocalMatch();
-    commitOwnZooStateToServer(exportCurrentGameState());
+    // Exchange/result are transient UI references, not durable zoo state.
+    // If they are committed here the authoritative server copies them into its
+    // returned zoo even after removing the source animals. A later zoo-state
+    // replay then resurrects those removed cards in the Exchange/Upgrade cells.
+    const preExchangeSnapshot=exportCurrentGameState();
+    if(preExchangeSnapshot?.state){
+        preExchangeSnapshot.state.exchange=[null,null];
+        preExchangeSnapshot.state.result=null;
+        preExchangeSnapshot.state.exchangeGlowFocusKey=null;
+    }
+    commitOwnZooStateToServer(preExchangeSnapshot);
     if(!await awaitDurableZooCommitIdle()){
         console.warn('Authoritative Exchange paused because the durable zoo changed.');
         return false;
@@ -29214,12 +29200,21 @@ async function requestServerAuthoritativeExchange(destination=null,autoPlace=fal
     // than calling completeExchange(), which would create/remove cards a second
     // time and reintroduce the disconnect window this server path eliminates.
     t.durableZooRevision=Math.max(0,Number(response.zooRevision)||0);
-    t.durableOwnZooSnapshot=cloneForSave(response.zoo);
+    // Older/current servers may echo transient Exchange UI state from a snapshot
+    // that was committed just before the action. Sanitize the authoritative zoo
+    // before storing or importing it so stale source/result cards cannot return.
+    const authoritativeExchangeZoo=cloneForSave(response.zoo);
+    if(authoritativeExchangeZoo?.state){
+        authoritativeExchangeZoo.state.exchange=[null,null];
+        authoritativeExchangeZoo.state.result=null;
+        authoritativeExchangeZoo.state.exchangeGlowFocusKey=null;
+    }
+    t.durableOwnZooSnapshot=cloneForSave(authoritativeExchangeZoo);
     t.durableZooQueuedSnapshot=null;
     t.durableZooQueuedSignature='';
     autoResumeWriteSuppressed=true;
     try{
-        await importGameState(cloneForSave(response.zoo),{deferRender:false});
+        await importGameState(authoritativeExchangeZoo,{deferRender:false});
     }finally{autoResumeWriteSuppressed=false;}
 
     const resultAnimal=(state.animals||[]).find(a=>
@@ -29236,6 +29231,9 @@ async function requestServerAuthoritativeExchange(destination=null,autoPlace=fal
     state.result=null;
     state.exchangeGlowFocusKey=null;
     for(const source of sources)state.suppressedExchangeGlowIds.delete(source.id);
+    const ownMatchPlayer=localClassicMatch?.players?.[localClassicMatch.activePlayerId];
+    if(ownMatchPlayer)ownMatchPlayer.snapshot=cloneForSave(authoritativeExchangeZoo);
+    renderExchange();
 
     finalizeClassicProgressionCommit('Server-authoritative Exchange');
     const snapshot=exportCurrentGameState();
@@ -31493,17 +31491,6 @@ function ensureGenerateZooUI() {
             country.appendChild(option);
         }
 
-        const addCountryButton = (value, sticky = false) => {
-            if (!pool.includes(value)) return;
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = `new-zoo-country-option${sticky ? ' sticky-option' : ''}`;
-            button.dataset.country = value;
-            button.setAttribute('role', 'option');
-            button.textContent = `${countryFlagEmoji(value)} ${value}`;
-            button.addEventListener('click', () => selectCountry(value, true));
-            countryMenu.appendChild(button);
-        };
 
         const sticky = ['Netherlands', 'Germany', 'United Kingdom'];
         const stickyWrap = document.createElement('span');
@@ -38186,10 +38173,22 @@ async function finishDirectHumanTradeResultDrag(event){
 }
 
 
+function directHumanTradeSenderClaimAnimal(offer){
+    if(!offer)return null;
+    const transferId=String(offer.requestedTransferId??'');
+    if(transferId){
+        const live=(state.animals||[]).find(a=>String(a?.id)===transferId);
+        if(live)return live;
+        const senderSnapshot=localClassicMatch?.players?.[offer.fromPlayerId]?.snapshot;
+        const snap=(senderSnapshot?.state?.animals||[]).find(a=>String(a?.id)===transferId);
+        if(snap)return snap;
+    }
+    return offer.senderClaimAnimal||null;
+}
 function startDirectHumanTradeSenderClaimDrag(event,offer){
     if(!offer||offer.status!=='accepted-awaiting-sender-claim'||
        offer.fromPlayerId!==localClassicMatch?.activePlayerId||state.drag||state.pan)return;
-    const incoming=offer.senderClaimAnimal;
+    const incoming=directHumanTradeSenderClaimAnimal(offer);
     if(!incoming)return;
     event.preventDefault();event.stopPropagation();
 
@@ -38424,7 +38423,7 @@ function renderDirectHumanTradeCards(){
         incomingOfferBox.classList.add('trade-filled');
         outgoingOfferBox.innerHTML='<span>YOUR<br>OFFER</span>';
         incomingOfferBox.innerHTML='';
-        const claimCard=directHumanTradeCard(offer.senderClaimAnimal,'incoming');
+        const claimCard=directHumanTradeCard(directHumanTradeSenderClaimAnimal(offer),'incoming');
         if(claimCard){
             claimCard.classList.add('human-trade-accepted-glow');
             claimCard.style.cursor='grab';

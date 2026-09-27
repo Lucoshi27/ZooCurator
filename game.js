@@ -1437,6 +1437,7 @@ function clearTradeEligibleGlow(immediate = true) {
 }
 
 function applyTradeEligibleGlow() {
+    if(trueDecorationToolActive){clearTradeEligibleGlow(true);return;}
     // Trade-interest blue glow belongs only to the player's own actionable zoo.
     if (state.visitingZoo || visitingAnotherZooForActionUI()) {
         clearTradeEligibleGlow();
@@ -5481,6 +5482,12 @@ function currentCompatibilityGlowKeys(candidateAnimals = compatibilityHintAnimal
 }
 
 function applyCompatibilityDestinationGlowClasses() {
+    if(trueDecorationToolActive){
+        state.compatibilityGlowKeys=new Set();state.compatibilityGlowFadeKeys=new Set();
+        state.compatibilityGlowHoldUntil=0;state.compatibilityGlowFadeUntil=0;
+        document.querySelectorAll('.compatibility-match-glow,.compatibility-match-glow-fading').forEach(el=>el.classList.remove('compatibility-match-glow','compatibility-match-glow-fading'));
+        return;
+    }
     const now = Date.now();
     const activeKeys = currentCompatibilityGlowKeys();
 
@@ -5664,6 +5671,7 @@ function clearCompatibilityHoverImmediately() {
 }
 
 function startCompatibilityAnimalHover(enclosure, slotIndex) {
+    if(trueDecorationToolActive){clearCompatibilityHoverImmediately();return;}
     if (visitingAnotherZooForActionUI() || document.body.classList.contains('history-viewing')) return;
 
     // an active animal drag already has a specific compatibility
@@ -7421,17 +7429,34 @@ function createStartingZoo(options = {}) {
 // TRUE CALENDAR + ACTIVITY
 // ============================================================
 
-const TRUE_CALENDAR_SPEEDS = [0, 1, 5, 20];
-// Calendar speeds are intentionally much more widely spaced than the first
-// prototype. 20x is a genuine fast-forward: roughly one month in 4.5 seconds.
-const TRUE_CALENDAR_INTERVAL_MS = { 1: 4000, 5: 800, 20: 150 };
+const TRUE_CALENDAR_SPEEDS = [0, 1, 2, 3];
+// True-mode clock presets. Regular advances 5 minutes per tick, Fast advances
+// one hour, and Max simulates a complete 09:00–19:00 guest day before advancing
+// to the next date. The virtual clock is compressed and guest movement scales proportionally
+// at x1 / x12 / x120 so visitors visibly keep pace with simulated time.
+const TRUE_CALENDAR_INTERVAL_MS = { 1: 4000, 2: 4000, 3: 4000 };
+const TRUE_CALENDAR_MINUTES_PER_TICK = { 1: 5, 2: 60, 3: 600 };
 let trueCalendarTimer = null;
+let trueCalendarWholeDayStartedAt = 0;
+let trueCalendarHourTickStartedAt = 0;
+let trueCalendarVisualClockRaf = 0;
+let trueCalendarVisualTickStartedAt = 0;
+let trueCalendarVisualTickBaseMinutes = 9*60;
 let lastTrueCalendarAutoResumeWriteAt = 0;
 
 function normaliseTrueCalendarState() {
     if (!state.trueCalendar || typeof state.trueCalendar !== 'object') state.trueCalendar = {};
     if (!/^\d{4}-\d{2}-\d{2}$/.test(String(state.trueCalendar.date || ''))) state.trueCalendar.date = '2027-01-01';
-    if (!TRUE_CALENDAR_SPEEDS.includes(Number(state.trueCalendar.speed))) state.trueCalendar.speed = 0;
+    if (!Number.isInteger(Number(state.trueCalendar.hour)) || Number(state.trueCalendar.hour)<9 || Number(state.trueCalendar.hour)>18) state.trueCalendar.hour = 9;
+    if (!Number.isInteger(Number(state.trueCalendar.minute)) || Number(state.trueCalendar.minute)<0 || Number(state.trueCalendar.minute)>59) state.trueCalendar.minute = 0;
+    {
+        const savedSpeed=Number(state.trueCalendar.speed);
+        // Backward compatibility with the former 1× / 5× / 20× values.
+        if(savedSpeed===5)state.trueCalendar.speed=2;
+        else if(savedSpeed===20)state.trueCalendar.speed=3;
+        else if(!TRUE_CALENDAR_SPEEDS.includes(savedSpeed))state.trueCalendar.speed=0;
+        else state.trueCalendar.speed=savedSpeed;
+    }
     if (!Array.isArray(state.trueCalendar.scheduledEvents)) state.trueCalendar.scheduledEvents = [];
     state.trueCalendar.lastMonthKey = String(state.trueCalendar.lastMonthKey || state.trueCalendar.date.slice(0, 7));
     if (!Array.isArray(state.trueActivityLog)) state.trueActivityLog = [];
@@ -7443,7 +7468,7 @@ function normaliseTrueCalendarState() {
 
 function resetTrueCalendarSimulation() {
     stopTrueCalendarTimer();
-    state.trueCalendar = { date: '2027-01-01', speed: 0, lastMonthKey: '2027-01', scheduledEvents: [] };
+    state.trueCalendar = { date: '2027-01-01', hour: 9, minute: 0, speed: 0, lastMonthKey: '2027-01', scheduledEvents: [] };
     state.trueActivityLog = [];
     state.trueActivityNextId = 1;
     state.trueMarketplace = { listings: [], nextListingId: 1, lastRefreshMonth: '', initialized: false };
@@ -7536,31 +7561,133 @@ function processTrueMonthChange(previousMonth, currentMonth) {
     refreshTrueMarketplaceForMonth(currentMonth, { announce: true });
 }
 
-function advanceTrueCalendarDay() {
+function trueGuestSimulateWholeDay(){
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return;
+    const target=trueGuestDailyTarget();
+    const occupied=(state.enclosures||[]).filter(enc=>enc?.trueBuilt&&(state.animals||[]).some(a=>String(a?.enclosureId)===String(enc.id)));
+    // Advance guest-side event state through the same 09:00–19:00 day in 5-minute
+    // slices. We intentionally do not create hundreds of DOM walkers: the day tick
+    // resolves their arrivals, visits and departures off-screen, then starts the next
+    // displayed day cleanly at 09:00.
+    trueGuestRuntime.dailyEntered=0;
+    trueGuestRuntime.dailyTargetDate=normaliseTrueCalendarState().date;
+    const groups=[];
+    let entered=0;
+    for(let minute=9*60;minute<17*60&&entered<target;minute+=5){
+        trueGuestUpdateAnimalEvents(minute);
+        const progress=(minute-9*60)/(8*60);
+        const paced=Math.max(0,Math.min(1,progress+.08*Math.sin(progress*Math.PI)));
+        const due=minute>=16*60?target:Math.floor(target*paced);
+        while(entered<due){
+            const size=Math.min(target-entered,1+Math.floor(Math.random()*5));
+            const stay=120+Math.floor(Math.random()*301);
+            const closeDeparture=17*60+Math.floor(Math.random()*61);
+            groups.push({size,arrival:minute,departure:Math.min(minute+stay,closeDeparture,18*60)});
+            entered+=size;
+        }
+    }
+    if(entered<target)groups.push({size:target-entered,arrival:16*60+55,departure:18*60});
+    trueGuestRuntime.dailyEntered=target;
+    // Resolve representative exhibit choices so new/high-level attractions still
+    // consume their simulated-day attention window instead of freezing for a day.
+    if(occupied.length){
+        for(const group of groups){
+            const visitMinutes=Math.max(0,group.departure-group.arrival);
+            const stops=Math.max(1,Math.floor(visitMinutes/25));
+            for(let n=0;n<stops;n++){
+                const at=group.arrival+(visitMinutes*(n+1)/(stops+1));
+                trueGuestUpdateAnimalEvents(at);
+                // Destination weighting mirrors the live simulation's rarity + event pull.
+                const weighted=occupied.map(enc=>{
+                    const animals=(state.animals||[]).filter(a=>String(a?.enclosureId)===String(enc.id));
+                    const level=Math.max(...animals.map(a=>Math.max(1,Math.min(5,Number(a.level)||1))));
+                    return {enc,w:Math.pow(1.72,level-1)*trueGuestEventAttraction(enc.id,at)};
+                });
+                let roll=Math.random()*weighted.reduce((sum,x)=>sum+x.w,0);
+                for(const item of weighted){roll-=item.w;if(roll<=0)break;}
+            }
+        }
+    }
+    trueGuestUpdateAnimalEvents(19*60);
+    for(const g of trueGuestRuntime.guests)g.el?.remove();
+    trueGuestRuntime.guests=[];trueGuestRuntime.spawnQueue=0;trueGuestRuntime.spawnGroupId=null;trueGuestRuntime.spawnGroupDepartureMinute=null;
+}
+function trueCalendarDisplayParts(now=performance.now()){
+    const calendar=normaliseTrueCalendarState();
+    const speed=Number(calendar.speed)||0;
+    let total=(Number(calendar.hour)||9)*60+(Number(calendar.minute)||0);
+    if(speed>0){
+        const interval=TRUE_CALENDAR_INTERVAL_MS[speed]||4000;
+        if(!trueCalendarVisualTickStartedAt){
+            trueCalendarVisualTickStartedAt=now;
+            trueCalendarVisualTickBaseMinutes=total;
+        }
+        const phase=Math.max(0,Math.min(1,(now-trueCalendarVisualTickStartedAt)/interval));
+        const span=TRUE_CALENDAR_MINUTES_PER_TICK[speed]||0;
+        total=trueCalendarVisualTickBaseMinutes+phase*span;
+        // Max represents exactly one complete 09:00–19:00 zoo day.
+        if(speed===3)total=Math.min(19*60,total);
+        else total=Math.min(19*60,total);
+    }
+    return {hour:Math.floor(total/60),minute:Math.floor(total%60),date:calendar.date};
+}
+function updateTrueCalendarVisualClock(){
+    const el=document.getElementById('trueCalendarVisualClock');
+    if(!el)return;
+    const shown=trueCalendarDisplayParts();
+    el.textContent=`${String(shown.hour).padStart(2,'0')}:${String(shown.minute).padStart(2,'0')} - ${formatTrueDate(shown.date)}`;
+}
+function ensureTrueCalendarVisualClock(){
+    if(trueCalendarVisualClockRaf)return;
+    const frame=()=>{
+        trueCalendarVisualClockRaf=requestAnimationFrame(frame);
+        if(state.gameMode==='true'&&!state.sandboxMode)updateTrueCalendarVisualClock();
+    };
+    trueCalendarVisualClockRaf=requestAnimationFrame(frame);
+}
+function advanceTrueCalendarTime() {
     if (state.gameMode !== 'true' || state.sandboxMode) return;
     const calendar = normaliseTrueCalendarState();
-    const oldMonth = calendar.date.slice(0, 7);
-    const date = trueDateObject(calendar.date);
-    date.setUTCDate(date.getUTCDate() + 1);
-    calendar.date = trueDateString(date);
-    const newMonth = calendar.date.slice(0, 7);
-    if (newMonth !== oldMonth) processTrueMonthChange(oldMonth, newMonth);
-    processTrueScheduledEvents();
-    trueTransferProcessDay();
-    if(trueDevelopmentShouldEvaluateToday())trueDevelopmentEvaluateMonthly();
-    processTrueRealZooManagementBudget(8);
+    const speed=Number(calendar.speed)||0;
+    const addMinutes=TRUE_CALENDAR_MINUTES_PER_TICK[speed]||1;
+    const isWholeDayTick=speed===3;
+    // Max speed visually runs the normal guest simulation through the complete
+    // 09:00–19:00 day during this four-second tick. The timer only commits the
+    // date rollover once that compressed day has finished.
+    let total=isWholeDayTick ? 19*60 : Number(calendar.hour)*60+Number(calendar.minute||0)+addMinutes;
+    const close=19*60;
+    let newDay=false;
+
+    if(total>=close){
+        const oldMonth=calendar.date.slice(0,7);
+        const date=trueDateObject(calendar.date);
+        date.setUTCDate(date.getUTCDate()+1);
+        calendar.date=trueDateString(date);
+        calendar.hour=9;calendar.minute=0;newDay=true;
+        const newMonth=calendar.date.slice(0,7);
+        if(newMonth!==oldMonth)processTrueMonthChange(oldMonth,newMonth);
+        processTrueScheduledEvents();
+        trueTransferProcessDay();
+        if(trueDevelopmentShouldEvaluateToday())trueDevelopmentEvaluateMonthly();
+        processTrueRealZooManagementBudget(8);
+    }else{
+        calendar.hour=Math.floor(total/60);
+        calendar.minute=total%60;
+    }
+
+    const nextPhaseNow=performance.now();
+    if(isWholeDayTick)trueCalendarWholeDayStartedAt=nextPhaseNow;
+    if(speed===2)trueCalendarHourTickStartedAt=nextPhaseNow;
+    trueCalendarVisualTickStartedAt=nextPhaseNow;
+    trueCalendarVisualTickBaseMinutes=(Number(calendar.hour)||9)*60+(Number(calendar.minute)||0);
     updateTurnDisplay();
     renderTrueSimulationPanel();
-    // A full auto-resume snapshot is relatively expensive. At fast-forward
-    // speeds, persist at most once every five real seconds rather than once per
-    // simulated day. Named saves still capture the exact current date.
-    const now = Date.now();
-    if (now - lastTrueCalendarAutoResumeWriteAt >= 5000) {
-        lastTrueCalendarAutoResumeWriteAt = now;
+    const now=Date.now();
+    if(now-lastTrueCalendarAutoResumeWriteAt>=5000){
+        lastTrueCalendarAutoResumeWriteAt=now;
         writeAutoResumeSnapshot(true);
     }
 }
-
 function stopTrueCalendarTimer() {
     if (trueCalendarTimer) clearInterval(trueCalendarTimer);
     trueCalendarTimer = null;
@@ -7571,12 +7698,18 @@ function restartTrueCalendarTimer() {
     if (state.gameMode !== 'true' || state.sandboxMode) return;
     const speed = normaliseTrueCalendarState().speed;
     if (!speed) return;
-    trueCalendarTimer = setInterval(advanceTrueCalendarDay, TRUE_CALENDAR_INTERVAL_MS[speed] || 4000);
+    trueCalendarTimer = setInterval(advanceTrueCalendarTime, TRUE_CALENDAR_INTERVAL_MS[speed] || 4000);
 }
 
 function setTrueCalendarSpeed(speed) {
     const value = TRUE_CALENDAR_SPEEDS.includes(Number(speed)) ? Number(speed) : 0;
     normaliseTrueCalendarState().speed = value;
+    const speedChangeNow=performance.now();
+    trueCalendarWholeDayStartedAt=value===3?speedChangeNow:0;
+    trueCalendarHourTickStartedAt=value===2?speedChangeNow:0;
+    trueCalendarVisualTickStartedAt=speedChangeNow;
+    const speedCalendar=normaliseTrueCalendarState();
+    trueCalendarVisualTickBaseMinutes=(Number(speedCalendar.hour)||9)*60+(Number(speedCalendar.minute)||0);
     restartTrueCalendarTimer();
     renderTrueSimulationPanel();
     updateTurnDisplay();
@@ -7587,6 +7720,573 @@ function runTrueActivityAction(item) {
     item.unread = false;
     if (item.action === 'marketplace') openTrueMarketplace();
     renderTrueSimulationPanel();
+}
+
+
+// ============================================================
+// TRUE MODE — LIGHTWEIGHT GUEST SIMULATION
+// ============================================================
+let trueGuestRuntime={guests:[],raf:0,last:0,layoutSig:'',walk:null,spawnQueue:0,nextSpawnAt:0,nextGroupAt:0,spawnGroupId:null,spawnGroupDepartureMinute:null,nextGroupId:1,lastCalendarDate:'',lastCalendarHour:null,dailyEntered:0,dailyTargetDate:'',populationSnapshot:new Map(),newAnimalEvents:new Map(),populationSnapshotReady:false};
+function trueGuestSimulationSpeedMultiplier(){
+    const speed=Number(state.trueCalendar?.speed)||0;
+    if(speed<=0)return 0;
+    // The normal 5-minute clock is the canonical 1x guest-speed baseline.
+    // Faster modes scale directly by simulated minutes per tick: 60/5=12,
+    // 600/5=120. The underlying base movement rate below is normalized so
+    // actual on-screen movement is unchanged from the previously tuned values.
+    if(speed===1)return 1;
+    if(speed===2)return 12;
+    return 120;
+}
+function trueGuestPrestigeDailyTarget(){
+    return Math.max(0,Math.min(200,Math.round(Number(currentZooPrestige())||0)));
+}
+function trueGuestDailyTarget(){
+    // Prestige is the default demand model: 8 current prestige = 8 guests/day.
+    // Once the player deliberately moves the slider it becomes a manual override.
+    if(state.trueGuestDailyTargetManual===true){
+        const raw=Number(state.trueGuestDailyTarget ?? state.trueGuestTargetCount);
+        if(Number.isFinite(raw))return Math.max(0,Math.min(200,Math.round(raw)));
+    }
+    return trueGuestPrestigeDailyTarget();
+}
+function trueGuestSetDailyTarget(value){
+    state.trueGuestDailyTarget=Math.max(0,Math.min(200,Math.round(Number(value)||0)));
+    state.trueGuestDailyTargetManual=true;
+    renderTrueSimulationPanel();
+    ensureTrueGuestSimulation();
+}
+function trueGuestLayer(){
+    let layer=document.getElementById('trueGuestLayer');
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo){layer?.remove();return null;}
+    if(!layer){
+        layer=document.createElement('div');layer.id='trueGuestLayer';
+        Object.assign(layer.style,{position:'absolute',left:'0',top:'0',width:'100%',height:'100%',
+            pointerEvents:'none',zIndex:'7',overflow:'visible'});
+        zooCanvas.appendChild(layer);
+    }
+    return layer;
+}
+function trueGuestEntrancePoint(){
+    const b=trueZooGroundsBounds();if(!b)return null;
+    const spec=state.trueEnclosureBuilder?.zooEntrance||{side:'bottom',t:.5};
+    const p=trueEntrancePointAtPerimeter(trueEntrancePerimeterPosition(spec,b),b);
+    const d=12;
+    return {x:p.x+(spec.side==='left'?d:spec.side==='right'?-d:0),
+            y:p.y+(spec.side==='top'?d:spec.side==='bottom'?-d:0)};
+}
+function trueGuestLayoutSignature(){
+    const b=trueZooGroundsBounds();
+    return `${Number(state.areaPlacementRevision)||0}|${b?`${b.x},${b.y},${b.w},${b.h}`:''}|`+
+        (state.enclosures||[]).filter(e=>e?.trueBuilt).map(e=>`${e.id}:${trueBuiltEnclosureDerived(e).sig}`).join(';');
+}
+function trueGuestBuildWalkGraph(){
+    const b=trueZooGroundsBounds();if(!b)return null;
+    const occupied=trueEnclosureSpatialIndex().occupied;
+    const minCol=Math.floor(b.x/TRUE_ENC_CELL_W),maxCol=Math.ceil((b.x+b.w)/TRUE_ENC_CELL_W)-1;
+    const minRow=Math.floor(b.y/TRUE_ENC_CELL_H),maxRow=Math.ceil((b.y+b.h)/TRUE_ENC_CELL_H)-1;
+    const free=new Set();
+    for(let r=minRow;r<=maxRow;r++)for(let c=minCol;c<=maxCol;c++){
+        const k=trueBuilderCellKey(c,r);if(!occupied.has(k))free.add(k);
+    }
+    return {free,minCol,maxCol,minRow,maxRow};
+}
+function trueGuestCellForPoint(p,walk){
+    if(!p||!walk)return null;
+    const c=Math.floor(p.x/TRUE_ENC_CELL_W),r=Math.floor(p.y/TRUE_ENC_CELL_H);
+    const key=trueBuilderCellKey(c,r);
+    if(walk.free.has(key))return {c,r,key};
+    let best=null;
+    for(let radius=1;radius<=4&&!best;radius++)for(let dr=-radius;dr<=radius;dr++)for(let dc=-radius;dc<=radius;dc++){
+        if(Math.max(Math.abs(dc),Math.abs(dr))!==radius)continue;
+        const k=trueBuilderCellKey(c+dc,r+dr);if(walk.free.has(k)){best={c:c+dc,r:r+dr,key:k};break;}
+    }
+    return best;
+}
+function trueGuestBaseGridPath(startPoint,endPoint){
+    const walk=trueGuestRuntime.walk;if(!walk)return [];
+    const start=trueGuestCellForPoint(startPoint,walk),goal=trueGuestCellForPoint(endPoint,walk);
+    if(!start||!goal)return [];
+    if(start.key===goal.key)return [endPoint];
+    const queue=[start],prev=new Map([[start.key,null]]),cells=new Map([[start.key,start]]);
+    let found=false;
+    for(let qi=0;qi<queue.length&&!found;qi++){
+        const cur=queue[qi];
+        for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]]){
+            const c=cur.c+dc,r=cur.r+dr,k=trueBuilderCellKey(c,r);
+            if(!walk.free.has(k)||prev.has(k))continue;
+            const next={c,r,key:k};prev.set(k,cur.key);cells.set(k,next);queue.push(next);
+            if(k===goal.key){found=true;break;}
+        }
+    }
+    if(!prev.has(goal.key))return [];
+    const rev=[];let k=goal.key;
+    while(k&&k!==start.key){const q=cells.get(k);rev.push({x:(q.c+.5)*TRUE_ENC_CELL_W,y:(q.r+.5)*TRUE_ENC_CELL_H});k=prev.get(k);}
+    rev.reverse();rev.push(endPoint);return rev;
+}
+function trueGuestPath(startPoint,endPoint){
+    // One base route is path-found, then guests choose one of five cheap lane
+    // variants. This avoids independent expensive pathfinding while preventing
+    // the crowd from looking like a single dotted line.
+    const base=trueGuestBaseGridPath(startPoint,endPoint);
+    if(!base.length)return base;
+    const variant=Math.floor(Math.random()*5);
+    const offsets=[-12,-6,0,6,12],off=offsets[variant];
+    const walk=trueGuestRuntime.walk;
+    return base.map((p,i)=>{
+        if(i===base.length-1)return p; // all variants arrive at the exhibit
+        const prev=i?base[i-1]:startPoint,next=base[Math.min(base.length-1,i+1)];
+        const dx=next.x-prev.x,dy=next.y-prev.y,len=Math.hypot(dx,dy)||1;
+        const q={x:p.x-dy/len*off,y:p.y+dx/len*off};
+        // Keep the lane variant only if it remains on walkable ground.
+        return trueGuestCellForPoint(q,walk)?.key===trueGuestCellForPoint(p,walk)?.key?q:p;
+    });
+}
+function trueGuestUpdateAnimalEvents(minutesNow){
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return;
+    const current=new Map();
+    for(const a of state.animals||[]){
+        if(a?.enclosureId==null)continue;
+        const id=String(a.id),count=Math.max(1,trueAnimalPopulationTotal(a)||1);
+        current.set(id,{count,enclosureId:String(a.enclosureId),level:Math.max(1,Math.min(5,Number(a.level)||1))});
+        const previous=trueGuestRuntime.populationSnapshot.get(id);
+        if(trueGuestRuntime.populationSnapshotReady&&(!previous||count>previous.count)){
+            const increase=previous?count-previous.count:count;
+            const level=Math.max(1,Math.min(5,Number(a.level)||1));
+            // Higher-level arrivals/births are progressively bigger zoo events.
+            // L1 is a modest nudge; L5 is strong enough to pull guests across the zoo.
+            const strength=[0,1.18,1.7,2.6,4.2,7.0][level]*(1+Math.min(3,increase-1)*.12);
+            const duration=[0,90,120,165,225,300][level];
+            const key=String(a.enclosureId),old=trueGuestRuntime.newAnimalEvents.get(key);
+            trueGuestRuntime.newAnimalEvents.set(key,{
+                strength:Math.max(strength,Number(old?.strength)||0),
+                expiresAt:Math.max(minutesNow+duration,Number(old?.expiresAt)||0),
+                level
+            });
+        }
+    }
+    trueGuestRuntime.populationSnapshot=current;
+    trueGuestRuntime.populationSnapshotReady=true;
+    for(const [key,event] of trueGuestRuntime.newAnimalEvents){
+        if(minutesNow>=Number(event.expiresAt||0))trueGuestRuntime.newAnimalEvents.delete(key);
+    }
+}
+function trueGuestEventAttraction(enclosureId,minutesNow){
+    const event=trueGuestRuntime.newAnimalEvents.get(String(enclosureId));
+    if(!event||minutesNow>=Number(event.expiresAt||0))return 1;
+    const level=Math.max(1,Math.min(5,Number(event.level)||1));
+    const duration=[0,90,120,165,225,300][level];
+    const remaining=Math.max(0,Number(event.expiresAt)-minutesNow);
+    const fade=Math.max(.2,Math.min(1,remaining/Math.max(1,duration)));
+    return 1+(Math.max(1,Number(event.strength)||1)-1)*fade;
+}
+function trueGuestViewingPoints(){
+    const walk=trueGuestRuntime.walk;if(!walk)return [];
+    const points=[];
+    const occupantsByEnclosure=new Map();
+    for(const a of state.animals||[]){
+        if(a?.enclosureId==null)continue;
+        const k=String(a.enclosureId);
+        if(!occupantsByEnclosure.has(k))occupantsByEnclosure.set(k,[]);
+        occupantsByEnclosure.get(k).push(a);
+    }
+    for(const enc of state.enclosures||[]){
+        if(!enc?.trueBuilt)continue;
+        const occupants=occupantsByEnclosure.get(String(enc.id))||[];
+        if(!occupants.length)continue;
+
+        const levels=occupants.map(a=>Math.max(1,Math.min(5,Number(a?.level)||1)));
+        const attractionLevel=Math.min(5,Math.max(...levels)+Math.min(.5,(levels.length-1)*.1));
+        const cells=trueBuiltWorldCells(enc);
+        const own=new Set(cells.map(cell=>trueBuilderCellKey(cell.col,cell.row)));
+        const seen=new Set();
+
+        // Every exposed enclosure-cell edge becomes a short viewing frontage.
+        // Put several destinations along that edge instead of one destination
+        // at the cell centre. Adjacent exposed edges therefore join into a
+        // continuous line of possible stopping positions along the enclosure.
+        for(const cell of cells){
+            for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]]){
+                const nc=cell.col+dc,nr=cell.row+dr,nk=trueBuilderCellKey(nc,nr);
+                if(own.has(nk)||!walk.free.has(nk))continue;
+
+                const horizontal=dr!==0;
+                const edgeKey=`${cell.col},${cell.row},${dc},${dr}`;
+                if(seen.has(edgeKey))continue;seen.add(edgeKey);
+
+                // Roughly one stop every 28 px, with a minimum of three across
+                // each visible cell edge. Endpoints are inset so corners don't
+                // duplicate each other.
+                const edgeLength=horizontal?TRUE_ENC_CELL_W:TRUE_ENC_CELL_H;
+                const samples=Math.max(3,Math.ceil(edgeLength/28));
+                for(let i=0;i<samples;i++){
+                    const t=(i+1)/(samples+1);
+                    let x,y;
+                    // Guest circles are 20–35 px wide. Keep their whole body outside
+                    // the enclosure rather than only keeping their centre outside it.
+                    const minBodyClearance=20;
+                    const requestedGap=minBodyClearance+Math.random()*80;
+                    const maxSafeGap=Math.max(minBodyClearance,(horizontal?TRUE_ENC_CELL_H:TRUE_ENC_CELL_W)*.48);
+                    const gap=Math.min(requestedGap,maxSafeGap);
+                    if(horizontal){
+                        x=(cell.col+t)*TRUE_ENC_CELL_W;
+                        y=dr>0?(cell.row+1)*TRUE_ENC_CELL_H:cell.row*TRUE_ENC_CELL_H;
+                        y+=dr*gap;
+                    }else{
+                        x=dc>0?(cell.col+1)*TRUE_ENC_CELL_W:cell.col*TRUE_ENC_CELL_W;
+                        y=(cell.row+t)*TRUE_ENC_CELL_H;
+                        x+=dc*gap;
+                    }
+                    const cal=normaliseTrueCalendarState(),minutesNow=(Number(cal.hour)||9)*60+(Number(cal.minute)||0);
+                    points.push({enclosureId:enc.id,x,y,attractionLevel,eventAttraction:trueGuestEventAttraction(enc.id,minutesNow),viewingPoint:true,gap});
+                }
+            }
+        }
+    }
+    return points;
+}
+function trueGuestWatchDuration(level){
+    const L=Math.max(1,Math.min(5,Number(level)||1));
+    // Guests can spend anywhere from 1–15 seconds at an exhibit. Higher-level
+    // animals still shift the random stay toward the longer end without making
+    // any duration deterministic.
+    const min=1000,max=15000;
+    const rarityBias=(L-1)/4;
+    const roll=Math.random();
+    const shaped=Math.pow(roll,1.65-.95*rarityBias);
+    return min+(max-min)*shaped;
+}
+function trueGuestChooseDestination(g){
+    const entrance=trueGuestEntrancePoint(),all=trueGuestViewingPoints();
+    if(!entrance)return false;
+    if(!all.length){
+        g.leaving=true;g.viewingDestination=null;g.path=trueGuestPath(g,entrance);g.pathIndex=0;return !!g.path.length;
+    }
+
+    if(!(g.visitedEnclosureIds instanceof Set))g.visitedEnclosureIds=new Set(g.visitedEnclosureIds||[]);
+    const unseen=all.filter(p=>!g.visitedEnclosureIds.has(String(p.enclosureId)));
+    const eventPoints=all.filter(p=>(Number(p.eventAttraction)||1)>1.05&&String(p.enclosureId)!==String(g.lastEnclosureId));
+    const strongestEvent=eventPoints.reduce((m,p)=>Math.max(m,Number(p.eventAttraction)||1),1);
+    // Normally guests continue exploring unseen exhibits. A major fresh arrival/birth can
+    // interrupt that plan; high-level events do this much more reliably than low-level ones.
+    const eventDetourChance=Math.min(.92,Math.max(0,(strongestEvent-1)/6));
+    const takeEventDetour=eventPoints.length&&Math.random()<eventDetourChance;
+    let candidates=(takeEventDetour?eventPoints:(unseen.length?unseen:all)).filter(p=>String(p.enclosureId)!==String(g.lastEnclosureId));
+    if(!candidates.length)candidates=unseen.length?unseen:all;
+    // Arrival parties are persistent social groups. The first member to choose
+    // an exhibit becomes the temporary leader; other members preferentially
+    // choose the same enclosure, while still taking separate fence viewpoints.
+    if(g.groupId!=null){
+        const peers=trueGuestRuntime.guests.filter(x=>x!==g&&x.groupId===g.groupId&&!x.leaving);
+        const leader=peers.find(x=>x.groupLeader)||peers[0];
+        const followEnclosure=leader?.lastEnclosureId;
+        if(followEnclosure!=null&&String(followEnclosure)!==String(g.lastEnclosureId)){
+            const together=candidates.filter(p=>String(p.enclosureId)===String(followEnclosure));
+            if(together.length)candidates=together;
+        }
+    }
+    if(!candidates.length){g.leaving=true;g.viewingDestination=null;g.path=trueGuestPath(g,entrance);g.pathIndex=0;return !!g.path.length;}
+
+    // The entrance is a circulation zone, not a place to stand. Keep the
+    // enclosure eligible, but discard only its viewing positions that would
+    // physically block the gate. Other positions around the same fence remain
+    // valid, so entrance-side exhibits are still visited.
+    const entranceKeepMovingRadius=48;
+    const outsideGate=candidates.filter(p=>Math.hypot(p.x-entrance.x,p.y-entrance.y)>entranceKeepMovingRadius);
+    if(outsideGate.length)candidates=outsideGate;
+
+    // Prefer an unoccupied stretch of fence. This is deliberately evaluated
+    // only when a destination is chosen (not every animation frame), keeping
+    // crowd behaviour cheap even with a large guest population.
+    const viewpointCrowding=p=>{
+        let score=0;
+        for(const other of trueGuestRuntime.guests){
+            if(other===g)continue;
+            const d=Math.hypot(other.x-p.x,other.y-p.y);
+            if(d<34+(other.radius||15))score+=3;
+            const od=other.path?.[other.path.length-1];
+            if(od&&Math.hypot(od.x-p.x,od.y-p.y)<42+(other.radius||15))score+=2;
+        }
+        return score;
+    };
+    candidates=candidates.map(p=>({...p,crowding:viewpointCrowding(p)}));
+    candidates.sort((a,b)=>
+        (a.crowding-b.crowding)*85+
+        Math.hypot(a.x-g.x,a.y-g.y)-Math.hypot(b.x-g.x,b.y-g.y)
+    );
+    const pool=candidates.slice(0,Math.min(candidates.length,Math.random()<.22?8:5));
+
+    // Guests still behave locally, but rarity now competes with distance.
+    // When several high-level exhibits are nearby, low-level exhibits can be
+    // skipped altogether rather than receiving a mandatory visit.
+    const highestNearby=Math.max(...pool.map(p=>p.attractionLevel||1));
+    let eligible=pool;
+    if(highestNearby>=4&&pool.some(p=>(p.attractionLevel||1)<=2)){
+        eligible=pool.filter(p=>{
+            const L=p.attractionLevel||1;
+            if(L>=highestNearby-1)return true;
+            const gap=highestNearby-L;
+            const keepChance=Math.max(.08,.55-gap*.16);
+            return Math.random()<keepChance;
+        });
+        if(!eligible.length)eligible=pool.filter(p=>(p.attractionLevel||1)===highestNearby);
+    }
+    const weighted=eligible.map((p,index)=>{
+        const L=p.attractionLevel||1;
+        // Level matters strongly, but a nearby L3 can still beat a distant L5.
+        const crowdPenalty=1+(Number(p.crowding)||0)*1.6;
+        const weight=(Math.pow(1.72,L-1)*(Number(p.eventAttraction)||1))/((1+index*.34)*crowdPenalty);
+        return {p,weight};
+    });
+    let roll=Math.random()*weighted.reduce((sum,x)=>sum+x.weight,0),dest=weighted[0].p;
+    for(const item of weighted){roll-=item.weight;if(roll<=0){dest=item.p;break;}}
+    const path=trueGuestPath(g,dest);
+    if(!path.length){g.visits++;return trueGuestChooseDestination(g);}
+    g.path=path;g.pathIndex=0;g.lastEnclosureId=dest.enclosureId;
+    g.viewingDestination={x:dest.x,y:dest.y,enclosureId:dest.enclosureId};
+    g.destinationAttractionLevel=dest.attractionLevel||1;g.leaving=false;return true;
+}
+function trueGuestSpawn(layer,groupId=null,groupLeader=false,groupDepartureMinute=null){
+    const p=trueGuestEntrancePoint();if(!p||!layer)return;
+    const el=document.createElement('span');
+    const size=20+Math.random()*15;
+    Object.assign(el.style,{position:'absolute',width:`${size}px`,height:`${size}px`,borderRadius:'50%',
+        background:'#383838',opacity:String(.72+Math.random()*.2),transform:'translate(-50%,-50%)',willChange:'left,top'});
+    layer.appendChild(el);
+    const calendar=normaliseTrueCalendarState();
+    const g={x:p.x,y:p.y,el,size,radius:size/2,speed:21+Math.random()*33,path:[],pathIndex:0,wait:Math.random()*500,visits:0,lastEnclosureId:null,leaving:false,
+        entering:true,groupId,groupLeader:Boolean(groupLeader),visitDate:calendar.date,visitedEnclosureIds:new Set(),
+        arrivalHour:Number(calendar.hour)||9,arrivalMinute:(Number(calendar.hour)||9)*60+(Number(calendar.minute)||0),departureHour:19,
+        plannedStayMinutes:120+Math.floor(Math.random()*301),
+        groupDepartureMinute:Number.isFinite(Number(groupDepartureMinute))?Number(groupDepartureMinute):(17*60+Math.floor(Math.random()*61))};
+    g.plannedDepartureMinute=Number.isFinite(Number(groupDepartureMinute))?Math.min(Number(groupDepartureMinute),18*60):Math.min(g.arrivalMinute+g.plannedStayMinutes,18*60);
+    trueGuestRuntime.guests.push(g);
+
+    // First clear the gate before selecting an attraction. Find a nearby free
+    // walk cell farther from the entrance; this prevents the first visitor in
+    // a party from immediately stopping across the opening.
+    const walk=trueGuestRuntime.walk;
+    const startCell=trueGuestCellForPoint(p,walk);
+    let entryPoint=null;
+    if(startCell&&walk){
+        const options=[...walk.free].map(key=>{
+            const [col,row]=String(key).split(',').map(Number);
+            return {col,row,x:(col+.5)*TRUE_ENC_CELL_W,y:(row+.5)*TRUE_ENC_CELL_H};
+        }).filter(c=>{
+            const d=Math.abs(c.col-startCell.c)+Math.abs(c.row-startCell.r);
+            return d>=1&&d<=2;
+        }).sort((a,b)=>Math.hypot(b.x-p.x,b.y-p.y)-Math.hypot(a.x-p.x,a.y-p.y));
+        entryPoint=options[Math.floor(Math.random()*Math.min(3,options.length))]||null;
+    }
+    if(entryPoint){
+        g.path=trueGuestPath(g,entryPoint);g.pathIndex=0;
+    }else{
+        g.entering=false;trueGuestChooseDestination(g);
+    }
+}
+function trueGuestRemove(g,now=performance.now()){
+    g.el?.remove();
+    const i=trueGuestRuntime.guests.indexOf(g);if(i>=0)trueGuestRuntime.guests.splice(i,1);
+    // The population slider is a long-term target, not a one-out/one-in conveyor.
+    // After somebody leaves, keep that capacity outside the zoo for a noticeable,
+    // randomized period. The next arrival will be a newly generated guest/party,
+    // with fresh size, speed and opacity rather than looking like the same dot
+    // instantly re-entered through the gate.
+    const simSpeed=Math.max(.75,trueGuestSimulationSpeedMultiplier()||1);
+    const outsideDelay=(7000+Math.random()*16000)/simSpeed;
+    trueGuestRuntime.nextGroupAt=Math.max(trueGuestRuntime.nextGroupAt,now+outsideDelay);
+}
+function trueGuestTick(now){
+    trueGuestRuntime.raf=0;
+    const layer=trueGuestLayer();
+    if(!layer){for(const g of trueGuestRuntime.guests)g.el?.remove();trueGuestRuntime.guests=[];trueGuestRuntime.spawnQueue=0;trueGuestRuntime.spawnGroupId=null;trueGuestRuntime.nextSpawnAt=0;trueGuestRuntime.nextGroupAt=0;trueGuestRuntime.last=0;return;}
+    const sig=trueGuestLayoutSignature();
+    if(sig!==trueGuestRuntime.layoutSig){
+        // Animal-card moves can change attraction data without changing the
+        // visitor walkable geometry. Rebuild the walk graph, but preserve every
+        // live guest and its current route whenever that route still lies on
+        // walkable ground. Only reroute guests whose path was actually invalidated.
+        trueGuestRuntime.layoutSig=sig;trueGuestRuntime.walk=trueGuestBuildWalkGraph();
+        const walk=trueGuestRuntime.walk;
+        for(const g of trueGuestRuntime.guests){
+            const remaining=(g.path||[]).slice(Math.max(0,Number(g.pathIndex)||0));
+            const routeStillValid=remaining.every(point=>Boolean(trueGuestCellForPoint(point,walk)));
+            if(routeStillValid)continue;
+            g.path=[];g.pathIndex=0;g.wait=0;
+            if(g.leaving){
+                g.viewingDestination=null;
+                g.path=trueGuestPath(g,trueGuestEntrancePoint());g.pathIndex=0;
+            }else trueGuestChooseDestination(g);
+        }
+    }
+    const rawDt=Math.min(.05,Math.max(0,(now-(trueGuestRuntime.last||now))/1000));trueGuestRuntime.last=now;
+    const calendarSpeed=Number(normaliseTrueCalendarState().speed)||0;
+    const simSpeed=trueGuestSimulationSpeedMultiplier();
+    const dt=rawDt*simSpeed;
+    const target=trueGuestDailyTarget();
+    const calendar=normaliseTrueCalendarState();
+    let calendarHour=Number(calendar.hour)||9;
+    let virtualCalendarMinute=Number(calendar.minute)||0;
+    if(calendarSpeed===2){
+        if(!trueCalendarHourTickStartedAt)trueCalendarHourTickStartedAt=now;
+        const phase=Math.max(0,Math.min(1,(now-trueCalendarHourTickStartedAt)/(TRUE_CALENDAR_INTERVAL_MS[2]||4000)));
+        const baseMinutes=(Number(calendar.hour)||9)*60+(Number(calendar.minute)||0);
+        const fastMinutes=Math.min(18*60-1,baseMinutes+Math.min(59,Math.floor(phase*60)));
+        calendarHour=Math.floor(fastMinutes/60);
+        virtualCalendarMinute=fastMinutes%60;
+    }else if(calendarSpeed===3){
+        if(!trueCalendarWholeDayStartedAt)trueCalendarWholeDayStartedAt=now;
+        const phase=Math.max(0,Math.min(1,(now-trueCalendarWholeDayStartedAt)/(TRUE_CALENDAR_INTERVAL_MS[3]||4000)));
+        const wholeDayMinutes=Math.min(599,Math.floor(phase*600));
+        calendarHour=9+Math.floor(wholeDayMinutes/60);
+        virtualCalendarMinute=wholeDayMinutes%60;
+    }
+    if(trueGuestRuntime.dailyTargetDate!==calendar.date){
+        trueGuestRuntime.dailyTargetDate=calendar.date;
+        trueGuestRuntime.dailyEntered=0;
+    }
+    if(trueGuestRuntime.lastCalendarDate&&trueGuestRuntime.lastCalendarDate!==calendar.date){
+        for(const g of trueGuestRuntime.guests)g.el?.remove();
+        trueGuestRuntime.guests=[];trueGuestRuntime.spawnQueue=0;trueGuestRuntime.spawnGroupId=null;trueGuestRuntime.spawnGroupDepartureMinute=null;
+        trueGuestRuntime.nextSpawnAt=now;trueGuestRuntime.nextGroupAt=now+Math.random()*900;
+    }
+    trueGuestRuntime.lastCalendarDate=calendar.date;trueGuestRuntime.lastCalendarHour=calendarHour;
+    // 18:00–19:00 is the final open hour. Stop admissions and send everybody
+    // still inside toward the exit; the 19:00 closed state itself is skipped.
+    const calendarMinute=(calendarSpeed===2||calendarSpeed===3)?virtualCalendarMinute:(Number(calendar.minute)||0);
+    const minutesNow=calendarHour*60+calendarMinute;
+    trueGuestUpdateAnimalEvents(minutesNow);
+    if(minutesNow>=9*60){
+        if(minutesNow>=17*60){trueGuestRuntime.spawnQueue=0;trueGuestRuntime.spawnGroupId=null;trueGuestRuntime.spawnGroupDepartureMinute=null;}
+        for(const g of trueGuestRuntime.guests){
+            const leaveAt=Math.min(18*60,Number(g.plannedDepartureMinute)||Number(g.groupDepartureMinute)||18*60);
+            if(!g.leaving&&minutesNow>=leaveAt){
+                g.wait=0;g.visits=99;g.leaving=true;g.viewingDestination=null;
+                g.path=trueGuestPath(g,trueGuestEntrancePoint());g.pathIndex=0;
+            }
+        }
+    }
+    // Guests arrive in staggered parties of 1–5. A party is queued, then its
+    // members enter one by one rather than stacking on the entrance point.
+    // The slider is a total daily admissions target, not a simultaneous population cap.
+    // Pace arrivals across 09:00–17:00 with a mild midday bias, while guaranteeing that
+    // the full target is admitted by the final admission hour when simulation time advances.
+    const admissionStart=9*60,admissionEnd=17*60;
+    const admissionProgress=Math.max(0,Math.min(1,(minutesNow-admissionStart)/(admissionEnd-admissionStart)));
+    const pacedProgress=Math.max(0,Math.min(1,admissionProgress+.08*Math.sin(admissionProgress*Math.PI)));
+    const shouldHaveEntered=Math.min(target,minutesNow>=16*60?target:Math.floor(target*pacedProgress));
+    const remainingToday=Math.max(0,target-trueGuestRuntime.dailyEntered);
+    const dueNow=Math.max(0,Math.min(remainingToday,shouldHaveEntered-trueGuestRuntime.dailyEntered));
+    if(simSpeed>0&&minutesNow<17*60&&trueGuestRuntime.spawnQueue<=0&&dueNow>0&&now>=trueGuestRuntime.nextGroupAt){
+        trueGuestRuntime.spawnQueue=Math.min(dueNow,1+Math.floor(Math.random()*5));
+        trueGuestRuntime.spawnGroupId=trueGuestRuntime.nextGroupId++;
+        const groupStayMinutes=120+Math.floor(Math.random()*301);
+        trueGuestRuntime.spawnGroupDepartureMinute=Math.min(minutesNow+groupStayMinutes,17*60+Math.floor(Math.random()*61),18*60);
+        trueGuestRuntime.nextSpawnAt=now;
+        trueGuestRuntime.nextGroupAt=now+(900+Math.random()*2400)/Math.max(.75,simSpeed);
+    }
+    if(simSpeed>0&&trueGuestRuntime.spawnQueue>0&&now>=trueGuestRuntime.nextSpawnAt){
+        const entrance=trueGuestEntrancePoint();
+        const entranceClear=entrance&&!trueGuestRuntime.guests.some(g=>
+            Math.hypot(g.x-entrance.x,g.y-entrance.y)<(g.radius||20)+28
+        );
+        if(entranceClear){
+            const gid=trueGuestRuntime.spawnGroupId;
+            const isLeader=!trueGuestRuntime.guests.some(g=>g.groupId===gid);
+            trueGuestSpawn(layer,gid,isLeader,trueGuestRuntime.spawnGroupDepartureMinute);trueGuestRuntime.dailyEntered++;trueGuestRuntime.spawnQueue--;
+            if(trueGuestRuntime.spawnQueue<=0){trueGuestRuntime.spawnGroupId=null;trueGuestRuntime.spawnGroupDepartureMinute=null;}
+            trueGuestRuntime.nextSpawnAt=now+(220+Math.random()*420)/Math.max(.75,simSpeed);
+        }else trueGuestRuntime.nextSpawnAt=now+120/Math.max(.75,simSpeed);
+    }
+    for(const g of [...trueGuestRuntime.guests]){
+        if(g.wait>0){g.wait-=dt*1000;continue;}
+        if(g.groupId!=null&&!g.entering&&!g.leaving){
+            const peers=trueGuestRuntime.guests.filter(x=>x!==g&&x.groupId===g.groupId&&!x.leaving);
+            // An early family member may peel away about 1–2 seconds first,
+            // but not while the rest are still substantially behind at the
+            // current exhibit.
+            // Do not treat a peer's already-planned *next* route as evidence
+            // that they are behind. Routes are assigned while guests are still
+            // viewing the current exhibit, so the old path test could make every
+            // family member wait forever once their viewing timers expired.
+            // Only hold briefly for a family member who is genuinely still
+            // viewing this same enclosure by more than two seconds.
+            const farBehind=peers.some(x=>
+                String(x.lastEnclosureId)===String(g.lastEnclosureId)&&
+                (x.wait||0)>2000
+            );
+            if(farBehind){g.wait=180;continue;}
+        }
+        const dest=g.path?.[g.pathIndex];
+        if(!dest){
+            if(g.entering){
+                g.entering=false;g.path=[];g.pathIndex=0;
+                trueGuestChooseDestination(g);continue;
+            }
+            if(g.leaving){trueGuestRemove(g,now);continue;}
+            const view=g.viewingDestination;
+            if(!view||String(view.enclosureId)!==String(g.lastEnclosureId)){
+                g.path=[];g.pathIndex=0;trueGuestChooseDestination(g);continue;
+            }
+            // Exhibit waits only begin at the exact fence-relative point.
+            g.x=view.x;g.y=view.y;
+            g.el.style.left=`${g.x}px`;g.el.style.top=`${g.y}px`;
+            if(!(g.visitedEnclosureIds instanceof Set))g.visitedEnclosureIds=new Set(g.visitedEnclosureIds||[]);
+            g.visitedEnclosureIds.add(String(g.lastEnclosureId));
+            g.visits++;
+            let watch=trueGuestWatchDuration(g.destinationAttractionLevel||1);
+            if(g.groupId!=null){
+                const peers=trueGuestRuntime.guests.filter(x=>x!==g&&x.groupId===g.groupId&&!x.leaving);
+                const sameStop=peers.find(x=>String(x.lastEnclosureId)===String(g.lastEnclosureId)&&Number.isFinite(x.groupWatchBase));
+                const base=sameStop?.groupWatchBase??watch;
+                g.groupWatchBase=base;
+                // Family members finish within roughly two seconds of one
+                // another, while the family's overall stop still spans 1–15 s.
+                watch=Math.max(1000,Math.min(15000,base-1000+Math.random()*2000));
+            }else g.groupWatchBase=null;
+            g.wait=watch;
+            trueGuestChooseDestination(g);continue;}
+        const dx=dest.x-g.x,dy=dest.y-g.y,dist=Math.hypot(dx,dy),step=g.speed*dt;
+        let nx=g.x,ny=g.y;
+        if(dist<=step){nx=dest.x;ny=dest.y;}
+        else if(dist){nx+=dx/dist*step;ny+=dy/dist*step;}
+
+        // Guests are intentionally non-blocking at this visual abstraction.
+        // They may overlap/cross briefly, which avoids artificial traffic jams
+        // in the coarse walk-cell network while preserving paths and groups.
+        g.x=nx;g.y=ny;
+        if(dist<=step)g.pathIndex++;
+
+        // The normal perimeter clamp deliberately keeps the whole guest circle
+        // inside the zoo. That means a leaving guest can never put its centre on
+        // the perimeter entrance itself. Remove it as soon as it reaches the gate
+        // clearance zone instead of leaving a visible dot parked on the entrance.
+        if(g.leaving){
+            const exit=trueGuestEntrancePoint();
+            const exitClearance=Math.max(8,(Number(g.radius)||0)+3);
+            if(exit&&Math.hypot(g.x-exit.x,g.y-exit.y)<=exitClearance){
+                trueGuestRemove(g,now);
+                continue;
+            }
+        }
+        const grounds=trueZooGroundsBounds();
+        if(grounds){
+            const bodyInset=Math.max(1,(Number(g.radius)||0)+2);
+            g.x=Math.max(grounds.x+bodyInset,Math.min(grounds.x+grounds.w-bodyInset,g.x));
+            g.y=Math.max(grounds.y+bodyInset,Math.min(grounds.y+grounds.h-bodyInset,g.y));
+        }
+        g.el.style.left=`${g.x}px`;g.el.style.top=`${g.y}px`;
+    }
+    trueGuestRuntime.raf=requestAnimationFrame(trueGuestTick);
+}
+function ensureTrueGuestSimulation(){
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo){
+        if(trueGuestRuntime.raf)cancelAnimationFrame(trueGuestRuntime.raf);trueGuestRuntime.raf=0;
+        document.getElementById('trueGuestLayer')?.remove();
+        for(const g of trueGuestRuntime.guests)g.el?.remove();trueGuestRuntime.guests=[];trueGuestRuntime.spawnQueue=0;trueGuestRuntime.spawnGroupId=null;trueGuestRuntime.nextSpawnAt=0;trueGuestRuntime.nextGroupAt=0;trueGuestRuntime.last=0;return;
+    }
+    trueGuestLayer();
+    if(!trueGuestRuntime.raf)trueGuestRuntime.raf=requestAnimationFrame(trueGuestTick);
 }
 
 function ensureTrueSimulationPanel() {
@@ -7715,6 +8415,7 @@ function renderTrueSimulationPanel() {
     if (state.gameMode !== 'true' || state.sandboxMode) { panel.style.display = 'none'; return; }
     panel.style.display = 'flex';
     normaliseTrueCalendarState();
+    ensureTrueGuestSimulation();
     const unread = state.trueActivityLog.filter(item => item.unread).length;
     const recent = state.trueActivityLog.slice(0, 5);
     panel.innerHTML = '';
@@ -7725,15 +8426,39 @@ function renderTrueSimulationPanel() {
         boxShadow:'0 3px 8px rgba(0,0,0,.12)'
     });
     const top = document.createElement('div'); top.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:14px;';
-    const date = document.createElement('strong'); date.textContent = formatTrueDate(state.trueCalendar.date); date.style.fontSize='15px';
+    const date = document.createElement('strong'); const cal=normaliseTrueCalendarState();
+    date.id='trueCalendarVisualClock';
+    const shownCal=trueCalendarDisplayParts();
+    date.textContent = `${String(shownCal.hour).padStart(2,'0')}:${String(shownCal.minute).padStart(2,'0')} - ${formatTrueDate(shownCal.date)}`; date.style.fontSize='15px';
+    ensureTrueCalendarVisualClock();
     const speeds = document.createElement('div'); speeds.style.cssText='display:flex;gap:4px;';
     for (const speed of TRUE_CALENDAR_SPEEDS) {
-        const button=document.createElement('button'); button.type='button'; button.textContent=speed===0?'⏸':speed===1?'▶':speed===5?'▶▶':'▶▶▶';
-        button.title=speed===0?'Pause':`${speed}× speed`; button.setAttribute('aria-label',button.title);
-        button.style.cssText=`min-width:34px;height:28px;padding:0 7px;border-radius:6px;border:1px solid #aaa69b;background:#fffdf6;color:#30291f;cursor:pointer;${state.trueCalendar.speed===speed?'outline:2px solid #9b8b48;outline-offset:1px;background:#fff;':''}`;
-        button.addEventListener('click',()=>setTrueCalendarSpeed(speed)); speeds.appendChild(button);
+        const button=document.createElement('button'); button.type='button';
+        const speedName=speed===0?'Pause':speed===1?'Regular':speed===2?'Fast':'Max';
+        button.textContent=speed===0?'⏸':speed===1?'▶':speed===2?'▶▶':'▶▶▶';
+        button.title=speed===0?'Pause':speed===1?'Regular — 5 minutes per tick':speed===2?'Fast — 1 hour per tick':'Max — 10 hours per tick (simulate 09:00–19:00)';
+        button.setAttribute('aria-label',button.title);
+        button.style.cssText=`min-width:34px;height:28px;padding:0 7px;border-radius:6px;border:1px solid #aaa69b;background:#fffdf6;color:#30291f;cursor:pointer;font-size:10px;font-weight:700;${state.trueCalendar.speed===speed?'outline:2px solid #9b8b48;outline-offset:1px;background:#fff;':''}`;
+        // Commit on pointerdown so rapid calendar rerenders cannot swallow a
+        // speed change before the corresponding click event arrives.
+        button.addEventListener('pointerdown',event=>{
+            if(event.button!==0)return;
+            event.preventDefault();
+            setTrueCalendarSpeed(speed);
+        });
+        button.addEventListener('click',event=>event.preventDefault());
+        speeds.appendChild(button);
     }
-    top.append(date,speeds); panel.appendChild(top);
+    const guestControl=document.createElement('label');
+    guestControl.title='Guests per day — defaults to current zoo prestige; moving the slider sets a manual override';
+    guestControl.style.cssText='display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;white-space:nowrap;';
+    const guestValue=document.createElement('span');guestValue.textContent=`Guests/day ${trueGuestDailyTarget()}`;
+    const guestSlider=document.createElement('input');guestSlider.type='range';guestSlider.min='0';guestSlider.max='200';guestSlider.step='1';guestSlider.value=String(trueGuestDailyTarget());
+    guestSlider.style.cssText='width:90px;';
+    guestSlider.addEventListener('input',()=>{state.trueGuestDailyTarget=Number(guestSlider.value);state.trueGuestDailyTargetManual=true;guestValue.textContent=`Guests/day ${guestSlider.value}`;ensureTrueGuestSimulation();});
+    guestSlider.addEventListener('change',()=>{trueGuestSetDailyTarget(guestSlider.value);writeAutoResumeSnapshot?.(true);});
+    guestControl.append(guestValue,guestSlider);
+    top.append(date,guestControl,speeds); panel.appendChild(top);
     const heading=document.createElement('div'); heading.style.cssText='display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:.08em;font-weight:800;opacity:.9;border-top:1px solid rgba(70,58,39,.18);padding-top:6px;';
     heading.innerHTML=`<span>ACTIVITY${unread ? ` (${unread})` : ''}</span><span style="opacity:.6;font-weight:600">latest</span>`; panel.appendChild(heading);
     const list=document.createElement('div'); list.style.cssText='display:flex;flex-direction:column;gap:3px;overflow:auto;min-height:0;padding-right:2px;';
@@ -7808,12 +8533,185 @@ const ZOO_COLOUR_SCHEMES = {
         line:'#A99A7D'
     }
 };
+function ensureTrueModeControlTheme(){
+    let style=document.getElementById('trueModeControlThemeStyle');
+    if(style)return;
+    style=document.createElement('style');style.id='trueModeControlThemeStyle';
+    style.textContent=`
+/* True-mode compact controls — shared geometry, scheme-specific finish */
+.true-pop-notation{
+    display:flex!important;align-items:center;gap:5px;
+    min-height:18px;box-sizing:border-box;
+}
+.true-pop-notation .true-sex-male,.true-pop-notation .true-sex-female{
+    display:inline-flex;align-items:center;gap:2px;font-weight:900;
+}
+.true-pop-controls{
+    box-sizing:border-box;
+}
+.true-pop-control-button{
+    font-family:inherit!important;font-weight:800!important;
+    border-radius:5px!important;border:1px solid!important;
+    box-sizing:border-box;transition:background .12s,border-color .12s,transform .08s;
+}
+.true-pop-control-button:active{transform:translateY(1px)}
+.true-pop-control-button.true-pop-male{color:#356b91!important}
+.true-pop-control-button.true-pop-female{color:#a55770!important}
+.true-pop-notation{background:transparent!important;border:0!important;box-shadow:none!important}
+.true-pop-notation .true-sex-male,.true-pop-notation .true-sex-female{
+    display:inline-flex;align-items:center;justify-content:center;gap:2px;line-height:1;
+    min-width:22px;height:15px;padding:0 4px;border-radius:7px;
+    background:rgba(250,247,237,.94);border:1px solid rgba(91,81,68,.34);
+    box-shadow:0 1px 1px rgba(50,40,30,.08);box-sizing:border-box;
+}
+.true-pop-notation .true-sex-male{color:#356b91!important}
+.true-pop-notation .true-sex-female{color:#a55770!important}
+.true-pop-notation i{font-style:normal;font-size:10px;opacity:.88}
+.true-pop-notation b{font:inherit;font-weight:900;color:#4d463c}
+
+/* Both map tools deliberately share one exact footprint. */
+#areaToolButton,#trueEnclosureBuilderButton,#trueDecorationToolButton{
+    width:64px!important;height:64px!important;min-width:64px!important;min-height:64px!important;
+    max-width:64px!important;max-height:64px!important;padding:9px!important;border-radius:10px!important;box-sizing:border-box!important;
+    font-size:28px!important;line-height:1!important;
+}
+#areaToolButton svg,#trueEnclosureBuilderButton svg,#trueDecorationToolButton svg{width:44px!important;height:44px!important;max-width:44px!important;max-height:44px!important}
+#areaToolButton{right:18px!important;bottom:20px!important;left:auto!important;top:auto!important}
+#trueEnclosureBuilderButton{right:18px!important;bottom:96px!important;left:auto!important;top:auto!important}
+#trueDecorationToolButton{right:18px!important;bottom:172px!important;left:auto!important;top:auto!important}
+
+
+/* Classic */
+body[data-zoo-colour-scheme="classic"] .true-pop-notation,
+body[data-zoo-colour-scheme="classic"] .true-pop-controls{
+    color:#252525!important;background:rgba(250,250,248,.97)!important;
+    border:1px solid #777!important;border-radius:5px!important;
+    box-shadow:0 2px 5px rgba(0,0,0,.18)!important;
+}
+body[data-zoo-colour-scheme="classic"] .true-pop-control-button{
+    background:#f7f7f4!important;border-color:#777!important;color:#252525!important;
+}
+body[data-zoo-colour-scheme="classic"] .true-pop-control-button:hover{background:#e9e9e4!important}
+body[data-zoo-colour-scheme="classic"] #areaToolButton,
+body[data-zoo-colour-scheme="classic"] #trueEnclosureBuilderButton,
+body[data-zoo-colour-scheme="classic"] #trueDecorationToolButton{
+    color:#292929!important;background:#f4f4f0!important;border:1px solid #666!important;
+    box-shadow:0 2px 6px rgba(0,0,0,.20)!important;
+}
+body[data-zoo-colour-scheme="classic"] #areaToolButton.active,
+body[data-zoo-colour-scheme="classic"] #trueEnclosureBuilderButton.active,
+body[data-zoo-colour-scheme="classic"] #trueDecorationToolButton.active{
+    background:#deded6!important;border-color:#333!important;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)!important;
+}
+
+/* Overloon map */
+body[data-zoo-colour-scheme="overloon"] .true-pop-notation,
+body[data-zoo-colour-scheme="overloon"] .true-pop-controls{
+    color:#5B5144!important;background:rgba(251,245,230,.97)!important;
+    border:1px solid #A99A7D!important;border-radius:6px!important;
+    box-shadow:0 2px 5px rgba(75,61,43,.18)!important;
+}
+body[data-zoo-colour-scheme="overloon"] .true-pop-control-button{
+    background:#FBF5E6!important;border-color:#A99A7D!important;color:#5B5144!important;
+}
+body[data-zoo-colour-scheme="overloon"] .true-pop-control-button:hover{background:#E7DCC1!important}
+body[data-zoo-colour-scheme="overloon"] #areaToolButton,
+body[data-zoo-colour-scheme="overloon"] #trueEnclosureBuilderButton,
+body[data-zoo-colour-scheme="overloon"] #trueDecorationToolButton{
+    color:#5B5144!important;background:#FBF5E6!important;border:1px solid #A99A7D!important;
+    box-shadow:0 2px 7px rgba(75,61,43,.20)!important;
+}
+body[data-zoo-colour-scheme="overloon"] #areaToolButton.active,
+body[data-zoo-colour-scheme="overloon"] #trueEnclosureBuilderButton.active,
+body[data-zoo-colour-scheme="overloon"] #trueDecorationToolButton.active{
+    background:#C7DEA0!important;border-color:#708858!important;
+    box-shadow:inset 0 0 0 2px rgba(112,136,88,.18),0 2px 7px rgba(75,61,43,.16)!important;
+}
+body.true-decoration-tool-active #zooCanvas{cursor:none!important}
+/* Decoration edit isolation: the map becomes a pure decoration canvas. */
+.true-tree-card-crossfade-underlay,.true-tree-card-crossfade-underlay *{pointer-events:none!important}
+body.true-decoration-tool-active #zooCanvas .animal-card,
+body.true-decoration-tool-active #zooCanvas .animal,
+body.true-decoration-tool-active #zooCanvas .animal-wrapper,
+body.true-decoration-tool-active #zooCanvas .card,
+body.true-decoration-tool-active #zooCanvas .enclosure-card,
+body.true-decoration-tool-active #zooCanvas .slot-card,
+body.true-decoration-tool-active #zooCanvas [data-animal-id],
+body.true-decoration-tool-active #zooCanvas [data-animalid]{
+    visibility:hidden!important;
+    pointer-events:none!important;
+}
+body.true-decoration-tool-active #zooCanvas .true-sex-counts,
+body.true-decoration-tool-active #zooCanvas .true-sex-count-label,
+body.true-decoration-tool-active #zooCanvas .true-sex-indicator,
+body.true-decoration-tool-active #zooCanvas .true-pop-sex,
+body.true-decoration-tool-active #zooCanvas .true-pop-controls,
+body.true-decoration-tool-active #zooCanvas .true-pop-controls *,
+body.true-decoration-tool-active #zooCanvas [class*="true-pop-"],
+body.true-decoration-tool-active #zooCanvas [class*="true-sex-"]{
+    display:none!important;
+    visibility:hidden!important;
+    opacity:0!important;
+    pointer-events:none!important;
+}
+body.true-decoration-tool-active #zooCanvas .true-pop-control-button,
+body.true-decoration-tool-active #zooCanvas .true-pop-split-button,
+body.true-decoration-tool-active #zooCanvas [data-population-action],
+body.true-decoration-tool-active #zooCanvas button[title*="Split"],
+body.true-decoration-tool-active #zooCanvas button[aria-label*="Split"]{
+    display:none!important;visibility:hidden!important;pointer-events:none!important;
+}
+body.true-decoration-tool-active #truePlacedDecorationLowLayer,
+body.true-decoration-tool-active #truePlacedDecorationTreeLayer,
+body.true-decoration-tool-active #truePlacedDecorationLowLayer *,
+body.true-decoration-tool-active #truePlacedDecorationTreeLayer *{
+    visibility:visible!important;opacity:1!important;
+}
+body.true-decoration-tool-active #zooCanvas .animal-glow,
+body.true-decoration-tool-active #zooCanvas .compatibility-glow,
+body.true-decoration-tool-active #zooCanvas .progression-glow,
+body.true-decoration-tool-active #zooCanvas .trade-glow,
+body.true-decoration-tool-active #zooCanvas .hint-glow,
+body.true-decoration-tool-active #zooCanvas [class*="animal"][class*="glow"],
+body.true-decoration-tool-active #zooCanvas [class*="compat"][class*="glow"]{
+    display:none!important;
+    pointer-events:none!important;
+}
+body.true-decoration-tool-active #zooCanvas .compatibility-match-glow,
+body.true-decoration-tool-active #zooCanvas .compatibility-match-glow-fading,
+body.true-decoration-tool-active #zooCanvas .compatibility-hover-slot-match,
+body.true-decoration-tool-active #zooCanvas .compatibility-hover-slot-match-fading,
+body.true-decoration-tool-active #zooCanvas .compatibility-animal-match,
+body.true-decoration-tool-active #zooCanvas .compatibility-animal-match-fading,
+body.true-decoration-tool-active #zooCanvas .trade-eligible-glow,
+body.true-decoration-tool-active #zooCanvas .trade-eligible-glow-fading,
+body.true-decoration-tool-active #zooCanvas .eligible-glow,
+body.true-decoration-tool-active #zooCanvas .cohabitation-glow,
+body.true-decoration-tool-active #zooCanvas .combination-glow,
+body.true-decoration-tool-active #zooCanvas .slot-glow,
+body.true-decoration-tool-active #zooCanvas [class*="eligible"][class*="glow"],
+body.true-decoration-tool-active #zooCanvas [class*="combination"][class*="glow"],
+body.true-decoration-tool-active #zooCanvas [class*="slot"][class*="glow"]{
+    box-shadow:none!important;filter:none!important;outline:none!important;
+    animation:none!important;display:none!important;pointer-events:none!important;
+}
+.true-decoration-brush-cursor{
+    position:absolute;pointer-events:none;z-index:10040;border:2px solid rgba(25,25,25,.82);
+    border-radius:50%;box-sizing:border-box;transform:translate(-50%,-50%);
+    box-shadow:0 0 0 1px rgba(255,255,255,.85),inset 0 0 0 1px rgba(255,255,255,.32);
+}
+.true-decoration-brush-cursor.erase{
+    border-style:dashed;background:rgba(255,255,255,.10)!important;
+}`;
+    document.head.appendChild(style);
+}
 function activeZooColourScheme(){
     const key=String(state.zooColourScheme||'overloon').toLowerCase();
     return ZOO_COLOUR_SCHEMES[key]?key:'overloon';
 }
 function activeZooPalette(){return ZOO_COLOUR_SCHEMES[activeZooColourScheme()];}
 function applyZooColourScheme(){
+    ensureTrueModeControlTheme();
     const key=activeZooColourScheme();
     state.zooColourScheme=key;
     document.body.dataset.zooColourScheme=key;
@@ -14561,6 +15459,12 @@ function abandonZooVisitForNewGame() {
     document.getElementById('trueEnclosureBuilderButton')?.remove();
     document.getElementById('trueEnclosureBuilderPanel')?.remove();
     document.getElementById('trueEnclosureBuilderSelection')?.remove();
+    trueDecorationToolActive=false;trueDecorationDrag=null;
+    document.getElementById('trueDecorationToolButton')?.remove();
+    document.getElementById('trueDecorationToolPanel')?.remove();
+    document.getElementById('trueDecorationLayer')?.remove();
+    document.getElementById('truePlacedDecorationLowLayer')?.remove();
+    document.getElementById('truePlacedDecorationTreeLayer')?.remove();
     realZooVisitLayouts.clear();
     realZooLivePrestige.clear();
     visitedZooQuickTabs=[];
@@ -14684,17 +15588,38 @@ function trueEntrancePointAtPerimeter(u,b){
     return{x:b.x,y:b.y+b.h*q.t};
 }
 function trueEntranceHasInteriorAccess(spec,b){
-    const p=trueEntrancePointAtPerimeter(trueEntrancePerimeterPosition(spec,b),b);
     const occupied=trueEnclosureSpatialIndex().occupied;
-    const col=Math.floor(p.x/TRUE_ENC_CELL_W),row=Math.floor(p.y/TRUE_ENC_CELL_H);
-    const inward=spec.side==='top'?{col,row:row+1}:spec.side==='bottom'?{col,row:row-1}:spec.side==='left'?{col:col+1,row}:{col:col-1,row};
-    if(occupied.has(trueBuilderCellKey(inward.col,inward.row)))return false;
     const minCol=Math.floor(b.x/TRUE_ENC_CELL_W),maxCol=Math.ceil((b.x+b.w)/TRUE_ENC_CELL_W)-1;
     const minRow=Math.floor(b.y/TRUE_ENC_CELL_H),maxRow=Math.ceil((b.y+b.h)/TRUE_ENC_CELL_H)-1;
-    // The perimeter is a wall around the rectangular zoo grounds, not a ring
-    // of forbidden cells. The first cell immediately inside the entrance is
-    // valid visitor circulation, including an edge-row/edge-column cell.
-    return inward.col>=minCol&&inward.col<=maxCol&&inward.row>=minRow&&inward.row<=maxRow;
+    const insideCell=(col,row)=>col>=minCol&&col<=maxCol&&row>=minRow&&row<=maxRow;
+
+    // The entrance is the WHOLE visible gap, not its centre point. Every cell
+    // immediately behind that gap must be free. Sampling the complete gap also
+    // handles an entrance that approaches/wraps a corner.
+    const P=2*(b.w+b.h);
+    const center=trueEntrancePerimeterPosition(spec,b);
+    const half=Math.min(TRUE_ZOO_ENTRANCE_GAP,P-1)/2;
+    const sampleStep=Math.max(2,Math.min(TRUE_ENC_CELL_W,TRUE_ENC_CELL_H)/8);
+    const sampleUs=[center-half,center+half];
+    for(let d=-half;d<=half;d+=sampleStep)sampleUs.push(center+d);
+
+    const checked=new Set();
+    for(const u of sampleUs){
+        const q=trueEntranceSpecFromPerimeter(u,b);
+        const p=trueEntrancePointAtPerimeter(u,b);
+        // Move a tiny amount INSIDE before converting to a construction cell.
+        // This avoids right/bottom boundary coordinates falling into the cell
+        // just outside the grounds and fixes dragging the gate onto those sides.
+        const eps=1;
+        const x=p.x+(q.side==='left'?eps:q.side==='right'?-eps:0);
+        const y=p.y+(q.side==='top'?eps:q.side==='bottom'?-eps:0);
+        const col=Math.floor(x/TRUE_ENC_CELL_W),row=Math.floor(y/TRUE_ENC_CELL_H);
+        const key=trueBuilderCellKey(col,row);
+        if(checked.has(key))continue;
+        checked.add(key);
+        if(!insideCell(col,row)||occupied.has(key))return false;
+    }
+    return checked.size>0;
 }
 function trueNearestAccessibleEntranceSpec(u,b){
     const P=2*(b.w+b.h),step=Math.min(TRUE_ENC_CELL_W,TRUE_ENC_CELL_H)/4;
@@ -14712,17 +15637,26 @@ function trueClosestPerimeterPosition(x,y,b){
     ];
     candidates.sort((a,c)=>a.d-c.d);return candidates[0].u;
 }
-function trueEntranceBorderPath(spec,b){
+function trueEntranceBorderPath(spec,b,inset=0){
     const P=2*(b.w+b.h),center=trueEntrancePerimeterPosition(spec,b),half=Math.min(TRUE_ZOO_ENTRANCE_GAP,P-1)/2;
     const a=(center-half+P)%P,c=(center+half)%P;
     const intervals=a<c?[[c,a+P]]:[[c,a]];
-    const pt=u=>trueEntrancePointAtPerimeter(u,b);
+    const pt=u=>{
+        const p=trueEntrancePointAtPerimeter(u,b);
+        // SVG strokes centred exactly on x=width/y=height can be clipped on the
+        // right/bottom viewport edges. Move every side inward by half the stroke
+        // so all four perimeter sides render at the same full thickness.
+        return {
+            x:p.x-b.x<=.001 ? inset : p.x-b.x>=b.w-.001 ? b.w-inset : p.x-b.x,
+            y:p.y-b.y<=.001 ? inset : p.y-b.y>=b.h-.001 ? b.h-inset : p.y-b.y
+        };
+    };
     let d='';
     for(const [from,to] of intervals){
         const cuts=[from,to];
         for(const corner of [0,b.w,b.w+b.h,2*b.w+b.h,P, P+b.w,P+b.w+b.h,P+2*b.w+b.h,2*P])if(corner>from&&corner<to)cuts.push(corner);
         cuts.sort((x,y)=>x-y);
-        for(let j=0;j<cuts.length-1;j++){const p=pt(cuts[j]),q=pt(cuts[j+1]);d+=`M${p.x-b.x} ${p.y-b.y}L${q.x-b.x} ${q.y-b.y} `;}
+        for(let j=0;j<cuts.length-1;j++){const p=pt(cuts[j]),q=pt(cuts[j+1]);d+=`M${p.x} ${p.y}L${q.x} ${q.y} `;}
     }
     return d;
 }
@@ -14803,7 +15737,7 @@ function ensureTrueZooGroundsVisual(){
 
     const entrance=trueZooEntranceSpec(bounds);
     const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-    path.setAttribute('d',trueEntranceBorderPath(entrance,bounds));
+    path.setAttribute('d',trueEntranceBorderPath(entrance,bounds,5));
     path.setAttribute('fill','none');path.setAttribute('stroke',activeZooColourScheme()==='overloon'?activeZooPalette().perimeter:'#454747');path.setAttribute('stroke-width','10');
     path.setAttribute('stroke-linejoin','miter');path.setAttribute('stroke-linecap','square');path.setAttribute('vector-effect','non-scaling-stroke');border.appendChild(path);
 
@@ -14814,7 +15748,12 @@ function ensureTrueZooGroundsVisual(){
     const handle=document.createElement('div');handle.id='trueZooEntranceHandle';handle.title='Drag to move zoo entrance';
     Object.assign(handle.style,{position:'absolute',left:`${center.x-bounds.x-15}px`,top:`${center.y-bounds.y-15}px`,width:'30px',height:'30px',borderRadius:'50%',background:'rgba(255,255,255,.01)',cursor:'grab',pointerEvents:'auto',zIndex:'3'});
     const marker=document.createElement('div');Object.assign(marker.style,{position:'absolute',left:'9px',top:'9px',width:'12px',height:'12px',borderRadius:'50%',background:activeZooColourScheme()==='overloon'?activeZooPalette().perimeter:'#454747',border:`2px solid ${activeZooColourScheme()==='overloon'?activeZooPalette().grounds:'#f2efe6'}`,boxSizing:'border-box',pointerEvents:'none'});handle.appendChild(marker);
-    border.style.pointerEvents='none';layer.appendChild(border);
+    // Keep only the perimeter stroke above enclosure artwork. The grounds fill and
+    // outside shade remain in the low grounds layer so they never cover exhibits.
+    border.style.pointerEvents='none';
+    border.style.zIndex='158';
+    document.getElementById('trueZooGroundsBorder')?.remove();
+    zooCanvas.appendChild(border);
     document.getElementById('trueZooEntranceHandle')?.remove();
     handle.style.left=`${center.x-15}px`;
     handle.style.top=`${center.y-15}px`;
@@ -15123,12 +16062,31 @@ function trueGeneratedLayoutHasInteriorAccess(enclosures,entranceCol,bounds,entr
 function repairTrueBuiltEnclosureGeometry(){
     if(state.gameMode!=='true'||state.sandboxMode)return false;
     const b=normaliseTrueEnclosureBuilderState();
-    // v11: the zoo is one explicit rectangular grounds box (B), with a single
+    // v12: the zoo is one explicit rectangular grounds box (B), with a single
     // bottom entrance (C). Empty cells inside that rectangle are visitor
     // circulation; enclosure cells block it. Every exhibit must border the
-    // entrance-connected circulation network.
-    if(Number(b.geometryVersion)>=11)return false;
-    const enclosures=(state.enclosures||[]).filter(e=>e?.trueBuilt).slice()
+    // entrance-connected circulation network. Revalidate old v11 layouts:
+    // some were stamped current even when bounded search fell back to padded
+    // grounds, leaving the bottom/right perimeter detached from all exhibits.
+    const currentEnclosures=(state.enclosures||[]).filter(e=>e?.trueBuilt);
+    const grounds=b.zooGrounds;
+    const sidesConnected=()=>{
+        if(!grounds||!currentEnclosures.length)return false;
+        const eps=2;
+        let top=false,bottom=false,left=false,right=false;
+        for(const enc of currentEnclosures){
+            for(const c of trueBuiltWorldCells(enc)){
+                const x=c.col*TRUE_ENC_CELL_W,y=c.row*TRUE_ENC_CELL_H;
+                if(Math.abs(y-grounds.y)<=eps)top=true;
+                if(Math.abs((y+TRUE_ENC_CELL_H)-(grounds.y+grounds.h))<=eps)bottom=true;
+                if(Math.abs(x-grounds.x)<=eps)left=true;
+                if(Math.abs((x+TRUE_ENC_CELL_W)-(grounds.x+grounds.w))<=eps)right=true;
+            }
+        }
+        return top&&bottom&&left&&right;
+    };
+    if(Number(b.geometryVersion)>=12&&sidesConnected())return false;
+    const enclosures=currentEnclosures.slice()
       .sort((a,b)=>{
           const ac=trueCanonicalCellList(a.cells||[]),bc=trueCanonicalCellList(b.cells||[]);
           // Packing large/awkward exhibits first avoids the exponential search
@@ -15138,7 +16096,7 @@ function repairTrueBuiltEnclosureGeometry(){
                  (Number(a.x)||0)-(Number(b.x)||0)||
                  (Number(a.id)||0)-(Number(b.id)||0);
       });
-    if(!enclosures.length){b.geometryVersion=11;return false;}
+    if(!enclosures.length){b.geometryVersion=12;return false;}
 
     const dims=enc=>{
         const c=trueCanonicalCellList(enc.cells||[]);
@@ -15165,7 +16123,9 @@ function repairTrueBuiltEnclosureGeometry(){
         if(cols*rows<requiredCells+1)continue;
         envelopes.push({cols,rows});
     }
-    envelopes.sort((a,c)=>(rand()-.5)||(a.cols*a.rows-c.cols*c.rows));
+    // Prefer the smallest viable perimeter first. Randomness only breaks ties;
+    // this greatly reduces failed searches and prevents padded fallback grounds.
+    envelopes.sort((a,c)=>(a.cols*a.rows-c.cols*c.rows)||(Math.abs(a.cols-a.rows)-Math.abs(c.cols-c.rows))||(rand()-.5));
 
     let chosen=null;
     for(const envelope of envelopes){
@@ -15192,7 +16152,7 @@ function repairTrueBuiltEnclosureGeometry(){
             // Hard cap prevents pathological imported layouts from blocking the
             // browser's main thread during initial render. If a particular
             // entrance/envelope is too expensive, move on to the next one.
-            let searchBudget=12000;
+            let searchBudget=40000;
             const entranceHasInteriorAccess=()=>{
                 // C is a real opening in the bottom perimeter. The first pale
                 // cell immediately inside it must remain free.
@@ -15271,12 +16231,19 @@ function repairTrueBuiltEnclosureGeometry(){
         // Do not invent an oversized startup grid. Restore legacy geometry if a
         // pathological imported layout cannot fit the startup constraints.
         for(const p of original){p.enc.x=p.x;p.enc.y=p.y;}
-        b.zooGrounds=null;
-        initialiseTrueZooGroundsFromCurrentLayout(true);
+        let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+        for(const enc of enclosures){
+            minX=Math.min(minX,Number(enc.x)||0);minY=Math.min(minY,Number(enc.y)||0);
+            maxX=Math.max(maxX,(Number(enc.x)||0)+trueEnclosureWidth(enc));
+            maxY=Math.max(maxY,(Number(enc.y)||0)+trueEnclosureHeight(enc));
+        }
+        b.zooGrounds={x:minX,y:minY,w:Math.max(TRUE_ENC_CELL_W,maxX-minX),h:Math.max(TRUE_ENC_CELL_H,maxY-minY)};
+        const entranceCol=Math.max(0,Math.min(Math.round(b.zooGrounds.w/TRUE_ENC_CELL_W)-1,Math.floor((b.zooGrounds.w/TRUE_ENC_CELL_W)/2)));
+        b.zooEntrance={side:'bottom',t:((entranceCol+.5)*TRUE_ENC_CELL_W)/b.zooGrounds.w};
         b.startingGroundsCells=null;
     }
-    b.zooGroundsVersion=11;
-    b.geometryVersion=11;
+    b.zooGroundsVersion=12;
+    b.geometryVersion=12;
     trueInvalidateEnclosureGeometry();
     if(changed)state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
     return changed;
@@ -15833,6 +16800,467 @@ function convertCurrentTrueZooToBuiltEnclosures(){
     normaliseTrueDevelopment();
     return true;
 }
+
+let trueDecorationToolActive=false;
+let trueDecorationDrag=null;
+const TRUE_DECORATION_PRESETS=[
+    {name:'Water',colour:'#78AFC2'},
+    {name:'Dirt',colour:'#8C704F'},
+    {name:'Sand',colour:'#D8C38A'},
+    {name:'Dry grass',colour:'#C9C47A'},
+    {name:'Grass',colour:'#C7DEA0'},
+    {name:'Dark grass',colour:'#9FBD78'}
+];
+function normaliseTrueDecorations(){
+    if(!Array.isArray(state.trueEnclosureDecorations))state.trueEnclosureDecorations=[];
+    if(!Array.isArray(state.truePlacedDecorations))state.truePlacedDecorations=[];
+    else state.truePlacedDecorations=state.truePlacedDecorations.filter(d=>d&&['bush','rock','tree'].includes(d.kind)&&Number.isFinite(Number(d.x))&&Number.isFinite(Number(d.y)));
+    if(!state.trueDecorationBrush||typeof state.trueDecorationBrush!=='object')state.trueDecorationBrush={colour:'#78AFC2',size:34};
+    state.trueDecorationBrush.size=Math.max(8,Math.min(100,Number(state.trueDecorationBrush.size)||34));
+    if(!['paint','bush','rock','tree','erase'].includes(state.trueDecorationMode))state.trueDecorationMode='paint';
+    state.trueDecorationObjectScale=Math.max(.1,Math.min(2,Number(state.trueDecorationObjectScale)||.5));
+    if(!Number.isInteger(state.trueDecorationPreviewVariant))state.trueDecorationPreviewVariant=Math.floor(Math.random()*20);
+    return state.trueEnclosureDecorations;
+}
+function trueDecorationPhysicalCellRect(enc,c,own=null,owners=null){
+    own=own||new Set(trueBuiltWorldCells(enc).map(q=>trueBuilderCellKey(q.col,q.row)));
+    owners=owners||trueEnclosureSpatialIndex().owners;
+    const inset=TRUE_ENC_EXTERNAL_GAP/2,key=(col,row)=>trueBuilderCellKey(col,row),seam=1;
+    const same=(col,row)=>own.has(key(col,row));
+    const other=(col,row)=>{const id=owners.get(key(col,row));return id!=null&&String(id)!==String(enc.id);};
+    const T=!same(c.col,c.row-1),R=!same(c.col+1,c.row),B=!same(c.col,c.row+1),L=!same(c.col-1,c.row);
+    // Internal linked-cell edges deliberately overlap by one CSS pixel. Exact
+    // edge-to-edge SVG/CSS rectangles can expose the canvas beneath them at
+    // fractional browser zoom/device-pixel ratios.
+    const left=c.col*TRUE_ENC_CELL_W+(L&&!other(c.col-1,c.row)?inset:0)-(L?0:seam);
+    const right=(c.col+1)*TRUE_ENC_CELL_W-(R&&!other(c.col+1,c.row)?inset:0)+(R?0:seam);
+    const top=c.row*TRUE_ENC_CELL_H+(T&&!other(c.col,c.row-1)?inset:0)-(T?0:seam);
+    const bottom=(c.row+1)*TRUE_ENC_CELL_H-(B&&!other(c.col,c.row+1)?inset:0)+(B?0:seam);
+    return {left,right,top,bottom};
+}
+function trueDecorationEnclosureAtPoint(x,y){
+    const owners=trueEnclosureSpatialIndex().owners;
+    for(const enc of state.enclosures||[]){
+        if(!enc?.trueBuilt)continue;
+        const world=trueBuiltWorldCells(enc),own=new Set(world.map(c=>trueBuilderCellKey(c.col,c.row)));
+        for(const c of world){
+            const r=trueDecorationPhysicalCellRect(enc,c,own,owners);
+            if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return enc;
+        }
+    }
+    return null;
+}
+function trueDecorationBrushFullyInside(enc,x,y,r){
+    if(!enc)return false;
+    // Eight perimeter samples make switching conservative: a stroke changes
+    // enclosure only once the whole circular brush has crossed the fence.
+    for(let i=0;i<8;i++){
+        const a=i*Math.PI/4,q=trueDecorationEnclosureAtPoint(x+Math.cos(a)*r,y+Math.sin(a)*r);
+        if(!q||String(q.id)!==String(enc.id))return false;
+    }
+    return true;
+}
+
+function truePointInsideZooGrounds(x,y){
+    const b=trueZooGroundsBounds?.();return Boolean(b&&x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);
+}
+function trueDecorationVariantData(kind,variant=0){
+    const v=((Math.floor(Number(variant)||0)%20)+20)%20;
+    const rand=n=>{let x=(v+1)*1103515245+(n+7)*12345; x=(x^(x>>>16))>>>0; return (x%10000)/10000;};
+    return {v,rand};
+}
+const trueDecorationGlyphCache=new Map();
+function trueDecorationGlyphSVG(kind,variant=0){
+    const cacheKey=`natural2:${kind}:${((Math.floor(Number(variant)||0)%20)+20)%20}`;
+    if(trueDecorationGlyphCache.has(cacheKey))return trueDecorationGlyphCache.get(cacheKey);
+    const {v,rand}=trueDecorationVariantData(kind,variant);
+    if(kind==='rock'){
+        // Softer illustrated stone: irregular silhouette, restrained outline and
+        // two low-contrast facets rather than a flat pop-art polygon/highlight.
+        const pts=[],n=8+(v%3);
+        for(let i=0;i<n;i++){
+            const a=-Math.PI/2+i*Math.PI*2/n,r=16.2+(rand(i)*4.2-2.1);
+            pts.push(`${(24+Math.cos(a)*r).toFixed(1)},${(25+Math.sin(a)*r*.73).toFixed(1)}`);
+        }
+        const stone=['#8F8B7B','#96917F','#858374','#9A9582'][v%4];
+        const shade=['#777467','#7E796C','#706F64','#817C6D'][v%4];
+        const light=['#AAA591','#B0AA96','#9F9D8C','#B3AD98'][v%4];
+        const svg=`<svg viewBox="0 0 48 48">
+          <polygon points="${pts.join(' ')}" fill="${stone}" stroke="${shade}" stroke-width="1.25" stroke-linejoin="round"/>
+          <path d="M${(12+rand(20)*4).toFixed(1)} ${(28+rand(21)*4).toFixed(1)} Q24 ${(34+rand(22)*3).toFixed(1)} ${(36+rand(23)*3).toFixed(1)} ${(27+rand(24)*4).toFixed(1)} Q29 39 17 36Z" fill="${shade}" opacity=".20"/>
+          <path d="M${(14+rand(12)*4).toFixed(1)} ${(18+rand(13)*3).toFixed(1)} Q23 ${(10+rand(14)*4).toFixed(1)} ${(32+rand(15)*3).toFixed(1)} ${(17+rand(16)*3).toFixed(1)} Q24 22 16 25Z" fill="${light}" opacity=".38"/>
+        </svg>`;trueDecorationGlyphCache.set(cacheKey,svg);return svg;
+    }
+    if(kind==='tree'){
+        // Map-illustration canopy: many overlapping, muted leaf masses with a
+        // subtle central shadow. Still graphic enough to read cleanly top-down.
+        const blobs=[],n=7+(v%4);
+        const fills=['#748F5B','#809963','#8BA36A','#6F8957','#94AA72'];
+        for(let i=0;i<n;i++){
+            const a=i*Math.PI*2/n+rand(i)*.38;
+            const dist=7+rand(i+3)*9,rx=7.2+rand(i+8)*4.2,ry=6.5+rand(i+11)*4;
+            const cx=32+Math.cos(a)*dist,cy=29+Math.sin(a)*dist*.78;
+            blobs.push(`<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${fills[(i+v)%fills.length]}" stroke="#687F53" stroke-width=".45" opacity=".97"/>`);
+        }
+        const svg=`<svg viewBox="0 0 64 64">
+          <ellipse cx="32" cy="38" rx="6.5" ry="10" fill="#75644C" opacity=".78"/>
+          <ellipse cx="33" cy="34" rx="17" ry="14" fill="#637C50" opacity=".30"/>
+          ${blobs.join('')}
+          <ellipse cx="${(25+rand(18)*8).toFixed(1)}" cy="${(20+rand(19)*5).toFixed(1)}" rx="${(7+rand(20)*3).toFixed(1)}" ry="${(5+rand(21)*2.5).toFixed(1)}" fill="#A8B985" opacity=".22"/>
+        </svg>`;trueDecorationGlyphCache.set(cacheKey,svg);return svg;
+    }
+    // Bush: denser, irregular top-down foliage with subdued value variation.
+    const fills=['#758E5C','#819963','#8CA36C','#6E8757','#94A974'];
+    const blobs=[],n=6+(v%4);
+    for(let i=0;i<n;i++){
+        const a=i*Math.PI*2/n+rand(i)*.42,dist=5+rand(i+4)*7;
+        const rx=7.5+rand(i+7)*3.2,ry=6.7+rand(i+11)*3;
+        const cx=24+Math.cos(a)*dist,cy=24+Math.sin(a)*dist*.78;
+        blobs.push(`<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${fills[(i+v)%fills.length]}" stroke="#687F53" stroke-width=".35"/>`);
+    }
+    const svg=`<svg viewBox="0 0 48 48"><ellipse cx="24" cy="27" rx="15" ry="10" fill="#627B50" opacity=".22"/>${blobs.join('')}<ellipse cx="${(18+rand(17)*8).toFixed(1)}" cy="${(17+rand(18)*5).toFixed(1)}" rx="6" ry="4" fill="#A6B783" opacity=".18"/></svg>`;
+    trueDecorationGlyphCache.set(cacheKey,svg);return svg;
+}
+function trueDecorationObjectSize(kind,scale=.5,baseSize=null){
+    const base=Number.isFinite(Number(baseSize))?Math.max(8,Math.min(100,Number(baseSize))):34;
+    const objectScale=Math.max(.1,Math.min(2,Number(scale)||.5));
+    return base*objectScale*3*(kind==='tree'?4:1);
+}
+function trueCanPlaceMapDecoration(kind,x,y){
+    if(kind==='tree')return true;
+    return truePointInsideZooGrounds(x,y);
+}
+function trueErasePlacedDecorationsAt(x,y,r){
+    normaliseTrueDecorations();
+    const before=state.truePlacedDecorations.length;
+    state.truePlacedDecorations=state.truePlacedDecorations.filter(d=>{
+        const rr=trueDecorationObjectSize(d.kind,d.scale,d.baseSize)/2+r;
+        return Math.hypot((Number(d.x)||0)-x,(Number(d.y)||0)-y)>rr;
+    });
+    return before!==state.truePlacedDecorations.length;
+}
+function refreshTruePlacedDecorationVisuals(){
+    document.getElementById('truePlacedDecorationLowLayer')?.remove();
+    document.getElementById('truePlacedDecorationTreeLayer')?.remove();
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return;
+    normaliseTrueDecorations();if(!state.truePlacedDecorations.length)return;
+    const makeLayer=(id,z)=>{const d=document.createElement('div');d.id=id;Object.assign(d.style,{position:'absolute',inset:'0',pointerEvents:'none',zIndex:String(z)});zooCanvas.appendChild(d);return d;};
+    const low=makeLayer('truePlacedDecorationLowLayer',155),trees=makeLayer('truePlacedDecorationTreeLayer',320);
+    trees.style.pointerEvents='none';
+    for(const d of state.truePlacedDecorations){
+        const el=document.createElement('div'),size=trueDecorationObjectSize(d.kind,d.scale,d.baseSize);
+        el.innerHTML=trueDecorationGlyphSVG(d.kind,d.variant);
+        const glyph=el.querySelector('svg');if(glyph)Object.assign(glyph.style,{display:'block',width:'100%',height:'100%',overflow:'visible'});
+        Object.assign(el.style,{position:'absolute',left:`${d.x}px`,top:`${d.y}px`,width:`${size}px`,height:`${size}px`,display:'block',visibility:'visible',opacity:'1',overflow:'visible',zIndex:'1',transform:`translate(-50%,-50%) rotate(${Number(d.rotation)||0}deg)`,pointerEvents:'none'});
+        (d.kind==='tree'?trees:low).appendChild(el);
+    }
+}
+function refreshTrueDecorationVisuals(refreshObjects=true){
+    document.getElementById('trueDecorationLayer')?.remove();
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return;
+    const strokes=normaliseTrueDecorations();if(refreshObjects)refreshTruePlacedDecorationVisuals();if(!strokes.length)return;
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.id='trueDecorationLayer';
+    Object.assign(svg.style,{position:'absolute',left:'0',top:'0',width:'100%',height:'100%',overflow:'visible',pointerEvents:'none',zIndex:'4'});
+    const defs=document.createElementNS(svg.namespaceURI,'defs');svg.appendChild(defs);
+    const clipById=new Map();
+    for(const enc of state.enclosures||[]){
+        if(!enc?.trueBuilt)continue;
+        const cp=document.createElementNS(svg.namespaceURI,'clipPath');cp.id=`trueDecorClip_${String(enc.id).replace(/[^a-zA-Z0-9_-]/g,'_')}`;
+        const world=trueBuiltWorldCells(enc),own=new Set(world.map(c=>trueBuilderCellKey(c.col,c.row))),owners=trueEnclosureSpatialIndex().owners;
+        for(const c of world){
+            const rect=document.createElementNS(svg.namespaceURI,'rect'),r=trueDecorationPhysicalCellRect(enc,c,own,owners);
+            rect.setAttribute('x',r.left);rect.setAttribute('y',r.top);
+            rect.setAttribute('width',r.right-r.left);rect.setAttribute('height',r.bottom-r.top);cp.appendChild(rect);
+        }
+        defs.appendChild(cp);clipById.set(String(enc.id),cp.id);
+    }
+    // Render chronologically. An erase stroke removes only paint that existed at
+    // that moment; later paint is rendered in a fresh epoch above it and can
+    // therefore repaint the same area normally.
+    const byEnclosure=new Map();
+    for(const st of strokes){
+        const key=String(st?.enclosureId);
+        if(!clipById.has(key)||!Array.isArray(st.points)||!st.points.length)continue;
+        if(!byEnclosure.has(key))byEnclosure.set(key,[]);
+        byEnclosure.get(key).push(st);
+    }
+    let epochSerial=0;
+    const paintPath=(st,group)=>{
+        const path=document.createElementNS(svg.namespaceURI,'path');
+        path.setAttribute('d',st.points.map((q,i)=>`${i?'L':'M'}${Number(q.x)||0} ${Number(q.y)||0}`).join(' '));
+        path.setAttribute('fill','none');path.setAttribute('stroke',st.colour||'#78AFC2');
+        path.setAttribute('stroke-width',Math.max(8,Math.min(100,Number(st.size)||34)));
+        path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');
+        group.appendChild(path);
+    };
+    for(const [encId,list] of byEnclosure){
+        const epochs=[];let current={paint:[],erasers:[]};epochs.push(current);
+        for(const st of list){
+            if(st.erase){
+                // This eraser applies to all paint epochs currently below it.
+                for(const ep of epochs)ep.erasers.push(st);
+                current={paint:[],erasers:[]};epochs.push(current);
+            }else current.paint.push(st);
+        }
+        for(const ep of epochs){
+            if(!ep.paint.length)continue;
+            const group=document.createElementNS(svg.namespaceURI,'g');
+            group.setAttribute('clip-path',`url(#${clipById.get(encId)})`);
+            if(ep.erasers.length){
+                const mask=document.createElementNS(svg.namespaceURI,'mask'),maskId=`trueDecorEpochMask_${epochSerial++}`;
+                mask.id=maskId;
+                const full=document.createElementNS(svg.namespaceURI,'rect');full.setAttribute('x','0');full.setAttribute('y','0');full.setAttribute('width','100%');full.setAttribute('height','100%');full.setAttribute('fill','white');mask.appendChild(full);
+                for(const st of ep.erasers){
+                    const epth=document.createElementNS(svg.namespaceURI,'path');epth.setAttribute('d',st.points.map((q,i)=>`${i?'L':'M'}${Number(q.x)||0} ${Number(q.y)||0}`).join(' '));epth.setAttribute('fill','none');epth.setAttribute('stroke','black');epth.setAttribute('stroke-width',Math.max(8,Math.min(100,Number(st.size)||34)));epth.setAttribute('stroke-linecap','round');epth.setAttribute('stroke-linejoin','round');mask.appendChild(epth);
+                }
+                defs.appendChild(mask);group.setAttribute('mask',`url(#${maskId})`);
+            }
+            for(const st of ep.paint)paintPath(st,group);
+            svg.appendChild(group);
+        }
+    }
+    zooCanvas.appendChild(svg);
+}
+
+const trueDecorationUndoStack=[];
+const trueDecorationRedoStack=[];
+let trueDecorationHistoryGestureStart=null;
+function trueDecorationHistorySnapshot(){
+    normaliseTrueDecorations();
+    return {
+        strokes:structuredClone(state.trueEnclosureDecorations||[]),
+        objects:structuredClone(state.truePlacedDecorations||[])
+    };
+}
+function trueDecorationHistorySame(a,b){
+    if(!a||!b)return false;
+    return JSON.stringify(a)===JSON.stringify(b);
+}
+function trueDecorationHistoryApply(snapshot){
+    if(!snapshot)return;
+    state.trueEnclosureDecorations=structuredClone(snapshot.strokes||[]);
+    state.truePlacedDecorations=structuredClone(snapshot.objects||[]);
+    refreshTrueDecorationVisuals(true);
+    syncActiveZooIntoLocalMatch?.();
+    writeAutoResumeSnapshot?.(true);
+}
+function trueDecorationHistoryCommit(before){
+    if(!before)return;
+    const after=trueDecorationHistorySnapshot();
+    if(trueDecorationHistorySame(before,after))return;
+    trueDecorationUndoStack.push(before);
+    if(trueDecorationUndoStack.length>80)trueDecorationUndoStack.shift();
+    trueDecorationRedoStack.length=0;
+}
+function trueDecorationUndo(){
+    if(!trueDecorationUndoStack.length)return;
+    const current=trueDecorationHistorySnapshot();
+    const previous=trueDecorationUndoStack.pop();
+    trueDecorationRedoStack.push(current);
+    if(trueDecorationRedoStack.length>80)trueDecorationRedoStack.shift();
+    trueDecorationHistoryApply(previous);
+}
+function trueDecorationRedo(){
+    if(!trueDecorationRedoStack.length)return;
+    const current=trueDecorationHistorySnapshot();
+    const next=trueDecorationRedoStack.pop();
+    trueDecorationUndoStack.push(current);
+    if(trueDecorationUndoStack.length>80)trueDecorationUndoStack.shift();
+    trueDecorationHistoryApply(next);
+}
+function trueDecorationKeyboardHistory(e){
+    if(!trueDecorationToolActive||e.defaultPrevented)return;
+    const target=e.target;
+    if(target?.matches?.('input,textarea,select,[contenteditable="true"]'))return;
+    if(!(e.ctrlKey||e.metaKey)||String(e.key).toLowerCase()!=='z')return;
+    e.preventDefault();e.stopPropagation();
+    if(e.shiftKey)trueDecorationRedo();else trueDecorationUndo();
+}
+if(!window.__trueDecorationHistoryKeysBound){
+    window.__trueDecorationHistoryKeysBound=true;
+    window.addEventListener('keydown',trueDecorationKeyboardHistory,true);
+}
+
+function ensureTrueDecorationToolUI(){
+    normaliseTrueDecorations();
+    const enabled=state.gameMode==='true'&&!state.sandboxMode&&!state.visitingZoo;
+    let button=document.getElementById('trueDecorationToolButton'),panel=document.getElementById('trueDecorationToolPanel');
+    if(!button){
+        button=document.createElement('button');button.id='trueDecorationToolButton';button.type='button';button.title='Decorations';button.setAttribute('aria-label','Decorations');
+        button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" style="display:block;margin:auto"><path d="M12 3c-2.8 0-4.5 2-4.2 4.1C5.6 7.3 4 9 4.3 11.1c.3 2 2.1 3.2 4 3.1.5 1.5 1.8 2.5 3.7 2.5s3.2-1 3.7-2.5c1.9.1 3.7-1.1 4-3.1.3-2.1-1.3-3.8-3.5-4C16.5 5 14.8 3 12 3z" fill="currentColor" opacity=".72"/><path d="M12 13v8M8.5 21h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+        Object.assign(button.style,{position:'fixed',right:'18px',zIndex:'10122',cursor:'pointer',pointerEvents:'auto',width:'78px',height:'78px',minWidth:'78px',minHeight:'78px',padding:'11px',borderRadius:'12px',boxSizing:'border-box'});document.body.appendChild(button);
+        button.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();});
+        button.addEventListener('click',e=>{
+            e.preventDefault();e.stopPropagation();trueDecorationToolActive=!trueDecorationToolActive;
+            if(trueDecorationToolActive){
+                if(trueEnclosureBuilderActive){trueEnclosureBuilderActive=false;document.body.classList.remove('true-enclosure-builder-active');document.getElementById('trueEnclosureBuilderButton')?.classList.remove('active');}
+                if(areaToolActive){areaToolActive=false;document.body.classList.remove('area-tool-active');document.getElementById('areaToolButton')?.classList.remove('active');document.getElementById('trueAreaBuilderPanel')?.style.setProperty('display','none');}
+                // Enter a clean decoration-only canvas immediately.
+                state.drag=null;
+                document.querySelectorAll('#zooCanvas button').forEach(el=>{const t=(el.title||el.getAttribute('aria-label')||el.textContent||'').trim().toLowerCase();if(t==='split'||t.startsWith('split '))el.remove();});
+                document.querySelectorAll('#zooCanvas .true-pop-controls,#zooCanvas [class*="true-pop-"],#zooCanvas [class*="true-sex-"]').forEach(el=>{
+                    if(!el.closest?.('#trueDecorationToolPanel'))el.remove();
+                });
+                document.querySelectorAll('#zooCanvas .animal-glow,#zooCanvas .compatibility-glow,#zooCanvas .progression-glow,#zooCanvas .trade-glow,#zooCanvas .hint-glow,#zooCanvas .trade-eligible-glow,#zooCanvas .trade-eligible-glow-fading,#zooCanvas .eligible-glow,#zooCanvas .cohabitation-glow,#zooCanvas .combination-glow,#zooCanvas .slot-glow,#zooCanvas [class*="animal"][class*="glow"],#zooCanvas [class*="compat"][class*="glow"],#zooCanvas [class*="eligible"][class*="glow"],#zooCanvas [class*="combination"][class*="glow"],#zooCanvas [class*="slot"][class*="glow"]').forEach(el=>el.remove());
+            }
+            document.body.classList.toggle('true-decoration-tool-active',trueDecorationToolActive);button.classList.toggle('active',trueDecorationToolActive);if(!trueDecorationToolActive)document.getElementById('trueDecorationBrushCursor')?.remove();ensureTrueDecorationToolUI();
+        });
+    }
+    button.style.display=enabled?'block':'none';button.classList.toggle('active',trueDecorationToolActive);
+    const areaButton=document.getElementById('areaToolButton'),enclosure=document.getElementById('trueEnclosureBuilderButton');
+    for(const toolButton of [areaButton,enclosure,button].filter(Boolean)){
+        Object.assign(toolButton.style,{width:'64px',height:'64px',minWidth:'64px',minHeight:'64px',maxWidth:'64px',maxHeight:'64px',padding:'9px',margin:'0',boxSizing:'border-box',borderRadius:'10px'});
+        const icon=toolButton.querySelector('svg');if(icon)Object.assign(icon.style,{width:'44px',height:'44px',maxWidth:'44px',maxHeight:'44px',display:'block',margin:'auto'});
+    }
+    const er=enclosure?.getBoundingClientRect();
+    button.style.bottom=`${20+2*((er?.height)||64)+24}px`;
+    if(!enabled){trueDecorationToolActive=false;document.body.classList.remove('true-decoration-tool-active');if(panel)panel.style.display='none';return;}
+    if(!panel){panel=document.createElement('div');panel.id='trueDecorationToolPanel';Object.assign(panel.style,{position:'fixed',zIndex:'10123',width:'238px',padding:'10px',borderRadius:'9px',boxSizing:'border-box',fontFamily:'inherit'});document.body.appendChild(panel);}
+    const scheme=activeZooColourScheme();
+    Object.assign(panel.style,scheme==='overloon'?{background:'#FBF5E6',border:'1px solid #A99A7D',color:'#5B5144',boxShadow:'0 4px 16px rgba(75,61,43,.22)'}:{background:'#f4f4f0',border:'1px solid #666',color:'#292929',boxShadow:'0 4px 16px rgba(0,0,0,.2)'});
+    panel.style.display=trueDecorationToolActive?'block':'none';if(!trueDecorationToolActive)return;
+    const brush=state.trueDecorationBrush;
+    panel.innerHTML=`<div style="font-weight:900;font-size:12px;margin-bottom:8px">Decorations</div>
+      <div style="font-size:10px;font-weight:900;margin-bottom:5px">TERRAIN PAINT</div>
+      <div data-swatches style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px"></div>
+      <div style="display:flex;gap:6px;margin-top:8px"><input data-custom type="color" value="${cssColourToHex(brush.colour)}" title="Custom colour" style="width:36px;height:28px;padding:0"><button data-paint type="button" style="flex:1">Paint</button><button data-erase type="button">Eraser</button></div>
+      <label style="display:grid;grid-template-columns:52px 1fr 34px;align-items:center;gap:6px;font-size:11px;font-weight:800;margin-top:9px">Size <input data-size type="range" min="8" max="100" step="2" value="${brush.size}"><span data-size-value>${brush.size}</span></label>
+      <div style="font-size:10px;font-weight:900;margin:11px 0 5px">MAP DECORATIONS</div>
+      <div data-objects style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px"></div>
+      <div style="font-size:10px;opacity:.72;margin-top:5px">Selected map decoration size: <b data-object-scale>50%</b></div>
+      <div style="display:flex;gap:6px;margin-top:9px"><button data-undo type="button" style="flex:1">Undo</button><button data-clear type="button">Clear all</button></div>
+      <div style="font-size:10px;opacity:.68;margin-top:8px">Bushes and rocks stay within the zoo perimeter. Trees may be placed anywhere. Each placement previews one of 20 variants. The Size slider affects paint, eraser, bushes, rocks and trees. Ctrl + scroll changes the shared size. Middle-drag pans the zoo. Right-drag always erases. Ctrl+Z undoes; Ctrl+Shift+Z redoes.</div>`;
+    const sw=panel.querySelector('[data-swatches]');
+    for(const preset of TRUE_DECORATION_PRESETS){
+        const b=document.createElement('button');b.type='button';b.title=preset.name;b.setAttribute('aria-label',preset.name);
+        Object.assign(b.style,{width:'30px',height:'30px',padding:'0',borderRadius:'50%',background:preset.colour,border:brush.colour.toLowerCase()===preset.colour.toLowerCase()?'3px solid #252525':'1px solid rgba(40,40,40,.55)',cursor:'pointer'});
+        b.addEventListener('click',()=>{brush.colour=preset.colour;state.trueDecorationMode='paint';ensureTrueDecorationToolUI();});sw.appendChild(b);
+    }
+    const objects=panel.querySelector('[data-objects]');
+    for(const kind of ['bush','rock','tree']){
+        const b=document.createElement('button');b.type='button';b.title=kind[0].toUpperCase()+kind.slice(1);b.innerHTML=trueDecorationGlyphSVG(kind,0);
+        Object.assign(b.style,{height:'48px',padding:'3px',borderRadius:'6px',border:state.trueDecorationMode===kind?'2px solid #4f6540':'1px solid #8b806d',background:'rgba(255,255,255,.24)',cursor:'pointer'});
+        b.querySelector('svg')?.style.setProperty('width','100%');b.querySelector('svg')?.style.setProperty('height','100%');
+        b.addEventListener('click',()=>{state.trueDecorationMode=kind;state.trueDecorationObjectScale=.5;state.trueDecorationPreviewVariant=Math.floor(Math.random()*20);ensureTrueDecorationToolUI();});objects.appendChild(b);
+    }
+    panel.querySelectorAll('[data-undo],[data-clear],[data-paint],[data-erase]').forEach(b=>Object.assign(b.style,{font:'inherit',fontSize:'10px',fontWeight:'800',padding:'5px 7px',borderRadius:'5px',border:'1px solid currentColor',background:'transparent',cursor:'pointer'}));
+    panel.querySelector('[data-size]').addEventListener('input',e=>{brush.size=Number(e.target.value);panel.querySelector('[data-size-value]').textContent=e.target.value;const c=document.getElementById('trueDecorationBrushCursor');if(c&&['bush','rock','tree'].includes(state.trueDecorationMode)){const size=trueDecorationObjectSize(state.trueDecorationMode,state.trueDecorationObjectScale,state.trueDecorationBrush?.size);c.style.width=`${size}px`;c.style.height=`${size}px`;}});
+    panel.querySelector('[data-custom]').addEventListener('input',e=>{brush.colour=e.target.value;state.trueDecorationMode='paint';});
+    const paintButton=panel.querySelector('[data-paint]'),eraseButton=panel.querySelector('[data-erase]');
+    const setModeButtonState=(button,selected)=>{
+        button.setAttribute('aria-pressed',selected?'true':'false');
+        Object.assign(button.style,selected?{
+            transform:'translateY(1px)',background:scheme==='overloon'?'#D8C9AA':'#d8d8d2',
+            borderColor:scheme==='overloon'?'#6E5C43':'#555',
+            boxShadow:'inset 0 2px 4px rgba(55,45,32,.30)'
+        }:{transform:'',background:'',borderColor:'',boxShadow:''});
+    };
+    setModeButtonState(paintButton,state.trueDecorationMode==='paint');
+    setModeButtonState(eraseButton,state.trueDecorationMode==='erase');
+    paintButton.addEventListener('click',()=>{state.trueDecorationMode='paint';ensureTrueDecorationToolUI();});
+    eraseButton.addEventListener('click',()=>{state.trueDecorationMode='erase';ensureTrueDecorationToolUI();});
+    panel.querySelector('[data-undo]').addEventListener('click',()=>trueDecorationUndo());
+    panel.querySelector('[data-clear]').addEventListener('click',()=>{
+        const before=trueDecorationHistorySnapshot();
+        state.trueEnclosureDecorations=[];state.truePlacedDecorations=[];
+        trueDecorationHistoryCommit(before);
+        refreshTrueDecorationVisuals();syncActiveZooIntoLocalMatch?.();writeAutoResumeSnapshot?.(true);
+    });
+    const br=button.getBoundingClientRect(),pr=panel.getBoundingClientRect();panel.style.left=`${Math.max(8,br.left-pr.width-12)}px`;panel.style.top=`${Math.max(8,Math.min(innerHeight-pr.height-8,br.top))}px`;
+}
+function setupTrueDecorationInteractions(){
+    if(zooCanvas.dataset.trueDecorationReady==='1')return;zooCanvas.dataset.trueDecorationReady='1';
+    // Installed on child/card targets rather than zooCanvas itself so decoration
+    // handlers on the canvas still receive the event after bubbling.
+    const blockUnderlyingDecorationInteraction=e=>{
+        if(!trueDecorationToolActive)return;
+        const target=e.target;
+        if(target===zooCanvas||target?.closest?.('#trueDecorationToolPanel,#trueDecorationToolButton'))return;
+        if(target?.closest?.('.animal-card,.animal,.animal-wrapper,.card,.enclosure-card,.slot-card,[data-animal-id],[data-animalid]')){
+            e.preventDefault();e.stopPropagation();
+        }
+    };
+    for(const type of ['pointerdown','pointerup','click','dblclick','mouseover','mouseenter'])
+        zooCanvas.addEventListener(type,blockUnderlyingDecorationInteraction,true);
+    const point=e=>{const r=zooCanvas.getBoundingClientRect(),z=state.zoom||1;return{x:(e.clientX-r.left)/z,y:(e.clientY-r.top)/z};};
+    const cursor=(p,erase=false)=>{
+        let c=document.getElementById('trueDecorationBrushCursor');
+        if(!trueDecorationToolActive){c?.remove();return;}
+        if(!c){c=document.createElement('div');c.id='trueDecorationBrushCursor';zooCanvas.appendChild(c);}
+        c.className='true-decoration-brush-cursor'+(erase?' erase':'');
+        const mode=state.trueDecorationMode||'paint',objectMode=['bush','rock','tree'].includes(mode)&&!erase;
+        const size=objectMode?trueDecorationObjectSize(mode,state.trueDecorationObjectScale,state.trueDecorationBrush?.size):Math.max(8,Math.min(100,Number(state.trueDecorationBrush?.size)||34));
+        const eraserCursor=erase||mode==='erase',previewKey=objectMode?`${mode}:${state.trueDecorationPreviewVariant}`:(eraserCursor?'eraser':'brush');
+        if(c.dataset.previewKey!==previewKey){
+            c.innerHTML=objectMode?trueDecorationGlyphSVG(mode,state.trueDecorationPreviewVariant):(eraserCursor?'<span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:18px;font-weight:900;line-height:1;color:#514638;text-shadow:0 1px 1px #fff">×</span>':'');
+            c.dataset.previewKey=previewKey;
+        }
+        c.style.border=objectMode?'0':(eraserCursor?'2px dashed rgba(76,63,49,.95)':'2px solid rgba(25,25,25,.82)');
+        c.style.borderRadius=objectMode?'0':'50%';
+        c.style.boxShadow=objectMode?'none':(eraserCursor?'0 0 0 2px rgba(255,250,238,.9),inset 0 0 0 1px rgba(76,63,49,.18)':'0 0 0 1px rgba(255,255,255,.85)');
+        Object.assign(c.style,{left:`${p.x}px`,top:`${p.y}px`,width:`${size}px`,height:`${size}px`,background:eraserCursor?'rgba(255,250,238,.22)':(objectMode?'transparent':(state.trueDecorationBrush?.colour||'#78AFC2')),opacity:objectMode?(trueCanPlaceMapDecoration(mode,p.x,p.y)?'.72':'.25'):'1',display:'block'});
+    };
+    zooCanvas.addEventListener('contextmenu',e=>{if(trueDecorationToolActive){e.preventDefault();e.stopPropagation();}});
+    zooCanvas.addEventListener('auxclick',e=>{if(trueDecorationToolActive&&e.button===1){/* middle mouse belongs to board panning */}});
+    zooCanvas.addEventListener('wheel',e=>{
+        if(!trueDecorationToolActive)return;
+        normaliseTrueDecorations();const mode=state.trueDecorationMode||'paint';
+        if(!e.ctrlKey)return;
+        e.preventDefault();e.stopPropagation();
+        const brush=state.trueDecorationBrush,step=e.deltaY<0?4:-4;brush.size=Math.max(8,Math.min(100,(Number(brush.size)||34)+step));
+        cursor(point(e),false);
+        const slider=document.querySelector('#trueDecorationToolPanel [data-size]'),value=document.querySelector('#trueDecorationToolPanel [data-size-value]');
+        if(slider)slider.value=brush.size;if(value)value.textContent=brush.size;
+    },{passive:false});
+    zooCanvas.addEventListener('pointerdown',e=>{
+        if(!trueDecorationToolActive||state.gameMode!=='true'||state.sandboxMode||state.visitingZoo||(e.button!==0&&e.button!==1&&e.button!==2))return;
+        const p=point(e),brush=state.trueDecorationBrush,mode=state.trueDecorationMode||'paint',erase=e.button===2||mode==='erase';
+        if(e.button===1)return;
+        e.preventDefault();e.stopPropagation();normaliseTrueDecorations();
+        const historyBefore=trueDecorationHistorySnapshot();
+        if(erase){
+            const enc=trueDecorationEnclosureAtPoint(p.x,p.y);
+            if(enc){
+                const stroke={enclosureId:enc.id,colour:brush.colour,size:brush.size,erase:true,createdAt:Date.now(),points:[p]};
+                state.trueEnclosureDecorations.push(stroke);trueDecorationDrag={pointerId:e.pointerId,stroke,enclosure:enc,last:p,erase:true,historyBefore};
+            }else trueDecorationDrag={pointerId:e.pointerId,stroke:null,enclosure:null,last:p,erase:true,historyBefore};
+            trueErasePlacedDecorationsAt(p.x,p.y,brush.size/2);zooCanvas.setPointerCapture?.(e.pointerId);cursor(p,true);refreshTrueDecorationVisuals(true);return;
+        }
+        if(['bush','rock','tree'].includes(mode)){
+            if(!trueCanPlaceMapDecoration(mode,p.x,p.y))return;
+            state.truePlacedDecorations.push({kind:mode,x:p.x,y:p.y,variant:state.trueDecorationPreviewVariant,scale:.5,baseSize:Math.max(8,Math.min(100,Number(state.trueDecorationBrush?.size)||34)),rotation:Math.floor(Math.random()*360),createdAt:Date.now()});
+            state.trueDecorationPreviewVariant=Math.floor(Math.random()*20);
+            trueDecorationHistoryCommit(historyBefore);
+            refreshTrueDecorationVisuals();syncActiveZooIntoLocalMatch?.();writeAutoResumeSnapshot?.(true);cursor(p,false);return;
+        }
+        const enc=trueDecorationEnclosureAtPoint(p.x,p.y);if(!enc)return;
+        const stroke={enclosureId:enc.id,colour:brush.colour,size:brush.size,erase:false,createdAt:Date.now(),points:[p]};
+        state.trueEnclosureDecorations.push(stroke);trueDecorationDrag={pointerId:e.pointerId,stroke,enclosure:enc,last:p,erase:false,historyBefore};zooCanvas.setPointerCapture?.(e.pointerId);cursor(p,false);refreshTrueDecorationVisuals(false);
+    });
+    zooCanvas.addEventListener('pointermove',e=>{
+        const p=point(e);cursor(p,Boolean(trueDecorationDrag?.erase||(e.buttons&2)));
+        const d=trueDecorationDrag;if(!d||e.pointerId!==d.pointerId)return;
+        const r=Math.max(4,Number(state.trueDecorationBrush?.size||34)/2),hit=trueDecorationEnclosureAtPoint(p.x,p.y);
+        if(d.erase){
+            trueErasePlacedDecorationsAt(p.x,p.y,r);
+            if(!d.stroke&&hit){const stroke={enclosureId:hit.id,colour:state.trueDecorationBrush.colour,size:state.trueDecorationBrush.size,erase:true,createdAt:Date.now(),points:[p]};state.trueEnclosureDecorations.push(stroke);d.stroke=stroke;d.enclosure=hit;d.last=p;}
+            else if(d.stroke&&hit&&String(hit.id)===String(d.enclosure?.id)&&Math.hypot(p.x-d.last.x,p.y-d.last.y)>=2){d.stroke.points.push(p);d.last=p;}
+            else if(d.stroke&&hit&&String(hit.id)!==String(d.enclosure?.id)&&trueDecorationBrushFullyInside(hit,p.x,p.y,r)){const stroke={enclosureId:hit.id,colour:d.stroke.colour,size:d.stroke.size,erase:true,createdAt:d.stroke.createdAt,points:[p]};state.trueEnclosureDecorations.push(stroke);d.stroke=stroke;d.enclosure=hit;d.last=p;}
+            refreshTrueDecorationVisuals(true);return;
+        }
+        if(hit&&String(hit.id)!==String(d.enclosure.id)&&trueDecorationBrushFullyInside(hit,p.x,p.y,r)){
+            const stroke={enclosureId:hit.id,colour:d.stroke.colour,size:d.stroke.size,erase:d.erase,createdAt:d.stroke.createdAt,points:[p]};
+            normaliseTrueDecorations().push(stroke);d.stroke=stroke;d.enclosure=hit;d.last=p;
+        }else if(hit&&String(hit.id)===String(d.enclosure.id)){
+            if(Math.hypot(p.x-d.last.x,p.y-d.last.y)>=2){d.stroke.points.push(p);d.last=p;}
+        }
+        refreshTrueDecorationVisuals(false);
+    });
+    const stop=e=>{if(!trueDecorationDrag||e.pointerId!==trueDecorationDrag.pointerId)return;const before=trueDecorationDrag.historyBefore;trueDecorationDrag=null;trueDecorationHistoryCommit(before);cursor(point(e),false);syncActiveZooIntoLocalMatch?.();writeAutoResumeSnapshot?.(true);};
+    zooCanvas.addEventListener('pointerup',stop);zooCanvas.addEventListener('pointercancel',e=>{if(trueDecorationDrag&&e.pointerId===trueDecorationDrag.pointerId)trueDecorationDrag=null;document.getElementById('trueDecorationBrushCursor')?.remove();});
+    zooCanvas.addEventListener('pointerleave',()=>{if(!trueDecorationDrag)document.getElementById('trueDecorationBrushCursor')?.remove();});
+}
+
 function ensureTrueEnclosureBuilderUI(){
     const enabled=state.gameMode==='true'&&!state.sandboxMode&&!state.visitingZoo;
     let button=document.getElementById('trueEnclosureBuilderButton');
@@ -15898,6 +17326,7 @@ body.true-enclosure-builder-active #zooCanvas .enclosure{cursor:cell!important}
         button.addEventListener('click',e=>{
             e.preventDefault();e.stopPropagation();
             trueEnclosureBuilderActive=!trueEnclosureBuilderActive;
+            if(trueEnclosureBuilderActive&&trueDecorationToolActive){trueDecorationToolActive=false;document.body.classList.remove('true-decoration-tool-active');document.getElementById('trueDecorationToolButton')?.classList.remove('active');document.getElementById('trueDecorationToolPanel')?.style.setProperty('display','none');}
             trueEnclosureBuilderSelectedId=null;trueEnclosureBuilderSelectedCell=null;
             if(trueEnclosureBuilderActive&&areaToolActive){areaToolActive=false;trueAreaBuilderSelectedId=null;trueAreaBuilderSelectedCell=null;areaToolDrag=null;document.getElementById('areaToolButton')?.classList.remove('active');document.body.classList.remove('area-tool-active');const p=document.getElementById('trueAreaBuilderPanel');if(p)p.style.display='none';document.getElementById('areaToolSelection')?.remove();document.getElementById('trueAreaPaintCursor')?.remove();document.getElementById('areaStyleMenu')?.remove();document.querySelectorAll('.true-area-cell-delete,.area-tag-controls').forEach(el=>el.remove());hideGeographicAreaPreview(true);refreshTrueAreaVisuals();}
             button.classList.toggle('active',trueEnclosureBuilderActive);document.body.classList.toggle('true-enclosure-builder-active',trueEnclosureBuilderActive);
@@ -15910,11 +17339,12 @@ body.true-enclosure-builder-active #zooCanvas .enclosure{cursor:cell!important}
     button.style.display='block';button.classList.toggle('active',trueEnclosureBuilderActive);
     document.body.classList.toggle('true-enclosure-builder-active',trueEnclosureBuilderActive);
     const area=document.getElementById('areaToolButton'),r=area?.getBoundingClientRect();
-    if(r?.width){const cs=getComputedStyle(area);button.style.cssText+=`;width:${r.width}px;height:${r.height}px;border-radius:${cs.borderRadius};border:${cs.border};color:${cs.color};font:${cs.font};padding:${cs.padding};`;button.style.background='';button.style.boxShadow='';button.style.transform='';button.style.filter='';}
-    else{button.style.width='44px';button.style.height='44px';}
     button.style.position='fixed';button.style.right='18px';
-    button.style.bottom=`${20+(r?.height||72)+10}px`;
+    button.style.bottom='96px';
     button.style.left='auto';button.style.top='auto';button.style.zIndex='10121';
+    ensureTrueDecorationToolUI();
+    setupTrueDecorationInteractions();
+    refreshTrueDecorationVisuals();
 }
 function trueCaptureResidentWorldCells(enc){
     const canonical=trueCanonicalCellList(enc.cells||[]);
@@ -16130,8 +17560,8 @@ function setupTrueEnclosureBuilderInteractions(){
 
 function ensureAreaToolUI(){
     let b=document.getElementById('areaToolButton'),panel=document.getElementById('trueAreaBuilderPanel');
-    if(!b){b=document.createElement('button');b.id='areaToolButton';b.type='button';b.title='Area Builder';b.setAttribute('aria-label','Area Builder');b.textContent='▱';document.body.appendChild(b);
-      b.addEventListener('click',()=>{if(state.visitingZoo)return;areaToolActive=!areaToolActive;if(!areaToolActive){document.getElementById('trueAreaPaintCursor')?.remove();trueAreaBuilderSelectedId=null;trueAreaBuilderSelectedCell=null;areaToolDrag=null;areaToolForceNewArea=false;document.getElementById('areaToolSelection')?.remove();document.getElementById('areaStyleMenu')?.remove();document.querySelectorAll('.true-area-cell-delete,.area-tag-controls').forEach(el=>el.remove());}if(areaToolActive&&trueEnclosureBuilderActive){trueEnclosureBuilderActive=false;trueEnclosureBuilderSelectedId=null;trueEnclosureBuilderSelectedCell=null;document.getElementById('trueEnclosureBuilderButton')?.classList.remove('active');document.body.classList.remove('true-enclosure-builder-active');const p=document.getElementById('trueEnclosureBuilderPanel');if(p)p.style.display='none';}b.classList.toggle('active',areaToolActive);document.body.classList.toggle('area-tool-active',areaToolActive);ensureAreaToolUI();refreshAreaVisualsAfterEdit();});}
+    if(!b){b=document.createElement('button');b.id='areaToolButton';b.type='button';b.title='Area Builder';b.setAttribute('aria-label','Area Builder');b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" style="display:block;margin:auto"><path d="M4 5.5h16v13H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2.4 1.7"/><path d="M7 9.5c2.4-2.2 4.1 1.1 6.2-.7 2.1-1.7 3.1-.6 4.1.4v5.4c-1.5-1.1-2.7-1.5-4.5.1-2 1.7-3.8-1.5-5.8.6z" fill="currentColor" opacity=".35"/></svg>';document.body.appendChild(b);
+      b.addEventListener('click',()=>{if(state.visitingZoo)return;areaToolActive=!areaToolActive;if(areaToolActive&&trueDecorationToolActive){trueDecorationToolActive=false;document.body.classList.remove('true-decoration-tool-active');document.getElementById('trueDecorationToolButton')?.classList.remove('active');document.getElementById('trueDecorationToolPanel')?.style.setProperty('display','none');}if(!areaToolActive){document.getElementById('trueAreaPaintCursor')?.remove();trueAreaBuilderSelectedId=null;trueAreaBuilderSelectedCell=null;areaToolDrag=null;areaToolForceNewArea=false;document.getElementById('areaToolSelection')?.remove();document.getElementById('areaStyleMenu')?.remove();document.querySelectorAll('.true-area-cell-delete,.area-tag-controls').forEach(el=>el.remove());}if(areaToolActive&&trueEnclosureBuilderActive){trueEnclosureBuilderActive=false;trueEnclosureBuilderSelectedId=null;trueEnclosureBuilderSelectedCell=null;document.getElementById('trueEnclosureBuilderButton')?.classList.remove('active');document.body.classList.remove('true-enclosure-builder-active');const p=document.getElementById('trueEnclosureBuilderPanel');if(p)p.style.display='none';}b.classList.toggle('active',areaToolActive);document.body.classList.toggle('area-tool-active',areaToolActive);ensureAreaToolUI();refreshAreaVisualsAfterEdit();});}
     const enabled=!state.visitingZoo;
     Object.assign(b.style,{position:'fixed',right:'18px',bottom:'20px',left:'auto',top:'auto',zIndex:'10120'});
     b.style.display=enabled?'':'none';
@@ -17511,8 +18941,17 @@ function renderCustomAreas(){
         }else for(const q of cells){
             const rr=areaCellRenderRect(q);
             const tile=document.createElement('div');
-            tile.className='player-custom-area-fill';tile.style.cssText=`position:absolute;left:${rr.x}px;top:${rr.y}px;width:${rr.w}px;height:${rr.h}px;box-sizing:border-box;z-index:0;background:${area.type==='house'?'#454849':`color-mix(in srgb, ${area.color} 18%, transparent)`};`;
+            tile.className='player-custom-area-fill';tile.style.cssText=`position:absolute;left:${rr.x-(area.type==='house'?3:0)}px;top:${rr.y-(area.type==='house'?3:0)}px;width:${rr.w+(area.type==='house'?6:0)}px;height:${rr.h+(area.type==='house'?6:0)}px;box-sizing:border-box;z-index:${area.type==='house'?6:0};background:${area.type==='house'?'rgba(70,60,48,.24)':`color-mix(in srgb, ${area.color} 18%, transparent)`};`;
             box.appendChild(tile);
+            if(area.type==='house'){
+                // House cells cover both exhibits and circulation. A translucent
+                // brown-grey veil turns the normally pale zoo paths into indoor
+                // corridors without destroying their underlying geometry.
+                const indoorVeil=document.createElement('div');
+                indoorVeil.className='true-house-indoor-veil';
+                indoorVeil.style.cssText=`position:absolute;left:${rr.x-2}px;top:${rr.y-2}px;width:${rr.w+4}px;height:${rr.h+4}px;background:rgba(47,42,36,.30);pointer-events:none;z-index:7;`;
+                box.appendChild(indoorVeil);
+            }
             for(const [side,dc,dr]of[['Top',0,-1],['Right',1,0],['Bottom',0,1],['Left',-1,0]]){
                 if(keys.has(trueAreaCellKey(q.col+dc,q.row+dr)))continue;
                 const depth=coincidentDepth(q,side);
@@ -17522,10 +18961,11 @@ function renderCustomAreas(){
                 const dotted=area.lineStyle==='dotted';
                 edge.classList.add('player-custom-area-edge-overlay');
                 const common=`position:absolute;pointer-events:none;box-sizing:border-box;z-index:12;`;
-                if(side==='Top')edge.style.cssText=common+`left:${rr.x}px;top:${rr.y+inset}px;width:${rr.w}px;height:0;border-top:3px ${dotted?'dotted':'solid'} ${area.color};`;
-                else if(side==='Bottom')edge.style.cssText=common+`left:${rr.x}px;top:${rr.y+rr.h-inset}px;width:${rr.w}px;height:0;border-top:3px ${dotted?'dotted':'solid'} ${area.color};`;
-                else if(side==='Left')edge.style.cssText=common+`left:${rr.x+inset}px;top:${rr.y}px;width:0;height:${rr.h}px;border-left:3px ${dotted?'dotted':'solid'} ${area.color};`;
-                else edge.style.cssText=common+`left:${rr.x+rr.w-inset}px;top:${rr.y}px;width:0;height:${rr.h}px;border-left:3px ${dotted?'dotted':'solid'} ${area.color};`;
+                const isHouse=area.type==='house',houseOut=isHouse?3:0,edgeWidth=isHouse?6:3,edgeColour=isHouse?'#302a24':area.color;
+                if(side==='Top')edge.style.cssText=common+`left:${rr.x-houseOut}px;top:${rr.y+inset-houseOut}px;width:${rr.w+houseOut*2}px;height:0;border-top:${edgeWidth}px ${dotted?'dotted':'solid'} ${edgeColour};`;
+                else if(side==='Bottom')edge.style.cssText=common+`left:${rr.x-houseOut}px;top:${rr.y+rr.h-inset+houseOut}px;width:${rr.w+houseOut*2}px;height:0;border-top:${edgeWidth}px ${dotted?'dotted':'solid'} ${edgeColour};`;
+                else if(side==='Left')edge.style.cssText=common+`left:${rr.x+inset-houseOut}px;top:${rr.y-houseOut}px;width:0;height:${rr.h+houseOut*2}px;border-left:${edgeWidth}px ${dotted?'dotted':'solid'} ${edgeColour};`;
+                else edge.style.cssText=common+`left:${rr.x+rr.w-inset+houseOut}px;top:${rr.y-houseOut}px;width:0;height:${rr.h+houseOut*2}px;border-left:${edgeWidth}px ${dotted?'dotted':'solid'} ${edgeColour};`;
                 box.appendChild(edge);
             }
         }
@@ -18065,6 +19505,15 @@ function renderZoo() {
         profiledZooRenderStage('zoo.sandbox-loose-animals', () => renderSandboxLooseAnimals());
     }
 
+    // Decorations are persistent zoo state, not transient editor UI. renderZoo()
+    // clears zooCanvas at the start (including during animal drag frames), so
+    // always restore both painted strokes and placed map objects before the frame
+    // is considered complete. This keeps them visible through dragging, normal
+    // rerenders, zoom/layout reconciliation, save restore, and tool closure.
+    if(state.gameMode==='true'&&!state.sandboxMode&&!state.visitingZoo){
+        profiledZooRenderStage('zoo.decorations',()=>refreshTrueDecorationVisuals(true));
+    }
+
     // If normalization shifted world coordinates, compensate the scroll
     // position by the same rendered distance. Existing enclosures therefore
     // stay visually stationary while the pannable world grows around them.
@@ -18316,33 +19765,54 @@ function renderEnclosure(
                       ri=R?(exposedWallShared(c,'R')?0:TRUE_ENC_EXTERNAL_GAP/2):0,
                       bi=B?(exposedWallShared(c,'B')?0:TRUE_ENC_EXTERNAL_GAP/2):0,
                       li=L?(exposedWallShared(c,'L')?0:TRUE_ENC_EXTERNAL_GAP/2):0;
+                const seam=1;
+                const internalT=!T,internalR=!R,internalB=!B,internalL=!L;
                 const fill=document.createElement('div');
-                const grass=['#C3DC9B','#BDD793','#C9E2A5','#B8D28D','#C6DFA0'];
-                const grassColour=grass[Math.abs(Number(enclosure.id)||0)%grass.length];
-                Object.assign(fill.style,{position:'absolute',left:`${(c.col-minCol)*TRUE_ENC_CELL_W+li}px`,top:`${(c.row-minRow)*TRUE_ENC_CELL_H+ti}px`,
-                    width:`${TRUE_ENC_CELL_W-li-ri}px`,height:`${TRUE_ENC_CELL_H-ti-bi}px`,background:grassColour,pointerEvents:'none',zIndex:'0'});
+                Object.assign(fill.style,{position:'absolute',
+                    left:`${(c.col-minCol)*TRUE_ENC_CELL_W+li-(internalL?seam:0)}px`,
+                    top:`${(c.row-minRow)*TRUE_ENC_CELL_H+ti-(internalT?seam:0)}px`,
+                    width:`${TRUE_ENC_CELL_W-li-ri+(internalL?seam:0)+(internalR?seam:0)}px`,
+                    height:`${TRUE_ENC_CELL_H-ti-bi+(internalT?seam:0)+(internalB?seam:0)}px`,
+                    background:'#C7DEA0',pointerEvents:'none',zIndex:'0'});
                 element.appendChild(fill);
             }
         }
+        // Stable enclosure tint is a translucent layer rather than a replacement
+        // grass colour. It therefore colours both untouched grass and any painted
+        // water/dirt/sand beneath it consistently across the whole enclosure.
+        const tint=document.createElementNS('http://www.w3.org/2000/svg','svg');tint.classList.add('true-enclosure-tint');
+        const tintPalette=['rgba(74,116,43,.055)','rgba(111,139,54,.06)','rgba(53,105,48,.045)','rgba(142,151,61,.05)','rgba(82,126,61,.055)'];
+        Object.assign(tint.style,{position:'absolute',inset:'0',width:'100%',height:'100%',overflow:'visible',pointerEvents:'none',zIndex:'8'});
+        const tintWorld=trueBuiltWorldCells(enclosure),tintOwn=new Set(tintWorld.map(c=>trueBuilderCellKey(c.col,c.row))),tintOwners=trueEnclosureSpatialIndex().owners;
+        const tintMinCol=Math.min(...tintWorld.map(c=>c.col)),tintMinRow=Math.min(...tintWorld.map(c=>c.row));
+        for(const c of tintWorld){
+            const wr=trueDecorationPhysicalCellRect(enclosure,c,tintOwn,tintOwners),r=document.createElementNS(tint.namespaceURI,'rect');
+            r.setAttribute('x',wr.left-tintMinCol*TRUE_ENC_CELL_W);r.setAttribute('y',wr.top-tintMinRow*TRUE_ENC_CELL_H);
+            r.setAttribute('width',wr.right-wr.left);r.setAttribute('height',wr.bottom-wr.top);
+            r.setAttribute('fill',tintPalette[Math.abs(Number(enclosure.id)||0)%tintPalette.length]);tint.appendChild(r);
+        }
+        element.appendChild(tint);
+
+        const indexedHouseCells=renderContext?.houseCellsByEnclosure?.get(String(enclosure.id));
+        const houseCells=indexedHouseCells || trueHouseCellsForEnclosure(enclosure);
+        const enclosureIsIndoor=houseCells.length>0;
         const path=document.createElementNS('http://www.w3.org/2000/svg','path');
         path.setAttribute('d',trueRenderedEnclosurePath(enclosure));
         path.setAttribute('fill','none');
-        path.setAttribute('stroke',renderColourScheme==='overloon'?renderPalette.enclosureBorder:'#3f4242');
-        path.setAttribute('stroke-width','4');
+        path.setAttribute('stroke',enclosureIsIndoor?'#292520':(renderColourScheme==='overloon'?renderPalette.enclosureBorder:'#3f4242'));
+        path.setAttribute('stroke-width',enclosureIsIndoor?'6':'4');
         path.setAttribute('stroke-linecap','square');
         path.setAttribute('stroke-linejoin','miter');
         path.setAttribute('stroke-linecap','square');
         path.setAttribute('vector-effect','non-scaling-stroke');
-        svg.appendChild(path);element.appendChild(svg);
-        const indexedHouseCells=renderContext?.houseCellsByEnclosure?.get(String(enclosure.id));
-        const houseCells=indexedHouseCells || trueHouseCellsForEnclosure(enclosure);
+        svg.style.zIndex='9';svg.style.pointerEvents='none';svg.appendChild(path);element.appendChild(svg);
         if(houseCells.length){
             const baseCol=Math.round((Number(enclosure.x)||0)/TRUE_ENC_CELL_W),baseRow=Math.round((Number(enclosure.y)||0)/TRUE_ENC_CELL_H);
             const seen=new Set();
             for(const hc of houseCells){
                 const key=trueAreaCellKey(hc.col,hc.row);if(seen.has(key))continue;seen.add(key);
                 const indoor=document.createElement('div');indoor.className='true-indoor-enclosure-cell';
-                Object.assign(indoor.style,{position:'absolute',left:`${(hc.col-baseCol)*TRUE_ENC_CELL_W+TRUE_ENC_EXTERNAL_GAP/2}px`,top:`${(hc.row-baseRow)*TRUE_ENC_CELL_H+TRUE_ENC_EXTERNAL_GAP/2}px`,width:`${TRUE_ENC_CELL_W-TRUE_ENC_EXTERNAL_GAP}px`,height:`${TRUE_ENC_CELL_H-TRUE_ENC_EXTERNAL_GAP}px`,background:'rgba(225,226,224,.92)',boxShadow:'inset 0 0 0 1px rgba(255,255,255,.18)',pointerEvents:'none',zIndex:'0'});
+                Object.assign(indoor.style,{position:'absolute',left:`${(hc.col-baseCol)*TRUE_ENC_CELL_W+TRUE_ENC_EXTERNAL_GAP/2}px`,top:`${(hc.row-baseRow)*TRUE_ENC_CELL_H+TRUE_ENC_EXTERNAL_GAP/2}px`,width:`${TRUE_ENC_CELL_W-TRUE_ENC_EXTERNAL_GAP}px`,height:`${TRUE_ENC_CELL_H-TRUE_ENC_EXTERNAL_GAP}px`,background:'rgba(48,42,34,.24)',boxShadow:'inset 0 0 0 1px rgba(35,31,27,.16)',pointerEvents:'none',zIndex:'10'});
                 element.appendChild(indoor);
             }
         }
@@ -20317,6 +21787,15 @@ const SAVE_STATE_KEYS = [
     'animals',
     'zooColourScheme',
     'trueEnclosureBuilder',
+    // True-mode decoration editor: terrain strokes, placed map objects and the
+    // current editor settings all belong to the zoo and must survive named
+    // saves, auto-resume and multiplayer durable zoo snapshots.
+    'trueEnclosureDecorations',
+    'truePlacedDecorations',
+    'trueDecorationBrush',
+    'trueDecorationMode',
+    'trueDecorationObjectScale',
+    'trueDecorationPreviewVariant',
     'exchange',
     'result',
     'nextId',
@@ -24056,6 +25535,22 @@ function destroyLocalClassicMatchContainer() {
     syncActiveZooIntoLocalMatch();
     closeLocalMultiplayerBrowserTransport();
     disableLocalMultiplayerPeerSimulation();
+
+    // Multiplayer trade state is session UI, never part of the single-player
+    // zoo. Clear it at the same boundary that destroys the match so stale
+    // public listings/proposals cannot survive into a newly generated solo zoo.
+    multiplayerPublicTradeListings=[];
+    selectedMultiplayerPublicListingPlayerId=null;
+    selectedHumanTradeProposalId=null;
+    multiplayerTradeListingPublishGeneration=0;
+    pendingHumanTradeActionIds.clear?.();
+    clearDirectHumanTradeActions?.();
+    state.autonomousTradeOffer=null;
+    state.tradeOffers=[];
+    state.selectedTradeOpponent=null;
+    state.outgoingOffer=null;
+    document.getElementById('tradeCapacityBlockNotice')?.remove();
+
     localClassicMatch = null;
     pendingMultiplayerZooReset=false;
     hideZooVisitReturnButton();
@@ -24065,6 +25560,7 @@ function destroyLocalClassicMatchContainer() {
         activeCategories:[...state.activeCategories]
     };
     renderVisitedZooQuickTabs();
+    renderTrade?.();
     updateMultiplayerHeaderButtonState();
     return true;
 }
@@ -24726,10 +26222,12 @@ function importGameState(saveData, { deferRender = false } = {}) {
     if (state.sandboxMode) state.gameMode = 'sandbox';
     if (state.gameMode === 'true') {
         normaliseTrueCalendarState();
+        normaliseTrueDecorations();
         // V229.1 migration: older True saves predate enclosure populations. Give
         // every existing species card a small neutral founder population while
         // leaving Classic/Sandbox save objects completely untouched.
         for (const animal of state.animals || []) normaliseTrueAnimalPopulation(animal);
+        requestAnimationFrame(()=>refreshTrueDecorationVisuals());
     }
     if (!Array.isArray(state.sandboxLooseAnimals)) state.sandboxLooseAnimals = [];
     state.turnHistory = cloneForSave(saveData.turnHistory || []);
@@ -27462,9 +28960,10 @@ function truePopulationTransferOne(animal,sex,direction){
     truePopulationControlsStickyIds.add(animal.id);
     return direction==='in'?trueMoveSexBetweenPopulationCards(other,animal,sex):trueMoveSexBetweenPopulationCards(animal,other,sex);
 }
-function truePopulationControlButton(text,title,handler,colour){
+function truePopulationControlButton(text,title,handler,sex=''){
     const b=document.createElement('button');b.type='button';b.textContent=text;b.title=title;
-    Object.assign(b.style,{border:'0',background:'rgba(247,243,232,.96)',color:colour||'#26231e',fontSize:'11px',fontWeight:'900',lineHeight:'14px',minWidth:'18px',height:'18px',padding:'0 3px',cursor:'pointer'});
+    b.className=`true-pop-control-button${sex?` true-pop-${sex}`:''}`;
+    Object.assign(b.style,{fontSize:'11px',lineHeight:'14px',minWidth:'20px',height:'19px',padding:'0 4px',cursor:'pointer'});
     b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();});b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();handler();});return b;
 }
 function showTruePopulationCardControls(card,animal){
@@ -27472,19 +28971,19 @@ function showTruePopulationCardControls(card,animal){
     const host=card.parentElement;if(!host||host.querySelector(':scope > .true-pop-controls'))return;
     host.style.overflow='visible';
     const controls=document.createElement('div');controls.className='true-pop-controls';
-    Object.assign(controls.style,{position:'absolute',left:'50%',top:'-23px',transform:'translateX(-50%)',height:'21px',display:'flex',alignItems:'center',gap:'2px',zIndex:'80',whiteSpace:'nowrap',border:'1px solid rgba(45,42,35,.45)',borderRadius:'5px',background:'rgba(247,243,232,.96)',boxShadow:'0 2px 5px rgba(0,0,0,.18)',padding:'1px 2px'});
+    Object.assign(controls.style,{position:'absolute',left:'50%',top:'-24px',transform:'translateX(-50%)',height:'22px',display:'flex',alignItems:'center',gap:'2px',zIndex:'260',whiteSpace:'nowrap',padding:'1px 2px'});
     const others=trueSameSpeciesPopulations(animal);
     if(others.length){
         const male=document.createElement('span');Object.assign(male.style,{display:'flex',gap:'0'});male.append(
-            truePopulationControlButton('▲','Move one male to this group',()=>truePopulationTransferOne(animal,'males','in'),'#2674c8'),
-            truePopulationControlButton('▼','Move one male from this group',()=>truePopulationTransferOne(animal,'males','out'),'#2674c8'));
+            truePopulationControlButton('▲','Move one male to this group',()=>truePopulationTransferOne(animal,'males','in'),'male'),
+            truePopulationControlButton('▼','Move one male from this group',()=>truePopulationTransferOne(animal,'males','out'),'male'));
         controls.appendChild(male);
     }
     controls.appendChild(truePopulationControlButton('Split','Split population',()=>trueSplitPopulationCard(animal,card)));
     if(others.length){
         const female=document.createElement('span');Object.assign(female.style,{display:'flex',gap:'0'});female.append(
-            truePopulationControlButton('▲','Move one female to this group',()=>truePopulationTransferOne(animal,'females','in'),'#d45a93'),
-            truePopulationControlButton('▼','Move one female from this group',()=>truePopulationTransferOne(animal,'females','out'),'#d45a93'));
+            truePopulationControlButton('▲','Move one female to this group',()=>truePopulationTransferOne(animal,'females','in'),'female'),
+            truePopulationControlButton('▼','Move one female from this group',()=>truePopulationTransferOne(animal,'females','out'),'female'));
         controls.appendChild(female);
     }
     host.appendChild(controls);
@@ -27492,14 +28991,66 @@ function showTruePopulationCardControls(card,animal){
 function attachTruePopulationCardUI(card,animal){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return;
     const host=card.parentElement;if(!host)return;host.style.overflow='visible';
-    const label=document.createElement('div');label.className='true-pop-notation';label.textContent=`♂ ${normaliseTrueAnimalPopulation(animal).males} · ♀ ${animal.population.females}`;
+    const label=document.createElement('div');label.className='true-pop-notation';
+    const pop=normaliseTrueAnimalPopulation(animal);
+    label.innerHTML=`<span class="true-sex-male" title="Males"><i>♂</i><b>${pop.males}</b></span><span class="true-sex-female" title="Females"><i>♀</i><b>${pop.females}</b></span>`;
     // Keep the notation attached to the physical zoo card, but above the enclosure
     // perimeter rather than visually disappearing beneath it.
-    Object.assign(host.style,{overflow:'visible',zIndex:'90'});
-    Object.assign(label.style,{position:'absolute',left:'50%',top:`${ANIMAL_H+2}px`,transform:'translateX(-50%)',fontSize:'11px',fontWeight:'900',lineHeight:'14px',whiteSpace:'nowrap',color:'#25231f',background:'rgba(247,243,232,.94)',borderRadius:'4px',padding:'0 4px',pointerEvents:'none',zIndex:'120',display:state.trueSexCountsAlways===false?'none':'block'});host.appendChild(label);
+    Object.assign(host.style,{overflow:'visible',zIndex:'240'});
+    Object.assign(label.style,{position:'absolute',left:'50%',top:`${ANIMAL_H+3}px`,transform:'translateX(-50%)',fontSize:'10px',fontWeight:'800',lineHeight:'13px',whiteSpace:'nowrap',padding:'0',gap:'3px',alignItems:'center',borderRadius:'0',pointerEvents:'none',zIndex:'250',display:state.trueSexCountsAlways===false?'none':'flex'});host.appendChild(label);
     const id=animal.id;
-    const enter=()=>{if(state.trueSexCountsAlways===false)label.style.display='block';const h=truePopulationControlHideTimers.get(id);if(h)clearTimeout(h);truePopulationControlHideTimers.delete(id);if(host.querySelector(':scope > .true-pop-controls'))return;const old=truePopulationControlShowTimers.get(id);if(old)clearTimeout(old);truePopulationControlShowTimers.set(id,setTimeout(()=>{truePopulationControlShowTimers.delete(id);showTruePopulationCardControls(card,animal);},TRUE_POP_CONTROL_INTENT_MS));};
-    const leave=()=>{if(state.trueSexCountsAlways===false)label.style.display='none';truePopulationControlsStickyIds.delete(id);const sh=truePopulationControlShowTimers.get(id);if(sh)clearTimeout(sh);truePopulationControlShowTimers.delete(id);const old=truePopulationControlHideTimers.get(id);if(old)clearTimeout(old);truePopulationControlHideTimers.set(id,setTimeout(()=>{truePopulationControlHideTimers.delete(id);host.querySelector(':scope > .true-pop-controls')?.remove();},TRUE_POP_CONTROL_LEAVE_MS));};
+    let treeForegroundReturnTimer=0,treeForegroundFadeTimer=0,treeForegroundClone=null;
+    const clearTreeForegroundClone=()=>{if(treeForegroundClone){treeForegroundClone.remove();treeForegroundClone=null;}};
+    const enter=()=>{
+        if(treeForegroundReturnTimer){clearTimeout(treeForegroundReturnTimer);treeForegroundReturnTimer=0;}
+        if(treeForegroundFadeTimer){clearTimeout(treeForegroundFadeTimer);treeForegroundFadeTimer=0;}
+        clearTreeForegroundClone();
+        host.style.transition='none';host.style.opacity='1';host.style.zIndex='360';
+        if(state.trueSexCountsAlways===false)label.style.display='flex';
+        const h=truePopulationControlHideTimers.get(id);if(h)clearTimeout(h);truePopulationControlHideTimers.delete(id);
+        if(host.querySelector(':scope > .true-pop-controls'))return;
+        const old=truePopulationControlShowTimers.get(id);if(old)clearTimeout(old);
+        truePopulationControlShowTimers.set(id,setTimeout(()=>{truePopulationControlShowTimers.delete(id);showTruePopulationCardControls(card,animal);},TRUE_POP_CONTROL_INTENT_MS));
+    };
+    const leave=()=>{
+        // After the two-second hold, place one inert visual snapshot of the card
+        // at its normal under-tree layer. Only the foreground copy fades, so the
+        // transition visually resolves into the card beneath the canopy instead
+        // of briefly fading to empty space.
+        if(treeForegroundReturnTimer)clearTimeout(treeForegroundReturnTimer);
+        if(treeForegroundFadeTimer)clearTimeout(treeForegroundFadeTimer);
+        clearTreeForegroundClone();
+        treeForegroundReturnTimer=setTimeout(()=>{
+            treeForegroundReturnTimer=0;
+            if(!host.isConnected)return;
+            const parent=host.parentElement;
+            if(parent){
+                treeForegroundClone=host.cloneNode(true);
+                treeForegroundClone.classList.add('true-tree-card-crossfade-underlay');
+                treeForegroundClone.querySelectorAll('.true-pop-controls').forEach(el=>el.remove());
+                treeForegroundClone.removeAttribute('id');
+                treeForegroundClone.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+                Object.assign(treeForegroundClone.style,{
+                    zIndex:'240',pointerEvents:'none',transition:'none',opacity:'1'
+                });
+                parent.insertBefore(treeForegroundClone,host);
+            }
+            host.style.transition='opacity 650ms ease';
+            host.style.opacity='0';
+            treeForegroundFadeTimer=setTimeout(()=>{
+                treeForegroundFadeTimer=0;
+                host.style.transition='none';
+                host.style.zIndex='240';
+                host.style.opacity='1';
+                clearTreeForegroundClone();
+            },650);
+        },2000);
+        if(state.trueSexCountsAlways===false)label.style.display='none';
+        truePopulationControlsStickyIds.delete(id);
+        const sh=truePopulationControlShowTimers.get(id);if(sh)clearTimeout(sh);truePopulationControlShowTimers.delete(id);
+        const old=truePopulationControlHideTimers.get(id);if(old)clearTimeout(old);
+        truePopulationControlHideTimers.set(id,setTimeout(()=>{truePopulationControlHideTimers.delete(id);host.querySelector(':scope > .true-pop-controls')?.remove();},TRUE_POP_CONTROL_LEAVE_MS));
+    };
     host.addEventListener('pointerenter',enter);host.addEventListener('pointerleave',leave);
     if(truePopulationControlsStickyIds.has(id))requestAnimationFrame(()=>showTruePopulationCardControls(card,animal));
 }
@@ -28316,6 +29867,7 @@ function checkCurrentProgressionRewards() {
     // Rebuild the checkboxes from the actual animals currently placed in the
     // zoo before testing reward thresholds.
     updateDiscoveredCategoryLevels();
+    let rewardsAdded=0;
 
     for (let level = 2; level <= 5; level++) {
         const count = progressionCountForLevel(level);
@@ -28332,6 +29884,7 @@ function checkCurrentProgressionRewards() {
             ) {
                 state.awardedProgressMilestones.add(rewardKey);
                 addRewardEnclosure();
+                rewardsAdded++;
             }
         }
     }
@@ -28343,11 +29896,12 @@ function checkCurrentProgressionRewards() {
             .filter(([levelText]) => Number(levelText) === 2)
             .map(([, milestoneText]) => Number(milestoneText))
     );
+    return rewardsAdded;
 }
 
 function checkEnclosureReward(animal, source='upgrade') {
-    if (!animal) return;
-    if(source!=='upgrade'&&source!=='exchange')return;
+    if (!animal) return 0;
+    if(source!=='upgrade'&&source!=='exchange')return 0;
 
     // Enclosure progression starts at Level 2. A Level 1 draw/trade can change
     // the live category set, but it must never be allowed to trigger a deferred
@@ -28356,14 +29910,14 @@ function checkEnclosureReward(animal, source='upgrade') {
     // trade repeatedly discover an already-satisfied higher-level milestone and
     // hand out another enclosure. Only a newly acquired L2+ card is a legitimate
     // progression-reward boundary.
-    if ((Number(animal.level) || 0) < 2) return;
+    if ((Number(animal.level) || 0) < 2) return 0;
 
     // The incoming/new animal has already been placed before this is called,
     // so reward eligibility can be determined entirely from current zoo state.
     // Its callers finish by running renderAll(), which rebuilds the progression
     // tracker. Rendering it here only built the same tracker twice per committed
     // exchange/trade.
-    checkCurrentProgressionRewards();
+    return checkCurrentProgressionRewards();
 }
 
 
@@ -30203,19 +31757,31 @@ async function requestServerAuthoritativeExchange(destination=null,autoPlace=fal
             resultAnimal.category,resultAnimal.level,resultAnimal.filename);
         markPlayerLevelSeen(resultAnimal.level);
         if(autoPlace)markNewPlacementGlow(resultAnimal);
-        checkEnclosureReward(resultAnimal);
+        checkEnclosureReward(resultAnimal,'exchange');
     }
     state.exchange=[null,null];
     state.result=null;
     state.exchangeGlowFocusKey=null;
     for(const source of sources)state.suppressedExchangeGlowIds.delete(source.id);
-    const ownMatchPlayer=localClassicMatch?.players?.[localClassicMatch.activePlayerId];
-    if(ownMatchPlayer)ownMatchPlayer.snapshot=cloneForSave(authoritativeExchangeZoo);
     renderExchange();
 
     finalizeClassicProgressionCommit('Server-authoritative Exchange');
+
+    // IMPORTANT: authoritativeExchangeZoo is the server's pre-reward exchange
+    // result. Enclosure rewards are calculated by the browser because the
+    // milestone/category rules and enclosure generator live here. Therefore the
+    // durable multiplayer snapshot must be taken AFTER checkEnclosureReward().
+    // Otherwise a disconnect/reload can resurrect the pre-reward zoo and either
+    // lose the enclosure or award it again later.
     const snapshot=exportCurrentGameState();
-    commitOwnZooStateToServer(snapshot);
+    const ownMatchPlayer=localClassicMatch?.players?.[localClassicMatch.activePlayerId];
+    if(ownMatchPlayer)ownMatchPlayer.snapshot=cloneForSave(snapshot);
+    const rewardPersisted=await commitOwnZooStateToServer(snapshot);
+    const rewardDurable=rewardPersisted!==false && await awaitDurableZooCommitIdle(5000);
+    if(!rewardDurable){
+        console.warn('Multiplayer exchange reward state did not become durable before completion.');
+        showGameNotice?.('Exchange completed, but the enclosure reward is still syncing. Please wait before leaving the game.');
+    }
     if(t?.role==='peer'&&t.playerId===localClassicMatch?.activePlayerId){
         const bridge=await sendLocalMultiplayerBrowserAction('replace-player-zoo',{snapshot});
         if(!bridge?.ok)console.warn('Could not bridge authoritative Exchange into host zoo state:',bridge?.reason||'unknown');
@@ -39296,15 +40862,41 @@ function renderTrueTransferProposal() {
     for (const child of Array.from(area.children)) {
         if (child !== panel) child.style.display = 'none';
     }
+    // The proposal must not live inside the header/trade container: transformed
+    // or clipped header ancestors change the containing block of position:fixed.
+    // Move it to body and anchor it independently to the viewport.
+    if(panel.parentElement!==document.body)document.body.appendChild(panel);
     panel.style.display = '';
     panel.innerHTML = '';
+    if(!window.__trueTransferProposalResizeBound){
+        window.__trueTransferProposalResizeBound=true;
+        let transferResizeRaf=0;
+        window.addEventListener('resize',()=>{cancelAnimationFrame(transferResizeRaf);transferResizeRaf=requestAnimationFrame(()=>{try{renderTrade();}catch(_){}});},{passive:true});
+    }
+    const viewportPad=15;
+    const panelWidth=Math.min(540,Math.max(320,window.innerWidth-viewportPad*2));
+    const activityRect=document.getElementById('trueSimulationPanel')?.getBoundingClientRect();
+    let panelLeft=Math.max(viewportPad,window.innerWidth-panelWidth-viewportPad);
+    let panelTop=Math.max(8,activityRect?.top||36);
+    if(activityRect){
+        const rightSpace=window.innerWidth-activityRect.right-viewportPad;
+        if(rightSpace>=panelWidth+12){
+            panelLeft=Math.min(window.innerWidth-panelWidth-viewportPad,activityRect.right+12);
+            panelTop=activityRect.top;
+        }else{
+            panelLeft=Math.max(viewportPad,Math.min(window.innerWidth-panelWidth-viewportPad,activityRect.left));
+            panelTop=Math.min(window.innerHeight-140,activityRect.bottom+8);
+        }
+    }
     Object.assign(panel.style,{
-        width:'min(610px, calc(100vw - 28px))',
-        maxWidth:'100%',
+        position:'fixed',
+        left:`${panelLeft}px`,
+        top:`${panelTop}px`,
+        right:'auto',
+        width:`${panelWidth}px`,
+        maxWidth:`calc(100vw - ${viewportPad*2}px)`,
         minHeight:'124px',
-        marginTop:'42px',
-        marginLeft:'auto',
-        marginRight:'0',
+        margin:'0',
         padding:'10px',
         boxSizing:'border-box',
         border:'1px solid rgba(70,60,45,.45)',
@@ -39312,25 +40904,21 @@ function renderTrueTransferProposal() {
         background:'#f3efe3',
         color:'#29261f',
         boxShadow:'0 2px 7px rgba(0,0,0,.12)',
-        fontFamily:'inherit'
+        fontFamily:'inherit',
+        zIndex:'10030',
+        overflow:'hidden'
     });
-    // The legacy trade area is right-anchored. Measure from its untransformed
-    // position synchronously so rerenders cannot alternate between shifted and
-    // unshifted positions (the old rAF measurement included the previous transform).
     panel.style.transform='';
-    const proposalRect=panel.getBoundingClientRect();
-    const proposalOverflow=proposalRect.right-(window.innerWidth-10);
-    panel.style.transform=proposalOverflow>0?`translateX(${-proposalOverflow}px)`:'';
 
     const offer = state.autonomousTradeOffer?.marketplaceRequest ? state.autonomousTradeOffer : null;
     const headingRow=document.createElement('div');
-    Object.assign(headingRow.style,{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'8px',marginBottom:'7px'});
+    Object.assign(headingRow.style,{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'8px',marginBottom:'7px',minWidth:'0'});
     const heading = document.createElement('div');
     heading.textContent = offer ? `TRANSFER PROPOSAL · ${state.opponentProfiles?.[offer.opponentIndex]?.name || 'Zoo'}` : 'TRANSFER PROPOSAL';
-    Object.assign(heading.style,{fontSize:'11px',fontWeight:'900',letterSpacing:'.04em'});
+    Object.assign(heading.style,{fontSize:'11px',fontWeight:'900',letterSpacing:'.04em',minWidth:'0',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'});
     const marketButton=document.createElement('button');
     marketButton.type='button'; marketButton.textContent='Marketplace'; marketButton.title='Browse available populations';
-    Object.assign(marketButton.style,{padding:'5px 8px',borderRadius:'6px',border:'1px solid #6d6558',fontSize:'11px',fontWeight:'800',cursor:'pointer'});
+    Object.assign(marketButton.style,{padding:'5px 8px',borderRadius:'6px',border:'1px solid #6d6558',fontSize:'11px',fontWeight:'800',cursor:'pointer',flex:'0 0 auto'});
     marketButton.addEventListener('click',openTrueMarketplace);
     headingRow.append(heading,marketButton);
     panel.appendChild(headingRow);

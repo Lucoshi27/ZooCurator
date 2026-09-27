@@ -19563,7 +19563,7 @@ async function completeExchange(destination = null, autoPlace = false) {
 
     for (const id of exchangedIds) state.suppressedExchangeGlowIds.delete(id);
 
-    checkEnclosureReward(newAnimal);
+    checkEnclosureReward(newAnimal,'exchange');
     return finalizeClassicProgressionCommit('Exchange commit');
 }
 
@@ -22509,6 +22509,9 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     }
                 }
                 reconcileLocalMultiplayerRosterFromServerPlayers(transport.serverPlayers);
+                // Presence is part of trade availability: a disconnected player
+                // cannot leave a public animal card stranded on the trade board.
+                renderTrade?.();
                 if(localMultiplayerPeerReplica){
                     if(!localMultiplayerPeerReplica.players)localMultiplayerPeerReplica.players={};
                     if(!Array.isArray(localMultiplayerPeerReplica.playerIds))localMultiplayerPeerReplica.playerIds=[];
@@ -23312,6 +23315,10 @@ async function applyLocalMultiplayerActionEnvelope(action){
         const offered=(state.animals||[]).find(a=>String(a.id)===String(action.payload?.offeredAnimalId));
         const requested=draft?.requestedPlayerId?directTradeAnimal(draft.requestedPlayerId,draft.requestedAnimalId):null;
         if(!draft?.requestedPlayerId||!requested||!offered)return {ok:false,reason:'trade-draft'};
+        const softlockReason=humanTradeSoftlockReason(
+            action.playerId,offered,draft.requestedPlayerId,requested
+        );
+        if(softlockReason)return {ok:false,reason:'no-legal-post-trade-placement'};
         const offeredKey=animalCardKey(offered),requestedKey=animalCardKey(requested);
         const fromOthers=(state.animals||[]).filter(a=>String(a.id)!==String(offered.id));
         const targetAnimals=localClassicMatch.players[draft.requestedPlayerId]?.snapshot?.state?.animals||[];
@@ -23535,6 +23542,35 @@ async function applyLocalMultiplayerActionEnvelope(action){
         return {ok:true,revision:localClassicMatch.revision};
     }
     return {ok:false,reason:'unsupported-action'};
+}
+
+function multiplayerTradeDestinationToWireAfterOutgoing(destination,incoming,outgoingId){
+    if(!destination?.enclosure||destination.slotIndex==null)return null;
+    const slotIndex=Number(destination.slotIndex);
+    if(!Number.isInteger(slotIndex)||!getAllSlots(destination.enclosure).includes(slotIndex))return null;
+    const wire={enclosureId:destination.enclosure.id,slotIndex};
+    const outgoing=(state.animals||[]).find(a=>String(a?.id)===String(outgoingId));
+    if(!incoming){wire.clientPlacementValidated=false;return wire;}
+    if(!outgoing){
+        wire.clientPlacementValidated=canPlace(incoming,destination.enclosure,slotIndex)===true;
+        return wire;
+    }
+    const saved={
+        enclosureId:outgoing.enclosureId,slotIndex:outgoing.slotIndex,
+        reservedEnclosureId:outgoing.reservedEnclosureId,reservedSlotIndex:outgoing.reservedSlotIndex
+    };
+    try{
+        // Evaluate the exact post-trade board: the outgoing card and any slot
+        // reservation belonging to it no longer occupy the zoo.
+        outgoing.enclosureId=null;outgoing.slotIndex=null;
+        outgoing.reservedEnclosureId=null;outgoing.reservedSlotIndex=null;
+        wire.clientPlacementValidated=canPlace(incoming,destination.enclosure,slotIndex)===true;
+    }finally{
+        outgoing.enclosureId=saved.enclosureId;outgoing.slotIndex=saved.slotIndex;
+        outgoing.reservedEnclosureId=saved.reservedEnclosureId;
+        outgoing.reservedSlotIndex=saved.reservedSlotIndex;
+    }
+    return wire;
 }
 
 function multiplayerDestinationToWire(destination,animal=null){
@@ -28309,8 +28345,9 @@ function checkCurrentProgressionRewards() {
     );
 }
 
-function checkEnclosureReward(animal) {
+function checkEnclosureReward(animal, source='upgrade') {
     if (!animal) return;
+    if(source!=='upgrade'&&source!=='exchange')return;
 
     // Enclosure progression starts at Level 2. A Level 1 draw/trade can change
     // the live category set, but it must never be allowed to trigger a deferred
@@ -35126,6 +35163,9 @@ function otherServerTradeListings(){
     const active=localClassicMatch?.activePlayerId;
     return multiplayerPublicTradeListings.filter(x=>{
         if(String(x?.playerId||'')===id)return false;
+        const serverOwner=(localMultiplayerBrowserTransport?.serverPlayers||[])
+            .find(player=>String(player?.playerId||'')===String(x?.playerId||''));
+        if(serverOwner&&serverOwner.connected===false)return false;
         const localId=multiplayerLocalPlayerIdForServerId(x?.playerId);
         const snapshot=localClassicMatch?.players?.[localId]?.snapshot;
         const animals=snapshot?.state?.animals;
@@ -35389,15 +35429,36 @@ function renderSelectedMultiplayerPublicListing(){
         withdraw.title='Remove your animal from the public multiplayer trade board.';
         withdraw.onclick=async()=>{
             withdraw.disabled=true;
-            const ok=await withdrawMultiplayerTradeListing();
+            const listingBefore=cloneForSave(ownServerTradeListing());
+            const listedAnimalId=String(listingBefore?.animalId||'');
+            // Removing a PUBLIC LISTING changes only trade-board state. The
+            // animal never leaves the zoo merely because it is listed, so do
+            // not route this through animal-drag/removal logic or clear its
+            // enclosure reservation.
+            const ok=await withdrawMultiplayerTradeListing(listedAnimalId||null);
             if(ok){
                 selectedHumanTradeProposalId=null;
+                selectedMultiplayerPublicListingPlayerId=null;
                 showGameNotice?.('Your multiplayer trade offer was removed.');
+                // Reassert the unchanged owning zoo after the listing ACK. This
+                // prevents an older transient "card in YOUR OFFER" snapshot from
+                // winning a later durable-sync race and making the animal vanish.
+                if(listedAnimalId){
+                    const stillOwned=(state.animals||[]).some(
+                        animal=>String(animal?.id)===listedAnimalId
+                    );
+                    if(stillOwned){
+                        scheduleLocalMultiplayerSync?.('trade-listing-withdraw-preserve-animal');
+                        commitOwnZooStateToServer?.(exportCurrentGameState());
+                    }
+                }
             }else{
                 withdraw.disabled=false;
                 showGameNotice?.('Could not remove that multiplayer trade offer.');
             }
             renderTrade();
+            renderAnimals?.();
+            refreshDrawAvailabilityState?.();
         };
         ensureTradeAreaLayout();
         const tradeArea=document.getElementById('opponentTradeArea');
@@ -35468,6 +35529,40 @@ function directTradeSnapshotAnimals(playerId,{syncActive=true}={}){
 }
 function directTradeAnimal(playerId,animalId){
     return directTradeSnapshotAnimals(playerId).find(a=>String(a?.id)===String(animalId))||null;
+}
+function directTradeSnapshotCanReceiveAfterOutgoing(snapshot,incoming,outgoing){
+    if(!snapshot?.state||!incoming||!outgoing)return false;
+    // Reuse the game's exact placement/compatibility rules by temporarily
+    // evaluating the supplied zoo snapshot as state. This is read-only and
+    // restores the live zoo immediately.
+    const liveState=state;
+    const candidate=cloneForSave(snapshot);
+    try{
+        state=candidate.state||candidate;
+        const outgoingId=String(outgoing.id);
+        const liveOutgoing=(state.animals||[]).find(a=>String(a?.id)===outgoingId);
+        if(liveOutgoing){
+            state.animals=state.animals.filter(a=>String(a?.id)!==outgoingId);
+        }
+        const probe={...cloneForSave(incoming),enclosureId:null,slotIndex:null,
+            reservedEnclosureId:null,reservedSlotIndex:null};
+        return Boolean(randomEligibleDestinationForAnimal(probe));
+    }catch(error){
+        console.warn('Could not preflight remote trade capacity:',error);
+        return false;
+    }finally{
+        state=liveState;
+    }
+}
+function humanTradeSoftlockReason(fromId,offered,toId,requested){
+    const fromSnap=localClassicMatch?.players?.[fromId]?.snapshot;
+    const toSnap=localClassicMatch?.players?.[toId]?.snapshot;
+    if(!fromSnap||!toSnap||!offered||!requested)return 'Trade cannot be verified safely right now.';
+    if(!directTradeSnapshotCanReceiveAfterOutgoing(fromSnap,requested,offered))
+        return `${localMultiplayerPlayerLabel(fromId)} has no valid enclosure space for ${animalDisplayName(requested)} after trading away ${animalDisplayName(offered)}.`;
+    if(!directTradeSnapshotCanReceiveAfterOutgoing(toSnap,offered,requested))
+        return `${localMultiplayerPlayerLabel(toId)} has no valid enclosure space for ${animalDisplayName(offered)} after trading away ${animalDisplayName(requested)}.`;
+    return '';
 }
 function authoritativeVisitedTradeAnimal(playerId,renderedAnimal){
     if(!renderedAnimal)return null;
@@ -35627,6 +35722,14 @@ async function acceptDirectHumanTradeOffer(id,destination=null,{skipActiveSync=f
         offer.status='invalid';
         resumeAITradingAfterHumanTrade();
         renderVisitedZooQuickTabs();renderTrade();return false;
+    }
+
+    const softlockReason=humanTradeSoftlockReason(
+        offer.fromPlayerId,offeredNow,offer.toPlayerId,requestedNow
+    );
+    if(softlockReason){
+        showTradeCapacityBlock(offeredNow,requestedNow,softlockReason);
+        return false;
     }
 
     const offeredKey=animalCardKey(offeredNow), requestedKey=animalCardKey(requestedNow);
@@ -37318,6 +37421,13 @@ function assignOpponentProfiles() {
     renderOpponentTradeState();
 }
 
+function multiplayerAITradesDisabled(){
+    // Temporary stability switch: AI/real-zoo trading is disabled ONLY while a
+    // Classic multiplayer match exists. Human multiplayer trades remain active.
+    // Single-player Classic and True mode retain their existing trade systems.
+    return Boolean(localClassicMatch) && state.gameMode!=='true';
+}
+
 function randomAutonomousOfferDelay() {
     // V220.69: incoming offers were averaging about one every 14 turns at the
     // default 50% setting when legal trades were available. A 1-3 turn retry
@@ -37327,6 +37437,10 @@ function randomAutonomousOfferDelay() {
 }
 
 function scheduleNextAutonomousOpponentOffer() {
+    if(multiplayerAITradesDisabled()){
+        state.nextAutonomousOfferTurn=Infinity;
+        return;
+    }
     state.nextAutonomousOfferTurn = state.turn + randomAutonomousOfferDelay();
 }
 
@@ -37342,6 +37456,7 @@ function clearAutonomousOpponentOffer(resetTimer = true) {
 
 function createAutonomousOpponentOffer() {
     if (state.gameMode === 'true') return false;
+    if (multiplayerAITradesDisabled()) return false;
     if (localClassicMatch && humanTradeBlocksAITrading()) return false;
     if (isRealOpponentMode()) return createRealAutonomousOpponentOffer();
     if (state.outgoingOffer || state.autonomousTradeOffer) return false;
@@ -37386,6 +37501,17 @@ function createAutonomousOpponentOffer() {
 
 function updateAutonomousOpponentOffer() {
     if (state.sandboxMode) return;
+    if(multiplayerAITradesDisabled()){
+        // Clear any AI offer restored from an older multiplayer save/reconnect.
+        if(state.autonomousTradeOffer){
+            state.autonomousTradeOffer=null;
+            state.selectedTradeOpponent=null;
+            state.tradeOffers=[];
+            renderTrade();
+        }
+        state.nextAutonomousOfferTurn=Infinity;
+        return;
+    }
     if (localClassicMatch && humanTradeBlocksAITrading()) {
         cancelAITradingForHumanTrade();
         return;
@@ -37548,6 +37674,30 @@ function generateOpponentTradeOffers(outgoing, pendingEmergencyTrade = null) {
 function selectedTradeOffer() {
     if (state.autonomousTradeOffer) return state.autonomousTradeOffer;
     return state.tradeOffers.find(o => o.opponentIndex === state.selectedTradeOpponent) || null;
+}
+function showTradeCapacityBlock(incoming,outgoing,reason=''){
+    document.getElementById('tradeCapacityBlockNotice')?.remove();
+    const notice=document.createElement('div');
+    notice.id='tradeCapacityBlockNotice';
+    const incomingName=animalDisplayName?.(incoming)||String(incoming?.filename||'the incoming animal').replace(/\.png$/i,'');
+    const outgoingName=animalDisplayName?.(outgoing)||String(outgoing?.filename||'this animal').replace(/\.png$/i,'');
+    notice.textContent=reason
+        ? `Trade not possible: ${reason} Make suitable space first.`
+        : `Trade not possible: if you trade ${outgoingName}, there is no valid enclosure space for ${incomingName}. Make suitable space first.`;
+    Object.assign(notice.style,{
+        position:'fixed',zIndex:'10050',maxWidth:'360px',padding:'9px 12px',
+        border:'2px solid #b4493d',borderRadius:'7px',background:'#fff7e8',
+        color:'#4a3028',fontWeight:'700',fontSize:'13px',lineHeight:'1.25',
+        boxShadow:'0 3px 12px rgba(0,0,0,.25)',pointerEvents:'none'
+    });
+    document.body.appendChild(notice);
+    const box=(document.getElementById('opponentTradeArea')||outgoingOfferBox)?.getBoundingClientRect?.();
+    const nr=notice.getBoundingClientRect();
+    const left=box?Math.max(8,Math.min(window.innerWidth-nr.width-8,box.left+(box.width-nr.width)/2)):8;
+    const top=box?Math.max(8,box.top-nr.height-8):8;
+    notice.style.left=`${left}px`;notice.style.top=`${top}px`;
+    clearTimeout(showTradeCapacityBlock._timer);
+    showTradeCapacityBlock._timer=setTimeout(()=>notice.remove(),4200);
 }
 
 function outgoingFitsAutonomousOffer(animal = state.outgoingOffer, offerOverride = null) {
@@ -38314,9 +38464,24 @@ function tryDropOnOutgoingOffer(event, animal) {
             // replica can either make the request disappear or substitute a
             // locally regenerated ID, recreating REQUESTED_ANIMAL_NOT_OWNED.
             const requested=serverTrade
-                ? null
+                ? (draft.requestedAnimalIdentity
+                    ? {...cloneForSave(draft.requestedAnimalIdentity),id:draft.requestedAnimalId}
+                    : null)
                 : directTradeAnimal(draft.requestedPlayerId,draft.requestedAnimalId);
-            if(!serverTrade&&!requested)return false;
+            if(!requested)return false;
+
+            // A proposal must be physically completable by its sender. Do not
+            // allow the offered card to reserve a trade whose requested animal
+            // has nowhere legal to go after that card leaves the zoo.
+            const softlockReason=humanTradeSoftlockReason(
+                fromId,animal,draft.requestedPlayerId,requested
+            );
+            if(softlockReason){
+                restoreDraggedAnimal();
+                showTradeCapacityBlock(requested,animal,softlockReason);
+                renderTrade();
+                return true;
+            }
 
             if(!serverTrade){
                 const offeredKey=animalCardKey(animal),requestedKey=animalCardKey(requested);
@@ -38447,6 +38612,14 @@ function tryDropOnOutgoingOffer(event, animal) {
     }
 
     if (state.autonomousTradeOffer) {
+        const selectedIncoming=state.autonomousTradeOffer?.animal;
+        if(selectedIncoming&&!tradeIncomingHasDestinationAfterOutgoing(selectedIncoming,animal)){
+            if(state.drag?.type==='animal'&&state.drag.animal?.id===animal.id)
+                restoreDraggedAnimal();
+            showTradeCapacityBlock(selectedIncoming,animal);
+            renderTrade();
+            return true;
+        }
         // AI offers keep their same-level acceptance rule, but a connected
         // human player may publicly list ANY animal here. The public listing
         // must not be rejected merely because the currently displayed AI offer
@@ -39352,7 +39525,9 @@ async function finishDirectHumanTradeResultDrag(event){
         // the Scarlet Macaw into that just-vacated slot therefore serialized
         // clientPlacementValidated:false and the authoritative server rejected
         // an otherwise legal exchange.
-        const wireDestination=multiplayerDestinationToWire(destination,incoming);
+        const wireDestination=multiplayerTradeDestinationToWireAfterOutgoing(
+            destination,incoming,released?.animalId
+        );
         // Restore the live zoo before the async authority round-trip. The server
         // independently removes the outgoing animal before validating the same
         // destination, so this does not weaken placement validation.
@@ -39375,7 +39550,7 @@ async function finishDirectHumanTradeResultDrag(event){
                 multiplayerDiagnostic('human-trade-accept-rejected',{
                     offerId:drag.humanTradeOfferId,
                     reason:result?.reason||'server-rejected',
-                    destination:multiplayerDestinationToWire(destination,incoming)
+                    destination:wireDestination
                 });
                 showGameNotice?.(`Trade placement rejected: ${result?.reason||'server rejected the placement'}.`);
                 renderTrade();
@@ -39634,6 +39809,7 @@ function renderDirectHumanTradeCards(){
         resetDrawCardFromTheirOfferMode();
         const requested=directTradeAnimal(draft.requestedPlayerId,draft.requestedAnimalId);
         outgoingOfferBox.classList.remove('trade-filled','trade-locked');
+        incomingOfferBox.classList.remove('trade-locked');
         incomingOfferBox.classList.toggle('trade-filled',Boolean(requested));
         outgoingOfferBox.innerHTML='<span>YOUR<br>OFFER</span>';
         incomingOfferBox.innerHTML='';
@@ -39689,6 +39865,11 @@ function renderDirectHumanTradeCards(){
     if(offer.status==='accepted-awaiting-sender-claim'){
         if(!isSender)return false;
         outgoingOfferBox.classList.remove('trade-filled','trade-locked');
+        // While the proposal was still pending, the sender's incoming box was
+        // deliberately trade-locked (grey card + red forbidden cursor). Once
+        // accepted this SAME DOM box becomes the sender's collectible animal.
+        // Remove the stale lock class as well as installing the grab handler.
+        incomingOfferBox.classList.remove('trade-locked');
         incomingOfferBox.classList.add('trade-filled');
         outgoingOfferBox.innerHTML='<span>YOUR<br>OFFER</span>';
         incomingOfferBox.innerHTML='';
@@ -39814,6 +39995,17 @@ function renderTrade() {
     }
 
     pruneUnavailableIncomingTradeOffers();
+
+    if(multiplayerAITradesDisabled()){
+        // Human trade UI stays live; suppress only AI/real-zoo negotiation state.
+        state.autonomousTradeOffer=null;
+        state.tradeOffers=[];
+        state.selectedTradeOpponent=null;
+        if(state.outgoingOffer && !ownServerTradeListing()){
+            // Legacy private AI outgoing cards are not meaningful in multiplayer.
+            state.outgoingOffer=null;
+        }
+    }
 
     if(serverAuthoritativeMultiplayerActive())renderMultiplayerPublicTradeRows();
 
@@ -40142,16 +40334,14 @@ function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=nu
     state.animals.push(incoming);
     markPlayerLevelSeen(incoming.level);
 
-    // Finish any older enclosure-reward glow before progression is evaluated.
-    // This must happen BEFORE checkEnclosureReward(): that function can award
-    // a brand-new enclosure, whose glow should survive the accepted trade.
+    // Trading changes ownership, not progression achievements. Enclosure
+    // rewards are earned when an Exchange/Upgrade creates a new Level 2+ card;
+    // accepting an AI trade must never award (or re-award) an enclosure, even
+    // if the imported card is Level 2+ or progression bookkeeping was rebuilt.
+    // Clear any old reward glow, but deliberately do NOT evaluate milestones.
     state.glowingEnclosureIds.clear();
     state.newEnclosureGlowStartedAt.clear();
 
-    // Recalculate progression only after BOTH sides of the trade have changed
-    // ownership, so a traded-away last card cannot keep a box checked while
-    // the incoming card is being evaluated.
-    checkEnclosureReward(incoming);
     state.tradeOffers=[];
     state.selectedTradeOpponent=null;
     if (state.autonomousTradeOffer?.marketplaceRequest && state.autonomousTradeOffer?.marketplaceListingId) {

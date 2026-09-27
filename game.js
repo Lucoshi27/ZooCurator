@@ -19637,6 +19637,28 @@ function pushMultiplayerActivity(type,{playerId=null,text='',key=null}={}){
     if(multiplayerProgressTrackerFace==='activity')renderProgressTracker();
     return true;
 }
+function relayAuthoritativeMultiplayerActivity(message){
+    const t=localMultiplayerBrowserTransport;
+    if(t?.role!=='host'||!message||message.__activityRelay===true)return false;
+    const channel=localMultiplayerBrowserChannel;
+    if(!channel?.postMessage)return false;
+    try{
+        channel.postMessage({
+            protocol:'zoo-curator-browser-transport-v1',
+            matchId:t.matchId,
+            senderPlayerId:t.playerId,
+            type:'multiplayer-activity',
+            activity:cloneForSave({...message,__activityRelay:true})
+        });
+        return true;
+    }catch(_){return false;}
+}
+function receiveRelayedMultiplayerActivity(message){
+    const activity=message?.activity;
+    if(!activity||activity.type!=='action-committed')return false;
+    return recordAuthoritativeMultiplayerActivity(activity);
+}
+
 function recordAuthoritativeMultiplayerActivity(message){
     if(message?.type!=='action-committed')return false;
     const playerId=String(message.playerId||'');
@@ -19652,10 +19674,37 @@ function recordAuthoritativeMultiplayerActivity(message){
             text:`${who} exchanged for ${multiplayerActivityAnimalName(animal)}.`});
     }
     if(message.action==='human-trade'){
-        const status=String(message.trade?.status||message.status||'');
-        if(status==='completed'||status==='accepted'||status==='accepted-awaiting-sender-claim'){
-            return pushMultiplayerActivity('trade',{playerId,key,
-                text:`${who} completed a trade.`});
+        const trade=message.trade||{};
+        const status=String(trade.status||message.status||'');
+        const fromId=String(trade.fromPlayerId||'');
+        const toId=String(trade.toPlayerId||'');
+        const fromName=multiplayerActivityPlayerName(fromId);
+        const toName=multiplayerActivityPlayerName(toId);
+        const offered=multiplayerActivityAnimalName(
+            trade.offeredAnimal||trade.offered||message.offeredAnimal
+        );
+        const requested=multiplayerActivityAnimalName(
+            trade.requestedAnimal||trade.requested||message.requestedAnimal
+        );
+        if(status==='pending'){
+            return pushMultiplayerActivity('trade',{playerId:fromId||playerId,key,
+                text:`${fromName} offered ${offered} to ${toName} for ${requested}.`});
+        }
+        if(status==='accepted-awaiting-sender-claim'){
+            return pushMultiplayerActivity('trade',{playerId:toId||playerId,key,
+                text:`${toName} accepted a trade with ${fromName}.`});
+        }
+        if(status==='completed'||status==='accepted'){
+            return pushMultiplayerActivity('trade',{playerId:fromId||playerId,key,
+                text:`${fromName} and ${toName} completed a trade.`});
+        }
+        if(status==='declined'){
+            return pushMultiplayerActivity('trade',{playerId:toId||playerId,key,
+                text:`${toName} declined a trade from ${fromName}.`});
+        }
+        if(status==='cancelled'){
+            return pushMultiplayerActivity('trade',{playerId:fromId||playerId,key,
+                text:`${fromName} cancelled a trade offer.`});
         }
     }
     return false;
@@ -21057,12 +21106,20 @@ function applyAuthoritativeHumanTradeMessage(message){
         localClassicMatch.viewingPlayerId===localClassicMatch.activePlayerId)){
         const authoritativeOwnZoo=cloneForSave(ownUpdate.zoo);
         const authoritativeOwnRevision=Math.max(0,Number(ownUpdate.revision)||0);
-        enqueueMicrotask(async()=>{
+        const importKey=`${String(incoming.id)}:${String(incoming.status)}:${authoritativeOwnRevision}`;
+        const transportNow=localMultiplayerBrowserTransport;
+        if(!transportNow.authoritativeHumanTradeImportKeys)
+            transportNow.authoritativeHumanTradeImportKeys=new Set();
+        if(!transportNow.authoritativeHumanTradeImportKeys.has(importKey)){
+            transportNow.authoritativeHumanTradeImportKeys.add(importKey);
+            enqueueMicrotask(async()=>{
             const transport=localMultiplayerBrowserTransport;
             // The action packet and zoo-state packet can arrive back-to-back.
             // Never let a queued import of revision N overwrite N+1.
-            if(Math.max(0,Number(transport?.durableZooRevision)||0)>authoritativeOwnRevision)
+            if(Math.max(0,Number(transport?.durableZooRevision)||0)>authoritativeOwnRevision){
+                transport?.authoritativeHumanTradeImportKeys?.delete(importKey);
                 return;
+            }
             autoResumeWriteSuppressed=true;
             try{await importGameState(authoritativeOwnZoo,{deferRender:false});}
             finally{autoResumeWriteSuppressed=false;}
@@ -21075,6 +21132,7 @@ function applyAuthoritativeHumanTradeMessage(message){
                     try{await importGameState(cloneForSave(latest),{deferRender:false});}
                     finally{autoResumeWriteSuppressed=false;}
                 }
+                transport?.authoritativeHumanTradeImportKeys?.delete(importKey);
                 return;
             }
             const ownedIds=new Set((state.animals||[]).map(a=>String(a?.id)));
@@ -21102,7 +21160,9 @@ function applyAuthoritativeHumanTradeMessage(message){
             localClassicMatch.players[localClassicMatch.activePlayerId].snapshot=cloneForSave(exportCurrentGameState());
             renderTrade?.();
             renderVisitedZooQuickTabs?.();
+            transport?.authoritativeHumanTradeImportKeys?.delete(importKey);
         });
+        }
     }
 
     if(incoming.status==='accepted-awaiting-sender-claim'){
@@ -21133,6 +21193,14 @@ function applyAuthoritativeHumanTradeMessage(message){
     renderTrade?.();
     renderVisitedZooQuickTabs?.();
     return true;
+}
+
+function sanitizeTransientExchangeState(snapshot){
+    if(!snapshot?.state)return snapshot;
+    snapshot.state.exchange=[null,null];
+    snapshot.state.result=null;
+    snapshot.state.exchangeGlowFocusKey=null;
+    return snapshot;
 }
 
 function commitOwnZooStateToServer(snapshot=null,options={}){
@@ -21715,6 +21783,41 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                         playerId:p?.playerId||null,seat:Number(p?.seat)||null,connected:p?.connected!==false
                     }))
                 });
+                if(transport.role==='peer'&&transport.serverSeat&&transport.serverReturning!==true){
+                    const authenticatedLocalId=`player-${Number(transport.serverSeat)}`;
+                    const ownSnapshot=localClassicMatch?.players?.[authenticatedLocalId]?.snapshot;
+                    if(localClassicMatch&&!ownSnapshot){
+                        localClassicMatch.activePlayerId=authenticatedLocalId;
+                        transport.playerId=authenticatedLocalId;
+                        localClassicMatch.awaitingLocalZooSetup=true;
+                        pendingMultiplayerSetup={
+                            gameMode:localClassicMatch.rules?.gameMode==='true'?'true':'classic',
+                            turnMode:localClassicMatch.rules?.turnMode==='simultaneous'?'simultaneous':'alternating',
+                            activeCategories:[...(localClassicMatch.rules?.activeCategories||Object.keys(FOLDERS))]
+                        };
+                        queueMicrotask(()=>{
+                            if(localMultiplayerBrowserTransport!==transport||
+                               !localClassicMatch?.awaitingLocalZooSetup)return;
+                            const menu=ensureGenerateZooUI();
+                            menu?.classList.add('multiplayer-join-zoo-setup');
+                            openGenerateZooMenu();
+                            const select=menu?.querySelector?.('#newZooGameMode');
+                            if(select){
+                                select.value=pendingMultiplayerSetup.gameMode;
+                                select.disabled=true;
+                            }
+                            const cancel=menu?.querySelector?.('#generateZooCancel');
+                            if(cancel){
+                                cancel.disabled=true;
+                                cancel.title='Create your zoo to join this multiplayer game.';
+                            }
+                            multiplayerDiagnostic('join-setup-opened-after-authentication',{
+                                seat:transport.serverSeat,
+                                playerId:authenticatedLocalId
+                            });
+                        });
+                    }
+                }
                 if(transport.role==='peer'&&transport.serverSeat){
                     clearTimeout(transport._joinSetupWatchdog);
                     transport._joinSetupWatchdog=setTimeout(()=>{
@@ -21761,7 +21864,9 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 const zooRevision=Math.max(0,Number(message.revision)||0);
                 if(zoo&&typeof zoo==='object'&&!Array.isArray(zoo)){
                     const serverPlayer=transport.serverPlayers?.find(p=>String(p?.playerId||'')===serverPlayerId);
-                    const localTargetId=serverPlayer?.seat?`player-${Number(serverPlayer.seat)}`:null;
+                    const localTargetId=serverPlayerId===String(transport.serverPlayerId||'')&&Number(transport.serverSeat)>0
+                        ? `player-${Number(transport.serverSeat)}`
+                        : (serverPlayer?.seat?`player-${Number(serverPlayer.seat)}`:null);
                     if(localTargetId&&localClassicMatch?.players?.[localTargetId])
                         localClassicMatch.players[localTargetId].snapshot=cloneForSave(zoo);
                     if(localTargetId&&localMultiplayerPeerReplica?.players?.[localTargetId])
@@ -21971,6 +22076,8 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                             emitLocalMultiplayerSync('server-peer-joined');
                     });
                 }
+            }else if(message.type==='multiplayer-activity'){
+                receiveRelayedMultiplayerActivity(message);
             }else if(message.type==='cursor'){
                 receiveMultiplayerCursor(message);
             }else if(message.type==='live-layout'){
@@ -21993,7 +22100,10 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 }
             }else if(message.type==='action-committed'||message.type==='action-rejected'){
                 transport.lastServerAction=cloneForSave(message);
-                if(message.type==='action-committed')recordAuthoritativeMultiplayerActivity(message);
+                if(message.type==='action-committed'){
+                    recordAuthoritativeMultiplayerActivity(message);
+                    relayAuthoritativeMultiplayerActivity(message);
+                }
                 if(message.type==='action-committed'&&message.action==='human-trade')
                     applyAuthoritativeHumanTradeMessage(message);
                 if(message.type==='action-committed'&&
@@ -23085,6 +23195,12 @@ async function dispatchLocalMultiplayerAction(playerId,type,payload={}){
         if(!durableReady)return {ok:false,reason:'zoo-state-sync-timeout'};
         const authorized=await authorizeHumanTradeWithServer(type,payload);
         if(!authorized.ok)return authorized;
+        // The websocket event handler normally applies this same authoritative
+        // packet, but the action promise can resolve before that handler's
+        // queued zoo import/render finishes. Apply the transaction to the local
+        // trade ledger now as an idempotent operation so accept/claim UI cannot
+        // remain one state behind until another server message arrives.
+        applyAuthoritativeHumanTradeMessage(authorized.response);
         // Server + SQLite are the authority. Do not replay the same trade
         // through the browser-host action envelope.
         return {
@@ -29171,12 +29287,7 @@ async function requestServerAuthoritativeExchange(destination=null,autoPlace=fal
     // If they are committed here the authoritative server copies them into its
     // returned zoo even after removing the source animals. A later zoo-state
     // replay then resurrects those removed cards in the Exchange/Upgrade cells.
-    const preExchangeSnapshot=exportCurrentGameState();
-    if(preExchangeSnapshot?.state){
-        preExchangeSnapshot.state.exchange=[null,null];
-        preExchangeSnapshot.state.result=null;
-        preExchangeSnapshot.state.exchangeGlowFocusKey=null;
-    }
+    const preExchangeSnapshot=sanitizeTransientExchangeState(exportCurrentGameState());
     commitOwnZooStateToServer(preExchangeSnapshot);
     if(!await awaitDurableZooCommitIdle()){
         console.warn('Authoritative Exchange paused because the durable zoo changed.');
@@ -29203,12 +29314,7 @@ async function requestServerAuthoritativeExchange(destination=null,autoPlace=fal
     // Older/current servers may echo transient Exchange UI state from a snapshot
     // that was committed just before the action. Sanitize the authoritative zoo
     // before storing or importing it so stale source/result cards cannot return.
-    const authoritativeExchangeZoo=cloneForSave(response.zoo);
-    if(authoritativeExchangeZoo?.state){
-        authoritativeExchangeZoo.state.exchange=[null,null];
-        authoritativeExchangeZoo.state.result=null;
-        authoritativeExchangeZoo.state.exchangeGlowFocusKey=null;
-    }
+    const authoritativeExchangeZoo=sanitizeTransientExchangeState(cloneForSave(response.zoo));
     t.durableOwnZooSnapshot=cloneForSave(authoritativeExchangeZoo);
     t.durableZooQueuedSnapshot=null;
     t.durableZooQueuedSignature='';
@@ -31399,15 +31505,35 @@ function ensureGenerateZooUI() {
     }
 
     function selectRealZooNearestStartingSize() {
-        const records = realZooRecordsForCountry(country.value);
-        if (!records.length) return;
-        const target = Number(zooSize.value);
-        const chosen = records.slice().sort((a, b) =>
-            Math.abs(realZooSliderPosition(a) - target) - Math.abs(realZooSliderPosition(b) - target) ||
-            String(a.name).localeCompare(String(b.name), 'en', { sensitivity:'base' })
+        if(state.realZooDataLoadState!=='ready')return;
+        const records=(state.realZooData?.zoos||[])
+            .filter(record=>record?.name&&Array.isArray(record.animals)&&record.animals.length)
+            .slice();
+        if(!records.length)return;
+        const target=Math.max(0,Math.min(100,Number(zooSize.value)||0));
+        const chosen=records.sort((a,b)=>
+            Math.abs(realZooSliderPosition(a)-target)-Math.abs(realZooSliderPosition(b)-target)||
+            String(a.name).localeCompare(String(b.name),'en',{sensitivity:'base'})
         )[0];
-        realZooName.value = realZooHoldingKey(chosen);
-        applySelectedRealZoo({ syncSlider: false });
+        if(!chosen)return;
+        const chosenCountry=String(chosen.country||country.value||'');
+        if(chosenCountry&&normaliseGeographyPart(chosenCountry)!==normaliseGeographyPart(country.value)){
+            const realCountries=[...new Set(records.map(record=>record.country).filter(Boolean))]
+                .sort((a,b)=>String(a).localeCompare(String(b),'en',{sensitivity:'base'}));
+            refreshCountries(chosenCountry,realCountries);
+            country.value=chosenCountry;
+            countryTrigger.textContent=`${countryFlagEmoji(chosenCountry)} ${chosenCountry}`;
+        }
+        const countryRecords=realZooRecordsForCountry(country.value);
+        realZooName.innerHTML='';
+        for(const record of countryRecords){
+            const option=document.createElement('option');
+            option.value=realZooHoldingKey(record);
+            option.textContent=record.name;
+            realZooName.appendChild(option);
+        }
+        realZooName.value=realZooHoldingKey(chosen);
+        applySelectedRealZoo({syncSlider:false});
     }
 
     function updateZooSizePreview() {
@@ -31429,9 +31555,17 @@ function ensureGenerateZooUI() {
             `${enclosureRules.maxSpaces} starting enclosure spaces`;
     }
 
+    let realZooSizeSelectionFrame=0;
     zooSize.addEventListener('input', () => {
-        if (zooKind.value === 'real') selectRealZooNearestStartingSize();
-        else updateZooSizePreview();
+        if(zooKind.value!=='real'){
+            updateZooSizePreview();
+            return;
+        }
+        if(realZooSizeSelectionFrame)cancelAnimationFrame(realZooSizeSelectionFrame);
+        realZooSizeSelectionFrame=requestAnimationFrame(()=>{
+            realZooSizeSelectionFrame=0;
+            if(zooKind.value==='real')selectRealZooNearestStartingSize();
+        });
     });
 
     function countryFlagEmoji(name) {
@@ -31964,8 +32098,13 @@ function ensureGenerateZooUI() {
 
     overlay.querySelector('#resetNewZooSize').addEventListener('click', () => {
         zooSize.value = '20';
-        if (zooKind.value === 'real') selectRealZooNearestStartingSize();
-        else updateZooSizePreview();
+        if(zooKind.value==='real'){
+            if(realZooSizeSelectionFrame){
+                cancelAnimationFrame(realZooSizeSelectionFrame);
+                realZooSizeSelectionFrame=0;
+            }
+            selectRealZooNearestStartingSize();
+        }else updateZooSizePreview();
     });
     overlay.querySelector('#generateZooCancel').addEventListener('click', () => {
         pendingMultiplayerZooReset=false;
@@ -32227,7 +32366,18 @@ function ensureGenerateZooUI() {
     overlay._syncZooSize = () => {
         // New Zoo always opens at the standard 20% preset. The user's previous
         // zoo size is deliberately not carried into the next New Zoo dialog.
-        gameMode.value = 'classic';
+        const multiplayerLocked=!!(
+            pendingMultiplayerZooReset ||
+            (localMultiplayerBrowserTransport?.role==='peer' &&
+             localClassicMatch?.awaitingLocalZooSetup)
+        );
+        if(multiplayerLocked){
+            gameMode.value=localClassicMatch?.rules?.gameMode==='true'?'true':'classic';
+            gameMode.disabled=true;
+        }else{
+            gameMode.disabled=false;
+            gameMode.value='classic';
+        }
         zooKind.value = 'fictional';
         zooSize.value = 20;
         updateZooSizePreview();
@@ -38216,13 +38366,42 @@ function moveDirectHumanTradeSenderClaimDrag(event){
     drag.image.style.left=`${event.clientX-drag.offsetX}px`;
     drag.image.style.top=`${event.clientY-drag.offsetY}px`;
 }
+function authoritativeHumanTradeClaimDestination(event,dragRect=null){
+    // Claim placement is ultimately validated against the server's current zoo.
+    // Do not let a briefly stale local compatibility/occupancy snapshot prevent
+    // the claim request from ever reaching that authority.
+    const points=[[event.clientX,event.clientY]];
+    if(dragRect){
+        points.push(
+            [dragRect.left+dragRect.width*.5,dragRect.top+dragRect.height*.5],
+            [dragRect.left+dragRect.width*.25,dragRect.top+dragRect.height*.25],
+            [dragRect.left+dragRect.width*.75,dragRect.top+dragRect.height*.25],
+            [dragRect.left+dragRect.width*.25,dragRect.top+dragRect.height*.75],
+            [dragRect.left+dragRect.width*.75,dragRect.top+dragRect.height*.75]
+        );
+    }
+    for(const [x,y] of points){
+        for(const slot of zooBoard.querySelectorAll('.slot')){
+            const rect=slot.getBoundingClientRect();
+            if(x<rect.left||x>rect.right||y<rect.top||y>rect.bottom)continue;
+            const enclosure=state.enclosures.find(
+                item=>String(item.id)===String(slot.dataset.enclosureId)
+            );
+            if(enclosure)return {enclosure,slotIndex:Number(slot.dataset.slotIndex)};
+        }
+    }
+    return null;
+}
 async function finishDirectHumanTradeSenderClaimDrag(event){
-    const drag=state.drag;if(drag?.type!=='direct-human-trade-sender-claim')return;
+    const drag=state.drag;if(!drag||drag.type!=='direct-human-trade-sender-claim')return;
     const dragRect=drag.image?.getBoundingClientRect?.()||null;
     const incoming=drag.incomingAnimal;
     drag.image?.remove();state.drag=null;
+    const serverClaim=serverAuthoritativeMultiplayerActive();
     const destination=incoming
-        ? (resultDropDestinationFromDrag(event,incoming,dragRect)||resultDropDestination(event,incoming))
+        ? (serverClaim
+            ? authoritativeHumanTradeClaimDestination(event,dragRect)
+            : (resultDropDestinationFromDrag(event,incoming,dragRect)||resultDropDestination(event,incoming)))
         : null;
     const offer=pendingDirectHumanTrades().find(o=>o.id===drag.humanTradeOfferId);
     if(!offer||!directHumanTradeHasParticipant(offer,localClassicMatch?.activePlayerId)||
@@ -38239,10 +38418,11 @@ async function finishDirectHumanTradeSenderClaimDrag(event){
     const authoritativeTransferId=String(offer.requestedTransferId??incoming?.id??'');
     const hasOtherDuplicate=(state.animals||[]).some(a=>
         animalCardKey(a)===incomingKey &&
-        !(serverAuthoritativeMultiplayerActive()&&
-          authoritativeTransferId&&String(a?.id)===authoritativeTransferId)
+        !(serverClaim&&authoritativeTransferId&&String(a?.id)===authoritativeTransferId)
     );
-    if(hasOtherDuplicate){renderTrade();return;}
+    // For server-backed claims, ownership/duplicate checks are transactional on
+    // the server. A stale local replica must not strand an accepted trade.
+    if(hasOtherDuplicate&&!serverClaim){renderTrade();return;}
 
     if(serverAuthoritativeMultiplayerActive()||
        localMultiplayerPeerReplica?.playerId===localClassicMatch?.activePlayerId ||

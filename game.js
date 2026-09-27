@@ -28402,7 +28402,7 @@ function finishAnimalDrag(event) {
         // listing withdrawal is in flight. Otherwise the durable zoo snapshot
         // can briefly contain enclosureId=null, freeing the old slot; a later
         // server zoo-state then resurrects the card in YOUR OFFER.
-        clearAnimalZooSlotReservation(animal);
+        clearAnimalZooReservation(animal);
         withdrawMultiplayerTradeListing().then(ok=>{
             if(!ok){
                 multiplayerDiagnostic('trade-listing-takeback-withdraw-failed',{
@@ -34495,19 +34495,16 @@ function createRealAutonomousOpponentOffer() {
 // seize a single global trade slot.
 function reconcilePublicTradeProposalsWithListings(){
     if(!localClassicMatch||!Array.isArray(localClassicMatch.pendingPlayerTrades))return;
-    const byServerPlayer=new Map(multiplayerPublicTradeListings.map(x=>[String(x?.playerId||''),String(x?.animalId??'')]));
-    for(const offer of localClassicMatch.pendingPlayerTrades){
-        if(offer?.status!=='pending')continue;
-        const fromServer=offer.fromServerPlayerId||
-            multiplayerServerPlayerForLocalId(offer.fromPlayerId)?.playerId;
-        const toServer=offer.toServerPlayerId||
-            multiplayerServerPlayerForLocalId(offer.toPlayerId)?.playerId;
-        if(!fromServer||!toServer)continue;
-        if(byServerPlayer.get(String(fromServer))!==String(offer.offeredAnimalId)||
-           byServerPlayer.get(String(toServer))!==String(offer.requestedAnimalId)){
-            offer.status='invalid';
-        }
-    }
+    // Do NOT infer human-trade validity from the public listing board here.
+    // Direct visit-based proposals are intentionally private and may reference
+    // animals that were never publicly listed. The authoritative server owns
+    // cancellation/invalidation when an animal becomes unavailable and sends
+    // that terminal trade state to both participants.
+    //
+    // The old client-side listing comparison immediately marked every valid
+    // private visit proposal `invalid` as soon as the public-listing broadcast
+    // arrived, making the new direct-trade workflow disappear before Player 2
+    // could act on it.
     if(selectedHumanTradeProposalId&&!localClassicMatch.pendingPlayerTrades.some(o=>
         String(o?.id)===String(selectedHumanTradeProposalId)&&o?.status==='pending'))
         selectedHumanTradeProposalId=null;
@@ -37661,6 +37658,18 @@ function tryDropOnOutgoingOffer(event, animal) {
                     offeredAnimalId:animal.id,
                     requestedPlayerId:draft.requestedPlayerId,
                     requestedAnimalId:requested.id
+                }).then(result=>{
+                    if(result?.ok===false){
+                        multiplayerDiagnostic('human-trade-offer-rejected',{
+                            tradeId,reason:result?.reason||'server rejected the proposal'
+                        });
+                        showGameNotice?.(`Trade proposal rejected: ${result?.reason||'server rejected the proposal'}.`);
+                    }
+                    renderTrade();
+                }).catch(error=>{
+                    console.warn('Could not send human trade proposal:',error);
+                    showGameNotice?.('Could not send the trade proposal.');
+                    renderTrade();
                 });
                 return true;
             }

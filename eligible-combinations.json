@@ -31840,6 +31840,470 @@
           "note": "African elephants and hamadryas baboons were housed together by day in a 1.3-ha outdoor enclosure; study reports the mixed exhibit as successful apart from a one-off Salmonella cross-contamination event."
         }
       ]
+    },
+    {
+      "animals": [
+        "Channel-Billed Toucan",
+        "Green Iguana"
+      ],
+      "evidence": [
+        {
+          "zoo": "Santa Ana Zoo / Singapore Zoo",
+          "country": "United States / Singapore",
+          "date": "documented in 2021 review",
+          "source": "Mo & Mo (2021), Green Iguanas in mixed-species exhibits",
+          "note": "Published review explicitly documents Channel-billed Toucans sharing mixed exhibits with Green Iguanas."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Channel-Billed Toucan",
+        "Azara's Agouti"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zagreb Zoo",
+          "country": "Croatia",
+          "date": "2022",
+          "source": "ZooInstitutes mixed South-American exhibit record",
+          "note": "Both species documented in the same mixed South-American exhibit."
+        },
+        {
+          "zoo": "Bird Paradise",
+          "country": "Singapore",
+          "date": "2024-06",
+          "source": "contemporary collection report",
+          "note": "Azara's Agouti reported added to the Channel-billed Toucan enclosure."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Guyana Toucanet",
+        "Green Iguana"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bird Kingdom",
+          "country": "Canada",
+          "date": "2026-08-23",
+          "source": "contemporary visit/species report",
+          "note": "Green Iguana and Guyana Toucanet listed together as an exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Plate-Billed Mountain Toucan",
+        "Emerald Toucanet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2013-04",
+          "source": "documented Orinoco Rainforest River's Edge Lower Exhibit species list",
+          "note": "Species documented together in the same River's Edge Lower Exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Plate-Billed Mountain Toucan",
+        "Saffron Toucanet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2013-04",
+          "source": "documented Orinoco Rainforest River's Edge Lower Exhibit species list",
+          "note": "Species documented together in the same River's Edge Lower Exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Plate-Billed Mountain Toucan",
+        "Emperor Tamarin"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2013-04",
+          "source": "documented Orinoco Rainforest River's Edge Lower Exhibit species list",
+          "note": "Species documented together in the same River's Edge Lower Exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Plate-Billed Mountain Toucan",
+        "Common Anaconda"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2013-04",
+          "source": "documented Orinoco Rainforest River's Edge Lower Exhibit species list",
+          "note": "Species documented together in the same River's Edge Lower Exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Emerald Toucanet",
+        "Saffron Toucanet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2013-04",
+          "source": "documented Orinoco Rainforest River's Edge Lower Exhibit species list",
+          "note": "Species documented together in the same River's Edge Lower Exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Emerald Toucanet",
+        "Emperor Tamarin"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2013-04",
+          "source": "documented Orinoco Rainforest River's Edge Lower Exhibit species list",
+          "note": "Species documented together in the same River's Edge Lower Exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Emerald Toucanet",
+        "Common Anaconda"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2013-04",
+          "source": "documented Orinoco Rainforest River's Edge Lower Exhibit species list",
+          "note": "Species documented together in the same River's Edge Lower Exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Saffron Toucanet",
+        "Emperor Tamarin"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2013-04",
+          "source": "documented Orinoco Rainforest River's Edge Lower Exhibit species list",
+          "note": "Species documented together in the same River's Edge Lower Exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Saffron Toucanet",
+        "Common Anaconda"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2013-04",
+          "source": "documented Orinoco Rainforest River's Edge Lower Exhibit species list",
+          "note": "Species documented together in the same River's Edge Lower Exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Throated Toucan",
+        "Military Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Terra Natura Benidorm",
+          "country": "Spain",
+          "date": "2021-08-31",
+          "source": "ZooChat exhibit photograph/report",
+          "note": "Exhibit explicitly identified as housing Military Macaw, Blue-and-Yellow Macaw and White-Throated Toucan together."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Throated Toucan",
+        "Blue-and-Yellow Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Terra Natura Benidorm",
+          "country": "Spain",
+          "date": "2021-08-31",
+          "source": "ZooChat exhibit photograph/report",
+          "note": "Exhibit explicitly identified as housing Military Macaw, Blue-and-Yellow Macaw and White-Throated Toucan together."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Throated Toucan",
+        "Green Aracari"
+      ],
+      "evidence": [
+        {
+          "zoo": "Eskişehir Zoo",
+          "country": "Türkiye",
+          "date": "before 2025-05",
+          "source": "ZooChat zoo update describing the former mixed-species toucan aviary",
+          "note": "Former tropical-building mixed-species toucan aviary explicitly listed White-Throated Toucan, Green Aracari and Guyana Toucanet."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Throated Toucan",
+        "Guyana Toucanet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Eskişehir Zoo",
+          "country": "Türkiye",
+          "date": "before 2025-05",
+          "source": "ZooChat zoo update describing the former mixed-species toucan aviary",
+          "note": "Former tropical-building mixed-species toucan aviary explicitly listed White-Throated Toucan, Green Aracari and Guyana Toucanet."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Ivory-Billed Aracari",
+        "Crimson-Rumped Toucanet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Philadelphia Zoo",
+          "country": "United States",
+          "date": "2014",
+          "source": "Detailed Philadelphia Zoo review / McNeil Avian Center walkthrough species list",
+          "note": "Large mixed walk-through aviary explicitly listed Ivory-Billed Aracari, Crimson-Rumped Toucanet and Violaceous Turaco; Violaceous Turaco is a synonym/common name for the inventory's Violet Turaco (Musophaga violacea)."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Ivory-Billed Aracari",
+        "Violet Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Philadelphia Zoo",
+          "country": "United States",
+          "date": "2014",
+          "source": "Detailed Philadelphia Zoo review / McNeil Avian Center walkthrough species list",
+          "note": "Large mixed walk-through aviary explicitly listed Ivory-Billed Aracari, Crimson-Rumped Toucanet and Violaceous Turaco; Violaceous Turaco is a synonym/common name for the inventory's Violet Turaco (Musophaga violacea)."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Guyana Toucanet",
+        "Black-Faced Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "date": "2021-03-29",
+          "source": "ZooChat Pantanal refurbished walk-through aviary species list",
+          "note": "Guianan/Guyana Toucanet and Black-Faced Ibis explicitly documented in the same walk-through aviary."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pale-Billed Aracari",
+        "Giant Anteater"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2013-04",
+          "source": "ZooChat documented Orinoco Rainforest Jungle Junction exhibit",
+          "note": "Pale-mandibled/Pale-Billed Aracari explicitly documented in the same Jungle Junction exhibit with Giant Anteater, Crimson-Rumped Toucanet and Giant Wood-Rail, among other species."
+        },
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2025-04-18",
+          "source": "ZooChat Jungle Junction exhibit photograph",
+          "note": "Contemporary Jungle Junction photograph/caption again identifies Pale-mandibled Aracari and Giant Anteater in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pale-Billed Aracari",
+        "Crimson-Rumped Toucanet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2013-04",
+          "source": "ZooChat documented Orinoco Rainforest Jungle Junction exhibit",
+          "note": "Pale-mandibled/Pale-Billed Aracari explicitly documented in the same Jungle Junction exhibit with Giant Anteater, Crimson-Rumped Toucanet and Giant Wood-Rail, among other species."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pale-Billed Aracari",
+        "Giant Wood-Rail"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "2013-04",
+          "source": "ZooChat documented Orinoco Rainforest Jungle Junction exhibit",
+          "note": "Pale-mandibled/Pale-Billed Aracari explicitly documented in the same Jungle Junction exhibit with Giant Anteater, Crimson-Rumped Toucanet and Giant Wood-Rail, among other species."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Curl-Crested Aracari",
+        "Umbrella Cockatoo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Audubon Zoo",
+          "country": "United States",
+          "date": "current / pre-renovation",
+          "source": "Audubon Nature Institute official Wings of the World page",
+          "note": "Official page lists these species as highlights of the same Exotic Aviary."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Green Aracari",
+        "Red-Footed Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Salisbury Zoo",
+          "country": "United States",
+          "date": "2026-02-02",
+          "source": "Salisbury Zoo announcement",
+          "note": "Zoo announcement states the Green Aracari pair joined the Red-footed Tortoises in the renovated Rainforest habitat."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Ivory-Billed Aracari",
+        "Sunbittern"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2025-10 and 2026-07/08",
+          "source": "Detailed species-by-aviary inventories",
+          "note": "Aviary 2 explicitly housed Pteroglossus azara with Sunbittern in both the October 2025 and July/August 2026 inventories; the aracari was reported under brown-mandibled/yellow-billed subspecific common names."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Breasted Toucan",
+        "Toco Toucan"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2025-10-04",
+          "source": "Detailed contemporary visit report and numbered species-by-exhibit list",
+          "note": "Exhibit 48 explicitly lists Red-breasted Toucan (Ramphastos dicolorus) and Toco Toucan (Ramphastos toco) together; the visit narrative independently describes toucans sharing the Black-fronted Piping Guan enclosure."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Channel-Billed Toucan",
+        "Vinaceous-Breasted Amazon"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2021",
+          "source": "Detailed species-by-exhibit inventory",
+          "note": "Exhibit 3 explicitly lists Channel-billed Toucan with Red-browed Amazon and Vinaceous-breasted Amazon."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Curl-Crested Aracari",
+        "Red-Footed Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Woodland Park Zoo",
+          "country": "United States",
+          "date": "2026-05-01",
+          "source": "Detailed species-by-exhibit inventory / visit report",
+          "note": "Tropical Rainforest Walkthrough Aviary explicitly lists Curl-crested Aracari and Red-footed Tortoise together; observer reports seeing the tortoise walking on the aviary floor."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Breasted Toucan",
+        "Sunbittern"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "current page, corroborated by 2018 Toucan Heights record",
+          "source": "Dallas World Aquarium official Toucan Heights exhibit page",
+          "note": "The official Toucan Heights exhibit page lists Red-breasted Toucan, Sunbittern and Grey-winged Trumpeter (Psophia crepitans) under the same exhibit. A dated 2018 photograph independently places Red-breasted Toucan in Toucan Heights."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Breasted Toucan",
+        "Common Trumpeter"
+      ],
+      "evidence": [
+        {
+          "zoo": "Dallas World Aquarium",
+          "country": "United States",
+          "date": "current page, corroborated by 2018 Toucan Heights record",
+          "source": "Dallas World Aquarium official Toucan Heights exhibit page",
+          "note": "The official Toucan Heights exhibit page lists Red-breasted Toucan, Sunbittern and Grey-winged Trumpeter (Psophia crepitans) under the same exhibit. A dated 2018 photograph independently places Red-breasted Toucan in Toucan Heights."
+        }
+      ]
     }
   ],
   "proxy_compatibility": {

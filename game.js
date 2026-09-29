@@ -3042,28 +3042,20 @@ let areaSignatureTaskCache=null;
 let areaSignatureTaskCacheScheduled=false;
 let areaSignatureTaskShape='';
 function areaRenderStateSignature(){
-    const taskShape=`${state.gameMode||''}:${state.enclosures?.length||0}:${state.animals?.length||0}:`+
+    const revision=Number(state.areaPlacementRevision)||0;
+    const taskShape=`${state.gameMode||''}:${revision}:${state.enclosures?.length||0}:${state.animals?.length||0}:`+
         `${(state.animals||[]).reduce((n,a)=>n+(a?.enclosureId!=null?1:0),0)}`;
     if(areaSignatureTaskCache!==null&&areaSignatureTaskShape===taskShape)return areaSignatureTaskCache;
-    // Deliberately include only data that can change automatic geography.
-    // UI state, turn number, card level, prestige, trade state, etc. do not
-    // invalidate Area reconciliation.
+    // Only derive the detailed signature when the geography revision/shape
+    // changes. Normal simulation/render ticks now reuse it indefinitely.
     const enclosures=(state.enclosures||[]).map(e=>
         `${e.id}:${Math.round(Number(e.x)||0)},${Math.round(Number(e.y)||0)}:${e.image||e.type||''}`
     ).join('|');
     const animals=(state.animals||[]).filter(a=>a&&a.enclosureId!=null).map(a=>
         `${a.id||''}:${a.enclosureId}:${a.slotIndex??''}:${geographicSpeciesSignature(a)}`
     ).join('|');
-    areaSignatureTaskCache=`${state.gameMode||''}#${enclosures}#${animals}`;
+    areaSignatureTaskCache=`${state.gameMode||''}:${revision}#${enclosures}#${animals}`;
     areaSignatureTaskShape=taskShape;
-    if(!areaSignatureTaskCacheScheduled){
-        areaSignatureTaskCacheScheduled=true;
-        queueMicrotask(()=>{
-            areaSignatureTaskCache=null;
-            areaSignatureTaskShape='';
-            areaSignatureTaskCacheScheduled=false;
-        });
-    }
     return areaSignatureTaskCache;
 }
 
@@ -3102,6 +3094,16 @@ function generatedAreaCellUnionSegments(group,pad=0){
 }
 
 let generatedModernGeographicAreas = [];
+
+// Classic geography is derived state. Rebuilding Realm/Subregion/Bioregion
+// candidates, adjacency and connectivity on every render is wasteful in large
+// zoos, so keep the last complete reconciliation until geography actually
+// changes. UI ticks, guest movement, prestige, time and hover do not invalidate it.
+let classicGeneratedGeographyCache={signature:null,groups:null};
+
+function invalidateClassicGeneratedGeography(){
+    classicGeneratedGeographyCache={signature:null,groups:null};
+}
 
 function restoredSet(value){
     if(value instanceof Set)return value;
@@ -3196,7 +3198,16 @@ function generatedGroupModernArea(group,index=0){
     const key=`auto:${group?.theme?.geographicKey||group?.theme?.key||name}:${areaMembershipSignature(group)}`;
     const saved=state.areaLabelPositions instanceof Map ? state.areaLabelPositions.get(key) : null;
     const geometry=trueAreaGeometryFromCells(cells);
-    const colour=knownAreaColour(name) || (level==='realm'?'#3f8a62':level==='subregion'?'#b79332':'#b05a45');
+    // Generated geography is recomputed from the zoo, but presentation choices
+    // belong to the player. Store colour by the stable geographic identity
+    // rather than membership/Area id, so adding/removing a qualifying cell does
+    // not reset the player's chosen colour.
+    if(!(state.generatedAreaOverrides instanceof Map))
+        state.generatedAreaOverrides=restoredMap(state.generatedAreaOverrides);
+    const presentationOverride=state.generatedAreaOverrides.get(geoIdentity)||{};
+    const colour=String(presentationOverride.color||
+        knownAreaColour(name)||
+        (level==='realm'?'#3f8a62':level==='subregion'?'#b79332':'#b05a45'));
     return {
         id:generatedModernAreaStableId(group),
         name,color:colour,type:'area',
@@ -6392,6 +6403,9 @@ function placeAnimal(
     // reservations alone never reach this point, so temporarily lifting a card
     // out and returning it without placing elsewhere does not revive a deleted Area.
     state.areaPlacementRevision = (Number(state.areaPlacementRevision) || 0) + 1;
+    areaSignatureTaskCache=null;
+    areaSignatureTaskShape='';
+    invalidateClassicGeneratedGeography();
     releaseSuppressedAreasForNewSpecies();
 
     // Placement changes logical zoo capacity. Keep Draw L1 availability tied to
@@ -14117,22 +14131,97 @@ let activeGeographicResidentCache=null;
 let activeGeographicQualificationCache=null;
 let activeGeographicCandidateKeys=null;
 let activeGeographicAdjacencyIndex=null;
+
+// Adjacency depends only on enclosure/logical-cell geometry, never on species.
+// Keep it across animal moves/additions so a geography update does not rebuild
+// even the spatial graph unless the actual enclosure layout changed.
+let geographicAdjacencyGeometryCache={signature:null,index:null};
+
+function geographicAdjacencyGeometrySignature(units){
+    const parts=(units||[]).map(unit=>{
+        const key=geographicLogicalCellKey(unit);
+        const r=geographicUnitRect(unit);
+        return `${key}:${Math.round(r.x*100)/100},${Math.round(r.y*100)/100},${Math.round(r.w*100)/100},${Math.round(r.h*100)/100}`;
+    }).sort();
+    return `${state.gameMode||''}#${parts.join('|')}`;
+}
+
 function buildGeographicAdjacencyIndex(units){
-    const index=new Map((units||[]).map(unit=>[geographicLogicalCellKey(unit),[]]));
-    // Geometry is stable for the duration of one reconciliation. Compute every
-    // pair once; candidate/diagnostic component passes can then traverse this
-    // graph instead of repeatedly rebuilding rectangles and testing adjacency.
-    for(let i=0;i<(units?.length||0);i++){
-        const a=units[i],ak=geographicLogicalCellKey(a);
-        for(let j=i+1;j<units.length;j++){
-            const b=units[j],bk=geographicLogicalCellKey(b);
+    const source=units||[];
+    const geometrySignature=geographicAdjacencyGeometrySignature(source);
+    if(geographicAdjacencyGeometryCache.signature===geometrySignature &&
+       geographicAdjacencyGeometryCache.index instanceof Map){
+        return geographicAdjacencyGeometryCache.index;
+    }
+
+    const index=new Map(source.map(unit=>[geographicLogicalCellKey(unit),[]]));
+    if(source.length<2){
+        geographicAdjacencyGeometryCache={signature:geometrySignature,index};
+        return index;
+    }
+
+    // Large Classic zoos used to test every logical cell against every other
+    // logical cell (O(n²)) whenever geography genuinely changed. Area adjacency
+    // is local, so use a spatial hash and only test units whose expanded bounds
+    // occupy a common bucket. This preserves the exact adjacency predicate while
+    // making distant enclosure cards essentially free.
+    const bucketSize=Math.max(
+        64,
+        state.gameMode==='true'?TRUE_ENC_CELL_W:ENCLOSURE_W/2,
+        state.gameMode==='true'?TRUE_ENC_CELL_H:ENCLOSURE_H/2
+    );
+    const reach=(state.gameMode==='true'?TRUE_ENC_EXTERNAL_GAP:ENCLOSURE_GAP)+
+        ENCLOSURE_AREA_ADJACENCY_TOLERANCE+10;
+    const buckets=new Map();
+    const rects=source.map(geographicUnitRect);
+    const bucketKey=(x,y)=>`${x},${y}`;
+
+    for(let i=0;i<source.length;i++){
+        const r=rects[i];
+        const minX=Math.floor((r.x-reach)/bucketSize);
+        const maxX=Math.floor((r.x+r.w+reach)/bucketSize);
+        const minY=Math.floor((r.y-reach)/bucketSize);
+        const maxY=Math.floor((r.y+r.h+reach)/bucketSize);
+        for(let bx=minX;bx<=maxX;bx++)for(let by=minY;by<=maxY;by++){
+            const key=bucketKey(bx,by);
+            if(!buckets.has(key))buckets.set(key,[]);
+            buckets.get(key).push(i);
+        }
+    }
+
+    const tested=new Set();
+    for(const members of buckets.values()){
+        for(let ai=0;ai<members.length;ai++)for(let bi=ai+1;bi<members.length;bi++){
+            const i=members[ai],j=members[bi];
+            if(i===j)continue;
+            const lo=Math.min(i,j),hi=Math.max(i,j),pair=`${lo}:${hi}`;
+            if(tested.has(pair))continue;
+            tested.add(pair);
+            const a=source[lo],b=source[hi];
             if(!geographicUnitsAdjacent(a,b))continue;
+            const ak=geographicLogicalCellKey(a),bk=geographicLogicalCellKey(b);
             index.get(ak)?.push(bk);
             index.get(bk)?.push(ak);
         }
     }
+    geographicAdjacencyGeometryCache={signature:geometrySignature,index};
     return index;
 }
+function verifyGeographicAdjacencyOptimization(){
+    const units=geographicLogicalExhibits();
+    const optimized=buildGeographicAdjacencyIndex(units);
+    const exhaustive=new Map(units.map(unit=>[geographicLogicalCellKey(unit),[]]));
+    for(let i=0;i<units.length;i++)for(let j=i+1;j<units.length;j++){
+        if(!geographicUnitsAdjacent(units[i],units[j]))continue;
+        const a=geographicLogicalCellKey(units[i]),b=geographicLogicalCellKey(units[j]);
+        exhaustive.get(a)?.push(b);exhaustive.get(b)?.push(a);
+    }
+    const normalized=map=>[...map.entries()].map(([k,v])=>[k,[...v].sort()]).sort((a,b)=>a[0].localeCompare(b[0]));
+    const ok=JSON.stringify(normalized(optimized))===JSON.stringify(normalized(exhaustive));
+    return {ok,units:units.length,optimizedEdges:[...optimized.values()].reduce((n,v)=>n+v.length,0)/2,
+        exhaustiveEdges:[...exhaustive.values()].reduce((n,v)=>n+v.length,0)/2};
+}
+
 function buildGeographicAnimalIndex(){
     const byEnclosure=new Map();
     for(const animal of state.animals||[]){
@@ -14379,6 +14468,50 @@ function buildActiveGeographicCandidateKeys(){
     return keys;
 }
 
+function buildGeographicCandidateUnitIndex(units){
+    const result={
+        realm:new Map(),
+        subregion:new Map(),
+        bioregion:new Map()
+    };
+    const add=(level,key,unit)=>{
+        if(!key)return;
+        const map=result[level];
+        if(!map.has(key))map.set(key,[]);
+        map.get(key).push(unit);
+    };
+    for(const unit of units||[]){
+        const residents=animalsInGeographicExhibit(unit);
+        if(!residents.length)continue;
+        let common=null;
+        for(const animal of residents){
+            const animalKeys={realm:new Set(),subregion:new Set(),bioregion:new Set()};
+            for(const code of animalWildRegionCodes(animal)){
+                const normalized=normalizeOneEarthCode(code);
+                if(normalized)animalKeys.bioregion.add(normalized);
+                const meta=geographyMetaForCode(normalized);
+                if(!meta)continue;
+                if(meta.zoo_region)animalKeys.subregion.add(String(meta.zoo_region).toLowerCase());
+                if(meta.realm)animalKeys.realm.add(String(meta.realm).toLowerCase());
+            }
+            if(common===null){
+                common=animalKeys;
+            }else{
+                for(const level of ['realm','subregion','bioregion']){
+                    common[level]=new Set([...common[level]].filter(key=>animalKeys[level].has(key)));
+                }
+            }
+            if(common && !common.realm.size && !common.subregion.size && !common.bioregion.size)break;
+        }
+        if(!common)continue;
+        for(const level of ['realm','subregion','bioregion'])
+            for(const key of common[level])add(level,key,unit);
+    }
+    return result;
+}
+
+let activeGeographicCandidateUnitIndex=null;
+
 function geographicCandidateComponents(units,level,entries,minimum){
     const out=[];
     for(const [rawKey,entry] of Object.entries(entries)){
@@ -14391,7 +14524,8 @@ function geographicCandidateComponents(units,level,entries,minimum){
         // Do NOT gate a child on a rendered/generated parent Area. Generated
         // parents are presentation results and may collapse, be ambiguous, or
         // fail their own threshold while a precise child is still valid.
-        let eligible=units.filter(unit=>{
+        const possibleUnits=activeGeographicCandidateUnitIndex?.[level]?.get(key)||[];
+        let eligible=possibleUnits.filter(unit=>{
             const q=enclosureGeographicQualification(unit,level,key);
             return !!q?.qualifies;
         });
@@ -14421,6 +14555,37 @@ function geographicCandidateComponents(units,level,entries,minimum){
     }
     return out;
 }
+function verifyGeographicCandidateIndexOptimization(){
+    const units=geographicLogicalExhibits();
+    activeGeographicAnimalIndex=buildGeographicAnimalIndex();
+    activeGeographicResidentCache=new Map();
+    activeGeographicQualificationCache=new Map();
+    const indexed=buildGeographicCandidateUnitIndex(units);
+    const mismatches=[];
+    const data=trueAreaNamesData||{};
+    const defs=[
+        ['realm',data.realms||{}],
+        ['subregion',data.subrealms||{}],
+        ['bioregion',data.bioregions||{}]
+    ];
+    for(const [level,entries] of defs){
+        for(const rawKey of Object.keys(entries)){
+            const key=level==='bioregion'?normalizeOneEarthCode(rawKey):String(rawKey).toLowerCase();
+            const oldSet=new Set(units.filter(unit=>enclosureGeographicQualification(unit,level,key)?.qualifies)
+                .map(geographicLogicalCellKey));
+            const newSet=new Set((indexed[level].get(key)||[])
+                .filter(unit=>enclosureGeographicQualification(unit,level,key)?.qualifies)
+                .map(geographicLogicalCellKey));
+            if(oldSet.size!==newSet.size||[...oldSet].some(k=>!newSet.has(k)))
+                mismatches.push({level,key,old:oldSet.size,indexed:newSet.size});
+        }
+    }
+    activeGeographicAnimalIndex=null;
+    activeGeographicResidentCache=null;
+    activeGeographicQualificationCache=null;
+    return {ok:mismatches.length===0,mismatches};
+}
+
 function geographicAnimalRegionCodes(animal){
     const entry=inventoryEntryForAnimal(animal)||{};
     return Array.isArray(entry.wild_regions)
@@ -14510,6 +14675,12 @@ function geographicResolveExclusiveTier(groups,level){
 
 function generatedGeographicAreaGroups(){
     const data=trueAreaNamesData;if(!data)return [];
+    const geographySignature=areaRenderStateSignature();
+    if(state.gameMode!=='true' &&
+       classicGeneratedGeographyCache.signature===geographySignature &&
+       Array.isArray(classicGeneratedGeographyCache.groups)){
+        return classicGeneratedGeographyCache.groups;
+    }
     // Geography asks for the same exhibit residents hundreds/thousands of times
     // while resolving candidates. Build one O(n animals) index for this pass.
     activeGeographicAnimalIndex=buildGeographicAnimalIndex();
@@ -14519,6 +14690,7 @@ function generatedGeographicAreaGroups(){
     activeGeographicCandidateKeys=buildActiveGeographicCandidateKeys();
     const units=geographicLogicalExhibits(),all=[];
     activeGeographicAdjacencyIndex=buildGeographicAdjacencyIndex(units);
+    activeGeographicCandidateUnitIndex=buildGeographicCandidateUnitIndex(units);
 
     // Realm is the broadest generated tier. Every tier owns its logical cells
     // exclusively, while different tiers may nest over the same cells.
@@ -14644,11 +14816,18 @@ function generatedGeographicAreaGroups(){
     activeGeographicQualificationCache=null;
     activeGeographicCandidateKeys=null;
     activeGeographicAdjacencyIndex=null;
+    activeGeographicCandidateUnitIndex=null;
     activeAnimalGeographicMatchCache=null;
     // Defensive bound for long development sessions where geography data may
     // be hot-reloaded repeatedly. Clearing only affects speed, never results.
     if(persistentAnimalGeographicMatchCache.size>50000)
         persistentAnimalGeographicMatchCache.clear();
+    if(state.gameMode!=='true'){
+        classicGeneratedGeographyCache={
+            signature:geographySignature,
+            groups:displayed
+        };
+    }
     return displayed;
 }
 
@@ -21900,13 +22079,13 @@ function ensureAreaStyleMenu(area, anchor) {
         const sw=document.createElement('button');sw.type='button';sw.className='area-colour-swatch';
         sw.title=name;sw.setAttribute('aria-label',name);sw.style.setProperty('--swatch',value);
         if(cssColourToHex(area.color||'').toLowerCase()===value.toLowerCase())sw.classList.add('active');
-        sw.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();area.color=value;writeAutoResumeSnapshot?.(true);refreshAreaVisualsAfterEdit();requestAnimationFrame(()=>{const fresh=document.querySelector(`.player-custom-area-name[data-area-id="${CSS.escape(String(area.id))}"]`);if(fresh)ensureAreaStyleMenu(area,fresh);});});
+        sw.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();area.color=value;persistGeneratedModernAreaPresentation(area);writeAutoResumeSnapshot?.(true);refreshAreaVisualsAfterEdit();requestAnimationFrame(()=>{const fresh=document.querySelector(`.player-custom-area-name[data-area-id="${CSS.escape(String(area.id))}"]`);if(fresh)ensureAreaStyleMenu(area,fresh);});});
         palette.appendChild(sw);
     }
     const customWrap=document.createElement('label');customWrap.className='area-custom-colour';customWrap.title='Choose any colour';
     const custom=document.createElement('input');custom.type='color';custom.value=cssColourToHex(area.color||'#477344');custom.setAttribute('aria-label','Choose any Area colour');
     const customText=document.createElement('span');customText.textContent='Custom colour…';
-    custom.addEventListener('input',e=>{e.stopPropagation();area.color=custom.value;writeAutoResumeSnapshot?.(true);refreshAreaVisualsAfterEdit();});
+    custom.addEventListener('input',e=>{e.stopPropagation();area.color=custom.value;persistGeneratedModernAreaPresentation(area);writeAutoResumeSnapshot?.(true);refreshAreaVisualsAfterEdit();});
     custom.addEventListener('pointerdown',e=>e.stopPropagation());
     customWrap.append(custom,customText);
     const type=document.createElement('select'); type.innerHTML='<option value="area">Area</option><option value="house">House</option>'; type.value=area.type||'area';
@@ -21916,6 +22095,14 @@ function ensureAreaStyleMenu(area, anchor) {
     setTimeout(()=>document.addEventListener('pointerdown',function close(e){if(!menu.contains(e.target)&&e.target!==anchor){menu.remove();document.removeEventListener('pointerdown',close);}},true),0);
 }
 
+function persistGeneratedModernAreaPresentation(area){
+    if(!area?._generatedGeography||!area._geographicIdentity)return;
+    if(!(state.generatedAreaOverrides instanceof Map))
+        state.generatedAreaOverrides=restoredMap(state.generatedAreaOverrides);
+    const key=String(area._geographicIdentity);
+    const current=state.generatedAreaOverrides.get(key)||{};
+    state.generatedAreaOverrides.set(key,{...current,color:String(area.color||current.color||'#587f50')});
+}
 function randomAreaColour(){ const h=Math.floor(Math.random()*360); return `hsl(${h} 52% 48%)`; }
 function knownAreaColour(name){
     const n=String(name||'').trim().toLowerCase();
@@ -21960,7 +22147,7 @@ function startInlineAreaName(area,label,clickPoint=null){
     sel.removeAllRanges();sel.addRange(caretRange);
     let done=false;
     let key=null;
-    const commit=()=>{if(done)return;done=true;if(key)label.removeEventListener('keydown',key); area.name=label.textContent.replace(/[\r\n]+/g,' ').trim()||nextCustomAreaName(); if(area._generatedGeography&&area._geographicIdentity)generatedAreaCustomNameStore().set(area._geographicIdentity,area.name); area.color=knownAreaColour(area.name)||area.color||randomAreaColour(); label.contentEditable='false'; label.classList.remove('editing'); document.getElementById('areaStyleMenu')?.remove(); refreshAreaVisualsAfterEdit(); writeAutoResumeSnapshot?.(true);};
+    const commit=()=>{if(done)return;done=true;if(key)label.removeEventListener('keydown',key); area.name=label.textContent.replace(/[\r\n]+/g,' ').trim()||nextCustomAreaName(); if(area._generatedGeography&&area._geographicIdentity)generatedAreaCustomNameStore().set(area._geographicIdentity,area.name); area.color=knownAreaColour(area.name)||area.color||randomAreaColour(); persistGeneratedModernAreaPresentation(area); label.contentEditable='false'; label.classList.remove('editing'); document.getElementById('areaStyleMenu')?.remove(); refreshAreaVisualsAfterEdit(); writeAutoResumeSnapshot?.(true);};
     key=e=>{if(e.key==='Enter'){e.preventDefault();e.stopPropagation();commit();}};
     label.addEventListener('keydown',key); label.addEventListener('blur',commit,{once:true});
     requestAnimationFrame(()=>ensureAreaStyleMenu(area,label));
@@ -25073,12 +25260,20 @@ function performClassicGameAction(action) {
     if(action.type===CLASSIC_GAME_ACTION.DRAW_LEVEL_1&&
        serverAuthoritativeMultiplayerActive()&&
        !performClassicGameAction.authorityExecuting){
-        return requestServerAuthoritativeLevelOneDraw(action.destination||null);
+        // Server-backed progression must use the same per-player transaction
+        // lock as legacy/local Classic. Previously this early return bypassed
+        // runClassicProgressionTransaction(), allowing Draw and Exchange to be
+        // in flight together from one browser.
+        return runClassicProgressionTransaction(
+            ()=>requestServerAuthoritativeLevelOneDraw(action.destination||null)
+        );
     }
     if(action.type===CLASSIC_GAME_ACTION.COMPLETE_EXCHANGE&&
        serverAuthoritativeMultiplayerActive()&&
        !performClassicGameAction.authorityExecuting){
-        return requestServerAuthoritativeExchange(action.destination??null,!!action.autoPlace);
+        return runClassicProgressionTransaction(
+            ()=>requestServerAuthoritativeExchange(action.destination??null,!!action.autoPlace)
+        );
     }
 
     // In local network simulation Player 2 is treated as the remote client.
@@ -26316,6 +26511,38 @@ function resetTurnHistory() {
     document.body.classList.remove('history-viewing');
 }
 
+function compactPortableTurnHistory(history, currentTurn) {
+    const source=Array.isArray(history)?history:[];
+    if(!source.length)return [];
+    // Portable/browser-persistent saves keep fine-grained recent history without
+    // letting long-running zoos duplicate a full visual snapshot every turn.
+    // Latest 100 turns: every turn. Previous 200: every 10th. Older: every 20th.
+    const turnNow=Number(currentTurn)||0;
+    const recentCutoff=Math.max(0,turnNow-100);
+    const mediumCutoff=Math.max(0,turnNow-300);
+    const compacted=source.filter(entry=>{
+        const turn=Number(entry?.turn);
+        if(!Number.isFinite(turn))return true;
+        if(turn>=recentCutoff)return true;
+        if(turn>=mediumCutoff)return turn%10===0;
+        return turn%20===0;
+    });
+    if(source.length&&compacted[0]!==source[0])compacted.unshift(source[0]);
+    const newest=source[source.length-1];
+    if(newest&&!compacted.includes(newest))compacted.push(newest);
+    return compacted;
+}
+
+function compactPortableGameSnapshot(game) {
+    if(!game?.state)return game;
+    const copy=cloneForSave(game);
+    copy.turnHistory=cloneForSave(compactPortableTurnHistory(
+        copy.turnHistory,
+        copy.state?.turn
+    ));
+    return copy;
+}
+
 function exportCurrentGameState({ compactHistory = false } = {}) {
     const data = {};
     for (const key of SAVE_STATE_KEYS) {
@@ -26323,30 +26550,9 @@ function exportCurrentGameState({ compactHistory = false } = {}) {
     }
 
     const history=Array.isArray(state.turnHistory)?state.turnHistory:[];
-    let exportedHistory=history;
-    if(compactHistory){
-        // Portable saves keep fine-grained recent undo history without letting
-        // long-running zoos duplicate a full state snapshot for every turn.
-        // Latest 100 turns: every turn. Previous 200: every 10th turn.
-        // Older history: every 20th turn.
-        const currentTurn=Number(state.turn)||0;
-        const recentCutoff=Math.max(0,currentTurn-100);
-        const mediumCutoff=Math.max(0,currentTurn-300);
-        exportedHistory=history.filter((entry,index)=>{
-            const turn=Number(entry?.turn);
-            // Preserve malformed/legacy checkpoints rather than silently losing
-            // data during a save migration.
-            if(!Number.isFinite(turn))return true;
-            if(turn>=recentCutoff)return true;
-            if(turn>=mediumCutoff)return turn%10===0;
-            return turn%20===0;
-        });
-        // Always preserve both ends of the available history even when they do
-        // not land exactly on a 10/20-turn boundary.
-        if(history.length&&exportedHistory[0]!==history[0])exportedHistory.unshift(history[0]);
-        const newest=history[history.length-1];
-        if(newest&&!exportedHistory.includes(newest))exportedHistory.push(newest);
-    }
+    const exportedHistory=compactHistory
+        ? compactPortableTurnHistory(history,state.turn)
+        : history;
 
     return {
         version: SAVE_FORMAT_VERSION,
@@ -28045,6 +28251,10 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
         serverViewTargetPlayerId:null,serverViewSubscriptionPending:false,serverViewSubscriptionSequence:0,
         serverProgressionInitSent:false,
         durableZooRevision:0,
+        // Highest durable zoo revision accepted for every server player. This is
+        // separate from our own CAS revision because viewer/reconnect/action
+        // packets can independently carry snapshots for several players.
+        serverZooRevisionByPlayer:new Map(),
         durableZooCommitPending:false,durableZooCommitBaseRevision:0,durableZooQueuedSnapshot:null,
         durableZooQueuedSignature:'',durableZooCommitWaiters:[],
         durableZooCommitTimer:null,durableZooScheduledSnapshot:null,durableZooScheduledSignature:'',
@@ -28217,6 +28427,24 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 const ownServerId=String(transport.serverPlayerId||'');
                 const zoo=message.zoo;
                 const zooRevision=Math.max(0,Number(message.revision)||0);
+                if(!(transport.serverZooRevisionByPlayer instanceof Map))
+                    transport.serverZooRevisionByPlayer=new Map(transport.serverZooRevisionByPlayer||[]);
+                const highestAcceptedZooRevision=Math.max(
+                    0,Number(transport.serverZooRevisionByPlayer.get(serverPlayerId))||0
+                );
+                // Never let a reconnect replay, action broadcast or old live-view
+                // snapshot replace a newer durable zoo already accepted for this
+                // player. Equal revisions are allowed because the owner's
+                // commitAck/correction flags can carry important control state.
+                if(zooRevision<highestAcceptedZooRevision){
+                    multiplayerDiagnostic('zoo-state-stale-dropped',{
+                        playerId:serverPlayerId,revision:zooRevision,
+                        highestAcceptedRevision:highestAcceptedZooRevision
+                    });
+                    return;
+                }
+                if(zooRevision>highestAcceptedZooRevision)
+                    transport.serverZooRevisionByPlayer.set(serverPlayerId,zooRevision);
                 if(zoo&&typeof zoo==='object'&&!Array.isArray(zoo)){
                     const serverPlayer=transport.serverPlayers?.find(p=>String(p?.playerId||'')===serverPlayerId);
                     const localTargetId=serverPlayerId===String(transport.serverPlayerId||'')&&Number(transport.serverSeat)>0
@@ -28231,7 +28459,10 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     // The durable owned zoo has now crossed the wire; the local
                     // reload fallback is no longer needed.
                     transport.reconnectFallbackMatch=null;
-                    transport.durableZooRevision=zooRevision;
+                    transport.durableZooRevision=Math.max(
+                        Math.max(0,Number(transport.durableZooRevision)||0),
+                        zooRevision
+                    );
                     if(message.authoritativeCorrection===true)transport.awaitingAuthoritativeZooCorrection=false;
                     transport.durableOwnZooSnapshot=cloneForSave(zoo);
                     const ownPlayer=localClassicMatch?.players?.[transport.playerId];
@@ -29040,7 +29271,9 @@ function ensureMultiplayerLobbyOverlay(){
     overlay._syncSetup=()=>{
         const locked=multiplayerCategoriesLocked();
         const source=locked?localClassicMatch.rules:pendingMultiplayerSetup;
-        mode.value='classic';
+        mode.value=locked
+            ? (source?.gameMode==='true'?'true':'classic')
+            : (state.gameMode==='true'?'true':'classic');
         mode.disabled=true;
         if(turnMode){
             turnMode.value=source?.turnMode==='simultaneous'?'simultaneous':'alternating';
@@ -30011,7 +30244,7 @@ async function startConfiguredLocalTwoPlayerClassicMatch({
     // only a vacant seat: their zoo is created on their own client after join.
     localClassicMatch=null;
     renderVisitedZooQuickTabs();
-    const multiplayerGameMode=gameMode==='true'?'true':'classic';
+    const multiplayerGameMode='classic';
     createLocalClassicMatchContainer();
     localClassicMatch.players['player-1'].snapshot=cloneForSave(playerOneSnapshot);
     localClassicMatch.activePlayerId='player-1';
@@ -30066,9 +30299,18 @@ function multiplayerOwnedGameStateForResume() {
     if (localClassicMatch?.viewingPlayerId &&
         localClassicMatch.viewingPlayerId !== localClassicMatch.activePlayerId) {
         const owned = localClassicMatch.players?.[localClassicMatch.activePlayerId]?.snapshot;
-        if (owned?.state) return cloneForSave(owned);
+        if (owned?.state) return compactPortableGameSnapshot(owned);
     }
-    return exportCurrentGameState();
+    return exportCurrentGameState({ compactHistory:true });
+}
+
+function compactLocalMatchForPersistence(match) {
+    if(!match)return null;
+    const copy=cloneForSave(match);
+    for(const player of Object.values(copy.players||{})){
+        if(player?.snapshot?.state)player.snapshot=compactPortableGameSnapshot(player.snapshot);
+    }
+    return copy;
 }
 
 function writeAutoResumeSnapshot(force = false) {
@@ -30096,7 +30338,7 @@ function writeAutoResumeSnapshot(force = false) {
             // complete match container separately. Without this, refresh
             // restored only whichever zoo happened to be open.
             localClassicMatch: localClassicMatch
-                ? serialiseSpecial(getLocalClassicMatchSnapshot())
+                ? serialiseSpecial(compactLocalMatchForPersistence(getLocalClassicMatchSnapshot()))
                 : null
         };
 
@@ -30571,6 +30813,21 @@ function importGameState(saveData, { deferRender = false } = {}) {
         throw new Error(uiText('This save file does not contain a valid Zoo Curator game.'));
     }
 
+    // A full import replaces the physical zoo, not merely a few state fields.
+    // Never let geometry/geography caches from the previously rendered zoo
+    // survive a multiplayer visit, return-home import, reconnect correction or
+    // save load. Two different zoos can legitimately share the same revision
+    // and object counts, which made the old task-shape shortcut reuse the wrong
+    // detailed signature and generated Area result.
+    areaSignatureTaskCache=null;
+    areaSignatureTaskShape='';
+    areaSignatureTaskCacheScheduled=false;
+    invalidateClassicGeneratedGeography();
+    geographicAdjacencyGeometryCache={signature:null,index:null};
+    activeGeographicAnimalIndex=null;
+    activeGeographicResidentCache=null;
+    activeGeographicCandidateUnitIndex=null;
+
     // Named saves written by the old plain-JSON path flattened every Set/Map to
     // an empty object. Remember that corruption before cloneForSave/normalisers
     // turn it into an indistinguishable empty runtime collection.
@@ -30639,16 +30896,19 @@ function importGameState(saveData, { deferRender = false } = {}) {
     state.turnHistory = cloneForSave(saveData.turnHistory || []);
     if(Array.isArray(state.turnHistory)){
         const byTurn=new Map();
-        const unnumbered=[];
         for(const snapshot of state.turnHistory){
             const turn=Number(snapshot?.turn);
-            if(Number.isFinite(turn))byTurn.set(turn,snapshot);
-            else unnumbered.push(snapshot);
+            // Turn history is read-only convenience data, not authoritative zoo
+            // state. Ignore malformed legacy checkpoints rather than allowing an
+            // undefined turn or missing zoo arrays to break history controls/load.
+            if(!Number.isFinite(turn))continue;
+            if(!Array.isArray(snapshot?.enclosures)||!Array.isArray(snapshot?.animals))continue;
+            snapshot.turn=turn;
+            byTurn.set(turn,snapshot);
         }
-        state.turnHistory=[
-            ...[...byTurn.entries()].sort((a,b)=>a[0]-b[0]).map(([,snapshot])=>snapshot),
-            ...unnumbered
-        ];
+        state.turnHistory=[...byTurn.entries()]
+            .sort((a,b)=>a[0]-b[0])
+            .map(([,snapshot])=>snapshot);
     }else{
         state.turnHistory=[];
     }
@@ -31963,9 +32223,11 @@ function updateHistoryControls() {
     const returnButton = document.getElementById('returnCurrentTurn');
     if (!slider || !label) return;
 
-    const turns = state.turnHistory.map(item => item.turn);
+    const turns = state.turnHistory
+        .map(item => Number(item?.turn))
+        .filter(Number.isFinite);
     const minimum = turns.length ? Math.min(...turns) : state.turn;
-    const maximum = turns.length ? Math.max(...turns, state.turn) : state.turn;
+    const maximum = turns.length ? Math.max(...turns, Number(state.turn)||1) : state.turn;
 
     slider.min = String(minimum);
     slider.max = String(maximum);
@@ -31985,13 +32247,26 @@ function updateHistoryControls() {
 }
 
 function viewHistoricalTurn(turn) {
-    const snapshot = state.turnHistory.find(item => item.turn === turn);
-
+    const requestedTurn=Number(turn);
     // The far-right/current value always means return to the live game.
-    if (!snapshot || turn === state.turn) {
+    if (!Number.isFinite(requestedTurn) || requestedTurn >= Number(state.turn)) {
         exitHistoryView(true);
         return;
     }
+
+    let snapshot = state.turnHistory.find(item => Number(item?.turn) === requestedTurn);
+    if(!snapshot){
+        const checkpoints=state.turnHistory
+            .filter(item=>Number.isFinite(Number(item?.turn))&&Number(item.turn)<Number(state.turn))
+            .slice()
+            .sort((a,b)=>Number(a.turn)-Number(b.turn));
+        if(!checkpoints.length){exitHistoryView(true);return;}
+        snapshot=checkpoints.reduce((best,item)=>
+            Math.abs(Number(item.turn)-requestedTurn)<Math.abs(Number(best.turn)-requestedTurn)
+                ? item : best
+        ,checkpoints[0]);
+    }
+    turn=Number(snapshot.turn);
 
     if (state.historyViewTurn === null) {
         state.historyLiveView = currentVisualSnapshot();
@@ -32005,9 +32280,11 @@ function viewHistoricalTurn(turn) {
 
     state.enclosures = cloneForSave(snapshot.enclosures);
     state.animals = cloneForSave(snapshot.animals);
-    state.generatedAreaMembership = normalizeGeneratedAreaMembership(
-        cloneForSave(snapshot.generatedAreaMembership)
-    );
+    if(snapshot.generatedAreaMembership!==undefined){
+        state.generatedAreaMembership = normalizeGeneratedAreaMembership(
+            cloneForSave(snapshot.generatedAreaMembership)
+        );
+    }
     state.zoom = snapshot.zoom || state.zoom;
     document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
 
@@ -32028,9 +32305,11 @@ function exitHistoryView(render = true) {
     if (live) {
         state.enclosures = cloneForSave(live.enclosures);
         state.animals = cloneForSave(live.animals);
-        state.generatedAreaMembership = normalizeGeneratedAreaMembership(
-            cloneForSave(live.generatedAreaMembership)
-        );
+        if(live.generatedAreaMembership!==undefined){
+            state.generatedAreaMembership = normalizeGeneratedAreaMembership(
+                cloneForSave(live.generatedAreaMembership)
+            );
+        }
         state.zoom = live.zoom || state.zoom;
         document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
     }
@@ -38106,8 +38385,15 @@ function realZooPlannedCards(units, allowHugeEnclosure = false) {
     const remaining = units.slice();
     const cards = [];
     const takeMatchingSingle = key => {
-        let i = remaining.findIndex(unit => unit.length === 1 && (unit._layoutAreaKey || realZooAreaSortKey(unit)) === key);
-        if (i < 0) i = remaining.findIndex(unit => unit.length === 1);
+        // Never pad a themed/evidenced exhibit with an arbitrary singleton.
+        // The old fallback grabbed the next available animal when no matching
+        // geography/theme remained, then the whole enclosure inherited the
+        // pair's Area key. That could make generated real zoos visually group
+        // unrelated species inside a Central Asia/Amazon/etc. district.
+        const i = remaining.findIndex(unit =>
+            unit.length === 1 &&
+            (unit._layoutAreaKey || realZooAreaSortKey(unit)) === key
+        );
         return i < 0 ? null : remaining.splice(i, 1)[0];
     };
 
@@ -38127,20 +38413,26 @@ function realZooPlannedCards(units, allowHugeEnclosure = false) {
 
         const key = remaining[0]._layoutAreaKey || realZooAreaSortKey(remaining[0]);
         const same = [];
-        // Deliberately vary card density. Three logical exhibits is the normal
-        // maximum; four-small-exhibit Enclosure 5 remains possible but uncommon.
+        // Pack a geographic district before choosing its enclosure artwork.
+        // Deliberately creating one-exhibit cards here produced large real zoos
+        // full of visibly empty logical exhibits. Prefer 2–3 exhibits per card;
+        // four remains occasional, while a singleton occurs only when this
+        // district genuinely has no second compatible unit left.
+        const availableSame = remaining.reduce((count,unit) =>
+            count + (unit.length===1 &&
+                (unit._layoutAreaKey || realZooAreaSortKey(unit))===key ? 1 : 0), 0);
         const roll = Math.random();
-        const targetCount = roll < 0.18 ? 1 : roll < 0.58 ? 2 : roll < 0.94 ? 3 : 4;
+        const desiredCount = roll < 0.62 ? 2 : roll < 0.94 ? 3 : 4;
+        const targetCount = Math.max(1, Math.min(desiredCount, availableSame));
         for (let i = remaining.length - 1; i >= 0 && same.length < targetCount; i--) {
             if (remaining[i].length === 1 && (remaining[i]._layoutAreaKey || realZooAreaSortKey(remaining[i])) === key) {
                 same.unshift(remaining.splice(i, 1)[0]);
             }
         }
-        while (same.length < targetCount && remaining.length) {
-            const i = remaining.findIndex(unit => unit.length === 1);
-            if (i < 0) break;
-            same.push(remaining.splice(i, 1)[0]);
-        }
+        // Do not fill the chosen card density with animals from another Area
+        // key. A smaller same-theme card is preferable to manufacturing a
+        // mixed geographic district. Unmatched units remain in `remaining` and
+        // will receive their own appropriately keyed enclosure plan.
         const count = same.length;
         const useHuge = allowHugeEnclosure && count === 1 && Math.random() < 0.05;
         const number = count >= 4 ? 5 : count === 3 ? randomItem([4,6,7]) : count === 2 ? randomItem([1,2,3,8,9]) : (useHuge ? 10 : randomItem([4,5,6,7]));
@@ -38200,16 +38492,33 @@ function sizeAwareRealZooPlans(plans, allowHugeEnclosure = false) {
         if (!original?.units?.length) { output.push(original); continue; }
         const capacityCandidates = allNumbers.filter(number => realZooPlanFitsEnclosureNumber(original, number, false));
         const sizeCandidates = capacityCandidates.filter(number => realZooPlanFitsEnclosureNumber(original, number, true));
+        const tightestRealZooEnclosure = candidates => {
+            const nonHuge=candidates.filter(number=>number!==10);
+            const pool=nonHuge.length?nonHuge:candidates;
+            const occupied=(original.units||[]).reduce((n,unit)=>n+(unit?.length||0),0);
+            return pool.slice().sort((a,b)=>{
+                // First avoid unused logical exhibits, then avoid unused card
+                // slots. Keep a small random tie-break only between genuinely
+                // equivalent shapes so generated zoos do not become identical.
+                const ag=Math.max(0,(GROUPS[a]?.length||0)-(original.units?.length||0));
+                const bg=Math.max(0,(GROUPS[b]?.length||0)-(original.units?.length||0));
+                if(ag!==bg)return ag-bg;
+                const aw=Math.max(0,enclosureSlotCapacity(a)-occupied);
+                const bw=Math.max(0,enclosureSlotCapacity(b)-occupied);
+                if(aw!==bw)return aw-bw;
+                return Math.random()-.5;
+            })[0];
+        };
         if (sizeCandidates.length && Math.random() >= GENERATED_UNDERSIZED_EXHIBIT_CHANCE) {
-            const nonHuge = sizeCandidates.filter(number => number !== 10);
-            original.number = randomItem(nonHuge.length ? nonHuge : sizeCandidates);
+            original.number = tightestRealZooEnclosure(sizeCandidates);
             output.push(original);
             continue;
         }
         if (capacityCandidates.length) {
-            // 1% deliberate exception, or the best capacity-only fallback when no
-            // size-correct card exists for this exact multi-exhibit plan.
-            original.number = randomItem(capacityCandidates.filter(n => n !== 10).length ? capacityCandidates.filter(n => n !== 10) : capacityCandidates);
+            // 1% deliberate size exception, or the best capacity-only fallback
+            // when no size-correct card exists. Still choose the tightest shape:
+            // an exception must not manufacture empty logical exhibits.
+            original.number = tightestRealZooEnclosure(capacityCandidates);
             output.push(original);
             continue;
         }
@@ -38222,7 +38531,16 @@ function sizeAwareRealZooPlans(plans, allowHugeEnclosure = false) {
             const pool = fit.length ? fit : cap;
             if (!pool.length) throw new Error('No enclosure can accommodate a generated real-zoo exhibit.');
             const nonHuge = pool.filter(number => number !== 10);
-            single.number = randomItem(nonHuge.length ? nonHuge : pool);
+            const candidates = nonHuge.length ? nonHuge : pool;
+            const occupied=unit.length;
+            single.number=candidates.slice().sort((a,b)=>{
+                const ag=Math.max(0,(GROUPS[a]?.length||0)-1);
+                const bg=Math.max(0,(GROUPS[b]?.length||0)-1);
+                if(ag!==bg)return ag-bg;
+                const aw=Math.max(0,enclosureSlotCapacity(a)-occupied);
+                const bw=Math.max(0,enclosureSlotCapacity(b)-occupied);
+                return aw-bw;
+            })[0];
             output.push(single);
         }
     }
@@ -38279,15 +38597,24 @@ function createRealZooFromRecord(record, options = {}) {
     const authoritativeLayout = authoritativeRealZooLayout(record);
     if (!authoritativeLayout) {
     const units = realZooPlacementUnits(record, state.animals);
-    // Prefer obvious Areas, but do not force every eligible singleton into a
-    // giant themed block. About one quarter of unpaired animals deliberately
-    // break out of their dominant Area key, giving the generated zoo a more
-    // organic layout and distributing future expansion space around the map.
+    // Keep every placement unit on its natural layout key. The former 25%
+    // singleton-scatter rule fragmented one geographic district into several
+    // disconnected copies and, because cross-theme filler is forbidden, also
+    // created many one-animal enclosure cards. Irregularity belongs in the
+    // district SHAPE below, not in falsifying which district an animal belongs to.
     for (const unit of units) {
-        const naturalKey = realZooAreaSortKey(unit);
-        unit._layoutAreaKey = unit.length > 1 || Math.random() >= 0.25
-            ? naturalKey
-            : `zz-scattered-${classicGameRandom().toString(36).slice(2, 8)}`;
+        if(unit.length>1){
+            // A real mixed exhibit remains an inseparable husbandry unit, but it
+            // should join a geographic district only when every resident supports
+            // that same district. Otherwise keep it as a neutral mixed-exhibit
+            // district instead of letting one resident visually claim the other.
+            const memberKeys=unit.map(animal=>realZooAreaSortKey([animal]));
+            unit._layoutAreaKey=memberKeys.every(key=>key===memberKeys[0])
+                ? memberKeys[0]
+                : 'zz-mixed-exhibits';
+        }else{
+            unit._layoutAreaKey=realZooAreaSortKey(unit);
+        }
     }
     units.sort((a,b) => (a._layoutAreaKey || '').localeCompare(b._layoutAreaKey || ''));
     const occupiedPlans = sizeAwareRealZooPlans(
@@ -38342,9 +38669,10 @@ function createRealZooFromRecord(record, options = {}) {
         if (!allCells.length) {
             seed = {x:0,y:0};
         } else {
-            // Start the next theme on an exposed edge of the existing zoo. Bias
-            // toward the outside of the current footprint so themes become
-            // recognisable lobes instead of being packed into one rectangle.
+            // Start the next theme on the exposed edge of the previous district,
+            // but do not deliberately choose the farthest outer 35%. That old
+            // rule stretched large zoos into long chains even after each district
+            // itself had become compact.
             const cx = allCells.reduce((sum,c)=>sum+c.x,0) / allCells.length;
             const cy = allCells.reduce((sum,c)=>sum+c.y,0) / allCells.length;
             const anchors = (previousDistrictCells.length ? previousDistrictCells : allCells)
@@ -38352,13 +38680,13 @@ function createRealZooFromRecord(record, options = {}) {
                 .filter(entry => occupiedNeighbourCount(entry.candidate) === 1);
             const fallback = allCells.flatMap(anchor => freeNeighbours(anchor).map(candidate => ({anchor,candidate})));
             const pool = anchors.length ? anchors : fallback;
-            pool.sort((a,b) => {
-                const ad = Math.hypot(a.candidate.x-cx,a.candidate.y-cy);
-                const bd = Math.hypot(b.candidate.x-cx,b.candidate.y-cy);
-                return bd-ad;
-            });
-            const outerBand = pool.slice(0, Math.max(1, Math.ceil(pool.length * 0.35)));
-            seed = (randomItem(outerBand) || pool[0] || {candidate:{x:districtIndex,y:0}}).candidate;
+            const ranked=pool.map(entry=>({
+                ...entry,
+                score:Math.hypot(entry.candidate.x-cx,entry.candidate.y-cy)
+                    + Math.random()*1.15
+            })).sort((a,b)=>a.score-b.score);
+            const compactBand=ranked.slice(0,Math.max(1,Math.ceil(ranked.length*0.35)));
+            seed=(randomItem(compactBand)||ranked[0]||{candidate:{x:districtIndex,y:0}}).candidate;
         }
 
         const addCell = (cell, planIndex) => {
@@ -38370,26 +38698,31 @@ function createRealZooFromRecord(record, options = {}) {
         addCell(seed, district.indices[0]);
 
         for (let localIndex=1; localIndex<district.indices.length; localIndex++) {
-            // Grow mostly from this district's own frontier. Prefer cells with
-            // only one occupied neighbour: this naturally creates branches and
-            // indentations. Occasionally accept a two-neighbour cell so larger
-            // districts also form compact pockets/courtyards instead of snakes.
+            // Grow a compact but non-rectangular district. The old placer
+            // preferred one-neighbour frontier cells and a target radius from
+            // the seed; on large real zoos that deliberately produced long
+            // branches/snakes and fragmented geographic Areas.
             let candidates = districtCells.flatMap(anchor => freeNeighbours(anchor));
             const unique = new Map(candidates.map(c => [cellKey(c.x,c.y),c]));
             candidates = [...unique.values()];
-            const airy = candidates.filter(c => occupiedNeighbourCount(c) === 1);
-            const pocket = candidates.filter(c => occupiedNeighbourCount(c) === 2);
-            const pool = airy.length && (pocket.length === 0 || Math.random() >= 0.28) ? airy : (pocket.length ? pocket : candidates);
-            if (!pool.length) throw new Error('Naturalistic real-zoo layout ran out of connected grid cells.');
+            if (!candidates.length) throw new Error('Naturalistic real-zoo layout ran out of connected grid cells.');
 
-            // Prefer moderate distance from the district seed, but keep a random
-            // choice among the best candidates so different zoos develop
-            // distinct silhouettes while remaining fully grid-aligned.
-            const targetRadius = Math.max(1.5, Math.sqrt(district.indices.length) * 0.9);
-            const ranked = pool.map(cell => ({cell, score:Math.abs(Math.hypot(cell.x-seed.x,cell.y-seed.y)-targetRadius) + Math.random()*1.35}))
-                .sort((a,b)=>a.score-b.score);
-            const choice = randomItem(ranked.slice(0, Math.min(4, ranked.length)))?.cell || ranked[0].cell;
-            addCell(choice, district.indices[localIndex]);
+            const dcx=districtCells.reduce((sum,c)=>sum+c.x,0)/districtCells.length;
+            const dcy=districtCells.reduce((sum,c)=>sum+c.y,0)/districtCells.length;
+            const ranked=candidates.map(cell=>{
+                const neighboursHere=occupiedNeighbourCount(cell);
+                const ownNeighbours=neighbours.reduce((count,[dx,dy]) =>
+                    count + (districtCells.some(c=>c.x===cell.x+dx&&c.y===cell.y+dy)?1:0),0);
+                const distance=Math.hypot(cell.x-dcx,cell.y-dcy);
+                // Two/three same-district neighbours close gaps and make Area
+                // footprints readable. One-neighbour growth remains possible
+                // with a small random term, preserving natural irregular edges.
+                const cohesionPenalty=ownNeighbours>=2 ? 0 : 1.55;
+                const foreignPenalty=Math.max(0,neighboursHere-ownNeighbours)*0.35;
+                return {cell,score:distance*0.72+cohesionPenalty+foreignPenalty+Math.random()*0.8};
+            }).sort((a,b)=>a.score-b.score);
+            const choice=randomItem(ranked.slice(0,Math.min(3,ranked.length)))?.cell||ranked[0].cell;
+            addCell(choice,district.indices[localIndex]);
         }
         previousDistrictCells = districtCells;
     });
@@ -38646,6 +38979,7 @@ function ensureGenerateZooUI() {
         locationProvinceTooltip.style.display = 'none';
     });
     const gameMode = overlay.querySelector('#newZooGameMode');
+    if(gameMode?.value==='true')gameMode.value='classic';
     const zooSize = overlay.querySelector('#newZooSize');
     const zooSizeValue = overlay.querySelector('#newZooSizeValue');
     const zooSizeNote = overlay.querySelector('#newZooSizeNote');
@@ -39373,8 +39707,8 @@ function ensureGenerateZooUI() {
         );
         const resettingMultiplayerZoo=!!(pendingMultiplayerZooReset&&localClassicMatch);
         const selectedGameMode = (joiningMultiplayerSeat||resettingMultiplayerZoo)
-            ? 'classic'
-            : (['classic', 'multiplayer', 'sandbox'].includes(gameMode.value)
+            ? (localClassicMatch?.rules?.gameMode==='true'?'true':'classic')
+            : (['classic', 'multiplayer', 'true', 'sandbox'].includes(gameMode.value)
                 ? gameMode.value
                 : 'classic');
         const selectedZooSize = Math.max(0, Math.min(100, Math.round(Number(zooSize.value))));
@@ -39502,6 +39836,19 @@ function ensureGenerateZooUI() {
                         serverBacked:localMultiplayerBrowserChannel?.serverBacked===true,
                         authenticated:localMultiplayerBrowserTransport?.serverAuthenticated===true
                     });
+                    // In server-backed multiplayer the durable zoo must exist
+                    // before the browser-host match advertises this seat as
+                    // registered. The old order registered with the host first;
+                    // a failed/timed-out durable commit then left P1 seeing a
+                    // fully joined P2 while P2 was still trapped in setup.
+                    if(serverAuthoritativeMultiplayerActive()){
+                        const durableRegistration=cloneForSave(registrationSnapshot);
+                        if(!commitOwnZooStateToServer(durableRegistration))
+                            throw new Error('The multiplayer server could not store this zoo.');
+                        if(!await awaitDurableZooCommitIdle())
+                            throw new Error('The multiplayer zoo could not finish synchronising.');
+                    }
+
                     const registration=await sendLocalMultiplayerBrowserAction('register-player-zoo',{
                         snapshot:registrationSnapshot
                     });
@@ -39513,24 +39860,9 @@ function ensureGenerateZooUI() {
                     state.turn=Number(registration.turn)||state.turn;
                     localClassicMatch.awaitingLocalZooSetup=false;
 
-                    // The legacy browser-host registration above updates the
-                    // shared/local match, but the durable multiplayer server
-                    // owns trade eligibility. Previously P2's newly generated
-                    // zoo was never committed here, leaving SQLite at the
-                    // pre-registration revision while P1 could already see the
-                    // newer zoo through browser sync/live presentation.
-                    if(serverAuthoritativeMultiplayerActive()){
-                        const durableRegistration=cloneForSave(registrationSnapshot);
-                        durableRegistration.state.turn=state.turn;
-                        if(!commitOwnZooStateToServer(durableRegistration))
-                            throw new Error('The multiplayer server could not store this zoo.');
-                        if(!await awaitDurableZooCommitIdle())
-                            throw new Error('The multiplayer zoo could not finish synchronising.');
-                    }
-
-                    // Keep the freshly-created zoo on screen. The host now
-                    // broadcasts the registered snapshot immediately; do not
-                    // overwrite/fill the local seat here.
+                    // Registration is now visible only after durable ownership
+                    // succeeded. Keep the freshly-created zoo on screen; the
+                    // host broadcasts the registered snapshot immediately.
                     renderAll();
                     renderVisitedZooQuickTabs();
                     writeAutoResumeSnapshot(true);
@@ -39600,7 +39932,7 @@ function ensureGenerateZooUI() {
              localClassicMatch?.awaitingLocalZooSetup)
         );
         if(multiplayerLocked){
-            gameMode.value='classic';
+            gameMode.value=localClassicMatch?.rules?.gameMode==='true'?'true':'classic';
             gameMode.disabled=true;
         }else{
             gameMode.disabled=false;
@@ -39732,7 +40064,7 @@ function openLeaveMultiplayerForNewGamePrompt() {
         const menu=document.getElementById('generateZooOverlay');
         const gameModeSelect=menu?.querySelector?.('#newZooGameMode');
         if(gameModeSelect){
-            gameModeSelect.value=localClassicMatch?.rules?.gameMode==='true'?'true':'classic';
+            gameModeSelect.value='classic';
             gameModeSelect.disabled=true;
         }
     };

@@ -166,10 +166,33 @@ const STARTUP_CENTER_Y = 1700;
 const ZOOM_MIN = 0.30;
 const MOBILE_ZOOM_MIN = 0.22;
 
+function currentZooFootprintBounds(){
+    const enclosures=Array.isArray(state?.enclosures)?state.enclosures:[];
+    if(!enclosures.length)return null;
+    const minX=Math.min(...enclosures.map(e=>Number(e.x)||0));
+    const maxX=Math.max(...enclosures.map(e=>(Number(e.x)||0)+ENCLOSURE_W));
+    const minY=Math.min(...enclosures.map(e=>Number(e.y)||0));
+    const maxY=Math.max(...enclosures.map(e=>(Number(e.y)||0)+ENCLOSURE_H));
+    return {minX,maxX,minY,maxY,width:Math.max(1,maxX-minX),height:Math.max(1,maxY-minY)};
+}
 function currentZoomMin() {
-    return window.matchMedia('(max-width: 700px)').matches
+    const baseMin=window.matchMedia('(max-width: 700px)').matches
         ? MOBILE_ZOOM_MIN
         : ZOOM_MIN;
+    const bounds=currentZooFootprintBounds();
+    if(!bounds||!zooBoard)return baseMin;
+
+    // Normal-sized zoos retain the familiar zoom floor. Once the occupied zoo
+    // footprint outgrows what that floor can frame, expand the zoom-out range
+    // just enough to keep the whole zoo visible with a modest margin.
+    const padding=70;
+    const availableWidth=Math.max(200,zooBoard.clientWidth-padding*2);
+    const availableHeight=Math.max(200,zooBoard.clientHeight-padding*2);
+    const fitZoom=Math.min(
+        availableWidth/Math.max(1,bounds.width),
+        availableHeight/Math.max(1,bounds.height)
+    );
+    return Math.max(0.06,Math.min(baseMin,fitZoom));
 }
 const ZOOM_MAX = 2;
 const ZOOM_STEP = 0.1;
@@ -8334,7 +8357,23 @@ function trueEventEligibleSourceRecords(seedSuffix='general'){
     // receiving unsolicited events from arbitrary distant institutions.
     const records=realZooRecordsAvailable();
     if(!records.length)return [];
-    const rows=records.map((record,index)=>({record,profile:realZooProfile(record,index)}));
+    const actualPrestige=visibleZooPrestige();
+    const accessPrestige=playerTradeAccessPrestige(actualPrestige);
+    const rows=records.map((record,index)=>({record,profile:realZooProfile(record,index)}))
+        .filter(row=>{
+            const band=realZooGeographyBand(row.record);
+            const sourceKey=realZooHoldingKey(row.record);
+            const rel=trueRelationshipForProfile(row.profile,sourceKey);
+            const established=(Number(rel.trust)||0)>=20||(Number(rel.familiarity)||0)>=3;
+            if(established)return true;
+            // Unsolicited contacts start with the original local network:
+            // same province, adjacent domestic, and adjacent foreign. Broader
+            // domestic networking appears once the zoo is established; remote
+            // foreign institutions require substantially more access prestige.
+            if(band<=2)return true;
+            if(band===3)return accessPrestige>=70;
+            return accessPrestige>=160;
+        });
     const selected=selectPrestigeLocationCandidates(
         rows,
         Math.min(16,rows.length),
@@ -8479,7 +8518,7 @@ function trueAnimalRequestSendPopulation(event,population){
     if(!event||event.kind!=='animal-request'||event.status!=='active')return false;
     const animal=(state.animals||[]).find(a=>String(a.id)===String(event.playerAnimalId));
     if(!animal)return false;
-    const send=normaliseTrueAnimalPopulation(population);
+    const send=normaliseTruePopulationCounts(population);
     const available=trueTransferAvailableCounts(animal);
     const total=send.males+send.females+send.unknown;
     if(total<=0||send.unknown>0)return false;
@@ -9420,6 +9459,62 @@ function openTrueEventDialog(id){
     card.append(close,actions);overlay.appendChild(card);
     document.body.appendChild(overlay);renderVisitedZooQuickTabs();return true;
 }
+function trueEnsureDailyEvent(today=normaliseTrueCalendarState().date){
+    const events=normaliseTrueEventState();
+    if(events.items.some(event=>event.createdDate===today))return null;
+
+    // The normal timed rolls remain the primary event generator. If all three
+    // rolls miss, guarantee one lightweight world event so a True day never
+    // passes without something happening. Prefer a zoo/species story and relax
+    // only the recent-repeat filter for this fallback.
+    const candidates=trueEventWorldCandidates();
+    if(candidates.length){
+        let total=0;
+        const weighted=candidates.map(candidate=>{
+            const repeatPenalty=trueEventRecentlyRepeated(events,candidate)?.18:1;
+            const weight=Math.max(.05,trueEventCandidateWeight(candidate))*repeatPenalty;
+            total+=weight;
+            return {candidate,weight};
+        });
+        let pick=seededRoll(`true-event-daily-fallback|${state.zooName}|${today}`).roll*total;
+        let chosen=weighted[0].candidate;
+        for(const row of weighted){
+            pick-=row.weight;
+            if(pick<=0){chosen=row.candidate;break;}
+        }
+        const kinds=['programme-update','collection-planning','network-contact'];
+        const kind=kinds[Math.min(
+            kinds.length-1,
+            Math.floor(seededRoll(`true-event-daily-fallback-kind|${state.zooName}|${today}`).roll*kinds.length)
+        )];
+        const event=trueCreateWorldNewsEvent(chosen,today,kind);
+        if(event&&kind!=='network-contact')
+            trueScheduleEventFollowUp(event,5+Math.floor(seededRoll(`true-event-follow-delay|${event.id}`).roll*11));
+        return event;
+    }
+
+    // Extremely early/incomplete data states may have no external zoo candidate.
+    // Still record a harmless daily zoo event rather than breaking the guarantee.
+    const expiry=trueDateObject(today);expiry.setUTCDate(expiry.getUTCDate()+1);
+    const event={
+        id:`ze-${events.nextId++}`,kind:'daily-zoo-update',status:'active',
+        createdDate:today,expiresDate:trueDateString(expiry),
+        independentEvent:true,informational:true,sourceKey:null,profile:null,
+        animal:null,population:null,scale:'Routine',
+        title:'Daily zoo update',
+        message:'A routine day at the zoo has brought new observations from the collection.',
+        detail:'No external transfer or collection-planning event developed today, but the daily management cycle has still produced a new zoo update.'
+    };
+    events.items.unshift(event);
+    events.lastGeneratedDate=today;
+    trueEventRememberFamily(events,'daily-zoo-update');
+    addTrueActivity({
+        type:'information',title:event.title,message:event.message,
+        actionLabel:'View event',action:'event',eventId:event.id
+    });
+    requestAnimationFrame(()=>openTrueEventDialog(event.id));
+    return event;
+}
 function trueProcessEventDay(){
     const events=normaliseTrueEventState(),today=normaliseTrueCalendarState().date;
     for(const e of events.items){
@@ -9438,6 +9533,7 @@ function trueProcessEventDay(){
     trueEvaluateHusbandryConcernsForDay();
     trueEvaluatePlayerBirthsForDay();
     if(!events.items.some(e=>e.createdDate===today)) trueMaybeGenerateRelationshipPopulationHelp(today);
+    if(!events.items.some(e=>e.createdDate===today)) trueEnsureDailyEvent(today);
 }
 
 function processTrueScheduledEvents() {
@@ -12643,6 +12739,16 @@ function normaliseTrueAnimalPopulation(animal) {
     return animal.population;
 }
 
+function normaliseTruePopulationCounts(value) {
+    const source=(value&&typeof value==='object'&&value.population&&typeof value.population==='object')
+        ? value.population
+        : (value&&typeof value==='object'?value:{});
+    return {
+        males:Math.max(0,Math.floor(Number(source.males)||0)),
+        females:Math.max(0,Math.floor(Number(source.females)||0)),
+        unknown:Math.max(0,Math.floor(Number(source.unknown)||0))
+    };
+}
 function trueAnimalPopulationTotal(animal) {
     const population = normaliseTrueAnimalPopulation(animal);
     return population ? population.males + population.females + population.unknown : 0;
@@ -17177,11 +17283,11 @@ function trueWorldPopulationChange(recordOrName,animal,delta,{type='transfer',te
     return entry;
 }
 function trueWorldPopulationRemove(recordOrName,animal,population,meta={}){
-    const p=normaliseTrueAnimalPopulation(population||animal);
+    const p=normaliseTruePopulationCounts(population||animal);
     return trueWorldPopulationChange(recordOrName,animal,{males:-p.males,females:-p.females,unknown:-p.unknown},meta);
 }
 function trueWorldPopulationAdd(recordOrName,animal,population,meta={}){
-    const p=normaliseTrueAnimalPopulation(population||animal);
+    const p=normaliseTruePopulationCounts(population||animal);
     return trueWorldPopulationChange(recordOrName,animal,{males:p.males,females:p.females,unknown:p.unknown},meta);
 }
 function trueEventAlternativeDestination(sourceRecord,event){
@@ -31537,7 +31643,7 @@ function loadHandcraftedRealZooLayouts() {
 
 function loadPregeneratedRealZooLayouts() {
     const path = 'pregenerated_real_zoo_layouts.json';
-    const pregeneratedPromise = fetch(path, { cache:'default' })
+    const pregeneratedPromise = fetch(path, { cache:'no-store' })
         .then(response => response.ok ? response.json() : { layouts:[] })
         .then(data => {
             const layouts = Array.isArray(data) ? data : (Array.isArray(data?.layouts) ? data.layouts : []);
@@ -31718,8 +31824,66 @@ function buildRealZooLayoutTemplate(record) {
         generatedAreaOverrides: Object.fromEntries(state.generatedAreaOverrides instanceof Map ? state.generatedAreaOverrides : []),
         areaLabelPositions: Object.fromEntries(state.areaLabelPositions instanceof Map ? state.areaLabelPositions : []),
         suppressedGeneratedAreas: Object.fromEntries(state.suppressedGeneratedAreas instanceof Map ? state.suppressedGeneratedAreas : []),
-        prestige: (() => { const b=zooPrestigeBreakdown(); return { original:Math.ceil(b.base), current:Math.ceil(b.current), area_bonus_percent:b.areaBonusPercent, combination_bonus_percent:b.combinationUnits, husbandry_penalty_percent:b.husbandryPenaltyPercent }; })()
+        prestige: (() => {
+            const b=zooPrestigeBreakdown();
+            return {
+                original:Math.ceil(b.base),
+                current:Math.ceil(b.current),
+                identity_bonus_percent:Number(b.identityPercent)||0,
+                area_bonus_percent:Number(b.areaBonusPercent)||0,
+                combination_bonus_percent:Number(b.combinationUnits)||0,
+                curation_bonus_percent:Number(b.curationPercent)||0,
+                husbandry_penalty_percent:Number(b.husbandryPenaltyPercent)||0,
+                total_modifier_percent:
+                    (Number(b.identityPercent)||0)+(Number(b.areaBonusPercent)||0)+
+                    (Number(b.combinationUnits)||0)+(Number(b.curationPercent)||0)-
+                    (Number(b.husbandryPenaltyPercent)||0)
+            };
+        })()
     };
+}
+
+function canonicaliseProceduralRealZooGridSpacing(){
+    const enclosures=Array.isArray(state.enclosures)?state.enclosures:[];
+    if(enclosures.length<2)return false;
+    const stepX=ENCLOSURE_W+ENCLOSURE_GAP;
+    const stepY=ENCLOSURE_H+ENCLOSURE_GAP;
+    const xs=[...new Set(enclosures.map(e=>Number(e.x)).filter(Number.isFinite))].sort((a,b)=>a-b);
+    const ys=[...new Set(enclosures.map(e=>Number(e.y)).filter(Number.isFinite))].sort((a,b)=>a-b);
+    if(!xs.length||!ys.length)return false;
+
+    // Procedural real zoos are generated on an integer grid. Recover that grid
+    // from the smallest observed pitch, then rewrite it using the exact Classic
+    // startup pitch. Unlike rank-compaction, this preserves intentional empty
+    // grid columns/rows in irregular silhouettes.
+    const positiveDeltas=values=>values.slice(1)
+        .map((value,index)=>value-values[index])
+        .filter(delta=>Number.isFinite(delta)&&delta>1);
+    const xDeltas=positiveDeltas(xs),yDeltas=positiveDeltas(ys);
+    const sourceStepX=xDeltas.length?Math.min(...xDeltas):stepX;
+    const sourceStepY=yDeltas.length?Math.min(...yDeltas):stepY;
+    const originX=xs[0],originY=ys[0];
+
+    let changed=false;
+    for(const enclosure of enclosures){
+        const gx=Math.round((Number(enclosure.x)-originX)/sourceStepX);
+        const gy=Math.round((Number(enclosure.y)-originY)/sourceStepY);
+        const x=originX+gx*stepX;
+        const y=originY+gy*stepY;
+        if(Math.abs(Number(enclosure.x)-x)>.01||Math.abs(Number(enclosure.y)-y)>.01)changed=true;
+        enclosure.x=x;
+        enclosure.y=y;
+    }
+    if(changed){
+        state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
+        invalidateConnectedAreaReconciliation();
+        renderedConnectedAreaGroups=[];
+        renderedConnectedAreaGroupsSignature='';
+        stableConnectedAreaGroups=[];
+        stableConnectedAreaGroupsSignature='';
+        generatedModernGeographicAreas=[];
+    }
+    return changed;
 }
 
 // Batch-regenerate the canonical real-zoo layout file from the CURRENT opponent
@@ -31740,14 +31904,21 @@ async function pregenerateAllRealZooLayouts() {
         for (let index = 0; index < records.length; index++) {
             const record = records[index];
             try {
+                const usesAuthoredLayout=Boolean(
+                    handcraftedRealZooLayout(record)||localRealZooTemplate(record)
+                );
                 createRealZooFromRecord(record, { sandboxMode:false });
+                // Pregenerated procedural zoos must use the exact same physical
+                // card pitch as ordinary Classic generation. Authored templates
+                // deliberately retain their hand-positioned coordinates.
+                // Procedural coordinates are already emitted on the canonical Classic grid.
                 // Force reconciliation before capture so generated Areas and the
                 // prestige summary describe exactly what opening this zoo shows.
                 connectedEnclosureThemeGroups();
                 const layout = buildRealZooLayoutTemplate(record);
                 layout._pregeneration = {
-                    status: 'regenerated-v2.43.17',
-                    generator: handcraftedRealZooLayout(record) || localRealZooTemplate(record)
+                    status: 'regenerated-v2.43.21',
+                    generator: usesAuthoredLayout
                         ? 'authoritative-handcrafted-layout'
                         : 'naturalistic-thematic-districts',
                     source_trade_id: record.trade_id ?? null,
@@ -31765,8 +31936,25 @@ async function pregenerateAllRealZooLayouts() {
             }
         }
     } finally {
-        REAL_ZOO_PREGENERATED_LAYOUTS = previousPregenerated;
+        // Do not restore the stale pregenerated map after a successful developer
+        // regeneration. Install every newly generated layout immediately so the
+        // current localhost/session uses the same geometry and prestige that is
+        // written to the downloaded JSON. Preserve an old entry only for a zoo
+        // whose regeneration failed.
+        const generatedMap=new Map();
+        for(const layout of layouts){
+            const key=realZooTemplateKey(layout?.zoo?.name || layout?.zooName || '');
+            if(key)generatedMap.set(key,layout);
+        }
+        for(const [key,layout] of previousPregenerated){
+            if(!generatedMap.has(key))generatedMap.set(key,layout);
+        }
+        REAL_ZOO_PREGENERATED_LAYOUTS = generatedMap;
         REAL_ZOO_PRESTIGE_CACHE = new WeakMap();
+        state.tradeOfferCache?.clear?.();
+        if(document.getElementById('realZooDirectoryOverlay')?.style.display==='flex'){
+            renderRealZooDirectory();
+        }
     }
 
     const payload = {
@@ -38780,65 +38968,65 @@ function realZooPlanFreeSpaces(plans) {
 }
 
 
+function realZooPackingKey(unit){
+    const animals=(unit||[]).filter(Boolean);
+    if(!animals.length)return 'zz-empty';
+    const tagSets=animals.map(animal=>
+        new Set(animalInventoryTags(animal.category,animal.level,animal.filename)));
+    const common=tagSets.length
+        ? [...tagSets[0]].filter(tag=>tagSets.every(set=>set.has(tag)))
+        : [];
+    const regionTags=(state.inventory?.tagDefinitions?.geographyHierarchy?.player_facing_prestige_regions||[])
+        .map(definition=>definition?.tag).filter(Boolean);
+    const continents=['africa','asia','europe','north-america','south-america','oceania','antarctica'];
+    const geography=[...regionTags,...continents].find(tag=>common.includes(tag));
+    if(geography)return `geo:${geography}`;
+    // No shared geography: keep otherwise-unrelated singleton exhibits apart
+    // instead of grouping them through broad habitat tags such as wetland,
+    // forest or aquatic.
+    if(animals.length===1)return `category:${animals[0].category||'other'}`;
+    return 'zz-mixed-exhibits';
+}
+
 function realZooPlannedCards(units, allowHugeEnclosure = false) {
-    // Real zoos should not default to Enclosure 5 for every four singleton
-    // animals. Build smaller 1–3-exhibit cards as well, which naturally uses
-    // the large-exhibit artwork (1–4, 8–10) much more often.
+    // Pack real-zoo exhibits as tightly as the enclosure grammar allows. Every
+    // enclosure card has four physical cells, so reducing card count is the
+    // direct way to reduce visually empty cells. Geography remains a hard
+    // packing boundary: unrelated districts are never combined just to save a
+    // cell. Minimum exhibit-size rules are respected while packing.
     const remaining = units.slice();
     const cards = [];
-    const takeMatchingSingle = key => {
-        // Never pad a themed/evidenced exhibit with an arbitrary singleton.
-        // The old fallback grabbed the next available animal when no matching
-        // geography/theme remained, then the whole enclosure inherited the
-        // pair's Area key. That could make generated real zoos visually group
-        // unrelated species inside a Central Asia/Amazon/etc. district.
-        const i = remaining.findIndex(unit =>
-            unit.length === 1 &&
-            (unit._layoutAreaKey || realZooAreaSortKey(unit)) === key
-        );
-        return i < 0 ? null : remaining.splice(i, 1)[0];
-    };
+    const numbers = allowHugeEnclosure ? [1,2,3,4,5,6,7,8,9,10] : [1,2,3,4,5,6,7,8,9];
+    const planFitsSomeCard = candidate => numbers.some(number =>
+        realZooPlanFitsEnclosureNumber(candidate, number, true)
+    );
 
     while (remaining.length) {
-        const pairIndex = remaining.findIndex(unit => unit.length >= 2);
-        if (pairIndex >= 0) {
-            const pair = remaining.splice(pairIndex, 1)[0];
-            const key = realZooAreaSortKey(pair);
-            const single = takeMatchingSingle(key);
-            if (single) cards.push({ number: randomItem([1,2]), units: [pair, single] });
-            else {
-                const useHuge = allowHugeEnclosure && Math.random() < 0.05;
-                cards.push({ number: useHuge ? 10 : randomItem([1,2,3,8,9]), units: [pair] });
-            }
-            continue;
-        }
+        const seed = remaining.shift();
+        const key = realZooPackingKey(seed);
+        const plan = { number: 5, units: [seed] };
 
-        const key = remaining[0]._layoutAreaKey || realZooAreaSortKey(remaining[0]);
-        const same = [];
-        // Pack a geographic district before choosing its enclosure artwork.
-        // Deliberately creating one-exhibit cards here produced large real zoos
-        // full of visibly empty logical exhibits. Prefer 2–3 exhibits per card;
-        // four remains occasional, while a singleton occurs only when this
-        // district genuinely has no second compatible unit left.
-        const availableSame = remaining.reduce((count,unit) =>
-            count + (unit.length===1 &&
-                (unit._layoutAreaKey || realZooAreaSortKey(unit))===key ? 1 : 0), 0);
-        const roll = Math.random();
-        const desiredCount = roll < 0.62 ? 2 : roll < 0.94 ? 3 : 4;
-        const targetCount = Math.max(1, Math.min(desiredCount, availableSame));
-        for (let i = remaining.length - 1; i >= 0 && same.length < targetCount; i--) {
-            if (remaining[i].length === 1 && (remaining[i]._layoutAreaKey || realZooAreaSortKey(remaining[i])) === key) {
-                same.unshift(remaining.splice(i, 1)[0]);
+        // A card has at most four logical exhibits. Repeatedly add the matching
+        // unit that packs the most animal populations onto this card while a
+        // size-correct enclosure shape still exists. This naturally gives:
+        //   small exhibits -> up to four singles (Enclosure 5),
+        //   medium exhibit -> medium + up to two singles (Enclosure 4),
+        //   large exhibit -> large + one single where legal (8/9),
+        // instead of manufacturing several half-empty cards.
+        while (plan.units.length < 4) {
+            let bestIndex=-1,bestAnimals=-1;
+            for (let i=0;i<remaining.length;i++) {
+                const unit=remaining[i];
+                if(realZooPackingKey(unit)!==key)continue;
+                const candidate={number:5,units:[...plan.units,unit]};
+                if(!planFitsSomeCard(candidate))continue;
+                const animals=unit?.length||0;
+                if(animals>bestAnimals){bestAnimals=animals;bestIndex=i;}
             }
+            if(bestIndex<0)break;
+            plan.units.push(remaining.splice(bestIndex,1)[0]);
         }
-        // Do not fill the chosen card density with animals from another Area
-        // key. A smaller same-theme card is preferable to manufacturing a
-        // mixed geographic district. Unmatched units remain in `remaining` and
-        // will receive their own appropriately keyed enclosure plan.
-        const count = same.length;
-        const useHuge = allowHugeEnclosure && count === 1 && Math.random() < 0.05;
-        const number = count >= 4 ? 5 : count === 3 ? randomItem([4,6,7]) : count === 2 ? randomItem([1,2,3,8,9]) : (useHuge ? 10 : randomItem([4,5,6,7]));
-        cards.push({ number, units: same });
+        cards.push(plan);
     }
     return cards;
 }
@@ -38873,17 +39061,37 @@ function realZooAreaSortKey(unit) {
 }
 
 
-function realZooPlanFitsEnclosureNumber(plan, number, enforceSize = true) {
+function realZooBestUnitGroupAssignment(plan, number, enforceSize = true) {
     const groups = GROUPS[number] || [];
     const units = plan?.units || [];
-    if (groups.length < units.length) return false;
-    for (let i = 0; i < units.length; i++) {
-        const group = groups[i];
-        const unit = units[i] || [];
-        if (!group || group.length < unit.length) return false;
-        if (enforceSize && !generationGroupFitsAnimals(group, unit)) return false;
-    }
-    return true;
+    if (groups.length < units.length) return null;
+    const used=new Set(),assignment=new Array(units.length);
+    // Place hardest units first, but return a mapping for the original unit
+    // order. This fixes the old order-dependent bug where a Large exhibit could
+    // be rejected merely because a Small exhibit happened to be listed first.
+    const order=units.map((unit,index)=>({unit,index,need:
+        unit.some(a=>animalEnclosureSize(a)==='large')?3:
+        unit.some(a=>animalEnclosureSize(a)==='medium')?2:unit.length
+    })).sort((a,b)=>b.need-a.need||b.unit.length-a.unit.length);
+    const search=depth=>{
+        if(depth>=order.length)return true;
+        const item=order[depth];
+        const choices=groups.map((group,groupIndex)=>({group,groupIndex}))
+            .filter(({group,groupIndex})=>!used.has(groupIndex)&&group.length>=item.unit.length&&
+                (!enforceSize||generationGroupFitsAnimals(group,item.unit)))
+            .sort((a,b)=>a.group.length-b.group.length);
+        for(const choice of choices){
+            used.add(choice.groupIndex);assignment[item.index]=choice.groupIndex;
+            if(search(depth+1))return true;
+            used.delete(choice.groupIndex);assignment[item.index]=undefined;
+        }
+        return false;
+    };
+    return search(0)?assignment:null;
+}
+
+function realZooPlanFitsEnclosureNumber(plan, number, enforceSize = true) {
+    return Boolean(realZooBestUnitGroupAssignment(plan,number,enforceSize));
 }
 
 function sizeAwareRealZooPlans(plans, allowHugeEnclosure = false) {
@@ -38913,6 +39121,7 @@ function sizeAwareRealZooPlans(plans, allowHugeEnclosure = false) {
         };
         if (sizeCandidates.length && Math.random() >= GENERATED_UNDERSIZED_EXHIBIT_CHANCE) {
             original.number = tightestRealZooEnclosure(sizeCandidates);
+            original.groupAssignment = realZooBestUnitGroupAssignment(original, original.number, true);
             output.push(original);
             continue;
         }
@@ -38921,6 +39130,7 @@ function sizeAwareRealZooPlans(plans, allowHugeEnclosure = false) {
             // when no size-correct card exists. Still choose the tightest shape:
             // an exception must not manufacture empty logical exhibits.
             original.number = tightestRealZooEnclosure(capacityCandidates);
+            original.groupAssignment = realZooBestUnitGroupAssignment(original, original.number, false);
             output.push(original);
             continue;
         }
@@ -38943,6 +39153,7 @@ function sizeAwareRealZooPlans(plans, allowHugeEnclosure = false) {
                 const bw=Math.max(0,enclosureSlotCapacity(b)-occupied);
                 return aw-bw;
             })[0];
+            single.groupAssignment = realZooBestUnitGroupAssignment(single, single.number, Boolean(fit.length));
             output.push(single);
         }
     }
@@ -39090,15 +39301,18 @@ function createRealZooFromRecord(record, options = {}) {
                 const touching=occupiedNeighbourCount(candidate);
                 const nextMinX=Math.min(minX,candidate.x),nextMaxX=Math.max(maxX,candidate.x);
                 const nextMinY=Math.min(minY,candidate.y),nextMaxY=Math.max(maxY,candidate.y);
-                const oldArea=(maxX-minX+1)*(maxY-minY+1);
-                const newArea=(nextMaxX-nextMinX+1)*(nextMaxY-nextMinY+1);
-                const boxExpansion=newArea-oldArea;
+                const oldWidth=maxX-minX+1, oldHeight=maxY-minY+1;
+                const newWidth=nextMaxX-nextMinX+1, newHeight=nextMaxY-nextMinY+1;
+                // Do NOT score raw bounding-box area expansion here. For a 1xN
+                // footprint that makes extending the long axis cost 1 while
+                // starting a second row costs N, which perversely creates giant
+                // single-row/single-column zoos. Perimeter growth plus aspect
+                // imbalance rewards genuinely compact, roughly balanced shapes.
+                const spanExpansion=(newWidth+newHeight)-(oldWidth+oldHeight);
+                const aspectImbalance=Math.abs(newWidth-newHeight);
                 const distance=Math.hypot(candidate.x-cx,candidate.y-cy);
-                // 2+ neighbours is the strongest signal: fill corners/notches
-                // before extending the outline. One-neighbour cells remain legal
-                // so irregular lobes can form, but long thin arms lose heavily.
-                const contactPenalty=touching>=3?-4.8:touching===2?-3.2:2.4;
-                return {candidate,score:contactPenalty+boxExpansion*1.35+distance*.42+Math.random()*.55};
+                const contactPenalty=touching>=3?-5.2:touching===2?-3.8:2.2;
+                return {candidate,score:contactPenalty+spanExpansion*1.15+aspectImbalance*.42+distance*.18+Math.random()*.3};
             }).sort((a,b)=>a.score-b.score);
             // Keep a little silhouette variation among near-equivalent compact
             // cells without ever sampling from a broad outer band.
@@ -39120,28 +39334,40 @@ function createRealZooFromRecord(record, options = {}) {
             // preferred one-neighbour frontier cells and a target radius from
             // the seed; on large real zoos that deliberately produced long
             // branches/snakes and fragmented geographic Areas.
-            let candidates = districtCells.flatMap(anchor => freeNeighbours(anchor));
+            // Grow from the GLOBAL zoo frontier, not only the current district.
+            // Restricting a multi-card district to its own edge could force it
+            // outward even while perfect concave gaps existed elsewhere, making
+            // the whole zoo's bounding box much larger than a normal generated
+            // zoo. Geography still matters through own-neighbour preference.
+            let candidates = allCells.flatMap(anchor => freeNeighbours(anchor));
             const unique = new Map(candidates.map(c => [cellKey(c.x,c.y),c]));
             candidates = [...unique.values()];
-            if (!candidates.length) throw new Error('Naturalistic real-zoo layout ran out of connected grid cells.');
+            if (!candidates.length) throw new Error('Naturalistic real-zoo layout has no free connected grid cell.');
 
             const dcx=districtCells.reduce((sum,c)=>sum+c.x,0)/districtCells.length;
             const dcy=districtCells.reduce((sum,c)=>sum+c.y,0)/districtCells.length;
+            const minX=Math.min(...allCells.map(c=>c.x)),maxX=Math.max(...allCells.map(c=>c.x));
+            const minY=Math.min(...allCells.map(c=>c.y)),maxY=Math.max(...allCells.map(c=>c.y));
+            const oldWidth=maxX-minX+1, oldHeight=maxY-minY+1;
             const ranked=candidates.map(cell=>{
                 const neighboursHere=occupiedNeighbourCount(cell);
                 const ownNeighbours=neighbours.reduce((count,[dx,dy]) =>
                     count + (districtCells.some(c=>c.x===cell.x+dx&&c.y===cell.y+dy)?1:0),0);
                 const distance=Math.hypot(cell.x-dcx,cell.y-dcy);
-                // Prefer block-building growth. Two/three same-district contacts
-                // are ideal; global contacts are also useful because they keep
-                // neighbouring districts in one readable clump. A single-contact
-                // extension is still possible, but no longer competitive unless
-                // there is no sensible gap to fill.
-                const cohesionPenalty=ownNeighbours>=3?-3.0:ownNeighbours===2?-2.0:2.15;
-                const globalContactBonus=Math.max(0,neighboursHere-ownNeighbours)*-.65;
-                return {cell,score:distance*.58+cohesionPenalty+globalContactBonus+Math.random()*.5};
+                const nextMinX=Math.min(minX,cell.x),nextMaxX=Math.max(maxX,cell.x);
+                const nextMinY=Math.min(minY,cell.y),nextMaxY=Math.max(maxY,cell.y);
+                const newWidth=nextMaxX-nextMinX+1, newHeight=nextMaxY-nextMinY+1;
+                const spanExpansion=(newWidth+newHeight)-(oldWidth+oldHeight);
+                const aspectImbalance=Math.abs(newWidth-newHeight);
+                // Prefer concave fills and balanced footprints. Geography remains
+                // a local tie-breaker instead of being allowed to stretch the zoo.
+                const contactPenalty=neighboursHere>=3?-5.6:neighboursHere===2?-4.0:2.4;
+                const ownBonus=ownNeighbours>=2?-1.25:ownNeighbours===1?-.45:0;
+                return {cell,score:contactPenalty+spanExpansion*1.2+aspectImbalance*.4+distance*.14+ownBonus+Math.random()*.25};
             }).sort((a,b)=>a.score-b.score);
-            const choice=randomItem(ranked.slice(0,Math.min(3,ranked.length)))?.cell||ranked[0].cell;
+            const best=ranked[0]?.score??0;
+            const compactBand=ranked.filter(entry=>entry.score<=best+.35).slice(0,3);
+            const choice=(randomItem(compactBand)||ranked[0]).cell;
             addCell(choice,district.indices[localIndex]);
         }
         previousDistrictCells = districtCells;
@@ -39168,7 +39394,10 @@ function createRealZooFromRecord(record, options = {}) {
         if (!plan.units.length) return;
         const enclosure = state.enclosures[index];
         const groups = GROUPS[plan.number] || [[0]];
-        plan.units.forEach((unit, groupIndex) => {
+        plan.units.forEach((unit, unitIndexInPlan) => {
+            const groupIndex=Array.isArray(plan.groupAssignment)
+                ? plan.groupAssignment[unitIndexInPlan]
+                : unitIndexInPlan;
             const group = groups[groupIndex];
             if (!group || group.length < unit.length) throw new Error('Real zoo exhibit planner produced an invalid enclosure group.');
             unit.forEach((animal, unitIndex) => {
@@ -41558,6 +41787,20 @@ function realZooOriginalPrestige(record) {
     return (Array.isArray(record.animals) ? record.animals : []).reduce((total,name)=>
         total + (ZOO_PRESTIGE_BY_LEVEL[realZooAnimalLevelByName(name)] || 0), 0);
 }
+function realZooStartingPrestige(record) {
+    if (!record || typeof record !== 'object') return 0;
+    // Gameplay "Original" means the zoo's prestige at world start, after its
+    // pregenerated layout, Areas, combinations, identity and curation modifiers
+    // have all been applied. Keep this baseline frozen even after the zoo is
+    // visited or its holdings change through trades.
+    const pregenerated=pregeneratedRealZooLayout(record);
+    const starting=Number(pregenerated?.prestige?.current);
+    if(Number.isFinite(starting))return Math.ceil(Math.max(0,starting));
+    // Legacy/custom layouts without a pregenerated prestige summary retain the
+    // old animal-base fallback rather than inventing a starting score.
+    return realZooOriginalPrestige(record);
+}
+
 function realZooStoredPrestigeSummary(record) {
     // A materialised/visited zoo has the newest exact score. Prefer that over
     // the static template so All Zoos reflects current prestige after changes.
@@ -41593,7 +41836,11 @@ function realZooPrestige(record) {
     const currentBase = currentNames.reduce((total,name)=> total + (ZOO_PRESTIGE_BY_LEVEL[realZooAnimalLevelByName(name)] || 0), 0);
     if (summary) {
         if (!holdingsChanged && Number.isFinite(Number(summary.current))) return Math.ceil(Math.max(0,Number(summary.current)));
-        const pct=(Number(summary.area_bonus_percent)||0)+(Number(summary.combination_bonus_percent)||0)-(Number(summary.husbandry_penalty_percent)||0);
+        const pct=Number.isFinite(Number(summary.total_modifier_percent))
+            ? Number(summary.total_modifier_percent)
+            : (Number(summary.identity_bonus_percent)||0)+(Number(summary.area_bonus_percent)||0)+
+              (Number(summary.combination_bonus_percent)||0)+(Number(summary.curation_bonus_percent)||0)-
+              (Number(summary.husbandry_penalty_percent)||0);
         return Math.ceil(Math.max(0,currentBase*(1+pct/100)));
     }
     return Math.ceil(Math.max(0,currentBase));
@@ -43929,7 +44176,7 @@ function realZooDirectoryRows() {
             record,
             country: String(record?.country || 'Unknown'),
             prestige: realZooPrestige(record),
-            originalPrestige: realZooOriginalPrestige(record),
+            originalPrestige: realZooStartingPrestige(record),
             prestigeComplete:Boolean(prestigeSummary&&Number.isFinite(Number(prestigeSummary.current))),
             isPlayer: false,
             name: record?.name || 'Zoo'
@@ -43988,7 +44235,7 @@ function renderRealZooDirectory() {
         currentSort.onclick=()=>{overlay.dataset.prestigeSort='current';renderRealZooDirectory();};
         originalSort.onclick=()=>{overlay.dataset.prestigeSort='original';renderRealZooDirectory();};
         controls.append(currentSort,originalSort); list.appendChild(controls);
-        // Global ranking: sortable by current or original prestige.
+        // Global ranking: "Original" is the frozen pregenerated starting prestige.
         // and explicit rank numbers make the player's relative position clear.
         const sortKey = overlay.dataset.prestigeSort === 'original' ? 'originalPrestige' : 'prestige';
         directoryRows.sort((a, b) =>

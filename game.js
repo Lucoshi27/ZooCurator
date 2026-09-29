@@ -29486,7 +29486,6 @@ function ensureMultiplayerLobbyOverlay(){
                 <span>Gamemode</span>
                 <select id="multiplayerGameMode">
                     <option value="classic">Classic</option>
-                    <option value="true">True</option>
                 </select>
             </label>
             <label class="trade-frequency-option">
@@ -39280,8 +39279,7 @@ function ensureGenerateZooUI() {
                     <span>Gamemode</span>
                     <select id="newZooGameMode">
                         <option value="classic">Classic</option>
-                        <option value="true">True</option>
-                        <option value="sandbox">Sandbox</option>
+                            <option value="sandbox">Sandbox</option>
                     </select>
                 </label>
                 <label class="trade-frequency-option new-zoo-size-option" id="newZooSizeRow">

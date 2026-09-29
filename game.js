@@ -28704,6 +28704,22 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 });
                 const serverPlayerId=String(message.playerId||'');
                 const ownServerId=String(transport.serverPlayerId||'');
+                const liveViewSequence=Math.max(0,Number(message.liveViewSubscriptionSequence)||0);
+                // A subscription snapshot is valid only for the exact view
+                // request that produced it. Without this check, P2 -> P3 ->
+                // Return could receive P2's delayed initial snapshot after the
+                // browser had already moved on. Replica revisions may still be
+                // useful for ordinary broadcasts, but a stale subscription
+                // bootstrap must be completely side-effect free.
+                if(liveViewSequence&&
+                   liveViewSequence!==Number(transport.serverViewSubscriptionSequence||0)){
+                    multiplayerDiagnostic('live-view-zoo-state-stale-dropped',{
+                        playerId:serverPlayerId,
+                        subscriptionSequence:liveViewSequence,
+                        currentSubscriptionSequence:Number(transport.serverViewSubscriptionSequence)||0
+                    });
+                    return;
+                }
                 const zoo=message.zoo;
                 const zooRevision=Math.max(0,Number(message.revision)||0);
                 if(!(transport.serverZooRevisionByPlayer instanceof Map))
@@ -29907,11 +29923,19 @@ async function applyLocalMultiplayerActionEnvelope(action){
             !localClassicMatch.viewingPlayerId)
             ? Number(state.turn)||1
             : 0;
-        const joinTurn=Math.max(
-            liveHostTurn,
-            Number(hostSnapshot?.state?.turn)||1,
-            Number(registered.state.turn)||1
-        );
+        // Simultaneous multiplayer has independent per-player action turns.
+        // A newly joined zoo therefore starts on its own generated turn instead
+        // of inheriting P1's current turn. The server progression row uses the
+        // same per-player model (new seats begin at actionTurn 1). Keeping these
+        // aligned also means the durable zoo committed just before registration
+        // cannot later restore an older turn than the browser-host snapshot.
+        const joinTurn=localClassicUsesSimultaneousTurns()
+            ? Math.max(1,Number(registered.state.turn)||1)
+            : Math.max(
+                liveHostTurn,
+                Number(hostSnapshot?.state?.turn)||1,
+                Number(registered.state.turn)||1
+            );
         registered.state.turn=joinTurn;
         registered.state.gameMode=localClassicMatch.rules?.gameMode==='true'?'true':'classic';
         registered.state.sandboxMode=false;
@@ -39010,23 +39034,39 @@ function createRealZooFromRecord(record, options = {}) {
         if (!allCells.length) {
             seed = {x:0,y:0};
         } else {
-            // Start the next theme on the exposed edge of the previous district,
-            // but do not deliberately choose the farthest outer 35%. That old
-            // rule stretched large zoos into long chains even after each district
-            // itself had become compact.
+            // A new geographic/theme district must join the ZOO, not merely the
+            // previously-created district. Seeding from the previous district
+            // turned a run of small districts into a one-card-wide snake. Build
+            // one global frontier and prefer cells that close concave gaps, keep
+            // the bounding box compact and remain near the existing centre.
             const cx = allCells.reduce((sum,c)=>sum+c.x,0) / allCells.length;
             const cy = allCells.reduce((sum,c)=>sum+c.y,0) / allCells.length;
-            const anchors = (previousDistrictCells.length ? previousDistrictCells : allCells)
-                .flatMap(anchor => freeNeighbours(anchor).map(candidate => ({anchor,candidate})))
-                .filter(entry => occupiedNeighbourCount(entry.candidate) === 1);
-            const fallback = allCells.flatMap(anchor => freeNeighbours(anchor).map(candidate => ({anchor,candidate})));
-            const pool = anchors.length ? anchors : fallback;
-            const ranked=pool.map(entry=>({
-                ...entry,
-                score:Math.hypot(entry.candidate.x-cx,entry.candidate.y-cy)
-                    + Math.random()*1.15
-            })).sort((a,b)=>a.score-b.score);
-            const compactBand=ranked.slice(0,Math.max(1,Math.ceil(ranked.length*0.35)));
+            const minX=Math.min(...allCells.map(c=>c.x)),maxX=Math.max(...allCells.map(c=>c.x));
+            const minY=Math.min(...allCells.map(c=>c.y)),maxY=Math.max(...allCells.map(c=>c.y));
+            const frontierMap=new Map();
+            for(const anchor of allCells){
+                for(const candidate of freeNeighbours(anchor))
+                    frontierMap.set(cellKey(candidate.x,candidate.y),candidate);
+            }
+            const frontier=[...frontierMap.values()];
+            const ranked=frontier.map(candidate=>{
+                const touching=occupiedNeighbourCount(candidate);
+                const nextMinX=Math.min(minX,candidate.x),nextMaxX=Math.max(maxX,candidate.x);
+                const nextMinY=Math.min(minY,candidate.y),nextMaxY=Math.max(maxY,candidate.y);
+                const oldArea=(maxX-minX+1)*(maxY-minY+1);
+                const newArea=(nextMaxX-nextMinX+1)*(nextMaxY-nextMinY+1);
+                const boxExpansion=newArea-oldArea;
+                const distance=Math.hypot(candidate.x-cx,candidate.y-cy);
+                // 2+ neighbours is the strongest signal: fill corners/notches
+                // before extending the outline. One-neighbour cells remain legal
+                // so irregular lobes can form, but long thin arms lose heavily.
+                const contactPenalty=touching>=3?-4.8:touching===2?-3.2:2.4;
+                return {candidate,score:contactPenalty+boxExpansion*1.35+distance*.42+Math.random()*.55};
+            }).sort((a,b)=>a.score-b.score);
+            // Keep a little silhouette variation among near-equivalent compact
+            // cells without ever sampling from a broad outer band.
+            const best=ranked[0]?.score??0;
+            const compactBand=ranked.filter(entry=>entry.score<=best+.65).slice(0,4);
             seed=(randomItem(compactBand)||ranked[0]||{candidate:{x:districtIndex,y:0}}).candidate;
         }
 
@@ -39055,12 +39095,14 @@ function createRealZooFromRecord(record, options = {}) {
                 const ownNeighbours=neighbours.reduce((count,[dx,dy]) =>
                     count + (districtCells.some(c=>c.x===cell.x+dx&&c.y===cell.y+dy)?1:0),0);
                 const distance=Math.hypot(cell.x-dcx,cell.y-dcy);
-                // Two/three same-district neighbours close gaps and make Area
-                // footprints readable. One-neighbour growth remains possible
-                // with a small random term, preserving natural irregular edges.
-                const cohesionPenalty=ownNeighbours>=2 ? 0 : 1.55;
-                const foreignPenalty=Math.max(0,neighboursHere-ownNeighbours)*0.35;
-                return {cell,score:distance*0.72+cohesionPenalty+foreignPenalty+Math.random()*0.8};
+                // Prefer block-building growth. Two/three same-district contacts
+                // are ideal; global contacts are also useful because they keep
+                // neighbouring districts in one readable clump. A single-contact
+                // extension is still possible, but no longer competitive unless
+                // there is no sensible gap to fill.
+                const cohesionPenalty=ownNeighbours>=3?-3.0:ownNeighbours===2?-2.0:2.15;
+                const globalContactBonus=Math.max(0,neighboursHere-ownNeighbours)*-.65;
+                return {cell,score:distance*.58+cohesionPenalty+globalContactBonus+Math.random()*.5};
             }).sort((a,b)=>a.score-b.score);
             const choice=randomItem(ranked.slice(0,Math.min(3,ranked.length)))?.cell||ranked[0].cell;
             addCell(choice,district.indices[localIndex]);

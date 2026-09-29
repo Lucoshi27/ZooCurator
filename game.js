@@ -7993,15 +7993,39 @@ function classicTutorialPlaceBoardHint(hint,target,side='right'){
     const point=classicTutorialWorldPointForElement(target);
     if(!point)return false;
     const gap=18;
-    hint.style.left=`${Math.round(point.x+(side==='right'?point.width/2+gap:-170))}px`;
-    hint.style.top=`${Math.round(point.y-point.height/2)}px`;
+    const hintWidth=300;
+    // Keep board hints inside the playable zoo canvas rather than allowing a
+    // target near the top edge to push the card underneath the fixed header.
+    const canvasHeight=Math.max(zooCanvas.scrollHeight||0,zooCanvas.offsetHeight||0);
+    const canvasWidth=Math.max(zooCanvas.scrollWidth||0,zooCanvas.offsetWidth||0);
+    let left=point.x+(side==='right'?point.width/2+gap:-hintWidth-gap);
+    let top=point.y-point.height/2;
+    left=Math.max(12,Math.min(Math.max(12,canvasWidth-hintWidth-12),left));
+    top=Math.max(12,Math.min(Math.max(12,canvasHeight-150),top));
+    hint.style.left=`${Math.round(left)}px`;
+    hint.style.top=`${Math.round(top)}px`;
+    return true;
+}
+function classicTutorialPlaceHeaderHint(hint,target){
+    if(!hint||!target)return false;
+    const rect=target.getBoundingClientRect();
+    const gap=8;
+    const width=300;
+    const viewportWidth=document.documentElement.clientWidth||window.innerWidth||width;
+    // Prefer immediately below the header control; this keeps the tooltip next
+    // to Draw/Trade without covering the button itself. Clamp horizontally so
+    // narrow screens still keep the whole card visible.
+    let left=rect.left+rect.width/2-width/2;
+    left=Math.max(8,Math.min(Math.max(8,viewportWidth-width-8),left));
+    hint.style.left=`${Math.round(left)}px`;
+    hint.style.top=`${Math.round(rect.bottom+gap)}px`;
     return true;
 }
 function renderClassicTutorialHint(){
     removeClassicTutorialHint();
     if(!classicTutorialEligible())return;
     const step=Number(showFirstClassicWelcomeBriefing.step)||1;
-    let target=null,title='',body='',side='right';
+    let target=null,title='',body='',side='right',anchorMode='board';
     if(step===1){
         const animal=classicTutorialAnchorAnimal();
         target=classicTutorialAnimalElement(animal);
@@ -8009,10 +8033,12 @@ function renderClassicTutorialHint(){
         body=`Whenever you collect three animals from the same category at the same level, you can trade two in for one animal a level higher. You already have three Level 1 ${animal?.category||'category'} cards. Drag any two of them into the Exchange slots to get a Level 2.`;
     }else if(step===2){
         target=drawCard;
+        anchorMode='header';
         title='Draw an Animal';
         body='The deck is how new Level 1 animals enter your zoo. Draw a card and place it in a free enclosure.';
     }else if(step===3){
         target=outgoingOfferBox;
+        anchorMode='header';
         title='Trade with Other Zoos';
         body='Drag one of your animals into Your Offer. Other zoos will offer animals in return, giving you another way to shape your collection and find species you cannot simply draw.';
     }else if(step===4){
@@ -8034,10 +8060,19 @@ function renderClassicTutorialHint(){
         event.stopPropagation();
         advanceClassicTutorial(step,true);
     };
-    zooCanvas.appendChild(hint);
-    if(!classicTutorialPlaceBoardHint(hint,target,side)){
-        hint.remove();
-        target.classList.remove('classic-tutorial-target');
+    if(anchorMode==='header'){
+        hint.classList.add('classic-context-tutorial-hint--header');
+        document.body.appendChild(hint);
+        if(!classicTutorialPlaceHeaderHint(hint,target)){
+            hint.remove();
+            target.classList.remove('classic-tutorial-target');
+        }
+    }else{
+        zooCanvas.appendChild(hint);
+        if(!classicTutorialPlaceBoardHint(hint,target,side)){
+            hint.remove();
+            target.classList.remove('classic-tutorial-target');
+        }
     }
 }
 function advanceClassicTutorial(expectedStep,forced=false){
@@ -8064,6 +8099,9 @@ classicTutorialStyle.textContent=`
     border:2px solid #4c5140;border-radius:5px;
     box-shadow:4px 5px 0 rgba(53,57,45,.24);
     cursor:pointer;pointer-events:auto;
+}
+#classicContextTutorialHint.classic-context-tutorial-hint--header{
+    position:fixed;z-index:10020;
 }
 #classicContextTutorialHint strong{display:block;margin:0 0 5px;font-size:14px;font-weight:800;color:#34382c}
 #classicContextTutorialHint span{display:block;font-size:12px;line-height:1.4}

@@ -18922,6 +18922,13 @@
           "zoo": "GaiaZOO",
           "country": "Netherlands",
           "date": "2020-03-10"
+        },
+        {
+          "zoo": "Cleveland Metroparks Zoo – The RainForest",
+          "country": "United States",
+          "date": "2013-10-14",
+          "source": "ZooChat exhibit photograph/description",
+          "note": "Giant anteater exhibit in The RainForest; Scarlet Ibis and Roseate Spoonbill documented free-roaming in the same hall."
         }
       ]
     },
@@ -18935,6 +18942,13 @@
           "zoo": "GaiaZOO",
           "country": "Netherlands",
           "date": "2020-03-10"
+        },
+        {
+          "zoo": "Cleveland Metroparks Zoo – The RainForest",
+          "country": "United States",
+          "date": "2013-10-14",
+          "source": "ZooChat exhibit photograph/description",
+          "note": "Giant anteater exhibit in The RainForest; Scarlet Ibis and Roseate Spoonbill documented free-roaming in the same hall."
         }
       ]
     },
@@ -27397,9 +27411,25 @@
       ],
       "evidence": [
         {
-          "zoo": "San Diego Zoo Safari Park",
-          "country": "United States",
-          "date": "2021-05-09"
+          "zoo": "Prague Zoo",
+          "country": "Czech Republic",
+          "date": "2021-05-09",
+          "source": "ZooRope Mixed exhibit Suidae",
+          "note": "Eurasian Wild Boar (Sus scrofa), Manitoban Elk and Mouflon documented as a mixed exhibit."
+        },
+        {
+          "zoo": "Nógrádi Vadaspark",
+          "country": "Hungary",
+          "date": "2021-05-09",
+          "source": "ZooRope Mixed exhibit Suidae",
+          "note": "Eurasian Wild Boar documented in a mixed exhibit including Mouflon, Fallow Deer, European Roe Deer and Red Deer."
+        },
+        {
+          "zoo": "Xantus János Állatkert (Győr)",
+          "country": "Hungary",
+          "date": "2021-05-09",
+          "source": "ZooRope Mixed exhibit Suidae",
+          "note": "Eurasian Wild Boar documented in a mixed exhibit including Mouflon, Fallow Deer, Red Deer and European Bison."
         }
       ]
     },
@@ -29957,6 +29987,13 @@
           "zoo": "Zoomarine",
           "country": "Portugal",
           "date": "2022"
+        },
+        {
+          "zoo": "Cleveland Metroparks Zoo – The RainForest",
+          "country": "United States",
+          "date": "2013-10-14",
+          "source": "ZooChat exhibit photograph/description",
+          "note": "Upper Forest record explicitly documents Roseate Spoonbill and Scarlet Ibis together among the free-roaming birds."
         }
       ]
     },
@@ -32801,6 +32838,13 @@
         "Greater Kudu",
         "Impala",
         "White Rhinoceros"
+      ],
+      "alpine_mouflon_shared_husbandry": [
+        "Alpine Ibex",
+        "Mouflon"
+      ],
+      "alpine_mouflon_boar_partner_pool": [
+        "Wild Boar"
       ]
     },
     "complete_groups": [
@@ -33258,6 +33302,12 @@
         "to": "mountain_zebra_large_paddock_partners",
         "mode": "large_managed_paddock_proxy",
         "note": "Conservative Hartmann's Mountain Zebra gameplay proxy. Direct mixed-exhibit evidence supports the species in large managed multi-species paddocks, but Mountain Zebra does not inherit the broader Plains Zebra or Grevy's Zebra compatibility networks because aggression and management constraints are repeatedly reported. Use only with ample space, retreat/separation options and managed introductions."
+      },
+      {
+        "from": "alpine_mouflon_shared_husbandry",
+        "to": "alpine_mouflon_boar_partner_pool",
+        "mode": "rocky_caprine_external_partner_proxy",
+        "note": "Narrow Zoo Curator gameplay proxy. Wild Boar + Mouflon is directly documented at Prague Zoo, Nógrádi Vadaspark and Xantus János Állatkert. Alpine Ibex and Mouflon are already linked in the game's managed rocky-caprine husbandry profile, so Alpine Ibex inherits Wild Boar as an external partner. This does not extend Wild Boar compatibility to every goat/sheep/caprine."
       }
     ]
   },
@@ -38452,6 +38502,38 @@
       "rule": "Every pair within each listed exhibit matrix is directly compatible.",
       "direct_pairs_added": 53,
       "existing_pairs_strengthened_with_burgers_2024_evidence": 23
+    },
+    "v11_49_anteater_ibis_boar_caprine": {
+      "strengthened_direct_pairs": [
+        [
+          "Giant Anteater",
+          "Scarlet Ibis",
+          "Cleveland Metroparks Zoo – The RainForest"
+        ],
+        [
+          "Giant Anteater",
+          "Roseate Spoonbill",
+          "Cleveland Metroparks Zoo – The RainForest"
+        ]
+      ],
+      "corrected_direct_pair": [
+        "Wild Boar",
+        "Mouflon",
+        "Replaced weak/incorrect San Diego Safari Park attribution with named ZooRope records from Prague, Nógrádi Vadaspark and Xantus János Állatkert."
+      ],
+      "new_proxy_result": [
+        "Wild Boar",
+        "Alpine Ibex"
+      ],
+      "proxy_scope": "Alpine Ibex + Mouflon only; no blanket all-goat/caprine inheritance."
+    },
+    "v11_50_cleveland_ibis_spoonbill": {
+      "strengthened_direct_pair": [
+        "Scarlet Ibis",
+        "Roseate Spoonbill"
+      ],
+      "evidence": "Cleveland Metroparks Zoo – The RainForest, 2013-10-14; both explicitly documented as free-roaming Upper Forest birds.",
+      "result": "Completes direct compatibility edges among Giant Anteater, Scarlet Ibis and Roseate Spoonbill."
     }
   }
 }

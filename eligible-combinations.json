@@ -8271,32 +8271,6 @@
     {
       "animals": [
         "Black-Necked Aracari",
-        "Giant Anteater"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2022-01-03"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black-Necked Aracari",
-        "Linneaus's Two-Toed Sloth"
-      ],
-      "evidence": [
-        {
-          "zoo": "Weltvogelpark Walsrode",
-          "country": "Germany",
-          "date": "2026-08"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black-Necked Aracari",
         "Peacock-Eye Stingray"
       ],
       "evidence": [
@@ -8306,19 +8280,6 @@
           "date": "2024",
           "source": "ZooTierListe current/2024 holdings + Almere Jungle zoo map",
           "note": "Species shown together on the Almere Jungle zoo map; ZooTierListe lists the species at Almere Jungle from 2024."
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Black-Necked Aracari",
-        "Red-Footed Tortoise"
-      ],
-      "evidence": [
-        {
-          "zoo": "Weltvogelpark Walsrode",
-          "country": "Germany",
-          "date": "2026-08"
         }
       ]
     },
@@ -10475,19 +10436,6 @@
           "zoo": "Kujukushima Aquarium Umi Kirara",
           "country": "Japan",
           "date": "2009-2012"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Brazilian Porcupine",
-        "Green Aracari"
-      ],
-      "evidence": [
-        {
-          "zoo": "Orientarium Zoo Łódź",
-          "country": "Poland",
-          "date": "2025"
         }
       ]
     },
@@ -12848,19 +12796,6 @@
           "zoo": "Parc Safari",
           "country": "Canada",
           "date": "2020-05-18"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Chestnut-Eared Aracari",
-        "Green Iguana"
-      ],
-      "evidence": [
-        {
-          "zoo": "Selwo Marina Benalmádena",
-          "country": "Spain",
-          "date": "2025-09-21"
         }
       ]
     },
@@ -16694,19 +16629,6 @@
     },
     {
       "animals": [
-        "Giant Anteater",
-        "Crimson-Rumped Toucanet"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2013-04"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Crimson-Rumped Toucanet",
         "Keel-Billed Toucan"
       ],
@@ -18800,19 +18722,6 @@
     {
       "animals": [
         "Giant Anteater",
-        "Keel-Billed Toucan"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2013-04"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Giant Anteater",
         "Linneaus's Two-Toed Sloth"
       ],
       "evidence": [
@@ -19019,19 +18928,6 @@
           "zoo": "GaiaZOO",
           "country": "Netherlands",
           "date": "2020-03-10"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Giant Anteater",
-        "Toco Toucan"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2013-04"
         }
       ]
     },
@@ -21266,24 +21162,6 @@
     {
       "animals": [
         "Green Aracari",
-        "Green Iguana"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoomarine Algarve",
-          "country": "Portugal",
-          "date": "2023"
-        },
-        {
-          "zoo": "Zoomarine",
-          "country": "Portugal",
-          "date": "2022"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Aracari",
         "Roseate Spoonbill"
       ],
       "evidence": [
@@ -21332,19 +21210,6 @@
     },
     {
       "animals": [
-        "Green Aracari",
-        "Sunbittern"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoomarine",
-          "country": "Portugal",
-          "date": "2022"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Green Iguana",
         "Hermann's Tortoise"
       ],
@@ -21353,24 +21218,6 @@
           "zoo": "De Zonnegloed Wild Animal Sanctuary",
           "country": "Belgium",
           "date": "documented 2021"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Keel-Billed Toucan"
-      ],
-      "evidence": [
-        {
-          "zoo": "Chapultepec Zoo",
-          "country": "Mexico",
-          "date": "documented 2020"
-        },
-        {
-          "zoo": "Zoológico de San Juan de Aragón",
-          "country": "Mexico",
-          "date": "2010-12-25"
         }
       ]
     },
@@ -21756,19 +21603,6 @@
           "zoo": "Royal Burgers' Zoo",
           "country": "Netherlands",
           "date": "2024"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Green Iguana",
-        "Toco Toucan"
-      ],
-      "evidence": [
-        {
-          "zoo": "Zoo Miami",
-          "country": "United States",
-          "date": "2026-08"
         }
       ]
     },
@@ -23973,19 +23807,6 @@
     },
     {
       "animals": [
-        "Hoffmann's Two-Toed Sloth",
-        "Spot-Billed Toucanet"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2013"
-        }
-      ]
-    },
-    {
-      "animals": [
         "White-Faced Saki",
         "Hoffmann's Two-Toed Sloth"
       ],
@@ -25909,19 +25730,6 @@
     {
       "animals": [
         "Linneaus's Two-Toed Sloth",
-        "Saffron Toucanet"
-      ],
-      "evidence": [
-        {
-          "zoo": "Bird Paradise",
-          "country": "Singapore",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Linneaus's Two-Toed Sloth",
         "Scaly-Headed Parrot"
       ],
       "evidence": [
@@ -26025,19 +25833,6 @@
           "zoo": "Oglebay Good Zoo",
           "country": "United States",
           "date": "2023-06-15"
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Linneaus's Two-Toed Sloth",
-        "Toco Toucan"
-      ],
-      "evidence": [
-        {
-          "zoo": "Singapore Zoo",
-          "country": "Singapore",
-          "date": "2022"
         }
       ]
     },
@@ -31068,34 +30863,6 @@
     },
     {
       "animals": [
-        "Takin",
-        "Takin"
-      ],
-      "evidence": [
-        {
-          "zoo": "Beauval",
-          "country": "France",
-          "date": "2024"
-        },
-        {
-          "zoo": "ZooParc de Beauval",
-          "country": "France",
-          "date": "2024"
-        },
-        {
-          "zoo": "Poznań Zoo",
-          "country": "Poland",
-          "date": "undated"
-        },
-        {
-          "zoo": "Poznań Zoo",
-          "country": "Poland",
-          "date": "2025"
-        }
-      ]
-    },
-    {
-      "animals": [
         "Visayan Warty Pig",
         "Takin"
       ],
@@ -31844,21 +31611,6 @@
     {
       "animals": [
         "Channel-Billed Toucan",
-        "Green Iguana"
-      ],
-      "evidence": [
-        {
-          "zoo": "Santa Ana Zoo / Singapore Zoo",
-          "country": "United States / Singapore",
-          "date": "documented in 2021 review",
-          "source": "Mo & Mo (2021), Green Iguanas in mixed-species exhibits",
-          "note": "Published review explicitly documents Channel-billed Toucans sharing mixed exhibits with Green Iguanas."
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Channel-Billed Toucan",
         "Azara's Agouti"
       ],
       "evidence": [
@@ -31875,21 +31627,6 @@
           "date": "2024-06",
           "source": "contemporary collection report",
           "note": "Azara's Agouti reported added to the Channel-billed Toucan enclosure."
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Guyana Toucanet",
-        "Green Iguana"
-      ],
-      "evidence": [
-        {
-          "zoo": "Bird Kingdom",
-          "country": "Canada",
-          "date": "2026-08-23",
-          "source": "contemporary visit/species report",
-          "note": "Green Iguana and Guyana Toucanet listed together as an exhibit."
         }
       ]
     },
@@ -32136,28 +31873,6 @@
     {
       "animals": [
         "Pale-Billed Aracari",
-        "Giant Anteater"
-      ],
-      "evidence": [
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2013-04",
-          "source": "ZooChat documented Orinoco Rainforest Jungle Junction exhibit",
-          "note": "Pale-mandibled/Pale-Billed Aracari explicitly documented in the same Jungle Junction exhibit with Giant Anteater, Crimson-Rumped Toucanet and Giant Wood-Rail, among other species."
-        },
-        {
-          "zoo": "Dallas World Aquarium",
-          "country": "United States",
-          "date": "2025-04-18",
-          "source": "ZooChat Jungle Junction exhibit photograph",
-          "note": "Contemporary Jungle Junction photograph/caption again identifies Pale-mandibled Aracari and Giant Anteater in the same exhibit."
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Pale-Billed Aracari",
         "Crimson-Rumped Toucanet"
       ],
       "evidence": [
@@ -32202,36 +31917,6 @@
     },
     {
       "animals": [
-        "Green Aracari",
-        "Red-Footed Tortoise"
-      ],
-      "evidence": [
-        {
-          "zoo": "Salisbury Zoo",
-          "country": "United States",
-          "date": "2026-02-02",
-          "source": "Salisbury Zoo announcement",
-          "note": "Zoo announcement states the Green Aracari pair joined the Red-footed Tortoises in the renovated Rainforest habitat."
-        }
-      ]
-    },
-    {
-      "animals": [
-        "Ivory-Billed Aracari",
-        "Sunbittern"
-      ],
-      "evidence": [
-        {
-          "zoo": "Weltvogelpark Walsrode",
-          "country": "Germany",
-          "date": "2025-10 and 2026-07/08",
-          "source": "Detailed species-by-aviary inventories",
-          "note": "Aviary 2 explicitly housed Pteroglossus azara with Sunbittern in both the October 2025 and July/August 2026 inventories; the aracari was reported under brown-mandibled/yellow-billed subspecific common names."
-        }
-      ]
-    },
-    {
-      "animals": [
         "Red-Breasted Toucan",
         "Toco Toucan"
       ],
@@ -32262,21 +31947,6 @@
     },
     {
       "animals": [
-        "Curl-Crested Aracari",
-        "Red-Footed Tortoise"
-      ],
-      "evidence": [
-        {
-          "zoo": "Woodland Park Zoo",
-          "country": "United States",
-          "date": "2026-05-01",
-          "source": "Detailed species-by-exhibit inventory / visit report",
-          "note": "Tropical Rainforest Walkthrough Aviary explicitly lists Curl-crested Aracari and Red-footed Tortoise together; observer reports seeing the tortoise walking on the aviary floor."
-        }
-      ]
-    },
-    {
-      "animals": [
         "Red-Breasted Toucan",
         "Sunbittern"
       ],
@@ -32292,16 +31962,795 @@
     },
     {
       "animals": [
-        "Red-Breasted Toucan",
-        "Common Trumpeter"
+        "Spot-Billed Toucanet",
+        "Channel-Billed Toucan"
       ],
       "evidence": [
         {
-          "zoo": "Dallas World Aquarium",
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "historical collection layout",
+          "source": "Weltvogelpark Walsrode species-list-over-the-years aviary archive",
+          "note": "Former Block 2 Aviary 1 explicitly lists Spot-billed Toucanet and Channel-billed Toucan together in the same aviary."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Crimson-Rumped Toucanet",
+        "White-Throated Toucan"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "historical collection layout",
+          "source": "Weltvogelpark Walsrode species-list-over-the-years aviary archive",
+          "note": "Former Block 2 Aviary 2 explicitly lists Crimson-rumped Toucanet, White-throated Toucan and Grey-winged Trumpeter together. Grey-winged Trumpeter is Psophia crepitans, matching the inventory's Common Trumpeter."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Channel-Billed Toucan",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2021",
+          "source": "Detailed species-by-exhibit inventory",
+          "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Channel-Billed Toucan",
+        "Blue-Headed Parrot"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2021",
+          "source": "Detailed species-by-exhibit inventory",
+          "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Channel-Billed Toucan",
+        "Blue-Fronted Amazon"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2021",
+          "source": "Detailed species-by-exhibit inventory",
+          "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Channel-Billed Toucan",
+        "Orange-Winged Amazon"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2021",
+          "source": "Detailed species-by-exhibit inventory",
+          "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Breasted Toucan",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2021",
+          "source": "Detailed species-by-exhibit inventory",
+          "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Breasted Toucan",
+        "Blue-Headed Parrot"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2021",
+          "source": "Detailed species-by-exhibit inventory",
+          "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Breasted Toucan",
+        "Blue-Fronted Amazon"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2021",
+          "source": "Detailed species-by-exhibit inventory",
+          "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Breasted Toucan",
+        "Orange-Winged Amazon"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2021",
+          "source": "Detailed species-by-exhibit inventory",
+          "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Toco Toucan",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2021",
+          "source": "Detailed species-by-exhibit inventory",
+          "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Toco Toucan",
+        "Blue-Headed Parrot"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2021",
+          "source": "Detailed species-by-exhibit inventory",
+          "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Toco Toucan",
+        "Orange-Winged Amazon"
+      ],
+      "evidence": [
+        {
+          "zoo": "BioParque do Rio",
+          "country": "Brazil",
+          "date": "2021",
+          "source": "Detailed species-by-exhibit inventory",
+          "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-and-Rufous Elephant Shrew",
+        "White-Faced Saki"
+      ],
+      "evidence": [
+        {
+          "zoo": "Philadelphia Zoo",
           "country": "United States",
-          "date": "current page, corroborated by 2018 Toucan Heights record",
-          "source": "Dallas World Aquarium official Toucan Heights exhibit page",
-          "note": "The official Toucan Heights exhibit page lists Red-breasted Toucan, Sunbittern and Grey-winged Trumpeter (Psophia crepitans) under the same exhibit. A dated 2018 photograph independently places Red-breasted Toucan in Toucan Heights."
+          "date": "2025",
+          "source": "Contemporary Rare Animal Conservation Center mixed-exhibit reports",
+          "note": "Black-and-rufous sengis are documented in mixed exhibits in the same building with White-faced Saki, Hoffmann's Two-toed Sloth, Golden Lion Tamarin and Pied Tamarin. Contemporary visitor reports explicitly identify these as mixed enclosures rather than merely species held in the building."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-and-Rufous Elephant Shrew",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Philadelphia Zoo",
+          "country": "United States",
+          "date": "2025",
+          "source": "Contemporary Rare Animal Conservation Center mixed-exhibit reports",
+          "note": "Black-and-rufous sengis are documented in mixed exhibits in the same building with White-faced Saki, Hoffmann's Two-toed Sloth, Golden Lion Tamarin and Pied Tamarin. Contemporary visitor reports explicitly identify these as mixed enclosures rather than merely species held in the building."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-and-Rufous Elephant Shrew",
+        "Golden Lion Tamarin"
+      ],
+      "evidence": [
+        {
+          "zoo": "Philadelphia Zoo",
+          "country": "United States",
+          "date": "2025",
+          "source": "Contemporary Rare Animal Conservation Center mixed-exhibit reports",
+          "note": "Black-and-rufous sengis are documented in mixed exhibits in the same building with White-faced Saki, Hoffmann's Two-toed Sloth, Golden Lion Tamarin and Pied Tamarin. Contemporary visitor reports explicitly identify these as mixed enclosures rather than merely species held in the building."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-and-Rufous Elephant Shrew",
+        "Pied Tamarin"
+      ],
+      "evidence": [
+        {
+          "zoo": "Philadelphia Zoo",
+          "country": "United States",
+          "date": "2025",
+          "source": "Contemporary Rare Animal Conservation Center mixed-exhibit reports",
+          "note": "Black-and-rufous sengis are documented in mixed exhibits in the same building with White-faced Saki, Hoffmann's Two-toed Sloth, Golden Lion Tamarin and Pied Tamarin. Contemporary visitor reports explicitly identify these as mixed enclosures rather than merely species held in the building."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Brushtail Possum",
+        "Sugar Glider"
+      ],
+      "evidence": [
+        {
+          "source": "ZooChat mixed-exhibit experience report",
+          "date": "2011",
+          "note": "Experienced zoo observer reports having seen numerous mixed exhibits involving Sugar Gliders, explicitly including Brushtail Possum among the companion species."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Bald Uakari",
+        "Guaian Bearded Saki"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooParque Itatiba",
+          "country": "Brazil",
+          "source": "Documented mixed-primate exhibit report",
+          "note": "ZooParque Itatiba documents Bald Uakari in a mixed exhibit with Red-backed Bearded Saki. Per Zoo Curator's accepted bearded-saki gameplay mapping, this is represented by the inventory species Guaian Bearded Saki."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Bell's Hinge-Back Tortoise",
+        "Leopard Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Werribee Open Range Zoo",
+          "country": "Australia",
+          "date": "2023",
+          "source": "Detailed Werribee exhibit review, corroborated by the zoo's official 2022/23 animal inventory",
+          "note": "A dedicated tortoise building is described as housing Bell's Hinge-Back Tortoise and Leopard Tortoise, with indoor and outdoor exhibit space. The official inventory independently confirms both taxa at Werribee."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Chinese Box Turtle",
+        "Asian Leaf Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Singapore Zoo / Mandai Wildlife Reserve",
+          "country": "Singapore",
+          "date": "2024-2025",
+          "source": "Photographed Reptile Garden / Rainforest Wild Asia mixed chelonian exhibit",
+          "note": "Chinese Box Turtle was explicitly housed in one shared Asian chelonian exhibit with Asian Leaf Turtle, Elongated Tortoise and Spiny Hill Turtle/Terrapin. The roster was documented in 2024 at Singapore Zoo and again in 2025 after transfer to Rainforest Wild Asia."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Chinese Box Turtle",
+        "Elongated Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Singapore Zoo / Mandai Wildlife Reserve",
+          "country": "Singapore",
+          "date": "2024-2025",
+          "source": "Photographed Reptile Garden / Rainforest Wild Asia mixed chelonian exhibit",
+          "note": "Chinese Box Turtle was explicitly housed in one shared Asian chelonian exhibit with Asian Leaf Turtle, Elongated Tortoise and Spiny Hill Turtle/Terrapin. The roster was documented in 2024 at Singapore Zoo and again in 2025 after transfer to Rainforest Wild Asia."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Chinese Box Turtle",
+        "Spiny Hill Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Singapore Zoo / Mandai Wildlife Reserve",
+          "country": "Singapore",
+          "date": "2024-2025",
+          "source": "Photographed Reptile Garden / Rainforest Wild Asia mixed chelonian exhibit",
+          "note": "Chinese Box Turtle was explicitly housed in one shared Asian chelonian exhibit with Asian Leaf Turtle, Elongated Tortoise and Spiny Hill Turtle/Terrapin. The roster was documented in 2024 at Singapore Zoo and again in 2025 after transfer to Rainforest Wild Asia."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Snapping Turtle",
+        "American Beaver"
+      ],
+      "evidence": [
+        {
+          "zoo": "Toronto Zoo",
+          "country": "Canada",
+          "source": "Toronto Zoo Americas mixed-exhibit documentation / detailed zoo inventory report",
+          "note": "Toronto Zoo's Americas section documents American Beaver and Common Snapping Turtle sharing the beaver aquatic exhibit, together with largemouth bass and other fish."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Snapping Turtle",
+        "Bobcat"
+      ],
+      "evidence": [
+        {
+          "zoo": "The Maryland Zoo in Baltimore",
+          "country": "United States",
+          "source": "Maryland Wilderness exhibit documentation / detailed mixed-reptile exhibit report",
+          "note": "The Maryland Wilderness complex documents a Bobcat and Common Snapping Turtle exhibit, renovated from the former Red Fox exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Eastern Yellow-Billed Hornbill",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Cincinnati Zoo & Botanical Garden",
+          "country": "United States",
+          "date": "2011",
+          "source": "Photographed Jungle Trails mixed-species aviary inventory",
+          "note": "Jungle Trails mixed-species aviary explicitly housed Eastern Yellow-Billed Hornbill with Hamerkop, Golden-Breasted Starling and Ruddy Shelduck. The Hamerkops were later reported removed from the exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Crowned Hornbill",
+        "Blue Duiker"
+      ],
+      "evidence": [
+        {
+          "zoo": "Montgomery Zoo",
+          "country": "United States",
+          "source": "Old World Aviary species inventory",
+          "note": "Montgomery Zoo's Old World Aviary is documented as a shared African bird-and-mammal aviary containing Crowned Hornbill and Blue Duiker, alongside Hamerkop and several African bird species."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Asian Houbara",
+        "Greater Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Arabia's Wildlife Centre",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "ZooInstitutes Arabian mixed aviary exhibit record",
+          "note": "The 2024 walk-through Arabian mixed aviary explicitly lists Houbara Bustard (Chlamydotis macqueenii) and Greater Flamingo (Phoenicopterus roseus) among the animals sharing the exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Boreal Owl",
+        "Eurasian Pygmy-Owl"
+      ],
+      "evidence": [
+        {
+          "zoo": "Alpenzoo Innsbruck",
+          "country": "Austria",
+          "date": "2015",
+          "source": "Detailed photographed ZooChat visit report of the Owl Roundhouse",
+          "note": "The first Owl Roundhouse aviary is explicitly described as a mixed exhibit for European Boreal Owl (Aegolius funereus funereus) and European/Eurasian Pygmy Owl (Glaucidium passerinum), with both species sharing the densely vegetated aviary."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Tawny Owl",
+        "Short-Eared Owl"
+      ],
+      "evidence": [
+        {
+          "source": "Association of Zoos and Aquariums (AZA), Owl (Strigiformes) Care Manual, Table 6",
+          "note": "AZA's mixed-species owl table documents Barn, Tawny, Long-Eared, Short-Eared and Little Owls housed together in a 45 x 10 x 10 m aviary, with all species breeding. Zoo Curator's generic Barn Owl is not present in the current inventory, so only exact inventory taxa from the documented group are matrixed here."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Tawny Owl",
+        "Little Owl"
+      ],
+      "evidence": [
+        {
+          "source": "Association of Zoos and Aquariums (AZA), Owl (Strigiformes) Care Manual, Table 6",
+          "note": "AZA's mixed-species owl table documents Barn, Tawny, Long-Eared, Short-Eared and Little Owls housed together in a 45 x 10 x 10 m aviary, with all species breeding. Zoo Curator's generic Barn Owl is not present in the current inventory, so only exact inventory taxa from the documented group are matrixed here."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Long-Eared Owl",
+        "Short-Eared Owl"
+      ],
+      "evidence": [
+        {
+          "source": "Association of Zoos and Aquariums (AZA), Owl (Strigiformes) Care Manual, Table 6",
+          "note": "AZA's mixed-species owl table documents Barn, Tawny, Long-Eared, Short-Eared and Little Owls housed together in a 45 x 10 x 10 m aviary, with all species breeding. Zoo Curator's generic Barn Owl is not present in the current inventory, so only exact inventory taxa from the documented group are matrixed here."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Long-Eared Owl",
+        "Little Owl"
+      ],
+      "evidence": [
+        {
+          "source": "Association of Zoos and Aquariums (AZA), Owl (Strigiformes) Care Manual, Table 6",
+          "note": "AZA's mixed-species owl table documents Barn, Tawny, Long-Eared, Short-Eared and Little Owls housed together in a 45 x 10 x 10 m aviary, with all species breeding. Zoo Curator's generic Barn Owl is not present in the current inventory, so only exact inventory taxa from the documented group are matrixed here."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Short-Eared Owl",
+        "Little Owl"
+      ],
+      "evidence": [
+        {
+          "source": "Association of Zoos and Aquariums (AZA), Owl (Strigiformes) Care Manual, Table 6",
+          "note": "AZA's mixed-species owl table documents Barn, Tawny, Long-Eared, Short-Eared and Little Owls housed together in a 45 x 10 x 10 m aviary, with all species breeding. Zoo Curator's generic Barn Owl is not present in the current inventory, so only exact inventory taxa from the documented group are matrixed here."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Binturong",
+        "Tufted Deer"
+      ],
+      "evidence": [
+        {
+          "source": "AZA Small Carnivore TAG (2010) Viverrids Care Manual, as compiled and discussed in Svábik 2020, Mixed-species exhibits with Civets and Genets",
+          "note": "Binturongs are explicitly reported as having been successfully exhibited with Tufted Deer. The specialist review cites the AZA Viverrids Care Manual for this successful combination."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Short-Beaked Echidna",
+        "Red and White Giant Flying Squirrel"
+      ],
+      "evidence": [
+        {
+          "zoo": "Wrocław Zoo",
+          "country": "Poland",
+          "source": "Detailed ZooChat review of Wrocław Zoo",
+          "note": "The review explicitly states that Short-beaked Echidnas lived together with Red and White Giant Flying Squirrels in one indoor exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Tailed Prairie Dog",
+        "Burrowing Owl"
+      ],
+      "evidence": [
+        {
+          "zoo": "California Living Museum (CALM)",
+          "country": "United States",
+          "date": "2023",
+          "source": "Detailed photographed zoo visit report describing the Wild Prairies walk-through aviary",
+          "note": "Wild Prairies is explicitly described as a walk-through aviary containing Prairie Dog, Burrowing Owl, Barn Owl, Turkey Vulture and Roadrunner. Zoo Curator's Black-Tailed Prairie Dog and American Barn Owl are the corresponding inventory taxa used here."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Tailed Prairie Dog",
+        "American Barn Owl"
+      ],
+      "evidence": [
+        {
+          "zoo": "California Living Museum (CALM)",
+          "country": "United States",
+          "date": "2023",
+          "source": "Detailed photographed zoo visit report describing the Wild Prairies walk-through aviary",
+          "note": "Wild Prairies is explicitly described as a walk-through aviary containing Prairie Dog, Burrowing Owl, Barn Owl, Turkey Vulture and Roadrunner. Zoo Curator's Black-Tailed Prairie Dog and American Barn Owl are the corresponding inventory taxa used here."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Maned Wolf",
+        "Galapagos Giant Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "source": "ZOOLEX / Zoltán Svábik, Mixed-species exhibits with Dogs (Canidae), 2020",
+          "note": "The specialist mixed-canid review explicitly documents a Houston Zoo mixed exhibit containing Maned Wolf, African Spurred Tortoise and Galápagos Tortoise together."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Spurred Tortoise",
+        "Galapagos Giant Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "source": "ZOOLEX / Zoltán Svábik, Mixed-species exhibits with Dogs (Canidae), 2020",
+          "note": "The specialist mixed-canid review explicitly documents a Houston Zoo mixed exhibit containing Maned Wolf, African Spurred Tortoise and Galápagos Tortoise together."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pygmy Hippopotamus",
+        "Rüppell's Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Franklin Park Zoo – Zoo New England",
+          "country": "United States",
+          "source": "Krisztián Svábik, Mixed-species exhibits with zoo-housed Hippopotamuses (2022), citing AZA Ungulate TAGs 2017",
+          "note": "The review reports Pygmy Hippopotamus, Hartlaub's Duck and Rüppell's Vulture successfully mixed in Franklin Park Zoo's Tropical Forest since 2000; the vultures had elevated perching/nesting inaccessible to the hippos."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pygmy Hippopotamus",
+        "African Spurred Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Givskud Zoo – Zootopia",
+          "country": "Denmark",
+          "source": "Krisztián Svábik, Mixed-species exhibits with zoo-housed Hippopotamuses (2022)",
+          "note": "The specialist review lists a Givskud mixed exhibit containing Pygmy Hippopotamus, Marabou and African Spurred Tortoise."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pygmy Hippopotamus",
+        "Northern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Orientarium Zoo Łódź",
+          "country": "Poland",
+          "source": "ZooInstitutes Pygmy hippo exhibit record",
+          "note": "The exhibit is explicitly marked as a mixed, walk-through exhibit and lists Pygmy Hippopotamus and Northern Bald Ibis together, alongside African Spoonbill, Black Swan, Hamerkop, Sacred Ibis, Cattle Egret and African Comb Duck."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pygmy Hippopotamus",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Orientarium Zoo Łódź",
+          "country": "Poland",
+          "source": "ZooInstitutes Pygmy hippo exhibit record",
+          "note": "The exhibit is explicitly marked as a mixed, walk-through exhibit and lists Pygmy Hippopotamus and Hamerkop together, alongside several other African/water birds."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Long-Billed Corella",
+        "Palm Cockatoo"
+      ],
+      "evidence": [
+        {
+          "source": "Palm Cockatoo Husbandry Manual, Dr Donna Treby / Australasian Society of Zoo Keeping; Table 1 citing Taylor 1998",
+          "note": "The husbandry manual's interspecific compatibility table records Long-billed Corella and Blue-eyed Cockatoo as species successfully housed with Palm Cockatoos. It cautions that Palm Cockatoos may become aggressive while raising chicks, so other parrots may need removal during breeding."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Indian Star Tortoise",
+        "Green Iguana"
+      ],
+      "evidence": [
+        {
+          "source": "Observational Study on Captive Indian Star Tortoise (Geochelone elegans) in intra and interspecific enclosures",
+          "note": "The published study describes Enclosure II as a mixed-species terrestrial enclosure containing Indian Star Tortoises, Green Iguanas, green vine snakes, bronzeback snakes, keelback snakes, trinket snakes and frogs."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Indian Star Tortoise",
+        "Ring-Tailed Lemur"
+      ],
+      "evidence": [
+        {
+          "zoo": "Virginia Safari Park",
+          "country": "United States",
+          "date": "2020",
+          "source": "Photographed Virginia Safari Park exhibit record",
+          "note": "A June 2020 photograph documents Indian Star Tortoise on the ground in the Ring-Tailed Lemur mixed exhibit; the gallery discussion explicitly identifies the tortoises as mixed with Ring-Tailed Lemurs."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Northern Cassowary",
+        "Llama"
+      ],
+      "evidence": [
+        {
+          "zoo": "Taman Safari Bogor",
+          "country": "Indonesia",
+          "source": "ZooChat unusual/unique mixed-exhibit compilation; taxon presence independently corroborated by Zootierliste/Wikimedia zoo records",
+          "note": "Taman Safari Bogor is specifically reported as maintaining Red Lechwe, Llama and Northern Cassowary together. Red Lechwe is absent from the current Zoo Curator inventory, so only the exact Northern Cassowary + Llama pair is added."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Indian Star Tortoise",
+        "Goeldi's Monkey"
+      ],
+      "evidence": [
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "source": "Detailed Houston Zoo mixed-primate exhibit report (Natural Encounters Building)",
+          "note": "Houston Zoo's indoor/outdoor Natural Encounters rainforest is reported to rotate and sometimes simultaneously exhibit Goeldi's Monkey, Golden Lion Tamarin, Golden-Headed Lion Tamarin, Pygmy Marmoset and White-Faced Saki; these primates share the exhibit with Indian Star Tortoise, Linnaeus's Two-Toed Sloth, Victoria Crowned Pigeon and imperial pigeons."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Indian Star Tortoise",
+        "Golden Lion Tamarin"
+      ],
+      "evidence": [
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "source": "Detailed Houston Zoo mixed-primate exhibit report (Natural Encounters Building)",
+          "note": "Houston Zoo's indoor/outdoor Natural Encounters rainforest is reported to rotate and sometimes simultaneously exhibit Goeldi's Monkey, Golden Lion Tamarin, Golden-Headed Lion Tamarin, Pygmy Marmoset and White-Faced Saki; these primates share the exhibit with Indian Star Tortoise, Linnaeus's Two-Toed Sloth, Victoria Crowned Pigeon and imperial pigeons."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Indian Star Tortoise",
+        "Golden-Headed Lion Tamarin"
+      ],
+      "evidence": [
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "source": "Detailed Houston Zoo mixed-primate exhibit report (Natural Encounters Building)",
+          "note": "Houston Zoo's indoor/outdoor Natural Encounters rainforest is reported to rotate and sometimes simultaneously exhibit Goeldi's Monkey, Golden Lion Tamarin, Golden-Headed Lion Tamarin, Pygmy Marmoset and White-Faced Saki; these primates share the exhibit with Indian Star Tortoise, Linnaeus's Two-Toed Sloth, Victoria Crowned Pigeon and imperial pigeons."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Indian Star Tortoise",
+        "Pygmy Marmoset"
+      ],
+      "evidence": [
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "source": "Detailed Houston Zoo mixed-primate exhibit report (Natural Encounters Building)",
+          "note": "Houston Zoo's indoor/outdoor Natural Encounters rainforest is reported to rotate and sometimes simultaneously exhibit Goeldi's Monkey, Golden Lion Tamarin, Golden-Headed Lion Tamarin, Pygmy Marmoset and White-Faced Saki; these primates share the exhibit with Indian Star Tortoise, Linnaeus's Two-Toed Sloth, Victoria Crowned Pigeon and imperial pigeons."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Indian Star Tortoise",
+        "White-Faced Saki"
+      ],
+      "evidence": [
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "source": "Detailed Houston Zoo mixed-primate exhibit report (Natural Encounters Building)",
+          "note": "Houston Zoo's indoor/outdoor Natural Encounters rainforest is reported to rotate and sometimes simultaneously exhibit Goeldi's Monkey, Golden Lion Tamarin, Golden-Headed Lion Tamarin, Pygmy Marmoset and White-Faced Saki; these primates share the exhibit with Indian Star Tortoise, Linnaeus's Two-Toed Sloth, Victoria Crowned Pigeon and imperial pigeons."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Indian Star Tortoise",
+        "Linneaus's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Houston Zoo",
+          "country": "United States",
+          "source": "Detailed Houston Zoo mixed-primate exhibit report (Natural Encounters Building)",
+          "note": "Houston Zoo's indoor/outdoor Natural Encounters rainforest is reported to rotate and sometimes simultaneously exhibit Goeldi's Monkey, Golden Lion Tamarin, Golden-Headed Lion Tamarin, Pygmy Marmoset and White-Faced Saki; these primates share the exhibit with Indian Star Tortoise, Linnaeus's Two-Toed Sloth, Victoria Crowned Pigeon and imperial pigeons."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Chinese Box Turtle",
+        "Green Iguana"
+      ],
+      "evidence": [
+        {
+          "zoo": "TerraZoo Rheinberg",
+          "country": "Germany",
+          "source": "Documented reptile mixed-exhibit compilation",
+          "note": "TerraZoo Rheinberg is specifically reported keeping Central American Green Iguana with Chinese Stripe-Necked Turtle and Chinese Box Turtle in the same mixed reptile exhibit, alongside several other reptiles."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Chinese Box Turtle",
+        "Chinese Stripe-Necked Turtle"
+      ],
+      "evidence": [
+        {
+          "zoo": "TerraZoo Rheinberg",
+          "country": "Germany",
+          "source": "Documented reptile mixed-exhibit compilation",
+          "note": "TerraZoo Rheinberg is specifically reported keeping Central American Green Iguana with Chinese Stripe-Necked Turtle and Chinese Box Turtle in the same mixed reptile exhibit, alongside several other reptiles."
         }
       ]
     }
@@ -33309,6 +33758,43 @@
       ],
       "alpine_mouflon_boar_partner_pool": [
         "Wild Boar"
+      ],
+      "small_ramphastid_proxy": [
+        "Green Aracari",
+        "Black-Necked Aracari",
+        "Chestnut-Eared Aracari",
+        "Crimson-Rumped Toucanet",
+        "Curl-Crested Aracari",
+        "Guyana Toucanet",
+        "Ivory-Billed Aracari",
+        "Pale-Billed Aracari",
+        "Saffron Toucanet",
+        "Spot-Billed Toucanet"
+      ],
+      "small_ramphastid_robust_partners": [
+        "Giant Anteater",
+        "Green Iguana",
+        "Red-Footed Tortoise",
+        "Common Trumpeter",
+        "Sunbittern",
+        "Brazilian Porcupine",
+        "Linneaus's Two-Toed Sloth",
+        "Hoffmann's Two-Toed Sloth"
+      ],
+      "large_toucan_proxy": [
+        "Toco Toucan",
+        "Channel-Billed Toucan",
+        "White-Throated Toucan",
+        "Red-Breasted Toucan",
+        "Keel-Billed Toucan"
+      ],
+      "large_toucan_robust_partners": [
+        "Giant Anteater",
+        "Green Iguana",
+        "Common Trumpeter",
+        "Red-Legged Seriema",
+        "Brazilian Porcupine",
+        "Linneaus's Two-Toed Sloth"
       ]
     },
     "complete_groups": [
@@ -33772,6 +34258,18 @@
         "to": "alpine_mouflon_boar_partner_pool",
         "mode": "rocky_caprine_external_partner_proxy",
         "note": "Narrow Zoo Curator gameplay proxy. Wild Boar + Mouflon is directly documented at Prague Zoo, Nógrádi Vadaspark and Xantus János Állatkert. Alpine Ibex and Mouflon are already linked in the game's managed rocky-caprine husbandry profile, so Alpine Ibex inherits Wild Boar as an external partner. This does not extend Wild Boar compatibility to every goat/sheep/caprine."
+      },
+      {
+        "from": "small_ramphastid_proxy",
+        "to": "small_ramphastid_robust_partners",
+        "mode": "small_ramphastid_robust_partner_proxy",
+        "note": "Conservative Zoo Curator proxy derived from repeated mixed-aviary evidence for aracaris and smaller toucanets. It propagates only robust/structurally separated companions (large terrestrial mammals, reptiles, robust ground birds and sloths). It does not infer ramphastid-to-ramphastid compatibility, does not propagate parrots or other small flying birds, and deliberately excludes Emerald Toucanet and Plate-Billed Mountain Toucan."
+      },
+      {
+        "from": "large_toucan_proxy",
+        "to": "large_toucan_robust_partners",
+        "mode": "large_toucan_robust_partner_proxy",
+        "note": "Conservative Zoo Curator proxy for large Ramphastos/Keel-Billed toucans, based on repeated zoo mixed-exhibit evidence. Only robust terrestrial/reptile/ground-bird/sloth partners are propagated. Bird-to-bird combinations such as macaws, Amazons and ibises remain direct evidence-only because large toucans can be predatory and aggressive, especially around breeding."
       }
     ]
   },
@@ -38998,6 +39496,848 @@
       ],
       "evidence": "Cleveland Metroparks Zoo – The RainForest, 2013-10-14; both explicitly documented as free-roaming Upper Forest birds.",
       "result": "Completes direct compatibility edges among Giant Anteater, Scarlet Ibis and Roseate Spoonbill."
+    },
+    "toucan_proxy_pass15": {
+      "date": "2026-09-29",
+      "direct_pairs_before": 2054,
+      "direct_pairs_after": 2020,
+      "direct_pairs_collapsed": 34,
+      "policy": "Only direct pairs exactly implied by the two new conservative ramphastid group links were removed. Unusual bird-to-bird and ramphastid-to-ramphastid evidence remains explicit.",
+      "collapsed_pairs": [
+        [
+          "Black-Necked Aracari",
+          "Giant Anteater"
+        ],
+        [
+          "Black-Necked Aracari",
+          "Linneaus's Two-Toed Sloth"
+        ],
+        [
+          "Black-Necked Aracari",
+          "Red-Footed Tortoise"
+        ],
+        [
+          "Brazilian Porcupine",
+          "Green Aracari"
+        ],
+        [
+          "Chestnut-Eared Aracari",
+          "Green Iguana"
+        ],
+        [
+          "Giant Anteater",
+          "Crimson-Rumped Toucanet"
+        ],
+        [
+          "Giant Anteater",
+          "Keel-Billed Toucan"
+        ],
+        [
+          "Giant Anteater",
+          "Toco Toucan"
+        ],
+        [
+          "Green Aracari",
+          "Green Iguana"
+        ],
+        [
+          "Green Aracari",
+          "Sunbittern"
+        ],
+        [
+          "Green Iguana",
+          "Keel-Billed Toucan"
+        ],
+        [
+          "Green Iguana",
+          "Toco Toucan"
+        ],
+        [
+          "Hoffmann's Two-Toed Sloth",
+          "Spot-Billed Toucanet"
+        ],
+        [
+          "Linneaus's Two-Toed Sloth",
+          "Saffron Toucanet"
+        ],
+        [
+          "Linneaus's Two-Toed Sloth",
+          "Toco Toucan"
+        ],
+        [
+          "Channel-Billed Toucan",
+          "Green Iguana"
+        ],
+        [
+          "Guyana Toucanet",
+          "Green Iguana"
+        ],
+        [
+          "Pale-Billed Aracari",
+          "Giant Anteater"
+        ],
+        [
+          "Green Aracari",
+          "Red-Footed Tortoise"
+        ],
+        [
+          "Ivory-Billed Aracari",
+          "Sunbittern"
+        ],
+        [
+          "Curl-Crested Aracari",
+          "Red-Footed Tortoise"
+        ],
+        [
+          "Red-Breasted Toucan",
+          "Common Trumpeter"
+        ],
+        [
+          "Crimson-Rumped Toucanet",
+          "Common Trumpeter"
+        ],
+        [
+          "White-Throated Toucan",
+          "Common Trumpeter"
+        ],
+        [
+          "Curl-Crested Aracari",
+          "Common Trumpeter"
+        ],
+        [
+          "Channel-Billed Toucan",
+          "Linneaus's Two-Toed Sloth"
+        ],
+        [
+          "Channel-Billed Toucan",
+          "Brazilian Porcupine"
+        ],
+        [
+          "Channel-Billed Toucan",
+          "Red-Legged Seriema"
+        ],
+        [
+          "Red-Breasted Toucan",
+          "Linneaus's Two-Toed Sloth"
+        ],
+        [
+          "Red-Breasted Toucan",
+          "Brazilian Porcupine"
+        ],
+        [
+          "Red-Breasted Toucan",
+          "Green Iguana"
+        ],
+        [
+          "Red-Breasted Toucan",
+          "Red-Legged Seriema"
+        ],
+        [
+          "Toco Toucan",
+          "Brazilian Porcupine"
+        ],
+        [
+          "Toco Toucan",
+          "Red-Legged Seriema"
+        ]
+      ],
+      "collapsed_pair_records": [
+        {
+          "animals": [
+            "Black-Necked Aracari",
+            "Giant Anteater"
+          ],
+          "evidence": [
+            {
+              "zoo": "Dallas World Aquarium",
+              "country": "United States",
+              "date": "2022-01-03"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Black-Necked Aracari",
+            "Linneaus's Two-Toed Sloth"
+          ],
+          "evidence": [
+            {
+              "zoo": "Weltvogelpark Walsrode",
+              "country": "Germany",
+              "date": "2026-08"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Black-Necked Aracari",
+            "Red-Footed Tortoise"
+          ],
+          "evidence": [
+            {
+              "zoo": "Weltvogelpark Walsrode",
+              "country": "Germany",
+              "date": "2026-08"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Brazilian Porcupine",
+            "Green Aracari"
+          ],
+          "evidence": [
+            {
+              "zoo": "Orientarium Zoo Łódź",
+              "country": "Poland",
+              "date": "2025"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Chestnut-Eared Aracari",
+            "Green Iguana"
+          ],
+          "evidence": [
+            {
+              "zoo": "Selwo Marina Benalmádena",
+              "country": "Spain",
+              "date": "2025-09-21"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Giant Anteater",
+            "Crimson-Rumped Toucanet"
+          ],
+          "evidence": [
+            {
+              "zoo": "Dallas World Aquarium",
+              "country": "United States",
+              "date": "2013-04"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Giant Anteater",
+            "Keel-Billed Toucan"
+          ],
+          "evidence": [
+            {
+              "zoo": "Dallas World Aquarium",
+              "country": "United States",
+              "date": "2013-04"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Giant Anteater",
+            "Toco Toucan"
+          ],
+          "evidence": [
+            {
+              "zoo": "Dallas World Aquarium",
+              "country": "United States",
+              "date": "2013-04"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Green Aracari",
+            "Green Iguana"
+          ],
+          "evidence": [
+            {
+              "zoo": "Zoomarine Algarve",
+              "country": "Portugal",
+              "date": "2023"
+            },
+            {
+              "zoo": "Zoomarine",
+              "country": "Portugal",
+              "date": "2022"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Green Aracari",
+            "Sunbittern"
+          ],
+          "evidence": [
+            {
+              "zoo": "Zoomarine",
+              "country": "Portugal",
+              "date": "2022"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Green Iguana",
+            "Keel-Billed Toucan"
+          ],
+          "evidence": [
+            {
+              "zoo": "Chapultepec Zoo",
+              "country": "Mexico",
+              "date": "documented 2020"
+            },
+            {
+              "zoo": "Zoológico de San Juan de Aragón",
+              "country": "Mexico",
+              "date": "2010-12-25"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Green Iguana",
+            "Toco Toucan"
+          ],
+          "evidence": [
+            {
+              "zoo": "Zoo Miami",
+              "country": "United States",
+              "date": "2026-08"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Hoffmann's Two-Toed Sloth",
+            "Spot-Billed Toucanet"
+          ],
+          "evidence": [
+            {
+              "zoo": "Dallas World Aquarium",
+              "country": "United States",
+              "date": "2013"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Linneaus's Two-Toed Sloth",
+            "Saffron Toucanet"
+          ],
+          "evidence": [
+            {
+              "zoo": "Bird Paradise",
+              "country": "Singapore",
+              "date": "2025"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Linneaus's Two-Toed Sloth",
+            "Toco Toucan"
+          ],
+          "evidence": [
+            {
+              "zoo": "Singapore Zoo",
+              "country": "Singapore",
+              "date": "2022"
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Channel-Billed Toucan",
+            "Green Iguana"
+          ],
+          "evidence": [
+            {
+              "zoo": "Santa Ana Zoo / Singapore Zoo",
+              "country": "United States / Singapore",
+              "date": "documented in 2021 review",
+              "source": "Mo & Mo (2021), Green Iguanas in mixed-species exhibits",
+              "note": "Published review explicitly documents Channel-billed Toucans sharing mixed exhibits with Green Iguanas."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Guyana Toucanet",
+            "Green Iguana"
+          ],
+          "evidence": [
+            {
+              "zoo": "Bird Kingdom",
+              "country": "Canada",
+              "date": "2026-08-23",
+              "source": "contemporary visit/species report",
+              "note": "Green Iguana and Guyana Toucanet listed together as an exhibit."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Pale-Billed Aracari",
+            "Giant Anteater"
+          ],
+          "evidence": [
+            {
+              "zoo": "Dallas World Aquarium",
+              "country": "United States",
+              "date": "2013-04",
+              "source": "ZooChat documented Orinoco Rainforest Jungle Junction exhibit",
+              "note": "Pale-mandibled/Pale-Billed Aracari explicitly documented in the same Jungle Junction exhibit with Giant Anteater, Crimson-Rumped Toucanet and Giant Wood-Rail, among other species."
+            },
+            {
+              "zoo": "Dallas World Aquarium",
+              "country": "United States",
+              "date": "2025-04-18",
+              "source": "ZooChat Jungle Junction exhibit photograph",
+              "note": "Contemporary Jungle Junction photograph/caption again identifies Pale-mandibled Aracari and Giant Anteater in the same exhibit."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Green Aracari",
+            "Red-Footed Tortoise"
+          ],
+          "evidence": [
+            {
+              "zoo": "Salisbury Zoo",
+              "country": "United States",
+              "date": "2026-02-02",
+              "source": "Salisbury Zoo announcement",
+              "note": "Zoo announcement states the Green Aracari pair joined the Red-footed Tortoises in the renovated Rainforest habitat."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Ivory-Billed Aracari",
+            "Sunbittern"
+          ],
+          "evidence": [
+            {
+              "zoo": "Weltvogelpark Walsrode",
+              "country": "Germany",
+              "date": "2025-10 and 2026-07/08",
+              "source": "Detailed species-by-aviary inventories",
+              "note": "Aviary 2 explicitly housed Pteroglossus azara with Sunbittern in both the October 2025 and July/August 2026 inventories; the aracari was reported under brown-mandibled/yellow-billed subspecific common names."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Curl-Crested Aracari",
+            "Red-Footed Tortoise"
+          ],
+          "evidence": [
+            {
+              "zoo": "Woodland Park Zoo",
+              "country": "United States",
+              "date": "2026-05-01",
+              "source": "Detailed species-by-exhibit inventory / visit report",
+              "note": "Tropical Rainforest Walkthrough Aviary explicitly lists Curl-crested Aracari and Red-footed Tortoise together; observer reports seeing the tortoise walking on the aviary floor."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Red-Breasted Toucan",
+            "Common Trumpeter"
+          ],
+          "evidence": [
+            {
+              "zoo": "Dallas World Aquarium",
+              "country": "United States",
+              "date": "current page, corroborated by 2018 Toucan Heights record",
+              "source": "Dallas World Aquarium official Toucan Heights exhibit page",
+              "note": "The official Toucan Heights exhibit page lists Red-breasted Toucan, Sunbittern and Grey-winged Trumpeter (Psophia crepitans) under the same exhibit. A dated 2018 photograph independently places Red-breasted Toucan in Toucan Heights."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Crimson-Rumped Toucanet",
+            "Common Trumpeter"
+          ],
+          "evidence": [
+            {
+              "zoo": "Weltvogelpark Walsrode",
+              "country": "Germany",
+              "date": "historical collection layout",
+              "source": "Weltvogelpark Walsrode species-list-over-the-years aviary archive",
+              "note": "Former Block 2 Aviary 2 explicitly lists Crimson-rumped Toucanet, White-throated Toucan and Grey-winged Trumpeter together. Grey-winged Trumpeter is Psophia crepitans, matching the inventory's Common Trumpeter."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "White-Throated Toucan",
+            "Common Trumpeter"
+          ],
+          "evidence": [
+            {
+              "zoo": "Weltvogelpark Walsrode",
+              "country": "Germany",
+              "date": "historical collection layout",
+              "source": "Weltvogelpark Walsrode species-list-over-the-years aviary archive",
+              "note": "Former Block 2 Aviary 2 explicitly lists Crimson-rumped Toucanet, White-throated Toucan and Grey-winged Trumpeter together. Grey-winged Trumpeter is Psophia crepitans, matching the inventory's Common Trumpeter."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Curl-Crested Aracari",
+            "Common Trumpeter"
+          ],
+          "evidence": [
+            {
+              "zoo": "Weltvogelpark Walsrode",
+              "country": "Germany",
+              "date": "2025-10 and 2026-07/08",
+              "source": "Detailed species-by-aviary inventories",
+              "note": "Aviary 5 explicitly housed Curl-crested Aracari (Pteroglossus beauharnaisii) with Grey-winged Trumpeter (Psophia crepitans) in both inventories. Psophia crepitans matches the inventory's Common Trumpeter."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Channel-Billed Toucan",
+            "Linneaus's Two-Toed Sloth"
+          ],
+          "evidence": [
+            {
+              "zoo": "BioParque do Rio",
+              "country": "Brazil",
+              "date": "2021",
+              "source": "Detailed species-by-exhibit inventory",
+              "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Channel-Billed Toucan",
+            "Brazilian Porcupine"
+          ],
+          "evidence": [
+            {
+              "zoo": "BioParque do Rio",
+              "country": "Brazil",
+              "date": "2021",
+              "source": "Detailed species-by-exhibit inventory",
+              "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Channel-Billed Toucan",
+            "Red-Legged Seriema"
+          ],
+          "evidence": [
+            {
+              "zoo": "BioParque do Rio",
+              "country": "Brazil",
+              "date": "2021",
+              "source": "Detailed species-by-exhibit inventory",
+              "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Red-Breasted Toucan",
+            "Linneaus's Two-Toed Sloth"
+          ],
+          "evidence": [
+            {
+              "zoo": "BioParque do Rio",
+              "country": "Brazil",
+              "date": "2021",
+              "source": "Detailed species-by-exhibit inventory",
+              "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Red-Breasted Toucan",
+            "Brazilian Porcupine"
+          ],
+          "evidence": [
+            {
+              "zoo": "BioParque do Rio",
+              "country": "Brazil",
+              "date": "2021",
+              "source": "Detailed species-by-exhibit inventory",
+              "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Red-Breasted Toucan",
+            "Green Iguana"
+          ],
+          "evidence": [
+            {
+              "zoo": "BioParque do Rio",
+              "country": "Brazil",
+              "date": "2021",
+              "source": "Detailed species-by-exhibit inventory",
+              "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Red-Breasted Toucan",
+            "Red-Legged Seriema"
+          ],
+          "evidence": [
+            {
+              "zoo": "BioParque do Rio",
+              "country": "Brazil",
+              "date": "2021",
+              "source": "Detailed species-by-exhibit inventory",
+              "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Toco Toucan",
+            "Brazilian Porcupine"
+          ],
+          "evidence": [
+            {
+              "zoo": "BioParque do Rio",
+              "country": "Brazil",
+              "date": "2021",
+              "source": "Detailed species-by-exhibit inventory",
+              "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+            }
+          ]
+        },
+        {
+          "animals": [
+            "Toco Toucan",
+            "Red-Legged Seriema"
+          ],
+          "evidence": [
+            {
+              "zoo": "BioParque do Rio",
+              "country": "Brazil",
+              "date": "2021",
+              "source": "Detailed species-by-exhibit inventory",
+              "note": "The large Tropical Immersion walkthrough aviary explicitly lists these toucans and companion species together in the same exhibit."
+            }
+          ]
+        }
+      ],
+      "evidence_preservation": "Full original compatible_pair records are retained here so proxy compaction does not discard the zoo/source evidence."
+    },
+    "validation_cleanup_pass16": {
+      "removed_invalid_self_pairs": [
+        [
+          "Takin",
+          "Takin"
+        ]
+      ],
+      "note": "Removed invalid same-species entries from mixed-species compatible_pairs during full graph validation."
+    },
+    "low_coverage_pass20": {
+      "removed_after_verification": [
+        [
+          "Chimpanzee",
+          "Western Lowland Gorilla"
+        ]
+      ],
+      "removal_reason": "The Lisbon source groups adjacent ape exhibits under a mixed-exhibit label, but corroborating sources show the chimpanzees and gorillas were separate. AZA chimpanzee care guidance states purposeful mixed-species chimpanzee exhibits are not recommended.",
+      "added_pairs": [
+        [
+          "Bell's Hinge-Back Tortoise",
+          "Leopard Tortoise"
+        ]
+      ]
+    },
+    "low_coverage_pass23": {
+      "added_pairs": [
+        [
+          "Eastern Yellow-Billed Hornbill",
+          "Hamerkop"
+        ],
+        [
+          "Crowned Hornbill",
+          "Blue Duiker"
+        ]
+      ],
+      "notes": "Continued zero/low effective-combination audit; skipped plausible leads whose documented companions are absent from the current inventory."
+    },
+    "low_coverage_pass25": {
+      "added_pairs": [
+        [
+          "Boreal Owl",
+          "Eurasian Pygmy-Owl"
+        ]
+      ]
+    },
+    "low_coverage_pass26": {
+      "added_pairs": [
+        [
+          "Tawny Owl",
+          "Short-Eared Owl"
+        ],
+        [
+          "Tawny Owl",
+          "Little Owl"
+        ],
+        [
+          "Long-Eared Owl",
+          "Short-Eared Owl"
+        ],
+        [
+          "Long-Eared Owl",
+          "Little Owl"
+        ],
+        [
+          "Short-Eared Owl",
+          "Little Owl"
+        ]
+      ],
+      "basis": "AZA Owl Care Manual documented breeding mixed-species aviary"
+    },
+    "low_coverage_pass27": {
+      "added_pairs": [
+        [
+          "Binturong",
+          "Tufted Deer"
+        ]
+      ]
+    },
+    "low_coverage_pass28": {
+      "added_pairs": [
+        [
+          "Short-Beaked Echidna",
+          "Red and White Giant Flying Squirrel"
+        ]
+      ]
+    },
+    "low_coverage_pass29": {
+      "added_pairs": [
+        [
+          "Black-Tailed Prairie Dog",
+          "Burrowing Owl"
+        ],
+        [
+          "Black-Tailed Prairie Dog",
+          "American Barn Owl"
+        ]
+      ]
+    },
+    "low_coverage_pass30": {
+      "added_pairs": [
+        [
+          "Maned Wolf",
+          "Galapagos Giant Tortoise"
+        ],
+        [
+          "African Spurred Tortoise",
+          "Galapagos Giant Tortoise"
+        ]
+      ],
+      "skipped_leads": [
+        "Darling Downs Zoo Indian Star Tortoise + wallaby: genuine mixed exhibit, but the available report does not identify which wallaby species; no inventory mapping was assumed."
+      ]
+    },
+    "low_coverage_pass31": {
+      "added_pairs": [
+        [
+          "Pygmy Hippopotamus",
+          "Rüppell's Vulture"
+        ],
+        [
+          "Pygmy Hippopotamus",
+          "African Spurred Tortoise"
+        ]
+      ]
+    },
+    "low_coverage_pass32": {
+      "added_pairs": [
+        [
+          "Pygmy Hippopotamus",
+          "Northern Bald Ibis"
+        ],
+        [
+          "Pygmy Hippopotamus",
+          "Hamerkop"
+        ]
+      ]
+    },
+    "low_coverage_pass34": {
+      "added_pairs": [
+        [
+          "Indian Star Tortoise",
+          "Green Iguana"
+        ],
+        [
+          "Indian Star Tortoise",
+          "Ring-Tailed Lemur"
+        ]
+      ]
+    },
+    "low_coverage_pass35": {
+      "added_pairs": [
+        [
+          "Northern Cassowary",
+          "Llama"
+        ]
+      ]
+    },
+    "low_coverage_pass36": {
+      "added_pairs": [
+        [
+          "Indian Star Tortoise",
+          "Goeldi's Monkey"
+        ],
+        [
+          "Indian Star Tortoise",
+          "Golden Lion Tamarin"
+        ],
+        [
+          "Indian Star Tortoise",
+          "Golden-Headed Lion Tamarin"
+        ],
+        [
+          "Indian Star Tortoise",
+          "Pygmy Marmoset"
+        ],
+        [
+          "Indian Star Tortoise",
+          "White-Faced Saki"
+        ],
+        [
+          "Indian Star Tortoise",
+          "Linneaus's Two-Toed Sloth"
+        ]
+      ]
+    },
+    "low_coverage_pass37": {
+      "added_pairs": [
+        [
+          "Chinese Box Turtle",
+          "Green Iguana"
+        ],
+        [
+          "Chinese Box Turtle",
+          "Chinese Stripe-Necked Turtle"
+        ]
+      ]
     }
   }
 }

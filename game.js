@@ -350,7 +350,7 @@ function startingCollectionSizeRules(value = 20) {
     // five hard brackets.
     const species = Math.round(interpolateStartingZooValue(size, [
         [0, 0],
-        [20, 8],
+        [20, 7],
         [40, 14],
         [60, 24],
         [80, 36],
@@ -411,7 +411,7 @@ function startingZooSizeRules(value = 20) {
     // and therefore needs proportionally much less empty capacity.
     const maxSpaces = Math.round(interpolateStartingZooValue(size, [
         [0, 8],
-        [20, 12],   // 8 animals: +4 spare enclosure spaces
+        [20, 12],   // 7 animals: +5 spare enclosure spaces
         [40, 18],   // 14 animals: +4 spaces
         [60, 28],   // 24 animals: +4 spaces
         [80, 40],   // 36 animals: +4 spaces
@@ -1271,49 +1271,50 @@ function predictedPlayerTradeOffersWithoutEmergency(animal, writeCache = true, n
         }
 
         const records = realZooRecordsAvailableForTrade(animal);
-        const orderedRecords = selectPrestigeLocationCandidates(
-            records.map(record => ({ record })),
-            records.length,
-            `real-record-order|${animal.id}|${tradeOfferWindow()}`
-        ).map(item => item.record);
         const candidates = [];
         const playerKeys = playerOwnedTradeKeys();
 
-        // Prestige and geography are resolved before any zoo collection is
-        // inspected. Walk that ordered shortlist until the offer slots are
-        // full instead of materialising every animal held by every zoo. Reuse
-        // the ownership Set across the whole scan.
-        for (const record of orderedRecords) {
-            if (!realZooCanTradeFor(record, animal)) continue;
+        // Consume the prestige/geography weighted zoo order lazily. The old
+        // path first constructed the complete weighted permutation (quadratic
+        // in shortlist size) even though this prediction stops after at most
+        // simultaneousTradeOfferCap() live offers.
+        visitPrestigeLocationCandidates(
+            records.map(record=>({record})),
+            item=>{
+                const record=item.record;
+                if(!realZooCanTradeFor(record,animal))return true;
 
-            const matching = realZooTradeAnimals(record, true, playerKeys)
-                .filter(candidate =>
-                    candidate.level === animal.level &&
-                    tradeIncomingHasDestinationAfterOutgoing(candidate, animal)
+                const matching=[];
+                for(const candidate of realZooTradeAnimals(record,true,playerKeys)){
+                    if(
+                        candidate.level===animal.level &&
+                        tradeIncomingHasDestinationAfterOutgoing(candidate,animal)
+                    )matching.push(candidate);
+                }
+                if(!matching.length)return true;
+
+                const favourites=Array.isArray(record.preferred_categories)
+                    ?record.preferred_categories:[];
+                const likesOutgoing=favourites.includes(animal.category);
+                const baseInterest=likesOutgoing?.27:.11;
+                const levelPenalty=(animal.level-1)*.025;
+                const zooChance=Math.max(.025,baseInterest-levelPenalty);
+                const {seed,roll}=seededRoll(
+                    `real-zoo|${animal.id}|${record.name}|${tradeOfferWindow()}`
                 );
-            if (!matching.length) continue;
+                if(roll>zooChance)return true;
 
-            const favourites = Array.isArray(record.preferred_categories)
-                ? record.preferred_categories
-                : [];
-            const likesOutgoing = favourites.includes(animal.category);
-            const baseInterest = likesOutgoing ? 0.27 : 0.11;
-            const levelPenalty = (animal.level - 1) * 0.025;
-            const zooChance = Math.max(0.025, baseInterest - levelPenalty);
-
-            const { seed, roll } = seededRoll(
-                `real-zoo|${animal.id}|${record.name}|${tradeOfferWindow()}`
-            );
-            if (roll > zooChance) continue;
-
-            const offeredAnimal = weightedRandomItem(
-                matching,
-                candidate => animalZooTypeWeight(candidate, record.zoo_types || record.zooTypes || 'general', 'trade'),
-                ((seed >>> 8) % 1000000) / 1000000
-            );
-            candidates.push({ record, animal: offeredAnimal });
-            if (candidates.length >= simultaneousTradeOfferCap()) break;
-        }
+                const offeredAnimal=weightedRandomItem(
+                    matching,
+                    candidate=>animalZooTypeWeight(
+                        candidate,record.zoo_types||record.zooTypes||'general','trade'),
+                    ((seed>>>8)%1000000)/1000000
+                );
+                candidates.push({record,animal:offeredAnimal});
+                return candidates.length<simultaneousTradeOfferCap();
+            },
+            `real-record-order|${animal.id}|${tradeOfferWindow()}`
+        );
 
         const locked = candidates.map(item => ({
             recordName: item.record.name,
@@ -6214,7 +6215,15 @@ function tradeIncomingHasDestinationAfterOutgoing(incoming, outgoing) {
         outgoing.enclosureId = null;
         outgoing.slotIndex = null;
         clearAnimalZooReservation(outgoing);
-        return eligibleDestinationsForAnimal(incoming).length > 0;
+        // Trade validation needs only existence, not the complete destination
+        // list. Stop on the first legal slot instead of allocating every legal
+        // destination for every incoming/outgoing candidate pair.
+        for(const enclosure of state.enclosures||[]){
+            for(const slotIndex of getAllSlots(enclosure)){
+                if(canPlace(incoming,enclosure,slotIndex))return true;
+            }
+        }
+        return false;
     } finally {
         outgoing.enclosureId = oldEnclosureId;
         outgoing.slotIndex = oldSlotIndex;
@@ -7245,6 +7254,40 @@ function createStartingZoo(options = {}) {
     const specialistQuota = specialistStartingQuota(startupRules.species);
     let specialistCount = 0;
 
+    // Classic starts should expose at least one real Exchange immediately:
+    // three distinct Level 1 species in the same category, with a Level 2
+    // inventory available for that category. Preserve the explicit 0-animal
+    // slider endpoint (and any hypothetical 1-2 animal start); the guarantee is
+    // mathematically applicable whenever the requested collection has >=3 cards.
+    let classicExchangeAnchorCards = [];
+    if(requestedGameMode==='classic' && startupRules.species>=3){
+        const levelOneByCategory=new Map();
+        for(const candidate of availableStartingCardsAtLevel(1,false)){
+            if(!hasNextLevelInventory(candidate.category,1))continue;
+            if(!levelOneByCategory.has(candidate.category))
+                levelOneByCategory.set(candidate.category,[]);
+            levelOneByCategory.get(candidate.category).push(candidate);
+        }
+        let anchorCategories=[...levelOneByCategory.entries()]
+            .filter(([,cards])=>cards.length>=3)
+            .map(([category])=>category);
+        // When the configured specialist quota itself is at least three, make
+        // the guaranteed Exchange reinforce that zoo identity if possible.
+        if(specialistQuota>=3 && specialistCategories.length){
+            const specialistAnchors=anchorCategories.filter(category=>
+                specialistCategories.includes(category));
+            if(specialistAnchors.length)anchorCategories=specialistAnchors;
+        }
+        if(anchorCategories.length){
+            const anchorCategory=randomItem(anchorCategories);
+            classicExchangeAnchorCards=shuffle(
+                [...levelOneByCategory.get(anchorCategory)]
+            ).slice(0,3);
+        }else{
+            console.warn('Classic startup could not find a category with three distinct Level 1 cards and a Level 2 Exchange result.');
+        }
+    }
+
     for (let i = 0; i < startupRules.species; i++) {
         const stillNeeded = Math.max(0, specialistQuota - specialistCount);
         const slotsRemaining = startupRules.species - i;
@@ -7270,6 +7313,8 @@ function createStartingZoo(options = {}) {
             const source=(duplicatePool.length?duplicatePool:state.animals)[Math.floor(Math.random()*(duplicatePool.length?duplicatePool:state.animals).length)];
             startingCard={category:source.category,level:source.level,filename:source.filename};
             tutorialDuplicateSourceId=source.id;
+        }else if(classicExchangeAnchorCards[i]){
+            startingCard=classicExchangeAnchorCards[i];
         }else{
             startingCard = randomAvailableStartingAnimal(
                 startupRules.levelChances,
@@ -7286,6 +7331,8 @@ function createStartingZoo(options = {}) {
             animal.trueTutorialStartingDuplicate=true;
             animal.trueTutorialDuplicateOfId=tutorialDuplicateSourceId;
         }
+        if(requestedGameMode==='classic' && i<classicExchangeAnchorCards.length)
+            animal.classicStartingExchangeAnchor=true;
         state.animals.push(animal);
         if (specialistCategories.includes(animal.category)) specialistCount += 1;
         markPlayerLevelSeen(animal.level);
@@ -7496,7 +7543,8 @@ function createStartingZoo(options = {}) {
         const repairableIndexes=state.animals.map((animal,index)=>({animal,index})).filter(({animal})=>
             (speciesCounts.get(speciesKey(animal))||0)===1 &&
             !duplicateKeys.has(speciesKey(animal)) &&
-            !animal?.trueTutorialStartingDuplicate
+            !animal?.trueTutorialStartingDuplicate &&
+            !animal?.classicStartingExchangeAnchor
         ).map(({index})=>index);
         if(!repairableIndexes.length)break;
         const replaceIndex = repairableIndexes[Math.floor(Math.random() * repairableIndexes.length)];
@@ -7627,7 +7675,7 @@ function createStartingZoo(options = {}) {
         }
 
         if (fallbackFailed) {
-            // startup failsafe: an 8-animal opening is preferred, but a
+            // startup failsafe: the requested opening is preferred, but a
             // rare compatibility dead-end must never abort the whole game.
             // Retry the cheap greedy placement with 7 animals, then 6.
             const originalCount = state.animals.length;
@@ -7647,6 +7695,7 @@ function createStartingZoo(options = {}) {
                     const removableIndexes = [];
 
                     for (let index = 0; index < state.animals.length; index++) {
+                        if(state.animals[index]?.classicStartingExchangeAnchor)continue;
                         const candidateAnimals = state.animals.filter((_, i) => i !== index);
                         if (!startingCollectionProgressionIsValid(candidateAnimals)) continue;
 
@@ -7756,6 +7805,10 @@ function createStartingZoo(options = {}) {
         placed = true;
         console.warn('Startup used bounded greedy placement after compatibility search reached its limit.');
     }
+
+    // Generation-only protection is no longer needed once startup placement is
+    // settled; do not persist it into normal saves or multiplayer snapshots.
+    for(const animal of state.animals)delete animal.classicStartingExchangeAnchor;
 
     // A generated Level 4 card counts as placed now, so Enclosure 10 becomes
     // available for future rewards exactly as it would during normal play.
@@ -7877,6 +7930,147 @@ function resetTrueCalendarSimulation() {
         });
     }
 }
+
+// One-time Classic welcome for this browser. Keep it separate from zoo saves:
+// starting another zoo or loading an existing one should not replay the lesson.
+function classicTutorialStorageKey(){return 'zooCuratorClassicContextTutorialV2';}
+function classicTutorialSeen(){
+    try{return window.localStorage.getItem(classicTutorialStorageKey())==='1';}
+    catch(error){return !!showFirstClassicWelcomeBriefing.completedThisSession;}
+}
+function classicTutorialRememberComplete(){
+    showFirstClassicWelcomeBriefing.completedThisSession=true;
+    try{window.localStorage.setItem(classicTutorialStorageKey(),'1');}catch(error){}
+}
+function classicTutorialEligible(){
+    return state.gameMode==='classic'&&!state.sandboxMode&&!localClassicMatch&&!classicTutorialSeen();
+}
+function removeClassicTutorialHint(){
+    document.getElementById('classicContextTutorialHint')?.remove();
+    document.querySelectorAll('.classic-tutorial-target').forEach(el=>el.classList.remove('classic-tutorial-target'));
+}
+function classicTutorialAnchorAnimal(){
+    const counts=new Map();
+    for(const animal of state.animals||[]){
+        if(Number(animal?.level)!==1)continue;
+        const key=`${animal.category}|1`;
+        if(!counts.has(key))counts.set(key,[]);
+        counts.get(key).push(animal);
+    }
+    const group=[...counts.values()].find(animals=>
+        animals.length>=3&&hasNextLevelInventory(animals[0].category,1));
+    return group?.[0]||null;
+}
+function classicTutorialAnimalElement(animal){
+    if(!animal)return null;
+    return [...zooCanvas.querySelectorAll('[data-animal-id]')].find(el=>
+        String(el.dataset.animalId)===String(animal.id))||null;
+}
+function classicTutorialEnclosureElement(){
+    const enclosures=state.enclosures||[];
+    const preferred=enclosures.filter(enclosure=>{
+        const cells=getAllSlots(enclosure)?.length||0;
+        return cells===2||cells===3;
+    });
+    const pool=preferred.length?preferred:enclosures;
+    if(!pool.length)return null;
+    const enclosure=pool[Math.floor(Math.random()*pool.length)];
+    return zooCanvas.querySelector(`.enclosure[data-enclosure-id="${CSS.escape(String(enclosure.id))}"]`);
+}
+function classicTutorialWorldPointForElement(target){
+    if(!target||!zooBoard||!zooCanvas)return null;
+    const boardRect=zooBoard.getBoundingClientRect();
+    const rect=target.getBoundingClientRect();
+    const zoom=Math.max(.01,Number(state.zoom)||1);
+    return {
+        x:(zooBoard.scrollLeft+rect.left-boardRect.left+rect.width/2)/zoom,
+        y:(zooBoard.scrollTop+rect.top-boardRect.top+rect.height/2)/zoom,
+        width:rect.width/zoom,
+        height:rect.height/zoom
+    };
+}
+function classicTutorialPlaceBoardHint(hint,target,side='right'){
+    const point=classicTutorialWorldPointForElement(target);
+    if(!point)return false;
+    const gap=18;
+    hint.style.left=`${Math.round(point.x+(side==='right'?point.width/2+gap:-170))}px`;
+    hint.style.top=`${Math.round(point.y-point.height/2)}px`;
+    return true;
+}
+function renderClassicTutorialHint(){
+    removeClassicTutorialHint();
+    if(!classicTutorialEligible())return;
+    const step=Number(showFirstClassicWelcomeBriefing.step)||1;
+    let target=null,title='',body='',side='right';
+    if(step===1){
+        const animal=classicTutorialAnchorAnimal();
+        target=classicTutorialAnimalElement(animal);
+        title='Try an Exchange';
+        body=`Whenever you collect three animals from the same category at the same level, you can trade two in for one animal a level higher. You already have three Level 1 ${animal?.category||'category'} cards. Drag any two of them into the Exchange slots to get a Level 2.`;
+    }else if(step===2){
+        target=drawCard;
+        title='Draw an Animal';
+        body='The deck is how new Level 1 animals enter your zoo. Draw a card and place it in a free enclosure.';
+    }else if(step===3){
+        target=outgoingOfferBox;
+        title='Trade with Other Zoos';
+        body='Drag one of your animals into Your Offer. Other zoos will offer animals in return, giving you another way to shape your collection and find species you cannot simply draw.';
+    }else if(step===4){
+        target=classicTutorialEnclosureElement();
+        title='Build a Better Zoo';
+        body='Some species can share an enclosure. Discover convincing combinations and group enclosures into geographically accurate Areas to earn extra Prestige. Prestige is your zoo’s reputation: as it rises, more zoos and trading opportunities open up.';
+    }else{
+        classicTutorialRememberComplete();
+        return;
+    }
+    if(!target)return;
+    target.classList.add('classic-tutorial-target');
+    const hint=document.createElement('button');
+    hint.type='button';
+    hint.id='classicContextTutorialHint';
+    hint.className='classic-context-tutorial-hint';
+    hint.innerHTML=`<strong>${title}</strong><span>${body}</span><small>Click to continue</small>`;
+    hint.onclick=event=>{
+        event.stopPropagation();
+        advanceClassicTutorial(step,true);
+    };
+    zooCanvas.appendChild(hint);
+    if(!classicTutorialPlaceBoardHint(hint,target,side)){
+        hint.remove();
+        target.classList.remove('classic-tutorial-target');
+    }
+}
+function advanceClassicTutorial(expectedStep,forced=false){
+    if(!classicTutorialEligible()||Number(showFirstClassicWelcomeBriefing.step)!==expectedStep)return;
+    showFirstClassicWelcomeBriefing.step=expectedStep+1;
+    if(showFirstClassicWelcomeBriefing.step>4){
+        removeClassicTutorialHint();
+        classicTutorialRememberComplete();
+        return;
+    }
+    requestAnimationFrame(()=>renderClassicTutorialHint());
+}
+function showFirstClassicWelcomeBriefing(){
+    if(!classicTutorialEligible())return;
+    showFirstClassicWelcomeBriefing.step=1;
+    requestAnimationFrame(()=>renderClassicTutorialHint());
+}
+
+const classicTutorialStyle=document.createElement('style');
+classicTutorialStyle.textContent=`
+#classicContextTutorialHint{
+    position:absolute;z-index:48;width:300px;box-sizing:border-box;padding:11px 13px;
+    text-align:left;font:inherit;color:#2f3028;background:#f4efd9;
+    border:2px solid #4c5140;border-radius:5px;
+    box-shadow:4px 5px 0 rgba(53,57,45,.24);
+    cursor:pointer;pointer-events:auto;
+}
+#classicContextTutorialHint strong{display:block;margin:0 0 5px;font-size:14px;font-weight:800;color:#34382c}
+#classicContextTutorialHint span{display:block;font-size:12px;line-height:1.4}
+#classicContextTutorialHint small{display:block;margin-top:8px;font-size:10px;font-weight:700;opacity:.58}
+.classic-tutorial-target{outline:3px solid #d8ad3d!important;outline-offset:3px!important}
+`;
+document.head.appendChild(classicTutorialStyle);
 
 // Opening-day briefing for a freshly generated single-player True zoo.
 // It is intentionally not saved as progression: loading an existing zoo must
@@ -25597,6 +25791,7 @@ async function completeExchange(destination = null, autoPlace = false) {
         !localClassicMatch;
 
     const committed=finalizeClassicProgressionCommit('Exchange commit');
+    if(committed)advanceClassicTutorial(1);
     if(level5ExchangeChoice){
         enqueueMicrotask(()=>openLevel5ExchangeEnclosureRewardPicker(newAnimal));
     }
@@ -26645,6 +26840,15 @@ function getLocalClassicMatchSnapshot() {
 function scheduleDurableOwnZooStateCommit(snapshot=null,delayMs=180){
     const t=localMultiplayerBrowserTransport;
     if(!serverAuthoritativeMultiplayerActive()||!t?.serverAuthenticated)return false;
+    // On an authenticated reconnect, the auto-resume zoo is display-only until
+    // the server has returned this player's durable zoo. Publishing during this
+    // window could overwrite newer server state with the browser's old fallback.
+    if(t.serverReturning===true&&!t.durableOwnZooSnapshot)return false;
+    // A CAS rejection is followed by an authoritative correction snapshot.
+    // Never allow local state to commit against the newly reported revision in
+    // the gap between those two packets, or the stale browser zoo could become
+    // valid again merely because its base revision was advanced.
+    if(t.awaitingAuthoritativeZooCorrection===true)return false;
     // Real-zoo generation temporarily reuses the global game state. Never queue
     // that inspection state as the multiplayer player's durable zoo, including
     // the short generation window before state.visitingZoo is restored/set.
@@ -26680,6 +26884,10 @@ function syncActiveZooIntoLocalMatch() {
         localClassicMatch.viewingPlayerId !== localClassicMatch.activePlayerId) return false;
     const player = localClassicMatch.players?.[localClassicMatch.activePlayerId];
     if (!player) return false;
+    const reconnectTransport=localMultiplayerBrowserTransport;
+    if(reconnectTransport?.serverReturning===true&&!reconnectTransport.durableOwnZooSnapshot)
+        return false;
+    if(reconnectTransport?.awaitingAuthoritativeZooCorrection===true)return false;
     // A joining peer owns an intentionally empty seat until Open New Zoo sends
     // register-player-zoo. Never fill that seat implicitly from pre-join state.
     if(localMultiplayerBrowserTransport?.role==='peer' &&
@@ -27532,6 +27740,33 @@ function applyAuthoritativeHumanTradeMessage(message){
     if(!offer){
         offer={id:incoming.id};
         localClassicMatch.pendingPlayerTrades.push(offer);
+    }else{
+        const knownTradeUpdatedAt=Math.max(0,Number(offer.updatedAt)||0);
+        const incomingTradeUpdatedAt=Math.max(0,Number(incoming.updatedAt)||0);
+        // Trade packets have their own durable ordering independent of zoo
+        // revisions. Reconnect recovery and a live transaction can cross on the
+        // socket; never let an older pending/accepted packet resurrect a trade
+        // after a newer invalid/declined/completed transition was already seen.
+        if(incomingTradeUpdatedAt<knownTradeUpdatedAt){
+            multiplayerDiagnostic('human-trade-state-stale-dropped',{
+                tradeId:incoming.id,status:incoming.status,
+                updatedAt:incomingTradeUpdatedAt,highestAcceptedUpdatedAt:knownTradeUpdatedAt
+            });
+            return false;
+        }
+        if(incomingTradeUpdatedAt===knownTradeUpdatedAt){
+            const rank={
+                pending:1,'accepted-awaiting-sender-claim':2,
+                declined:3,cancelled:3,invalid:3,accepted:4,completed:4
+            };
+            if((rank[incoming.status]||0)<(rank[offer.status]||0)){
+                multiplayerDiagnostic('human-trade-state-regression-dropped',{
+                    tradeId:incoming.id,status:incoming.status,knownStatus:offer.status,
+                    updatedAt:incomingTradeUpdatedAt
+                });
+                return false;
+            }
+        }
     }
     Object.assign(offer,cloneForSave(incoming));
     if(message.recovered===true)offer.recoveredFromServer=true;
@@ -27547,18 +27782,44 @@ function applyAuthoritativeHumanTradeMessage(message){
 
     // The server response already contains the exact durable zoo revisions
     // produced by the transaction. Keep replicas current without asking the
-    // browser host to replay ownership mutations.
+    // browser host to replay ownership mutations. Record only updates that pass
+    // the monotonic revision guard; later trade UI must never read a raw stale
+    // zooUpdates payload that this loop deliberately rejected.
+    const acceptedTradeZooUpdates=new Map();
     for(const update of (Array.isArray(message.zooUpdates)?message.zooUpdates:[])){
         const localUpdatePlayerId=multiplayerLocalPlayerIdForServerId(update.playerId);
         const player=localClassicMatch.players?.[localUpdatePlayerId];
+        const transport=localMultiplayerBrowserTransport;
+        const updateRevision=Math.max(0,Number(update.revision)||0);
+        if(!(transport?.serverZooRevisionByPlayer instanceof Map) && transport)
+            transport.serverZooRevisionByPlayer=new Map(transport.serverZooRevisionByPlayer||[]);
+        const serverPlayerKey=String(update.playerId||'');
+        const knownTransportRevision=Math.max(
+            0,Number(transport?.serverZooRevisionByPlayer?.get(serverPlayerKey))||0
+        );
+        const knownPlayerRevision=Math.max(0,Number(player?.lastServerZooRevision)||0);
+        const knownRevision=Math.max(knownTransportRevision,knownPlayerRevision);
+        if(updateRevision<knownRevision){
+            multiplayerDiagnostic('human-trade-zoo-update-stale-dropped',{
+                tradeId:incoming.id,playerId:serverPlayerKey,
+                revision:updateRevision,highestAcceptedRevision:knownRevision
+            });
+            continue;
+        }
         if(player&&update.zoo){
+            acceptedTradeZooUpdates.set(serverPlayerKey,update);
             player.snapshot=cloneForSave(update.zoo);
-            player.lastServerZooRevision=Number(update.revision)||0;
-            if(String(update.playerId)===String(localMultiplayerBrowserTransport?.serverPlayerId)){
-                localMultiplayerBrowserTransport.durableZooRevision=Number(update.revision)||0;
-                localMultiplayerBrowserTransport.durableOwnZooSnapshot=cloneForSave(update.zoo);
-                localMultiplayerBrowserTransport.durableZooQueuedSnapshot=null;
-                localMultiplayerBrowserTransport.durableZooQueuedSignature='';
+            player.lastServerZooRevision=Math.max(knownPlayerRevision,updateRevision);
+            if(updateRevision>knownTransportRevision)
+                transport?.serverZooRevisionByPlayer?.set(serverPlayerKey,updateRevision);
+            if(String(update.playerId)===String(transport?.serverPlayerId)){
+                transport.durableZooRevision=Math.max(
+                    Math.max(0,Number(transport.durableZooRevision)||0),
+                    updateRevision
+                );
+                transport.durableOwnZooSnapshot=cloneForSave(update.zoo);
+                transport.durableZooQueuedSnapshot=null;
+                transport.durableZooQueuedSignature='';
                 // Do NOT clear durableZooCommitPending here. If an ordinary
                 // zoo-state commit was already sent, its ACK/rejection is still
                 // in flight and remains the only event allowed to settle that
@@ -27581,7 +27842,11 @@ function applyAuthoritativeHumanTradeMessage(message){
     const ownUpdate=(message.zooUpdates||[]).find(
         u=>String(u?.playerId||'')===ownServerId
     );
-    if(ownUpdate?.zoo &&
+    const ownUpdateRevision=Math.max(0,Number(ownUpdate?.revision)||0);
+    const latestOwnRevision=Math.max(
+        0,Number(localMultiplayerBrowserTransport?.durableZooRevision)||0
+    );
+    if(ownUpdate?.zoo && ownUpdateRevision>=latestOwnRevision &&
        localClassicMatch.activePlayerId===multiplayerLocalPlayerIdForServerId(ownUpdate.playerId) &&
        (!localClassicMatch.viewingPlayerId ||
         localClassicMatch.viewingPlayerId===localClassicMatch.activePlayerId)){
@@ -27678,9 +27943,9 @@ function applyAuthoritativeHumanTradeMessage(message){
     }
 
     if(incoming.status==='accepted-awaiting-sender-claim'){
-        const senderZoo=(message.zooUpdates||[]).find(
-                u=>String(u.playerId)===String(incoming.fromServerPlayerId)
-            )?.zoo || localClassicMatch.players?.[incoming.fromPlayerId]?.snapshot;
+        const acceptedSenderUpdate=acceptedTradeZooUpdates.get(String(incoming.fromServerPlayerId||''));
+        const senderZoo=acceptedSenderUpdate?.zoo ||
+            localClassicMatch.players?.[incoming.fromPlayerId]?.snapshot;
         const transferred=(senderZoo?.state?.animals||[]).find(
             a=>String(a?.id)===String(incoming.requestedTransferId)
         );
@@ -27696,6 +27961,15 @@ function applyAuthoritativeHumanTradeMessage(message){
         offer.senderClaimAnimal=null;
         if(String(selectedHumanTradeProposalId||'')===String(incoming.id))
             selectedHumanTradeProposalId=null;
+        // A server invalidation may arrive while this exact proposal card is
+        // being dragged. Drop only that transaction ghost; never disturb a
+        // normal animal drag or a different simultaneous proposal.
+        if((state.drag?.type==='direct-human-trade-result'||
+            state.drag?.type==='direct-human-trade-sender-claim')&&
+           String(state.drag?.humanTradeOfferId||'')===String(incoming.id)){
+            state.drag.image?.remove?.();
+            state.drag=null;
+        }
         resumeAITradingAfterHumanTrade?.();
     }
 
@@ -27721,6 +27995,11 @@ function commitOwnZooStateToServer(snapshot=null,options={}){
     const t=localMultiplayerBrowserTransport;
     const channel=localMultiplayerBrowserChannel;
     if(!serverAuthoritativeMultiplayerActive()||!channel?.postServerMessage)return false;
+    // Direct callers must obey the same reconnect firewall as the debounced
+    // scheduler. Until the first durable own-zoo snapshot arrives, local resume
+    // state is not authoritative and must never be committed.
+    if(t.serverReturning===true&&!t.durableOwnZooSnapshot)return false;
+    if(t.awaitingAuthoritativeZooCorrection===true)return false;
     // Last persistence firewall: even a direct caller may not publish a real/AI
     // zoo visit as this player's authoritative zoo.
     if(realZooVisitTransitionActive||state.visitingZoo)return false;
@@ -28254,7 +28533,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
         // Highest durable zoo revision accepted for every server player. This is
         // separate from our own CAS revision because viewer/reconnect/action
         // packets can independently carry snapshots for several players.
-        serverZooRevisionByPlayer:new Map(),
+        serverZooRevisionByPlayer:new Map(),appliedAuthoritativeOwnActionZooRevisions:new Set(),
         durableZooCommitPending:false,durableZooCommitBaseRevision:0,durableZooQueuedSnapshot:null,
         durableZooQueuedSignature:'',durableZooCommitWaiters:[],
         durableZooCommitTimer:null,durableZooScheduledSnapshot:null,durableZooScheduledSignature:'',
@@ -28491,7 +28770,20 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     // Only force a full own-zoo restore for an authenticated reconnect.
                     // Viewer zoo-state packets remain display data and must never overwrite
                     // the local player's zoo.
-                    if((transport.serverReturning===true||message.authoritativeTrade===true||message.authoritativeDraw===true||message.authoritativeExchange===true||message.authoritativeCorrection===true)&&!localClassicMatch?.viewingPlayerId){
+                    if(!(transport.appliedAuthoritativeOwnActionZooRevisions instanceof Set))
+                        transport.appliedAuthoritativeOwnActionZooRevisions=
+                            new Set(transport.appliedAuthoritativeOwnActionZooRevisions||[]);
+                    const redundantOwnActionEcho=(
+                        (message.authoritativeDraw===true||
+                         message.authoritativeExchange===true||
+                         message.authoritativeMove===true) &&
+                        zooRevision>0 &&
+                        transport.appliedAuthoritativeOwnActionZooRevisions.has(zooRevision)
+                    );
+                    if(redundantOwnActionEcho)
+                        transport.appliedAuthoritativeOwnActionZooRevisions.delete(zooRevision);
+                    if((transport.serverReturning===true||message.authoritativeTrade===true||message.authoritativeDraw===true||message.authoritativeExchange===true||message.authoritativeCorrection===true)&&
+                       !redundantOwnActionEcho&&!localClassicMatch?.viewingPlayerId){
                         // The server owns gameplay state, never this browser's camera.
                         const localCamera={
                             zoom:Number(state.zoom)||1,
@@ -28577,6 +28869,14 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                 transport.durableZooCommitBaseRevision=currentRevision;
                 transport.durableZooQueuedSnapshot=null;
                 transport.durableZooQueuedSignature='';
+                // A second local edit may already be sitting in the debounce
+                // timer behind the rejected commit. It was produced from the
+                // same now-stale authority base, so discard it as well rather
+                // than letting its timer fire during/after correction.
+                if(transport.durableZooCommitTimer)clearTimeout(transport.durableZooCommitTimer);
+                transport.durableZooCommitTimer=null;
+                transport.durableZooScheduledSnapshot=null;
+                transport.durableZooScheduledSignature='';
                 transport.durableZooLastRequestedSignature='';
                 transport.awaitingAuthoritativeZooCorrection=true;
                 settleDurableZooCommitWaiters(false);
@@ -29132,6 +29432,7 @@ function ensureMultiplayerLobbyOverlay(){
                 <span>Gamemode</span>
                 <select id="multiplayerGameMode">
                     <option value="classic">Classic</option>
+                    <option value="true">True</option>
                 </select>
             </label>
             <label class="trade-frequency-option">
@@ -29943,7 +30244,15 @@ async function dispatchLocalMultiplayerAction(playerId,type,payload={}){
             console.warn('Human trade proceeding with server validation after durable zoo sync timeout.');
         }
         const authorized=await authorizeHumanTradeWithServer(type,payload);
-        if(!authorized.ok)return authorized;
+        if(!authorized.ok){
+            if((type==='accept-human-trade'||type==='claim-human-trade')&&
+               (authorized.reason==='TRADE_NOT_PENDING'||authorized.reason==='TRADE_NOT_AWAITING_CLAIM')){
+                multiplayerDiagnostic('human-trade-duplicate-action-rejected',{
+                    type,offerId:payload.offerId,reason:authorized.reason
+                });
+            }
+            return authorized;
+        }
         // The websocket event handler normally applies this same authoritative
         // packet, but the action promise can resolve before that handler's
         // queued zoo import/render finishes. Apply the transaction to the local
@@ -30015,7 +30324,7 @@ async function sendLocalMultiplayerAnimalMove(playerId,animalId,destination){
         if(String(response.playerId||'')!==String(t?.serverPlayerId||'')||
            !response.zoo?.state)return {ok:false,reason:'move-response'};
 
-        t.durableZooRevision=Number(response.zooRevision)||0;
+        noteAuthoritativeOwnZooRevision(response.zooRevision);
         t.durableOwnZooSnapshot=cloneForSave(response.zoo);
         t.durableZooQueuedSnapshot=null;t.durableZooQueuedSignature='';
 
@@ -30244,7 +30553,7 @@ async function startConfiguredLocalTwoPlayerClassicMatch({
     // only a vacant seat: their zoo is created on their own client after join.
     localClassicMatch=null;
     renderVisitedZooQuickTabs();
-    const multiplayerGameMode='classic';
+    const multiplayerGameMode=gameMode==='true'?'true':'classic';
     createLocalClassicMatchContainer();
     localClassicMatch.players['player-1'].snapshot=cloneForSave(playerOneSnapshot);
     localClassicMatch.activePlayerId='player-1';
@@ -36574,6 +36883,37 @@ function drawSafeDestinationsForAnimal(animal) {
 }
 
 
+function noteAuthoritativeOwnZooRevision(revision){
+    const t=localMultiplayerBrowserTransport;
+    const value=Math.max(0,Number(revision)||0);
+    if(!t)return value;
+    t.durableZooRevision=Math.max(Math.max(0,Number(t.durableZooRevision)||0),value);
+    if(!(t.appliedAuthoritativeOwnActionZooRevisions instanceof Set))
+        t.appliedAuthoritativeOwnActionZooRevisions=new Set(t.appliedAuthoritativeOwnActionZooRevisions||[]);
+    if(value>0){
+        t.appliedAuthoritativeOwnActionZooRevisions.add(value);
+        // Only a tiny recent window is needed for websocket echo de-duplication.
+        // Bound it so long multiplayer sessions never accumulate revision IDs.
+        if(t.appliedAuthoritativeOwnActionZooRevisions.size>16){
+            const ordered=[...t.appliedAuthoritativeOwnActionZooRevisions].sort((a,b)=>a-b);
+            for(const revision of ordered.slice(0,-16))
+                t.appliedAuthoritativeOwnActionZooRevisions.delete(revision);
+        }
+    }
+    if(!(t.serverZooRevisionByPlayer instanceof Map))
+        t.serverZooRevisionByPlayer=new Map(t.serverZooRevisionByPlayer||[]);
+    const serverPlayerId=String(t.serverPlayerId||'');
+    if(serverPlayerId){
+        const known=Math.max(0,Number(t.serverZooRevisionByPlayer.get(serverPlayerId))||0);
+        if(value>known)t.serverZooRevisionByPlayer.set(serverPlayerId,value);
+    }
+    const localPlayer=localClassicMatch?.players?.[t.playerId];
+    if(localPlayer) localPlayer.lastServerZooRevision=Math.max(
+        Math.max(0,Number(localPlayer.lastServerZooRevision)||0),value
+    );
+    return value;
+}
+
 async function commitServerAuthoritativeLevelOneDraw(message,destination){
     const t=localMultiplayerBrowserTransport;
     const zoo=message?.zoo;
@@ -36586,7 +36926,7 @@ async function commitServerAuthoritativeLevelOneDraw(message,destination){
     // The server has already consumed the unique shared card AND inserted it
     // into this zoo in one SQLite transaction. Import that exact durable result;
     // never manufacture a second local copy of the animal.
-    t.durableZooRevision=Math.max(0,Number(message.zooRevision)||0);
+    noteAuthoritativeOwnZooRevision(message.zooRevision);
     t.durableOwnZooSnapshot=cloneForSave(zoo);
     t.durableZooQueuedSnapshot=null;
     t.durableZooQueuedSignature='';
@@ -36716,7 +37056,7 @@ async function requestServerAuthoritativeExchange(destination=null,autoPlace=fal
     // Ownership is already committed. Import the exact durable result rather
     // than calling completeExchange(), which would create/remove cards a second
     // time and reintroduce the disconnect window this server path eliminates.
-    t.durableZooRevision=Math.max(0,Number(response.zooRevision)||0);
+    noteAuthoritativeOwnZooRevision(response.zooRevision);
     // Older/current servers may echo transient Exchange UI state from a snapshot
     // that was committed just before the action. Sanitize the authoritative zoo
     // before storing or importing it so stale source/result cards cannot return.
@@ -36913,6 +37253,7 @@ async function createLevelOneForDrawUnlocked(destination) {
     // A Level 1 draw itself is not an enclosure milestone. Enclosure rewards
     // are granted by the upgrade/progression achievement paths instead.
     finalizeClassicProgressionCommit('Level 1 draw commit');
+    advanceClassicTutorial(2);
 
     // Prepare the following card after the successful turn. This also makes
     // Draw immediately reflect "no cards left" / exact-card compatibility.
@@ -38859,6 +39200,7 @@ function ensureGenerateZooUI() {
                     <span>Gamemode</span>
                     <select id="newZooGameMode">
                         <option value="classic">Classic</option>
+                        <option value="true">True</option>
                         <option value="sandbox">Sandbox</option>
                     </select>
                 </label>
@@ -38979,7 +39321,6 @@ function ensureGenerateZooUI() {
         locationProvinceTooltip.style.display = 'none';
     });
     const gameMode = overlay.querySelector('#newZooGameMode');
-    if(gameMode?.value==='true')gameMode.value='classic';
     const zooSize = overlay.querySelector('#newZooSize');
     const zooSizeValue = overlay.querySelector('#newZooSizeValue');
     const zooSizeNote = overlay.querySelector('#newZooSizeNote');
@@ -39779,8 +40120,9 @@ function ensureGenerateZooUI() {
 
                 // A fresh single-player True zoo opens with a short in-world
                 // briefing. Multiplayer True keeps its match flow untouched.
-                if (!localMultiplayerMode && !joiningMultiplayerSeat && !resettingMultiplayerZoo && state.gameMode === 'true') {
-                    showTrueOpeningDayBriefing();
+                if (!localMultiplayerMode && !joiningMultiplayerSeat && !resettingMultiplayerZoo) {
+                    if(state.gameMode==='true')showTrueOpeningDayBriefing();
+                    else if(state.gameMode==='classic')showFirstClassicWelcomeBriefing();
                 }
 
                 if(resettingMultiplayerZoo){
@@ -40064,7 +40406,7 @@ function openLeaveMultiplayerForNewGamePrompt() {
         const menu=document.getElementById('generateZooOverlay');
         const gameModeSelect=menu?.querySelector?.('#newZooGameMode');
         if(gameModeSelect){
-            gameModeSelect.value='classic';
+            gameModeSelect.value=localClassicMatch?.rules?.gameMode==='true'?'true':'classic';
             gameModeSelect.disabled=true;
         }
     };
@@ -41306,6 +41648,79 @@ function selectPrestigeLocationCandidates(candidates, count, seedText = '') {
     return selected;
 }
 
+// Same weighted order as selectPrestigeLocationCandidates(), but consume it
+// lazily. Autonomous incoming offers only need the FIRST zoo that can make a
+// legal offer; building the complete weighted permutation first made a random
+// incoming trade an O(n²) foreground operation across the real-zoo database.
+function visitPrestigeLocationCandidates(candidates, visit, seedText=''){
+    const actualPrestige=(state.gameMode==='true'&&!state.sandboxMode&&!state.visitingZoo)
+        ?visibleZooPrestige()
+        :currentZooPrestige();
+    const prestige=playerTradeAccessPrestige(actualPrestige);
+    const window=realZooPrestigeWindow(actualPrestige,prestige);
+    const geographyWeights=interpolatedPrestigeWeights(
+        REAL_ZOO_GEOGRAPHY_PRESTIGE_CURVE,prestige
+    );
+    const remaining=candidates.filter(item=>{
+        const zooPrestige=realZooPrestige(item.record);
+        return zooPrestige>=window.minimum&&zooPrestige<=window.maximum;
+    });
+    let selectedIndex=0;
+    while(remaining.length){
+        const geographyFade=Math.max(0,Math.min(1,(prestige-700)/300));
+        const ignoreGeography=seededRoll(
+            `${seedText}|geography-fade|${selectedIndex}`
+        ).roll<geographyFade;
+        let choicePool=remaining;
+        let chosen=null;
+        if(ignoreGeography){
+            const weights=choicePool.map(item=>
+                realZooPrestigeSimilarityWeight(item.record,window));
+            const choiceIndex=weightedIndex(
+                weights,seededRoll(`${seedText}|prestige-zoo|${selectedIndex}`).roll);
+            chosen=choicePool[choiceIndex];
+        }else{
+            const availableBands=new Set(
+                remaining.map(item=>realZooGeographyBand(item.record)));
+            const rollWeights=geographyWeights.map((weight,band)=>
+                availableBands.has(band)?weight:0);
+            let chosenBand=weightedIndex(
+                rollWeights,
+                seededRoll(`${seedText}|geography-band|${selectedIndex}`).roll
+            );
+            if(chosenBand<0){
+                const fallbackOrder=[0,1,2,3];
+                if(geographyWeights[4]>0)fallbackOrder.push(4);
+                chosenBand=fallbackOrder.find(band=>availableBands.has(band));
+            }
+            if(!Number.isInteger(chosenBand))break;
+            choicePool=remaining.filter(item=>
+                realZooGeographyBand(item.record)===chosenBand);
+            const weights=choicePool.map(item=>
+                realZooPrestigeSimilarityWeight(item.record,window));
+            const choiceIndex=weightedIndex(
+                weights,seededRoll(`${seedText}|prestige-zoo|${selectedIndex}`).roll);
+            if(choiceIndex<0){selectedIndex++;continue;}
+            chosen=choicePool[choiceIndex];
+        }
+        if(!chosen)break;
+        remaining.splice(remaining.indexOf(chosen),1);
+        if(visit(chosen,selectedIndex)===false)return chosen;
+        selectedIndex++;
+    }
+    return null;
+}
+
+function firstPrestigeLocationCandidate(candidates,accept,seedText=''){
+    let accepted=null;
+    visitPrestigeLocationCandidates(candidates,item=>{
+        if(!accept(item))return true;
+        accepted=item;
+        return false;
+    },seedText);
+    return accepted;
+}
+
 function animalFromRealZooName(name) {
     const spec = realZooAnimalSpecByName(name);
     return spec ? {
@@ -41608,8 +42023,7 @@ function lockedPlayerTradeOfferIsLive(outgoing, item) {
     if (!outgoing || !item) return false;
 
     if (isRealOpponentMode()) {
-        const record = (state.realZooData?.zoos || [])
-            .find(candidate => candidate.name === item.recordName);
+        const record = realZooRecordByName(item.recordName);
         if (!record || realZooHasAnimal(record, outgoing)) return false;
 
         const animal = cachedTradeAnimalPreview(item);
@@ -41777,92 +42191,78 @@ function createRealAutonomousOpponentOffer() {
     // The same slider controls spontaneous real-zoo offers.
     if (Math.random() > tradeFrequencyFactor()) return false;
 
-    const records = realZooRecordsAvailable();
-    const orderedRecords = selectPrestigeLocationCandidates(
-        records.map(record => ({ record })),
-        records.length,
-        `real-autonomous-record-order|${state.turn}`
-    ).map(item => item.record);
-
+    const records=realZooRecordsAvailable();
     // Everything below is read-only candidate inspection. Compute values that
-    // are invariant for the whole pass once rather than rebuilding them for
-    // every zoo / incoming card / outgoing card combination.
-    const playerKeys = playerOwnedTradeKeys();
-    const highestPlayerLevel = Math.max(1, ...state.playerLevelsSeen);
+    // are invariant for the whole pass once.
+    const playerKeys=playerOwnedTradeKeys();
+    const highestPlayerLevel=Math.max(1,...state.playerLevelsSeen);
+    let selectedPossible=null;
 
-    let selected = null;
-    for (const record of orderedRecords) {
-        const profile = realZooProfile(record, 0);
-        const incomingPool = realZooTradeAnimals(record, true, playerKeys).filter(incoming =>
-            incoming.level <= highestPlayerLevel &&
-            (trueModeAllowsDuplicateSpecies() || !playerKeys.has(animalCardKey(incoming)))
-        );
-        if (!incomingPool.length) continue;
+    const selectedItem=firstPrestigeLocationCandidate(
+        records.map(record=>({record})),
+        item=>{
+            const record=item.record;
+            const profile=realZooProfile(record,0);
+            const incomingPool=realZooTradeAnimals(record,true,playerKeys).filter(incoming=>
+                incoming.level<=highestPlayerLevel &&
+                (trueModeAllowsDuplicateSpecies()||!playerKeys.has(animalCardKey(incoming)))
+            );
+            if(!incomingPool.length)return false;
 
-        // Autonomous offer discovery used to run a complete destination search
-        // inside incomingPool.filter(... state.animals.some(...)). A zoo with a
-        // large holding could therefore repeat the same expensive placement
-        // work hundreds of times in one synchronous turn commit.
-        //
-        // First narrow outgoing cards by the cheap zoo/category rules, grouped
-        // by level. Then test each incoming only against that small relevant
-        // group. This preserves the exact legality rule while removing all
-        // impossible category/level pairs before destination validation.
-        const outgoingByLevel=new Map();
-        for(const outgoing of state.animals||[]){
-            if(
-                !profile.favourites.includes(outgoing.category) ||
-                realZooHasAnimal(record,outgoing)
-            ) continue;
-            const level=Number(outgoing.level)||1;
-            let list=outgoingByLevel.get(level);
-            if(!list){list=[];outgoingByLevel.set(level,list);}
-            list.push(outgoing);
-        }
-        if(!outgoingByLevel.size) continue;
+            const outgoingByLevel=new Map();
+            for(const outgoing of state.animals||[]){
+                if(
+                    !profile.favourites.includes(outgoing.category) ||
+                    realZooHasAnimal(record,outgoing)
+                )continue;
+                const level=Number(outgoing.level)||1;
+                let list=outgoingByLevel.get(level);
+                if(!list){list=[];outgoingByLevel.set(level,list);}
+                list.push(outgoing);
+            }
+            if(!outgoingByLevel.size)return false;
 
-        const possible=[];
-        for(const incoming of incomingPool){
-            const outgoingCandidates=outgoingByLevel.get(Number(incoming.level)||1);
-            if(!outgoingCandidates?.length)continue;
-            let legal=false;
-            for(const outgoing of outgoingCandidates){
-                if(tradeIncomingHasDestinationAfterOutgoing(incoming,outgoing)){
-                    legal=true;
-                    break;
+            const possible=[];
+            for(const incoming of incomingPool){
+                const outgoingCandidates=outgoingByLevel.get(Number(incoming.level)||1);
+                if(!outgoingCandidates?.length)continue;
+                for(const outgoing of outgoingCandidates){
+                    if(tradeIncomingHasDestinationAfterOutgoing(incoming,outgoing)){
+                        possible.push(incoming);
+                        break;
+                    }
                 }
             }
-            if(legal)possible.push(incoming);
-        }
-        if (!possible.length) continue;
-        selected = { record, possible };
-        break;
-    }
-    if (!selected) return false;
+            if(!possible.length)return false;
+            selectedPossible={record,possible};
+            return true;
+        },
+        `real-autonomous-record-order|${state.turn}`
+    );
 
-    const { record, possible } = selected;
-    const animal = weightedRandomItem(
+    if(!selectedItem||!selectedPossible)return false;
+    const {record,possible}=selectedPossible;
+    const animal=weightedRandomItem(
         possible,
-        candidate => animalZooTypeWeight(
+        candidate=>animalZooTypeWeight(
             candidate,
-            record.zoo_types || record.zooTypes || 'general',
+            record.zoo_types||record.zooTypes||'general',
             'trade'
         )
     );
-    state.opponentProfiles = [realZooProfile(record, 0)];
-    state.opponentTradeStocks = [possible];
-    state.autonomousTradeOffer = {
-        opponentIndex: 0,
+    state.opponentProfiles=[realZooProfile(record,0)];
+    state.opponentTradeStocks=[possible];
+    state.autonomousTradeOffer={
+        opponentIndex:0,
         animal,
-        offeredTurn: state.turn,
-        expiresTurn: state.turn + 3
+        offeredTurn:state.turn,
+        expiresTurn:state.turn+3
     };
-    state.selectedTradeOpponent = 0;
-    state.tradeOffers = [];
+    state.selectedTradeOpponent=0;
+    state.tradeOffers=[];
     renderTrade();
     return true;
 }
-
 
 
 // Public multiplayer trade board. Each zoo owns one listing; listings and AI
@@ -45592,7 +45992,9 @@ function tryDropOnOutgoingOffer(event, animal) {
         animal.enclosureId = null; animal.slotIndex = null;
         noteNewCardAction();
         if(serverAuthoritativeMultiplayerActive())publishMultiplayerTradeListing(animal);
-        renderTrade(); return true;
+        renderTrade();
+        advanceClassicTutorial(3);
+        return true;
     }
     // startAnimalDrag() captured the rescue before removing the animal from
     // its enclosure. Use that exact preserved offer here.
@@ -45610,6 +46012,7 @@ function tryDropOnOutgoingOffer(event, animal) {
     animal.slotIndex = null;
 
     noteNewCardAction();
+    advanceClassicTutorial(3);
     // Multiplayer listings are public and independent from AI offers.
     // Publishing is intentionally fire-and-forget for the local drag UI; the
     // server broadcast updates every player's Other Zoos list immediately.

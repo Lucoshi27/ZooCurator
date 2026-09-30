@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V2.43.87";
+const ZOO_CURATOR_VERSION = "V2.43.93";
 // Definitive V2 baseline: True-mode systems + current Information-map geography fixes.
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
@@ -8222,8 +8222,13 @@ function showTrueOpeningDayBriefing() {
     requestAnimationFrame(() => overlay.querySelector('#trueOpeningDayBegin')?.focus());
 }
 
-function trueDateObject(value = normaliseTrueCalendarState().date) {
-    const [y,m,d] = String(value).split('-').map(Number);
+function trueDateObject(value = null) {
+    // Leaf date helper: never normalize calendar state here. This function is
+    // used by normalizers/migrations themselves, so a normalizing default
+    // creates hidden recursion whenever a caller passes undefined.
+    const raw=value==null?String(state.trueCalendar?.date||''):String(value);
+    const safe=/^\d{4}-\d{2}-\d{2}$/.test(raw)?raw:'2026-04-18';
+    const [y,m,d] = safe.split('-').map(Number);
     return new Date(Date.UTC(y, Math.max(0,m-1), d));
 }
 
@@ -8233,7 +8238,7 @@ function trueDateString(date) {
 
 // Canonical True-calendar helpers used by transfers and development.
 // Keep all simulation dates on the UTC-backed True calendar rather than the browser clock.
-function trueCurrentDate() { return trueDateObject(); }
+function trueCurrentDate() { return trueDateObject(state.trueCalendar?.date||'2026-04-18'); }
 function trueDateKey(date = trueCurrentDate()) { return trueDateString(date); }
 
 function formatTrueDate(value, includeYear = true) {
@@ -8286,7 +8291,7 @@ function trueEventCatalogueEntry(section,key){
     return source?.[section]?.[key]??TRUE_EVENT_FALLBACK_CATALOGUE?.[section]?.[key]??null;
 }
 function loadTrueEventCatalogue(){
-    return loadOptionalJsonInBackground('true_events.json')
+    return loadOptionalJsonInBackground('assets/data/true_events.json')
         .then(data=>{
             if(!data||typeof data!=='object'||Array.isArray(data))throw new Error('true_events.json must contain an object.');
             trueEventCatalogue=data;
@@ -8300,15 +8305,16 @@ function loadTrueEventCatalogue(){
 }
 
 function normaliseTrueEventState(){
-    normaliseTrueCalendarState();
-    if(!state.trueEvents||typeof state.trueEvents!=='object')state.trueEvents={items:[],nextId:1,lastGeneratedDate:normaliseTrueCalendarState().date};
+    const calendar=normaliseTrueCalendarState();
+    const today=calendar.date;
+    if(!state.trueEvents||typeof state.trueEvents!=='object')state.trueEvents={items:[],nextId:1,lastGeneratedDate:today};
     const events=state.trueEvents;
     if(!Array.isArray(events.items))events.items=[];
     events.nextId=Math.max(1,Number(events.nextId)||1);
     if(!Array.isArray(events.recentFamilies))events.recentFamilies=[];
     events.recentFamilies=events.recentFamilies.filter(Boolean).slice(-6);
     if(!Array.isArray(events.modifiers))events.modifiers=[];
-    const today=normaliseTrueCalendarState().date;
+
     events.modifiers=events.modifiers.filter(mod=>mod&&(!mod.untilDate||mod.untilDate>=today));
     return events;
 }
@@ -43700,8 +43706,16 @@ function normaliseTruePublicPrestige(){
         // Seed new games, and repair older True saves that persisted the broken
         // zero public-prestige value. From here the visible value can lag normally.
         state.truePublicPrestige=underlying;
-        state.truePublicPrestigeLastDate=normaliseTrueCalendarState().date;
-        state.truePublicPrestigeLastAppliedAbsMinute=trueEventAbsoluteMinute?.()||0;
+        // This normalizer is reachable from calendar/event rendering. Never call
+        // the calendar normalizer from here or Calendar <-> PublicPrestige can
+        // recurse during startup. The raw calendar has already been initialized
+        // by its caller; use a safe fallback for standalone calls.
+        const rawDate=String(state.trueCalendar?.date||'');
+        state.truePublicPrestigeLastDate=/^\d{4}-\d{2}-\d{2}$/.test(rawDate)?rawDate:'2026-04-18';
+        const rawHour=Math.max(9,Math.min(18,Number(state.trueCalendar?.hour)||9));
+        const rawMinute=Math.max(0,Math.min(59,Number(state.trueCalendar?.minute)||0));
+        const dayIndex=Math.floor((trueDateObject(state.truePublicPrestigeLastDate)-trueDateObject('2026-04-18'))/86400000);
+        state.truePublicPrestigeLastAppliedAbsMinute=dayIndex*1440+rawHour*60+rawMinute;
     }
     state.truePublicPrestige=Math.max(0,Number(state.truePublicPrestige)||0);
     state.trueGuestAttendanceDays=(state.trueGuestAttendanceDays&&typeof state.trueGuestAttendanceDays==='object'&&!Array.isArray(state.trueGuestAttendanceDays))
@@ -47547,7 +47561,8 @@ function normaliseTrueMarketplaceState() {
 }
 
 function addTrueDays(dateString, days) {
-    const date = trueDateObject(dateString);
+    const raw=String(dateString||state.trueCalendar?.date||'2026-04-18');
+    const date = trueDateObject(raw);
     date.setUTCDate(date.getUTCDate() + Math.max(0, Math.floor(Number(days) || 0)));
     return trueDateString(date);
 }
@@ -47919,9 +47934,10 @@ function createTrueMarketplaceListing(candidate, monthKey, ordinal=0) {
     };
 }
 
-function expireTrueMarketplaceListings() {
+function expireTrueMarketplaceListings(today=null) {
     const market = normaliseTrueMarketplaceState();
-    const today = normaliseTrueCalendarState().date;
+    const rawDate=String(today||state.trueCalendar?.date||'');
+    today=/^\d{4}-\d{2}-\d{2}$/.test(rawDate)?rawDate:'2026-04-18';
     for (const listing of market.listings) {
         if (listing.status === 'available' && listing.expiresDate && listing.expiresDate < today) listing.status = 'expired';
     }
@@ -47953,10 +47969,12 @@ function trueMarketplaceDiverseSelection(candidates,maxNew){
     return selected;
 }
 
-function refreshTrueMarketplaceForMonth(monthKey = normaliseTrueCalendarState().date.slice(0,7), { announce=false, force=false } = {}) {
+function refreshTrueMarketplaceForMonth(monthKey = null, { announce=false, force=false } = {}) {
+    const rawDate=String(state.trueCalendar?.date||'2026-04-18');
+    monthKey=String(monthKey||rawDate.slice(0,7));
     if (state.gameMode !== 'true') return 0;
     const market = normaliseTrueMarketplaceState();
-    expireTrueMarketplaceListings();
+    expireTrueMarketplaceListings(`${monthKey}-01`);
     if (!force && market.initialized && market.lastRefreshMonth === monthKey) return 0;
 
     const candidates = trueMarketplaceSourceCandidates(monthKey);
@@ -48021,10 +48039,12 @@ function trueMarketplaceDaysBetween(a,b){
     if(!a||!b)return Infinity;
     return Math.floor((trueDateObject(b)-trueDateObject(a))/86400000);
 }
-function refreshTrueMarketplaceRolling(today=normaliseTrueCalendarState().date,{announce=false,force=false}={}){
+function refreshTrueMarketplaceRolling(today=null,{announce=false,force=false}={}){
+    const rawDate=String(today||state.trueCalendar?.date||'');
+    today=/^\d{4}-\d{2}-\d{2}$/.test(rawDate)?rawDate:'2026-04-18';
     if(state.gameMode!=='true')return 0;
     const market=normaliseTrueMarketplaceState();
-    expireTrueMarketplaceListings();
+    expireTrueMarketplaceListings(today);
     if(!market.initialized){
         const added=refreshTrueMarketplaceForMonth(today.slice(0,7),{force:true,announce:false});
         market.lastRollingRefreshDate=today;
@@ -48067,8 +48087,10 @@ function refreshTrueMarketplaceRolling(today=normaliseTrueCalendarState().date,{
 function trueMarketplaceEntries() {
     if (state.gameMode !== 'true') return [];
     const market = normaliseTrueMarketplaceState();
-    refreshTrueMarketplaceRolling(normaliseTrueCalendarState().date);
-    expireTrueMarketplaceListings();
+    const rawDate=String(state.trueCalendar?.date||'');
+    const today=/^\d{4}-\d{2}-\d{2}$/.test(rawDate)?rawDate:'2026-04-18';
+    refreshTrueMarketplaceRolling(today);
+    expireTrueMarketplaceListings(today);
     return market.listings
         .filter(item => item.status === 'available' || item.status === 'negotiating')
         .sort((a,b) => String(a.expiresDate).localeCompare(String(b.expiresDate)) || String(a.id).localeCompare(String(b.id)));
@@ -48929,20 +48951,40 @@ incomingOfferBox?.addEventListener('mouseenter', () => {
     releaseHoverPreviewForTradeControls();
 });
 
+function classicTradeOfferStillLive(offer) {
+    if(!offer?.animal || !Number.isInteger(Number(offer.opponentIndex))) return false;
+    const index=Number(offer.opponentIndex);
+    const profile=state.opponentProfiles?.[index];
+    if(!profile) return false;
+
+    // True Marketplace/Event proposals have their own lifecycle and must not be
+    // judged against Classic opponentTradeStocks.
+    if(state.gameMode==='true' || offer.marketplaceRequest || offer.eventOpportunity || offer.eventRequest) return true;
+
+    const stock=state.opponentTradeStocks?.[index]||[];
+    if(isRealOpponentMode()){
+        const key=animalCardKey(offer.animal);
+        return stock.some(animal=>animal && animalCardKey(animal)===key);
+    }
+    // Fictional stock cards have stable per-card IDs. Prefer that identity;
+    // fall back to species identity for old saves that predate stock IDs.
+    if(offer.animal.id!=null)
+        return stock.some(animal=>animal && String(animal.id)===String(offer.animal.id));
+    const key=animalCardKey(offer.animal);
+    return stock.some(animal=>animal && animalCardKey(animal)===key);
+}
+
 function pruneUnavailableIncomingTradeOffers() {
-    // Asset-missing animals may remain in saved/opponent holdings, but they
-    // must not survive as an active offer after a later startup audit has
-    // conclusively found their card PNG absent.
-    state.tradeOffers = (state.tradeOffers || []).filter(offer =>
-        offer?.animal
-    );
+    // Offers are promises about a concrete opponent stock card. Saved state,
+    // stock rotation and real-zoo refreshes can invalidate that promise.
+    state.tradeOffers = (state.tradeOffers || []).filter(classicTradeOfferStillLive);
 
     if (
         state.autonomousTradeOffer?.animal &&
-        !true
+        !classicTradeOfferStillLive(state.autonomousTradeOffer)
     ) {
         state.autonomousTradeOffer = null;
-        scheduleNextAutonomousOpponentOffer();
+        if(state.gameMode!=='true')scheduleNextAutonomousOpponentOffer();
     }
 
     if (
@@ -50546,6 +50588,24 @@ function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=nu
         ? Boolean(state.autonomousTradeOffer)
         : Boolean(autonomousOverride);
     if(!state.outgoingOffer) return false;
+
+    // A drag may outlive a stock refresh/render. Never settle a frozen offer
+    // that the opponent no longer owns, and never settle with an outgoing card
+    // that has disappeared from the player's zoo state.
+    if(state.gameMode!=='true' && !classicTradeOfferStillLive(offer)){
+        pruneUnavailableIncomingTradeOffers();
+        renderTrade();
+        return false;
+    }
+    const outgoingSourceId=Number(state.outgoingOffer.truePopulationTradeSourceId??state.outgoingOffer.id);
+    if(!state.animals.some(animal=>Number(animal?.id)===outgoingSourceId)){
+        state.outgoingOffer=null;
+        state.tradeOffers=[];
+        state.selectedTradeOpponent=null;
+        renderTrade();
+        refreshDrawAvailabilityState();
+        return false;
+    }
     if(autonomous && !outgoingFitsAutonomousOffer(state.outgoingOffer,offer)) return false;
 
     const outgoingForHistory = state.outgoingOffer;
@@ -50604,7 +50664,9 @@ function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=nu
     const stock=state.opponentTradeStocks[offer.opponentIndex]||[];
     state.opponentTradeStocks[offer.opponentIndex] = isRealOpponentMode()
         ? stock.filter(a => animalCardKey(a) !== animalCardKey(incoming))
-        : stock.filter(a => a.id !== incoming.id);
+        : stock.filter(a => incoming.id!=null
+            ? String(a?.id)!==String(incoming.id)
+            : animalCardKey(a)!==animalCardKey(incoming));
 
     if (!isRealOpponentMode()) {
         const outgoingForOpponent = state.outgoingOffer;

@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V2.43.93";
+const ZOO_CURATOR_VERSION = "V2.43.97";
 // Definitive V2 baseline: True-mode systems + current Information-map geography fixes.
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
@@ -8592,13 +8592,19 @@ function trueEventCandidateWeight(listing){
 }
 
 function trueEventEligibleSourceRecords(seedSuffix='general'){
-    // Zoo-network events use the same institutional access layer as real-zoo
-    // trading: first apply the player's trade-access prestige window, then the
-    // province/adjacency geography curve. This prevents a new local zoo from
-    // receiving unsolicited events from arbitrary distant institutions.
+    // Starter events use the same concentric network rule as Marketplace.
+    // Dense countries remain strongly local; sparse countries expand only as
+    // far as needed to assemble a useful pool of small institutions.
     const records=realZooRecordsAvailable();
     if(!records.length)return [];
     const actualPrestige=visibleZooPrestige();
+    if(actualPrestige<80){
+        return trueStarterNetworkCandidates(records,16,{
+            seedText:`true-events|${state.zooName}|${normaliseTrueCalendarState().date}|${seedSuffix}`,
+            respectSpecialism:true,
+            includeEstablished:true
+        }).map(row=>row.record);
+    }
     const accessPrestige=playerTradeAccessPrestige(actualPrestige);
     const rows=records.map((record,index)=>({record,profile:realZooProfile(record,index)}))
         .filter(row=>{
@@ -8607,10 +8613,6 @@ function trueEventEligibleSourceRecords(seedSuffix='general'){
             const rel=trueRelationshipForProfile(row.profile,sourceKey);
             const established=(Number(rel.trust)||0)>=20||(Number(rel.familiarity)||0)>=3;
             if(established)return true;
-            // Unsolicited contacts start with the original local network:
-            // same province, adjacent domestic, and adjacent foreign. Broader
-            // domestic networking appears once the zoo is established; remote
-            // foreign institutions require substantially more access prestige.
             if(band<=2)return true;
             if(band===3)return accessPrestige>=70;
             return accessPrestige>=160;
@@ -8801,7 +8803,7 @@ function trueAnimalRequestSendPopulation(event,population){
         {trust:2,familiarity:1});
     addTrueActivity({type:'action',title:'Animal request fulfilled',
         message:`${truePopulationNotation(send)} ${animalDisplayName(event.animal)} sent to ${event.profile?.name||'the requesting zoo'}.`});
-    closeTrueEventDialog();renderAll();renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
+    closeTrueEventDialog(true);renderAll();renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
     return true;
 }
 function trueAcceptAnimalRequestEvent(event){
@@ -9112,6 +9114,100 @@ function trueConcernZooForAnimal(animal,today){
     for(const row of rows){pick-=row.weight;if(pick<=0)return row;}
     return rows[0];
 }
+
+function truePopulationExactRepair(animal){
+    if(!animal)return null;
+    const current=normaliseTrueAnimalPopulation(animal);
+    if(truePopulationGroupSizeStatus(animal).valid)return null;
+    let best=null;
+    const consider=(mode,pop,result)=>{
+        if(!truePopulationGroupSizeStatus({...animal,population:result}).valid)return;
+        const amount=(pop.males||0)+(pop.females||0)+(pop.unknown||0);
+        const sexes=(pop.males>0?1:0)+(pop.females>0?1:0)+(pop.unknown>0?1:0);
+        const score=[amount,sexes,pop.unknown||0];
+        if(!best||score.some((v,i)=>v<best.score[i]&&score.slice(0,i).every((x,j)=>x===best.score[j])))
+            best={mode,population:pop,result,score};
+    };
+    // Search both directions. A welfare intervention is only valid when the
+    // proposed transfer leaves the player's population fully legal immediately.
+    for(let m=0;m<=current.males;m++)for(let f=0;f<=current.females;f++)for(let u=0;u<=current.unknown;u++){
+        const n=m+f+u;if(!n||n>=current.males+current.females+current.unknown)continue;
+        consider('send',{males:m,females:f,unknown:u},{males:current.males-m,females:current.females-f,unknown:current.unknown-u});
+    }
+    for(let m=0;m<=8;m++)for(let f=0;f<=8;f++){
+        const n=m+f;if(!n||n>8)continue;
+        consider('receive',{males:m,females:f,unknown:0},{males:current.males+m,females:current.females+f,unknown:current.unknown});
+    }
+    return best;
+}
+function trueConcernZooWithExactRepair(animal,repair,today){
+    if(!repair)return null;
+    const records=state.realZooData?.zoos||[];
+    const local=records.map((record,index)=>({record,index,band:realZooGeographyBand(record)}));
+    let eligible=local.filter(x=>x.band===0);if(!eligible.length)eligible=local.filter(x=>x.band===1);
+    const rows=[];
+    for(const row of eligible){
+        const profile=realZooProfile(row.record,row.index),sourceKey=realZooHoldingKey(row.record);
+        if(repair.mode==='send'){
+            if(!trueDestinationCanReceiveSurplus(row.record,animal,repair.population))continue;
+        }else{
+            const entry=trueWorldPopulation(row.record,animal,{create:true,reason:'welfare exact group repair'});
+            if(!entry)continue;
+            const before=normaliseTrueAnimalPopulation(entry.population),give=normaliseTrueAnimalPopulation(repair.population);
+            if(give.males>before.males||give.females>before.females||give.unknown>before.unknown)continue;
+            const after={males:before.males-give.males,females:before.females-give.females,unknown:before.unknown-give.unknown};
+            if(!truePopulationGroupSizeStatus({...animal,population:after,truePopulationManagement:entry.management||null}).valid)continue;
+        }
+        const rel=trueRelationshipForProfile(profile,sourceKey);
+        rows.push({record,profile,sourceKey,rel,weight:1+Math.max(0,Number(rel.trust)||0)/20+Math.max(0,Number(rel.familiarity)||0)/30});
+    }
+    if(!rows.length)return null;
+    let total=rows.reduce((n,r)=>n+r.weight,0),pick=seededRoll(`welfare-repair-zoo|${animalCardKey(animal)}|${today}`).roll*total;
+    for(const row of rows){pick-=row.weight;if(pick<=0)return row;}return rows[0];
+}
+function trueCreateWelfareProtestAfterDeclinedHelp(parent){
+    if(!parent||parent.welfareHelpDeclinedProtestId)return null;
+    const events=normaliseTrueEventState(),today=normaliseTrueCalendarState().date,species=animalDisplayName(parent.animal);
+    const event={id:`ze-${events.nextId++}`,kind:'welfare-protest',status:'active',createdDate:today,expiresDate:addTrueDays(today,10),
+        informational:true,welfareConcern:true,welfareProtestFollowUp:true,parentEventId:parent.id,enclosureId:parent.enclosureId,
+        welfareDimensions:{space:false,group:true},sourceKey:'animal-welfare-public',profile:{name:'Animal welfare groups'},
+        animal:cloneForSave(parent.animal),population:cloneForSave(parent.population),scale:'Notable',
+        title:'Welfare protest',message:`Animal welfare campaigners are protesting the unresolved group-size problem for your ${species}.`,
+        detail:`A zoo had already offered a transfer that would have completely corrected the managed group, but that offer was declined and the population remains unsuitable.`,
+        impactText:'The protest has hurt public confidence. Visitor demand will be lower for the next few zoo days.'};
+    trueEventAddModifier({type:'attendance-multiplier',value:.90,untilDate:addTrueDays(today,3),sourceEventId:event.id,text:'Public criticism is suppressing attendance while the group-size concern remains unresolved.'});
+    events.items.unshift(event);parent.welfareHelpDeclinedProtestId=event.id;
+    addTrueActivity({type:'information',title:event.title,message:event.message,actionLabel:'View event',action:'event',eventId:event.id});
+    trueQueueEventPresentation(event);return event;
+}
+function trueAcceptExactHusbandryRepair(event){
+    if(!event||event.status!=='active'||!event.husbandryExactRepair)return false;
+    const animal=(state.animals||[]).find(a=>String(a.id)===String(event.animal?.id));if(!animal)return false;
+    const repair=event.husbandryExactRepair,pop=normaliseTrueAnimalPopulation(repair.population);
+    const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===event.sourceKey);if(!record)return false;
+    if(repair.mode==='send'){
+        const available=trueTransferAvailableCounts(animal);
+        if(pop.males>available.males||pop.females>available.females||pop.unknown>available.unknown)return false;
+        const projected={males:available.males-pop.males,females:available.females-pop.females,unknown:available.unknown-pop.unknown};
+        if(!truePopulationGroupSizeStatus({...animal,population:projected}).valid)return false;
+        trueTransferSubtract(animal,pop);trueWorldPopulationAdd(record,event.animal,pop,{type:'transfer-in',text:`Population received from ${state.zooName||'the player zoo'} to resolve a group-size concern.`,otherZooKey:'player'});
+    }else{
+        const entry=trueWorldPopulation(record,event.animal,{create:true,reason:'accepted welfare group repair'});
+        const source=normaliseTrueAnimalPopulation(entry.population);
+        if(pop.males>source.males||pop.females>source.females||pop.unknown>source.unknown)return false;
+        const projected=normaliseTrueAnimalPopulation(animal);
+        projected.males+=pop.males;projected.females+=pop.females;projected.unknown+=pop.unknown;
+        if(!truePopulationGroupSizeStatus({...animal,population:projected}).valid)return false;
+        trueWorldPopulationRemove(record,event.animal,pop,{type:'transfer-out',text:`Population sent to ${state.zooName||'the player zoo'} to resolve a group-size concern.`,otherZooKey:'player'});
+        animal.population=projected;
+    }
+    event.status='resolved';event.resolvedDate=normaliseTrueCalendarState().date;
+    event.resolution=`Accepted ${event.profile?.name||'the zoo'}'s offer; the managed group is now valid.`;
+    trueRelationshipRecord(event.profile,event.sourceKey,'husbandry-exact-repair',`Completed a transfer that corrected the ${animalDisplayName(event.animal)} group.`,{trust:3,familiarity:1});
+    addTrueActivity({type:'action',title:'Group-size concern resolved',message:`The transfer with ${event.profile?.name||'the other zoo'} has completely corrected the ${animalDisplayName(event.animal)} group structure.`});
+    closeTrueEventDialog(true);renderAll();renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);return true;
+}
+
 function trueHusbandryReliefPopulation(animal,condition){
     if(!animal||!condition?.groupBad)return null;
     const current=normaliseTrueAnimalPopulation(animal);
@@ -9164,66 +9260,54 @@ function trueAcceptHusbandryReliefOffer(event){
         title:'Population transfer completed',
         message:`${truePopulationNotation(wanted)} ${animalDisplayName(event.animal)} transferred to ${event.profile?.name||'the other zoo'} to address the husbandry concern.`
     });
-    closeTrueEventDialog();
+    closeTrueEventDialog(true);
     renderZoo();renderTrueSimulationPanel();renderVisitedZooQuickTabs();
     writeAutoResumeSnapshot?.(true);
     return true;
 }
 function trueCreateHusbandryConcernEvent(animal,condition,today,incidentCount=1){
     const events=normaliseTrueEventState(),species=animalDisplayName(animal);
-    const zooConcern=seededRoll(`welfare-kind|${animal.id}|${today}|${incidentCount}`).roll>=.45;
-    const expiry=trueDateObject(today);expiry.setUTCDate(expiry.getUTCDate()+10);
-    let profile=null,sourceKey='animal-welfare-public',title,message,detail,relationshipImpact=0;
-    const problems=[];
+    // Group-size welfare escalation always starts with practical help from
+    // another zoo. We do not create a protest until the player has explicitly
+    // declined an offer that would fix the group completely.
+    if(condition.groupBad){
+        const repair=truePopulationExactRepair(animal);
+        const row=trueConcernZooWithExactRepair(animal,repair,today);
+        if(!repair||!row)return null;
+        const expiry=addTrueDays(today,10),notation=truePopulationNotation(repair.population);
+        const verb=repair.mode==='send'?'take':'send';
+        const direction=repair.mode==='send'
+            ?`${row.profile.name} can take ${notation} ${species} from your group.`
+            :`${row.profile.name} can send ${notation} ${species} to your zoo.`;
+        const event={id:`ze-${events.nextId++}`,kind:'welfare-zoo-concern',status:'active',createdDate:today,expiresDate:expiry,
+            informational:true,welfareConcern:true,welfareGroupHelpOffer:true,enclosureId:animal.enclosureId,
+            welfareDimensions:{space:false,group:true},husbandryExactRepair:cloneForSave(repair),
+            sourceKey:row.sourceKey,profile:cloneForSave(row.profile),animal:cloneForSave(animal),population:cloneForSave(animal.population),
+            scale:(incidentCount>=2||Number(condition.severity)>=.5)?'Notable':'Routine',
+            title:`${row.profile.name} offers help with the ${species} group`,
+            message:`${row.profile.name} has noticed that your ${species} group is outside its normal managed structure and has offered a concrete transfer to correct it.`,
+            detail:`${direction} Accepting this exact transfer leaves the population fully within a valid managed group structure immediately.`,
+            impactText:`This is a practical welfare intervention. Accepting it completely fixes the group-size problem; declining it may lead to public welfare criticism.`};
+        events.items.unshift(event);events.lastGeneratedDate=today;
+        addTrueActivity({type:'opportunity',title:event.title,message:event.message,actionLabel:'View event',action:'event',eventId:event.id});
+        trueQueueEventPresentation(event);return event;
+    }
+    // Space-only concerns may still be raised by another institution, but they
+    // never jump directly to a public welfare protest.
     if(condition.spaceBad){
-        const baseline=trueAnimalMinimumEnclosureCells(animal);
-        const driver=condition.enclosureSpace?.driver;
-        if(condition.enclosureSpace?.mixed&&driver){
-            problems.push(`the shared ${condition.cells}-cell mixed exhibit is below its ${condition.required}-cell managed requirement, set by ${animalDisplayName(driver.animals[0])}`);
-        }else{
-            problems.push(condition.required>baseline
-                ?`its ${condition.cells}-cell enclosure is below the ${condition.required}-cell managed requirement for a population of ${condition.group.total} (species baseline ${baseline})`
-                :`its ${condition.cells}-cell enclosure is below the ${condition.required}-cell baseline for the species`);
-        }
+        const row=trueConcernZooForAnimal(animal,today);if(!row)return null;
+        const event={id:`ze-${events.nextId++}`,kind:'welfare-zoo-concern',status:'active',createdDate:today,expiresDate:addTrueDays(today,10),
+            informational:true,welfareConcern:true,enclosureId:animal.enclosureId,welfareDimensions:{space:true,group:false},
+            sourceKey:row.sourceKey,profile:cloneForSave(row.profile),animal:cloneForSave(animal),population:cloneForSave(animal.population),
+            scale:'Routine',title:'Another zoo raises an enclosure concern',
+            message:`${row.profile.name} has raised concerns about the available space for your ${species}.`,
+            detail:`The enclosure remains below the managed space requirement. This concern can be resolved by correcting the enclosure rather than by a population transfer.`,
+            impactText:`The concern remains open until the enclosure meets the managed space requirement.`};
+        events.items.unshift(event);events.lastGeneratedDate=today;
+        addTrueActivity({type:'information',title:event.title,message:event.message,actionLabel:'View event',action:'event',eventId:event.id});
+        trueQueueEventPresentation(event);return event;
     }
-    if(condition.group.tooSmall)problems.push(`the population of ${condition.group.total} is below the normal managed group range (${condition.group.min}–${condition.group.max})`);
-    if(condition.group.tooLarge)problems.push(`the population of ${condition.group.total} is above the normal managed group range (${condition.group.min}–${condition.group.max})`);
-    if(condition.group.structureMismatch){const p=condition.group.population||{};problems.push(`the group composition (${p.males||0}.${p.females||0}${p.unknown?` + ${p.unknown} unsexed`:''}) does not match a normal managed structure for the species`);}
-    if(zooConcern){
-        const row=trueConcernZooForAnimal(animal,today);
-        if(row){
-            profile=row.profile;sourceKey=row.sourceKey;relationshipImpact=-Math.min(6,1+incidentCount+(Number(condition.severity)>=.5?1:0));
-            title='Another zoo raises husbandry concerns';
-            message=`${profile.name||'Another zoo'} has criticised the conditions in which your ${species} are being kept.`;
-            detail=`After the problem remained unresolved for several days, ${profile.name||'the zoo'} contacted you about the ${species}: ${problems.join('; ')}. Continued poor conditions can damage cooperation between your institutions.`;
-            trueRelationshipRecord(profile,sourceKey,'husbandry-concern',`Raised concerns about the conditions for ${species}.`,{trust:relationshipImpact,familiarity:.25});
-        }
-    }
-    if(!profile){
-        profile={name:'Animal welfare groups'};
-        title='Welfare protest';
-        message=`Animal welfare campaigners are protesting the conditions for your ${species}.`;
-        detail=`The problem has remained unresolved for several days: ${problems.join('; ')}. The protest is drawing public attention to the exhibit.`;
-    }
-    const relief=(zooConcern&&relationshipImpact)?trueHusbandryReliefPopulation(animal,condition):null;
-    if(relief){
-        const notation=truePopulationNotation(relief.population);
-        detail+=` ${profile.name||'The zoo'} has offered to take ${notation} from this population, which would bring the remaining group back within its preferred managed structure.`;
-    }
-    const event={id:`ze-${events.nextId++}`,kind:zooConcern&&relationshipImpact?'welfare-zoo-concern':'welfare-protest',status:'active',createdDate:today,expiresDate:trueDateString(expiry),
-        informational:true,welfareConcern:true,enclosureId:animal.enclosureId,
-        welfareDimensions:{space:Boolean(condition.spaceBad),group:Boolean(condition.groupBad)},
-        husbandryReliefPopulation:relief?cloneForSave(relief.population):null,
-        sourceKey,profile:cloneForSave(profile),animal:cloneForSave(animal),population:cloneForSave(animal.population),scale:(incidentCount>=2||Number(condition.severity)>=.5)?'Notable':'Routine',title,message,detail,relationshipImpact};
-    if(event.kind==='welfare-protest'){
-        trueEventAddModifier({type:'attendance-multiplier',value:.90,untilDate:addTrueDays(today,3),sourceEventId:event.id,text:'Public criticism is suppressing attendance while the concern remains fresh.'});
-        event.impactText='The protest has hurt public confidence. Visitor demand will be lower for the next few zoo days.';
-    }else{
-        event.impactText=`The criticism has reduced trust with ${profile.name||'the other zoo'}; future cooperation with that institution is now less likely until the relationship recovers.`;
-    }
-    events.items.unshift(event);events.lastGeneratedDate=today;
-    addTrueActivity({type:'information',title,message,actionLabel:'View event',action:'event',eventId:event.id});
-    trueQueueEventPresentation(event);return event;
+    return null;
 }
 function trueResolveRepairedHusbandryEvents(animal,today){
     const events=normaliseTrueEventState();
@@ -9303,6 +9387,12 @@ function trueEvaluateHusbandryConcernsForDay(){
     const today=normaliseTrueCalendarState().date,store=normaliseTrueHusbandryConcernState(),live=new Set();
     let created=null;
     for(const animal of state.animals||[]){
+        const enclosure=(state.enclosures||[]).find(e=>String(e?.id)===String(animal?.enclosureId));
+        // Backstage is deliberately off-show operational holding. It can be used
+        // for arrivals, quarantine and temporary population management without
+        // generating public-zoo welfare incidents. Welfare events only inspect
+        // animals housed in the viewable/public zoo.
+        if(enclosure&&trueEnclosureIsCurrentBackstage(enclosure))continue;
         const key=String(animal.id),condition=trueHusbandryConditionForAnimal(animal);live.add(key);
         let row=store[key];
         if(!row||typeof row!=='object')row=store[key]={spaceDays:0,groupDays:0,lastDate:null,lastEventDate:null,incidents:0};
@@ -9324,8 +9414,9 @@ function trueEvaluateHusbandryConcernsForDay(){
             const duplicateSpaceOnly=condition.spaceBad&&!condition.groupBad&&normaliseTrueEventState().items.some(e=>
                 e.status==='active'&&e.welfareConcern&&String(e.enclosureId)===String(animal.enclosureId));
             if(!duplicateSpaceOnly){
-                row.incidents=Math.max(0,Number(row.incidents)||0)+1;row.lastEventDate=today;
-                created=trueCreateHusbandryConcernEvent(animal,condition,today,row.incidents);
+                const nextIncident=Math.max(0,Number(row.incidents)||0)+1;
+                const candidate=trueCreateHusbandryConcernEvent(animal,condition,today,nextIncident);
+                if(candidate){row.incidents=nextIncident;row.lastEventDate=today;created=candidate;}
             }
         }
     }
@@ -9932,7 +10023,18 @@ function trueAcceptIndependentTransferEvent(event){
     renderVisitedZooQuickTabs();
     writeAutoResumeSnapshot?.(true);return true;
 }
-function closeTrueEventDialog(){document.getElementById('trueEventDialogOverlay')?.remove();}
+function trueEventRequiresDecision(event){
+    if(!event||event.status!=='active')return false;
+    if(event.kind==='player-zoo-birth')return true;
+    if(event.welfareGroupHelpOffer)return true;
+    return ['transfer-opportunity','animal-request','population-cooperation','surplus-relief','breeding-success','priority-contact','emergency-placement'].includes(event.kind);
+}
+function closeTrueEventDialog(force=false){
+    const overlay=document.getElementById('trueEventDialogOverlay');if(!overlay)return;
+    const event=trueEventById(overlay.dataset?.eventId);
+    if(!force&&trueEventRequiresDecision(event))return false;
+    overlay.remove();return true;
+}
 function trueResolvePopulationPressureChoice(event,choice){
     if(!event||event.status!=='active'||event.kind!=='population-pressure')return false;
     const today=normaliseTrueCalendarState().date;
@@ -9959,7 +10061,7 @@ function trueResolvePopulationPressureChoice(event,choice){
     }else return false;
     event.status='resolved';event.resolvedDate=today;event.resolution=event.choiceResult;
     addTrueActivity({type:'information',title:'Population plan chosen',message:event.choiceResult});
-    closeTrueEventDialog();renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
+    closeTrueEventDialog(true);renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
     return true;
 }
 
@@ -10051,9 +10153,14 @@ function openTrueEventDialog(id){
     // time races past its deadline. Only slow faster modes; never unpause or
     // speed up a player who is already paused/at Regular speed.
     if(Number(normaliseTrueCalendarState().speed)>1)setTrueCalendarSpeed(1);
-    closeTrueEventDialog();
+    const existing=document.getElementById('trueEventDialogOverlay');
+    if(existing){
+        const existingEvent=trueEventById(existing.dataset?.eventId);
+        if(trueEventRequiresDecision(existingEvent)&&String(existingEvent?.id)!==String(event.id))return false;
+        closeTrueEventDialog(true);
+    }
     const listing=trueMarketplaceListingById(event.listingId);
-    const overlay=document.createElement('div');overlay.id='trueEventDialogOverlay';
+    const overlay=document.createElement('div');overlay.id='trueEventDialogOverlay';overlay.dataset.eventId=String(event.id);
     // Events are deliberately presented as side cards rather than blocking
     // centre-screen modals: the zoo remains visible while the player considers them.
     overlay.style.cssText='position:fixed;inset:0;z-index:100050;pointer-events:none;';
@@ -10133,13 +10240,29 @@ function openTrueEventDialog(id){
                 button('Ease breeding pressure',()=>trueResolvePopulationPressureChoice(event,'manage')),
                 button('Ask zoo network for advice',()=>trueResolvePopulationPressureChoice(event,'network'),true)
             );
+        }else if(event.welfareGroupHelpOffer&&event.husbandryExactRepair){
+            const repair=event.husbandryExactRepair,notation=truePopulationNotation(repair.population);
+            actions.append(button('Decline help',()=>{
+                event.status='declined';event.playerReply='Declined';event.respondedDate=normaliseTrueCalendarState().date;event.resolvedDate=normaliseTrueCalendarState().date;
+                trueRelationshipRecord(event.profile,event.sourceKey,'husbandry-help-declined',`Declined practical help with the ${animalDisplayName(event.animal)} group.`,{familiarity:.25});
+                closeTrueEventDialog(true);
+                trueCreateWelfareProtestAfterDeclinedHelp(event);
+                renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
+            }));
+            actions.append(button(repair.mode==='send'?`Send ${notation} to ${event.profile?.name||'zoo'}`:`Accept ${notation} from ${event.profile?.name||'zoo'}`,()=>trueAcceptExactHusbandryRepair(event),true));
         }else if(event.welfareConcern&&event.husbandryReliefPopulation){
             actions.append(button('Acknowledge concern',()=>{
                 event.acknowledgedDate=normaliseTrueCalendarState().date;
-                closeTrueEventDialog();renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
+                closeTrueEventDialog(true);renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
             }));
             actions.append(button(`Send ${truePopulationNotation(event.husbandryReliefPopulation)} to ${event.profile?.name||'zoo'}`,()=>{
                 trueAcceptHusbandryReliefOffer(event);
+            },true));
+        }else if(isPlayerBirth){
+            actions.append(button('Acknowledge birth',()=>{
+                event.status='acknowledged';event.resolvedDate=normaliseTrueCalendarState().date;event.playerReply='Birth acknowledged';
+                closeTrueEventDialog(true);renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
+                trueProcessEventPresentationQueue();
             },true));
         }else if(replyChoices.length){
             actions.style.justifyContent='flex-end';
@@ -10166,7 +10289,7 @@ function openTrueEventDialog(id){
                 event.status='acknowledged';event.resolvedDate=normaliseTrueCalendarState().date;
                 trueRelationshipRecord(event.profile,event.sourceKey,'event-contact',`Kept in contact about ${animalDisplayName(event.animal)}.`,{familiarity:.35});
             }
-            closeTrueEventDialog();renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
+            closeTrueEventDialog(true);renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
             trueProcessEventPresentationQueue();
         },true));
     }else if(active&&isRequest&&requestedPlayerAnimal){
@@ -10222,7 +10345,7 @@ function openTrueEventDialog(id){
                 event.resolution=`You declined ${event.profile?.name||'the zoo'}'s request. No animals were transferred.`;
                 trueRelationshipRecord(event.profile,event.sourceKey,'event-declined',`Declined ${event.title}.`,{familiarity:.15});
                 addTrueActivity({type:'information',title:'Animal request declined',message:`You declined ${event.profile?.name||'the zoo'}'s request for ${animalDisplayName(event.animal)}. The population remains at your zoo.`});
-                closeTrueEventDialog();renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
+                closeTrueEventDialog(true);renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
             })
         );
     }else if(active){
@@ -10244,12 +10367,12 @@ function openTrueEventDialog(id){
                         addTrueActivity({type:'information',title:'Population placed elsewhere',message:`${event.profile?.name||'The zoo'} later let you know that the ${animalDisplayName(event.animal)} population has gone to ${event.alternativeDestinationName}.`});
                     }
                 }
-                closeTrueEventDialog();renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
+                closeTrueEventDialog(true);renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
             }),
             button(isRequest?'Discuss sending animal':'Discuss transfer',()=>{
                 if(isRequest){trueAcceptAnimalRequestEvent(event);return;}
                 if(event.independentEvent){trueAcceptIndependentTransferEvent(event);return;}
-                event.status='engaged';event.respondedDate=normaliseTrueCalendarState().date;event.resolvedDate=normaliseTrueCalendarState().date;trueRelationshipRecord(event.profile,event.sourceKey,'event-engaged',`Responded to ${event.title}.`,{familiarity:1});closeTrueEventDialog();requestTrueMarketplaceAnimal(listing);writeAutoResumeSnapshot?.(true);
+                event.status='engaged';event.respondedDate=normaliseTrueCalendarState().date;event.resolvedDate=normaliseTrueCalendarState().date;trueRelationshipRecord(event.profile,event.sourceKey,'event-engaged',`Responded to ${event.title}.`,{familiarity:1});closeTrueEventDialog(true);requestTrueMarketplaceAnimal(listing);writeAutoResumeSnapshot?.(true);
             },true)
         );
     }else if(event.status==='engaged'&&state.autonomousTradeOffer?.eventOpportunity&&
@@ -10262,12 +10385,31 @@ function openTrueEventDialog(id){
             },true)
         );
     }else actions.append(button('Close',closeTrueEventDialog,true));
+    const sticky=trueEventRequiresDecision(event);
     const close=document.createElement('button');close.type='button';close.textContent='−';close.title='Minimize event';
     close.setAttribute('aria-label','Minimize event');
     close.style.cssText='position:absolute;right:10px;top:8px;width:30px;height:30px;border:0;background:transparent;font-size:26px;line-height:24px;cursor:pointer;color:#4c4235;opacity:.7;font-weight:800;';
-    close.onclick=closeTrueEventDialog;
+    close.onclick=()=>closeTrueEventDialog();
+    if(sticky)close.style.display='none';
     card.append(close,actions);overlay.appendChild(card);
     document.body.appendChild(overlay);
+    // Event cards can be moved out of the way. Interactive controls always win:
+    // a pointer starting on a button/input/select/textarea/link never begins drag.
+    let drag=null;
+    card.addEventListener('pointerdown',e=>{
+        if(e.button!==0||e.target.closest('button,input,select,textarea,a,[role="button"]'))return;
+        const r=card.getBoundingClientRect();
+        drag={id:e.pointerId,dx:e.clientX-r.left,dy:e.clientY-r.top};
+        card.setPointerCapture?.(e.pointerId);card.style.cursor='grabbing';e.preventDefault();
+    });
+    card.addEventListener('pointermove',e=>{
+        if(!drag||drag.id!==e.pointerId)return;
+        const maxX=Math.max(0,window.innerWidth-card.offsetWidth),maxY=Math.max(0,window.innerHeight-card.offsetHeight);
+        const x=Math.max(0,Math.min(maxX,e.clientX-drag.dx)),y=Math.max(0,Math.min(maxY,e.clientY-drag.dy));
+        card.style.left=`${x}px`;card.style.top=`${y}px`;card.style.right='auto';card.style.maxHeight=`calc(100vh - ${y+8}px)`;
+    });
+    const endDrag=e=>{if(!drag||drag.id!==e.pointerId)return;drag=null;card.releasePointerCapture?.(e.pointerId);card.style.cursor='';};
+    card.addEventListener('pointerup',endDrag);card.addEventListener('pointercancel',endDrag);
     const presented=normaliseTrueEventState();
     if(!presented.presentedEventIds||typeof presented.presentedEventIds!=='object'||Array.isArray(presented.presentedEventIds))presented.presentedEventIds={};
     presented.presentedEventIds[event.id]=trueEventAbsoluteMinute();
@@ -10521,6 +10663,7 @@ function trueProcessEventDay(){
     // now become a world event. Repeated incidents have a seven-day cooldown.
     trueEvaluateHusbandryConcernsForDay();
     trueEvaluatePlayerBirthsForDay();
+    trueMarketplaceGeneratePlayerListingOffers();
     // Event generation is deliberately deferred to the two daytime slots
     // (09:30–18:00). Do not create a fallback event at the 09:00 rollover.
 }
@@ -10569,52 +10712,22 @@ function processTrueMonthChange(previousMonth, currentMonth) {
 function trueGuestSimulateWholeDay(){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return;
     const target=trueGuestDailyTarget();
-    const occupied=(state.enclosures||[]).filter(enc=>enc?.trueBuilt&&(state.animals||[]).some(a=>String(a?.enclosureId)===String(enc.id)));
-    // Advance guest-side event state through the same 09:00–19:00 day in 5-minute
-    // slices. We intentionally do not create hundreds of DOM walkers: the live Max
-    // frame shows only a small representative crowd, while this rollover resolves
-    // the complete day's attendance without adding more DOM guests.
-    trueGuestRuntime.dailyEntered=0;
-    trueGuestRuntime.dailyTargetDate=normaliseTrueCalendarState().date;
-    const groups=[];
-    let entered=0;
-    for(let minute=9*60;minute<17*60&&entered<target;minute+=5){
-        trueGuestUpdateAnimalEvents(minute);
-        const paced=trueGuestArrivalProgress(minute);
-        const due=minute>=16*60?target:Math.floor(target*paced);
-        while(entered<due){
-            const size=Math.min(target-entered,1+Math.floor(Math.random()*5));
-            const stay=120+Math.floor(Math.random()*301);
-            const closeDeparture=17*60+Math.floor(Math.random()*61);
-            groups.push({size,arrival:minute,departure:Math.min(minute+stay,closeDeparture,18*60)});
-            entered+=size;
-        }
-    }
-    if(entered<target)groups.push({size:target-entered,arrival:16*60+55,departure:18*60});
+    // Max speed resolves attendance numerically. The previous implementation
+    // constructed every synthetic guest group and then simulated thousands of
+    // weighted exhibit stops whose selected destination was never stored. That
+    // work produced no gameplay result and could block the main thread exactly
+    // at 19:00, making Max appear frozen.
     trueGuestRuntime.dailyEntered=target;
-    // Resolve representative exhibit choices so new/high-level attractions still
-    // consume their simulated-day attention window instead of freezing for a day.
-    if(occupied.length){
-        for(const group of groups){
-            const visitMinutes=Math.max(0,group.departure-group.arrival);
-            const stops=Math.max(1,Math.floor(visitMinutes/25));
-            for(let n=0;n<stops;n++){
-                const at=group.arrival+(visitMinutes*(n+1)/(stops+1));
-                trueGuestUpdateAnimalEvents(at);
-                // Destination weighting mirrors the live simulation's rarity + event pull.
-                const weighted=occupied.map(enc=>{
-                    const animals=(state.animals||[]).filter(a=>String(a?.enclosureId)===String(enc.id));
-                    const level=Math.max(...animals.map(a=>Math.max(1,Math.min(5,Number(a.level)||1))));
-                    return {enc,w:Math.pow(1.72,level-1)*trueGuestEventAttraction(enc.id,at)};
-                });
-                let roll=Math.random()*weighted.reduce((sum,x)=>sum+x.w,0);
-                for(const item of weighted){roll-=item.w;if(roll<=0)break;}
-            }
-        }
-    }
-    trueGuestUpdateAnimalEvents(19*60);
-    for(const g of trueGuestRuntime.guests)g.el?.remove();
-    trueGuestRuntime.guests=[];trueGuestRuntime.spawnQueue=0;trueGuestRuntime.spawnGroupId=null;trueGuestRuntime.spawnGroupDepartureMinute=null;
+    trueGuestRuntime.dailyTargetDate=String(state.trueCalendar?.date||'');
+    // Animal-attraction event timers do matter. Advance those at bounded
+    // half-hour checkpoints rather than once per synthetic visitor stop.
+    for(let minute=9*60;minute<=19*60;minute+=30)trueGuestUpdateAnimalEvents(minute);
+    for(const g of trueGuestRuntime.guests||[])g.el?.remove();
+    trueGuestRuntime.guests=[];
+    trueGuestRuntime.spawnQueue=0;
+    trueGuestRuntime.spawnGroupId=null;
+    trueGuestRuntime.spawnGroupDepartureMinute=null;
+    refreshTrueGuestsTodayCounter();
 }
 function trueCalendarDisplayParts(now=performance.now()){
     const calendar=normaliseTrueCalendarState();
@@ -21851,6 +21964,26 @@ function repairTrueBuiltEnclosureGeometry(){
                     state.enclosures.push(enc);return enc.id;
                 };
                 b.backstageEnclosureIds=[makePen(backstagePenCells)];
+                // Backstage is a first-class pregenerated Area, covering the
+                // complete off-show compound (holding pen + free connector cell).
+                // It is operational rather than a prestige geography Area.
+                const backstageAreaCells=backstageCells.map(c=>({col:c.col,row:c.row}));
+                const backstageArea={
+                    id:`true-backstage-area-${state.nextId++}`,
+                    name:'Backstage',
+                    type:'area',
+                    color:'#6A7858',
+                    colour:'#6A7858',
+                    cells:backstageAreaCells,
+                    geometry:trueAreaGeometryFromCells(backstageAreaCells),
+                    enclosureIds:[...b.backstageEnclosureIds],
+                    tags:['Backstage'],
+                    tag:'Backstage',
+                    trueBackstageArea:true,
+                    diagnostic:false
+                };
+                state.customAreas=(state.customAreas||[]).filter(a=>!a?.trueBackstageArea);
+                state.customAreas.push(backstageArea);
                 const allStarterAnimals=(state.animals||[]).filter(a=>!a?.trueArrivalPending);
                 if(allStarterAnimals.length){
                     const speciesKey=a=>`${a.category}|${Number(a.level)||1}|${cleanFilename(a.filename)}`;
@@ -23056,10 +23189,19 @@ function refreshTrueDecorationVisuals(refreshObjects=true,renderContext=null){
     }
     let epochSerial=0;
     const paintPath=(st,group)=>{
+        const width=Math.max(8,Math.min(100,Number(st.size)||34));
+        if(st.points.length===1){
+            // SVG does not render a zero-length "M x y" path. A click is a
+            // legitimate brush gesture, so render it as one round brush dab.
+            const q=st.points[0],dot=document.createElementNS(svg.namespaceURI,'circle');
+            dot.setAttribute('cx',Number(q.x)||0);dot.setAttribute('cy',Number(q.y)||0);
+            dot.setAttribute('r',width/2);dot.setAttribute('fill',st.colour||'#78AFC2');
+            group.appendChild(dot);return;
+        }
         const path=document.createElementNS(svg.namespaceURI,'path');
         path.setAttribute('d',st.points.map((q,i)=>`${i?'L':'M'}${Number(q.x)||0} ${Number(q.y)||0}`).join(' '));
         path.setAttribute('fill','none');path.setAttribute('stroke',st.colour||'#78AFC2');
-        path.setAttribute('stroke-width',Math.max(8,Math.min(100,Number(st.size)||34)));
+        path.setAttribute('stroke-width',width);
         path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');
         group.appendChild(path);
     };
@@ -23081,7 +23223,14 @@ function refreshTrueDecorationVisuals(refreshObjects=true,renderContext=null){
                 mask.id=maskId;
                 const full=document.createElementNS(svg.namespaceURI,'rect');full.setAttribute('x','0');full.setAttribute('y','0');full.setAttribute('width','100%');full.setAttribute('height','100%');full.setAttribute('fill','white');mask.appendChild(full);
                 for(const st of ep.erasers){
-                    const epth=document.createElementNS(svg.namespaceURI,'path');epth.setAttribute('d',st.points.map((q,i)=>`${i?'L':'M'}${Number(q.x)||0} ${Number(q.y)||0}`).join(' '));epth.setAttribute('fill','none');epth.setAttribute('stroke','black');epth.setAttribute('stroke-width',Math.max(8,Math.min(100,Number(st.size)||34)));epth.setAttribute('stroke-linecap','round');epth.setAttribute('stroke-linejoin','round');mask.appendChild(epth);
+                    const width=Math.max(8,Math.min(100,Number(st.size)||34));
+                    if(st.points.length===1){
+                        const q=st.points[0],dot=document.createElementNS(svg.namespaceURI,'circle');
+                        dot.setAttribute('cx',Number(q.x)||0);dot.setAttribute('cy',Number(q.y)||0);
+                        dot.setAttribute('r',width/2);dot.setAttribute('fill','black');mask.appendChild(dot);
+                    }else{
+                        const epth=document.createElementNS(svg.namespaceURI,'path');epth.setAttribute('d',st.points.map((q,i)=>`${i?'L':'M'}${Number(q.x)||0} ${Number(q.y)||0}`).join(' '));epth.setAttribute('fill','none');epth.setAttribute('stroke','black');epth.setAttribute('stroke-width',width);epth.setAttribute('stroke-linecap','round');epth.setAttribute('stroke-linejoin','round');mask.appendChild(epth);
+                    }
                 }
                 defs.appendChild(mask);group.setAttribute('mask',`url(#${maskId})`);
             }
@@ -44015,6 +44164,96 @@ function realZooGeographyBand(record) {
     return sameCountry ? 3 : 4;
 }
 
+
+function trueStarterNetworkCandidates(records, targetCount=10, {
+    seedText='starter-network',
+    respectSpecialism=true,
+    includeEstablished=false
+}={}) {
+    // Starter networks expand concentrically. Small nearby institutions remain
+    // first choice, but sparse countries (Luxembourg, microstates, thin database
+    // coverage) are never allowed to starve the player of contacts.
+    const actualPrestige=Math.max(0,Number(visibleZooPrestige?.() ?? currentZooPrestige())||0);
+    const playerCountry=normaliseGeographyPart(truePlayerCountryName?.()||state.zooCountry);
+    const playerTypes=typeof truePlayerZooTypes==='function'?truePlayerZooTypes():[];
+    const softPrestigeCeiling=Math.max(80,actualPrestige+85);
+    const rows=(records||[]).map((item,index)=>{
+        const record=item?.record||item;
+        if(!record)return null;
+        const profile=item?.profile||realZooProfile(record,index);
+        const prestige=Number(item?.prestige);
+        return {
+            ...(item?.record?item:{}),
+            record,profile,
+            prestige:Number.isFinite(prestige)?prestige:realZooPrestige(record),
+            geographyBand:Number.isFinite(Number(item?.geographyBand))
+                ?Number(item.geographyBand):realZooGeographyBand(record)
+        };
+    }).filter(Boolean);
+
+    const relationEstablished=row=>{
+        if(!includeEstablished)return false;
+        const rel=trueRelationshipForProfile?.(row.profile,realZooHoldingKey(row.record));
+        return (Number(rel?.trust)||0)>=20||(Number(rel?.familiarity)||0)>=3;
+    };
+    const specialistOkay=row=>!respectSpecialism ||
+        !trueMarketplaceSpecialistMismatch?.(row.record,playerTypes);
+
+    // Expansion order:
+    // 0 same province -> 1 adjacent domestic -> 2 adjacent foreign ->
+    // 3 farther domestic -> 4 farther foreign. Within every ring, prefer the
+    // small/prestige-compatible zoos first. This means the Netherlands keeps
+    // exhausting its local small-zoo supply before scaling outward, while
+    // Luxembourg naturally reaches neighbouring and then farther small zoos.
+    const ranked=rows.slice().sort((a,b)=>{
+        const establishedA=relationEstablished(a)?0:1,establishedB=relationEstablished(b)?0:1;
+        if(establishedA!==establishedB)return establishedA-establishedB;
+        if(a.geographyBand!==b.geographyBand)return a.geographyBand-b.geographyBand;
+        const smallA=a.prestige<=softPrestigeCeiling?0:1,smallB=b.prestige<=softPrestigeCeiling?0:1;
+        if(smallA!==smallB)return smallA-smallB;
+        const mismatchA=specialistOkay(a)?0:1,mismatchB=specialistOkay(b)?0:1;
+        if(mismatchA!==mismatchB)return mismatchA-mismatchB;
+        const affinityA=typeof trueMarketplaceTypeAffinity==='function'
+            ?trueMarketplaceTypeAffinity(a.record,playerTypes):0;
+        const affinityB=typeof trueMarketplaceTypeAffinity==='function'
+            ?trueMarketplaceTypeAffinity(b.record,playerTypes):0;
+        if(affinityA!==affinityB)return affinityA-affinityB;
+        if(a.prestige!==b.prestige)return a.prestige-b.prestige;
+        // Stable seeded tie-break prevents every new zoo in the same country
+        // receiving an identical list while preserving locality/scale priorities.
+        const ra=seededRoll(`${seedText}|${realZooHoldingKey(a.record)}`).roll;
+        const rb=seededRoll(`${seedText}|${realZooHoldingKey(b.record)}`).roll;
+        return ra-rb;
+    });
+
+    const selected=[],used=new Set();
+    const add=row=>{
+        const key=realZooHoldingKey(row.record);if(!key||used.has(key))return;
+        used.add(key);selected.push(row);
+    };
+
+    // First pass: small, suitable institutions, ring by ring.
+    for(let band=0;band<=4&&selected.length<targetCount;band++)
+        for(const row of ranked)
+            if(row.geographyBand===band&&row.prestige<=softPrestigeCeiling&&specialistOkay(row))
+                {add(row);if(selected.length>=targetCount)break;}
+
+    // Second pass: still respect geography, but permit larger institutions when
+    // the small-zoo supply has genuinely been exhausted.
+    for(let band=0;band<=4&&selected.length<targetCount;band++)
+        for(const row of ranked)
+            if(row.geographyBand===band&&specialistOkay(row))
+                {add(row);if(selected.length>=targetCount)break;}
+
+    // Last resort: specialist mismatch is better than an empty/undersized
+    // network in a country with very sparse real-zoo coverage.
+    for(let band=0;band<=4&&selected.length<targetCount;band++)
+        for(const row of ranked)
+            if(row.geographyBand===band)
+                {add(row);if(selected.length>=targetCount)break;}
+    return selected;
+}
+
 function realZooRelationshipLabel(record) {
     if (!record?.country) return '';
     const sameCountry = normaliseGeographyPart(record.country) ===
@@ -47527,6 +47766,9 @@ function normaliseTrueMarketplaceState() {
     if (!state.trueMarketplace || typeof state.trueMarketplace !== 'object') state.trueMarketplace = {};
     if (!Array.isArray(state.trueMarketplace.listings)) state.trueMarketplace.listings = [];
     if (!Array.isArray(state.trueMarketplace.wants)) state.trueMarketplace.wants = [];
+    if (!Array.isArray(state.trueMarketplace.playerListings)) state.trueMarketplace.playerListings = [];
+    if (!Number.isFinite(Number(state.trueMarketplace.nextPlayerListingId))) state.trueMarketplace.nextPlayerListingId=1;
+    state.trueMarketplace.nextPlayerListingId=Math.max(1,Math.floor(Number(state.trueMarketplace.nextPlayerListingId)));
     for(const want of state.trueMarketplace.wants){
         if(want && (want.kind==='level'||want.kind==='sex-category')) want.status='expired';
     }
@@ -47814,45 +48056,13 @@ function trueMarketplaceSourceCandidates(monthKey) {
         const playerPrestige=visibleZooPrestige();
         let selected;
         if(playerPrestige < 80){
-            // A new True zoo starts with the small institutions in its immediate
-            // network, not a random sample of the whole country. Geography is
-            // the primary sort, then institutional scale/prestige. This makes
-            // nearby small zoos the natural first contacts.
-            const playerCountry=truePlayerCountryName().toLowerCase();
-            const playerTypes=truePlayerZooTypes();
-            const domestic=records
-                .filter(item=>String(item.profile?.country||'').toLowerCase()===playerCountry);
-            const softPrestigeCeiling=Math.max(80,playerPrestige+85);
-            const smallDomestic=domestic.filter(item=>item.prestige<=softPrestigeCeiling);
-            const pool=smallDomestic.length>=5?smallDomestic:domestic;
-
-            const ranked=pool.slice().sort((a,b)=>{
-                if(a.geographyBand!==b.geographyBand) return a.geographyBand-b.geographyBand;
-                const affinityA=trueMarketplaceTypeAffinity(a.record,playerTypes);
-                const affinityB=trueMarketplaceTypeAffinity(b.record,playerTypes);
-                if(affinityA!==affinityB) return affinityA-affinityB;
-                if(a.prestige!==b.prestige) return a.prestige-b.prestige;
-                return String(a.profile?.name||'').localeCompare(String(b.profile?.name||''));
+            // Build a concentric starter network. Nearby small zoos dominate,
+            // but sparse countries automatically expand through neighbouring,
+            // farther domestic, then farther foreign institutions.
+            selected=trueStarterNetworkCandidates(records,10,{
+                seedText:`true-marketplace|${state.zooName}|${monthKey}`,
+                respectSpecialism:true
             });
-
-            // Compose the first network instead of merely taking the first rows.
-            // Start with nearby compatible/general institutions; only use a
-            // strongly mismatched specialist when the local terrestrial/aquatic
-            // network genuinely cannot fill the contact set.
-            const compatible=ranked.filter(item=>!trueMarketplaceSpecialistMismatch(item.record,playerTypes));
-            const mismatched=ranked.filter(item=>trueMarketplaceSpecialistMismatch(item.record,playerTypes));
-            const targetContacts=10;
-            selected=compatible.slice(0,targetContacts);
-            // Do not pad a starter zoo's network with the wrong specialist type.
-            // At higher prestige one mismatched specialist may enter organically.
-            if(playerPrestige>=45 && selected.length<targetContacts){
-                selected.push(...mismatched.slice(0,Math.min(1,targetContacts-selected.length)));
-            }
-            // If unusually sparse data leaves the local network empty, fall back
-            // to the established selector rather than producing no marketplace.
-            if(!selected.length){
-                selected=selectPrestigeLocationCandidates(records,12,`true-marketplace|${state.zooName}|${monthKey}`);
-            }
         } else {
             selected=selectPrestigeLocationCandidates(
                 records,
@@ -48198,6 +48408,141 @@ function trueMarketplaceDatabaseValue(entry,key){
     };
     return values[key]??'';
 }
+
+function trueMarketplacePlayerListingAnimal(row){
+    return (state.animals||[]).find(a=>String(a?.id)===String(row?.animalId))||null;
+}
+function trueMarketplacePlayerActiveListings(){
+    const market=normaliseTrueMarketplaceState(),today=String(state.trueCalendar?.date||'2026-04-18');
+    for(const row of market.playerListings){
+        if(row?.status==='listed'&&row.expiresDate&&row.expiresDate<today)row.status='expired';
+        if(row?.status==='listed'&&!trueMarketplacePlayerListingAnimal(row))row.status='withdrawn';
+    }
+    return market.playerListings.filter(r=>r?.status==='listed');
+}
+function trueMarketplaceListPlayerAnimal(animal){
+    if(!animal||animal.trueArrivalPending||animal.reservedForTrade||animal.reservedEnclosureId!=null)return false;
+    if(trueMarketplacePlayerActiveListings().some(r=>String(r.animalId)===String(animal.id)))return false;
+    const market=normaliseTrueMarketplaceState(),today=normaliseTrueCalendarState().date;
+    const row={id:`tmpl-${market.nextPlayerListingId++}`,animalId:animal.id,animal:cloneForSave(animal),
+        population:cloneForSave(normaliseTrueAnimalPopulation(animal)),createdDate:today,
+        expiresDate:addTrueDays(today,14),status:'listed',offers:[],lastOfferDate:''};
+    market.playerListings.push(row);
+    animal.trueMarketplaceListed=true;
+    addTrueActivity({type:'information',title:'Population listed in Marketplace',
+        message:`${animalDisplayName(animal)} has been offered to the zoo network. Interested institutions may contact us over the next few days.`});
+    writeAutoResumeSnapshot?.(true);return true;
+}
+function trueMarketplaceWithdrawPlayerListing(row){
+    if(!row||row.status!=='listed')return false;row.status='withdrawn';
+    const animal=trueMarketplacePlayerListingAnimal(row);if(animal)delete animal.trueMarketplaceListed;
+    writeAutoResumeSnapshot?.(true);return true;
+}
+function trueMarketplacePlayerOfferCandidates(row,today){
+    const animal=trueMarketplacePlayerListingAnimal(row);if(!animal)return [];
+    const records=trueStarterNetworkCandidates(realZooRecordsAvailable(),24,{
+        seedText:`player-market-offer|${state.zooName}|${row.id}|${today}`,respectSpecialism:false,includeEstablished:true
+    });
+    return records.filter(x=>{
+        const stock=realZooTradeAnimals(x.record,true);
+        return !stock.some(a=>animalCardKey(a)===animalCardKey(animal)) ||
+            (Number(trueRelationshipForProfile(x.profile,realZooHoldingKey(x.record))?.trust)||0)>20;
+    });
+}
+function trueMarketplaceGeneratePlayerListingOffers(){
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return 0;
+    const today=normaliseTrueCalendarState().date;let made=0;
+    for(const row of trueMarketplacePlayerActiveListings()){
+        if(row.lastOfferDate===today)continue;
+        const age=trueDaysBetween(row.createdDate,today);if(age<1)continue;
+        const chance=Math.min(.78,.20+age*.08);
+        if(seededRoll(`player-listing-interest|${row.id}|${today}`).roll>chance)continue;
+        const candidates=trueMarketplacePlayerOfferCandidates(row,today);if(!candidates.length)continue;
+        const pick=candidates[Math.floor(seededRoll(`player-listing-zoo|${row.id}|${today}`).roll*candidates.length)]||candidates[0];
+        const record=pick.record,profile=pick.profile,sourceKey=realZooHoldingKey(record),stock=realZooTradeAnimals(record,true);
+        const exchangeRoll=seededRoll(`player-listing-exchange|${row.id}|${sourceKey}|${today}`).roll;
+        let offeredAnimal=null;
+        if(exchangeRoll<.52&&stock.length){
+            const suitable=stock.filter(a=>!playerOwnedTradeKeys().has(animalCardKey(a)));
+            if(suitable.length)offeredAnimal=cloneForSave(suitable[Math.floor(seededRoll(`player-listing-animal|${row.id}|${today}`).roll*suitable.length)]);
+        }
+        const offer={id:`tmplo-${row.id}-${today}-${sourceKey.replace(/[^a-z0-9]+/gi,'-').slice(0,24)}`,
+            date:today,sourceKey,profile:cloneForSave(profile),offeredAnimal,
+            status:'pending',playerListingId:row.id};
+        row.offers.push(offer);row.lastOfferDate=today;made++;
+        addTrueActivity({type:'opportunity',title:'Marketplace offer received',
+            message:offeredAnimal
+                ?`${profile.name} would take ${animalDisplayName(row.animal)} and can offer ${animalDisplayName(offeredAnimal)} in return.`
+                :`${profile.name} has offered to take ${animalDisplayName(row.animal)} without asking for an exchange.`,
+            actionLabel:'Marketplace',action:'marketplace'});
+    }
+    return made;
+}
+function trueMarketplaceResolvePlayerOffer(row,offer,accept){
+    if(!row||!offer||offer.status!=='pending')return false;
+    const animal=trueMarketplacePlayerListingAnimal(row);if(!animal){offer.status='unavailable';row.status='withdrawn';return false;}
+    const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===offer.sourceKey);
+    if(!accept){offer.status='declined';trueRelationshipRecord(offer.profile,offer.sourceKey,'marketplace-offer-declined',
+        `Declined an offer for ${animalDisplayName(animal)}.`,{familiarity:1});writeAutoResumeSnapshot?.(true);return true;}
+    const population=normaliseTrueAnimalPopulation(animal);
+    if(record)trueWorldPopulationAdd(record,animal,population,{type:'transfer-in',text:`Population received from ${state.zooName||'the player zoo'} via Marketplace.`,otherZooKey:'player'});
+    state.animals=state.animals.filter(a=>a!==animal);
+    if(offer.offeredAnimal){
+        if(record)trueWorldPopulationRemove(record,offer.offeredAnimal,trueMarketplacePopulation(offer.offeredAnimal,offer.profile?.name,row.id),
+            {type:'transfer-out',text:`Population exchanged with ${state.zooName||'the player zoo'} via Marketplace.`,otherZooKey:'player'});
+        const incoming={...cloneForSave(offer.offeredAnimal),id:state.nextId++,enclosureId:null,slotIndex:null,
+            population:trueMarketplacePopulation(offer.offeredAnimal,offer.profile?.name,row.id)};
+        const holding=trueBackstageEnclosures()[0]||null;
+        if(holding){incoming.enclosureId=holding.id;incoming.slotIndex=0;incoming.x=holding.x;incoming.y=holding.y;}
+        state.animals.push(incoming);
+    }
+    row.status='completed';offer.status='accepted';
+    trueRelationshipRecord(offer.profile,offer.sourceKey,'marketplace-player-transfer',
+        `Completed a Marketplace transfer involving ${animalDisplayName(animal)}.`,{trust:4,familiarity:2});
+    addTrueActivity({type:'action',title:'Marketplace transfer completed',
+        message:offer.offeredAnimal
+            ?`${offer.profile?.name||'The zoo'} has taken ${animalDisplayName(animal)}. ${animalDisplayName(offer.offeredAnimal)} has arrived in return.`
+            :`${offer.profile?.name||'The zoo'} has taken ${animalDisplayName(animal)} into its collection.`});
+    renderZoo();renderTrade();writeAutoResumeSnapshot?.(true);return true;
+}
+function openTrueMarketplacePlayerListings(){
+    if(state.gameMode!=='true'||state.visitingZoo)return;
+    closeTrueMarketplace();
+    const overlay=document.createElement('div');overlay.id='trueMarketplaceOverlay';
+    Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:'100000',background:'rgba(20,18,14,.66)',display:'flex',alignItems:'center',justifyContent:'center',padding:'18px'});
+    const panel=document.createElement('div');Object.assign(panel.style,{width:'min(900px,95vw)',maxHeight:'88vh',overflow:'auto',background:'#f5f0e5',color:'#2b251d',border:'1px solid #8b7b63',borderRadius:'14px',padding:'18px',boxSizing:'border-box'});
+    const head=document.createElement('div');Object.assign(head.style,{display:'flex',justifyContent:'space-between',alignItems:'center'});
+    const title=document.createElement('div');title.innerHTML='<div style="font-size:22px;font-weight:900">Offer animals</div><div style="font-size:12px;opacity:.65">List a population and wait for zoos in your network to make an offer</div>';
+    const close=document.createElement('button');close.textContent='Close';close.onclick=closeTrueMarketplace;head.append(title,close);panel.appendChild(head);
+    const active=trueMarketplacePlayerActiveListings();
+    for(const row of active){
+        const card=document.createElement('div');Object.assign(card.style,{marginTop:'14px',padding:'12px',border:'1px solid #b5a78d',borderRadius:'9px'});
+        const h=document.createElement('div');h.textContent=`${animalDisplayName(row.animal)} · listed until ${formatTrueDate(row.expiresDate,false)}`;h.style.fontWeight='900';card.appendChild(h);
+        for(const offer of row.offers||[]){
+            if(offer.status!=='pending')continue;
+            const line=document.createElement('div');Object.assign(line.style,{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'10px',marginTop:'8px'});
+            const text=document.createElement('span');text.textContent=offer.offeredAnimal?`${offer.profile?.name}: ${animalDisplayName(offer.offeredAnimal)} in return`:`${offer.profile?.name}: can take them without an exchange`;
+            const actions=document.createElement('span');
+            for(const [label,val] of [['Accept',true],['Decline',false]]){const b=document.createElement('button');b.textContent=label;b.style.marginLeft='5px';b.onclick=()=>{trueMarketplaceResolvePlayerOffer(row,offer,val);openTrueMarketplacePlayerListings();};actions.appendChild(b);}
+            line.append(text,actions);card.appendChild(line);
+        }
+        if(!(row.offers||[]).some(o=>o.status==='pending')){const wait=document.createElement('div');wait.textContent='No current offers. The listing remains visible to the network.';wait.style.opacity='.65;';card.appendChild(wait);}
+        const withdraw=document.createElement('button');withdraw.textContent='Withdraw listing';withdraw.style.marginTop='9px';withdraw.onclick=()=>{trueMarketplaceWithdrawPlayerListing(row);openTrueMarketplacePlayerListings();};card.appendChild(withdraw);panel.appendChild(card);
+    }
+    const listedIds=new Set(active.map(r=>String(r.animalId)));
+    const animals=(state.animals||[]).filter(a=>a&&!a.trueArrivalPending&&!a.reservedForTrade&&a.reservedEnclosureId==null&&!listedIds.has(String(a.id)));
+    if(animals.length){
+        const sub=document.createElement('div');sub.textContent='Available to list';Object.assign(sub.style,{fontWeight:'900',marginTop:'18px',borderTop:'1px solid #c6baa3',paddingTop:'12px'});panel.appendChild(sub);
+        for(const animal of animals){
+            const line=document.createElement('div');Object.assign(line.style,{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0'});
+            const text=document.createElement('span');text.textContent=`${animalDisplayName(animal)} · ${truePopulationNotation(normaliseTrueAnimalPopulation(animal))}`;
+            const b=document.createElement('button');b.textContent='List in Marketplace';b.onclick=()=>{trueMarketplaceListPlayerAnimal(animal);openTrueMarketplacePlayerListings();};line.append(text,b);panel.appendChild(line);
+        }
+    }
+    if(!active.length&&!animals.length){const empty=document.createElement('div');empty.textContent='No populations are currently available to list.';empty.style.marginTop='18px';panel.appendChild(empty);}
+    overlay.onclick=e=>{if(e.target===overlay)closeTrueMarketplace();};overlay.appendChild(panel);document.body.appendChild(overlay);
+}
+
 function openTrueMarketplace() {
     if (state.gameMode !== 'true' || state.visitingZoo) return;
     closeTrueMarketplace();
@@ -48212,10 +48557,11 @@ function openTrueMarketplace() {
     const heading=document.createElement('div');
     heading.innerHTML='<div style="font-size:22px;font-weight:900;letter-spacing:.01em">Zoo Marketplace</div><div style="font-size:12px;opacity:.65;margin-top:2px">Browse current transfer opportunities across your zoo network</div>';
     const topActions=document.createElement('div');Object.assign(topActions.style,{display:'flex',gap:'7px',alignItems:'center'});
-    const browse=document.createElement('button'),close=document.createElement('button');
-    browse.type=close.type='button';browse.textContent='Browse all';close.textContent='Close';
-    for(const b of [browse,close])Object.assign(b.style,{height:'34px',padding:'0 12px',border:'1px solid #8b7b63',borderRadius:'7px',background:'#fffaf0',fontWeight:'800',cursor:'pointer'});
-    close.addEventListener('click',closeTrueMarketplace);topActions.append(browse,close);head.append(heading,topActions);panel.appendChild(head);
+    const browse=document.createElement('button'),offerMine=document.createElement('button'),close=document.createElement('button');
+    browse.type=offerMine.type=close.type='button';browse.textContent='Browse all';offerMine.textContent='Offer animals';close.textContent='Close';
+    for(const b of [browse,offerMine,close])Object.assign(b.style,{height:'34px',padding:'0 12px',border:'1px solid #8b7b63',borderRadius:'7px',background:'#fffaf0',fontWeight:'800',cursor:'pointer'});
+    offerMine.addEventListener('click',openTrueMarketplacePlayerListings);
+    close.addEventListener('click',closeTrueMarketplace);topActions.append(browse,offerMine,close);head.append(heading,topActions);panel.appendChild(head);
 
     const body=document.createElement('div');Object.assign(body.style,{flex:'1',minHeight:'0',position:'relative',overflow:'hidden'});panel.appendChild(body);
     let mode='carousel',carouselTab='recommended',carouselIndex=0,sortKey='species',sortDir=1;
@@ -49527,7 +49873,7 @@ function trueNetworkProfileForRelationshipKey(sourceKey){
     if(record)return realZooProfile(record,(state.realZooData?.zoos||[]).indexOf(record));
     const event=normaliseTrueEventState().items.find(e=>String(e?.sourceKey||'')===key&&e?.profile);
     if(event?.profile)return event.profile;
-    const listing=normaliseTrueMarketplace().listings.find(l=>String(l?.sourceKey||'')===key&&l?.profile);
+    const listing=normaliseTrueMarketplaceState().listings.find(l=>String(l?.sourceKey||'')===key&&l?.profile);
     return listing?.profile||null;
 }
 function trueNetworkRows(){

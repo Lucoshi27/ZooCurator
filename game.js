@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V2.43.97";
+const ZOO_CURATOR_VERSION = "V2.44.02";
 // Definitive V2 baseline: True-mode systems + current Information-map geography fixes.
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
@@ -7973,7 +7973,7 @@ function resetTrueCalendarSimulation() {
     state.trueGuestDailyTargetManual = false;
     state.trueGuestDailyTarget = null;
     state.trueDaytimeActivity = { generatedKeys: [], round: null };
-    state.trueMarketplace = { listings: [], nextListingId: 1, lastRefreshMonth: '', lastRollingRefreshDate: '', rollingLifecycleVersion: 1, initialized: false };
+    state.trueMarketplace = { listings: [], wants: [], playerListings: [], nextPlayerListingId: 1, nextListingId: 1, lastRefreshMonth: '', lastRollingRefreshDate: '', rollingLifecycleVersion: 1, initialized: false };
     state.trueRelationships = {};
     state.trueTransferProposals = [];
     state.trueTransferProposalNextId = 1;
@@ -8588,14 +8588,43 @@ function trueEventCandidateWeight(listing){
     // ahead of relationship strength. Trust helps familiar partners recur, but a
     // distant high-trust zoo should not routinely crowd out suitable local peers.
     const relationshipWeight=1+trust/34+Math.min(1.35,familiarity/14)+Math.min(1.1,categoryHistory*.22);
-    return relationshipWeight*prestigeWeight*proximityWeight*zooTypeWeight*specialistWeight*cooperationWeight*recencyWeight;
+    return relationshipWeight*prestigeWeight*proximityWeight*zooTypeWeight*specialistWeight*cooperationWeight*recencyWeight*truePlayerOfferLevelWeight(listing.animal);
+}
+
+function trueEventProfileIsAquarium(profile){
+    return normaliseZooTypes(profile?.zooTypes||profile?.zoo_types||'general').some(type=>{
+        const t=String(type||'').toLowerCase();
+        return t.includes('aquarium')||t.includes('marine')||t.includes('aquatic')||
+            t.includes('sea life')||t.includes('sealife')||t.includes('ocean');
+    });
+}
+function truePlayerHasAquaticAnimal(){
+    return (state.animals||[]).some(animal=>{
+        if(!animal||animal.trueArrivalPending)return false;
+        const category=String(animal.category||animal.categoryName||'').toLowerCase();
+        if(category==='marine mania'||category.includes('marine'))return true;
+        const tags=[
+            ...(Array.isArray(animal.tags)?animal.tags:[]),
+            ...(Array.isArray(animal.habitat_tags)?animal.habitat_tags:[]),
+            ...(Array.isArray(animal.habitatTags)?animal.habitatTags:[])
+        ].map(v=>String(v||'').toLowerCase());
+        return tags.some(t=>t==='aquatic'||t==='marine'||t==='semi-aquatic'||t.includes('aquatic')||t.includes('marine'));
+    });
+}
+function trueEventAquariumSourceAllowed(record,index=0){
+    const profile=realZooProfile(record,index);
+    // Temporary event rule: aquarium institutions do not initiate events with a
+    // non-aquatic player collection. Marketplace supply is intentionally not
+    // filtered here. The gate opens automatically as soon as an aquatic animal
+    // is actually present in the player's zoo.
+    return !trueEventProfileIsAquarium(profile)||trueMarketplacePlayerIsAquarium()||truePlayerHasAquaticAnimal();
 }
 
 function trueEventEligibleSourceRecords(seedSuffix='general'){
     // Starter events use the same concentric network rule as Marketplace.
     // Dense countries remain strongly local; sparse countries expand only as
     // far as needed to assemble a useful pool of small institutions.
-    const records=realZooRecordsAvailable();
+    const records=realZooRecordsAvailable().filter((record,index)=>trueEventAquariumSourceAllowed(record,index));
     if(!records.length)return [];
     const actualPrestige=visibleZooPrestige();
     if(actualPrestige<80){
@@ -8837,6 +8866,26 @@ function trueAcceptAnimalRequestEvent(event){
     closeTrueEventDialog();renderTrade();writeAutoResumeSnapshot?.(true);return true;
 }
 
+function truePlayerOfferProgression(){
+    const counts={1:0,2:0,3:0,4:0,5:0};
+    for(const animal of state.animals||[]){
+        if(!animal||animal.trueArrivalPending||trueAnimalPopulationTotal(animal)<=0)continue;
+        const level=Math.max(1,Math.min(5,Number(animal.level)||1));counts[level]++;
+    }
+    let maxLevel=2;
+    if(counts[2]>=3)maxLevel=3;
+    if(maxLevel>=3&&counts[3]>=3)maxLevel=4;
+    if(maxLevel>=4&&counts[4]>=3)maxLevel=5;
+    return {counts,maxLevel};
+}
+function truePlayerOfferLevelWeight(animal){
+    const level=Math.max(1,Math.min(5,Number(animal?.level)||1)),max=truePlayerOfferProgression().maxLevel;
+    if(level>max)return 0;
+    const weights={2:{1:1,2:.18},3:{1:.48,2:1,3:.34},4:{1:.24,2:.82,3:1,4:.30},5:{1:.14,2:.62,3:1,4:.72,5:.24}};
+    return Number(weights[max]?.[level]||0);
+}
+function truePlayerOfferAnimalAllowed(animal){return truePlayerOfferLevelWeight(animal)>0;}
+
 function trueEventWorldCandidates(){
     const records=trueEventEligibleSourceRecords('world');
     const marketKeys=new Set(trueMarketplaceEntries().filter(e=>e.status==='available'||e.status==='negotiating')
@@ -8845,14 +8894,12 @@ function trueEventWorldCandidates(){
     const candidates=[];
     for(let index=0;index<records.length;index++){
         const record=records[index],sourceKey=realZooHoldingKey(record),profile=realZooProfile(record,index);
-        const stock=realZooTradeAnimals(record,true);
+        const stock=realZooTradeAnimals(record,true).filter(truePlayerOfferAnimalAllowed);
         if(!stock.length)continue;
-        // Deterministically sample a few populations per institution instead of
-        // turning its entire holdings list into event tickets.
         const offset=Math.floor(seededRoll(`event-world-stock|${sourceKey}|${normaliseTrueCalendarState().date}`).roll*stock.length);
-        for(let j=0;j<Math.min(3,stock.length);j++){
+        for(let j=0;j<Math.min(6,stock.length);j++){
             const animal=stock[(offset+j)%stock.length],key=`${sourceKey}|${animalCardKey(animal)}`;
-            if(marketKeys.has(key)||activeKeys.has(key))continue; // Events are not Marketplace adverts.
+            if(marketKeys.has(key)||activeKeys.has(key))continue;
             candidates.push({sourceKey,profile,animal,population:normaliseTrueAnimalPopulation(animal),record});
         }
     }
@@ -9115,21 +9162,19 @@ function trueConcernZooForAnimal(animal,today){
     return rows[0];
 }
 
-function truePopulationExactRepair(animal){
-    if(!animal)return null;
+function truePopulationExactRepairOptions(animal){
+    if(!animal)return {send:null,receive:null};
     const current=normaliseTrueAnimalPopulation(animal);
-    if(truePopulationGroupSizeStatus(animal).valid)return null;
-    let best=null;
+    if(truePopulationGroupSizeStatus(animal).valid)return {send:null,receive:null};
+    const best={send:null,receive:null};
     const consider=(mode,pop,result)=>{
         if(!truePopulationGroupSizeStatus({...animal,population:result}).valid)return;
         const amount=(pop.males||0)+(pop.females||0)+(pop.unknown||0);
         const sexes=(pop.males>0?1:0)+(pop.females>0?1:0)+(pop.unknown>0?1:0);
-        const score=[amount,sexes,pop.unknown||0];
-        if(!best||score.some((v,i)=>v<best.score[i]&&score.slice(0,i).every((x,j)=>x===best.score[j])))
-            best={mode,population:pop,result,score};
+        const score=[amount,sexes,pop.unknown||0],old=best[mode];
+        if(!old||score.some((v,i)=>v<old.score[i]&&score.slice(0,i).every((x,j)=>x===old.score[j])))
+            best[mode]={mode,population:pop,result,score};
     };
-    // Search both directions. A welfare intervention is only valid when the
-    // proposed transfer leaves the player's population fully legal immediately.
     for(let m=0;m<=current.males;m++)for(let f=0;f<=current.females;f++)for(let u=0;u<=current.unknown;u++){
         const n=m+f+u;if(!n||n>=current.males+current.females+current.unknown)continue;
         consider('send',{males:m,females:f,unknown:u},{males:current.males-m,females:current.females-f,unknown:current.unknown-u});
@@ -9139,6 +9184,12 @@ function truePopulationExactRepair(animal){
         consider('receive',{males:m,females:f,unknown:0},{males:current.males+m,females:current.females+f,unknown:current.unknown});
     }
     return best;
+}
+function truePopulationExactRepair(animal,seedKey=''){
+    const options=truePopulationExactRepairOptions(animal);
+    if(options.send&&options.receive)
+        return seededRoll(`exact-group-repair-direction|${animalCardKey(animal)}|${seedKey}`).roll<.65?options.send:options.receive;
+    return options.send||options.receive||null;
 }
 function trueConcernZooWithExactRepair(animal,repair,today){
     if(!repair)return null;
@@ -9271,8 +9322,15 @@ function trueCreateHusbandryConcernEvent(animal,condition,today,incidentCount=1)
     // another zoo. We do not create a protest until the player has explicitly
     // declined an offer that would fix the group completely.
     if(condition.groupBad){
-        const repair=truePopulationExactRepair(animal);
-        const row=trueConcernZooWithExactRepair(animal,repair,today);
+        const options=truePopulationExactRepairOptions(animal);
+        const sendRow=options.send?trueConcernZooWithExactRepair(animal,options.send,today):null;
+        const receiveRow=options.receive?trueConcernZooWithExactRepair(animal,options.receive,today):null;
+        let repair=null,row=null;
+        if(sendRow&&receiveRow){
+            const outgoing=seededRoll(`welfare-repair-direction-65-35|${animalCardKey(animal)}|${today}`).roll<.65;
+            repair=outgoing?options.send:options.receive;row=outgoing?sendRow:receiveRow;
+        }else if(sendRow){repair=options.send;row=sendRow;}
+        else if(receiveRow){repair=options.receive;row=receiveRow;}
         if(!repair||!row)return null;
         const expiry=addTrueDays(today,10),notation=truePopulationNotation(repair.population);
         const verb=repair.mode==='send'?'take':'send';
@@ -9381,6 +9439,90 @@ function trueResolveRepairedHusbandryEvents(animal,today){
         resolved++;
     }
     return resolved;
+}
+
+function trueCombinationOfferExhibitCandidates(){
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return [];
+    const rows=[];
+    for(const enclosure of state.enclosures||[]){
+        if(!enclosure?.trueBuilt||trueEnclosureIsCurrentBackstage(enclosure))continue;
+        const residents=animalsInWholeEnclosure(enclosure).filter(a=>a&&!a.trueArrivalPending);
+        const capacity=Math.max(1,enclosure.cells?.length||1);
+        if(!residents.length||residents.length>=capacity)continue;
+        const used=new Set(residents.map(a=>Number(a.slotIndex)).filter(Number.isInteger));
+        const freeSlot=Array.from({length:capacity},(_,i)=>i).find(i=>!used.has(i));
+        if(freeSlot==null)continue;
+        rows.push({enclosure,residents,capacity,freeSlot});
+    }
+    return rows;
+}
+function trueCombinationOfferCandidate(today){
+    const exhibits=trueCombinationOfferExhibitCandidates();if(!exhibits.length)return null;
+    const sourceRows=trueEventEligibleSourceRecords(`combination-offer|${today}`);
+    if(!sourceRows.length)return null;
+    const owned=playerOwnedTradeKeys();
+    const candidates=[];
+    for(const record of sourceRows){
+        const sourceKey=realZooHoldingKey(record),profile=realZooProfile(record,0);
+        for(const offered of realZooTradeAnimals(record,true).filter(truePlayerOfferAnimalAllowed)){
+            if(!offered||owned.has(animalCardKey(offered)))continue;
+            const pop=trueMarketplacePopulation(offered,profile.name,`combination|${sourceKey}|${today}|${animalCardKey(offered)}`);
+            const preview={...offered,population:pop};
+            for(const exhibit of exhibits){
+                if(!exhibit.residents.every(resident=>animalsAreCompatible(resident,preview)))continue;
+                if(!animalsFormCompatibilityChain([...exhibit.residents,preview]))continue;
+                if(!enclosureAnimalSizeSpaceStatus(exhibit.capacity,[...exhibit.residents,preview]).valid)continue;
+                candidates.push({record,sourceKey,profile,offered,pop,exhibit});
+            }
+        }
+    }
+    if(!candidates.length)return null;
+    const r=seededRoll(`combination-offer-pick|${state.zooName}|${today}`).roll;
+    return candidates[Math.min(candidates.length-1,Math.floor(r*candidates.length))];
+}
+function trueCreateCombinationOfferEvent(today=normaliseTrueCalendarState().date){
+    const events=normaliseTrueEventState();
+    if(events.items.some(e=>e?.kind==='combination-offer'&&e.status==='active'))return null;
+    // This is deliberately occasional rather than a guaranteed daily source of animals.
+    if(seededRoll(`combination-offer-roll|${state.zooName}|${today}`).roll>.20)return null;
+    const c=trueCombinationOfferCandidate(today);if(!c)return null;
+    const resident=c.exhibit.residents[Math.floor(seededRoll(`combination-resident|${c.exhibit.enclosure.id}|${today}`).roll*c.exhibit.residents.length)]||c.exhibit.residents[0];
+    const event={id:`ze-${events.nextId++}`,kind:'combination-offer',status:'active',createdDate:today,expiresDate:addTrueDays(today,7),
+        sourceKey:c.sourceKey,profile:cloneForSave(c.profile),animal:cloneForSave(c.offered),population:cloneForSave(c.pop),
+        targetEnclosureId:c.exhibit.enclosure.id,targetResidentId:resident.id,targetResident:cloneForSave(resident),
+        title:'A suggestion for the exhibit',
+        message:`${c.profile.name} has ${animalDisplayName(c.offered)} ${truePopulationNotation(c.pop)} available and thinks they could work well in the exhibit with our ${animalDisplayName(resident)}.`,
+        detail:`They've specifically suggested putting them with the ${animalDisplayName(resident)}. If we accept, they'll go straight into that exhibit.`,
+        impactText:`Accepting brings the ${animalDisplayName(c.offered)} directly into the ${animalDisplayName(resident)} exhibit.`};
+    events.items.unshift(event);events.lastGeneratedDate=today;
+    addTrueActivity({type:'opportunity',title:event.title,message:event.message,actionLabel:'View event',action:'event',eventId:event.id});
+    trueQueueEventPresentation(event);return event;
+}
+function trueAcceptCombinationOffer(event){
+    if(!event||event.status!=='active'||event.kind!=='combination-offer')return false;
+    const enclosure=(state.enclosures||[]).find(e=>String(e?.id)===String(event.targetEnclosureId));
+    const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===event.sourceKey);
+    if(!enclosure||!record||trueEnclosureIsCurrentBackstage(enclosure))return false;
+    const residents=animalsInWholeEnclosure(enclosure).filter(a=>a&&!a.trueArrivalPending);
+    const capacity=Math.max(1,enclosure.cells?.length||1),used=new Set(residents.map(a=>Number(a.slotIndex)).filter(Number.isInteger));
+    const freeSlot=Array.from({length:capacity},(_,i)=>i).find(i=>!used.has(i));
+    const incoming={...cloneForSave(event.animal),id:state.nextId++,population:cloneForSave(event.population),enclosureId:enclosure.id,slotIndex:freeSlot};
+    // Revalidate at acceptance: the player may have changed the exhibit while the popup was open.
+    if(freeSlot==null||!residents.length||!residents.every(a=>animalsAreCompatible(a,incoming))||
+       !animalsFormCompatibilityChain([...residents,incoming])||
+       !enclosureAnimalSizeSpaceStatus(capacity,[...residents,incoming]).valid)return false;
+    const sourcePop=trueWorldPopulation(record,event.animal,{create:true,reason:'combination exhibit offer'});
+    const available=normaliseTrueAnimalPopulation(sourcePop?.population);
+    const requested=normaliseTrueAnimalPopulation(event.population);
+    if(requested.males>available.males||requested.females>available.females||requested.unknown>available.unknown)return false;
+    trueWorldPopulationRemove(record,event.animal,requested,{type:'transfer-out',text:`Population sent to ${state.zooName||'the player zoo'} for a mixed-species exhibit.`,otherZooKey:'player'});
+    state.animals.push(incoming);
+    event.status='resolved';event.resolvedDate=normaliseTrueCalendarState().date;event.playerReply='Accepted';
+    event.resolution=`Accepted. The ${animalDisplayName(incoming)} were placed directly with the ${animalDisplayName(event.targetResident)}.`;
+    trueRelationshipRecord(event.profile,event.sourceKey,'combination-offer-accepted',`Accepted ${animalDisplayName(incoming)} for a mixed-species exhibit.`,{trust:3,familiarity:2});
+    addTrueActivity({type:'action',title:'New arrivals in the exhibit',message:`The ${animalDisplayName(incoming)} have arrived from ${event.profile?.name||'the other zoo'} and were placed directly with the ${animalDisplayName(event.targetResident)}.`});
+    trueMaybeUnlockFirstNewSpeciesExpansion([incoming]);
+    closeTrueEventDialog(true);renderAll();renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);return true;
 }
 function trueEvaluateHusbandryConcernsForDay(){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return null;
@@ -9851,15 +9993,47 @@ function trueProcessEventPresentationQueue(){
     }
     return false;
 }
+function trueMaybeGeneratePriorityGroupRepair(today,slotIndex=0){
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo||trueEventBlockingItems().length>=3)return null;
+    const events=normaliseTrueEventState(),store=normaliseTrueHusbandryConcernState();
+    const candidates=[];
+    for(const animal of state.animals||[]){
+        const enclosure=(state.enclosures||[]).find(e=>String(e?.id)===String(animal?.enclosureId));
+        if(!enclosure||trueEnclosureIsCurrentBackstage(enclosure))continue;
+        const condition=trueHusbandryConditionForAnimal(animal);
+        if(!condition.groupBad)continue;
+        if((events.items||[]).some(e=>e?.status==='active'&&e.welfareConcern&&String(e.animal?.id)===String(animal.id)))continue;
+        const row=store[String(animal.id)];
+        const days=Math.max(1,Number(row?.groupDays)||1);
+        candidates.push({animal,condition,days,severity:truePopulationInterventionSeverity(animal)});
+    }
+    if(!candidates.length)return null;
+    // Group-size repair is deliberately dominant while a bad group is visible:
+    // 82% on the first daily slot, 90% on the second if still unresolved.
+    const chance=slotIndex===0?.82:.90;
+    if(seededRoll(`priority-group-repair|${state.zooName}|${today}|${slotIndex}`).roll>=chance)return null;
+    candidates.sort((a,b)=>b.severity-a.severity||b.days-a.days);
+    for(const candidate of candidates){
+        const event=trueCreateHusbandryConcernEvent(candidate.animal,candidate.condition,today,
+            Math.max(1,Number(store[String(candidate.animal.id)]?.incidents)||0)+1);
+        if(event){
+            const row=store[String(candidate.animal.id)]||(store[String(candidate.animal.id)]={spaceDays:0,groupDays:candidate.days,lastDate:today,lastEventDate:null,incidents:0});
+            row.incidents=Math.max(1,Number(row.incidents)||0)+1;row.lastEventDate=today;
+            return event;
+        }
+    }
+    return null;
+}
 function trueGenerateDailyEventSlot(slotIndex=0){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return null;
     const today=normaliseTrueCalendarState().date,events=normaliseTrueEventState();
     const todaysEvents=(events.items||[]).filter(event=>event?.createdDate===today);
     if(todaysEvents.length>=2)return null;
     trueInvalidateEventOpportunitySnapshot();
-    // Keep population-management help ahead of generic news, just as the old
-    // start-of-day pass did, but evaluate it when an event slot actually arrives.
-    let event=trueMaybeGenerateSurplusRelief(today);
+    // Invalid group structure is the strongest event priority. Try an exact,
+    // actionable repair before ordinary surplus, cooperation or network news.
+    let event=trueMaybeGeneratePriorityGroupRepair(today,slotIndex);
+    if(!event)event=trueMaybeGenerateSurplusRelief(today);
     if(!event)event=trueMaybeGenerateRelationshipPopulationHelp(today);
     if(!event)event=trueGenerateRelationshipEventForDay(slotIndex);
     // The slot is guaranteed: when no contextual roll develops into something,
@@ -10027,7 +10201,7 @@ function trueEventRequiresDecision(event){
     if(!event||event.status!=='active')return false;
     if(event.kind==='player-zoo-birth')return true;
     if(event.welfareGroupHelpOffer)return true;
-    return ['transfer-opportunity','animal-request','population-cooperation','surplus-relief','breeding-success','priority-contact','emergency-placement'].includes(event.kind);
+    return ['transfer-opportunity','animal-request','population-cooperation','surplus-relief','breeding-success','priority-contact','emergency-placement','combination-offer'].includes(event.kind);
 }
 function closeTrueEventDialog(force=false){
     const overlay=document.getElementById('trueEventDialogOverlay');if(!overlay)return;
@@ -10240,6 +10414,13 @@ function openTrueEventDialog(id){
                 button('Ease breeding pressure',()=>trueResolvePopulationPressureChoice(event,'manage')),
                 button('Ask zoo network for advice',()=>trueResolvePopulationPressureChoice(event,'network'),true)
             );
+        }else if(event.kind==='combination-offer'){
+            actions.append(button('Decline offer',()=>{
+                event.status='declined';event.playerReply='Declined';event.respondedDate=normaliseTrueCalendarState().date;event.resolvedDate=event.respondedDate;
+                trueRelationshipRecord(event.profile,event.sourceKey,'combination-offer-declined',`Declined ${animalDisplayName(event.animal)} for the suggested mixed exhibit.`,{familiarity:.5});
+                closeTrueEventDialog(true);renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);trueProcessEventPresentationQueue();
+            }));
+            actions.append(button(`Accept for the ${animalDisplayName(event.targetResident)} exhibit`,()=>trueAcceptCombinationOffer(event),true));
         }else if(event.welfareGroupHelpOffer&&event.husbandryExactRepair){
             const repair=event.husbandryExactRepair,notation=truePopulationNotation(repair.population);
             actions.append(button('Decline help',()=>{
@@ -10663,6 +10844,7 @@ function trueProcessEventDay(){
     // now become a world event. Repeated incidents have a seven-day cooldown.
     trueEvaluateHusbandryConcernsForDay();
     trueEvaluatePlayerBirthsForDay();
+    trueCreateCombinationOfferEvent();
     trueMarketplaceGeneratePlayerListingOffers();
     // Event generation is deliberately deferred to the two daytime slots
     // (09:30–18:00). Do not create a fallback event at the 09:00 rollover.
@@ -48496,7 +48678,7 @@ function trueMarketplaceResolvePlayerOffer(row,offer,accept){
         if(holding){incoming.enclosureId=holding.id;incoming.slotIndex=0;incoming.x=holding.x;incoming.y=holding.y;}
         state.animals.push(incoming);
     }
-    row.status='completed';offer.status='accepted';
+    row.status='completed';offer.status='accepted';delete animal.trueMarketplaceListed;
     trueRelationshipRecord(offer.profile,offer.sourceKey,'marketplace-player-transfer',
         `Completed a Marketplace transfer involving ${animalDisplayName(animal)}.`,{trust:4,familiarity:2});
     addTrueActivity({type:'action',title:'Marketplace transfer completed',
@@ -48526,7 +48708,7 @@ function openTrueMarketplacePlayerListings(){
             for(const [label,val] of [['Accept',true],['Decline',false]]){const b=document.createElement('button');b.textContent=label;b.style.marginLeft='5px';b.onclick=()=>{trueMarketplaceResolvePlayerOffer(row,offer,val);openTrueMarketplacePlayerListings();};actions.appendChild(b);}
             line.append(text,actions);card.appendChild(line);
         }
-        if(!(row.offers||[]).some(o=>o.status==='pending')){const wait=document.createElement('div');wait.textContent='No current offers. The listing remains visible to the network.';wait.style.opacity='.65;';card.appendChild(wait);}
+        if(!(row.offers||[]).some(o=>o.status==='pending')){const wait=document.createElement('div');wait.textContent='No current offers. The listing remains visible to the network.';wait.style.opacity='.65';card.appendChild(wait);}
         const withdraw=document.createElement('button');withdraw.textContent='Withdraw listing';withdraw.style.marginTop='9px';withdraw.onclick=()=>{trueMarketplaceWithdrawPlayerListing(row);openTrueMarketplacePlayerListings();};card.appendChild(withdraw);panel.appendChild(card);
     }
     const listedIds=new Set(active.map(r=>String(r.animalId)));
@@ -48536,7 +48718,9 @@ function openTrueMarketplacePlayerListings(){
         for(const animal of animals){
             const line=document.createElement('div');Object.assign(line.style,{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0'});
             const text=document.createElement('span');text.textContent=`${animalDisplayName(animal)} · ${truePopulationNotation(normaliseTrueAnimalPopulation(animal))}`;
-            const b=document.createElement('button');b.textContent='List in Marketplace';b.onclick=()=>{trueMarketplaceListPlayerAnimal(animal);openTrueMarketplacePlayerListings();};line.append(text,b);panel.appendChild(line);
+            const b=document.createElement('button');b.textContent='List in Marketplace';b.onclick=()=>{
+                if(trueMarketplaceListPlayerAnimal(animal))openTrueMarketplacePlayerListings();
+            };line.append(text,b);panel.appendChild(line);
         }
     }
     if(!active.length&&!animals.length){const empty=document.createElement('div');empty.textContent='No populations are currently available to list.';empty.style.marginTop='18px';panel.appendChild(empty);}

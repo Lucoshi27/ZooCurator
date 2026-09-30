@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V2.43.86";
+const ZOO_CURATOR_VERSION = "V2.43.87";
 // Definitive V2 baseline: True-mode systems + current Information-map geography fixes.
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
@@ -7973,7 +7973,7 @@ function resetTrueCalendarSimulation() {
     state.trueGuestDailyTargetManual = false;
     state.trueGuestDailyTarget = null;
     state.trueDaytimeActivity = { generatedKeys: [], round: null };
-    state.trueMarketplace = { listings: [], nextListingId: 1, lastRefreshMonth: '', initialized: false };
+    state.trueMarketplace = { listings: [], nextListingId: 1, lastRefreshMonth: '', lastRollingRefreshDate: '', rollingLifecycleVersion: 1, initialized: false };
     state.trueRelationships = {};
     state.trueTransferProposals = [];
     state.trueTransferProposalNextId = 1;
@@ -47529,7 +47529,12 @@ function normaliseTrueMarketplaceState() {
     // Older saves used 35-80 day listings and only refreshed at month changes.
     // Migrate those boards once so an existing True zoo starts rotating too.
     if(Number(state.trueMarketplace.rollingLifecycleVersion||0)<1){
-        const today=normaliseTrueCalendarState().date;
+        // IMPORTANT: this normalizer is itself called by normaliseTrueCalendarState.
+        // Read the already-initialised raw calendar date here. Calling the calendar
+        // normalizer from this migration creates Calendar -> Marketplace -> Calendar
+        // recursion and bricks both save restore and new-zoo generation.
+        const rawDate=String(state.trueCalendar?.date||'');
+        const today=/^\d{4}-\d{2}-\d{2}$/.test(rawDate)?rawDate:'2026-04-18';
         for(const listing of state.trueMarketplace.listings){
             if(!listing||listing.status!=='available')continue;
             const cap=addTrueDays(listing.createdDate||today,28);

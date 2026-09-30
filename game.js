@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V2.43.75";
+const ZOO_CURATOR_VERSION = "V2.43.86";
 // Definitive V2 baseline: True-mode systems + current Information-map geography fixes.
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
@@ -9390,9 +9390,13 @@ function trueCreatePlayerBirthEvent(animal,males,females,today){
     const event={id:`ze-${events.nextId++}`,kind:'player-zoo-birth',status:'active',createdDate:today,expiresDate:addTrueDays(today,10),informational:true,
         playerZooBirth:true,animal:cloneForSave(animal),population:{males,females,unknown:0},scale:total>=3?'Notable':'Routine',
         title:`${species} birth${total===1?'':'s'}`,
-        message:`${state.zooName||'Your zoo'} has welcomed ${total===1?'a new':`${total} new`} ${species}${total===1?'': 's'}.`,
-        detail:`The new arrival${total===1?' has':'s have'} been recorded as ${sexText}. The population count has been updated.`,
-        impactText:`The newborn ${total===1?'has':'have'} already been added to the managed population, changing its size and sex structure.`};
+        message:total===1
+            ?`A ${species} was born at ${state.zooName||'your zoo'}.`
+            :`${total} ${species}s were born at ${state.zooName||'your zoo'}.`,
+        detail:total===1
+            ?`The birth has been recorded as ${sexText}. The population count is now ${truePopulationNotation(animal.population)}.`
+            :`The births have been recorded as ${sexText}. The population count is now ${truePopulationNotation(animal.population)}.`,
+        impactText:`The ${total===1?'young animal has':'young animals have'} been added to the managed population, changing its size and sex structure.`};
     events.items.unshift(event);events.lastGeneratedDate=today;
     animal.trueRecentBirthDate=today;animal.trueRecentBirthUntil=expiry;
     addTrueActivity({type:'information',title:event.title,message:event.message,actionLabel:'View event',action:'event',eventId:event.id,animalId:animal.id,glowAnimal:true});
@@ -9465,7 +9469,12 @@ function trueEvaluatePlayerBirthsForDay(){
         }
         if(!projected.valid)continue;
 
-        const p=normaliseTrueAnimalPopulation(animal);p.males+=males;p.females+=females;
+        const p=normaliseTrueAnimalPopulation(animal);
+        animal.population={
+            males:Math.max(0,Number(p.males)||0)+males,
+            females:Math.max(0,Number(p.females)||0)+females,
+            unknown:Math.max(0,Number(p.unknown)||0)
+        };
         row.lastBirthDate=today;
         created=trueCreatePlayerBirthEvent(animal,males,females,today);
     }
@@ -10544,10 +10553,11 @@ function processTrueScheduledEvents() {
 }
 
 function processTrueMonthChange(previousMonth, currentMonth) {
-    // Month boundaries are the heavier True simulation rhythm. Marketplace
-    // lifecycle work happens here rather than on every displayed day.
     state.trueCalendar.lastMonthKey = currentMonth;
-    refreshTrueMarketplaceForMonth(currentMonth, { announce: true });
+    // Collection wants can still change with the month, but listing supply now
+    // rotates independently every few zoo days.
+    const candidates=trueMarketplaceSourceCandidates(currentMonth);
+    refreshTrueMarketplaceWants(currentMonth,candidates);
 }
 
 function trueGuestSimulateWholeDay(){
@@ -10917,6 +10927,7 @@ function advanceTrueCalendarTime() {
         calendar.hour=9;calendar.minute=0;newDay=true;
         const newMonth=calendar.date.slice(0,7);
         if(newMonth!==oldMonth)processTrueMonthChange(oldMonth,newMonth);
+        refreshTrueMarketplaceRolling(calendar.date,{announce:true});
         processTrueScheduledEvents();
         trueProcessEventDay();
         trueTransferProcessDay();
@@ -11045,8 +11056,8 @@ function runTrueActivityAction(item) {
     else if (item.action === 'event' && item.eventId) {
         // openTrueEventDialog owns its own side-card DOM. Re-rendering the full
         // True panel immediately after opening can tear that card back down.
-        openTrueEventDialog(item.eventId);
-        rerender=false;
+        const opened=openTrueEventDialog(item.eventId);
+        rerender=!opened;
     } else if (item.action === 'focus-enclosure' && item.enclosureId!=null) trueFocusEnclosure(item.enclosureId);
     if(rerender)renderTrueSimulationPanel();
 }
@@ -12328,6 +12339,12 @@ function renderTrueSimulationPanel() {
     if (!panel) return;
     if (state.gameMode !== 'true' || state.sandboxMode) { panel.style.display = 'none'; return; }
     panel.style.display = 'flex';
+    if(!panel.dataset.pointerIsolationBound){
+        panel.dataset.pointerIsolationBound='1';
+        panel.addEventListener('pointerdown',e=>{
+            if(e.target?.closest?.('button,input,select,textarea,a,[role="button"]'))e.stopPropagation();
+        });
+    }
     normaliseTrueCalendarState();
     ensureTrueGuestSimulation();
 
@@ -12426,7 +12443,17 @@ function renderTrueSimulationPanel() {
         row.appendChild(dot);
         if(hasTransferCard){const mini=trueTransferActivityCard(item,32);if(mini)row.appendChild(mini);}
         row.appendChild(copy);
-        if (item.actionLabel && item.action) { const b=document.createElement('button'); b.type='button'; b.textContent=item.actionLabel; b.style.cssText='font-size:10px;padding:3px 6px;border-radius:5px;white-space:nowrap;'; b.addEventListener('click',()=>runTrueActivityAction(item)); row.appendChild(b); }
+        if (item.actionLabel && item.action) {
+            const b=document.createElement('button');
+            b.type='button';b.textContent=item.actionLabel;
+            b.style.cssText='font-size:10px;padding:3px 6px;border-radius:5px;white-space:nowrap;position:relative;z-index:2;pointer-events:auto;cursor:pointer;';
+            // Activity sits over the pannable zoo. Consume the pointer start here so
+            // the board drag/pan handler cannot steal the click before it reaches
+            // View event / Marketplace / focus actions.
+            b.addEventListener('pointerdown',e=>e.stopPropagation());
+            b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();runTrueActivityAction(item);});
+            row.appendChild(b);
+        }
         else row.appendChild(document.createElement('span'));
         const dateCol=document.createElement('span');dateCol.textContent=itemDateText;dateCol.style.cssText='opacity:.52;font-size:9px;font-weight:600;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums;padding-top:1px;';row.appendChild(dateCol);
         row.addEventListener('click',()=>{
@@ -19664,6 +19691,19 @@ function trueZooGroundsBounds(){
             right=Math.max(right,encRight);bottom=Math.max(bottom,encBottom);
         }
         b.zooGrounds={...b.zooGrounds,x,y,w:Math.max(TRUE_ENC_CELL_W,right-x),h:Math.max(TRUE_ENC_CELL_H,bottom-y)};
+        // If this save already uses an irregular ownership mask, built public
+        // enclosures must be part of that same mask. Otherwise a legacy/layout
+        // containment repair can enlarge the rectangular workspace while the
+        // actual buildable-land mask still says those cells are outside the zoo.
+        if(Array.isArray(b.startingGroundsCells)&&b.startingGroundsCells.length&&built.length){
+            const owned=new Set(b.startingGroundsCells.map(String));
+            let repaired=false;
+            for(const enc of built)for(const cell of trueBuiltWorldCells(enc)){
+                const key=trueBuilderCellKey(cell.col,cell.row);
+                if(!owned.has(key)){owned.add(key);repaired=true;}
+            }
+            if(repaired)b.startingGroundsCells=[...owned];
+        }
         return b.zooGrounds;
     }
 
@@ -19976,7 +20016,7 @@ function ensureTrueZooGroundsVisual(){
         const expansionCredits=Math.max(0,Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0);
         const purchasable=layerIndex===1&&expansionCredits>0;
         svg.dataset.expansionCells=cells.map(c=>`${c.col},${c.row}`).join(';');
-        Object.assign(svg.style,{position:'absolute',left:'0',top:'0',width:`${worldW}px`,height:`${worldH}px`,overflow:'visible',pointerEvents:'none',zIndex:'1',opacity:String(layerIndex===1?.92:layerIndex===2?.68:.50)});
+        Object.assign(svg.style,{position:'absolute',left:'0',top:'0',width:`${worldW}px`,height:`${worldH}px`,overflow:'visible',pointerEvents:purchasable?'auto':'none',zIndex:purchasable?'6':'1',opacity:String(layerIndex===1?.92:layerIndex===2?.68:.50)});
 
         // Expansion should never turn the full planning SVG into an invisible
         // click shield over the zoo. Only the actual parcel cells are interactive.
@@ -20042,6 +20082,10 @@ function ensureTrueZooGroundsVisual(){
                 svg.appendChild(hit);
             }
             svg.addEventListener('focus',()=>highlight(true));svg.addEventListener('blur',()=>highlight(false));
+            svg.addEventListener('click',e=>{
+                if(e.defaultPrevented)return;
+                e.preventDefault();e.stopPropagation();acquire();
+            });
             svg.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();acquire();}});
 
             // Keep the planning information on the land itself. The badge is
@@ -20074,7 +20118,17 @@ function ensureTrueZooGroundsVisual(){
     const dirs=[[1,0],[-1,0],[0,1],[0,-1]],parseKey=k=>k.split(',').map(Number),keyOf=(c,r)=>`${c},${r}`;
     const ringAround=set=>{
         const ring=new Set();
-        for(const key of set){const[c,r]=parseKey(key);for(const[dc,dr]of dirs){const nk=keyOf(c+dc,r+dr);if(!set.has(nk))ring.add(nk);}}
+        for(const key of set){
+            const[c,r]=parseKey(key);
+            for(const[dc,dr]of dirs){
+                const nc=c+dc,nr=r+dr;
+                // The zoo workspace has its origin at 0,0. Negative parcel cells
+                // are clipped by the grounds layer and therefore can never be a
+                // valid visible/purchasable option.
+                if(nc<0||nr<0)continue;
+                const nk=keyOf(nc,nr);if(!set.has(nk))ring.add(nk);
+            }
+        }
         return ring;
     };
     const touches=(key,set)=>{const[c,r]=parseKey(key);return dirs.some(([dc,dr])=>set.has(keyOf(c+dc,r+dr)));};
@@ -20157,6 +20211,65 @@ function ensureTrueZooGroundsVisual(){
         if(plots.some(p=>p.size<minSize||p.size>maxSize||!connected(p)||!plotEveryCellHasTwoNeighbours(p)))return null;
         return plots;
     };
+    const fallbackExpansionPlots=(anchor,count)=>{
+        // Guaranteed 2x3 / 3x2 rectangles on exposed edges. This is deliberately
+        // simpler than the organic planner: it exists so a failed random compact
+        // partition can never leave an approved expansion with nothing to buy.
+        const outside=ringAround(anchor),plots=[],used=new Set();
+        const tryRect=(c0,r0,w,h)=>{
+            const p=new Set();
+            for(let r=r0;r<r0+h;r++)for(let c=c0;c<c0+w;c++){
+                const k=keyOf(c,r);
+                if(c<0||r<0||anchor.has(k)||used.has(k)||!outside.has(k))return false;
+                p.add(k);
+            }
+            if(![...p].some(k=>touches(k,anchor)))return false;
+            for(const k of p)used.add(k);plots.push(p);return true;
+        };
+        const pts=[...anchor].map(parseKey),cols=pts.map(p=>p[0]),rows=pts.map(p=>p[1]);
+        const minC=Math.min(...cols),maxC=Math.max(...cols),minR=Math.min(...rows),maxR=Math.max(...rows);
+        // Rectangles are only one cell deep in the immediate ring, so instead
+        // build from a two-cell frontier and require the inner row/column to touch.
+        const frontier=new Set(outside);
+        for(const k of ringAround(new Set([...anchor,...outside])))if(!anchor.has(k))frontier.add(k);
+        const tryFrontierRect=(c0,r0,w,h)=>{
+            const p=new Set();
+            for(let r=r0;r<r0+h;r++)for(let c=c0;c<c0+w;c++){
+                const k=keyOf(c,r);
+                if(c<0||r<0||anchor.has(k)||used.has(k)||!frontier.has(k))return false;
+                p.add(k);
+            }
+            if(![...p].some(k=>touches(k,anchor)))return false;
+            for(const k of p)used.add(k);plots.push(p);return true;
+        };
+        const starts=[];
+        for(let c=minC;c<=maxC-2;c+=3){starts.push([c,minR-2,3,2],[c,maxR+1,3,2]);}
+        for(let r=minR;r<=maxR-2;r+=3){starts.push([minC-2,r,2,3],[maxC+1,r,2,3]);}
+        for(const spec of starts){if(plots.length>=count)break;tryFrontierRect(...spec);}
+        if(!plots.length){
+            // Last-resort connected parcel for highly irregular grounds with no
+            // straight 2x3 exposed edge. Grow six cells outward from any legal
+            // exposed cell. Connectivity + adjacency are the purchase invariants;
+            // visual compactness is secondary here.
+            const available=new Set(frontier),seed=[...outside].find(k=>{
+                const[c,r]=parseKey(k);return c>=0&&r>=0&&touches(k,anchor);
+            });
+            if(seed){
+                const p=new Set([seed]);available.delete(seed);
+                while(p.size<6){
+                    const next=adjacentCandidates(p,available)
+                        .sort((a,b)=>{
+                            const ta=new Set(p);ta.add(a);const tb=new Set(p);tb.add(b);
+                            return bboxScore(ta)-bboxScore(tb);
+                        })[0];
+                    if(!next)break;
+                    p.add(next);available.delete(next);
+                }
+                if(p.size>=5&&connected(p))plots.push(p);
+            }
+        }
+        return plots;
+    };
 
     let acquired=new Set(baseGround),parcelSerial=0;
     const previewPlan=[];
@@ -20179,7 +20292,8 @@ function ensureTrueZooGroundsVisual(){
             for(const k of ring)if(!acquired.has(k))candidate.add(k);
             plots=buildCompactPlots(candidate,acquired,optionTarget,layerIndex);
         }
-        if(!plots)continue;
+        if(!plots||!plots.length)plots=fallbackExpansionPlots(acquired,optionTarget);
+        if(!plots||!plots.length)continue;
         const used=new Set();
         plots.forEach(plot=>{
             const cells=[...plot].map(k=>{const[col,row]=parseKey(k);return{col,row};});
@@ -20190,11 +20304,30 @@ function ensureTrueZooGroundsVisual(){
         previewPlan.push({layer:layerIndex,plots:plots.length,minCells:Math.min(...plots.map(p=>p.size)),maxCells:Math.max(...plots.map(p=>p.size)),usedCells:used.size,overlapCells:plots.reduce((n,p)=>n+p.size,0)-used.size,blockiness:plots.map(p=>bboxScore(p)),minNeighboursPerPlot:plots.map(p=>plotMinNeighbourCount(p)),allCellsHaveTwoNeighbours:plots.every(p=>plotEveryCellHasTwoNeighbours(p))});
     }
 
+    // Hard gameplay invariant: an earned approval must never render without a
+    // purchasable first-horizon parcel. Retry with the deterministic fallback
+    // against the actual current grounds if the organic planner produced none.
+    const creditsNow=Math.max(0,Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0);
+    if(creditsNow>0&&!layer.querySelector('.true-zoo-future-grounds-parcel[data-expansion-layer="1"]')){
+        const emergency=fallbackExpansionPlots(baseGround,1);
+        if(emergency?.length){
+            const cells=[...emergency[0]].map(k=>{const[col,row]=parseKey(k);return{col,row};});
+            addFutureParcelCells(cells,'mixed',1,parcelSerial++);
+            previewPlan.unshift({layer:1,plots:1,minCells:cells.length,maxCells:cells.length,usedCells:cells.length,overlapCells:0,blockiness:[0],minNeighboursPerPlot:[2],allCellsHaveTwoNeighbours:true,fallback:true});
+        }
+    }
+
     if(typeof window!=='undefined'){
         window.zooExpansionDiagnostic=()=>({
             zoo:String(state.zooName||'Zoo'),targetOptionsPerLayer:optionTarget,previewLayers:3,minimumParcelCells:5,maximumParcelCells:12,compactPlotGeneration:true,everyCellMinimumOrthogonalNeighbours:2,previewPlan,
+            credits:Math.max(0,Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0),
             renderedParcels:document.querySelectorAll('.true-zoo-future-grounds-parcel').length,
-            renderedByLayer:[1,2,3].map(layerIndex=>({layer:layerIndex,count:document.querySelectorAll(`.true-zoo-future-grounds-parcel[data-expansion-layer="${layerIndex}"]`).length}))
+            purchasableParcels:document.querySelectorAll('.true-zoo-future-grounds-parcel[data-expansion-layer="1"][role="button"]').length,
+            renderedByLayer:[1,2,3].map(layerIndex=>({layer:layerIndex,count:document.querySelectorAll(`.true-zoo-future-grounds-parcel[data-expansion-layer="${layerIndex}"]`).length})),
+            negativeParcelCells:[...document.querySelectorAll('.true-zoo-future-grounds-parcel')].flatMap(el=>String(el.dataset.expansionCells||'').split(';')).filter(k=>{const[c,r]=k.split(',').map(Number);return c<0||r<0;}).length,
+            ownedGroundCells:trueZooGroundCellSet()?.size||0,
+            lastPurchasedCells:Array.isArray(state.trueEnclosureBuilder?.lastLandExpansionCells)?state.trueEnclosureBuilder.lastLandExpansionCells.length:0,
+            lastPurchaseStillOwned:(state.trueEnclosureBuilder?.lastLandExpansionCells||[]).every(k=>trueZooGroundCellSet()?.has(String(k)))
         });
     }
 
@@ -20563,6 +20696,14 @@ function trueSetRecentLandExpansionHighlight(cells){
         if(state.gameMode==='true'&&!state.visitingZoo)ensureTrueZooGroundsVisual();
     },4250);
 }
+function trueGroundsOwnCell(col,row){
+    const mask=trueZooGroundCellSet();
+    if(mask?.size)return mask.has(trueBuilderCellKey(col,row));
+    const grounds=trueZooGroundsBounds();if(!grounds)return false;
+    const c0=Math.round(grounds.x/TRUE_ENC_CELL_W),r0=Math.round(grounds.y/TRUE_ENC_CELL_H);
+    const cols=Math.max(1,Math.round(grounds.w/TRUE_ENC_CELL_W)),rows=Math.max(1,Math.round(grounds.h/TRUE_ENC_CELL_H));
+    return col>=c0&&col<c0+cols&&row>=r0&&row<r0+rows;
+}
 function trueApplyLandExpansionParcel(rawCells){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return false;
     const builder=normaliseTrueEnclosureBuilderState();
@@ -20592,14 +20733,23 @@ function trueApplyLandExpansionParcel(rawCells){
     const oldEntrancePoint=trueEntrancePointAtPerimeter(trueEntrancePerimeterPosition(oldEntrance,old),old);
     for(const key of parcelKeys)current.add(key);
     builder.startingGroundsCells=[...current];
+    // zooGrounds is the rectangular workspace extent; the exact irregular land
+    // ownership remains startingGroundsCells, so bounding-box holes are not land.
     const pts=[...current].map(k=>k.split(',').map(Number));
     const minCol=Math.min(...pts.map(p=>p[0])),maxCol=Math.max(...pts.map(p=>p[0]));
     const minRow=Math.min(...pts.map(p=>p[1])),maxRow=Math.max(...pts.map(p=>p[1]));
     builder.zooGrounds={x:minCol*TRUE_ENC_CELL_W,y:minRow*TRUE_ENC_CELL_H,w:(maxCol-minCol+1)*TRUE_ENC_CELL_W,h:(maxRow-minRow+1)*TRUE_ENC_CELL_H};
-    builder.zooEntrance=trueNearestAccessibleEntranceSpec(trueClosestPerimeterPosition(oldEntrancePoint.x,oldEntrancePoint.y,builder.zooGrounds),builder.zooGrounds);
+    // Keep the existing entrance when it is still a legal exposed irregular edge.
+    // Re-snapping against the new bounding rectangle can otherwise move a gate
+    // simply because land was purchased on another side of the zoo.
+    if(!trueEntranceHasInteriorAccess(builder.zooEntrance,builder.zooGrounds)){
+        builder.zooEntrance=trueNearestAccessibleEntranceSpec(trueClosestPerimeterPosition(oldEntrancePoint.x,oldEntrancePoint.y,builder.zooGrounds),builder.zooGrounds);
+    }
     builder.landExpansionCredits=Math.max(0,(Number(builder.landExpansionCredits)||0)-1);
     builder.landExpansionLevel=Math.max(0,Number(builder.landExpansionLevel)||0)+1;
-    const today=normaliseTrueCalendarState().date;
+    builder.lastLandExpansionCells=[...parcelKeys];
+    builder.lastLandExpansionDate=normaliseTrueCalendarState().date;
+    const today=builder.lastLandExpansionDate;
     for(const event of normaliseTrueEventState().items.filter(e=>e.status==='active'&&e.kind==='grounds-expansion-approval')){
         if(builder.landExpansionCredits>0)event.message=`The zoo still has ${builder.landExpansionCredits} approved grounds expansion${builder.landExpansionCredits===1?'':'s'} available.`;
         else{event.status='resolved';event.resolvedDate=today;event.resolution='Approved grounds expansion completed';}
@@ -20608,8 +20758,9 @@ function trueApplyLandExpansionParcel(rawCells){
     state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
     trueInvalidateEnclosureGeometry();trueGuestRuntime.layoutSig='';trueGuestRuntime.walk=null;
     document.getElementById('trueLandExpansionChooser')?.remove();
+    document.querySelector('.true-zoo-grounds-visual')?.remove();
     trueSetRecentLandExpansionHighlight(cells);
-    renderAll();refreshTrueEnclosureCapacityBadge();
+    renderAll();ensureTrueZooGroundsVisual();refreshTrueEnclosureCapacityBadge();
     addTrueActivity({type:'development',title:'New land added to the zoo',message:`An adjacent ${cells.length}-cell parcel has been incorporated into the zoo grounds. The new boundary is ready for paths and enclosures.`});
     writeAutoResumeSnapshot?.(true);syncActiveZooIntoLocalMatch?.();
     return true;
@@ -36098,7 +36249,21 @@ function trueTransferFinish(t,animal){
 function trueTransferCompleteImmediately(t){
     if(!t)return [];
     trueTransferNormaliseLegs(t);
-    // Exchange populations leave at the same moment the partner accepts.
+    // An accepted exchange executes atomically. If backstage cannot admit every
+    // incoming population yet, keep the player's outgoing population in place too.
+    if(t.incomings.length){
+        const plan=trueBackstagePlanIncoming(t.incomings.filter(l=>!l.completed).map(l=>l.animal));
+        if(!plan){
+            t.backstageArrivalBlocked=true;
+            t.status='in-transit';
+            trueBackstageNotifyNoSpace(t);
+            return [];
+        }
+        for(let i=0;i<plan.length;i++){
+            const leg=t.incomings.filter(l=>!l.completed)[i];
+            if(leg)leg.backstageEnclosureId=plan[i].enclosureId;
+        }
+    }
     trueTransferCompleteOutgoing(t);
     if(t.status==='completed'&&!t.incomings.length)return [];
     t.status='in-transit';
@@ -36131,8 +36296,23 @@ function trueTransferProcessDay(){
     if(state.gameMode!=='true')return;trueTransferSyncAcceptedProposals();const today=trueDateKey(trueCurrentDate());
     for(const raw of normaliseTrueTransfers()){
         const t=trueTransferNormaliseLegs(raw);if(['completed','cancelled'].includes(t.status))continue;
-        if(t.status==='scheduled'&&today>=t.departureDate){trueTransferCompleteOutgoing(t);if(t.status!=='completed')t.status='in-transit';}
         if(['scheduled','in-transit'].includes(t.status)&&today>=t.arrivalDate){
+            const remainingIncoming=t.incomings.filter(l=>!l.completed);
+            if(remainingIncoming.length){
+                const existing=remainingIncoming.filter(l=>state.animals.some(a=>Number(a.trueIncomingTransferId)===Number(t.id)&&String(a.trueIncomingTransferLegId)===String(l.legId)));
+                const missing=remainingIncoming.filter(l=>!existing.includes(l));
+                if(missing.length){
+                    const plan=trueBackstagePlanIncoming(missing.map(l=>l.animal));
+                    if(!plan){
+                        t.backstageArrivalBlocked=true;t.status='in-transit';
+                        if(t.lastBackstagePromptDate!==today){t.lastBackstagePromptDate=today;trueBackstageNotifyNoSpace(t);}
+                        continue;
+                    }
+                    for(let i=0;i<missing.length;i++)missing[i].backstageEnclosureId=plan[i].enclosureId;
+                }
+            }
+            trueTransferCompleteOutgoing(t);
+            if(t.status!=='completed')t.status='in-transit';
             const arrivals=trueTransferCreateArrivalCards(t);
             if(arrivals.length)t.status='awaiting-placement';else trueTransferMaybeFinish(t);
             if(!arrivals.length&&t.backstageArrivalBlocked){
@@ -45295,7 +45475,9 @@ async function acceptDirectHumanTradeOffer(id,destination=null,{skipActiveSync=f
     if(!offeredNow||!requestedNow){
         offer.status='invalid';
         resumeAITradingAfterHumanTrade();
-        renderVisitedZooQuickTabs();renderTrade();return false;
+        renderVisitedZooQuickTabs();renderTrade();
+        persistHumanTradeBoundary('human-trade-invalid-missing-animal');
+        return false;
     }
 
     const softlockReason=humanTradeSoftlockReason(
@@ -45315,6 +45497,7 @@ async function acceptDirectHumanTradeOffer(id,destination=null,{skipActiveSync=f
         offer.status='invalid';
         resumeAITradingAfterHumanTrade();
         renderTrade();renderVisitedZooQuickTabs();
+        persistHumanTradeBoundary('human-trade-invalid-duplicate');
         return false;
     }
 
@@ -45344,7 +45527,9 @@ async function acceptDirectHumanTradeOffer(id,destination=null,{skipActiveSync=f
     offer.senderClaimAnimal.id=offer.requestedTransferId??nextDirectTradeAnimalId(fromSnap);
     offer.senderClaimAnimal.enclosureId=null;offer.senderClaimAnimal.slotIndex=null;
     offer.senderClaimAnimal.x=null;offer.senderClaimAnimal.y=null;
-    addDirectTradeAnimal(fromSnap,offer.senderClaimAnimal,null,offer.senderClaimAnimal.id);
+    // Keep the sender's incoming card exclusively in the accepted trade object
+    // until the sender actually claims/places it. Adding it to fromSnap here
+    // creates an invisible unplaced duplicate before the second settlement step.
     offer.senderVacatedPlacement={
         enclosureId:offered.enclosureId??null,
         slotIndex:offered.slotIndex??null,
@@ -45379,7 +45564,9 @@ function declineDirectHumanTradeOffer(id,playerId=localClassicMatch?.activePlaye
     if(!offer||!directHumanTradeHasParticipant(offer,playerId)||offer.toPlayerId!==playerId)return false;
     offer.status='declined';offer.declinedRevision=++localClassicMatch.revision;
     resumeAITradingAfterHumanTrade();
-    renderVisitedZooQuickTabs();renderTrade();return true;
+    renderVisitedZooQuickTabs();renderTrade();
+    persistHumanTradeBoundary('human-trade-declined');
+    return true;
 }
 function renderDirectHumanTradeControls(strip){
     // V2.22.92: human trading now lives in the normal OUTGOING/INCOMING
@@ -47332,11 +47519,24 @@ function normaliseTrueMarketplaceState() {
     if (!Number.isFinite(Number(state.trueMarketplace.nextListingId))) state.trueMarketplace.nextListingId = 1;
     state.trueMarketplace.nextListingId = Math.max(1, Math.floor(Number(state.trueMarketplace.nextListingId)));
     state.trueMarketplace.lastRefreshMonth = String(state.trueMarketplace.lastRefreshMonth || '');
+    state.trueMarketplace.lastRollingRefreshDate = String(state.trueMarketplace.lastRollingRefreshDate || '');
     state.trueMarketplace.initialized = Boolean(state.trueMarketplace.initialized);
     for (const listing of state.trueMarketplace.listings) {
         if (!listing || typeof listing !== 'object') continue;
         if (!['available','negotiating','completed','withdrawn','expired'].includes(listing.status)) listing.status = 'available';
         if (!listing.population || typeof listing.population !== 'object') listing.population = { males:1, females:0, unknown:0 };
+    }
+    // Older saves used 35-80 day listings and only refreshed at month changes.
+    // Migrate those boards once so an existing True zoo starts rotating too.
+    if(Number(state.trueMarketplace.rollingLifecycleVersion||0)<1){
+        const today=normaliseTrueCalendarState().date;
+        for(const listing of state.trueMarketplace.listings){
+            if(!listing||listing.status!=='available')continue;
+            const cap=addTrueDays(listing.createdDate||today,28);
+            if(!listing.expiresDate||listing.expiresDate>cap)listing.expiresDate=cap;
+        }
+        state.trueMarketplace.lastRollingRefreshDate='';
+        state.trueMarketplace.rollingLifecycleVersion=1;
     }
     return state.trueMarketplace;
 }
@@ -47417,7 +47617,9 @@ function trueMarketplaceSupplyChance(candidate, monthKey='') {
 
 function trueMarketplaceExpiryDays(animal, seedKey='') {
     const level = Math.max(1, Number(animal?.level) || 1);
-    const base = ({1:35,2:42,3:52,4:65,5:80})[level] || 42;
+    // Marketplace is a rolling noticeboard. Rare populations can stay somewhat
+    // longer, but no ordinary listing should occupy a slot for several months.
+    const base = ({1:12,2:15,3:18,4:22,5:27})[level] || 16;
     return base + Math.floor(seededRoll(`market-expiry|${seedKey}`).roll * 22);
 }
 
@@ -47707,7 +47909,7 @@ function createTrueMarketplaceListing(candidate, monthKey, ordinal=0) {
         population,
         reason: trueMarketplaceReason(candidate.animal, population, seedKey, candidate.profile),
         createdDate,
-        expiresDate: addTrueDays(createdDate, Math.max(18,trueMarketplaceExpiryDays(candidate.animal, seedKey) +
+        expiresDate: addTrueDays(createdDate, Math.max(9,trueMarketplaceExpiryDays(candidate.animal, seedKey) +
             (trueMarketplaceReason(candidate.animal,population,seedKey,candidate.profile)==='Space management'?-12:0)))
     };
 }
@@ -47810,10 +48012,57 @@ function refreshTrueMarketplaceForMonth(monthKey = normaliseTrueCalendarState().
     return addCount;
 }
 
+function trueMarketplaceDaysBetween(a,b){
+    if(!a||!b)return Infinity;
+    return Math.floor((trueDateObject(b)-trueDateObject(a))/86400000);
+}
+function refreshTrueMarketplaceRolling(today=normaliseTrueCalendarState().date,{announce=false,force=false}={}){
+    if(state.gameMode!=='true')return 0;
+    const market=normaliseTrueMarketplaceState();
+    expireTrueMarketplaceListings();
+    if(!market.initialized){
+        const added=refreshTrueMarketplaceForMonth(today.slice(0,7),{force:true,announce:false});
+        market.lastRollingRefreshDate=today;
+        return added;
+    }
+    if(!force&&trueMarketplaceDaysBetween(market.lastRollingRefreshDate,today)<4)return 0;
+
+    const seedKey=`${today}|rolling`;
+    const candidates=trueMarketplaceSourceCandidates(seedKey);
+    const liveKeys=new Set(market.listings
+        .filter(item=>item.status==='available'||item.status==='negotiating')
+        .map(item=>`${item.sourceKey}|${animalCardKey(item.animal)}`));
+    let fresh=candidates.filter(item=>!liveKeys.has(`${item.sourceKey}|${animalCardKey(item.animal)}`));
+    fresh=seededShuffle?seededShuffle(fresh,`true-marketplace-rolling|${state.zooName}|${today}`):fresh;
+
+    const available=market.listings.filter(item=>item.status==='available').length;
+    const target=Math.max(6,Math.min(12,7+Math.floor(visibleZooPrestige()/120)));
+    // Even a full board occasionally gets one new population, while vacancies
+    // are filled more aggressively. Negotiating listings are never displaced.
+    const wanted=available<target?Math.min(3,target-available):1;
+    const selected=[];
+    for(const candidate of fresh){
+        const chance=trueMarketplaceSupplyChance(candidate,seedKey);
+        const roll=seededRoll(`true-market-rolling-available|${candidate.sourceKey}|${animalCardKey(candidate.animal)}|${today}`).roll;
+        if(roll<chance||selected.length===0)selected.push(candidate);
+        if(selected.length>=wanted)break;
+    }
+    const additions=trueMarketplaceDiverseSelection(selected,wanted);
+    for(let i=0;i<additions.length;i++)market.listings.push(createTrueMarketplaceListing(additions[i],seedKey,i));
+    market.lastRollingRefreshDate=today;
+
+    if(announce&&additions.length)addTrueActivity({
+        type:'opportunity',title:'Marketplace updated',
+        message:`${additions.length} new population${additions.length===1?' is':'s are'} now available through your zoo network.`,
+        actionLabel:'Marketplace',action:'marketplace'
+    });
+    return additions.length;
+}
+
 function trueMarketplaceEntries() {
     if (state.gameMode !== 'true') return [];
     const market = normaliseTrueMarketplaceState();
-    if (!market.initialized) refreshTrueMarketplaceForMonth(normaliseTrueCalendarState().date.slice(0,7), { force:true });
+    refreshTrueMarketplaceRolling(normaliseTrueCalendarState().date);
     expireTrueMarketplaceListings();
     return market.listings
         .filter(item => item.status === 'available' || item.status === 'negotiating')
@@ -49176,7 +49425,7 @@ function trueProposalStatusText(offer) {
     if (!offer?.marketplaceRequest&&!offer?.eventOpportunity) return '';
     const evaluation=trueProposalEvaluation(offer,trueProposalOutgoingOffers());
     if (offer.proposalStatus==='pending') return `Proposal sent · A response is expected ${trueProposalResponseLabel(offer.responseDueDate,offer.responseDueMinute)}.`;
-    if (offer.proposalStatus==='accepted') return 'Proposal accepted. The animal has arrived.';
+    if (offer.proposalStatus==='accepted'||offer.proposalStatus==='transfer-scheduled') return 'Proposal accepted. The animal has arrived.';
     if (offer.proposalStatus==='declined') return 'Proposal declined. Change your offered population to revise it.';
     return `${trueProposalOutgoingOffers().length?'Exchange proposal':'Permanent transfer · nothing requested in return'} · Likely response: ${evaluation?.label||'Uncertain'}. Submit when you are ready.`;
 }
@@ -49274,21 +49523,38 @@ function openTrueZooNetwork(){
     }
     overlay.appendChild(panel);overlay.addEventListener('pointerdown',e=>{if(e.target===overlay)closeTrueZooNetwork();});document.body.appendChild(overlay);
 }
+function closeTrueTradeHistory(){document.getElementById('trueTradeHistoryOverlay')?.remove();}
 function openTrueTradeHistory(){
-    pauseAllHintGlowsForMenu();
-    const overlay=document.getElementById('tradeHistoryOverlay'),list=document.getElementById('tradeHistoryList');
-    if(!overlay||!list)return;
-    list.innerHTML='';
-    const proposals=[...(normaliseTrueTransferProposals?.()||[])].filter(p=>p&&['accepted','declined','completed'].includes(String(p.status||''))).reverse();
-    if(!proposals.length)list.textContent='No True-mode transfer history yet.';
-    for(const p of proposals){
-        const row=document.createElement('div');row.style.cssText='padding:10px 0;border-top:1px solid rgba(0,0,0,.18);line-height:1.4;';
-        const profile=p.profile||trueNetworkProfileForRelationshipKey(p.sourceKey)||{};
-        const animal=p.animal?animalDisplayName(p.animal):'Animal transfer';
-        row.innerHTML=`<strong>${escapeHtml(profile.name||p.zooName||'Zoo')}</strong><div style="font-size:12px;opacity:.76">${escapeHtml(animal)} · ${escapeHtml(String(p.status||''))}</div>`;
-        list.appendChild(row);
+    closeTrueTradeHistory();
+    const overlay=document.createElement('div');overlay.id='trueTradeHistoryOverlay';
+    overlay.style.cssText='position:fixed;inset:0;z-index:100081;background:rgba(36,31,24,.42);display:flex;align-items:flex-start;justify-content:center;padding:70px 18px 24px;box-sizing:border-box;';
+    const panel=document.createElement('div');
+    panel.style.cssText='width:min(720px,calc(100vw - 36px));max-height:calc(100vh - 94px);overflow:auto;background:#efe4c3;color:#554936;border:1px solid #8f8062;border-radius:9px;box-shadow:0 14px 38px rgba(0,0,0,.28);padding:18px 20px;font-family:inherit;';
+    const head=document.createElement('div');head.style.cssText='display:flex;align-items:center;gap:12px;margin-bottom:14px;';
+    head.innerHTML='<div style="flex:1"><div style="font-size:10px;font-weight:900;letter-spacing:.12em;opacity:.62">TRANSFERS</div><div style="font-size:25px;font-weight:900;margin-top:3px">Trade History</div></div>';
+    const close=document.createElement('button');close.type='button';close.textContent='Close';close.className='save-load-button';close.onclick=closeTrueTradeHistory;head.appendChild(close);panel.appendChild(head);
+
+    const proposals=[...(normaliseTrueTransferProposals()||[])].filter(p=>p&&['accepted','transfer-scheduled','declined','completed'].includes(String(p.status||''))).reverse();
+    if(!proposals.length){
+        const empty=document.createElement('div');empty.textContent='No True-mode transfer history yet.';empty.style.opacity='.72';panel.appendChild(empty);
     }
-    overlay.style.display='flex';
+    for(const p of proposals){
+        const offer=p.offer||{};
+        const profile=trueOfferProfile(offer)||trueNetworkProfileForRelationshipKey(trueRelationshipKeyForOffer(offer))||{};
+        const animal=offer.animal?animalDisplayName(offer.animal):'Animal transfer';
+        const status=String(p.status||'').replace('transfer-scheduled','accepted');
+        const row=document.createElement('div');
+        row.style.cssText='display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 3px;border-top:1px solid rgba(84,72,52,.16);line-height:1.4;';
+        const left=document.createElement('div');
+        const zoo=document.createElement('strong');zoo.textContent=profile.name||'Zoo';
+        const detail=document.createElement('div');detail.textContent=animal;detail.style.cssText='font-size:12px;opacity:.76;margin-top:2px;';
+        left.append(zoo,detail);
+        const stateLabel=document.createElement('span');stateLabel.textContent=status;stateLabel.style.cssText='font-size:11px;font-weight:900;text-transform:capitalize;';
+        row.append(left,stateLabel);panel.appendChild(row);
+    }
+    overlay.appendChild(panel);
+    overlay.addEventListener('pointerdown',e=>{if(e.target===overlay)closeTrueTradeHistory();});
+    document.body.appendChild(overlay);
 }
 function renderTrueTransferProposal() {
     trueTransferSyncAcceptedProposals();
@@ -49310,7 +49576,7 @@ function renderTrueTransferProposal() {
         area.appendChild(panel);
     }
     // True owns this area: suppress every inherited Classic opponent/trade child.
-    // The proposal panel itself is the only visible child in True.
+    // The body-mounted proposal panel owns its own True-mode navigation.
     for (const child of Array.from(area.children)) {
         if (child !== panel && child.id!=='trueTradeNav') child.style.display = 'none';
     }
@@ -49320,15 +49586,7 @@ function renderTrueTransferProposal() {
     if(panel.parentElement!==document.body)document.body.appendChild(panel);
     panel.style.display = '';
     panel.innerHTML = '';
-    let trueTradeNav=document.getElementById('trueTradeNav');
-    if(!trueTradeNav){
-        trueTradeNav=document.createElement('div');trueTradeNav.id='trueTradeNav';
-        Object.assign(trueTradeNav.style,{position:'absolute',right:'0',top:'-39px',display:'flex',gap:'6px',alignItems:'center',zIndex:'4'});
-        const history=document.createElement('button');history.type='button';history.textContent='Trade History';history.className='save-load-button';history.addEventListener('click',openTrueTradeHistory);
-        const network=document.createElement('button');network.type='button';network.textContent='Zoo Network';network.className='save-load-button';network.addEventListener('click',openTrueZooNetwork);
-        trueTradeNav.append(history,network);area.appendChild(trueTradeNav);
-    }else trueTradeNav.style.display='flex';
-
+    document.getElementById('trueTradeNav')?.remove();
     if(!window.__trueTransferProposalResizeBound){
         window.__trueTransferProposalResizeBound=true;
         let transferResizeRaf=0;
@@ -49359,12 +49617,27 @@ function renderTrueTransferProposal() {
         color:'#29261f',
         boxShadow:'0 2px 7px rgba(0,0,0,.12)',
         fontFamily:'inherit',
-        zIndex:'10030',
+        zIndex:'10040',
         overflow:'hidden'
     });
     panel.style.transform='';
 
     const offer = (state.autonomousTradeOffer?.marketplaceRequest||state.autonomousTradeOffer?.eventOpportunity) ? state.autonomousTradeOffer : null;
+
+    const trueTradeNav=document.createElement('div');
+    trueTradeNav.id='trueTradeNav';
+    Object.assign(trueTradeNav.style,{display:'flex',justifyContent:'flex-end',gap:'6px',alignItems:'center',margin:'-2px 0 8px',paddingBottom:'8px',borderBottom:'1px solid rgba(70,60,45,.16)'});
+    const historyButton=document.createElement('button');
+    historyButton.type='button';historyButton.textContent='Trade History';historyButton.className='save-load-button';
+    Object.assign(historyButton.style,{padding:'5px 9px',fontSize:'11px',fontWeight:'800',cursor:'pointer'});
+    historyButton.addEventListener('click',openTrueTradeHistory);
+    const networkButton=document.createElement('button');
+    networkButton.type='button';networkButton.textContent='Zoo Network';networkButton.className='save-load-button';
+    Object.assign(networkButton.style,{padding:'5px 9px',fontSize:'11px',fontWeight:'800',cursor:'pointer'});
+    networkButton.addEventListener('click',openTrueZooNetwork);
+    trueTradeNav.append(historyButton,networkButton);
+    panel.appendChild(trueTradeNav);
+
     const headingRow=document.createElement('div');
     Object.assign(headingRow.style,{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'8px',marginBottom:'7px',minWidth:'0'});
     const heading = document.createElement('div');

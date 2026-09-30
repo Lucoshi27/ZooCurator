@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "impact": {
+    "animal-request": "This is an active population request. Your response can change the animals in your collection and your future relationship with {zoo}.",
+    "transfer-opportunity": "This is a live transfer opportunity. Your response can change both the population involved and your future cooperation with {zoo}.",
+    "population-cooperation": "This offer can repair the sex structure of one of your managed populations, and responding to it feeds back into your relationship with {zoo}.",
+    "player-zoo-birth": "The newborn animals have already been added to the population and now count toward its managed group structure.",
+    "welfare-zoo-concern": "Trust with {zoo} has been reduced by the unresolved husbandry concern.",
+    "welfare-protest": "Public criticism is temporarily reducing visitor demand.",
+    "grounds-expansion-approval": "A real grounds-expansion credit has been added and can be spent with the enclosure builder.",
+    "programme-update": "This contact has increased your working familiarity with {zoo}, which affects later requests and opportunities.",
+    "collection-planning": "This contact has increased your working familiarity with {zoo}, which affects later requests and opportunities.",
+    "network-contact": "This contact has increased your working familiarity with {zoo}, which affects later requests and opportunities.",
+    "daily-zoo-update": "This daily development has applied a short-lived zoo modifier.",
+    "husbandry-exchange": "Practical knowledge from {zoo} has strengthened the relationship and, when you keep {species}, temporarily improves that population’s breeding prospects.",
+    "publicity-feature": "The feature has strengthened contact with {zoo} and is giving visitor demand a small short-lived lift.",
+    "population-advice": "The population-management discussion has increased trust and familiarity with {zoo}, improving the basis for later cooperation.",
+    "population-pressure": "This population needs an active management decision rather than being left as a passive notification."
+  },
+  "daily_updates": {
+    "breeding_observation": {
+      "title": "Promising behaviour",
+      "messages": [
+        "Keepers have noticed encouraging breeding behaviour from the {species} population.",
+        "The {species} have been showing unusually promising courtship behaviour today.",
+        "Keeper observations suggest the {species} are entering a particularly favourable breeding period."
+      ],
+      "details": [
+        "The husbandry team believes conditions are favourable over the coming week. Nothing is guaranteed, but the signs are encouraging.",
+        "Staff will keep disturbance around the group low while these behaviours continue."
+      ],
+      "impact": "For the next seven zoo days, this {species} population has an increased chance of producing young."
+    },
+    "visitor_word_of_mouth": {
+      "title": "A good day out",
+      "messages": [
+        "Visitors have responded particularly positively to today's zoo experience.",
+        "A run of enthusiastic visitor comments is spreading beyond the gates.",
+        "Today's visitors are leaving the zoo with unusually positive impressions."
+      ],
+      "details": [
+        "Favourable word of mouth is beginning to spread locally.",
+        "The effect is modest, but tomorrow's attendance may benefit from today's response."
+      ],
+      "impact": "Positive word of mouth is giving visitor demand a small lift into the next zoo day."
+    },
+    "visitor_favourite": {
+      "title": "A visitor favourite",
+      "messages": [
+        "Visitors have been lingering around the {species} noticeably longer than usual.",
+        "The {species} have become one of today’s most talked-about stops in the zoo.",
+        "Visitor attention has gathered around the {species}, with unusually enthusiastic reactions throughout the day."
+      ],
+      "details": [
+        "The attention is beginning to carry beyond today’s visitors as people recommend the zoo to others.",
+        "Staff are hearing the same exhibit mentioned repeatedly in positive visitor feedback."
+      ],
+      "impact": "Interest in the {species} is giving visitor demand a modest lift for the next two zoo days."
+    },
+    "local_press_feature": {
+      "title": "Local attention",
+      "messages": [
+        "A local feature has highlighted {zoo} and its work with {species}.",
+        "The {species} have drawn local media attention to {zoo}.",
+        "A small piece of local coverage has put {zoo} and its {species} population in the public eye."
+      ],
+      "details": [
+        "The coverage does not change the zoo itself, but more people are now hearing about what has already been achieved.",
+        "Public awareness is catching up with developments that regular visitors and staff already know well."
+      ],
+      "impact": "For the next three zoo days, public reputation will catch up with the zoo’s underlying prestige more quickly."
+    },
+    "population_pressure": {
+      "title": "Population pressure",
+      "messages": [
+        "Keepers have flagged the {species} population for a management review.",
+        "The {species} group has reached a point where keepers want a clear population plan."
+      ],
+      "details": [
+        "The group can remain together for now, but continuing without a plan risks increasing pressure on its social structure.",
+        "Staff recommend deciding whether to ease breeding pressure internally or involve the wider zoo network."
+      ],
+      "impact": "This population now needs a management decision. You can ease breeding pressure or ask another zoo for population-management advice."
+    },
+    "crowded_day": {
+      "title": "A very busy day",
+      "messages": [
+        "Yesterday brought unusually heavy visitor numbers to {zoo}.",
+        "The zoo is still feeling the effects of an exceptionally busy visitor day."
+      ],
+      "details": [
+        "The extra footfall was welcome, but congestion and queues have slightly softened immediate word of mouth."
+      ],
+      "impact": "Visitor demand is slightly lower for the next zoo day while the effects of the crowding fade."
+    },
+    "visitor_disappointment": {
+      "title": "A quieter response",
+      "messages": [
+        "Visitor feedback around the {species} has been more muted than usual.",
+        "The {species} have drawn less visitor attention than staff expected today."
+      ],
+      "details": [
+        "Nothing is wrong with the animals or their care; this is a short-lived change in visitor interest rather than a welfare concern."
+      ],
+      "impact": "Short-term visitor demand is slightly reduced into the next zoo day."
+    }
+  },
+  "transfer_narratives": {
+    "breeding-success": {
+      "title": "Breeding success",
+      "message": "{zoo} has had a successful breeding season and is looking for a suitable new home for {animal} {pop}.",
+      "detail": "{zoo} contacted your zoo about {animal} following a successful breeding season. The population is now available for transfer."
+    },
+    "priority-contact": {
+      "title": "Partner zoo opportunity",
+      "message": "{zoo} has contacted you directly about {animal} {pop} before pursuing other placements.",
+      "detail": "Your {stage} relationship with {zoo} made your zoo a natural institution to contact about this {animal} population."
+    },
+    "emergency-placement": {
+      "title": "Placement requested",
+      "message": "{zoo} is seeking a suitable institution for {animal} {pop} on relatively short notice.",
+      "detail": "A change in population management at {zoo} has created a time-sensitive placement opportunity for {animal}."
+    },
+    "transfer-opportunity": {
+      "title": "Transfer opportunity",
+      "message": "{zoo} has approached your zoo about {animal} {pop}.",
+      "detail": "{zoo} is looking for an appropriate new holder for this {animal} population."
+    }
+  },
+  "world_news": {
+    "programme-update": {
+      "title": "Breeding programme update",
+      "message": "{zoo} has shared an update about its work with {species}.",
+      "detail": "The population is being retained for the moment while the zoo reviews its breeding plans. Staying in contact may create an opportunity later.",
+      "impact": "Being kept inside the programme discussion has improved your working familiarity with {zoo}; that relationship now carries into future breeding and transfer contacts."
+    },
+    "collection-planning": {
+      "title": "Collection plans changing",
+      "message": "{zoo} is reviewing the future of its {species} population.",
+      "detail": "No animals are being offered yet. The collection team expects to make a decision after its current planning round.",
+      "impact": "Your collection teams are now in closer contact with {zoo}. That familiarity will influence future requests and transfer opportunities."
+    },
+    "network-contact": {
+      "title": "Zoo network contact",
+      "message": "{zoo} has been in touch about {species}.",
+      "detail": "The zoo is sounding out institutions in its network before making any formal transfer plans. Your previous contact may matter if the situation develops.",
+      "impact": "The direct contact has strengthened your working relationship with {zoo}, making future cooperation a little more likely."
+    },
+    "husbandry-exchange": {
+      "title": "Keeper knowledge exchange",
+      "message": "Keepers from {zoo} have shared recent husbandry observations concerning {species}.",
+      "detail": "The exchange covers practical management and breeding observations gathered from their own population.",
+      "impact": "The exchange has strengthened your relationship with {zoo}. If you currently keep {species}, your team can apply the new husbandry knowledge over the coming days."
+    },
+    "publicity-feature": {
+      "title": "Zoo network feature",
+      "message": "{zoo} has included your zoo in a public story about institutions working with {species}.",
+      "detail": "The mention is modest, but it has put your collection in front of visitors who follow zoo and conservation news.",
+      "impact": "The feature has strengthened contact with {zoo} and is giving visitor demand a small lift for the next two zoo days."
+    },
+    "population-advice": {
+      "title": "Population management discussion",
+      "message": "The collection team at {zoo} has asked to compare notes about the long-term management of {species}.",
+      "detail": "No transfer is being proposed yet. The discussion is about population structure, future breeding and where cooperation might be useful.",
+      "impact": "The substantive discussion has increased trust and familiarity with {zoo}, improving the basis for future requests and transfers."
+    }
+  },
+  "surplus_relief": {
+    "title": "{zoo} offers to take surplus {species}",
+    "message": "{zoo} has noticed that your {species} population has grown beyond its preferred managed group size and can take {population} individuals.",
+    "detail": "Their collection team can absorb these animals without creating the same group-size problem at {zoo}. The suggested transfer is sized to bring your population back toward its normal managed range.",
+    "impact": "Sending the suggested individuals will reduce your {species} population toward a suitable group size and strengthen your working relationship with {zoo}."
+  }
+}

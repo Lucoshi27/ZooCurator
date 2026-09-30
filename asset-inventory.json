@@ -28,7 +28,7 @@
           ],
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Asian Small-Clawed Otter.png": {
@@ -60,7 +60,7 @@
           ],
           "population_profiles": [
             "pair",
-            "family_group",
+            "breeding_group",
             "bachelor_group",
             "female_group"
           ]
@@ -169,7 +169,7 @@
             "AT23"
           ],
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Eurasian Otter.png": {
@@ -281,7 +281,7 @@
           ],
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "European Wild Cat.png": {
@@ -340,7 +340,7 @@
           ],
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Meerkat.png": {
@@ -360,7 +360,7 @@
             "AT23"
           ],
           "population_profiles": [
-            "family_group",
+            "breeding_group",
             "bachelor_group"
           ]
         },
@@ -461,7 +461,7 @@
           "population_profiles": [
             "solitary",
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "South American Coati.png": {
@@ -603,7 +603,7 @@
           "population_profiles": [
             "solitary",
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Caracal.png": {
@@ -710,7 +710,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Eurasian Lynx.png": {
@@ -818,7 +818,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Kinkajou.png": {
@@ -995,7 +995,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Serval.png": {
@@ -1066,7 +1066,7 @@
           "population_profiles": [
             "solitary",
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Nosed Coati.png": {
@@ -1118,7 +1118,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Yellow-Throated Marten.png": {
@@ -1218,7 +1218,7 @@
           ],
           "space_requirement": 4,
           "population_profiles": [
-            "family_group",
+            "breeding_group",
             "bachelor_group"
           ]
         },
@@ -1294,7 +1294,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Bobcat.png": {
@@ -1451,7 +1451,7 @@
           ],
           "space_requirement": 2,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Cape Genet.png": {
@@ -1667,7 +1667,7 @@
           "space_requirement": 3,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Grey Wolf.png": {
@@ -1767,7 +1767,7 @@
           ],
           "space_requirement": 4,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Jungle Cat.png": {
@@ -1989,7 +1989,7 @@
           ],
           "space_requirement": 5,
           "population_profiles": [
-            "family_group",
+            "breeding_group",
             "bachelor_group"
           ]
         },
@@ -2028,7 +2028,7 @@
           ],
           "space_requirement": 5,
           "population_profiles": [
-            "family_group",
+            "breeding_group",
             "bachelor_group"
           ]
         },
@@ -2070,7 +2070,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Crab-Eating Raccoon.png": {
@@ -2139,7 +2139,7 @@
           ],
           "space_requirement": 4,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Egyptian Mongoose.png": {
@@ -2337,7 +2337,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Maned Wolf.png": {
@@ -2461,7 +2461,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Ringtail.png": {
@@ -2529,7 +2529,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Sand Cat.png": {
@@ -3076,7 +3076,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Axis Deer.png": {
@@ -3098,7 +3099,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Bactrian Camel.png": {
@@ -3136,7 +3138,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Domestic Donkey.png": {
@@ -3205,7 +3208,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Highland Cattle.png": {
@@ -3223,7 +3227,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Llama.png": {
@@ -3266,7 +3271,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Red Deer.png": {
@@ -3301,7 +3307,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "West African Dwarf Goat.png": {
@@ -3321,7 +3328,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Wild Boar.png": {
@@ -3417,7 +3425,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Watusi.png": {
@@ -3436,7 +3445,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         }
       },
@@ -3498,7 +3508,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Collared Peccary.png": {
@@ -3565,7 +3576,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Dromedary Camel.png": {
@@ -3633,7 +3645,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Guanaco.png": {
@@ -3657,7 +3670,8 @@
           "space_requirement": 3,
           "population_profiles": [
             "harem",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Kirk's Dik-Dik.png": {
@@ -3677,7 +3691,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Lechwe.png": {
@@ -3698,7 +3712,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Plains Zebra.png": {
@@ -3724,7 +3739,8 @@
           "space_requirement": 4,
           "population_profiles": [
             "harem",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Red River Hog.png": {
@@ -3747,7 +3763,7 @@
           ],
           "space_requirement": 2,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Reeve's Muntjac.png": {
@@ -3803,7 +3819,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Sika Deer.png": {
@@ -3830,7 +3847,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Vicuña.png": {
@@ -3872,7 +3890,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         }
       },
@@ -3892,7 +3911,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "American Bison.png": {
@@ -3925,7 +3945,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Blesbok.png": {
@@ -3944,7 +3965,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Blue Sheep.png": {
@@ -3973,7 +3995,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Blue Wildebeest.png": {
@@ -3999,7 +4022,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Bongo.png": {
@@ -4064,7 +4088,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Common Warthog.png": {
@@ -4131,7 +4156,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Dama Gazelle.png": {
@@ -4152,7 +4178,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Grévy's Zebra.png": {
@@ -4171,7 +4198,8 @@
           "space_requirement": 4,
           "population_profiles": [
             "harem",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Himalayan Tahr.png": {
@@ -4190,7 +4218,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Impala.png": {
@@ -4217,7 +4246,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Javan Banteng.png": {
@@ -4244,7 +4274,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Takin.png": {
@@ -4272,7 +4303,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Moose.png": {
@@ -4338,7 +4370,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Nilgai.png": {
@@ -4358,7 +4391,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Pygmy Hippopotamus.png": {
@@ -4395,7 +4429,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Scimitar Oryx.png": {
@@ -4417,7 +4452,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Sitatunga.png": {
@@ -4464,7 +4500,8 @@
           "space_requirement": 4,
           "population_profiles": [
             "harem",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "South American Tapir.png": {
@@ -4518,7 +4555,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Visayan Warty Pig.png": {
@@ -4587,7 +4625,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Arabian Sand Gazelle.png": {
@@ -4603,7 +4642,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Black Sable Antelope.png": {
@@ -4627,7 +4667,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Black Wildebeest.png": {
@@ -4646,7 +4687,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Cape Buffalo.png": {
@@ -4673,7 +4715,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Common Hog Deer.png": {
@@ -4718,7 +4761,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Greater Kudu.png": {
@@ -4854,7 +4898,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Javan Chevrotain.png": {
@@ -4893,7 +4938,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Lowland Anoa.png": {
@@ -4953,7 +4999,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Mountain Zebra.png": {
@@ -4972,7 +5019,8 @@
           "space_requirement": 4,
           "population_profiles": [
             "harem",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Musk Ox.png": {
@@ -4998,7 +5046,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Nyala.png": {
@@ -5056,7 +5105,8 @@
           "space_requirement": 4,
           "population_profiles": [
             "harem",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Przewalski's Horse.png": {
@@ -5074,7 +5124,8 @@
           "space_requirement": 4,
           "population_profiles": [
             "harem",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Red Buffalo.png": {
@@ -5096,7 +5147,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Red Duiker.png": {
@@ -5141,7 +5193,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Rothschild's Giraffe.png": {
@@ -5160,7 +5213,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Southern Pudu.png": {
@@ -5194,7 +5248,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Tufted Deer.png": {
@@ -5333,7 +5388,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Baird's Tapir.png": {
@@ -5404,7 +5460,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Blue Duiker.png": {
@@ -5474,7 +5531,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Gerenuk.png": {
@@ -5513,7 +5571,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Klipspringer.png": {
@@ -5545,7 +5604,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Masai Giraffe.png": {
@@ -5566,7 +5625,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Mountain Goat.png": {
@@ -5621,7 +5681,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Nubian Ibex.png": {
@@ -5643,7 +5704,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Philippine Mouse-Deer.png": {
@@ -5805,7 +5867,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Bolivian Squirrel Monkey.png": {
@@ -5822,7 +5885,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Common Marmoset.png": {
@@ -5838,7 +5902,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Common Squirrel Monkey.png": {
@@ -5856,7 +5920,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Cotton-Top Tamarin.png": {
@@ -5870,7 +5935,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Goeldi's Monkey.png": {
@@ -5886,7 +5951,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Golden-Handed Tamarin.png": {
@@ -5902,7 +5967,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Pygmy Marmoset.png": {
@@ -5918,7 +5983,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Rhesus Macaque.png": {
@@ -5956,7 +6021,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Ring-Tailed Lemur.png": {
@@ -5974,7 +6040,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Tufted Capuchin.png": {
@@ -6011,7 +6078,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         }
       },
@@ -6041,7 +6108,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Crab-Eating Macaque.png": {
@@ -6071,7 +6138,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "De Brazza's Monkey.png": {
@@ -6091,7 +6159,7 @@
           ],
           "space_requirement": 2,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Emperor Tamarin.png": {
@@ -6106,7 +6174,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Golden Lion Tamarin.png": {
@@ -6120,7 +6188,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Golden-Headed Lion Tamarin.png": {
@@ -6133,7 +6201,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Green Monkey.png": {
@@ -6156,7 +6224,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Hamadryas Baboon.png": {
@@ -6177,7 +6246,8 @@
           "space_requirement": 4,
           "population_profiles": [
             "harem",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Red Ruffed Lemur.png": {
@@ -6191,7 +6261,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Bellied Lemur.png": {
@@ -6206,7 +6276,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Bellied Tamarin.png": {
@@ -6221,7 +6291,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Faced Saki.png": {
@@ -6237,7 +6307,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Handed Gibbon.png": {
@@ -6262,7 +6332,7 @@
           "space_requirement": 3,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         }
       },
@@ -6284,7 +6354,7 @@
           ],
           "space_requirement": 2,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Black-Headed Spider Monkey.png": {
@@ -6325,7 +6395,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Crowned Lemur.png": {
@@ -6357,7 +6428,7 @@
           ],
           "space_requirement": 2,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Gelada Baboon.png": {
@@ -6374,7 +6445,8 @@
           "space_requirement": 4,
           "population_profiles": [
             "harem",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Lion-Tailed Macaque.png": {
@@ -6390,7 +6462,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Mandrill.png": {
@@ -6412,7 +6485,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Mantled Guereza.png": {
@@ -6437,7 +6511,8 @@
           "space_requirement": 2,
           "population_profiles": [
             "harem",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Patas Monkey.png": {
@@ -6465,7 +6540,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Pied Tamarin.png": {
@@ -6479,7 +6555,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red Titi.png": {
@@ -6494,7 +6570,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Senegal Bushbaby.png": {
@@ -6544,7 +6620,7 @@
           "space_requirement": 3,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Silvery Marmoset.png": {
@@ -6559,7 +6635,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Cheeked Gibbon.png": {
@@ -6577,7 +6653,7 @@
           "space_requirement": 3,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Faced Capuchin.png": {
@@ -6624,7 +6700,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Black Crested Mangabey.png": {
@@ -6642,7 +6718,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Brown-Mantled Tamarin.png": {
@@ -6656,7 +6733,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Capped Gibbon.png": {
@@ -6673,7 +6750,7 @@
           "space_requirement": 3,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Chimpanzee.png": {
@@ -6697,7 +6774,8 @@
           ],
           "space_requirement": 5,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Drill.png": {
@@ -6715,7 +6793,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "François' Langur.png": {
@@ -6753,7 +6832,7 @@
           "space_requirement": 3,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Grey Langur.png": {
@@ -6772,7 +6851,8 @@
           "space_requirement": 3,
           "population_profiles": [
             "harem",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Grey Slender Loris.png": {
@@ -6808,7 +6888,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Guaian Bearded Saki.png": {
@@ -6863,7 +6943,7 @@
           ],
           "space_requirement": 2,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Pygmy Slow Loris.png": {
@@ -6905,7 +6985,7 @@
           ],
           "space_requirement": 2,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Faced Spider Monkey.png": {
@@ -6921,7 +7001,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Red-Fronted Lemur.png": {
@@ -6965,7 +7046,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
-            "female_group"
+            "female_group",
+            "large_group"
           ]
         },
         "Western Lowland Gorilla.png": {
@@ -7002,7 +7084,7 @@
           "space_requirement": 3,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Aye-Aye.png": {
@@ -7068,7 +7150,8 @@
           ],
           "space_requirement": 5,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Bornean Orangutan.png": {
@@ -7097,7 +7180,7 @@
           ],
           "space_requirement": 2,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Crowned Sifaka.png": {
@@ -7111,7 +7194,7 @@
           ],
           "space_requirement": 2,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Dusky Langur.png": {
@@ -7163,7 +7246,8 @@
           "space_requirement": 4,
           "population_profiles": [
             "harem",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Grey Gibbon.png": {
@@ -7178,7 +7262,7 @@
           "space_requirement": 3,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Shanked Douc.png": {
@@ -7212,7 +7296,7 @@
           "space_requirement": 3,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Sumatran Orangutan.png": {
@@ -7247,7 +7331,8 @@
           ],
           "space_requirement": 3,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         }
       }
@@ -7283,7 +7368,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Azara's Agouti.png": {
@@ -7305,7 +7390,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Coypu.png": {
@@ -7385,7 +7470,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Four-Toed Hedgehog.png": {
@@ -7447,7 +7532,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Lesser Hedgehog Tenrec.png": {
@@ -7603,7 +7688,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Southern Three-Banded Armadillo.png": {
@@ -7642,7 +7727,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         }
       },
@@ -7690,7 +7775,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Black-Rumped Agouti.png": {
@@ -7709,7 +7794,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Black-Tailed Prairie Dog.png": {
@@ -7730,7 +7815,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Cape Porcupine.png": {
@@ -7759,7 +7845,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Capybara.png": {
@@ -7792,7 +7878,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Chacoan Mara.png": {
@@ -7858,7 +7945,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Large Hairy Armadillo.png": {
@@ -8400,7 +8488,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Large Flying Fox.png": {
@@ -8427,7 +8516,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Long-Nosed Potoroo.png": {
@@ -8503,7 +8593,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Rodriguez Flying Fox.png": {
@@ -8518,7 +8609,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Southern Tamandua.png": {
@@ -8632,7 +8724,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Asian Elephant.png": {
@@ -8663,7 +8755,8 @@
           "space_requirement": 6,
           "population_profiles": [
             "female_group",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Brown Dorcopsis.png": {
@@ -8720,7 +8813,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Dusky Pademelon.png": {
@@ -9040,7 +9133,8 @@
           "space_requirement": 7,
           "population_profiles": [
             "female_group",
-            "bachelor_group"
+            "bachelor_group",
+            "large_group"
           ]
         },
         "Bear Cuscus.png": {
@@ -9186,7 +9280,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Platypus.png": {
@@ -9278,7 +9372,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Tasmanian Devil.png": {
@@ -9345,7 +9439,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Common Raven.png": {
@@ -9435,7 +9530,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Demoiselle Crane.png": {
@@ -9473,7 +9568,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Emu.png": {
@@ -9552,7 +9647,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Laughing Kookaburra.png": {
@@ -9573,7 +9668,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Crowned Crane.png": {
@@ -9600,7 +9695,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Scarlet Ibis.png": {
@@ -9623,7 +9718,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "White Stork.png": {
@@ -9713,7 +9809,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Blue Crane.png": {
@@ -9732,7 +9828,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Common Ostrich.png": {
@@ -9844,7 +9940,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Hamerkop.png": {
@@ -9879,7 +9976,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Lesser Rhea.png": {
@@ -9949,7 +10046,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Red-Legged Seriema.png": {
@@ -9970,7 +10068,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Sarus Crane.png": {
@@ -10000,7 +10098,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Southern Ground Hornbill.png": {
@@ -10022,7 +10120,7 @@
           ],
           "space_requirement": 2,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Naped Crane.png": {
@@ -10047,7 +10145,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Yellow-Billed Stork.png": {
@@ -10104,7 +10202,7 @@
           ],
           "space_requirement": 2,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Allen's Gallinule.png": {
@@ -10133,7 +10231,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "American White Ibis.png": {
@@ -10161,7 +10259,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Black Crake.png": {
@@ -10195,7 +10294,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Black-Faced Ibis.png": {
@@ -10239,7 +10338,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Common Trumpeter.png": {
@@ -10254,7 +10353,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Giant Wood-Rail.png": {
@@ -10273,7 +10372,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Hadada Ibis.png": {
@@ -10325,7 +10424,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Saddle-Billed Stork.png": {
@@ -10360,7 +10459,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Southern Cassowary.png": {
@@ -10407,7 +10506,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Sunbittern.png": {
@@ -10437,7 +10537,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Tawny Frogmouth.png": {
@@ -10470,7 +10570,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         }
       },
@@ -10500,7 +10600,8 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Asian Woolly-Necked Stork.png": {
@@ -10528,7 +10629,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Australian Ibis.png": {
@@ -10553,7 +10654,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Black-Headed Ibis.png": {
@@ -10576,7 +10678,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Little Grebe.png": {
@@ -10658,7 +10761,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Madagascar Sacred Ibis.png": {
@@ -10694,7 +10797,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Sandhill Crane.png": {
@@ -10740,7 +10843,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Siberian Crane.png": {
@@ -10763,7 +10866,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Southern Bald Ibis.png": {
@@ -10805,7 +10908,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         }
       },
@@ -10861,7 +10964,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Brolga.png": {
@@ -10892,7 +10995,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Corncrake.png": {
@@ -11085,7 +11188,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "African Spoonbill.png": {
@@ -11135,7 +11239,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Dalmatian Pelican.png": {
@@ -11335,7 +11440,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Harbour Seal.png": {
@@ -11456,7 +11562,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Roseate Spoonbill.png": {
@@ -11517,7 +11624,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Blacktip Reef Shark.png": {
@@ -12431,7 +12539,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Green Sea Turtle.png": {
@@ -12796,7 +12905,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Lesser Flamingo.png": {
@@ -12822,7 +12932,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Magellanic Penguin.png": {
@@ -12852,7 +12963,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Rockhopper Penguin.png": {
@@ -12882,7 +12994,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Sand Tiger Shark.png": {
@@ -13159,7 +13272,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Atlantic Puffin.png": {
@@ -13698,7 +13812,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Macaroni Penguin.png": {
@@ -13735,7 +13850,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Northern Fur Seal.png": {
@@ -14023,7 +14139,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Atlantic Manta Ray.png": {
@@ -14299,7 +14416,8 @@
           ],
           "space_requirement": 2,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Harp Seal.png": {
@@ -14426,7 +14544,8 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "breeding_group"
+            "breeding_group",
+            "large_group"
           ]
         },
         "Melon-Headed Whale.png": {
@@ -14949,7 +15068,7 @@
           ],
           "space_requirement": 7,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Orinoco Dolphin.png": {
@@ -15663,7 +15782,7 @@
           ],
           "space_requirement": 6,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Spinner Dolphin.png": {
@@ -16632,7 +16751,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Common Buzzard.png": {
@@ -16685,7 +16804,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Eurasian Eagle-Owl.png": {
@@ -16751,7 +16870,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Golden Eagle.png": {
@@ -16835,7 +16954,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Great Grey Owl.png": {
@@ -16897,7 +17016,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Harris's Hawk.png": {
@@ -16931,7 +17050,7 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group"
+            "breeding_group"
           ]
         },
         "Little Owl.png": {
@@ -16982,7 +17101,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Snowy Owl.png": {
@@ -17023,7 +17142,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Tawny Owl.png": {
@@ -17075,7 +17194,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Ural Owl.png": {
@@ -17129,7 +17248,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Western Barn Owl.png": {
@@ -17193,7 +17312,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Tailed Eagle.png": {
@@ -17261,7 +17380,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         }
       },
@@ -17310,7 +17429,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Black Vulture.png": {
@@ -17390,7 +17509,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Brown Wood Owl.png": {
@@ -17428,7 +17547,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Burrowing Owl.png": {
@@ -17466,7 +17585,6 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group",
             "breeding_group"
           ]
         },
@@ -17511,7 +17629,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Egyptian Vulture.png": {
@@ -17562,7 +17680,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Eurasian Goshawk.png": {
@@ -17627,7 +17745,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "European Scops Owl.png": {
@@ -17669,7 +17787,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Great Horned Owl.png": {
@@ -17719,7 +17837,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Griffon Vulture.png": {
@@ -17822,7 +17940,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Lanner Falcon.png": {
@@ -17872,7 +17990,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Long-Eared Owl.png": {
@@ -17965,7 +18083,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Monk Vulture.png": {
@@ -18083,7 +18201,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red Kite.png": {
@@ -18113,7 +18231,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Saker Falcon.png": {
@@ -18159,7 +18277,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Spectacled Owl.png": {
@@ -18194,7 +18312,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Spotted Eagle-Owl.png": {
@@ -18226,7 +18344,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Steller's Sea Eagle.png": {
@@ -18249,7 +18367,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Steppe Eagle.png": {
@@ -18288,7 +18406,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Striated Caracara.png": {
@@ -18307,7 +18425,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Turkey Vulture.png": {
@@ -18412,7 +18530,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "African Wood Owl.png": {
@@ -18443,7 +18561,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "American Kestrel.png": {
@@ -18513,7 +18631,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Andean Condor.png": {
@@ -18539,7 +18657,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Ashy-Faced Owl.png": {
@@ -18555,7 +18673,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Australian Boobook.png": {
@@ -18579,7 +18697,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Bateleur.png": {
@@ -18614,7 +18732,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Bearded Vulture.png": {
@@ -18663,7 +18781,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Boreal Owl.png": {
@@ -18729,7 +18847,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Cape Eagle-Owl.png": {
@@ -18750,7 +18868,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Chaco Owl.png": {
@@ -18770,7 +18888,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Ferruginous Hawk.png": {
@@ -18795,7 +18913,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Ferruginous Pygmy Owl.png": {
@@ -18837,7 +18955,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Greyish Eagle-Owl.png": {
@@ -18865,7 +18983,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Gyrfalcon.png": {
@@ -18905,7 +19023,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Indian Scops Owl.png": {
@@ -18928,7 +19046,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "King Vulture.png": {
@@ -18963,7 +19081,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Laggar Falcon.png": {
@@ -18987,7 +19105,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Long-Legged Buzzard.png": {
@@ -19038,7 +19156,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Mottled Owl.png": {
@@ -19072,7 +19190,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Northern Hawk-Owl.png": {
@@ -19132,7 +19250,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Northern White-Faced Owl.png": {
@@ -19155,7 +19273,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Palm-Nut Vulture.png": {
@@ -19182,7 +19300,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Tailed Hawk.png": {
@@ -19230,7 +19348,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Rüppell's Vulture.png": {
@@ -19292,7 +19410,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Short-Eared Owl.png": {
@@ -19359,7 +19477,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Southern White-Faced Owl.png": {
@@ -19381,7 +19499,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Tawny Eagle.png": {
@@ -19425,7 +19543,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Tropical Screech Owl.png": {
@@ -19460,7 +19578,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Verreaux's Eagle-Owl.png": {
@@ -19496,7 +19614,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Backed Vulture.png": {
@@ -19552,7 +19670,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "American Barn Owl.png": {
@@ -19617,7 +19735,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Aplomado Falcon.png": {
@@ -19648,7 +19766,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Band-Bellied Owl.png": {
@@ -19667,7 +19785,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Barbary Falcon.png": {
@@ -19699,7 +19817,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Barred Owl.png": {
@@ -19738,7 +19856,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Bonelli's Eagle.png": {
@@ -19780,7 +19898,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Booted Eagle.png": {
@@ -19820,7 +19938,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Brahminy Kite.png": {
@@ -19858,7 +19976,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Eastern Imperial Eagle.png": {
@@ -19896,7 +20014,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Eurasian Hobby.png": {
@@ -19957,7 +20075,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Eurasian Pygmy-Owl.png": {
@@ -19996,7 +20114,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Eurasian Sparrowhawk.png": {
@@ -20060,7 +20178,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Himalayan Vulture.png": {
@@ -20102,7 +20220,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Lesser Kestrel.png": {
@@ -20171,7 +20289,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Lesser Yellow-Headed Vulture.png": {
@@ -20204,7 +20322,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Martial Eagle.png": {
@@ -20238,7 +20356,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Merlin.png": {
@@ -20328,7 +20446,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Mountain Caracara.png": {
@@ -20349,7 +20467,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Philippine Scops Owl.png": {
@@ -20365,7 +20483,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Backed Hawk.png": {
@@ -20391,7 +20509,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Footed Falcon.png": {
@@ -20485,7 +20603,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Striped Owl.png": {
@@ -20515,7 +20633,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Verreaux's Eagle.png": {
@@ -20549,7 +20667,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Western Honey Buzzard.png": {
@@ -20586,7 +20704,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Western Marsh-Harrier.png": {
@@ -20625,7 +20743,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Western Screech Owl.png": {
@@ -20656,7 +20774,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Headed Vulture.png": {
@@ -20726,7 +20844,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Yellow-Headed Caracara.png": {
@@ -20761,7 +20879,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         }
       },
@@ -20814,7 +20932,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Greater Yellow-Headed Vulture.png": {
@@ -20837,7 +20955,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Harpy Eagle.png": {
@@ -20868,7 +20986,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Nubian Vulture.png": {
@@ -20895,7 +21013,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Osprey.png": {
@@ -20962,7 +21080,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Headed Vulture.png": {
@@ -20983,7 +21101,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Bellied Sea Eagle.png": {
@@ -21030,7 +21148,7 @@
           "space_requirement": 2,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         }
       }
@@ -21080,7 +21198,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Blue-Fronted Amazon.png": {
@@ -21187,7 +21305,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Crested Turaco.png": {
@@ -21202,7 +21320,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Scarlet Macaw.png": {
@@ -21227,7 +21345,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Senegal Parrot.png": {
@@ -21260,7 +21378,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Violet Turaco.png": {
@@ -21282,7 +21400,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Cheeked Turaco.png": {
@@ -21299,7 +21417,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Yellow-Crested Cockatoo.png": {
@@ -21317,7 +21435,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Yellow-Crowned Amazon.png": {
@@ -21383,7 +21501,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Blue-Winged Macaw.png": {
@@ -21402,7 +21520,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Cuban Amazon.png": {
@@ -21437,7 +21555,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Green Aracari.png": {
@@ -21452,7 +21570,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Green Turaco.png": {
@@ -21475,7 +21593,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Hyacinth Macaw.png": {
@@ -21496,7 +21614,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Kea.png": {
@@ -21582,7 +21700,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Mealy Amazon.png": {
@@ -21630,7 +21748,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Pink Cockatoo.png": {
@@ -21683,7 +21801,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Lored Amazon.png": {
@@ -21730,7 +21848,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Silvery-Cheeked Hornbill.png": {
@@ -21753,7 +21871,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Solomons Corella.png": {
@@ -21829,7 +21947,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Trumpeter Hornbill.png": {
@@ -21855,7 +21973,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Vinaceous-Breasted Amazon.png": {
@@ -21893,7 +22011,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Bellied Parrot.png": {
@@ -21977,7 +22095,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Bearded Barbet.png": {
@@ -21996,7 +22114,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Black-Necked Aracari.png": {
@@ -22016,7 +22134,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Blue-Cheeked Amazon.png": {
@@ -22089,7 +22207,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Chestnut-Fronted Macaw.png": {
@@ -22115,7 +22233,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Festive Amazon.png": {
@@ -22153,7 +22271,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Lilac-Crowned Amazon.png": {
@@ -22232,7 +22350,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Papuan Hornbill.png": {
@@ -22247,7 +22365,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Philippine Cockatoo.png": {
@@ -22287,7 +22405,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Crowned Amazon.png": {
@@ -22319,7 +22437,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Fronted Parrot.png": {
@@ -22407,7 +22525,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Tarictic Hornbill.png": {
@@ -22421,7 +22539,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Crested Turaco.png": {
@@ -22445,7 +22563,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Fronted Amazon.png": {
@@ -22505,7 +22623,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Black-Casqued Hornbill.png": {
@@ -22524,7 +22642,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Blue-Headed Macaw.png": {
@@ -22542,7 +22660,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Bronze-Winged Parrot.png": {
@@ -22582,7 +22700,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Crowned Hornbill.png": {
@@ -22607,7 +22725,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Diademed Amazon.png": {
@@ -22647,7 +22765,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Great Indian Hornbill.png": {
@@ -22670,7 +22788,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Grey-Cheeked Hornbill.png": {
@@ -22689,7 +22807,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Hartlaub's Turaco.png": {
@@ -22705,7 +22823,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Northern Rufous Hornbill.png": {
@@ -22719,7 +22837,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Pacific Parrotlet.png": {
@@ -22757,7 +22875,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Billed Woodhoopoe.png": {
@@ -22790,7 +22908,6 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "family_group",
             "breeding_group"
           ]
         },
@@ -22851,7 +22968,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Crowned Parrot.png": {
@@ -22890,7 +23007,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Wreathed Hornbill.png": {
@@ -22916,7 +23033,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Wrinkled Hornbill.png": {
@@ -22937,7 +23054,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Yellow-Billed Amazon.png": {
@@ -23009,7 +23126,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Crimson-Rumped Toucanet.png": {
@@ -23027,7 +23144,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Curl-Crested Aracari.png": {
@@ -23043,7 +23160,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Eastern Yellow-Billed Hornbill.png": {
@@ -23061,7 +23178,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Emerald Toucanet.png": {
@@ -23081,7 +23198,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Gang-Gang Cockatoo.png": {
@@ -23120,7 +23237,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Guyana Toucanet.png": {
@@ -23134,7 +23251,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Ivory-Billed Aracari.png": {
@@ -23152,7 +23269,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Keel-Billed Toucan.png": {
@@ -23171,7 +23288,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Knobbed Hornbill.png": {
@@ -23185,7 +23302,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Lear's Macaw.png": {
@@ -23201,7 +23318,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Northern Kaka.png": {
@@ -23245,7 +23362,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Palawan Hornbill.png": {
@@ -23259,7 +23376,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Pale-Billed Aracari.png": {
@@ -23274,7 +23391,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Piping Hornbill.png": {
@@ -23291,7 +23408,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Plate-Billed Mountain Toucan.png": {
@@ -23307,7 +23424,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Red-Bellied Macaw.png": {
@@ -23345,7 +23462,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Ross's Turaco.png": {
@@ -23362,7 +23479,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Saffron Toucanet.png": {
@@ -23377,7 +23494,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Southern Rufous Hornbill.png": {
@@ -23391,7 +23508,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Spectacled Parrotlet.png": {
@@ -23440,7 +23557,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Western Long-Tailed Hornbill.png": {
@@ -23457,7 +23574,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Western Plantain-Eater.png": {
@@ -23476,7 +23593,6 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group",
             "breeding_group"
           ]
         },
@@ -23502,7 +23618,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "White-Thighed Hornbill.png": {
@@ -23518,7 +23634,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Writhed Hornbill.png": {
@@ -23532,7 +23648,7 @@
           "space_requirement": 1,
           "population_profiles": [
             "pair",
-            "family_group"
+            "breeding_group"
           ]
         },
         "Yellow-Tailed Black Cockatoo.png": {

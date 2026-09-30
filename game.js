@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V2.43.44";
+const ZOO_CURATOR_VERSION = "V2.43.75";
 // Definitive V2 baseline: True-mode systems + current Information-map geography fixes.
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
@@ -48,6 +48,9 @@ function desktopUiScale() {
 
     const t = (viewportRatio - fullHdRatio) / (1 - fullHdRatio);
     return 0.92 + t * 0.08;
+
+
+
 }
 
 let desktopUiScaleFrame = 0;
@@ -2426,20 +2429,45 @@ function animalInventoryTags(category, level, filename) {
 // population_profiles lookup. Until that data exists, True Mode uses a small,
 // conservative fallback instead of the old deliberately inflated test groups.
 const TRUE_POPULATION_PROFILE_TEMPLATES={
-    solitary:{structures:[{weight:1,males:[0,1],females:[0,1],total:[1,1]}]},
-    pair:{structures:[{weight:1,males:[1,1],females:[1,1]}]},
-    small_breeding_group:{structures:[{weight:1,males:[1,1],females:[2,4]}]},
-    family_group:{structures:[{weight:1,males:[1,1],females:[1,2],offspring:[0,3]}]},
-    multi_male_group:{structures:[{weight:1,males:[2,4],females:[2,6]}]},
-    bachelor_group:{structures:[{weight:1,males:[2,8],females:[0,0],management:'bachelor_group'}]},
-    female_group:{structures:[{weight:1,males:[0,0],females:[2,8],management:'female_group'}]},
-    breeding_group:{structures:[{weight:1,males:[1,4],females:[1,8],total:[4,12],management:'breeding_group'}]},
-    harem:{structures:[{weight:1,males:[1,1],females:[2,8],management:'harem'}]},
-    herd:{structures:[{weight:.78,males:[1,2],females:[3,9]},{weight:.22,males:[3,8],females:[0,0],management:'bachelor_group'}]},
-    flock:{structures:[{weight:1,males:[2,8],females:[2,8]}]},
-    colony:{structures:[{weight:1,males:[5,18],females:[5,18]}]},
-    school:{structures:[{weight:1,males:[4,15],females:[4,15]}]}
+    solitary:{structures:[{weight:1,males:[0,1],females:[0,1],total:[1,1],management:'solitary'}]},
+    pair:{structures:[{weight:1,males:[1,1],females:[1,1],total:[2,2],management:'pair'}]},
+    breeding_group:{structures:[{weight:1,males:[1,3],females:[1,5],total:[3,8],management:'breeding_group'}]},
+    bachelor_group:{structures:[{weight:1,males:[2,8],females:[0,0],total:[2,8],management:'bachelor_group'}]},
+    female_group:{structures:[{weight:1,males:[0,0],females:[2,8],total:[2,8],management:'female_group'}]},
+    harem:{structures:[{weight:1,males:[1,1],females:[2,8],total:[3,9],management:'harem'}]}
 };
+const TRUE_POPULATION_STRUCTURAL_PROFILES=new Set(Object.keys(TRUE_POPULATION_PROFILE_TEMPLATES));
+const TRUE_POPULATION_PROFILE_ALIASES={
+    family_group:'breeding_group',small_breeding_group:'breeding_group',multi_male_group:'breeding_group',multi_female_group:'breeding_group',
+    herd:'breeding_group',flock:'breeding_group',colony:'breeding_group',school:'breeding_group'
+};
+function trueNormalisePopulationProfileName(value){
+    const raw=String(value||'').trim().toLowerCase().replace(/[\s-]+/g,'_');
+    return TRUE_POPULATION_PROFILE_ALIASES[raw]||raw;
+}
+function truePopulationStructuresForProfiles(names=[]){
+    const unique=[...new Set((names||[]).map(trueNormalisePopulationProfileName).filter(Boolean))];
+    const large=unique.includes('large_group');
+    const structures=[];
+    for(const name of unique){
+        if(!TRUE_POPULATION_STRUCTURAL_PROFILES.has(name))continue;
+        const template=TRUE_POPULATION_PROFILE_TEMPLATES[name];
+        for(const source of template.structures||[]){
+            const row={...source,management:source.management||name,profileName:name};
+            if(large){
+                // large_group is a scale modifier, never an alternative sex structure.
+                // Preserve the structural minimum/sex rules but allow herd/flock/colony-scale populations.
+                if(name==='breeding_group'){row.males=[1,8];row.females=[1,16];row.total=[3,24];}
+                else if(name==='harem'){row.males=[1,1];row.females=[2,23];row.total=[3,24];}
+                else if(name==='bachelor_group'){row.males=[2,24];row.females=[0,0];row.total=[2,24];}
+                else if(name==='female_group'){row.males=[0,0];row.females=[2,24];row.total=[2,24];}
+                row.largeGroup=true;
+            }
+            structures.push(row);
+        }
+    }
+    return {profiles:unique,largeGroup:large,structures};
+}
 function truePopulationInventoryEntry(animal){
     if(!animal||!state.inventory)return null;
     const category=animal.category,level=Number(animal.level)||1,filename=cleanFilename(animal.filename||'');
@@ -2461,30 +2489,26 @@ function truePopulationInventoryEntry(animal){
 }
 function truePopulationProfile(animal){
     const entry=truePopulationInventoryEntry(animal);
-
-    // Current inventory format: every species can list several acceptable
-    // managed population structures. Treat them as alternatives, not as one
-    // preferred structure overwriting the others.
     const listed=Array.isArray(entry?.population_profiles)?entry.population_profiles
         :Array.isArray(entry?.populationProfiles)?entry.populationProfiles:null;
     if(listed?.length){
-        const names=[...new Set(listed.map(x=>String(x||'').trim().toLowerCase().replace(/[\s-]+/g,'_')).filter(Boolean))];
-        const structures=[];
-        for(const name of names){
-            const template=TRUE_POPULATION_PROFILE_TEMPLATES[name];
-            if(!template)continue;
-            for(const row of template.structures||[])structures.push({...row,management:row.management||name,profileName:name});
+        const built=truePopulationStructuresForProfiles(listed);
+        if(built.structures.length){
+            const first=built.profiles.find(name=>TRUE_POPULATION_STRUCTURAL_PROFILES.has(name))||'pair';
+            return {template:first,profiles:built.profiles,structures:built.structures,largeGroup:built.largeGroup,management:null,fallback:false};
         }
-        if(structures.length)return {template:names[0]||'pair',profiles:names,structures,management:null,fallback:false};
     }
 
-    // Backward compatibility for older inventories/saves with one detailed profile.
+    // Backward compatibility for old inventories/saves that stored one legacy profile.
     let raw=entry?.population_profile??entry?.populationProfile??null;
     if(!raw&&entry?.social_type)raw=entry;
     if(typeof raw==='string')raw={template:raw};
-    if(!raw||typeof raw!=='object')return {template:'pair',management:'pair',fallback:true};
-    const template=String(raw.template||raw.social_type||raw.socialType||'pair').trim().toLowerCase().replace(/[\s-]+/g,'_');
-    return {...raw,template,management:raw.management||raw.default_management||template,fallback:false};
+    if(!raw||typeof raw!=='object')return {template:'pair',profiles:['pair'],structures:TRUE_POPULATION_PROFILE_TEMPLATES.pair.structures,largeGroup:false,management:'pair',fallback:true};
+    const legacyTemplate=String(raw.template||raw.social_type||raw.socialType||'pair').trim().toLowerCase().replace(/[\s-]+/g,'_');
+    const template=trueNormalisePopulationProfileName(legacyTemplate);
+    const largeGroup=['herd','flock','colony','school'].includes(legacyTemplate)||raw.large_group===true||raw.largeGroup===true;
+    const built=truePopulationStructuresForProfiles([template,...(largeGroup?['large_group']:[])]);
+    return {...raw,template:TRUE_POPULATION_STRUCTURAL_PROFILES.has(template)?template:'pair',profiles:built.profiles.length?built.profiles:['pair'],structures:built.structures.length?built.structures:TRUE_POPULATION_PROFILE_TEMPLATES.pair.structures,largeGroup,management:trueNormalisePopulationProfileName(raw.management||raw.default_management||template),fallback:false};
 }
 function truePopulationRangeValue(range,roll,min=0){
     if(Number.isFinite(Number(range)))return Math.max(min,Math.round(Number(range)));
@@ -2630,9 +2654,9 @@ function trueOpeningDuplicatePopulationSplit(publicAnimal,backstageAnimal,seed='
 
 function truePopulationStructureLabel(name){
     return ({
-        solitary:'Solitary',pair:'Pair',family_group:'Family group',
-        breeding_group:'Breeding group',bachelor_group:'Bachelor group',
-        female_group:'Female group',harem:'Harem',herd:'Herd'
+        solitary:'Solitary',pair:'Pair',breeding_group:'Breeding group',
+        bachelor_group:'Bachelor group',female_group:'Female group',harem:'Harem',
+        large_group:'Large group'
     })[String(name||'').toLowerCase()]||String(name||'Managed group').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 }
 function truePopulationCurrentStructure(animal){
@@ -7915,9 +7939,14 @@ function normaliseTrueCalendarState() {
     state.trueCalendar.lastMonthKey = String(state.trueCalendar.lastMonthKey || state.trueCalendar.date.slice(0, 7));
     if (!Array.isArray(state.trueActivityLog)) state.trueActivityLog = [];
     if (!Number.isFinite(Number(state.trueActivityNextId))) state.trueActivityNextId = 1;
-    state.truePublicPrestige = null;
-    state.truePublicPrestigeLastDate = '';
-    state.trueGuestAttendanceDays = {};
+    // These are persistent simulation values, not transient calendar fields.
+    // Do not reset them from this frequently-called normalizer. Older broken
+    // saves with null/zero public prestige are repaired by normaliseTruePublicPrestige().
+    if(state.truePublicPrestige!==null&&state.truePublicPrestige!==''&&!Number.isFinite(Number(state.truePublicPrestige)))
+        state.truePublicPrestige=null;
+    state.truePublicPrestigeLastDate=String(state.truePublicPrestigeLastDate||'');
+    state.trueGuestAttendanceDays=(state.trueGuestAttendanceDays&&typeof state.trueGuestAttendanceDays==='object'&&!Array.isArray(state.trueGuestAttendanceDays))
+        ?state.trueGuestAttendanceDays:{};
     if (!state.trueDaytimeActivity || typeof state.trueDaytimeActivity !== 'object') state.trueDaytimeActivity = {};
     if (!Array.isArray(state.trueDaytimeActivity.generatedKeys)) state.trueDaytimeActivity.generatedKeys = [];
     if (!state.trueDaytimeActivity.round || typeof state.trueDaytimeActivity.round !== 'object') state.trueDaytimeActivity.round = null;
@@ -8248,19 +8277,7 @@ function scheduleTrueEvent({ date, type='info', title='Activity', message='', ac
 
 
 let trueEventCatalogue=null;
-const TRUE_EVENT_FALLBACK_CATALOGUE={
-    impact:{
-        "animal-request":"This is an active population request. Your response can change the animals in your collection and your future relationship with {zoo}.",
-        "transfer-opportunity":"This is a live transfer opportunity. Your response can change both the population involved and your future cooperation with {zoo}.",
-        "population-cooperation":"This offer can repair the sex structure of one of your managed populations, and responding to it feeds back into your relationship with {zoo}.",
-        "player-zoo-birth":"The newborn animals have already been added to the population and now count toward its managed group structure.",
-        "welfare-zoo-concern":"Trust with {zoo} has been reduced by the unresolved husbandry concern.",
-        "welfare-protest":"Public criticism is temporarily reducing visitor demand.",
-        "grounds-expansion-approval":"A real grounds-expansion credit has been added and can be spent with the enclosure builder.",
-        "programme-update":"This contact has increased your working familiarity with {zoo}, which affects later requests and opportunities.",
-        "daily-zoo-update":"This daily development has applied a short-lived zoo modifier."
-    }
-};
+const TRUE_EVENT_FALLBACK_CATALOGUE={"schema_version":1,"impact":{"animal-request":"{zoo} is asking us for animals. How we answer will matter next time we deal with them.","transfer-opportunity":"{zoo} has animals looking for a new home.","population-cooperation":"This could give us a better-balanced group.","player-zoo-birth":"The youngsters are now counted as part of the group.","welfare-zoo-concern":"{zoo} won't be too keen to work with us until we sort this out.","welfare-protest":"The bad publicity is putting some visitors off.","grounds-expansion-approval":"We've got permission to expand the zoo.","programme-update":"We're getting to know the people at {zoo} better.","collection-planning":"We're in closer touch with {zoo} now.","network-contact":"We've got a useful contact at {zoo} now.","daily-zoo-update":"","husbandry-exchange":"The team at {zoo} has passed on a few useful tips.","publicity-feature":"The extra attention should bring a few more people through the gates.","population-advice":"That chat should make it easier to work with {zoo} again.","population-pressure":"We need to decide what to do with this group."},"daily_updates":{"breeding_observation":{"title":"Promising behaviour","messages":["The {species} have been showing some promising breeding behaviour today.","We've seen some encouraging courtship from the {species} today.","The {species} have settled in nicely, and we've seen some good breeding behaviour."],"details":["We'll leave them in peace and see what happens.","Nothing certain yet, but I'd keep an eye on them."],"impact":"Breeding chance is higher for seven days."},"visitor_word_of_mouth":{"title":"Good word of mouth","messages":["We've had a lot of happy visitors today. Word seems to be getting around.","Visitor feedback has been especially good today.","People have been leaving happy today, and they're telling others about it."],"details":["We might see a few more people through the gates tomorrow.","It's a small boost, but tomorrow could be busier."],"impact":"Visitor demand is slightly higher tomorrow."},"visitor_favourite":{"title":"Popular today","messages":["People have been spending a lot of time at the {species} today.","The {species} have been getting plenty of attention today.","We've heard the {species} mentioned all day. They've gone down very well."],"details":["That sort of attention tends to bring people back with friends.","We've heard plenty of good comments about the exhibit."],"impact":"Visitor demand is higher for two days."},"local_press_feature":{"title":"In the local news","messages":["There's a local piece out about {zoo} and our work with {species}.","The {species} have landed us a bit of local press coverage.","We've had some local coverage for our work with {species}."],"details":["Nothing huge, but more people know what we're doing now.","Nice to see the zoo getting noticed."],"impact":"Prestige catches up a little faster for three days."},"population_pressure":{"title":"Group needs attention","messages":["We should have another look at the {species}. The group is getting a bit crowded.","The {species} group is getting large enough that we should make a plan."],"details":["They're fine for now, but I wouldn't leave it too long.","We can slow the breeding down here or ask another zoo for help."],"impact":"Decide how to manage the group."},"crowded_day":{"title":"Busy yesterday","messages":["Yesterday was packed. The team managed, but people definitely noticed the queues.","We had a very busy day yesterday. Good for the gate, less good for the queues."],"details":["It should settle down again quickly."],"impact":"Visitor demand is slightly lower today."},"visitor_disappointment":{"title":"Quiet at the exhibit","messages":["The {species} haven't been drawing much of a crowd today.","People have been moving past the {species} a bit quicker than usual today."],"details":["Nothing's wrong with the animals. Some days an exhibit just gets less attention."],"impact":"Visitor demand is slightly lower tomorrow."}},"transfer_narratives":{"breeding-success":{"title":"Breeding success","message":"{zoo} has had a good breeding season and needs a new home for {animal} {pop}.","detail":"They've asked if we have room."},"priority-contact":{"title":"First call","message":"{zoo} has come to us first about {animal} {pop}.","detail":"We've worked well together before, so they thought of us."},"emergency-placement":{"title":"Home needed","message":"{zoo} needs to place {animal} {pop} fairly quickly.","detail":"Their plans have changed and they're looking for somewhere suitable."},"transfer-opportunity":{"title":"Animals available","message":"{zoo} has asked if we'd be interested in {animal} {pop}.","detail":"They're looking for a suitable new home."}},"world_news":{"programme-update":{"title":"Breeding programme news","message":"We've heard from {zoo} about their {species}.","detail":"They're keeping the group for now while they work out their breeding plans. Something may come of it later.","impact":"We're in closer touch with {zoo} now."},"collection-planning":{"title":"Plans are changing","message":"{zoo} is having another look at the future of its {species}.","detail":"Nothing's available yet. They're still deciding what to do with the group.","impact":"We're in closer touch with {zoo} now."},"network-contact":{"title":"A call from {zoo}","message":"{zoo} has been asking around about {species}.","detail":"There isn't a transfer on the table yet, but they wanted to know who might be interested.","impact":"We've got a useful contact at {zoo} now."},"husbandry-exchange":{"title":"Keeper notes","message":"The keepers at {zoo} have sent us some notes on their {species}.","detail":"There are a few useful ideas in there about day-to-day care and breeding.","impact":"If we keep {species}, the notes may help over the next few days."},"publicity-feature":{"title":"A bit of publicity","message":"{zoo} has mentioned us in a story about zoos working with {species}.","detail":"It's a small mention, but a few more people will hear about us.","impact":"Visitor demand is slightly higher for two days."},"population-advice":{"title":"Comparing notes","message":"The team at {zoo} wants to compare notes on {species}.","detail":"No transfer yet. They want to talk about the group, breeding and whether we can help each other.","impact":"It should make working with {zoo} easier next time."}},"surplus_relief":{"title":"{zoo} has room for our {species}","message":"{zoo} can take {population} of our {species}. Our group has grown larger than we'd normally want.","detail":"Moving them would bring the group back to a better size, and they've got room.","impact":"The group would be back toward a suitable size."}};
 function trueEventTemplate(text,values={}){
     return String(text||'').replace(/\{([a-zA-Z0-9_]+)\}/g,(_,key)=>String(values[key]??''));
 }
@@ -8342,22 +8359,92 @@ function trueRelationshipRecord(profile,sourceKey,type,text,{trust=0,familiarity
     if(rel.history.length>40)rel.history.length=40;
     return rel;
 }
-function trueEventById(id){return normaliseTrueEventState().items.find(e=>String(e.id)===String(id))||null;}
-function trueEventActiveItems(){
-    const today=normaliseTrueCalendarState().date;
+const TRUE_EVENT_TERMINAL_RETENTION_DAYS=60;
+const TRUE_EVENT_TERMINAL_STATUSES=new Set(['resolved','declined','acknowledged','expired','unavailable','fulfilled']);
+function trueEventLifecycleCleanup(today=normaliseTrueCalendarState().date){
+    const events=normaliseTrueEventState();
+    const removedIds=new Set();
+    events.items=events.items.filter(event=>{
+        if(!event||typeof event!=='object')return false;
+        if(!TRUE_EVENT_TERMINAL_STATUSES.has(String(event.status||'')))return true;
+        const terminalDate=String(event.resolvedDate||event.expiredDate||event.acknowledgedDate||event.createdDate||today);
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(terminalDate))return true;
+        if(trueDaysBetween(terminalDate,today)<=TRUE_EVENT_TERMINAL_RETENTION_DAYS)return true;
+        removedIds.add(String(event.id||''));
+        return false;
+    });
+    if(removedIds.size&&Array.isArray(state.trueActivityLog)){
+        for(const item of state.trueActivityLog){
+            if(item?.action==='event'&&removedIds.has(String(item.eventId||''))){
+                item.action='';item.actionLabel='';
+            }
+        }
+    }
+    return removedIds.size;
+}
+function trueEventEngagementStillLive(event){
+    if(!event)return false;
+    const id=String(event.id||'');
+    if(id&&String(state.autonomousTradeOffer?.eventId||'')===id)return true;
+    return (state.trueTransferProposals||[]).some(proposal=>{
+        if(!proposal||!['draft','pending'].includes(String(proposal.status||'')))return false;
+        return String(proposal.offer?.eventId||'')===id;
+    });
+}
+function trueEventExpireActiveItems(today=normaliseTrueCalendarState().date){
     const events=normaliseTrueEventState();
     const landCredits=Math.max(0,Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0);
-    for(const e of events.items){
-        if(e.status!=='active'||!e.expiresDate||!(e.expiresDate<today))continue;
-        if(e.kind==='grounds-expansion-approval'&&landCredits>0){
-            // Planning approval is durable; keep its notice live while any
-            // approved parcel is still unused.
-            const d=trueDateObject(today);d.setUTCDate(d.getUTCDate()+30);e.expiresDate=trueDateString(d);
+    let changed=0;
+    for(const event of events.items){
+        if(!event?.expiresDate||!(event.expiresDate<today))continue;
+        if(event.status==='engaged'){
+            // A discussion/proposal may legitimately outlive the original card's
+            // response date. Keep it while a live transfer draft/pending proposal
+            // still references it; otherwise retire abandoned engagement state.
+            if(trueEventEngagementStillLive(event))continue;
+            event.status='expired';event.expiredDate=today;event.resolvedDate=event.resolvedDate||today;changed++;
             continue;
         }
-        e.status='expired';
+        if(event.status!=='active')continue;
+        if(event.kind==='grounds-expansion-approval'&&landCredits>0){
+            event.expiresDate=addTrueDays(today,30);
+            continue;
+        }
+        event.status='expired';
+        event.expiredDate=today;
+        if(!event.resolvedDate)event.resolvedDate=today;
+        changed++;
     }
-    return events.items.filter(e=>e.status==='active');
+    return changed;
+}
+function trueEventById(id){return normaliseTrueEventState().items.find(e=>String(e.id)===String(id))||null;}
+function trueEventRequestedPlayerAnimal(event){
+    if(!event||event.kind!=='animal-request'||!event.animal)return null;
+    const targetKey=animalCardKey(event.animal);
+    const eligible=(state.animals||[]).filter(animal=>
+        animal&&!animal.trueArrivalPending&&!animal.reservedForTrade&&animal.reservedEnclosureId==null&&
+        trueAnimalPopulationTotal(animal)>0&&animalCardKey(animal)===targetKey
+    );
+    return eligible.find(animal=>String(animal.id)===String(event.playerAnimalId))||eligible[0]||null;
+}
+function trueInvalidateImpossibleAnimalRequests(today=normaliseTrueCalendarState().date){
+    let changed=0;
+    for(const event of normaliseTrueEventState().items){
+        if(event?.kind!=='animal-request'||event.status!=='active')continue;
+        const animal=trueEventRequestedPlayerAnimal(event);
+        if(animal){event.playerAnimalId=animal.id;continue;}
+        event.status='unavailable';event.resolvedDate=today;
+        event.resolution=`The requested ${animalDisplayName(event.animal)} population is no longer held by your zoo, so the request was withdrawn.`;
+        changed++;
+    }
+    return changed;
+}
+function trueEventActiveItems(){
+    const today=normaliseTrueCalendarState().date;
+    trueEventExpireActiveItems(today);
+    trueInvalidateImpossibleAnimalRequests(today);
+    trueEventLifecycleCleanup(today);
+    return normaliseTrueEventState().items.filter(e=>e.status==='active');
 }
 function trueEventBlockingItems(){
     // Persistent informational state (welfare concerns and development notices)
@@ -8425,6 +8512,18 @@ function trueEventZooTypeAffinityWeight(profile){
     const partnerSpecific=partnerTypes.filter(type=>type&&type!=='general');
     if(!playerSpecific.length||!partnerSpecific.length)return 1;
     if(partnerSpecific.some(type=>playerSpecific.includes(type)))return 2.35;
+
+    const isAquaticType=type=>{
+        const t=String(type||'').toLowerCase();
+        return t.includes('aquarium')||t.includes('marine')||t.includes('aquatic')||
+            t.includes('sea life')||t.includes('sealife')||t.includes('ocean');
+    };
+    const partnerAquatic=partnerSpecific.some(isAquaticType);
+    const playerAquatic=playerSpecific.some(isAquaticType);
+    // Directional rule: an aquarium initiating contact with an ordinary zoo is
+    // exceptional. This is intentionally much harsher than the reverse direction.
+    // Aquariums still contact aquariums/marine specialists normally.
+    if(partnerAquatic&&!playerAquatic)return .02;
 
     // Related specialist institutions still share useful expertise. Keep these
     // affinities deliberately broad and non-exclusive: unlike types remain able
@@ -8534,7 +8633,7 @@ function trueEventPopulationPressureCandidates(){
         const current=truePopulationCurrentStructure(animal);
         // A group that no longer fits any valid social structure is the clearest
         // signal of management pressure. Very large groups are also eligible so
-        // colony/herd species can occasionally trigger a review without claiming
+        // large-group species can occasionally trigger a review without claiming
         // that an ordinary pair is overcrowded.
         return !current?.valid||total>=8;
     });
@@ -8640,6 +8739,14 @@ function trueEventRequestContext(candidate){
 }
 
 function trueCreateIncomingRequestEvent(candidate,today){
+    // Requests to the player must always originate from a population that is
+    // physically in the player's zoo at the moment the event is created.
+    const liveAnimal=(state.animals||[]).find(animal=>
+        animal===candidate?.animal&&!animal.trueArrivalPending&&!animal.reservedForTrade&&
+        animal.reservedEnclosureId==null&&trueAnimalPopulationTotal(animal)>0
+    );
+    if(!liveAnimal)return null;
+    candidate={...candidate,animal:liveAnimal};
     const events=normaliseTrueEventState();
     const rel=trueRelationshipForProfile(candidate.profile,candidate.sourceKey);
     const species=animalDisplayName(candidate.animal);
@@ -8660,13 +8767,14 @@ function trueCreateIncomingRequestEvent(candidate,today){
     event.scale=trueEventScaleFor('animal-request',candidate.animal,rel);
     events.items.unshift(event);events.lastGeneratedDate=today;trueEventRememberFamily(events,'animal-request');
     addTrueActivity({type:'opportunity',title:event.title,message:event.message,actionLabel:'View event',action:'event',eventId:event.id});
-    requestAnimationFrame(()=>openTrueEventDialog(event.id));
+    trueQueueEventPresentation(event);
     return event;
 }
 function trueAnimalRequestSendPopulation(event,population){
     if(!event||event.kind!=='animal-request'||event.status!=='active')return false;
-    const animal=(state.animals||[]).find(a=>String(a.id)===String(event.playerAnimalId));
-    if(!animal)return false;
+    const animal=trueEventRequestedPlayerAnimal(event);
+    if(!animal){event.status='unavailable';event.resolvedDate=normaliseTrueCalendarState().date;return false;}
+    event.playerAnimalId=animal.id;
     const send=normaliseTruePopulationCounts(population);
     const available=trueTransferAvailableCounts(animal);
     const total=send.males+send.females+send.unknown;
@@ -8691,8 +8799,9 @@ function trueAnimalRequestSendPopulation(event,population){
     return true;
 }
 function trueAcceptAnimalRequestEvent(event){
-    const animal=(state.animals||[]).find(a=>String(a.id)===String(event.playerAnimalId));
-    if(!animal){event.status='unavailable';closeTrueEventDialog();renderTrueSimulationPanel();return false;}
+    const animal=trueEventRequestedPlayerAnimal(event);
+    if(!animal){event.status='unavailable';event.resolvedDate=normaliseTrueCalendarState().date;closeTrueEventDialog();renderTrueSimulationPanel();return false;}
+    event.playerAnimalId=animal.id;
     let opponentIndex=null;
     const record=(state.realZooData?.zoos||[]).find(item=>realZooHoldingKey(item)===event.sourceKey);
     if(record){
@@ -8714,7 +8823,7 @@ function trueAcceptAnimalRequestEvent(event){
         offeredDate:normaliseTrueCalendarState().date,proposalSubmitted:false,proposalSubmittedDate:null,
         proposalStatus:'draft',responseDueDate:null
     }:null;
-    event.status='engaged';event.engagedDate=normaliseTrueCalendarState().date;
+    event.status='engaged';event.respondedDate=normaliseTrueCalendarState().date;event.engagedDate=normaliseTrueCalendarState().date;
     trueRelationshipRecord(event.profile,event.sourceKey,'request-discussed',`Agreed to discuss a request for ${animalDisplayName(animal)}.`,{trust:0,familiarity:1});
     addTrueActivity({type:'information',title:'Request accepted',message:`You agreed to discuss sending ${animalDisplayName(animal)} to ${event.profile?.name||'the requesting zoo'}.`});
     closeTrueEventDialog();renderTrade();writeAutoResumeSnapshot?.(true);return true;
@@ -8767,7 +8876,51 @@ function trueEventEnsureBreedingPopulation(candidate){
     }
     return trueWorldPopulation(candidate.record,candidate.animal,{create:false});
 }
+function trueEventOwnedSpeciesRelevance(animal,{allowProxy=false}={}){
+    const targetKey=animalCardKey(animal),targetName=compatibilityAnimalName(animal);
+    const live=(state.animals||[]).filter(a=>a&&!a.trueArrivalPending&&trueAnimalPopulationTotal(a)>0);
+    const exact=live.find(a=>animalCardKey(a)===targetKey);
+    if(exact)return {kind:'exact',animal:exact};
+    if(!allowProxy||!targetName)return null;
+
+    // Only explicit proxy equivalence groups count as similar husbandry.
+    // Ordinary compatible_pairs and group_links describe mixed-exhibit
+    // compatibility, not interchangeable species husbandry.
+    const proxy=state.compatibilityData?.proxy_compatibility;
+    const groups=proxy?.groups&&typeof proxy.groups==='object'?proxy.groups:{};
+    const complete=new Set(Array.isArray(proxy?.complete_groups)?proxy.complete_groups:[]);
+    for(const groupName of complete){
+        const members=(Array.isArray(groups[groupName])?groups[groupName]:[]).map(compatibilityName).filter(Boolean);
+        if(!members.includes(targetName))continue;
+        const owned=live.find(a=>members.includes(compatibilityAnimalName(a)));
+        if(owned)return {kind:'proxy',animal:owned,groupName};
+    }
+    return null;
+}
+
+function trueEventInformationKindWeight(kind,candidate,events=normaliseTrueEventState()){
+    const base=Math.max(.08,trueEventFamilyPenalty(events,kind));
+    const relevance=trueEventOwnedSpeciesRelevance(candidate?.animal,{allowProxy:true});
+    const owned=relevance?.kind==='exact';
+    const husbandryRelevant=Boolean(relevance);
+    const placeable=!owned&&candidate?.animal&&tradeIncomingHasDestinationAfterOutgoing(candidate.animal,null);
+    // Match the story family to the actual zoo state. Husbandry/advice should
+    // concern animals the player keeps; collection planning is most useful when
+    // it can plausibly open a legal acquisition route. Other network context is
+    // always valid and keeps the event mix broad.
+    if(kind==='programme-update')return husbandryRelevant?base*(owned?1.25:.85):0;
+    if(kind==='husbandry-exchange')return husbandryRelevant?base*(owned?1.55:1.05):0;
+    if(kind==='population-advice')return husbandryRelevant?base*(owned?1.35:.9):0;
+    if(kind==='collection-planning')return placeable?base*1.5:base*.22;
+    // A publicity story says this zoo is publicly associated with the species.
+    // That only makes sense for a population the player currently keeps.
+    if(kind==='publicity-feature')return owned?base*1.05:0;
+    return base;
+}
 function trueCreateWorldNewsEvent(candidate,today,kind){
+    const speciesRelevance=trueEventOwnedSpeciesRelevance(candidate?.animal,{allowProxy:true});
+    if(kind==='publicity-feature'&&speciesRelevance?.kind!=='exact')return null;
+    if(['programme-update','husbandry-exchange','population-advice'].includes(kind)&&!speciesRelevance)return null;
     const events=normaliseTrueEventState(),rel=trueRelationshipForProfile(candidate.profile,candidate.sourceKey);
     const species=animalDisplayName(candidate.animal),zoo=candidate.profile?.name||'A partner zoo';
     let duration=10,scale='Routine';
@@ -8777,18 +8930,26 @@ function trueCreateWorldNewsEvent(candidate,today,kind){
     const copy=trueEventCatalogueEntry('world_news',kind)||{};
     const values={zoo,species};
     const title=trueEventTemplate(copy.title||'Zoo network update',values);
-    const message=trueEventTemplate(copy.message||`${zoo} has shared an update about ${species}.`,values);
-    const detail=trueEventTemplate(copy.detail||'The contact has been recorded by your collection team.',values);
+    let message=trueEventTemplate(copy.message||`${zoo} has shared an update about ${species}.`,values);
+    let detail=trueEventTemplate(copy.detail||'The contact has been recorded by your collection team.',values);
+    if(speciesRelevance?.kind==='proxy'&&['programme-update','husbandry-exchange','population-advice'].includes(kind)){
+        const proxySpecies=animalDisplayName(speciesRelevance.animal);
+        detail=`${detail} They contacted us because our ${proxySpecies} is managed in a similar way, so the husbandry experience is relevant.`;
+        values.proxy_species=proxySpecies;
+    }
     const expiry=trueDateObject(today);expiry.setUTCDate(expiry.getUTCDate()+duration);
     const event={id:`ze-${events.nextId++}`,kind,status:'active',createdDate:today,expiresDate:trueDateString(expiry),
         independentEvent:true,informational:true,sourceKey:candidate.sourceKey,profile:cloneForSave(candidate.profile),
         animal:cloneForSave(candidate.animal),population:null,scale,title,message,detail};
-    const relationshipImpact=kind==='network-contact'?{trust:1,familiarity:1}
-        :kind==='programme-update'?{trust:.5,familiarity:1}
-        :kind==='husbandry-exchange'?{trust:.5,familiarity:.75}
-        :kind==='publicity-feature'?{trust:.25,familiarity:.5}
-        :kind==='population-advice'?{trust:.75,familiarity:.75}
-        :{trust:.25,familiarity:.75};
+    // Mere contact builds familiarity, not trust. Trust is reserved for actual
+    // cooperation: practical husbandry/advice exchanges may move it slightly,
+    // while publicity, planning and general network news do not manufacture it.
+    const relationshipImpact=kind==='husbandry-exchange'?{trust:.25,familiarity:.75}
+        :kind==='population-advice'?{trust:.25,familiarity:.75}
+        :kind==='network-contact'?{trust:0,familiarity:1}
+        :kind==='programme-update'?{trust:0,familiarity:1}
+        :kind==='publicity-feature'?{trust:0,familiarity:.5}
+        :{trust:0,familiarity:.75};
     trueRelationshipRecord(candidate.profile,candidate.sourceKey,`event-${kind}`,`${zoo} shared a ${kind.replaceAll('-',' ')} concerning ${species}.`,relationshipImpact);
 
     // Informational events must alter simulation state as well as relationship history.
@@ -8809,8 +8970,12 @@ function trueCreateWorldNewsEvent(candidate,today,kind){
         event.impactText=`The exchange has strengthened your working relationship with ${zoo}. You do not currently keep ${species}, so its husbandry advice has no breeding effect in your collection.`;
     }
     events.items.unshift(event);events.lastGeneratedDate=today;trueEventRememberFamily(events,kind);
+    trueEventEnsurePartnerTab(event);
     addTrueActivity({type:'information',title,message,actionLabel:'View event',action:'event',eventId:event.id});
-    requestAnimationFrame(()=>openTrueEventDialog(event.id));return event;
+    // Ambient network news should make the zoo feel alive without repeatedly
+    // taking control away from the player. It remains unread in Activity and can
+    // be opened on demand; only events that need a decision interrupt play.
+    return event;
 }
 function trueScheduleEventFollowUp(event,days,type='event-follow-up'){
     const cal=normaliseTrueCalendarState(),date=addTrueDays(cal.date,days);
@@ -8837,26 +9002,49 @@ function trueResolveEventFollowUp(eventId){
     if(!record)return;
     const events=normaliseTrueEventState(),today=normaliseTrueCalendarState().date;
     const rel=trueRelationshipForProfile(original.profile,original.sourceKey);
-    const roll=seededRoll(`event-follow-up|${original.id}|${today}`).roll;
-    if(roll<Math.min(.72,.48+Math.max(0,Number(rel.trust)||0)*.003)){
-        const sourceEntry=trueWorldPopulation(record,original.animal,{create:true,reason:'collection planning follow-up'});
-        const sourcePop=normaliseTrueAnimalPopulation(sourceEntry.population);
-        const offeredPop=sourcePop.unknown>0?{males:0,females:0,unknown:1}:sourcePop.males>1?{males:1,females:0,unknown:0}:sourcePop.females>1?{males:0,females:1,unknown:0}:{males:0,females:0,unknown:1};
-        const narrative=trueEventNarrative({profile:original.profile,animal:original.animal,population:offeredPop,reason:'population management'},'transfer-opportunity',rel);
-        const expiry=trueDateObject(today);expiry.setUTCDate(expiry.getUTCDate()+14);
-        const event={id:`ze-${events.nextId++}`,kind:'transfer-opportunity',status:'active',createdDate:today,expiresDate:trueDateString(expiry),
-            independentEvent:true,sourceKey:original.sourceKey,profile:cloneForSave(original.profile),animal:cloneForSave(original.animal),
-            population:cloneForSave(offeredPop),scale:trueEventScaleFor('transfer-opportunity',original.animal,rel),
-            title:narrative.title,message:`Following their earlier update, ${original.profile?.name||'the zoo'} is now ready to discuss placing ${animalDisplayName(original.animal)}.`,detail:narrative.detail,
-            impactText:`The earlier contact has now developed into a real transfer opportunity. Your response can change the population outcome and your relationship with ${original.profile?.name||'the zoo'}.`,
-            parentEventId:original.id};
-        events.items.unshift(event);events.lastGeneratedDate=today;trueEventRememberFamily(events,'transfer-opportunity');
-        addTrueActivity({type:'opportunity',title:'Earlier contact develops',message:event.message,actionLabel:'View event',action:'event',eventId:event.id});
-        requestAnimationFrame(()=>openTrueEventDialog(event.id));
-    }else{
-        addTrueActivity({type:'information',title:'Collection plans settled',message:`${original.profile?.name||'The zoo'} has decided to retain its ${animalDisplayName(original.animal)} population after the plans it discussed with you earlier.`});
-        trueRelationshipRecord(original.profile,original.sourceKey,'follow-up',`Kept in contact about ${animalDisplayName(original.animal)} collection planning.`,{familiarity:.5});
+
+    if(original.kind==='population-advice'){
+        const animal=(state.animals||[]).find(a=>a&&!a.trueArrivalPending&&original.animal&&animalCardKey(a)===animalCardKey(original.animal));
+        if(!animal)return;
+        const surplus=truePlayerPopulationSurplus(animal);
+        const easing=Boolean(surplus);
+        trueEventAddModifier({
+            type:'birth-chance-multiplier',value:easing?.82:1.12,untilDate:addTrueDays(today,7),
+            animalKey:animalCardKey(animal),sourceEventId:original.id,
+            text:easing
+                ?`${original.profile?.name||'A partner zoo'} has helped refine a short-term population-management plan.`
+                :`${original.profile?.name||'A partner zoo'} has shared follow-up breeding-management advice.`
+        });
+        trueRelationshipRecord(original.profile,original.sourceKey,'population-advice-follow-up',
+            `Provided practical follow-up population advice for ${animalDisplayName(animal)}.`,{trust:.5,familiarity:.5});
+        addTrueActivity({type:'information',title:'Population advice followed up',message:easing
+            ?`${original.profile?.name||'The partner zoo'} has helped your team refine management of the ${animalDisplayName(animal)} population; breeding pressure will be lower for the next seven zoo days.`
+            :`${original.profile?.name||'The partner zoo'} has followed up with breeding-management advice for ${animalDisplayName(animal)}; conditions are slightly more favourable for the next seven zoo days.`});
+        return;
     }
+
+    if(original.kind!=='collection-planning')return;
+    // Collection-planning follow-ups become transfers only when the animal is
+    // still genuinely placeable. Never create an offer that immediately violates
+    // duplicate/destination rules merely because the earlier story scheduled one.
+    if(!original.animal||!tradeIncomingHasDestinationAfterOutgoing(original.animal,null))return;
+    const roll=seededRoll(`event-follow-up|${original.id}|${today}`).roll;
+    if(roll>=Math.min(.72,.48+Math.max(0,Number(rel.trust)||0)*.003))return;
+    const sourceEntry=trueWorldPopulation(record,original.animal,{create:true,reason:'collection planning follow-up'});
+    const sourcePop=normaliseTrueAnimalPopulation(sourceEntry.population);
+    const offeredPop=sourcePop.unknown>0?{males:0,females:0,unknown:1}:sourcePop.males>1?{males:1,females:0,unknown:0}:sourcePop.females>1?{males:0,females:1,unknown:0}:null;
+    if(!offeredPop)return;
+    const narrative=trueEventNarrative({profile:original.profile,animal:original.animal,population:offeredPop,reason:'population management'},'transfer-opportunity',rel);
+    const expiry=trueDateObject(today);expiry.setUTCDate(expiry.getUTCDate()+14);
+    const event={id:`ze-${events.nextId++}`,kind:'transfer-opportunity',status:'active',createdDate:today,expiresDate:trueDateString(expiry),
+        independentEvent:true,sourceKey:original.sourceKey,profile:cloneForSave(original.profile),animal:cloneForSave(original.animal),
+        population:cloneForSave(offeredPop),scale:trueEventScaleFor('transfer-opportunity',original.animal,rel),
+        title:narrative.title,message:`Following their earlier collection planning, ${original.profile?.name||'the zoo'} is now ready to discuss placing ${animalDisplayName(original.animal)}.`,detail:narrative.detail,
+        impactText:`The earlier collection-planning contact has developed into a real transfer opportunity. Your response can change the population outcome and your relationship with ${original.profile?.name||'the zoo'}.`,
+        parentEventId:original.id,followUpEvent:true};
+    events.items.unshift(event);events.lastGeneratedDate=today;trueEventRememberFamily(events,'transfer-opportunity');
+    addTrueActivity({type:'opportunity',title:'Collection plan develops',message:event.message,actionLabel:'View event',action:'event',eventId:event.id});
+    trueQueueEventPresentation(event);
 }
 function normaliseTrueHusbandryConcernState(){
     if(!state.trueHusbandryConcerns||typeof state.trueHusbandryConcerns!=='object'||Array.isArray(state.trueHusbandryConcerns))state.trueHusbandryConcerns={};
@@ -9029,7 +9217,7 @@ function trueCreateHusbandryConcernEvent(animal,condition,today,incidentCount=1)
     }
     events.items.unshift(event);events.lastGeneratedDate=today;
     addTrueActivity({type:'information',title,message,actionLabel:'View event',action:'event',eventId:event.id});
-    requestAnimationFrame(()=>openTrueEventDialog(event.id));return event;
+    trueQueueEventPresentation(event);return event;
 }
 function trueResolveRepairedHusbandryEvents(animal,today){
     const events=normaliseTrueEventState();
@@ -9190,7 +9378,7 @@ function trueBirthLitterSize(animal,today){
         if(Array.isArray(raw))maxOffspring=Math.max(maxOffspring,Math.max(1,Math.round(Number(raw[1]??raw[0])||1)));
         else if(Number.isFinite(Number(raw)))maxOffspring=Math.max(maxOffspring,Math.max(1,Math.round(Number(raw))));
     }
-    // Keep ordinary births modest even for colony profiles; explicit profile
+    // Keep ordinary births modest even for large-group profiles; explicit profile
     // offspring ranges can still create litters/clutches up to their stated cap.
     const cap=Math.min(6,maxOffspring),roll=seededRoll(`player-birth-size|${animalCardKey(animal)}|${today}|${animal.id}`).roll;
     return 1+Math.floor(roll*cap);
@@ -9208,7 +9396,7 @@ function trueCreatePlayerBirthEvent(animal,males,females,today){
     events.items.unshift(event);events.lastGeneratedDate=today;
     animal.trueRecentBirthDate=today;animal.trueRecentBirthUntil=expiry;
     addTrueActivity({type:'information',title:event.title,message:event.message,actionLabel:'View event',action:'event',eventId:event.id,animalId:animal.id,glowAnimal:true});
-    requestAnimationFrame(()=>openTrueEventDialog(event.id));
+    trueQueueEventPresentation(event);
     return event;
 }
 function trueBirthResultStatus(animal,males=0,females=0){
@@ -9379,7 +9567,7 @@ function trueCreateSurplusReliefEvent(candidate,today){
         impactText:trueEventTemplate(copy.impact||`Sending the suggested individuals will reduce your ${species} population toward a suitable group size and strengthen your working relationship with ${zoo}.`,values)};
     events.items.unshift(event);events.lastGeneratedDate=today;trueEventRememberFamily(events,'animal-request');
     addTrueActivity({type:'opportunity',title:event.title,message:event.message,actionLabel:'View event',action:'event',eventId:event.id});
-    requestAnimationFrame(()=>openTrueEventDialog(event.id));return event;
+    trueQueueEventPresentation(event);return event;
 }
 function truePopulationInterventionSeverity(animal){
     if(!animal)return 0;
@@ -9444,7 +9632,7 @@ function trueCreateRelationshipPopulationHelpEvent(candidate,today){
         impactText:`Accepting this offer can repair the sex structure of your ${species} population, while your response will also feed back into your relationship with ${zoo}.`};
     events.items.unshift(event);events.lastGeneratedDate=today;trueEventRememberFamily(events,'population-cooperation');
     addTrueActivity({type:'opportunity',title:event.title,message:event.message,actionLabel:'View event',action:'event',eventId:event.id});
-    requestAnimationFrame(()=>openTrueEventDialog(event.id));return event;
+    trueQueueEventPresentation(event);return event;
 }
 function trueMaybeGenerateRelationshipPopulationHelp(today){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo||trueEventBlockingItems().length>=3)return null;
@@ -9466,16 +9654,124 @@ function trueMaybeGenerateRelationshipPopulationHelp(today){
 function trueEventRollScheduleForDate(date=normaliseTrueCalendarState().date){
     const events=normaliseTrueEventState();
     if(!events.dailyRollSchedules||typeof events.dailyRollSchedules!=='object'||Array.isArray(events.dailyRollSchedules))events.dailyRollSchedules={};
-    if(!Array.isArray(events.dailyRollSchedules[date])||events.dailyRollSchedules[date].length!==3){
-        const windows=[[600,759],[760,919],[920,1079]];
-        events.dailyRollSchedules[date]=windows.map((range,i)=>{
-            const span=range[1]-range[0]+1;
-            return range[0]+Math.floor(seededRoll(`true-event-time|${state.zooName}|${date}|${i}`).roll*span);
-        }).sort((a,b)=>a-b);
+    if(!events.firstScheduledEventDate)events.firstScheduledEventDate=date;
+    if(!Array.isArray(events.dailyRollSchedules[date])||events.dailyRollSchedules[date].length!==2){
+        const firstGameDay=date===events.firstScheduledEventDate;
+        let firstMinute;
+        if(firstGameDay){
+            firstMinute=600; // The first event of a new True zoo is always 10:00.
+        }else{
+            const firstRange=[570,750]; // 09:30-12:30
+            firstMinute=firstRange[0]+Math.floor(seededRoll(`true-event-time-v3|${state.zooName}|${date}|0`).roll*(firstRange[1]-firstRange[0]+1));
+        }
+        const secondRange=[840,1080]; // 14:00-18:00
+        let secondMinute=secondRange[0]+Math.floor(seededRoll(`true-event-time-v3|${state.zooName}|${date}|1`).roll*(secondRange[1]-secondRange[0]+1));
+        secondMinute=Math.max(secondMinute,firstMinute+120);
+        secondMinute=Math.min(1080,secondMinute);
+        events.dailyRollSchedules[date]=[firstMinute,secondMinute];
         const keys=Object.keys(events.dailyRollSchedules).sort();
         while(keys.length>14)delete events.dailyRollSchedules[keys.shift()];
     }
     return events.dailyRollSchedules[date];
+}
+
+function trueEventAbsoluteMinute(date=normaliseTrueCalendarState().date,minuteOfDay=null){
+    const d=trueDateObject(date);
+    const day=Math.floor(d.getTime()/86400000);
+    const cal=normaliseTrueCalendarState();
+    const minute=minuteOfDay==null?((Number(cal.hour)||0)*60+(Number(cal.minute)||0)):Number(minuteOfDay);
+    return day*1440+Math.max(0,minute||0);
+}
+function trueEventEnsurePartnerTab(event){
+    // Visiting other zoos is intentionally disabled in True mode for now.
+    // Keep the partner on the event/relationship itself, but do not expose it
+    // as a header quick-tab.
+    if(state.gameMode==='true')return;
+    const name=String(event?.profile?.name||'').trim();
+    if(name&&typeof rememberVisitedZooQuickTab==='function')rememberVisitedZooQuickTab(name);
+    else if(typeof renderVisitedZooQuickTabs==='function')renderVisitedZooQuickTabs();
+}
+function trueQueueEventPresentation(event,scheduledMinute=null){
+    if(!event?.id)return false;
+    const events=normaliseTrueEventState();
+    if(!Array.isArray(events.presentationQueue))events.presentationQueue=[];
+    if(!events.presentedEventIds||typeof events.presentedEventIds!=='object'||Array.isArray(events.presentedEventIds))events.presentedEventIds={};
+    trueEventEnsurePartnerTab(event); // The zoo tab exists before the modal can open.
+    if(events.presentedEventIds[event.id]||
+        document.getElementById('trueEventDialogOverlay')?.dataset?.eventId===String(event.id)||
+        events.presentationQueue.some(row=>String(row.id)===String(event.id)))return false;
+    events.presentationQueue.push({id:event.id,scheduledAbs:trueEventAbsoluteMinute(event.createdDate,scheduledMinute)});
+    // Some event producers finish inserting the event immediately after this call.
+    // Defer consumption by one task so the authoritative item exists before lookup.
+    setTimeout(()=>trueProcessEventPresentationQueue(),0);
+    return true;
+}
+function trueProcessEventPresentationQueue(){
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return false;
+    const events=normaliseTrueEventState();
+    if(!Array.isArray(events.presentationQueue)||!events.presentationQueue.length)return false;
+    if(document.getElementById('trueEventDialogOverlay'))return false;
+    if(!events.presentedEventIds||typeof events.presentedEventIds!=='object'||Array.isArray(events.presentedEventIds))events.presentedEventIds={};
+    const now=trueEventAbsoluteMinute();
+    const last=Number(events.lastEventPopupAbsMinute);
+    if(Number.isFinite(last)&&now-last<120)return false;
+    while(events.presentationQueue.length){
+        const row=events.presentationQueue[0];
+        if(!row){events.presentationQueue.shift();continue;}
+        if(Number.isFinite(Number(row.scheduledAbs))&&now<Number(row.scheduledAbs))return false;
+        events.presentationQueue.shift();
+        if(events.presentedEventIds[row.id])continue;
+        const event=trueEventById(row.id);
+        if(!event||!['active','engaged'].includes(event.status))continue;
+        trueEventEnsurePartnerTab(event);
+        requestAnimationFrame(()=>{
+            const opened=openTrueEventDialog(event.id);
+            if(opened){
+                const liveEvents=normaliseTrueEventState();
+                if(!liveEvents.presentedEventIds||typeof liveEvents.presentedEventIds!=='object'||Array.isArray(liveEvents.presentedEventIds))liveEvents.presentedEventIds={};
+                liveEvents.presentedEventIds[event.id]=trueEventAbsoluteMinute();
+                liveEvents.lastEventPopupAbsMinute=trueEventAbsoluteMinute();
+            }else{
+                // Opening failed or the event changed state before the frame.
+                // Do not consume it permanently; Activity must remain able to retry.
+                const liveEvent=trueEventById(event.id);
+                if(liveEvent&&['active','engaged'].includes(liveEvent.status)&&
+                   !normaliseTrueEventState().presentationQueue.some(q=>String(q.id)===String(event.id))){
+                    normaliseTrueEventState().presentationQueue.unshift(row);
+                }
+            }
+        });
+        return true;
+    }
+    return false;
+}
+function trueGenerateDailyEventSlot(slotIndex=0){
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return null;
+    const today=normaliseTrueCalendarState().date,events=normaliseTrueEventState();
+    const todaysEvents=(events.items||[]).filter(event=>event?.createdDate===today);
+    if(todaysEvents.length>=2)return null;
+    trueInvalidateEventOpportunitySnapshot();
+    // Keep population-management help ahead of generic news, just as the old
+    // start-of-day pass did, but evaluate it when an event slot actually arrives.
+    let event=trueMaybeGenerateSurplusRelief(today);
+    if(!event)event=trueMaybeGenerateRelationshipPopulationHelp(today);
+    if(!event)event=trueGenerateRelationshipEventForDay(slotIndex);
+    // The slot is guaranteed: when no contextual roll develops into something,
+    // create a lightweight zoo/network story instead of leaving the day empty.
+    if(!event)event=trueEnsureDailyEvent(today,true,`slot-${slotIndex}`);
+    if(event){
+        const signature=`${event.kind}|${animalCardKey(event.animal)}`;
+        const duplicate=(events.items||[]).some(other=>other!==event&&other?.createdDate===today&&
+            `${other.kind}|${animalCardKey(other.animal)}`===signature);
+        if(duplicate){
+            event.status='superseded';
+            event.resolvedDate=today;
+            return null;
+        }
+        const schedule=trueEventRollScheduleForDate(today);
+        trueQueueEventPresentation(event,schedule[slotIndex]);
+    }
+    return event;
 }
 function trueProcessTimedEventRolls(){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return;
@@ -9487,7 +9783,7 @@ function trueProcessTimedEventRolls(){
     for(let i=0;i<schedule.length;i++){
         if(done.has(i)||minute<schedule[i])continue;
         done.add(i);
-        trueGenerateRelationshipEventForDay(i);
+        trueGenerateDailyEventSlot(i);
     }
     events.processedTimedRolls[date]=[...done];
     const keys=Object.keys(events.processedTimedRolls).sort();
@@ -9500,12 +9796,12 @@ function trueGenerateRelationshipEventForDay(rollIndex=0){
     if(trueEventBlockingItems().length>=3)return null;
 
     const days=Math.max(0,trueDaysBetween(events.lastGeneratedDate||today,today));
-    const chance=Math.min(.62,.08+days*.045);
+    const chance=Math.min(.82,.48+days*.06);
     if(seededRoll(`true-event-day|${state.zooName}|${today}|${rollIndex}`).roll>=chance)return null;
 
     const requestCandidates=trueEventRequestCandidates().filter(c=>!trueEventRecentlyRepeated(events,c));
     const requestRoll=seededRoll(`true-event-direction|${state.zooName}|${today}|${rollIndex}`).roll;
-    const requestChance=.35*trueEventFamilyPenalty(events,'animal-request');
+    const requestChance=.45*trueEventFamilyPenalty(events,'animal-request');
     if(requestCandidates.length&&requestRoll<requestChance){
         let totalRequest=0;
         const weightedRequests=requestCandidates.map(c=>{const rel=trueRelationshipForProfile(c.profile,c.sourceKey);const relationshipWeight=1+(Number(rel.trust)||0)/48+Math.min(1.25,(Number(rel.familiarity)||0)/18);const recencyWeight=trueEventPartnerRecencyWeight(c.sourceKey);const w=Math.max(.1,Number(c.eventWeight)||1)*relationshipWeight*recencyWeight;totalRequest+=w;return {c,w};});
@@ -9528,14 +9824,19 @@ function trueGenerateRelationshipEventForDay(rollIndex=0){
 
     const rel=trueRelationshipForProfile(candidate.profile,candidate.sourceKey);
     const roll=seededRoll(`true-event-world-kind|${candidate.sourceKey}|${animalCardKey(candidate.animal)}|${today}`).roll;
+    const hasAmbientEventToday=(events.items||[]).some(event=>event?.createdDate===today&&event.informational);
     // A substantial share of zoo-network events are context, not immediate
     // acquisition opportunities. Some develop into transfer discussions later.
-    if(roll<.34){
+    if(roll<.20){
+        // One ambient headline per zoo day is enough. Later timed rolls may still
+        // produce a genuinely actionable request/transfer, but not another piece
+        // of routine news competing for the player's attention.
+        if(hasAmbientEventToday)return null;
         const infoKinds=['programme-update','collection-planning','network-contact','husbandry-exchange','publicity-feature','population-advice'];
         // Prefer a different information family when several are valid. This is a
         // pacing preference only: every family remains eligible, so state-aware
         // mechanics are never blocked merely for variety.
-        const weightedInfoKinds=infoKinds.map(kind=>({kind,weight:Math.max(.08,trueEventFamilyPenalty(events,kind))}));
+        const weightedInfoKinds=infoKinds.map(kind=>({kind,weight:trueEventInformationKindWeight(kind,candidate,events)})).filter(row=>row.weight>0);
         const infoTotal=weightedInfoKinds.reduce((sum,row)=>sum+row.weight,0);
         let infoPick=seededRoll(`true-event-info-kind|${candidate.sourceKey}|${today}`).roll*infoTotal;
         let infoKind=weightedInfoKinds[0].kind;
@@ -9581,7 +9882,7 @@ function trueGenerateRelationshipEventForDay(rollIndex=0){
     };
     events.items.unshift(event);events.lastGeneratedDate=today;trueEventRememberFamily(events,kind);
     addTrueActivity({type:'opportunity',title:event.title,message:event.message,actionLabel:'View event',action:'event',eventId:event.id});
-    requestAnimationFrame(()=>openTrueEventDialog(event.id));
+    trueQueueEventPresentation(event);
     return event;
 }
 
@@ -9598,7 +9899,7 @@ function trueAcceptIndependentTransferEvent(event){
         offeredDate:normaliseTrueCalendarState().date,proposalSubmitted:false,proposalSubmittedDate:null,
         proposalStatus:'draft',responseDueDate:null
     };
-    event.status='engaged';event.engagedDate=normaliseTrueCalendarState().date;
+    event.status='engaged';event.respondedDate=normaliseTrueCalendarState().date;event.engagedDate=normaliseTrueCalendarState().date;
     trueRelationshipRecord(event.profile,event.sourceKey,'event-engaged',`Responded to ${event.title}.`,{familiarity:1});
     closeTrueEventDialog();
     renderTrade();
@@ -9647,6 +9948,88 @@ function trueResolvePopulationPressureChoice(event,choice){
     return true;
 }
 
+
+const TRUE_EVENT_POPUP_COOLDOWN_MINUTES = 120;
+
+function trueEventReplyChoices(event){
+  if(!event) return [];
+  const type=String(event.type||event.kind||event.eventType||"");
+  const choices={
+    "programme-update":[
+      {label:"Ask them to keep us posted",effect:"They'll keep us in the loop. Contact with the zoo improves a little.",relationship:1},
+      {label:"Offer to compare notes",effect:"The teams swap a few notes. Contact with the zoo improves.",relationship:2},
+      {label:"Leave the door open",effect:"No promises, but the line stays open.",relationship:0}
+    ],
+    "collection-planning":[
+      {label:"Ask what they have in mind",effect:"You get a clearer idea of their plans. Contact with the zoo improves.",relationship:2},
+      {label:"Mention our collection plans",effect:"Both teams now know where cooperation might fit later.",relationship:1},
+      {label:"Keep in touch",effect:"The conversation stays open without committing to anything.",relationship:0}
+    ],
+    "network-contact":[
+      {label:"Ask what they have in mind",effect:"They share a little more about what they may need. Contact with the zoo improves.",relationship:2},
+      {label:"Tell them we may be interested",effect:"They know we are open to hearing more if their plans develop. Contact with the zoo improves.",relationship:1},
+      {label:"Leave the door open",effect:"Nothing changes today, but they know they can call us.",relationship:0}
+    ],
+    "husbandry-exchange":[
+      {label:"Send our notes back",effect:"Both keeper teams come away with something useful. The relationship improves.",relationship:2},
+      {label:"Try their approach",effect:"The keepers will try the useful parts with our own animals.",relationship:1},
+      {label:"Thank them",effect:"The notes are filed for the team and the contact stays warm.",relationship:0}
+    ],
+    "publicity-feature":[
+      {label:"Share their story",effect:"The story travels a little further and visitor interest gets a small extra lift.",relationship:1,visitor:1},
+      {label:"Thank their team",effect:"The publicity still helps, and the contact with the zoo improves.",relationship:2},
+      {label:"Let it run",effect:"The story does its job without any extra push.",relationship:0}
+    ],
+    "population-advice":[
+      {label:"Compare our plans",effect:"The teams have a useful talk about the population. Cooperation improves.",relationship:2},
+      {label:"Ask for their experience",effect:"We pick up a few practical ideas and strengthen the contact.",relationship:1},
+      {label:"Keep it informal",effect:"No plan is made, but the conversation stays open.",relationship:0}
+    ]
+  };
+  return choices[type]||[];
+}
+
+function trueEventChoiceApply(event,choice){
+    if(!event||!choice)return;
+    const zoo=event.profile?.name||event.zoo||event.zooName||event.sourceZoo||'the zoo';
+    const relGain=Math.max(0,Number(choice.relationship)||0);
+    if(relGain>0&&event.profile&&event.sourceKey){
+        trueRelationshipRecord(event.profile,event.sourceKey,'event-reply',
+            `${state.zooName||'Your zoo'} replied to ${event.title}.`,
+            {trust:relGain>=2?.35:.1,familiarity:relGain});
+    }
+    if(Number(choice.visitor)>0){
+        trueEventAddModifier({
+            type:'attendance-multiplier',value:1+Math.min(.08,Number(choice.visitor)*.025),
+            untilDate:addTrueDays(normaliseTrueCalendarState().date,2),
+            sourceEventId:event.id,text:`The response to ${zoo} brought the zoo a little extra attention.`
+        });
+    }
+    event.playerReply=choice.label;
+    event.playerReplyEffect=choice.effect||'Noted.';
+    event.status='acknowledged';
+    event.resolvedDate=normaliseTrueCalendarState().date;
+    addTrueActivity({type:'information',title:'Reply sent',message:`${choice.label}. ${event.playerReplyEffect}`});
+    renderVisitedZooQuickTabs();
+    writeAutoResumeSnapshot?.(true);
+}
+
+function trueEventResponseStatus(event){
+    if(!event)return null;
+    const kind=String(event.kind||'');
+    const actionable=['transfer-opportunity','animal-request','population-cooperation','surplus-relief','population-pressure'].includes(kind);
+    if(!actionable)return null;
+    const status=String(event.status||'active');
+    const reply=String(event.playerReply||event.response||event.decision||'').trim();
+    if(['declined','rejected'].includes(status))return {label:'Declined',tone:'done',detail:reply||'You declined this proposal.'};
+    if(['accepted','completed','resolved'].includes(status))return {label:'Accepted',tone:'done',detail:reply||'You accepted this proposal.'};
+    if(['engaged','pending-partner','waiting','awaiting-partner'].includes(status))
+        return {label:'Waiting for the other zoo',tone:'waiting',detail:reply?`Your response: ${reply}`:'Your response has been sent.'};
+    if(reply||event.respondedDate||event.responseDate)
+        return {label:'Response sent',tone:'waiting',detail:reply?`Your response: ${reply}`:'Your response has been sent.'};
+    const due=event.expiresDate||event.respondBy||event.deadlineDate||'';
+    return {label:'Awaiting your response',tone:'action',detail:due?`Respond by ${formatTrueDateLabel(due)}.`:'A response is expected.'};
+}
 function openTrueEventDialog(id){
     const event=trueEventById(id);if(!event)return false;
     // A significant zoo-network event should be readable before accelerated
@@ -9659,17 +10042,26 @@ function openTrueEventDialog(id){
     // Events are deliberately presented as side cards rather than blocking
     // centre-screen modals: the zoo remains visible while the player considers them.
     overlay.style.cssText='position:fixed;inset:0;z-index:100050;pointer-events:none;';
+    overlay.className='true-event-dialog-overlay';
     const activityRect=document.getElementById('trueSimulationPanel')?.getBoundingClientRect();
     const card=document.createElement('div');
     const cardWidth=Math.min(560,Math.max(360,window.innerWidth*.34));
     const right=Math.max(14,window.innerWidth-(activityRect?.right||window.innerWidth)+14);
     const top=Math.max(86,Math.min(window.innerHeight-300,(activityRect?.bottom||76)+12));
-    card.style.cssText=`position:absolute;right:${right}px;top:${top}px;width:${cardWidth}px;max-width:calc(100vw - 28px);max-height:calc(100vh - ${top+16}px);overflow:auto;pointer-events:auto;background:#f5f0e5;color:#2b251d;border:1px solid rgba(70,58,39,.42);border-radius:14px;box-shadow:0 14px 38px rgba(0,0,0,.26);padding:22px;box-sizing:border-box;`;
+    card.className='true-event-dialog-card';
+    const eventDark=document.body.classList.contains('zoo-dark-mode');
+    card.style.cssText=`position:absolute;right:${right}px;top:${top}px;width:${cardWidth}px;max-width:calc(100vw - 28px);max-height:calc(100vh - ${top+16}px);overflow:auto;pointer-events:auto;background:${eventDark?'#302f2b':'#eee3c4'};color:${eventDark?'#eee6d3':'#554a38'};border:1px solid ${eventDark?'#706a5d':'#9d8e6e'};border-radius:8px;box-shadow:0 10px 34px rgba(0,0,0,.32);padding:18px 20px 16px;box-sizing:border-box;font:600 13px/1.4 Arial,sans-serif;`;
     const isPlayerBirth=event.kind==='player-zoo-birth';
     const isDevelopment=Boolean(event.developmentEvent);
     const rel=(isPlayerBirth||isDevelopment)?{trust:0,familiarity:0,meaningfulTransfers:0,categoryCooperation:{}}:trueRelationshipForProfile(event.profile,event.sourceKey);
     const isRequest=event.kind==='animal-request';
-    const requestedPlayerAnimal=isRequest?(state.animals||[]).find(a=>String(a.id)===String(event.playerAnimalId)):null;
+    const requestedPlayerAnimal=isRequest?trueEventRequestedPlayerAnimal(event):null;
+    if(isRequest&&event.status==='active'&&!requestedPlayerAnimal){
+        event.status='unavailable';event.resolvedDate=normaliseTrueCalendarState().date;
+        event.resolution=`The requested ${animalDisplayName(event.animal)} population is no longer held by your zoo, so the request was withdrawn.`;
+        renderTrueSimulationPanel();writeAutoResumeSnapshot?.(true);return false;
+    }
+    if(requestedPlayerAnimal)event.playerAnimalId=requestedPlayerAnimal.id;
     const active=event.status==='active'&&(event.informational?true:(isRequest?!!requestedPlayerAnimal:(event.independentEvent?true:!!listing&&listing.status==='available')));
     const species=event.animal?animalDisplayName(event.animal):'';
     const specialties=trueRelationshipSpecialties(rel);
@@ -9686,27 +10078,39 @@ function openTrueEventDialog(id){
     // Informational network updates concern a species/population in general.
     // A null population means no animals are on offer, so never render it as
     // the misleading mechanical "0.0" population notation.
+    const isKeeperUpdate=Boolean(event.dailyUpdateKey);
     const subjectLine=event.animal
-        ?`<div style="font-size:17px;font-weight:850;margin-bottom:5px">${escapeHtml(species)}${event.population?` · ${escapeHtml(truePopulationNotation(event.population))}`:''}</div>`
+        ?`<div style="font-size:17px;font-weight:850;margin-bottom:8px">${escapeHtml(species)}${event.population?` · ${escapeHtml(truePopulationNotation(event.population))}`:''}</div>`
         :'';
-    let footer;
-    if(isPlayerBirth)footer='The birth has already been added to this population.';
-    else if(isDevelopment)footer=`Development status: ${event.status==='resolved'?'completed':event.status==='expired'?'notice archived':'approval available'}.`;
-    else if(event.welfareConcern)footer=event.status==='resolved'
-        ?`Resolution: ${escapeHtml(event.resolution||'Conditions corrected')}.`
-        :'This concern remains tied to the current husbandry conditions for this population.';
-    else if(isRequest)footer=`<strong>Why they want them:</strong> ${escapeHtml(event.requestReason||trueMarketplaceWantLabel(event.want))}`;
-    else if(event.informational)footer='This is an informal network update. No animals are currently being offered.';
-    else footer=`Why offered: ${escapeHtml(listing?.reason||(event.kind==='breeding-success'?'Recent breeding success':event.kind==='emergency-placement'?'A change in collection planning':'Population management'))}<br>Relationship: ${escapeHtml(relationshipContext)}${Number(rel.meaningfulTransfers)>0?` · ${Number(rel.meaningfulTransfers)} previous successful transfer${Number(rel.meaningfulTransfers)===1?'':'s'}`:''}`;
-    card.innerHTML=`<div style="font-size:10px;font-weight:900;letter-spacing:.12em;opacity:.55;margin-bottom:6px">${escapeHtml(trueEventScaleLabel(event.scale||trueEventScaleFor(event.kind,event.animal,rel)))}</div>
+    let footer='';
+    if(!isKeeperUpdate){
+        if(isPlayerBirth)footer='The birth has already been added to this population.';
+        else if(isDevelopment)footer=`Development status: ${event.status==='resolved'?'completed':event.status==='expired'?'notice archived':'approval available'}.`;
+        else if(event.welfareConcern)footer=event.status==='resolved'
+            ?`Resolution: ${escapeHtml(event.resolution||'Conditions corrected')}.`
+            :'This concern remains tied to the current husbandry conditions for this population.';
+        else if(isRequest)footer=`<strong>Why they want them:</strong> ${escapeHtml(event.requestReason||trueMarketplaceWantLabel(event.want))}`;
+        else if(!event.informational)footer=`Why offered: ${escapeHtml(listing?.reason||(event.kind==='breeding-success'?'Recent breeding success':event.kind==='emergency-placement'?'A change in collection planning':'Population management'))}<br>Relationship: ${escapeHtml(relationshipContext)}${Number(rel.meaningfulTransfers)>0?` · ${Number(rel.meaningfulTransfers)} previous successful transfer${Number(rel.meaningfulTransfers)===1?'':'s'}`:''}`;
+    }
+    const topLabel=isKeeperUpdate?'KEEPER UPDATE':trueEventScaleLabel(event.scale||trueEventScaleFor(event.kind,event.animal,rel));
+    const bodyParts=[];
+    if(event.message)bodyParts.push(`<div style="font-size:14px;line-height:1.5;margin-bottom:${event.detail?'8px':'14px'}">${escapeHtml(event.message)}</div>`);
+    if(event.detail&&event.detail!==event.message)bodyParts.push(`<div style="font-size:13px;line-height:1.5;opacity:.82;margin-bottom:14px">${escapeHtml(event.detail)}</div>`);
+    const replyChoices=active&&event.informational?trueEventReplyChoices(event):[];
+    const responseStatus=trueEventResponseStatus(event);
+    const responseStatusHtml=responseStatus?`<div class="true-event-response-status" data-tone="${escapeHtml(responseStatus.tone)}" style="margin:10px 0 4px;padding:8px 10px;border:1px solid rgba(86,72,43,.22);border-radius:7px;background:rgba(255,255,255,.18);font-size:12px;line-height:1.4"><strong>${escapeHtml(responseStatus.label)}</strong>${responseStatus.detail?`<div style="margin-top:2px;opacity:.76">${escapeHtml(responseStatus.detail)}</div>`:''}</div>`:'';
+    const impact=trueEventImpactText(event,rel);
+    const impactHtml=(!replyChoices.length&&impact)?`<div style="font-size:12px;line-height:1.45;opacity:.76;margin-top:4px"><strong>Effect:</strong> ${escapeHtml(impact)}</div>`:'';
+    const footerHtml=footer?`<div style="font-size:12px;opacity:.67;border-top:1px solid rgba(70,58,39,.17);padding-top:12px;margin-top:14px">${footer}</div>`:'';
+    card.innerHTML=`<div style="font-size:10px;font-weight:900;letter-spacing:.12em;opacity:.55;margin-bottom:6px">${escapeHtml(topLabel)}</div>
         <div style="font-size:25px;font-weight:900;margin-bottom:5px">${escapeHtml(event.title)}</div>
-        <div style="font-size:12px;opacity:.62;margin-bottom:18px">${metaLine}</div>
+        ${isKeeperUpdate?'':`<div style="font-size:12px;opacity:.62;margin-bottom:18px">${metaLine}</div>`}
         ${subjectLine}
-        <div style="font-size:14px;line-height:1.5;margin-bottom:14px">${escapeHtml(event.detail||event.message||'')}</div>
-        ${trueEventImpactText(event,rel)?`<div style="font-size:13px;line-height:1.45;margin:0 0 14px;padding:10px 12px;background:rgba(95,118,72,.10);border:1px solid rgba(95,118,72,.22);border-radius:8px"><strong>What this means for the zoo</strong><br>${escapeHtml(trueEventImpactText(event,rel))}</div>`:''}
-        <div style="font-size:12px;opacity:.67;border-top:1px solid rgba(70,58,39,.17);padding-top:12px">${footer}</div>`;
+        ${bodyParts.join('')}
+        ${responseStatusHtml}${impactHtml}
+        ${footerHtml}`;
     const actions=document.createElement('div');actions.style.cssText='display:flex;justify-content:flex-end;gap:8px;margin-top:20px;';
-    const button=(label,fn,primary=false)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.style.cssText=`height:36px;padding:0 13px;border-radius:7px;border:1px solid #88775d;background:${primary?'#54462f':'#fffaf0'};color:${primary?'#fff':'#30291f'};font-weight:800;cursor:pointer;`;b.onclick=fn;return b;};
+    const button=(label,fn,primary=false)=>{const b=document.createElement('button');b.type='button';b.textContent=label;const dark=document.body.classList.contains('zoo-dark-mode');b.style.cssText=`min-height:32px;padding:6px 12px;border-radius:4px;border:1px solid ${dark?'#706a5d':'#9d8e6e'};background:${primary?(dark?'#665b45':'#766344'):(dark?'#22211f':'#fffaf0')};color:${primary?'#fff':(dark?'#eee6d3':'#514633')};font:700 12px Arial,sans-serif;cursor:pointer;`;b.onclick=fn;return b;};
     if(active&&event.informational){
         if(event.kind==='population-pressure'&&event.choiceType==='population-pressure'){
             actions.style.justifyContent='space-between';
@@ -9722,7 +10126,23 @@ function openTrueEventDialog(id){
             actions.append(button(`Send ${truePopulationNotation(event.husbandryReliefPopulation)} to ${event.profile?.name||'zoo'}`,()=>{
                 trueAcceptHusbandryReliefOffer(event);
             },true));
-        }else actions.append(button(event.welfareConcern?'Acknowledge concern':(isDevelopment?'Close':'Thanks for the update'),()=>{
+        }else if(replyChoices.length){
+            actions.style.justifyContent='flex-end';
+            for(const choice of replyChoices){
+                actions.append(button(choice.label,()=>{
+                    trueEventChoiceApply(event,choice);
+                    actions.innerHTML='';
+                    const result=document.createElement('div');
+                    result.style.cssText='font-size:12px;line-height:1.45;opacity:.8;margin-top:8px;flex:1 1 100%;';
+                    result.innerHTML=`<strong>Effect:</strong> ${escapeHtml(event.playerReplyEffect||choice.effect||'Noted.')}`;
+                    card.insertBefore(result,actions);
+                    actions.append(button('Got it',()=>{
+                        closeTrueEventDialog();renderTrueSimulationPanel();renderVisitedZooQuickTabs();
+                        trueProcessEventPresentationQueue();
+                    },true));
+                },true));
+            }
+        }else actions.append(button(event.welfareConcern?'Acknowledge concern':(isDevelopment?'Close':(isKeeperUpdate?'Got it':'Good to know')),()=>{
             if(event.welfareConcern){
                 event.acknowledgedDate=normaliseTrueCalendarState().date;
             }else if(isDevelopment){
@@ -9732,6 +10152,7 @@ function openTrueEventDialog(id){
                 trueRelationshipRecord(event.profile,event.sourceKey,'event-contact',`Kept in contact about ${animalDisplayName(event.animal)}.`,{familiarity:.35});
             }
             closeTrueEventDialog();renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
+            trueProcessEventPresentationQueue();
         },true));
     }else if(active&&isRequest&&requestedPlayerAnimal){
         const rawAvailable=trueTransferAvailableCounts(requestedPlayerAnimal);
@@ -9755,7 +10176,7 @@ function openTrueEventDialog(id){
             const wrap=document.createElement('div');
             wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:2px;min-width:32px;';
             const up=document.createElement('button'),down=document.createElement('button'),value=document.createElement('div');
-            for(const b of [up,down]){b.type='button';b.style.cssText=`width:28px;height:20px;padding:0;border:1px solid ${colour};border-radius:5px;background:#fffaf0;color:${colour};font-weight:900;line-height:16px;cursor:pointer;`;}
+            for(const b of [up,down]){b.type='button';b.style.cssText=`width:28px;height:20px;padding:0;border:1px solid ${colour};border-radius:5px;background:${document.body.classList.contains('zoo-dark-mode')?'#22211f':'#fffaf0'};color:${colour};font-weight:900;line-height:16px;cursor:pointer;`;}
             up.textContent='▲';down.textContent='▼';
             value.style.cssText=`font-size:18px;font-weight:900;color:${colour};line-height:20px;`;
             const refresh=()=>{value.textContent=String(selection[key]);};
@@ -9767,7 +10188,6 @@ function openTrueEventDialog(id){
             if(selection.males+selection.females<=0)return;
             trueAnimalRequestSendPopulation(event,selection);
         },true);
-        agree.style.background='#356f9f';agree.style.borderColor='#285b84';
         const refreshRequestLabel=()=>{
             agree.textContent=`Agree to send ${selection.males}.${selection.females} individuals`;
             agree.disabled=selection.males+selection.females<=0;
@@ -9783,7 +10203,7 @@ function openTrueEventDialog(id){
             controls,
             agree,
             button('Decline',()=>{
-                event.status='declined';event.resolvedDate=normaliseTrueCalendarState().date;
+                event.status='declined';event.playerReply='Declined';event.respondedDate=normaliseTrueCalendarState().date;event.resolvedDate=normaliseTrueCalendarState().date;
                 event.resolution=`You declined ${event.profile?.name||'the zoo'}'s request. No animals were transferred.`;
                 trueRelationshipRecord(event.profile,event.sourceKey,'event-declined',`Declined ${event.title}.`,{familiarity:.15});
                 addTrueActivity({type:'information',title:'Animal request declined',message:`You declined ${event.profile?.name||'the zoo'}'s request for ${animalDisplayName(event.animal)}. The population remains at your zoo.`});
@@ -9793,7 +10213,7 @@ function openTrueEventDialog(id){
     }else if(active){
         actions.append(
             button('Decline',()=>{
-                event.status='declined';event.resolvedDate=normaliseTrueCalendarState().date;
+                event.status='declined';event.playerReply='Declined';event.respondedDate=normaliseTrueCalendarState().date;event.resolvedDate=normaliseTrueCalendarState().date;
                 event.resolution=`You declined the opportunity from ${event.profile?.name||'the zoo'}. No transfer was arranged.`;
                 trueRelationshipRecord(event.profile,event.sourceKey,'event-declined',`Declined ${event.title}.`,{familiarity:.15});
                 addTrueActivity({type:'information',title:'Transfer opportunity declined',message:`You declined ${event.profile?.name||'the zoo'}'s ${animalDisplayName(event.animal)} transfer opportunity. No animals changed hands.`});
@@ -9814,7 +10234,7 @@ function openTrueEventDialog(id){
             button(isRequest?'Discuss sending animal':'Discuss transfer',()=>{
                 if(isRequest){trueAcceptAnimalRequestEvent(event);return;}
                 if(event.independentEvent){trueAcceptIndependentTransferEvent(event);return;}
-                event.status='engaged';event.resolvedDate=normaliseTrueCalendarState().date;trueRelationshipRecord(event.profile,event.sourceKey,'event-engaged',`Responded to ${event.title}.`,{familiarity:1});closeTrueEventDialog();requestTrueMarketplaceAnimal(listing);writeAutoResumeSnapshot?.(true);
+                event.status='engaged';event.respondedDate=normaliseTrueCalendarState().date;event.resolvedDate=normaliseTrueCalendarState().date;trueRelationshipRecord(event.profile,event.sourceKey,'event-engaged',`Responded to ${event.title}.`,{familiarity:1});closeTrueEventDialog();requestTrueMarketplaceAnimal(listing);writeAutoResumeSnapshot?.(true);
             },true)
         );
     }else if(event.status==='engaged'&&state.autonomousTradeOffer?.eventOpportunity&&
@@ -9832,7 +10252,12 @@ function openTrueEventDialog(id){
     close.style.cssText='position:absolute;right:10px;top:8px;width:30px;height:30px;border:0;background:transparent;font-size:26px;line-height:24px;cursor:pointer;color:#4c4235;opacity:.7;font-weight:800;';
     close.onclick=closeTrueEventDialog;
     card.append(close,actions);overlay.appendChild(card);
-    document.body.appendChild(overlay);renderVisitedZooQuickTabs();return true;
+    document.body.appendChild(overlay);
+    const presented=normaliseTrueEventState();
+    if(!presented.presentedEventIds||typeof presented.presentedEventIds!=='object'||Array.isArray(presented.presentedEventIds))presented.presentedEventIds={};
+    presented.presentedEventIds[event.id]=trueEventAbsoluteMinute();
+    presented.lastEventPopupAbsMinute=trueEventAbsoluteMinute();
+    renderVisitedZooQuickTabs();return true;
 }
 // Rebuilt 442/443 event-direction layer. Evaluate once per zoo day and reuse the
 // snapshot so event selection stays cheap even in large True zoos.
@@ -9859,7 +10284,7 @@ function trueEventOpportunitySnapshot(today=normaliseTrueCalendarState().date){
     const spaceComfortable=freeCells>=4&&spareRatio>=.18;
     const stable=!unstable;
     const growthReady=stable&&!hasGrowthOpportunity;
-    const snapshot={date,housedCount:housed.length,pressureCount:pressure.length,needCount:needs.length,
+    const snapshot={date:today,housedCount:housed.length,pressureCount:pressure.length,needCount:needs.length,
         breederCount:breeders.length,freeCells,capacity,used,spareRatio,landCredits,unstable,stable,populationSeverity,
         spaceCritical,spaceConstrained,spaceTight,spaceComfortable,growthReady,hasPopulationOpportunity,hasGrowthOpportunity};
     events.opportunitySnapshot=snapshot;
@@ -9935,14 +10360,14 @@ function trueMaybeCreateBottleneckGrowthEvent(today,snapshot=trueEventOpportunit
         trueScheduleEventFollowUp(event,1+Math.floor(seededRoll(`true-growth-followup-delay|${event.id}`).roll*3));
     return event;
 }
-function trueEnsureDailyEvent(today=normaliseTrueCalendarState().date){
+function trueEnsureDailyEvent(today=normaliseTrueCalendarState().date,allowAdditional=false,seedSuffix='daily'){
     const events=normaliseTrueEventState();
-    if(events.items.some(event=>event.createdDate===today))return null;
+    const todaysCount=(events.items||[]).filter(event=>event?.createdDate===today).length;
+    if((!allowAdditional&&todaysCount>0)||todaysCount>=2)return null;
 
-    // Rebuilt 442/443: decide whether today's fallback should stabilize the zoo
-    // or help it grow before choosing generic news. Existing surplus relief and
-    // sex-structure support remain dominant because trueProcessEventDay() calls
-    // them first. This layer handles the next bottleneck only after those fail.
+    // Decide whether this timed slot should stabilize the zoo or help it grow
+    // before choosing generic news. Surplus relief and sex-structure support are
+    // attempted by trueGenerateDailyEventSlot() before this fallback layer.
     const opportunity=trueEventOpportunitySnapshot(today);
     if(opportunity.growthReady){
         const growth=trueMaybeCreateBottleneckGrowthEvent(today,opportunity);
@@ -9954,7 +10379,11 @@ function trueEnsureDailyEvent(today=normaliseTrueCalendarState().date){
     // passes without something happening. Prefer a zoo/species story and relax
     // only the recent-repeat filter for this fallback.
     const candidates=trueEventWorldCandidates();
-    if(candidates.length){
+    // Quiet internal zoo stories are part of the game, not an emergency fallback
+    // for when the external database has no candidates. Most days should have a
+    // chance to be about YOUR animals/visitors rather than another institution.
+    const preferInternalStory=seededRoll(`true-event-daily-perspective|${state.zooName}|${today}|${seedSuffix}`).roll<.30;
+    if(candidates.length&&!preferInternalStory){
         let total=0;
         const weighted=candidates.map(candidate=>{
             const repeatPenalty=trueEventRecentlyRepeated(events,candidate)?.18:1;
@@ -9962,16 +10391,16 @@ function trueEnsureDailyEvent(today=normaliseTrueCalendarState().date){
             total+=weight;
             return {candidate,weight};
         });
-        let pick=seededRoll(`true-event-daily-fallback|${state.zooName}|${today}`).roll*total;
+        let pick=seededRoll(`true-event-daily-fallback|${state.zooName}|${today}|${seedSuffix}`).roll*total;
         let chosen=weighted[0].candidate;
         for(const row of weighted){
             pick-=row.weight;
             if(pick<=0){chosen=row.candidate;break;}
         }
         const kinds=['programme-update','collection-planning','network-contact','husbandry-exchange','publicity-feature','population-advice'];
-        const weightedKinds=kinds.map(kind=>({kind,weight:Math.max(.08,trueEventFamilyPenalty(events,kind))}));
+        const weightedKinds=kinds.map(kind=>({kind,weight:trueEventInformationKindWeight(kind,chosen,events)})).filter(row=>row.weight>0);
         const kindTotal=weightedKinds.reduce((sum,row)=>sum+row.weight,0);
-        let kindPick=seededRoll(`true-event-daily-fallback-kind|${state.zooName}|${today}`).roll*kindTotal;
+        let kindPick=seededRoll(`true-event-daily-fallback-kind|${state.zooName}|${today}|${seedSuffix}`).roll*kindTotal;
         let kind=weightedKinds[0].kind;
         for(const row of weightedKinds){kindPick-=row.weight;if(kindPick<=0){kind=row.kind;break;}}
         const event=trueCreateWorldNewsEvent(chosen,today,kind);
@@ -9989,9 +10418,9 @@ function trueEnsureDailyEvent(today=normaliseTrueCalendarState().date){
         createdDate:today,expiresDate:trueDateString(expiry),
         independentEvent:true,informational:true,sourceKey:null,profile:null,
         animal:null,population:null,scale:'Routine',
-        title:'Daily zoo update',
-        message:'A routine day at the zoo has brought new observations from the collection.',
-        detail:'No external transfer or collection-planning event developed today, but the daily management cycle has still produced a new zoo update.'
+        title:'Keeper update',
+        message:'The team has picked up something worth keeping an eye on today.',
+        detail:'We’ll keep an eye on it.'
     };
     const housed=trueEventPlayerPopulationCandidates();
     const breeders=housed.filter(truePopulationCanBreed);
@@ -10004,9 +10433,9 @@ function trueEnsureDailyEvent(today=normaliseTrueCalendarState().date){
         const pick=Math.floor(seededRoll(`daily-zoo-copy|${state.zooName}|${today}|${key}|${salt}`).roll*Math.max(1,messages.length));
         const detailPick=Math.floor(seededRoll(`daily-zoo-detail|${state.zooName}|${today}|${key}|${salt}`).roll*Math.max(1,details.length));
         event.dailyUpdateKey=key;
-        event.title=trueEventTemplate(copy.title||'Daily zoo update',values);
-        event.message=trueEventTemplate(messages[pick]||'The day has produced a noteworthy development inside the zoo.',values);
-        event.detail=trueEventTemplate(details[detailPick]||'The effect will carry into the zoo’s next few days.',values);
+        event.title=trueEventTemplate(copy.title||'Keeper update',values);
+        event.message=trueEventTemplate(messages[pick]||'The team has picked up something worth keeping an eye on today.',values);
+        event.detail=trueEventTemplate(details[detailPick]||'We’ll keep an eye on it.',values);
         event.impactText=trueEventTemplate(copy.impact||trueEventCatalogueEntry('impact','daily-zoo-update')||'',values);
     };
     const pressure=trueEventPopulationPressureCandidates();
@@ -10018,7 +10447,7 @@ function trueEnsureDailyEvent(today=normaliseTrueCalendarState().date){
     // therefore never hidden by this pacing guard.
     const softAdversityBlocked=trueEventRecentSoftAdversity(today,5)||trueEventRecentRecoveryWindow(today,3);
     if(pressure.length&&internalRoll<.20){
-        const chosen=pressure[Math.floor(seededRoll(`daily-zoo-population-pressure|${state.zooName}|${today}`).roll*pressure.length)];
+        const chosen=pressure[Math.floor(seededRoll(`daily-zoo-population-pressure|${state.zooName}|${today}|${seedSuffix}`).roll*pressure.length)];
         event.kind='population-pressure';event.choiceType='population-pressure';event.animal=cloneForSave(chosen);
         const species=animalDisplayName(chosen);
         applyDailyCopy('population_pressure',chosen,{species});
@@ -10031,19 +10460,19 @@ function trueEnsureDailyEvent(today=normaliseTrueCalendarState().date){
         event.animal=cloneForSave(lowInterest);
         applyDailyCopy('visitor_disappointment',lowInterest,{species:animalDisplayName(lowInterest)});
     }else if(breeders.length&&internalRoll<.58){
-        const chosen=breeders[Math.floor(seededRoll(`daily-zoo-breeding-focus|${state.zooName}|${today}`).roll*breeders.length)];
+        const chosen=breeders[Math.floor(seededRoll(`daily-zoo-breeding-focus|${state.zooName}|${today}|${seedSuffix}`).roll*breeders.length)];
         trueEventAddModifier({type:'birth-chance-multiplier',value:1.35,untilDate:addTrueDays(today,7),animalKey:animalCardKey(chosen),sourceEventId:event.id,text:'Keepers have observed promising breeding behaviour.'});
         event.animal=cloneForSave(chosen);
         const species=animalDisplayName(chosen);
         applyDailyCopy('breeding_observation',chosen,{species});
     }else if(visitorStars.length&&internalRoll<.76){
-        const chosen=visitorStars[Math.floor(seededRoll(`daily-zoo-visitor-favourite|${state.zooName}|${today}`).roll*visitorStars.length)];
+        const chosen=visitorStars[Math.floor(seededRoll(`daily-zoo-visitor-favourite|${state.zooName}|${today}|${seedSuffix}`).roll*visitorStars.length)];
         trueEventAddModifier({type:'attendance-multiplier',value:1.07,untilDate:addTrueDays(today,2),sourceEventId:event.id,text:`Visitor enthusiasm around ${animalDisplayName(chosen)} is drawing extra interest.`});
         event.animal=cloneForSave(chosen);
         const species=animalDisplayName(chosen);
         applyDailyCopy('visitor_favourite',chosen,{species});
     }else if(housed.length&&internalRoll<.90){
-        const chosen=housed[Math.floor(seededRoll(`daily-zoo-local-feature|${state.zooName}|${today}`).roll*housed.length)];
+        const chosen=housed[Math.floor(seededRoll(`daily-zoo-local-feature|${state.zooName}|${today}|${seedSuffix}`).roll*housed.length)];
         trueEventAddModifier({type:'public-prestige-catchup-multiplier',value:1.25,untilDate:addTrueDays(today,3),sourceEventId:event.id,text:'Local coverage is helping public reputation catch up with the zoo’s current quality.'});
         event.animal=cloneForSave(chosen);
         const species=animalDisplayName(chosen);
@@ -10056,33 +10485,29 @@ function trueEnsureDailyEvent(today=normaliseTrueCalendarState().date){
     events.lastGeneratedDate=today;
     trueEventRememberFamily(events,'daily-zoo-update');
     addTrueActivity({
-        type:'information',title:event.title,message:event.message,
+        type:event.choiceType?'opportunity':'information',title:event.title,message:event.message,
         actionLabel:'View event',action:'event',eventId:event.id
     });
-    requestAnimationFrame(()=>openTrueEventDialog(event.id));
+    // Daily observations are deliberately non-modal. A real management choice
+    // (currently population pressure) still interrupts because it needs input.
+    if(event.choiceType)trueQueueEventPresentation(event);
     return event;
 }
 function trueProcessEventDay(){
     const events=normaliseTrueEventState(),today=normaliseTrueCalendarState().date;
     trueInvalidateEventOpportunitySnapshot();
-    for(const e of events.items){
-        if(e.status!=='active'||!(e.expiresDate<today))continue;
-        if(e.kind==='grounds-expansion-approval'&&(Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0)>0){
-            // The planning notice remains live for as long as the approval can
-            // still be used; the approval itself is not a 30-day timed offer.
-            e.expiresDate=trueDateString((()=>{const d=trueDateObject(today);d.setUTCDate(d.getUTCDate()+30);return d;})());
-            continue;
-        }
-        e.status='expired';
-    }
+    // Keep live opportunities authoritative, then retire only terminal records
+    // older than the 45-day repeat-suppression horizon. Active/engaged events
+    // are never removed by history cleanup.
+    trueEventExpireActiveItems(today);
+    trueEventLifecycleCleanup(today);
     // Poor conditions are tolerated mechanically: the player can make the
     // placement, but keeping it unresolved for three consecutive zoo days can
     // now become a world event. Repeated incidents have a seven-day cooldown.
     trueEvaluateHusbandryConcernsForDay();
     trueEvaluatePlayerBirthsForDay();
-    if(!events.items.some(e=>e.createdDate===today)) trueMaybeGenerateSurplusRelief(today);
-    if(!events.items.some(e=>e.createdDate===today)) trueMaybeGenerateRelationshipPopulationHelp(today);
-    if(!events.items.some(e=>e.createdDate===today)) trueEnsureDailyEvent(today);
+    // Event generation is deliberately deferred to the two daytime slots
+    // (09:30–18:00). Do not create a fallback event at the 09:00 rollover.
 }
 
 function processTrueScheduledEvents() {
@@ -10454,6 +10879,7 @@ function trueStartCuratorRound(){
 }
 
 function advanceTrueCalendarTime() {
+    trueProcessEventPresentationQueue();
     if (state.gameMode !== 'true' || state.sandboxMode) return;
     const calendar = normaliseTrueCalendarState();
     const speed=Number(calendar.speed)||0;
@@ -10471,7 +10897,7 @@ function advanceTrueCalendarTime() {
             const schedule=trueEventRollScheduleForDate(calendar.date),events=normaliseTrueEventState();
             if(!events.processedTimedRolls||typeof events.processedTimedRolls!=='object'||Array.isArray(events.processedTimedRolls))events.processedTimedRolls={};
             const done=new Set(Array.isArray(events.processedTimedRolls[calendar.date])?events.processedTimedRolls[calendar.date]:[]);
-            for(let i=0;i<schedule.length;i++)if(!done.has(i)){done.add(i);trueGenerateRelationshipEventForDay(i);}
+            for(let i=0;i<schedule.length;i++)if(!done.has(i)){done.add(i);trueGenerateDailyEventSlot(i);}
             events.processedTimedRolls[calendar.date]=[...done];
         }
         const completedDate=calendar.date;
@@ -10508,6 +10934,7 @@ function advanceTrueCalendarTime() {
     trueCalendarVisualTickBaseMinutes=(Number(calendar.hour)||9)*60+(Number(calendar.minute)||0);
     trueProcessTimedEventRolls();
     trueProcessDaytimeActivity();
+    trueAdvancePublicPrestigeDuringDay();
     updateTurnDisplay();
     renderTrueSimulationPanel();
     const now=Date.now();
@@ -10613,10 +11040,15 @@ function trueFocusEnclosure(enclosureId){
 function runTrueActivityAction(item) {
     if (!item) return;
     item.unread = false;
+    let rerender=true;
     if (item.action === 'marketplace') openTrueMarketplace();
-    else if (item.action === 'event' && item.eventId) openTrueEventDialog(item.eventId);
-    else if (item.action === 'focus-enclosure' && item.enclosureId!=null) trueFocusEnclosure(item.enclosureId);
-    renderTrueSimulationPanel();
+    else if (item.action === 'event' && item.eventId) {
+        // openTrueEventDialog owns its own side-card DOM. Re-rendering the full
+        // True panel immediately after opening can tear that card back down.
+        openTrueEventDialog(item.eventId);
+        rerender=false;
+    } else if (item.action === 'focus-enclosure' && item.enclosureId!=null) trueFocusEnclosure(item.enclosureId);
+    if(rerender)renderTrueSimulationPanel();
 }
 
 
@@ -11879,7 +12311,18 @@ function renderTrueIncomingTransferOverlay(){
     }
 }
 
+function trueHideZooVisitControls(){
+    if(state.gameMode!=='true')return;
+    for(const el of document.querySelectorAll('[data-action="visit-zoo"],.visit-zoo-btn,.visitZooBtn,#visitZooBtn')){
+        el.style.display='none';
+    }
+}
 function renderTrueSimulationPanel() {
+    const classicOpponentUi=document.getElementById('opponentZoos');
+    if(classicOpponentUi)classicOpponentUi.style.setProperty('display','none','important');
+    const classicOpponentHeader=document.getElementById('otherZoosHeader');
+    if(classicOpponentHeader)classicOpponentHeader.style.setProperty('display','none','important');
+    trueHideZooVisitControls();
     refreshTruePausedOverlay();
     const panel = document.getElementById('trueSimulationPanel') || (state.gameMode === 'true' ? ensureTrueSimulationPanel() : null);
     if (!panel) return;
@@ -18541,6 +18984,11 @@ function positionVisitedZooQuickTabs() {
     strip.style.top = `${Math.max(0, Math.round(bottom))}px`;
 }
 function renderVisitedZooQuickTabs() {
+    if(state.gameMode==='true'){
+        const host=document.getElementById('visitedZooQuickTabs');
+        if(host)host.innerHTML='';
+        return;
+    }
     const strip = ensureVisitedZooQuickTabsUI();
     strip.replaceChildren();
     strip.classList.toggle('has-multiplayer-tabs',!!localClassicMatch);
@@ -18964,6 +19412,7 @@ function hideZooVisitReturnButton(){
     if(b)b.style.display='none';
 }
 async function visitRealZoo(record) {
+    if(state.gameMode==='true')return false;
     if (!record || isPlayerRealZooRecord(record)) return false;
     if(localClassicMatch?.viewingPlayerId &&
        localClassicMatch.viewingPlayerId!==localClassicMatch.activePlayerId){
@@ -19162,7 +19611,8 @@ function isPlayerRealZooRecord(record) {
     const playerKey=realZooHoldingKey(state.realZooPlayerRecordName||'');
     return Boolean(playerKey && record && realZooHoldingKey(record)===playerKey);
 }
-function visitZooByName(name){ const r=realZooRecordByName(name); return r && !isPlayerRealZooRecord(r) ? visitRealZoo(r) : false; }
+function visitZooByName(name){
+    if(state.gameMode==='true')return false; const r=realZooRecordByName(name); return r && !isPlayerRealZooRecord(r) ? visitRealZoo(r) : false; }
 
 
 function normaliseTrueEnclosureBuilderState(){
@@ -19454,8 +19904,17 @@ function ensureTrueZooGroundsVisual(){
             for(const key of irregularGround){
                 const [col,row]=key.split(',').map(Number);
                 const ground=document.createElement('div');
-                Object.assign(ground.style,{position:'absolute',left:`${col*TRUE_ENC_CELL_W}px`,top:`${row*TRUE_ENC_CELL_H}px`,width:`${TRUE_ENC_CELL_W}px`,height:`${TRUE_ENC_CELL_H}px`,background:palette.grounds,pointerEvents:'none'});
+                const recent=trueRecentLandExpansionHighlight&&Date.now()<trueRecentLandExpansionHighlight.until&&trueRecentLandExpansionHighlight.keys?.has(key);
+                Object.assign(ground.style,{position:'absolute',left:`${col*TRUE_ENC_CELL_W}px`,top:`${row*TRUE_ENC_CELL_H}px`,width:`${TRUE_ENC_CELL_W}px`,height:`${TRUE_ENC_CELL_H}px`,background:recent?`linear-gradient(rgba(238,227,196,.34),rgba(238,227,196,.34)),${palette.grounds}`:palette.grounds,boxShadow:recent?'inset 0 0 0 4px rgba(118,99,68,.55)':'none',transition:'background .35s ease, box-shadow .35s ease',pointerEvents:'none'});
                 layer.appendChild(ground);
+            }
+            if(trueRecentLandExpansionHighlight&&Date.now()<trueRecentLandExpansionHighlight.until&&trueRecentLandExpansionHighlight.keys?.size){
+                const first=[...trueRecentLandExpansionHighlight.keys][0]?.split(',').map(Number);
+                if(first?.length===2){
+                    const badge=document.createElement('div');badge.textContent='NEW GROUNDS';
+                    Object.assign(badge.style,{position:'absolute',left:`${first[0]*TRUE_ENC_CELL_W+8}px`,top:`${first[1]*TRUE_ENC_CELL_H+8}px`,padding:'4px 7px',border:'1px solid #9d8e6e',borderRadius:'4px',background:'#eee3c4',color:'#554a38',font:'800 10px Arial,sans-serif',letterSpacing:'.06em',boxShadow:'0 2px 6px rgba(0,0,0,.18)',pointerEvents:'none',zIndex:'3'});
+                    layer.appendChild(badge);
+                }
             }
         }else{
             const ground=document.createElement('div');
@@ -19514,7 +19973,30 @@ function ensureTrueZooGroundsVisual(){
         svg.classList.add('true-zoo-future-grounds-parcel');
         svg.dataset.expansionSide=side;svg.dataset.expansionLayer=String(layerIndex);svg.dataset.expansionParcel=String(parcelIndex);
         svg.setAttribute('width',worldW);svg.setAttribute('height',worldH);
+        const expansionCredits=Math.max(0,Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0);
+        const purchasable=layerIndex===1&&expansionCredits>0;
+        svg.dataset.expansionCells=cells.map(c=>`${c.col},${c.row}`).join(';');
         Object.assign(svg.style,{position:'absolute',left:'0',top:'0',width:`${worldW}px`,height:`${worldH}px`,overflow:'visible',pointerEvents:'none',zIndex:'1',opacity:String(layerIndex===1?.92:layerIndex===2?.68:.50)});
+
+        // Expansion should never turn the full planning SVG into an invisible
+        // click shield over the zoo. Only the actual parcel cells are interactive.
+        // This matters especially once future parcels overlap the visible board.
+        const currentGround=new Set();
+        if(irregularGround?.size){for(const key of irregularGround)currentGround.add(key);}
+        else for(let r=0;r<groundRows;r++)for(let c=0;c<groundCols;c++)currentGround.add(`${groundCol0+c},${groundRow0+r}`);
+        const neighbourDirs=[[1,0],[-1,0],[0,1],[0,-1]];
+        const frontageEdges=cells.reduce((sum,c)=>sum+neighbourDirs.reduce((n,[dc,dr])=>n+(currentGround.has(`${c.col+dc},${c.row+dr}`)?1:0),0),0);
+        const minCol=Math.min(...cells.map(c=>c.col)),maxCol=Math.max(...cells.map(c=>c.col));
+        const minRow=Math.min(...cells.map(c=>c.row)),maxRow=Math.max(...cells.map(c=>c.row));
+        const boxCells=(maxCol-minCol+1)*(maxRow-minRow+1);
+        const compactness=cells.length/Math.max(1,boxCells);
+        const frontageLabel=frontageEdges>=5?'wide connection':frontageEdges>=3?'good connection':'narrow connection';
+        const shapeLabel=compactness>=.8?'compact':compactness>=.6?'irregular':'long';
+        const planningLabel=`${cells.length} cells · ${frontageLabel} · ${shapeLabel} parcel`;
+        svg.dataset.expansionFrontage=String(frontageEdges);
+        svg.dataset.expansionCompactness=compactness.toFixed(3);
+        svg.dataset.expansionPlanningLabel=planningLabel;
+
         const path=document.createElementNS('http://www.w3.org/2000/svg','path'),segments=[];
         for(const c of cells){
             const x=c.col*TRUE_ENC_CELL_W,y=c.row*TRUE_ENC_CELL_H,w=TRUE_ENC_CELL_W,h=TRUE_ENC_CELL_H;
@@ -19524,7 +20006,56 @@ function ensureTrueZooGroundsVisual(){
             if(!set.has(`${c.col-1},${c.row}`))segments.push(`M${x} ${y+h}V${y}`);
         }
         path.setAttribute('d',segments.join(' '));path.setAttribute('fill','none');path.setAttribute('stroke',futureCueColour);path.setAttribute('stroke-width','3');
-        path.setAttribute('stroke-dasharray',layerIndex===1?'10 6':layerIndex===2?'5 6':'2 7');path.setAttribute('stroke-linecap','square');path.setAttribute('vector-effect','non-scaling-stroke');
+        path.setAttribute('stroke-dasharray',layerIndex===1?'10 6':layerIndex===2?'5 6':'2 7');path.setAttribute('stroke-linecap','square');path.setAttribute('vector-effect','non-scaling-stroke');path.style.pointerEvents='none';
+
+        if(purchasable){
+            svg.setAttribute('role','button');svg.setAttribute('tabindex','0');
+            svg.setAttribute('aria-label',`Acquire ${planningLabel}`);
+            const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=`Acquire ${planningLabel}`;svg.appendChild(title);
+            let confirmationOpen=false;
+            const acquire=async()=>{
+                if(confirmationOpen)return false;
+                confirmationOpen=true;
+                try{
+                    const approved=await showGameConfirm(
+                        `This parcel adds ${cells.length} construction cell${cells.length===1?'':'s'} to the zoo and has a ${frontageLabel}.\n\nUse one grounds-expansion approval to acquire this land?`,
+                        {title:'Expand zoo grounds',confirmLabel:'Expand zoo',cancelLabel:'Cancel'}
+                    );
+                    if(!approved)return false;
+                    // Revalidate after the asynchronous confirmation. The player may
+                    // have changed state while the dialog was open; the mutation
+                    // itself remains the single authority that spends the credit.
+                    return trueApplyLandExpansionParcel(cells);
+                } finally {
+                    confirmationOpen=false;
+                }
+            };
+            const highlight=on=>{path.setAttribute('stroke-width',on?'6':'3');svg.style.opacity=on?'1':'.92';};
+            for(const c of cells){
+                const hit=document.createElementNS('http://www.w3.org/2000/svg','rect');
+                hit.setAttribute('x',String(c.col*TRUE_ENC_CELL_W));hit.setAttribute('y',String(c.row*TRUE_ENC_CELL_H));
+                hit.setAttribute('width',String(TRUE_ENC_CELL_W));hit.setAttribute('height',String(TRUE_ENC_CELL_H));
+                hit.setAttribute('fill','transparent');hit.style.pointerEvents='all';hit.style.cursor='pointer';
+                hit.addEventListener('pointerenter',()=>highlight(true));
+                hit.addEventListener('pointerleave',e=>{if(!e.relatedTarget?.closest?.('.true-zoo-future-grounds-parcel'))highlight(false);});
+                hit.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();acquire();});
+                svg.appendChild(hit);
+            }
+            svg.addEventListener('focus',()=>highlight(true));svg.addEventListener('blur',()=>highlight(false));
+            svg.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();acquire();}});
+
+            // Keep the planning information on the land itself. The badge is
+            // intentionally terse: location/shape remains the main decision,
+            // while cell count and frontage explain why two parcels differ.
+            const cx=cells.reduce((sum,c)=>sum+(c.col+.5)*TRUE_ENC_CELL_W,0)/cells.length;
+            const cy=cells.reduce((sum,c)=>sum+(c.row+.5)*TRUE_ENC_CELL_H,0)/cells.length;
+            const label=document.createElementNS('http://www.w3.org/2000/svg','text');
+            label.setAttribute('x',String(cx));label.setAttribute('y',String(cy));label.setAttribute('text-anchor','middle');
+            label.setAttribute('dominant-baseline','middle');label.setAttribute('font-size','13');label.setAttribute('font-weight','700');
+            label.setAttribute('paint-order','stroke');label.setAttribute('stroke',activeZooColourScheme()==='overloon'?activeZooPalette().grounds:'#f2efe6');label.setAttribute('stroke-width','4');
+            label.setAttribute('fill',activeZooColourScheme()==='overloon'?activeZooPalette().perimeter:'#454747');label.style.pointerEvents='none';
+            label.textContent=`${cells.length} cells · ${frontageLabel}`;svg.appendChild(label);
+        }
         svg.appendChild(path);layer.appendChild(svg);
     };
 
@@ -19952,7 +20483,7 @@ function trueCreateGroundsExpansionApprovalEvent(gained,prestige,context=null){
         existing.title='Zoo grounds expansion approvals';
         existing.message=`The zoo now has ${Math.max(0,Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0)} approved grounds expansions available.`;
         existing.detail=context?.firstNewSpecies
-            ?`The arrival of ${animalDisplayName(context.animal)} has expanded the collection. The planning authority has approved an adjacent extension to support the zoo's next stage of development. Open the enclosure tool to choose where to use the available approval.`
+            ?`The arrival of ${animalDisplayName(context.animal)} has expanded the collection. The planning authority has approved an adjacent extension to support the zoo's next stage of development. Open the enclosure tool and select one of the nearest dashed land parcels to use the available approval.`
             :`Public prestige has reached ${Math.round(Number(prestige)||0)}. Additional adjacent grounds expansion has been approved. Open the enclosure tool to choose where to use the available approvals.`;
         existing.impactText=`The approval is already available as a real grounds-expansion credit. You currently have ${Math.max(0,Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0)} to spend.`;
         existing.lastUpdatedDate=today;
@@ -19974,8 +20505,8 @@ function trueCreateGroundsExpansionApprovalEvent(gained,prestige,context=null){
             ?`The zoo has received ${gained} new approvals to extend its grounds.`
             :'The zoo has received approval to extend its grounds into one adjacent parcel.',
         detail:context?.firstNewSpecies
-            ?`The arrival of ${animalDisplayName(context.animal)} is the zoo's first new species since opening. The planning authority has approved an adjacent extension to support the growing collection. Open the enclosure tool to choose where to use the approval.`
-            :`Public prestige has reached ${Math.round(Number(prestige)||0)}. The planning authority has approved ${gained===1?'an adjacent extension':`${gained} adjacent extensions`}. Open the enclosure tool to choose where to use ${gained===1?'the approval':'these approvals'}.`,
+            ?`The arrival of ${animalDisplayName(context.animal)} is the zoo's first new species since opening. The planning authority has approved an adjacent extension to support the growing collection. Open the enclosure tool and select one of the nearest dashed land parcels to use the approval.`
+            :`Public prestige has reached ${Math.round(Number(prestige)||0)}. The planning authority has approved ${gained===1?'an adjacent extension':`${gained} adjacent extensions`}. Open the enclosure tool and select from the nearest dashed land parcels to use ${gained===1?'the approval':'these approvals'}.`,
         impactText:`${gained===1?'One grounds-expansion credit has':'New grounds-expansion credits have'} already been added to the enclosure builder and can be spent on adjacent land.`
     };
     events.items.unshift(event);
@@ -20021,6 +20552,67 @@ function trueLandExpansionOptions(){
     return ['top','right','bottom','left']
         .filter(side=>!(side==='left'&&b.x<parcelX)&&!(side==='top'&&b.y<parcelY))
         .map(side=>({side,bands}));
+}
+let trueRecentLandExpansionHighlight=null;
+function trueSetRecentLandExpansionHighlight(cells){
+    const keys=new Set(trueCanonicalCellList(cells).map(c=>trueBuilderCellKey(c.col,c.row)));
+    trueRecentLandExpansionHighlight={keys,until:Date.now()+4200};
+    setTimeout(()=>{
+        if(!trueRecentLandExpansionHighlight||Date.now()<trueRecentLandExpansionHighlight.until)return;
+        trueRecentLandExpansionHighlight=null;
+        if(state.gameMode==='true'&&!state.visitingZoo)ensureTrueZooGroundsVisual();
+    },4250);
+}
+function trueApplyLandExpansionParcel(rawCells){
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return false;
+    const builder=normaliseTrueEnclosureBuilderState();
+    if((Number(builder.landExpansionCredits)||0)<1)return false;
+    const cells=trueCanonicalCellList(Array.isArray(rawCells)?rawCells:[]);
+    if(!cells.length)return false;
+    const current=new Set();
+    const existingMask=trueZooGroundCellSet();
+    const grounds=trueZooGroundsBounds();if(!grounds)return false;
+    if(existingMask?.size){for(const key of existingMask)current.add(key);}
+    else{
+        const c0=Math.round(grounds.x/TRUE_ENC_CELL_W),r0=Math.round(grounds.y/TRUE_ENC_CELL_H);
+        const cols=Math.max(1,Math.round(grounds.w/TRUE_ENC_CELL_W)),rows=Math.max(1,Math.round(grounds.h/TRUE_ENC_CELL_H));
+        for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)current.add(trueBuilderCellKey(c0+c,r0+r));
+    }
+    // A purchasable parcel must be wholly new land and physically touch the
+    // current public grounds. This prevents stale UI or direct calls from
+    // buying a detached/later-horizon plot.
+    const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+    if(cells.some(c=>current.has(trueBuilderCellKey(c.col,c.row))))return false;
+    if(!cells.some(c=>dirs.some(([dc,dr])=>current.has(trueBuilderCellKey(c.col+dc,c.row+dr)))))return false;
+    const parcelKeys=new Set(cells.map(c=>trueBuilderCellKey(c.col,c.row))),seen=new Set(),stack=[cells[0]];
+    while(stack.length){const c=stack.pop(),k=trueBuilderCellKey(c.col,c.row);if(seen.has(k))continue;seen.add(k);for(const[dc,dr]of dirs){const nk=trueBuilderCellKey(c.col+dc,c.row+dr);if(parcelKeys.has(nk)&&!seen.has(nk))stack.push({col:c.col+dc,row:c.row+dr});}}
+    if(seen.size!==cells.length)return false;
+
+    const old={...grounds},oldEntrance=trueZooEntranceSpec(old);
+    const oldEntrancePoint=trueEntrancePointAtPerimeter(trueEntrancePerimeterPosition(oldEntrance,old),old);
+    for(const key of parcelKeys)current.add(key);
+    builder.startingGroundsCells=[...current];
+    const pts=[...current].map(k=>k.split(',').map(Number));
+    const minCol=Math.min(...pts.map(p=>p[0])),maxCol=Math.max(...pts.map(p=>p[0]));
+    const minRow=Math.min(...pts.map(p=>p[1])),maxRow=Math.max(...pts.map(p=>p[1]));
+    builder.zooGrounds={x:minCol*TRUE_ENC_CELL_W,y:minRow*TRUE_ENC_CELL_H,w:(maxCol-minCol+1)*TRUE_ENC_CELL_W,h:(maxRow-minRow+1)*TRUE_ENC_CELL_H};
+    builder.zooEntrance=trueNearestAccessibleEntranceSpec(trueClosestPerimeterPosition(oldEntrancePoint.x,oldEntrancePoint.y,builder.zooGrounds),builder.zooGrounds);
+    builder.landExpansionCredits=Math.max(0,(Number(builder.landExpansionCredits)||0)-1);
+    builder.landExpansionLevel=Math.max(0,Number(builder.landExpansionLevel)||0)+1;
+    const today=normaliseTrueCalendarState().date;
+    for(const event of normaliseTrueEventState().items.filter(e=>e.status==='active'&&e.kind==='grounds-expansion-approval')){
+        if(builder.landExpansionCredits>0)event.message=`The zoo still has ${builder.landExpansionCredits} approved grounds expansion${builder.landExpansionCredits===1?'':'s'} available.`;
+        else{event.status='resolved';event.resolvedDate=today;event.resolution='Approved grounds expansion completed';}
+    }
+    builder.zooGroundsVersion=Math.max(4,Number(builder.zooGroundsVersion)||0);
+    state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
+    trueInvalidateEnclosureGeometry();trueGuestRuntime.layoutSig='';trueGuestRuntime.walk=null;
+    document.getElementById('trueLandExpansionChooser')?.remove();
+    trueSetRecentLandExpansionHighlight(cells);
+    renderAll();refreshTrueEnclosureCapacityBadge();
+    addTrueActivity({type:'development',title:'New land added to the zoo',message:`An adjacent ${cells.length}-cell parcel has been incorporated into the zoo grounds. The new boundary is ready for paths and enclosures.`});
+    writeAutoResumeSnapshot?.(true);syncActiveZooIntoLocalMatch?.();
+    return true;
 }
 function trueApplyLandExpansion(side){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return false;
@@ -20081,32 +20673,17 @@ function trueOpenLandExpansionChooser(){
     document.getElementById('trueLandExpansionChooser')?.remove();
     const b=normaliseTrueEnclosureBuilderState();
     if((Number(b.landExpansionCredits)||0)<1)return;
+    // Refresh first so the nearest-horizon parcels receive their interactive hit
+    // areas immediately, even when the approval was just awarded.
+    ensureTrueZooGroundsVisual();
     const box=document.createElement('div');box.id='trueLandExpansionChooser';
-    Object.assign(box.style,{position:'fixed',right:'94px',bottom:'146px',zIndex:'10130',padding:'8px',
+    Object.assign(box.style,{position:'fixed',right:'94px',bottom:'146px',zIndex:'10130',padding:'9px 10px',maxWidth:'250px',
         border:'1px solid rgba(80,72,58,.42)',borderRadius:'8px',background:'rgba(251,245,230,.98)',
-        color:'#5B5144',boxShadow:'0 3px 9px rgba(0,0,0,.18)',fontSize:'11px',fontWeight:'800'});
-    const title=document.createElement('div');
-    title.textContent=`Expand zoo grounds · ${Math.max(0,Number(b.landExpansionCredits)||0)} approval${Number(b.landExpansionCredits)===1?'':'s'}`;
-    title.style.cssText='margin-bottom:3px;';
-    const note=document.createElement('div');
-    note.textContent=`Choose an adjacent ${trueLandExpansionParcelCells()}-cell-wide strip.`;
-    note.style.cssText='font-weight:500;opacity:.72;margin-bottom:7px;';
-    const row=document.createElement('div');row.style.cssText='display:flex;gap:5px;';
-    const grounds=trueZooGroundsBounds();
-    for(const {side} of trueLandExpansionOptions()){
-        const btn=document.createElement('button');btn.type='button';btn.textContent=side[0].toUpperCase()+side.slice(1);
-        btn.title='Extend the zoo into this adjacent parcel';
-        btn.style.cssText='font:inherit;padding:5px 7px;cursor:pointer;';
-        btn.addEventListener('click',()=>{
-            if(trueApplyLandExpansion(side)){
-                box.remove();
-                if((Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0)>0)trueOpenLandExpansionChooser();
-            }
-        });
-        row.appendChild(btn);
-    }
-    box.append(title,note,row);document.body.appendChild(box);
-    setTimeout(()=>document.addEventListener('pointerdown',function closeLandChooser(e){if(!box.contains(e.target)){box.remove();document.removeEventListener('pointerdown',closeLandChooser,true);}},true),0);
+        color:'#5B5144',boxShadow:'0 3px 9px rgba(0,0,0,.18)',fontSize:'11px'});
+    const title=document.createElement('div');title.textContent=`Choose expansion land · ${Math.max(0,Number(b.landExpansionCredits)||0)} approval${Number(b.landExpansionCredits)===1?'':'s'}`;title.style.cssText='font-weight:800;margin-bottom:4px;';
+    const note=document.createElement('div');note.textContent='Select one of the nearest dashed parcels around the zoo. Labels show usable cells and how broadly the parcel connects to the current grounds. More distant parcels are future planning only.';note.style.cssText='font-weight:500;line-height:1.35;opacity:.8;';
+    box.append(title,note);document.body.appendChild(box);
+    setTimeout(()=>document.addEventListener('pointerdown',function closeLandChooser(e){if(!box.contains(e.target)&&!e.target.closest?.('.true-zoo-future-grounds-parcel')){box.remove();document.removeEventListener('pointerdown',closeLandChooser,true);}},true),0);
 }
 
 function trueCanAddEnclosureCells(count=1){
@@ -20122,7 +20699,7 @@ function refreshTrueEnclosureCapacityBadge(){
     const remaining=Math.max(0,capacity-used);
     badge.textContent=`Enclosure cells left: ${remaining}${credits?` · Grounds expansion ${credits}`:''}`;
     badge.title=credits
-        ?`${remaining} enclosure cell${remaining===1?'':'s'} remaining. Click to choose an approved grounds expansion.`
+        ?`${remaining} enclosure cell${remaining===1?'':'s'} remaining. Click, then choose one of the nearest dashed land parcels on the map.`
         :`${remaining} enclosure cell${remaining===1?'':'s'} remaining at the zoo’s current public prestige.`;
     Object.assign(badge.style,{position:'fixed',right:'94px',bottom:'111px',zIndex:'10122',padding:'6px 9px',
         border:'1px solid rgba(80,72,58,.38)',borderRadius:'7px',background:'rgba(251,245,230,.96)',
@@ -21939,14 +22516,104 @@ function truePrepareOpeningZooChallenges(){
         for(const enc of enclosures){
             if(used<=9||protectedIds.has(String(enc.id)))continue;
             const current=trueCanonicalCellList(enc.cells||[]).length;
-            const residentCount=animals.filter(a=>String(a.enclosureId)===String(enc.id)).length;
-            const floor=Math.max(1,residentCount);
-            if(current<=floor)continue;
-            const remove=Math.min(current-floor,used-9);
+            const residents=animals.filter(a=>String(a.enclosureId)===String(enc.id));
+            // Never create accidental husbandry problems merely to hit the
+            // nine-cell opening-layout target. Only the deliberately selected
+            // challenge enclosure may sit below a resident species' managed
+            // minimum; all other exhibits stop trimming at the largest live
+            // requirement of their occupants.
+            const managedFloor=Math.max(1,residents.length,...residents.map(trueAnimalManagedEnclosureCells));
+            if(current<=managedFloor)continue;
+            const remove=Math.min(current-managedFloor,used-9);
             enc.cells=trueCompactConnectedCells(current-remove);
             trueInvalidateEnclosureGeometry(enc);used-=remove;
         }
     }
+    // Final opening-day husbandry invariant. Work at ENCLOSURE level: repairing
+    // one resident of a mixed exhibit changes the same physical space for every
+    // other resident, so species-by-species repair can accidentally erase the
+    // intended challenge or create a third one.
+    const undersizedSpecies=()=>{
+        const out=[];
+        for(const animal of animals){
+            const enc=enclosures.find(e=>String(e.id)===String(animal.enclosureId));
+            if(!enc)continue;
+            const cells=Math.max(1,trueCanonicalCellList(enc.cells||[]).length);
+            if(cells<trueAnimalManagedEnclosureCells(animal))out.push({animal,enc,cells});
+        }
+        return out;
+    };
+    const residentsOf=enc=>animals.filter(a=>String(a.enclosureId)===String(enc.id));
+    const enclosureRequirement=enc=>Math.max(1,...residentsOf(enc).map(trueAnimalManagedEnclosureCells));
+
+    // First remove every accidental space problem. The opening challenge is
+    // then reintroduced deliberately on ONE enclosure, making the 1-2 species
+    // cap a construction invariant instead of a repair-order side effect.
+    for(const enc of enclosures){
+        const residents=residentsOf(enc);if(!residents.length)continue;
+        const required=Math.max(1,residents.length,...residents.map(trueAnimalManagedEnclosureCells));
+        if(trueCanonicalCellList(enc.cells||[]).length<required){
+            enc.cells=trueCompactConnectedCells(required);
+            trueInvalidateEnclosureGeometry(enc);
+        }
+    }
+
+    // Prefer the originally selected small enclosure, then single-species
+    // exhibits. Find a one-cell-short (or smaller) size that makes exactly one
+    // or two resident species undersized. Mixed exhibits are therefore safe:
+    // three species can share an enclosure, but it is never chosen if shrinking
+    // it would make all three undersized together.
+    const challengeOrder=[...enclosures].sort((a,b)=>{
+        if(a===smallEnc)return -1;if(b===smallEnc)return 1;
+        const ar=residentsOf(a).length,br=residentsOf(b).length;
+        if(ar!==br)return ar-br;
+        return seededRoll(`opening-space-final|${state.zooName}|${a.id}`).roll-
+               seededRoll(`opening-space-final|${state.zooName}|${b.id}`).roll;
+    });
+    let finalSpaceChallenge=null;
+    for(const enc of challengeOrder){
+        const residents=residentsOf(enc);if(!residents.length)continue;
+        const required=Math.max(1,residents.length,...residents.map(trueAnimalManagedEnclosureCells));
+        for(let cells=required-1;cells>=1;cells--){
+            // Never make the physical card capacity smaller than the number of
+            // animal cards already placed in the enclosure.
+            if(cells<residents.length)continue;
+            const affected=residents.filter(a=>trueAnimalManagedEnclosureCells(a)>cells);
+            if(affected.length<1||affected.length>2)continue;
+            enc.cells=trueCompactConnectedCells(cells);
+            trueInvalidateEnclosureGeometry(enc);
+            finalSpaceChallenge={enc,cells,affected:affected.map(a=>a.id)};
+            break;
+        }
+        if(finalSpaceChallenge)break;
+    }
+
+    // Extremely small all-level-1 openings can have no shrinkable enclosure.
+    // Raise one single-species population just enough to create a two-cell
+    // managed requirement, then leave its one-cell exhibit as the challenge.
+    if(!finalSpaceChallenge){
+        const enc=challengeOrder.find(e=>residentsOf(e).length===1)||null;
+        const animal=enc?residentsOf(enc)[0]:null;
+        if(enc&&animal){
+            const p=normaliseTrueAnimalPopulation(animal);
+            let safety=20;
+            while(trueAnimalManagedEnclosureCells(animal)<2&&safety-->0){
+                if(p.females>p.males)p.females++;else p.males++;
+                animal.population={males:p.males,females:p.females,unknown:0};
+            }
+            if(trueAnimalManagedEnclosureCells(animal)>=2){
+                enc.cells=trueCompactConnectedCells(1);
+                trueInvalidateEnclosureGeometry(enc);
+                finalSpaceChallenge={enc,cells:1,affected:[animal.id]};
+            }
+        }
+    }
+
+    const undersized=undersizedSpecies();
+    if(undersized.length<1||undersized.length>2){
+        throw new Error(`True opening must contain 1-2 undersized species; generated ${undersized.length}.`);
+    }
+
     const b=normaliseTrueEnclosureBuilderState();
     b.unlockedCellCapacity=12;b.totalSpaces=12;b.cellCapacityInitialised=true;b.openingCellCapacityFloor=12;
     b.geometryVersion=0;
@@ -22339,7 +23006,10 @@ function trueApplyDesktopHeaderGeometry(){
     if(save)save.style.setProperty('margin-top','0','important');
     const otherHeader=document.getElementById('otherZoosHeader');
     const otherTitle=otherHeader?.querySelector('.opponent-title');
-    if(otherHeader){
+    if(otherHeader&&state.gameMode==='true'){
+        // Classic-mode Other Zoos / Trade History must never leak into True mode.
+        otherHeader.style.setProperty('display','none','important');
+    }else if(otherHeader){
         // This compact nav must live at viewport level. #opponentZoos has its own
         // legacy positioning/scaling and was moving the row after we aligned it.
         if(otherHeader.parentElement!==document.body)document.body.appendChild(otherHeader);
@@ -30726,7 +31396,7 @@ function ensureMultiplayerLobbyOverlay(){
                 <span>Gamemode</span>
                 <select id="multiplayerGameMode">
                     <option value="classic">Classic</option>
-                    <option value="true" disabled>True (coming soon)</option>
+                    <option value="true">True</option>
                 </select>
             </label>
             <label class="trade-frequency-option">
@@ -35343,7 +36013,7 @@ function trueTransferCreateFromAcceptedProposal(proposal){
     }
     const transfer={id,proposalId:proposal.id,zooId:proposal.zooId||proposal.partnerZooId||proposal.sourceZooId||null,
         zooName:proposal.zooName||proposal.partnerZooName||proposal.sourceZooName||trueOfferProfile(proposal.offer)?.name||'Partner zoo',
-        createdDate:trueDateKey(trueCurrentDate()),departureDate:trueTransferDatePlus(2),arrivalDate:trueTransferDatePlus(4),status:'scheduled',
+        createdDate:trueDateKey(trueCurrentDate()),departureDate:trueDateKey(trueCurrentDate()),arrivalDate:trueDateKey(trueCurrentDate()),status:'scheduled',
         transferKind:proposal.transferKind||(outgoings.length?'exchange':'transfer'),terms:proposal.terms||'permanent',incomings,outgoings};
     transfer.incoming=incomings[0]||null;transfer.outgoing=outgoings[0]||null;
     state.trueTransfers.push(transfer);proposal.transferId=id;proposal.status='transfer-scheduled';return transfer;
@@ -35382,10 +36052,12 @@ function trueTransferCreateArrivalCards(t){
             state.animals.push(a);
         }
         if(a?.trueBackstageArrival){
-            const legNow=t.incomings.find(x=>String(x.legId)===String(a.trueIncomingTransferLegId));
-            if(legNow)legNow.completed=true;
-            delete a.trueArrivalPending;delete a.trueIncomingTransferId;delete a.trueIncomingTransferLegId;delete a.trueLoosePopulation;
-            delete a.trueBackstageArrival;
+            // Arrival means the population now physically exists in backstage.
+            // Keep the incoming-transfer metadata until the player moves it into
+            // its permanent enclosure. Completing the leg here made the transfer
+            // disappear from the backstage/placement UI immediately after creation.
+            a.trueArrivalPending=true;
+            a.trueBackstageArrival=true;
         }
         made.push(a);
     }
@@ -35423,6 +36095,38 @@ function trueTransferFinish(t,animal){
     delete animal.trueArrivalPending;delete animal.trueIncomingTransferId;delete animal.trueIncomingTransferLegId;delete animal.trueLoosePopulation;delete animal.trueLooseCollapseDeadline;
     trueTransferMaybeFinish(t);return true;
 }
+function trueTransferCompleteImmediately(t){
+    if(!t)return [];
+    trueTransferNormaliseLegs(t);
+    // Exchange populations leave at the same moment the partner accepts.
+    trueTransferCompleteOutgoing(t);
+    if(t.status==='completed'&&!t.incomings.length)return [];
+    t.status='in-transit';
+    const arrivals=trueTransferCreateArrivalCards(t);
+    if(arrivals.length){
+        const backstageIds=new Set(trueBackstageEnclosures().map(enc=>String(enc.id)));
+        const verified=arrivals.filter(a=>a&&state.animals.includes(a)&&backstageIds.has(String(a.enclosureId))&&trueAnimalPopulationTotal(a)>0);
+        if(!verified.length){
+            t.backstageArrivalBlocked=true;
+            t.status='in-transit';
+            return [];
+        }
+        t.status='awaiting-placement';
+        if(!t.arrivalAnnounced){
+            t.arrivalAnnounced=true;
+            const names=verified.map(animalDisplayName),label=names.length===1?names[0]:`${names.length} populations`;
+            addTrueActivity?.({type:'action',title:'Animal transfer arrived',
+                message:`${label} from ${t.zooName} ${verified.length===1?'has':'have'} arrived in the backstage holding area.`,
+                transferId:t.id,transferLegId:verified[0]?.trueIncomingTransferLegId||null,animal:verified[0]||null,glowAnimal:true});
+        }
+    }else if(t.backstageArrivalBlocked){
+        // This is a physical-capacity block, not a transport delay. Retry as
+        // soon as the normal transfer processor next sees available backstage.
+        t.status='in-transit';
+        trueBackstageNotifyNoSpace(t);
+    }else trueTransferMaybeFinish(t);
+    return arrivals;
+}
 function trueTransferProcessDay(){
     if(state.gameMode!=='true')return;trueTransferSyncAcceptedProposals();const today=trueDateKey(trueCurrentDate());
     for(const raw of normaliseTrueTransfers()){
@@ -35438,17 +36142,23 @@ function trueTransferProcessDay(){
                 }
                 continue;
             }
-            if(arrivals.length&&!t.arrivalAnnounced){t.arrivalAnnounced=true;const names=arrivals.map(animalDisplayName),label=names.length===1?names[0]:`${names.length} populations`;
-                if(typeof addTrueActivity==='function'){
-                    const first=arrivals[0];
-                    addTrueActivity({type:'action',title:'Animal transfer arrived',message:`${label} from ${t.zooName} ${arrivals.length===1?'has':'have'} arrived in the backstage holding area.`,
-                        transferId:t.id,transferLegId:first?.trueIncomingTransferLegId||null,animal:first||null,glowAnimal:true});
-                }}
+            if(arrivals.length&&!t.arrivalAnnounced){
+                const backstageIds=new Set(trueBackstageEnclosures().map(enc=>String(enc.id)));
+                const verified=arrivals.filter(a=>a&&state.animals.includes(a)&&backstageIds.has(String(a.enclosureId))&&trueAnimalPopulationTotal(a)>0);
+                if(verified.length){t.arrivalAnnounced=true;const names=verified.map(animalDisplayName),label=names.length===1?names[0]:`${names.length} populations`;
+                    if(typeof addTrueActivity==='function'){
+                        const first=verified[0];
+                        addTrueActivity({type:'action',title:'Animal transfer arrived',message:`${label} from ${t.zooName} ${verified.length===1?'has':'have'} arrived in the backstage holding area.`,
+                            transferId:t.id,transferLegId:first?.trueIncomingTransferLegId||null,animal:first||null,glowAnimal:true});
+                    }}
+                }
         }
     }
 }
 function trueTransferAfterPlacement(animal){
     if(!animal?.trueArrivalPending||animal.enclosureId==null)return;
+    const enc=(state.enclosures||[]).find(e=>String(e.id)===String(animal.enclosureId));
+    if(enc&&trueEnclosureIsCurrentBackstage(enc))return;
     const t=normaliseTrueTransfers().find(x=>Number(x.id)===Number(animal.trueIncomingTransferId));if(t)trueTransferFinish(t,animal);
     renderTrueSimulationPanel();
 }
@@ -40851,7 +41561,7 @@ function ensureGenerateZooUI() {
                     <span>Gamemode</span>
                     <select id="newZooGameMode">
                         <option value="classic">Classic</option>
-                        <option value="true" disabled>True (coming soon)</option>
+                        <option value="true">True</option>
                         <option value="sandbox">Sandbox</option>
                     </select>
                 </label>
@@ -42811,6 +43521,7 @@ function normaliseTruePublicPrestige(){
         // zero public-prestige value. From here the visible value can lag normally.
         state.truePublicPrestige=underlying;
         state.truePublicPrestigeLastDate=normaliseTrueCalendarState().date;
+        state.truePublicPrestigeLastAppliedAbsMinute=trueEventAbsoluteMinute?.()||0;
     }
     state.truePublicPrestige=Math.max(0,Number(state.truePublicPrestige)||0);
     state.trueGuestAttendanceDays=(state.trueGuestAttendanceDays&&typeof state.trueGuestAttendanceDays==='object'&&!Array.isArray(state.trueGuestAttendanceDays))
@@ -42854,28 +43565,58 @@ function trueGuestAttendanceTargetForDate(date=normaliseTrueCalendarState().date
     while(keys.length>45)delete state.trueGuestAttendanceDays[keys.shift()];
     return target;
 }
-function trueApplyPublicPrestigeForCompletedDay(date,entered,target){
+function trueApplyPublicPrestigeForCompletedDay(date,entered,target,{partial=false}={}){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return visibleZooPrestige();
     const underlying=trueUnderlyingPrestige();
     let shown=normaliseTruePublicPrestige();
     const gap=underlying-shown;
     if(Math.abs(gap)<.01){
         state.truePublicPrestige=underlying;
+        state.truePublicPrestigeLastDate=String(date||'');
+        state.truePublicPrestigeLastAppliedAbsMinute=trueEventAbsoluteMinute?.()||0;
         if(state.trueEnclosureBuilder)trueEnclosureCellCapacity?.();
         trueEvaluateLandExpansionUnlocks?.();
         refreshTrueEnclosureCapacityBadge?.();
         return visibleZooPrestige();
     }
+
     const expected=Math.max(1,Number(target)||trueGuestAttendanceTargetForDate(date)||1);
     const exposure=Math.max(0,Math.min(1.35,(Number(entered)||0)/expected));
-    // Visitor exposure controls how quickly public reputation discovers the
-    // hidden target. Rising reputation travels a little faster than decline.
-    // Publicity/press events can change how quickly the outside world catches up
-    // with the zoo's underlying quality without changing that underlying prestige.
     const publicityCatchup=trueEventModifierProduct('public-prestige-catchup-multiplier',{date});
-    const rate=(gap>0?.16:.11)*exposure*publicityCatchup;
+
+    // Reputation should never freeze because the live guest counter was reset or
+    // because a quiet day happened to record zero entrants. Guests still control
+    // most of the speed, but an operating zoo always makes some progress toward
+    // its underlying reputation.
+    const exposureFactor=Math.max(.28,exposure);
+    const dailyRate=(gap>0?.18:.12)*exposureFactor*publicityCatchup;
+
+    let rate=dailyRate;
+    if(partial){
+        const cal=normaliseTrueCalendarState();
+        const nowAbs=trueEventAbsoluteMinute?.()||0;
+        const lastAbs=Number(state.truePublicPrestigeLastAppliedAbsMinute);
+        const elapsed=Number.isFinite(lastAbs)&&lastAbs>0?Math.max(0,nowAbs-lastAbs):0;
+        // Convert elapsed zoo minutes into a fraction of the 09:00-19:00 day.
+        // Cap a single update to avoid a stale save producing a huge jump.
+        const fraction=Math.min(.20,elapsed/600);
+        if(fraction<=0)return visibleZooPrestige();
+        rate*=fraction;
+        state.truePublicPrestigeLastAppliedAbsMinute=nowAbs;
+    }else{
+        // At closing apply only the unaccounted tail. Normal daytime updates have
+        // already moved prestige, so do not repeat a whole day's catch-up.
+        const nowAbs=trueEventAbsoluteMinute?.()||0;
+        const lastAbs=Number(state.truePublicPrestigeLastAppliedAbsMinute);
+        const elapsed=Number.isFinite(lastAbs)&&lastAbs>0?Math.max(0,nowAbs-lastAbs):600;
+        rate*=Math.min(1,elapsed/600);
+        state.truePublicPrestigeLastAppliedAbsMinute=nowAbs;
+    }
+
     let move=gap*rate;
-    if(exposure>0&&Math.abs(move)<.35)move=Math.sign(gap)*Math.min(Math.abs(gap),.35);
+    // Keep sub-point progress internally; the header rounds it for display.
+    // A minimum movement prevents asymptotic stalls close to the target.
+    if(Math.abs(move)<.04)move=Math.sign(gap)*Math.min(Math.abs(gap),.04);
     shown+=move;
     if((gap>0&&shown>underlying)||(gap<0&&shown<underlying))shown=underlying;
     state.truePublicPrestige=shown;
@@ -42884,6 +43625,19 @@ function trueApplyPublicPrestigeForCompletedDay(date,entered,target){
     trueEvaluateLandExpansionUnlocks?.();
     refreshTrueEnclosureCapacityBadge?.();
     return visibleZooPrestige();
+}
+
+function trueAdvancePublicPrestigeDuringDay(){
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return;
+    const cal=normaliseTrueCalendarState();
+    const minute=(Number(cal.hour)||0)*60+(Number(cal.minute)||0);
+    if(minute<9*60||minute>19*60)return;
+    trueApplyPublicPrestigeForCompletedDay(
+        cal.date,
+        Number(trueGuestRuntime?.dailyEntered)||0,
+        trueGuestDailyTarget(),
+        {partial:true}
+    );
 }
 
 function updateHighestZooPrestige() {
@@ -44657,8 +45411,16 @@ let opponentInfoFadeStarted = false;
 let opponentInfoShowTimer = null;
 
 function ensureOtherZoosUI() {
+    if(state.gameMode==='true'){
+        const legacyHeader=document.getElementById('otherZoosHeader');
+        if(legacyHeader)legacyHeader.style.setProperty('display','none','important');
+        const legacyContainer=document.getElementById('opponentZoos');
+        if(legacyContainer)legacyContainer.style.setProperty('display','none','important');
+        return;
+    }
     const container = document.getElementById('opponentZoos');
     if (!container) return;
+    container.style.removeProperty('display');
     enqueueMicrotask(updateLocalMultiplayerHUD);
 
     // Rename the existing heading without depending on a particular HTML tag.
@@ -47961,7 +48723,7 @@ function trueTransferProposalById(id) {
     return normaliseTrueTransferProposals().find(p=>p.id===id)||null;
 }
 function trueTransferProposalForListing(listingId) {
-    return normaliseTrueTransferProposals().find(p=>p.marketplaceListingId===listingId && !['completed','cancelled'].includes(p.status))||null;
+    return normaliseTrueTransferProposals().find(p=>p.marketplaceListingId===listingId && !['completed','cancelled','declined'].includes(p.status))||null;
 }
 
 function ensureTrueAcceptedTransferStack() {
@@ -48108,6 +48870,29 @@ function trueRelationshipStage(trust=0) {
 }
 function trueOfferProfile(offer) { return offer?.profile || state.opponentProfiles?.[offer?.opponentIndex] || {}; }
 
+function truePendingProposalCommittedPopulation(sourceId,excludeProposalId=null){
+    const total={males:0,females:0,unknown:0};
+    for(const p of normaliseTrueTransferProposals()){
+        if(!p||p.status!=='pending'||(excludeProposalId&&String(p.id)===String(excludeProposalId)))continue;
+        const offered=(p.outgoingOffers?.length?p.outgoingOffers:(p.outgoingOffer?[p.outgoingOffer]:[]));
+        for(const a of offered){
+            const id=Number(a?.truePopulationTradeSourceId??a?.id);
+            if(id!==Number(sourceId))continue;
+            const pop=trueTransferPop(a);
+            for(const k of ['males','females','unknown'])total[k]+=Number(pop[k])||0;
+        }
+    }
+    return total;
+}
+function trueProposalOutgoingStillAvailable(animal,excludeProposalId=null){
+    const sourceId=Number(animal?.truePopulationTradeSourceId??animal?.id);
+    const live=state.animals.find(a=>Number(a.id)===sourceId);
+    if(!live)return false;
+    const livePop=normaliseTrueAnimalPopulation(live);
+    const committed=truePendingProposalCommittedPopulation(sourceId,excludeProposalId);
+    const wanted=trueTransferPop(animal);
+    return ['males','females','unknown'].every(k=>(Number(livePop[k])||0)-(Number(committed[k])||0)>=(Number(wanted[k])||0));
+}
 function trueProposalOutgoingOffers(){
     if(!Array.isArray(state.trueProposalOutgoingOffers))state.trueProposalOutgoingOffers=state.outgoingOffer?[state.outgoingOffer]:[];
     state.trueProposalOutgoingOffers=state.trueProposalOutgoingOffers.filter(Boolean).slice(0,3);
@@ -48137,7 +48922,7 @@ function trueProposalEvaluation(offer,outgoings=trueProposalOutgoingOffers()){
     let want=Number(base.wantScore)||0;
     for(let i=1;i<parts.length;i++)want+=Math.max(-8,Math.min(16,((Number(parts[i].wantScore)||0)-46)*.55));
     const send=Number(base.sendScore)||0,total=Math.round(send*.52+want*.48);
-    const label=total>=70?'Very promising':total>=58?'Promising':total>=46?'Uncertain':total>=34?'Reluctant':'Very reluctant';
+    const label=total>=85?'Very promising':total>=70?'Promising':total>=50?'Possible':total>=35?'Uncertain':'Unlikely';
     return {...base,wantScore:want,total,label,reasons,offeredPopulationCount:list.length};
 }
 function trueDonationHousingSuitability(animal){
@@ -48204,7 +48989,7 @@ function trueOfferEvaluation(offer=state.autonomousTradeOffer,outgoing=state.out
         // indirect rarity effect rather than a visible "level" requirement.
         send-=({1:0,2:2,3:7,4:14,5:22})[reqLevel]||0;
         const total=Math.round(send);
-        const label=total>=70?'Very promising':total>=58?'Promising':total>=46?'Uncertain':total>=34?'Reluctant':'Very reluctant';
+        const label=total>=85?'Very promising':total>=70?'Promising':total>=50?'Possible':total>=35?'Uncertain':'Unlikely';
         return {sendScore:send,wantScore:0,total,label,relationshipStage:stage,reasons,transferKind:'permanent-transfer',housingSuitable:housing.hasSpace};
     }
 
@@ -48227,7 +49012,7 @@ function trueOfferEvaluation(offer=state.autonomousTradeOffer,outgoing=state.out
     else if(outLevel>reqLevel){want+=7;reasons.push({good:true,text:'The offered population is significant to the receiving zoo'});}
 
     const total=Math.round(send*.52+want*.48);
-    const label=total>=70?'Very promising':total>=58?'Promising':total>=46?'Uncertain':total>=34?'Reluctant':'Very reluctant';
+    const label=total>=85?'Very promising':total>=70?'Promising':total>=50?'Possible':total>=35?'Uncertain':'Unlikely';
     return {sendScore:send,wantScore:want,total,label,relationshipStage:stage,reasons};
 }
 function trueProposalResponseDelayHours(offer){
@@ -48305,6 +49090,15 @@ function resolveTrueTransferProposalResponse(payload={}){
     const proposal=trueTransferProposalById(payload.proposalId);
     if(!proposal || proposal.status!=='pending') return;
     const offer=proposal.offer;
+    const promised=(proposal.outgoingOffers?.length?proposal.outgoingOffers:(proposal.outgoingOffer?[proposal.outgoingOffer]:[]));
+    if(promised.some(a=>!trueProposalOutgoingStillAvailable(a,proposal.id))){
+        proposal.status='declined';
+        proposal.responseDate=normaliseTrueCalendarState().date;
+        if(offer.marketplaceListingId)setTrueMarketplaceListingStatus(offer.marketplaceListingId,'available');
+        addTrueActivity({type:'information',title:'Transfer proposal could not proceed',
+            message:'The population you offered is no longer available in the agreed numbers, so the proposal has been closed.'});
+        setTrueCalendarSpeed(0);renderTrade();return;
+    }
     const evaluation=trueProposalEvaluation(offer,proposal.outgoingOffers||proposal.outgoingOffer);
     const roll=seededRoll(`proposal-response|${proposal.id}|${proposal.submittedDate}|${(proposal.outgoingOffers?.length?proposal.outgoingOffers.map(animalCardKey).join('+'):(proposal.outgoingOffer?animalCardKey(proposal.outgoingOffer):'no-return'))}`).roll*100;
     const accepted=roll<Math.max(8,Math.min(94,evaluation.total));
@@ -48312,6 +49106,16 @@ function resolveTrueTransferProposalResponse(payload={}){
     proposal.responseDate=normaliseTrueCalendarState().date;
     const profile=trueOfferProfile(offer);
     if(accepted){
+        const partnerProfile=trueOfferProfile(offer);
+        const partnerKey=trueRelationshipKeyForOffer(offer);
+        const partnerRecord=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===partnerKey);
+        if(offer.marketplaceListingId){
+            setTrueMarketplaceListingStatus(offer.marketplaceListingId,'completed');
+            if(partnerRecord){
+                trueWorldPopulationRemove(partnerRecord,offer.animal,offer.population||offer.animal,
+                    {type:'transfer-out',text:`Population committed to ${state.zooName||'the player zoo'}.`,otherZooKey:'player'});
+            }
+        }
         if(offer.eventOpportunity){
             const event=trueEventById(offer.eventId);
             const sourceRecord=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===offer.eventSourceKey);
@@ -48322,13 +49126,33 @@ function resolveTrueTransferProposalResponse(payload={}){
             }
         }
         const transfer=trueTransferCreateFromAcceptedProposal(proposal);
+        const arrivals=trueTransferCompleteImmediately(transfer);
         const firstLeg=transfer?.incomings?.[0]||null;
+        const sent=(proposal.outgoingOffers?.length?proposal.outgoingOffers:(proposal.outgoingOffer?[proposal.outgoingOffer]:[]));
+        if(partnerRecord){
+            for(const outgoing of sent){
+                trueWorldPopulationAdd(partnerRecord,outgoing,trueTransferPop(outgoing),
+                    {type:'transfer-in',text:`Population received from ${state.zooName||'the player zoo'}.`,otherZooKey:'player'});
+            }
+        }
+        const relation=trueRelationshipForProfile(partnerProfile,partnerKey);
+        const significance=Math.max(1,Number(offer.animal?.level)||1);
+        const gain=Math.max(2,Math.round(5+significance*1.5-Math.min(4,Number(relation.meaningfulTransfers)||0)));
+        relation.trust=Math.min(100,(Number(relation.trust)||0)+gain);
+        trueRelationshipRecordTransfer(partnerProfile,partnerKey,offer.animal,
+            `Completed a transfer involving ${animalDisplayName(offer.animal)} with ${partnerProfile?.name||'partner zoo'}.`);
+        const activeWant=trueMarketplaceActiveWant(partnerProfile);
+        if(activeWant&&sent.some(a=>trueMarketplaceWantMatchesAnimal(activeWant,a))){
+            activeWant.status='fulfilled';activeWant.fulfilledDate=normaliseTrueCalendarState().date;
+        }
         const baseMessage=(proposal.outgoingOffers?.length||proposal.outgoingOffer)
             ? `${profile?.name||'The zoo'} accepted your exchange proposal for ${animalDisplayName(offer.animal)}.`
             : `${profile?.name||'The zoo'} approved the permanent transfer of ${animalDisplayName(offer.animal)} with nothing requested in return.`;
         addTrueActivity({type:'action',title:'Transfer proposal accepted',
-            message:`${baseMessage} Arrival is expected in ${trueFuzzyDaysEstimate(trueDaysBetween(normaliseTrueCalendarState().date,transfer?.arrivalDate||trueTransferDatePlus(4)),`arrival-${transfer?.id||proposal.id}`)}.`,
-            transferId:transfer?.id??null,transferLegId:null,animal:null,glowAnimal:false});
+            message:transfer?.backstageArrivalBlocked
+                ? `${baseMessage} The transfer is accepted, but backstage space is needed before the animal can be admitted.`
+                : `${baseMessage} The animal has arrived.`,
+            transferId:transfer?.id??null,transferLegId:firstLeg?.legId||null,animal:arrivals?.[0]||null,glowAnimal:Boolean(arrivals?.[0])});
     }else{
         if(offer.eventOpportunity){
             const event=trueEventById(offer.eventId);
@@ -48352,7 +49176,7 @@ function trueProposalStatusText(offer) {
     if (!offer?.marketplaceRequest&&!offer?.eventOpportunity) return '';
     const evaluation=trueProposalEvaluation(offer,trueProposalOutgoingOffers());
     if (offer.proposalStatus==='pending') return `Proposal sent · A response is expected ${trueProposalResponseLabel(offer.responseDueDate,offer.responseDueMinute)}.`;
-    if (offer.proposalStatus==='accepted') return 'Proposal accepted. Transfer arrangements are being made; the animal can be placed after it arrives.';
+    if (offer.proposalStatus==='accepted') return 'Proposal accepted. The animal has arrived.';
     if (offer.proposalStatus==='declined') return 'Proposal declined. Change your offered population to revise it.';
     return `${trueProposalOutgoingOffers().length?'Exchange proposal':'Permanent transfer · nothing requested in return'} · Likely response: ${evaluation?.label||'Uncertain'}. Submit when you are ready.`;
 }
@@ -48361,6 +49185,12 @@ function submitTrueTransferProposal() {
     const offer=state.autonomousTradeOffer;
     if(state.gameMode!=='true'||(!offer?.marketplaceRequest&&!offer?.eventOpportunity)) return false;
     normaliseTrueTransferProposals();
+    const outgoingNow=trueProposalOutgoingOffers();
+    if(outgoingNow.some(a=>!trueProposalOutgoingStillAvailable(a))){
+        addTrueActivity({type:'information',title:'Transfer proposal not sent',
+            message:'One of the populations in this proposal is already committed to another pending transfer or is no longer available.'});
+        return false;
+    }
     const proposalId=`ttp-${state.trueTransferProposalNextId++}`;
     const submittedDate=normaliseTrueCalendarState().date;
     const responseSchedule=scheduleTrueTransferProposalResponse(offer,proposalId);
@@ -48393,6 +49223,73 @@ function submitTrueTransferProposal() {
     return true;
 }
 
+
+function trueNetworkProfileForRelationshipKey(sourceKey){
+    const key=String(sourceKey||'');
+    const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===key)||
+        (state.realZooData?.zoos||[]).find(r=>String(r?.name||'')===key);
+    if(record)return realZooProfile(record,(state.realZooData?.zoos||[]).indexOf(record));
+    const event=normaliseTrueEventState().items.find(e=>String(e?.sourceKey||'')===key&&e?.profile);
+    if(event?.profile)return event.profile;
+    const listing=normaliseTrueMarketplace().listings.find(l=>String(l?.sourceKey||'')===key&&l?.profile);
+    return listing?.profile||null;
+}
+function trueNetworkRows(){
+    const rows=[];
+    for(const [sourceKey,rel] of Object.entries(normaliseTrueRelationships())){
+        if(!rel||(!rel.lastInteractionDate&&!(rel.history||[]).length&&!(Number(rel.familiarity)>0)))continue;
+        const profile=trueNetworkProfileForRelationshipKey(sourceKey);
+        if(!profile?.name)continue;
+        const record=realZooRecordByName(profile.name);
+        rows.push({sourceKey,profile,rel,country:String(profile.country||record?.country||'Unknown country').trim()||'Unknown country',
+            prestige:Number(profile.prestige)||Number(record?realZooPrestige(record):0)||0});
+    }
+    return rows;
+}
+function closeTrueZooNetwork(){document.getElementById('trueZooNetworkOverlay')?.remove();}
+function openTrueZooNetwork(){
+    closeTrueZooNetwork();
+    const overlay=document.createElement('div');overlay.id='trueZooNetworkOverlay';
+    overlay.style.cssText='position:fixed;inset:0;z-index:100080;background:rgba(36,31,24,.38);display:flex;align-items:flex-start;justify-content:center;padding:70px 18px 24px;box-sizing:border-box;';
+    const panel=document.createElement('div');
+    panel.style.cssText='width:min(720px,calc(100vw - 36px));max-height:calc(100vh - 94px);overflow:auto;background:#efe4c3;color:#554936;border:1px solid #8f8062;border-radius:9px;box-shadow:0 14px 38px rgba(0,0,0,.28);padding:18px 20px;font-family:inherit;';
+    const head=document.createElement('div');head.style.cssText='display:flex;align-items:center;gap:12px;margin-bottom:14px;';
+    head.innerHTML='<div style="flex:1"><div style="font-size:10px;font-weight:900;letter-spacing:.12em;opacity:.62">ZOO NETWORK</div><div style="font-size:25px;font-weight:900;margin-top:3px">Zoo Network</div></div>';
+    const close=document.createElement('button');close.type='button';close.textContent='Close';close.className='save-load-button';close.onclick=closeTrueZooNetwork;head.appendChild(close);panel.appendChild(head);
+    const rows=trueNetworkRows(),groups=new Map();
+    for(const row of rows){if(!groups.has(row.country))groups.set(row.country,[]);groups.get(row.country).push(row);}
+    const countries=[...groups.keys()].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));
+    if(!rows.length){const empty=document.createElement('div');empty.textContent='Your zoo has not made contact with another zoo yet.';empty.style.opacity='.72';panel.appendChild(empty);}
+    for(const country of countries){
+        const section=document.createElement('section');section.style.cssText='margin-top:13px;border-top:1px solid rgba(84,72,52,.24);padding-top:11px;';
+        const title=document.createElement('div');title.textContent=country;title.style.cssText='font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;';section.appendChild(title);
+        for(const row of groups.get(country).sort((a,b)=>b.prestige-a.prestige||String(a.profile.name).localeCompare(String(b.profile.name)))){
+            const line=document.createElement('div');line.style.cssText='display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:8px 3px;border-top:1px solid rgba(84,72,52,.12);';
+            const name=document.createElement('strong');name.textContent=row.profile.name;
+            const prestige=document.createElement('span');prestige.textContent=`Prestige ${Math.round(row.prestige)}`;prestige.style.cssText='font-size:11px;opacity:.7;white-space:nowrap;';
+            const relationship=document.createElement('span');relationship.textContent=trueRelationshipStage(row.rel.trust);relationship.style.cssText='font-size:11px;font-weight:900;min-width:72px;text-align:right;';
+            line.append(name,prestige,relationship);section.appendChild(line);
+        }
+        panel.appendChild(section);
+    }
+    overlay.appendChild(panel);overlay.addEventListener('pointerdown',e=>{if(e.target===overlay)closeTrueZooNetwork();});document.body.appendChild(overlay);
+}
+function openTrueTradeHistory(){
+    pauseAllHintGlowsForMenu();
+    const overlay=document.getElementById('tradeHistoryOverlay'),list=document.getElementById('tradeHistoryList');
+    if(!overlay||!list)return;
+    list.innerHTML='';
+    const proposals=[...(normaliseTrueTransferProposals?.()||[])].filter(p=>p&&['accepted','declined','completed'].includes(String(p.status||''))).reverse();
+    if(!proposals.length)list.textContent='No True-mode transfer history yet.';
+    for(const p of proposals){
+        const row=document.createElement('div');row.style.cssText='padding:10px 0;border-top:1px solid rgba(0,0,0,.18);line-height:1.4;';
+        const profile=p.profile||trueNetworkProfileForRelationshipKey(p.sourceKey)||{};
+        const animal=p.animal?animalDisplayName(p.animal):'Animal transfer';
+        row.innerHTML=`<strong>${escapeHtml(profile.name||p.zooName||'Zoo')}</strong><div style="font-size:12px;opacity:.76">${escapeHtml(animal)} · ${escapeHtml(String(p.status||''))}</div>`;
+        list.appendChild(row);
+    }
+    overlay.style.display='flex';
+}
 function renderTrueTransferProposal() {
     trueTransferSyncAcceptedProposals();
     if (state.gameMode !== 'true') {
@@ -48415,7 +49312,7 @@ function renderTrueTransferProposal() {
     // True owns this area: suppress every inherited Classic opponent/trade child.
     // The proposal panel itself is the only visible child in True.
     for (const child of Array.from(area.children)) {
-        if (child !== panel) child.style.display = 'none';
+        if (child !== panel && child.id!=='trueTradeNav') child.style.display = 'none';
     }
     // The proposal must not live inside the header/trade container: transformed
     // or clipped header ancestors change the containing block of position:fixed.
@@ -48423,6 +49320,15 @@ function renderTrueTransferProposal() {
     if(panel.parentElement!==document.body)document.body.appendChild(panel);
     panel.style.display = '';
     panel.innerHTML = '';
+    let trueTradeNav=document.getElementById('trueTradeNav');
+    if(!trueTradeNav){
+        trueTradeNav=document.createElement('div');trueTradeNav.id='trueTradeNav';
+        Object.assign(trueTradeNav.style,{position:'absolute',right:'0',top:'-39px',display:'flex',gap:'6px',alignItems:'center',zIndex:'4'});
+        const history=document.createElement('button');history.type='button';history.textContent='Trade History';history.className='save-load-button';history.addEventListener('click',openTrueTradeHistory);
+        const network=document.createElement('button');network.type='button';network.textContent='Zoo Network';network.className='save-load-button';network.addEventListener('click',openTrueZooNetwork);
+        trueTradeNav.append(history,network);area.appendChild(trueTradeNav);
+    }else trueTradeNav.style.display='flex';
+
     if(!window.__trueTransferProposalResizeBound){
         window.__trueTransferProposalResizeBound=true;
         let transferResizeRaf=0;

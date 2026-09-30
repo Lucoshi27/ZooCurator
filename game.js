@@ -3,7 +3,7 @@
  * Current consolidated build. Historical patch-version labels were removed
  * from inline comments so this constant is the single in-code version marker.
  */
-const ZOO_CURATOR_VERSION = "V2.44.02";
+const ZOO_CURATOR_VERSION = "V2.44.04";
 // Definitive V2 baseline: True-mode systems + current Information-map geography fixes.
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
@@ -2682,7 +2682,19 @@ function truePopulationHusbandrySummary(animal){
     const displayRequired=condition.enclosureSpace?.mixed&&driver&&driver.key!==animalCardKey(animal)
         ?condition.required
         :ownRequired;
-    const space=condition.cells==null?'No built enclosure':`${condition.cells} cells · ${displayRequired} recommended${displayRequired>baseline?` (${baseline} species baseline)`:''}${shared}${drivenBy}`;
+    let combinedWant='';
+    if(condition.enclosureSpace?.mixed){
+        const residents=condition.enclosureSpace.residents||[];
+        // Mixed exhibits have a real enclosure-level cell requirement in addition
+        // to this card's own recommendation. Find the smallest cell count that
+        // satisfies the complete resident combination, then retain any larger
+        // managed-population requirement already calculated for the enclosure.
+        let combinationCells=Math.max(1,residents.length);
+        while(combinationCells<64&&!enclosureAnimalSizeSpaceStatus(combinationCells,residents).valid)combinationCells++;
+        const combinedRequired=Math.max(Number(condition.enclosureSpace.required)||1,combinationCells);
+        combinedWant=` · ${combinedRequired} combined recommended`;
+    }
+    const space=condition.cells==null?'No built enclosure':`${condition.cells} cells · ${displayRequired} recommended${displayRequired>baseline?` (${baseline} species baseline)`:''}${combinedWant}${shared}${drivenBy}`;
     const profile=truePopulationProfile(animal);
     const preferred=[...new Set((profile.profiles?.length?profile.profiles:[profile.template]).filter(Boolean).map(truePopulationStructureLabel))];
     const composition=structure.valid?structure.label:structure.label;
@@ -24503,6 +24515,12 @@ function customAreaLeaderAutomaticRoute(g,area){
         ? [g.start,{x:g.target.x,y:g.start.y},g.target]
         : [g.start,{x:g.start.x,y:g.target.y},g.target];
     const ownEnclosures=new Set((area?.enclosureIds||[]).map(id=>String(id)));
+    // Backstage sits immediately beside the public zoo and its Area also includes
+    // the unoccupied staff-connector cell. Treating nearby public enclosures as
+    // obstacles can send this tiny label leader all the way around the outside of
+    // the zoo (often above the visible canvas), which looks like a line vanishing
+    // into nowhere. Backstage always uses the compact local Manhattan connection.
+    if(area?.trueBackstageArea)return direct;
     const crosses=direct.slice(0,-1).some((p,i)=>
         customAreaLeaderSegmentCrossesEnclosure(p,direct[i+1],ownEnclosures)
     );

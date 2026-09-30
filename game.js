@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.06";
+const ZOO_CURATOR_VERSION = "V2.44.09";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -7359,29 +7359,26 @@ function trueEventCandidateWeight(listing){
     return relationshipWeight*prestigeWeight*proximityWeight*zooTypeWeight*specialistWeight*cooperationWeight*recencyWeight*truePlayerOfferLevelWeight(listing.animal);
 }
 
-function trueEventProfileIsAquarium(profile){
-    return normaliseZooTypes(profile?.zooTypes||profile?.zoo_types||'general').some(type=>{
-        const t=String(type||'').toLowerCase();
-        return t.includes('aquarium')||t.includes('marine')||t.includes('aquatic')||
-            t.includes('sea life')||t.includes('sealife')||t.includes('ocean');
-    });
+function trueEventProfileIsAquarium(profile,record=null){
+    const aquatic=v=>{const t=String(v||'').toLowerCase();return t.includes('aquarium')||t.includes('marine mania')||t.includes('marine')||t.includes('aquatic')||t.includes('sea life')||t.includes('sealife')||t.includes('ocean');};
+    if(normaliseZooTypes(profile?.zooTypes||profile?.zoo_types||record?.zoo_types||record?.zooTypes||'general').some(aquatic))return true;
+    const favourites=[...(Array.isArray(profile?.favourites)?profile.favourites:[]),...(Array.isArray(record?.favoured_categories)?record.favoured_categories:[]),...(Array.isArray(record?.favorite_categories)?record.favorite_categories:[])];
+    if(favourites.some(v=>String(v||'').toLowerCase()==='marine mania'))return true;
+    // Some specialist institutions in the opponent data are not typed as
+    // "Aquarium". Recognise overwhelmingly Marine Mania collections too.
+    const stock=record?realZooTradeAnimals(record,true):[];
+    if(stock.length>=3){
+        const marine=stock.filter(a=>String(a?.category||a?.categoryName||'').toLowerCase()==='marine mania').length;
+        if(marine/stock.length>=.60)return true;
+    }
+    return false;
 }
-function truePlayerHasAquaticAnimal(){
-    return (state.animals||[]).some(animal=>{
-        if(!animal||animal.trueArrivalPending)return false;
-        const category=String(animal.category||animal.categoryName||'').toLowerCase();
-        if(category==='marine mania'||category.includes('marine'))return true;
-        const tags=[
-            ...(Array.isArray(animal.tags)?animal.tags:[]),
-            ...(Array.isArray(animal.habitat_tags)?animal.habitat_tags:[]),
-            ...(Array.isArray(animal.habitatTags)?animal.habitatTags:[])
-        ].map(v=>String(v||'').toLowerCase());
-        return tags.some(t=>t==='aquatic'||t==='marine'||t==='semi-aquatic'||t.includes('aquatic')||t.includes('marine'));
-    });
+function truePlayerHasMarineManiaAnimal(){
+    return (state.animals||[]).some(animal=>animal&&!animal.trueArrivalPending&&trueAnimalPopulationTotal(animal)>0&&String(animal.category||animal.categoryName||'').trim().toLowerCase()==='marine mania');
 }
 function trueEventAquariumSourceAllowed(record,index=0){
     const profile=realZooProfile(record,index);
-    return !trueEventProfileIsAquarium(profile)||trueMarketplacePlayerIsAquarium()||truePlayerHasAquaticAnimal();
+    return !trueEventProfileIsAquarium(profile,record)||truePlayerHasMarineManiaAnimal();
 }
 
 function trueEventEligibleSourceRecords(seedSuffix='general'){
@@ -8988,8 +8985,8 @@ function openTrueEventDialog(id){
     const requestedPlayerAnimal=isRequest?trueEventRequestedPlayerAnimal(event):null;
     if(isRequest&&event.status==='active'&&!requestedPlayerAnimal){
         event.status='unavailable';event.resolvedDate=normaliseTrueCalendarState().date;
-        event.resolution=`The requested ${animalDisplayName(event.animal)} population is no longer held by your zoo, so the request was withdrawn.`;
-        renderTrueSimulationPanel();writeAutoResumeSnapshot?.(true);return false;
+        event.resolution=`The requested ${animalDisplayName(event.animal)} population is no longer available to send, so the request has closed.`;
+        writeAutoResumeSnapshot?.(true);
     }
     if(requestedPlayerAnimal)event.playerAnimalId=requestedPlayerAnimal.id;
     const active=event.status==='active'&&(event.informational?true:(isRequest?!!requestedPlayerAnimal:(event.independentEvent?true:!!listing&&listing.status==='available')));
@@ -9016,7 +9013,7 @@ function openTrueEventDialog(id){
         else if(event.welfareConcern)footer=event.status==='resolved'
             ?`Resolution: ${escapeHtml(event.resolution||'Conditions corrected')}.`
             :'This concern remains tied to the current husbandry conditions for this population.';
-        else if(isRequest)footer=`<strong>Why they want them:</strong> ${escapeHtml(event.requestReason||trueMarketplaceWantLabel(event.want))}`;
+        else if(isRequest)footer=event.status==='unavailable'?`<strong>Request closed:</strong> ${escapeHtml(event.resolution||'The requested population is no longer available to send.')}`:`<strong>Why they want them:</strong> ${escapeHtml(event.requestReason||trueMarketplaceWantLabel(event.want))}`;
         else if(!event.informational)footer=`Why offered: ${escapeHtml(listing?.reason||(event.kind==='breeding-success'?'Recent breeding success':event.kind==='emergency-placement'?'A change in collection planning':'Population management'))}<br>Relationship: ${escapeHtml(relationshipContext)}${Number(rel.meaningfulTransfers)>0?` · ${Number(rel.meaningfulTransfers)} previous successful transfer${Number(rel.meaningfulTransfers)===1?'':'s'}`:''}`;
     }
     const topLabel=isKeeperUpdate?'KEEPER UPDATE':trueEventScaleLabel(event.scale||trueEventScaleFor(event.kind,event.animal,rel));
@@ -9195,6 +9192,7 @@ function openTrueEventDialog(id){
             },true)
         );
     }else actions.append(button('Close',closeTrueEventDialog,true));
+    if(!actions.children.length)actions.append(button('Close',()=>closeTrueEventDialog(true),true));
     const sticky=trueEventRequiresDecision(event);
     const close=document.createElement('button');close.type='button';close.textContent='−';close.title='Minimize event';
     close.setAttribute('aria-label','Minimize event');
@@ -42867,27 +42865,47 @@ function trueMarketplacePlayerListingAnimal(row){
 function trueMarketplacePlayerActiveListings(){
     const market=normaliseTrueMarketplaceState(),today=String(state.trueCalendar?.date||'2026-04-18');
     for(const row of market.playerListings){
-        if(row?.status==='listed'&&row.expiresDate&&row.expiresDate<today)row.status='expired';
+        if(row?.status==='listed'){
+            const animal=trueMarketplacePlayerListingAnimal(row);
+            if(animal&&row.reservationId==null){
+                const n=Number(String(row.id||'').match(/(\d+)$/)?.[1])||market.nextPlayerListingId++;
+                row.reservationId=-(1000000+n);trueTransferReserve(animal,normaliseTruePopulationCounts(row.population),row.reservationId);
+            }
+        }
+        if(row?.status==='listed'&&row.expiresDate&&row.expiresDate<today){
+            row.status='expired';const animal=trueMarketplacePlayerListingAnimal(row);
+            trueMarketplaceReleasePlayerListingReservation(row);if(animal)delete animal.trueMarketplaceListed;
+        }
         if(row?.status==='listed'&&!trueMarketplacePlayerListingAnimal(row))row.status='withdrawn';
     }
     return market.playerListings.filter(r=>r?.status==='listed');
 }
-function trueMarketplaceListPlayerAnimal(animal){
+function trueMarketplaceListPlayerAnimal(animal,population=null){
     if(!animal||animal.trueArrivalPending||animal.reservedForTrade||animal.reservedEnclosureId!=null)return false;
     if(trueMarketplacePlayerActiveListings().some(r=>String(r.animalId)===String(animal.id)))return false;
+    const available=trueTransferAvailableCounts(animal),selected=normaliseTruePopulationCounts(population||available);
+    const total=selected.males+selected.females+selected.unknown;
+    if(total<=0||selected.males>available.males||selected.females>available.females||selected.unknown>available.unknown)return false;
     const market=normaliseTrueMarketplaceState(),today=normaliseTrueCalendarState().date;
-    const row={id:`tmpl-${market.nextPlayerListingId++}`,animalId:animal.id,animal:cloneForSave(animal),
-        population:cloneForSave(normaliseTrueAnimalPopulation(animal)),createdDate:today,
-        expiresDate:addTrueDays(today,14),status:'listed',offers:[],lastOfferDate:''};
-    market.playerListings.push(row);
-    animal.trueMarketplaceListed=true;
+    const listingNumber=market.nextPlayerListingId++,reservationId=-(1000000+listingNumber);
+    const row={id:`tmpl-${listingNumber}`,animalId:animal.id,animal:cloneForSave(animal),
+        population:cloneForSave(selected),createdDate:today,expiresDate:addTrueDays(today,14),status:'listed',offers:[],lastOfferDate:'',reservationId};
+    market.playerListings.push(row);trueTransferReserve(animal,selected,reservationId);animal.trueMarketplaceListed=true;
     addTrueActivity({type:'information',title:'Population listed in Marketplace',
-        message:`${animalDisplayName(animal)} has been offered to the zoo network. Interested institutions may contact us over the next few days.`});
+        message:`${animalDisplayName(animal)} ${truePopulationNotation(selected)} has been offered to the zoo network. Interested institutions may contact us over the next few days.`});
     writeAutoResumeSnapshot?.(true);return true;
+}
+function trueMarketplaceReleasePlayerListingReservation(row){
+    const animal=trueMarketplacePlayerListingAnimal(row);if(!animal)return;
+    if(row?.reservationId!=null){
+        animal.trueTransferReservations=trueTransferReservations(animal).filter(r=>Number(r.transferId)!==Number(row.reservationId));
+        if(!animal.trueTransferReservations.length)delete animal.trueTransferReservations;
+    }
 }
 function trueMarketplaceWithdrawPlayerListing(row){
     if(!row||row.status!=='listed')return false;row.status='withdrawn';
-    const animal=trueMarketplacePlayerListingAnimal(row);if(animal)delete animal.trueMarketplaceListed;
+    const animal=trueMarketplacePlayerListingAnimal(row);trueMarketplaceReleasePlayerListingReservation(row);
+    if(animal)delete animal.trueMarketplaceListed;
     writeAutoResumeSnapshot?.(true);return true;
 }
 function trueMarketplacePlayerOfferCandidates(row,today){
@@ -42936,9 +42954,15 @@ function trueMarketplaceResolvePlayerOffer(row,offer,accept){
     const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===offer.sourceKey);
     if(!accept){offer.status='declined';trueRelationshipRecord(offer.profile,offer.sourceKey,'marketplace-offer-declined',
         `Declined an offer for ${animalDisplayName(animal)}.`,{familiarity:1});writeAutoResumeSnapshot?.(true);return true;}
-    const population=normaliseTrueAnimalPopulation(animal);
+    const population=normaliseTruePopulationCounts(row.population||normaliseTrueAnimalPopulation(animal));
+    trueMarketplaceReleasePlayerListingReservation(row);
+    const available=trueTransferAvailableCounts(animal);
+    if(population.males>available.males||population.females>available.females||population.unknown>available.unknown){
+        trueTransferReserve(animal,population,row.reservationId);offer.status='unavailable';return false;
+    }
     if(record)trueWorldPopulationAdd(record,animal,population,{type:'transfer-in',text:`Population received from ${state.zooName||'the player zoo'} via Marketplace.`,otherZooKey:'player'});
-    state.animals=state.animals.filter(a=>a!==animal);
+    trueTransferSubtract(animal,population);
+    if(trueAnimalPopulationTotal(animal)<=0)state.animals=state.animals.filter(a=>a!==animal);
     if(offer.offeredAnimal){
         if(record)trueWorldPopulationRemove(record,offer.offeredAnimal,trueMarketplacePopulation(offer.offeredAnimal,offer.profile?.name,row.id),
             {type:'transfer-out',text:`Population exchanged with ${state.zooName||'the player zoo'} via Marketplace.`,otherZooKey:'player'});
@@ -42957,6 +42981,20 @@ function trueMarketplaceResolvePlayerOffer(row,offer,accept){
             :`${offer.profile?.name||'The zoo'} has taken ${animalDisplayName(animal)} into its collection.`});
     renderZoo();renderTrade();writeAutoResumeSnapshot?.(true);return true;
 }
+function trueMarketplaceListingAmountChooser(animal,onDone){
+    const available=trueTransferAvailableCounts(animal),selected={males:0,females:0,unknown:0};
+    if(available.males>0)selected.males=1;else if(available.females>0)selected.females=1;else if(available.unknown>0)selected.unknown=1;
+    const shade=document.createElement('div');Object.assign(shade.style,{position:'fixed',inset:'0',zIndex:'100020',background:'rgba(20,18,14,.38)',display:'flex',alignItems:'center',justifyContent:'center'});
+    const box=document.createElement('div');Object.assign(box.style,{width:'min(430px,92vw)',background:'#f5f0e5',color:'#2b251d',border:'1px solid #8b7b63',borderRadius:'10px',padding:'16px',boxShadow:'0 14px 45px rgba(0,0,0,.35)'});
+    const title=document.createElement('div');title.textContent=`How many ${animalDisplayName(animal)}?`;Object.assign(title.style,{fontSize:'19px',fontWeight:'900',marginBottom:'4px'});
+    const note=document.createElement('div');note.textContent=`Available: ${truePopulationNotation(available)}. Choose the individuals to advertise.`;Object.assign(note.style,{fontSize:'12px',opacity:'.68',marginBottom:'14px'});box.append(title,note);
+    const row=document.createElement('div');Object.assign(row.style,{display:'flex',gap:'12px',alignItems:'center',marginBottom:'16px'});
+    const gameButton=(label,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=label;Object.assign(b.style,{height:'32px',padding:'0 11px',border:'1px solid #8b7b63',borderRadius:'7px',background:'#766344',color:'#fff',fontWeight:'800',cursor:'pointer'});b.onclick=fn;return b;};
+    const make=(key,label,max)=>{if(max<=0)return null;const wrap=document.createElement('div');Object.assign(wrap.style,{display:'flex',alignItems:'center',gap:'5px'});const value=document.createElement('strong');value.style.minWidth='18px';const refresh=()=>value.textContent=String(selected[key]);wrap.append(document.createTextNode(label+' '),gameButton('−',()=>{selected[key]=Math.max(0,selected[key]-1);refresh();refreshList();}),value,gameButton('+',()=>{selected[key]=Math.min(max,selected[key]+1);refresh();refreshList();}));refresh();return wrap;};
+    for(const item of [make('males','♂',available.males),make('females','♀',available.females),make('unknown','?',available.unknown)])if(item)row.append(item);box.append(row);
+    const actions=document.createElement('div');Object.assign(actions.style,{display:'flex',justifyContent:'flex-end',gap:'8px'});const cancel=gameButton('Cancel',()=>shade.remove()),list=gameButton('List selected',()=>{if(selected.males+selected.females+selected.unknown<=0)return;if(onDone({...selected})!==false)shade.remove();});
+    const refreshList=()=>{const ok=selected.males+selected.females+selected.unknown>0;list.disabled=!ok;list.style.opacity=ok?'1':'.45';list.style.cursor=ok?'pointer':'default';};refreshList();actions.append(cancel,list);box.append(actions);shade.append(box);shade.onclick=e=>{if(e.target===shade)shade.remove();};document.body.append(shade);
+}
 function openTrueMarketplacePlayerListings(){
     if(state.gameMode!=='true'||state.visitingZoo)return;
     closeTrueMarketplace();
@@ -42965,21 +43003,22 @@ function openTrueMarketplacePlayerListings(){
     const panel=document.createElement('div');Object.assign(panel.style,{width:'min(900px,95vw)',maxHeight:'88vh',overflow:'auto',background:'#f5f0e5',color:'#2b251d',border:'1px solid #8b7b63',borderRadius:'14px',padding:'18px',boxSizing:'border-box'});
     const head=document.createElement('div');Object.assign(head.style,{display:'flex',justifyContent:'space-between',alignItems:'center'});
     const title=document.createElement('div');title.innerHTML='<div style="font-size:22px;font-weight:900">Offer animals</div><div style="font-size:12px;opacity:.65">List a population and wait for zoos in your network to make an offer</div>';
-    const close=document.createElement('button');close.textContent='Close';close.onclick=closeTrueMarketplace;head.append(title,close);panel.appendChild(head);
+    const styleOfferButton=b=>Object.assign(b.style,{height:'32px',padding:'0 11px',border:'1px solid #8b7b63',borderRadius:'7px',background:'#766344',color:'#fff',fontWeight:'800',cursor:'pointer'});
+    const close=document.createElement('button');close.textContent='Close';styleOfferButton(close);close.onclick=closeTrueMarketplace;head.append(title,close);panel.appendChild(head);
     const active=trueMarketplacePlayerActiveListings();
     for(const row of active){
         const card=document.createElement('div');Object.assign(card.style,{marginTop:'14px',padding:'12px',border:'1px solid #b5a78d',borderRadius:'9px'});
-        const h=document.createElement('div');h.textContent=`${animalDisplayName(row.animal)} · listed until ${formatTrueDate(row.expiresDate,false)}`;h.style.fontWeight='900';card.appendChild(h);
+        const h=document.createElement('div');h.textContent=`${animalDisplayName(row.animal)} · ${truePopulationNotation(row.population)} · listed until ${formatTrueDate(row.expiresDate,false)}`;h.style.fontWeight='900';card.appendChild(h);
         for(const offer of row.offers||[]){
             if(offer.status!=='pending')continue;
             const line=document.createElement('div');Object.assign(line.style,{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'10px',marginTop:'8px'});
             const text=document.createElement('span');text.textContent=offer.offeredAnimal?`${offer.profile?.name}: ${animalDisplayName(offer.offeredAnimal)} in return`:`${offer.profile?.name}: can take them without an exchange`;
             const actions=document.createElement('span');
-            for(const [label,val] of [['Accept',true],['Decline',false]]){const b=document.createElement('button');b.textContent=label;b.style.marginLeft='5px';b.onclick=()=>{trueMarketplaceResolvePlayerOffer(row,offer,val);openTrueMarketplacePlayerListings();};actions.appendChild(b);}
+            for(const [label,val] of [['Accept',true],['Decline',false]]){const b=document.createElement('button');b.textContent=label;b.style.marginLeft='5px';styleOfferButton(b);b.onclick=()=>{trueMarketplaceResolvePlayerOffer(row,offer,val);openTrueMarketplacePlayerListings();};actions.appendChild(b);}
             line.append(text,actions);card.appendChild(line);
         }
         if(!(row.offers||[]).some(o=>o.status==='pending')){const wait=document.createElement('div');wait.textContent='No current offers. The listing remains visible to the network.';wait.style.opacity='.65';card.appendChild(wait);}
-        const withdraw=document.createElement('button');withdraw.textContent='Withdraw listing';withdraw.style.marginTop='9px';withdraw.onclick=()=>{trueMarketplaceWithdrawPlayerListing(row);openTrueMarketplacePlayerListings();};card.appendChild(withdraw);panel.appendChild(card);
+        const withdraw=document.createElement('button');withdraw.textContent='Withdraw listing';styleOfferButton(withdraw);withdraw.style.marginTop='9px';withdraw.onclick=()=>{trueMarketplaceWithdrawPlayerListing(row);openTrueMarketplacePlayerListings();};card.appendChild(withdraw);panel.appendChild(card);
     }
     const listedIds=new Set(active.map(r=>String(r.animalId)));
     const animals=(state.animals||[]).filter(a=>a&&!a.trueArrivalPending&&!a.reservedForTrade&&a.reservedEnclosureId==null&&!listedIds.has(String(a.id)));
@@ -42988,8 +43027,11 @@ function openTrueMarketplacePlayerListings(){
         for(const animal of animals){
             const line=document.createElement('div');Object.assign(line.style,{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0'});
             const text=document.createElement('span');text.textContent=`${animalDisplayName(animal)} · ${truePopulationNotation(normaliseTrueAnimalPopulation(animal))}`;
-            const b=document.createElement('button');b.textContent='List in Marketplace';b.onclick=()=>{
-                if(trueMarketplaceListPlayerAnimal(animal))openTrueMarketplacePlayerListings();
+            const b=document.createElement('button');b.textContent='List in Marketplace';styleOfferButton(b);b.onclick=()=>{
+                trueMarketplaceListingAmountChooser(animal,population=>{
+                    if(!trueMarketplaceListPlayerAnimal(animal,population))return false;
+                    openTrueMarketplacePlayerListings();return true;
+                });
             };line.append(text,b);panel.appendChild(line);
         }
     }

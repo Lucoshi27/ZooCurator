@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.09";
+const ZOO_CURATOR_VERSION = "V2.44.15";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -6731,6 +6731,9 @@ function createStartingZoo(options = {}) {
 const TRUE_CALENDAR_SPEEDS = [0, 1, 2, 3];
 const TRUE_CALENDAR_INTERVAL_MS = { 1: 4000, 2: 4000, 3: 4000 };
 const TRUE_CALENDAR_MINUTES_PER_TICK = { 1: 5, 2: 60, 3: 600 };
+const TRUE_CALENDAR_DRIVER_MS = 250;
+let trueCalendarLastDriverAt = 0;
+let trueCalendarMinuteRemainder = 0;
 let trueCalendarTimer = null;
 let trueCalendarWholeDayStartedAt = 0;
 let trueCalendarHourTickStartedAt = 0;
@@ -9488,23 +9491,9 @@ function trueGuestSimulateWholeDay(){
     trueGuestRuntime.spawnGroupDepartureMinute=null;
     refreshTrueGuestsTodayCounter();
 }
-function trueCalendarDisplayParts(now=performance.now()){
+function trueCalendarDisplayParts(){
     const calendar=normaliseTrueCalendarState();
-    const speed=Number(calendar.speed)||0;
-    let total=(Number(calendar.hour)||9)*60+(Number(calendar.minute)||0);
-    if(speed>0){
-        const interval=TRUE_CALENDAR_INTERVAL_MS[speed]||4000;
-        if(!trueCalendarVisualTickStartedAt){
-            trueCalendarVisualTickStartedAt=now;
-            trueCalendarVisualTickBaseMinutes=total;
-        }
-        const phase=Math.max(0,Math.min(1,(now-trueCalendarVisualTickStartedAt)/interval));
-        const span=speed===3
-            ? Math.max(0,19*60-trueCalendarVisualTickBaseMinutes)
-            : (TRUE_CALENDAR_MINUTES_PER_TICK[speed]||0);
-        total=Math.min(19*60,trueCalendarVisualTickBaseMinutes+phase*span);
-    }
-    return {hour:Math.floor(total/60),minute:Math.floor(total%60),date:calendar.date};
+    return {hour:Number(calendar.hour)||9,minute:Number(calendar.minute)||0,date:calendar.date};
 }
 function updateTrueCalendarVisualClock(){
     const el=document.getElementById('trueCalendarVisualClock');
@@ -9751,66 +9740,66 @@ function trueStartCuratorRound(){
     trueCuratorRoundShow(0);
 }
 
-function advanceTrueCalendarTime() {
+function trueProcessRemainingEventRollsBeforeClose(){
+    const cal=normaliseTrueCalendarState(),events=normaliseTrueEventState(),date=cal.date;
+    const schedule=trueEventRollScheduleForDate(date);
+    if(!events.processedTimedRolls||typeof events.processedTimedRolls!=='object'||Array.isArray(events.processedTimedRolls))events.processedTimedRolls={};
+    const done=new Set(Array.isArray(events.processedTimedRolls[date])?events.processedTimedRolls[date]:[]);
+    const originalHour=cal.hour,originalMinute=cal.minute;
+    for(let i=0;i<schedule.length;i++){
+        if(done.has(i))continue;
+        const minute=Number(schedule[i]);
+        cal.hour=Math.floor(minute/60);cal.minute=minute%60;
+        done.add(i);trueGenerateDailyEventSlot(i);
+        // A compressed day cannot actually display a modal at this simulated
+        // minute: openTrueEventDialog is deferred to requestAnimationFrame and
+        // would execute only after the calendar has rolled into tomorrow.
+        // Keep the event in Activity for manual viewing, but consume its automatic
+        // popup here so it can never masquerade as a next-morning event.
+        const generatedQueue=events.presentationQueue||[];
+        while(generatedQueue.length){
+            const queued=generatedQueue.shift();
+            if(!queued?.id)continue;
+            events.presentedEventIds=events.presentedEventIds&&typeof events.presentedEventIds==='object'&&!Array.isArray(events.presentedEventIds)?events.presentedEventIds:{};
+            events.presentedEventIds[queued.id]=trueEventAbsoluteMinute(date,minute);
+        }
+    }
+    events.processedTimedRolls[date]=[...done];
+    cal.hour=originalHour;cal.minute=originalMinute;
+}
+function advanceTrueCalendarTime(now=performance.now()) {
     trueProcessEventPresentationQueue();
     if (state.gameMode !== 'true' || state.sandboxMode) return;
-    const calendar = normaliseTrueCalendarState();
-    const speed=Number(calendar.speed)||0;
-    const addMinutes=TRUE_CALENDAR_MINUTES_PER_TICK[speed]||1;
-    const isWholeDayTick=speed===3;
-    let total=isWholeDayTick ? 19*60 : Number(calendar.hour)*60+Number(calendar.minute||0)+addMinutes;
+    const calendar=normaliseTrueCalendarState(),speed=Number(calendar.speed)||0;
+    if(!speed){trueCalendarLastDriverAt=now;return;}
+    if(!trueCalendarLastDriverAt)trueCalendarLastDriverAt=now;
+    const elapsed=Math.max(0,Math.min(1000,now-trueCalendarLastDriverAt));
+    trueCalendarLastDriverAt=now;
+    const rate=(TRUE_CALENDAR_MINUTES_PER_TICK[speed]||0)/(TRUE_CALENDAR_INTERVAL_MS[speed]||4000);
+    trueCalendarMinuteRemainder+=elapsed*rate;
+    let addMinutes=Math.floor(trueCalendarMinuteRemainder);
+    if(addMinutes<=0){updateTrueCalendarVisualClock();return;}
+    trueCalendarMinuteRemainder-=addMinutes;
+    let total=Number(calendar.hour)*60+Number(calendar.minute||0)+addMinutes;
     const close=19*60;
-    let newDay=false;
-
     if(total>=close){
-        if(isWholeDayTick){
-            const schedule=trueEventRollScheduleForDate(calendar.date),events=normaliseTrueEventState();
-            if(!events.processedTimedRolls||typeof events.processedTimedRolls!=='object'||Array.isArray(events.processedTimedRolls))events.processedTimedRolls={};
-            const done=new Set(Array.isArray(events.processedTimedRolls[calendar.date])?events.processedTimedRolls[calendar.date]:[]);
-            for(let i=0;i<schedule.length;i++)if(!done.has(i)){done.add(i);trueGenerateDailyEventSlot(i);}
-            events.processedTimedRolls[calendar.date]=[...done];
-        }
-        const completedDate=calendar.date;
-        const completedTarget=trueGuestDailyTarget();
-        if(isWholeDayTick)trueGuestSimulateWholeDay();
-        trueApplyPublicPrestigeForCompletedDay(
-            completedDate,
-            isWholeDayTick?completedTarget:trueGuestRuntime.dailyEntered,
-            completedTarget
-        );
-        const oldMonth=calendar.date.slice(0,7);
-        const date=trueDateObject(calendar.date);
-        date.setUTCDate(date.getUTCDate()+1);
-        calendar.date=trueDateString(date);
-        calendar.hour=9;calendar.minute=0;newDay=true;
-        const newMonth=calendar.date.slice(0,7);
-        if(newMonth!==oldMonth)processTrueMonthChange(oldMonth,newMonth);
-        refreshTrueMarketplaceRolling(calendar.date,{announce:true});
-        processTrueScheduledEvents();
-        trueProcessEventDay();
-        trueTransferProcessDay();
-        if(trueDevelopmentShouldEvaluateToday())trueDevelopmentEvaluateMonthly();
-        processTrueRealZooManagementBudget(8);
-    }else{
-        calendar.hour=Math.floor(total/60);
-        calendar.minute=total%60;
-    }
-
-    const nextPhaseNow=performance.now();
-    if(isWholeDayTick)trueCalendarWholeDayStartedAt=nextPhaseNow;
-    if(speed===2)trueCalendarHourTickStartedAt=nextPhaseNow;
-    trueCalendarVisualTickStartedAt=nextPhaseNow;
-    trueCalendarVisualTickBaseMinutes=(Number(calendar.hour)||9)*60+(Number(calendar.minute)||0);
-    trueProcessTimedEventRolls();
-    trueProcessDaytimeActivity();
-    trueAdvancePublicPrestigeDuringDay();
-    updateTurnDisplay();
-    renderTrueSimulationPanel();
-    const now=Date.now();
-    if(now-lastTrueCalendarAutoResumeWriteAt>=5000){
-        lastTrueCalendarAutoResumeWriteAt=now;
-        writeAutoResumeSnapshot(true);
-    }
+        trueProcessRemainingEventRollsBeforeClose();
+        const completedDate=calendar.date,completedTarget=trueGuestDailyTarget();
+        if(speed===3)trueGuestSimulateWholeDay();
+        trueApplyPublicPrestigeForCompletedDay(completedDate,speed===3?completedTarget:trueGuestRuntime.dailyEntered,completedTarget);
+        const oldMonth=calendar.date.slice(0,7),date=trueDateObject(calendar.date);date.setUTCDate(date.getUTCDate()+1);
+        calendar.date=trueDateString(date);calendar.hour=9;calendar.minute=0;trueCalendarMinuteRemainder=0;
+        const newMonth=calendar.date.slice(0,7),rolloverDate=calendar.date;
+        requestAnimationFrame(()=>{
+            if(state.gameMode!=='true'||normaliseTrueCalendarState().date!==rolloverDate)return;
+            if(newMonth!==oldMonth)processTrueMonthChange(oldMonth,newMonth);
+            refreshTrueMarketplaceRolling(rolloverDate,{announce:true});processTrueScheduledEvents();trueProcessEventDay();
+            setTimeout(()=>{if(state.gameMode!=='true'||normaliseTrueCalendarState().date!==rolloverDate)return;trueTransferProcessDay();if(trueDevelopmentShouldEvaluateToday())trueDevelopmentEvaluateMonthly();processTrueRealZooManagementBudget(8);renderTrueSimulationPanel();writeAutoResumeSnapshot?.(true);},0);
+        });
+    }else{calendar.hour=Math.floor(total/60);calendar.minute=total%60;}
+    trueCalendarVisualTickStartedAt=now;trueCalendarVisualTickBaseMinutes=(Number(calendar.hour)||9)*60+(Number(calendar.minute)||0);
+    trueProcessTimedEventRolls();trueProcessDaytimeActivity();trueAdvancePublicPrestigeDuringDay();updateTurnDisplay();renderTrueSimulationPanel();
+    const wall=Date.now();if(wall-lastTrueCalendarAutoResumeWriteAt>=5000){lastTrueCalendarAutoResumeWriteAt=wall;writeAutoResumeSnapshot(true);}
 }
 let trueCalendarTimerSpeed = null;
 function stopTrueCalendarTimer() {
@@ -9833,8 +9822,8 @@ function restartTrueCalendarTimer() {
     }
     if (trueCalendarTimer && trueCalendarTimerSpeed===speed) return;
     stopTrueCalendarTimer();
-    trueCalendarTimerSpeed=speed;
-    trueCalendarTimer = setInterval(advanceTrueCalendarTime, TRUE_CALENDAR_INTERVAL_MS[speed] || 4000);
+    trueCalendarTimerSpeed=speed;trueCalendarLastDriverAt=performance.now();trueCalendarMinuteRemainder=0;
+    trueCalendarTimer=setInterval(()=>advanceTrueCalendarTime(performance.now()),TRUE_CALENDAR_DRIVER_MS);
 }
 
 function refreshTruePausedOverlay() {
@@ -9875,8 +9864,9 @@ function refreshTruePausedOverlay() {
 
 function setTrueCalendarSpeed(speed) {
     const value = TRUE_CALENDAR_SPEEDS.includes(Number(speed)) ? Number(speed) : 0;
-    normaliseTrueCalendarState().speed = value;
     const speedChangeNow=performance.now();
+    advanceTrueCalendarTime(speedChangeNow);
+    normaliseTrueCalendarState().speed = value;trueCalendarLastDriverAt=speedChangeNow;
     trueCalendarWholeDayStartedAt=value===3?speedChangeNow:0;
     trueCalendarHourTickStartedAt=value===2?speedChangeNow:0;
     trueCalendarVisualTickStartedAt=speedChangeNow;
@@ -10610,22 +10600,10 @@ function trueGuestTickFrame(now){
     const simSpeed=trueGuestSimulationSpeedMultiplier();
     const dt=rawDt*simSpeed;
     const target=trueGuestDailyTarget();
-    let calendarHour=Number(calendar.hour)||9;
-    let virtualCalendarMinute=Number(calendar.minute)||0;
-    if(calendarSpeed===2){
-        if(!trueCalendarHourTickStartedAt)trueCalendarHourTickStartedAt=now;
-        const phase=Math.max(0,Math.min(1,(now-trueCalendarHourTickStartedAt)/(TRUE_CALENDAR_INTERVAL_MS[2]||4000)));
-        const baseMinutes=(Number(calendar.hour)||9)*60+(Number(calendar.minute)||0);
-        const fastMinutes=Math.min(18*60-1,baseMinutes+Math.min(59,Math.floor(phase*60)));
-        calendarHour=Math.floor(fastMinutes/60);
-        virtualCalendarMinute=fastMinutes%60;
-    }else if(calendarSpeed===3){
-        if(!trueCalendarWholeDayStartedAt)trueCalendarWholeDayStartedAt=now;
-        const phase=Math.max(0,Math.min(1,(now-trueCalendarWholeDayStartedAt)/(TRUE_CALENDAR_INTERVAL_MS[3]||4000)));
-        const wholeDayMinutes=Math.min(599,Math.floor(phase*600));
-        calendarHour=9+Math.floor(wholeDayMinutes/60);
-        virtualCalendarMinute=wholeDayMinutes%60;
-    }
+    // The calendar is authoritative at every speed. Guests must read it
+    // directly; creating another interpolated fast clock here made guest
+    // behaviour run ahead and could reintroduce apparent time snap-backs.
+    const calendarHour=Number(calendar.hour)||9;
     if(trueGuestRuntime.dailyTargetDate!==calendar.date){
         trueGuestRuntime.dailyTargetDate=calendar.date;
         trueGuestRuntime.dailyEntered=0;
@@ -10636,7 +10614,7 @@ function trueGuestTickFrame(now){
         trueGuestRuntime.nextSpawnAt=now;trueGuestRuntime.nextGroupAt=now+Math.random()*900;
     }
     trueGuestRuntime.lastCalendarDate=calendar.date;trueGuestRuntime.lastCalendarHour=calendarHour;
-    const calendarMinute=(calendarSpeed===2||calendarSpeed===3)?virtualCalendarMinute:(Number(calendar.minute)||0);
+    const calendarMinute=Number(calendar.minute)||0;
     const minutesNow=calendarHour*60+calendarMinute;
     const frameEntrance=trueGuestEntrancePoint();
     if(
@@ -21628,9 +21606,15 @@ function renderCustomAreaLeader(area,label){
         return;
     }
 
-    const guide=area.leaderGuide && (area.leaderGuide.axis==='x'||area.leaderGuide.axis==='y') ? area.leaderGuide : null;
+    // Backstage is generated as a fixed utility area. Never reuse a dragged/saved
+    // leader guide here: an old guide can route its tag line around the entire zoo.
+    // Always connect Backstage locally to its nearest area edge.
+    const guide=!area?.trueBackstageArea && area.leaderGuide && (area.leaderGuide.axis==='x'||area.leaderGuide.axis==='y') ? area.leaderGuide : null;
     let pts;
-    if(guide?.axis==='x'){
+    if(area?.trueBackstageArea){
+        if(area.leaderGuide)delete area.leaderGuide;
+        pts=customAreaLeaderAutomaticRoute(g,area);
+    }else if(guide?.axis==='x'){
         const gx=Number(guide.value);
         pts=[g.start,{x:gx,y:g.start.y},{x:gx,y:g.target.y},g.target];
     }else if(guide?.axis==='y'){

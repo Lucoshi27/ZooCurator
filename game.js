@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.15";
+const ZOO_CURATOR_VERSION = "V2.44.52";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -47,11 +47,29 @@ function refreshDesktopPeripheralHeaderScale(){
     if (window.matchMedia('(max-width: 700px)').matches) return;
 }
 
+function suspendTrueCalendarLifecycle(){
+    if(trueCalendarLifecycleSuspended)return;
+    trueCalendarLifecycleSuspended=true;
+    if(state?.gameMode==='true'&&!state.sandboxMode)stopTrueCalendarTimer({preserveRollover:true});
+}
+function resumeTrueCalendarLifecycle(){
+    if(!trueCalendarLifecycleSuspended)return;
+    trueCalendarLifecycleSuspended=false;
+    if(state?.gameMode==='true'&&!state.sandboxMode){
+        trueCalendarLastDriverAt=performance.now();
+        if(!trueCalendarRolloverPending){
+            if(trueCalendarPendingSpeed!=null)queueMicrotask(trueApplyPendingCalendarSpeed);
+            else restartTrueCalendarTimer();
+        }
+    }
+}
 document.addEventListener('visibilitychange',()=>{
-    if(document.hidden)dismissHoverPreviewForContextLoss();
+    if(document.hidden){dismissHoverPreviewForContextLoss();suspendTrueCalendarLifecycle();}
+    else resumeTrueCalendarLifecycle();
 });
 window.addEventListener('blur',dismissHoverPreviewForContextLoss);
-window.addEventListener('pagehide',dismissHoverPreviewForContextLoss);
+window.addEventListener('pagehide',()=>{dismissHoverPreviewForContextLoss();suspendTrueCalendarLifecycle();});
+window.addEventListener('pageshow',()=>{if(!document.hidden)resumeTrueCalendarLifecycle();});
 
 let desktopUiResizeRaf=0;
 const scheduleDesktopUiScaleRefresh=()=>{
@@ -6735,12 +6753,12 @@ const TRUE_CALENDAR_DRIVER_MS = 250;
 let trueCalendarLastDriverAt = 0;
 let trueCalendarMinuteRemainder = 0;
 let trueCalendarTimer = null;
-let trueCalendarWholeDayStartedAt = 0;
-let trueCalendarHourTickStartedAt = 0;
 let trueCalendarVisualClockRaf = 0;
-let trueCalendarVisualTickStartedAt = 0;
-let trueCalendarVisualTickBaseMinutes = 9*60;
 let lastTrueCalendarAutoResumeWriteAt = 0;
+let lastTrueCalendarAutosavePerfAt = 0;
+const TRUE_CALENDAR_AUTOSAVE_MS = 30000;
+let trueCalendarAutosaveQueued=false;
+let trueCalendarAutosaveGeneration=0;
 
 function normaliseTrueCalendarState() {
     if (!state.trueCalendar || typeof state.trueCalendar !== 'object') state.trueCalendar = {};
@@ -6752,7 +6770,6 @@ function normaliseTrueCalendarState() {
         if(savedSpeed===5)state.trueCalendar.speed=2;
         else if(savedSpeed===20)state.trueCalendar.speed=3;
         else if(!TRUE_CALENDAR_SPEEDS.includes(savedSpeed))state.trueCalendar.speed=0;
-        else state.trueCalendar.speed=savedSpeed;
     }
     if (!Array.isArray(state.trueCalendar.scheduledEvents)) state.trueCalendar.scheduledEvents = [];
     state.trueCalendar.lastMonthKey = String(state.trueCalendar.lastMonthKey || state.trueCalendar.date.slice(0, 7));
@@ -8709,21 +8726,31 @@ function trueGenerateDailyEventSlot(slotIndex=0){
     }
     return event;
 }
-function trueProcessTimedEventRolls(){
+let trueTimedRollCacheDate='',trueTimedRollCache=null,trueTimedRollCacheOwner=null;
+function trueProcessTimedEventRolls(minuteOverride=null){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return;
     const cal=normaliseTrueCalendarState(),events=normaliseTrueEventState(),date=cal.date;
-    const minute=(Number(cal.hour)||0)*60+(Number(cal.minute)||0);
+    const minute=Number.isFinite(Number(minuteOverride))?Number(minuteOverride):(Number(cal.hour)||0)*60+(Number(cal.minute)||0);
     const schedule=trueEventRollScheduleForDate(date);
     if(!events.processedTimedRolls||typeof events.processedTimedRolls!=='object'||Array.isArray(events.processedTimedRolls))events.processedTimedRolls={};
-    const done=new Set(Array.isArray(events.processedTimedRolls[date])?events.processedTimedRolls[date]:[]);
+    const timedOwner=events.processedTimedRolls;
+    if(trueTimedRollCacheDate!==date||!trueTimedRollCache||trueTimedRollCacheOwner!==timedOwner){
+        trueTimedRollCacheDate=date;
+        trueTimedRollCacheOwner=timedOwner;
+        trueTimedRollCache=new Set(Array.isArray(events.processedTimedRolls[date])?events.processedTimedRolls[date]:[]);
+    }
+    const done=trueTimedRollCache;
+    let changed=false;
     for(let i=0;i<schedule.length;i++){
         if(done.has(i)||minute<schedule[i])continue;
-        done.add(i);
+        done.add(i);changed=true;
         trueGenerateDailyEventSlot(i);
     }
-    events.processedTimedRolls[date]=[...done];
-    const keys=Object.keys(events.processedTimedRolls).sort();
-    while(keys.length>14)delete events.processedTimedRolls[keys.shift()];
+    if(changed){
+        events.processedTimedRolls[date]=[...done];
+        const keys=Object.keys(events.processedTimedRolls).sort();
+        while(keys.length>14)delete events.processedTimedRolls[keys.shift()];
+    }
 }
 function trueGenerateRelationshipEventForDay(rollIndex=0){
     if(state.gameMode!=='true'||state.sandboxMode)return null;
@@ -9478,28 +9505,45 @@ function processTrueMonthChange(previousMonth, currentMonth) {
     refreshTrueMarketplaceWants(currentMonth,candidates);
 }
 
-function trueGuestSimulateWholeDay(){
-    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return;
-    const target=trueGuestDailyTarget();
-    trueGuestRuntime.dailyEntered=target;
-    trueGuestRuntime.dailyTargetDate=String(state.trueCalendar?.date||'');
-    for(let minute=9*60;minute<=19*60;minute+=30)trueGuestUpdateAnimalEvents(minute);
-    for(const g of trueGuestRuntime.guests||[])g.el?.remove();
-    trueGuestRuntime.guests=[];
-    trueGuestRuntime.spawnQueue=0;
-    trueGuestRuntime.spawnGroupId=null;
-    trueGuestRuntime.spawnGroupDepartureMinute=null;
-    refreshTrueGuestsTodayCounter();
-}
+
 function trueCalendarDisplayParts(){
     const calendar=normaliseTrueCalendarState();
-    return {hour:Number(calendar.hour)||9,minute:Number(calendar.minute)||0,date:calendar.date};
+    return {hour:Math.max(9,Math.min(19,Number(calendar.hour)||9)),minute:Math.max(0,Math.min(59,Number(calendar.minute)||0)),date:calendar.date};
 }
 function updateTrueCalendarVisualClock(){
     const el=document.getElementById('trueCalendarVisualClock');
     if(!el)return;
     const shown=trueCalendarDisplayParts();
-    el.textContent=`${String(shown.hour).padStart(2,'0')}:${String(shown.minute).padStart(2,'0')} - ${formatTrueDate(shown.date)}`;
+    const text=`${String(shown.hour).padStart(2,'0')}:${String(shown.minute).padStart(2,'0')} - ${formatTrueDate(shown.date)}`;
+    if(el.textContent!==text)el.textContent=text;
+}
+function refreshTrueCalendarSpeedButtons(){
+    const active=String(Number(normaliseTrueCalendarState().speed)||0);
+    document.querySelectorAll('[data-true-calendar-speed]').forEach(button=>{
+        const on=button.dataset.trueCalendarSpeed===active;
+        button.style.outline=on?'2px solid #9b8b48':'';
+        button.style.outlineOffset=on?'1px':'';
+        button.style.background=on?'#fff':'#fffdf6';
+        button.setAttribute('aria-pressed',on?'true':'false');
+    });
+}
+let trueTimerLastPrestigeDisplay=null;
+function refreshTrueTimerHeaderUi(){
+    const element=document.getElementById('prestigeCounter');
+    if(!element||state.visitingZoo||state.sandboxMode)return;
+    const prestige=visibleZooPrestige();
+    if(prestige!==trueTimerLastPrestigeDisplay||element.textContent!==`Prestige ${prestige}`){
+        element.textContent=`Prestige ${prestige}`;
+        trueTimerLastPrestigeDisplay=prestige;
+    }
+    if(turnOrder)turnOrder.style.display='none';
+    if(playerZooName)playerZooName.style.visibility='hidden';
+}
+function refreshTrueCalendarTimerUi(){
+    updateTrueCalendarVisualClock();
+    refreshTrueTimerHeaderUi();
+    refreshTrueGuestsTodayCounter?.();
+    refreshTruePausedOverlay();
 }
 function ensureTrueCalendarVisualClock(){
     if(trueCalendarVisualClockRaf)return;
@@ -9513,7 +9557,7 @@ function normaliseTrueDaytimeActivity(){
     normaliseTrueCalendarState();
     const d=state.trueDaytimeActivity||(state.trueDaytimeActivity={});
     if(!Array.isArray(d.generatedKeys))d.generatedKeys=[];
-    if(d.generatedKeys.length>160)d.generatedKeys=d.generatedKeys.slice(-160);
+    if(d.generatedKeys.length>160)d.generatedKeys.splice(0,d.generatedKeys.length-160);
     if(d.round&&typeof d.round!=='object')d.round=null;
     return d;
 }
@@ -9587,26 +9631,42 @@ function trueDaytimeMilestone(key){
     if(!mark)return null;
     return {type:'milestone',title:`${mark} visitors today`,message:`The ${mark}th visitor of the day has passed through the gates.`};
 }
-function trueProcessDaytimeActivity(){
+let trueDaytimeProcessedCacheDate='',trueDaytimeProcessedCache=null,trueDaytimeProcessedCacheOwner=null;
+function resetTrueTimerHotpathCaches(){
+    trueTimedRollCacheDate='';trueTimedRollCache=null;trueTimedRollCacheOwner=null;
+    trueDaytimeProcessedCacheDate='';trueDaytimeProcessedCache=null;trueDaytimeProcessedCacheOwner=null;
+}
+
+function trueProcessDaytimeActivity(minuteOverride=null){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return;
     const cal=normaliseTrueCalendarState(),d=normaliseTrueDaytimeActivity();
-    const minute=(Number(cal.hour)||9)*60+(Number(cal.minute)||0);
-    if(minute<10*60||minute>=18*60)return;
-    const slot=Math.floor((minute-10*60)/120); // 10, 12, 14, 16
-    const key=`${cal.date}|${slot}`;
-    if(d.generatedKeys.includes(key))return;
-    d.generatedKeys.push(key);
-    const base=`${state.zooName||'zoo'}|${key}`;
-    if(seededRoll(base+'|show').roll>.78)return;
-    const animal=trueDaytimePick(trueDaytimeAnimalPool(),base+'|animal');
-    const kind=Math.floor(seededRoll(base+'|kind').roll*5);
-    let item=null;
-    if(kind===0&&animal)item=trueDaytimeAnimalObservation(animal,base);
-    else if(kind===1&&animal)item=trueDaytimeGuestObservation(animal,base);
-    else if(kind===2&&animal)item=trueDaytimeKeeperObservation(animal,base);
-    else if(kind===3)item=trueDaytimeNetworkObservation(base);
-    else item=trueDaytimeMilestone(base)|| (animal?trueDaytimeGuestObservation(animal,base):null);
-    if(item)addTrueActivity({...item,unread:false});
+    const daytimeOwner=d.generatedKeys;
+    if(trueDaytimeProcessedCacheDate!==cal.date||!trueDaytimeProcessedCache||trueDaytimeProcessedCacheOwner!==daytimeOwner){
+        trueDaytimeProcessedCacheDate=cal.date;
+        trueDaytimeProcessedCacheOwner=daytimeOwner;
+        trueDaytimeProcessedCache=new Set(d.generatedKeys.filter(key=>key.startsWith(`${cal.date}|`)));
+    }
+    const minute=Number.isFinite(Number(minuteOverride))?Number(minuteOverride):(Number(cal.hour)||9)*60+(Number(cal.minute)||0);
+    if(minute<10*60)return;
+    const latestSlot=Math.min(3,Math.floor((Math.min(minute,18*60-1)-10*60)/120));
+    if(latestSlot<0)return;
+    for(let slot=0;slot<=latestSlot;slot++){
+        const key=`${cal.date}|${slot}`;
+        if(trueDaytimeProcessedCache.has(key))continue;
+        trueDaytimeProcessedCache.add(key);
+        d.generatedKeys.push(key);
+        const base=`${state.zooName||'zoo'}|${key}`;
+        if(seededRoll(base+'|show').roll>.78)continue;
+        const animal=trueDaytimePick(trueDaytimeAnimalPool(),base+'|animal');
+        const kind=Math.floor(seededRoll(base+'|kind').roll*5);
+        let item=null;
+        if(kind===0&&animal)item=trueDaytimeAnimalObservation(animal,base);
+        else if(kind===1&&animal)item=trueDaytimeGuestObservation(animal,base);
+        else if(kind===2&&animal)item=trueDaytimeKeeperObservation(animal,base);
+        else if(kind===3)item=trueDaytimeNetworkObservation(base);
+        else item=trueDaytimeMilestone(base)||(animal?trueDaytimeGuestObservation(animal,base):null);
+        if(item)addTrueActivity({...item,unread:false});
+    }
 }
 let trueCuratorCameraFrame=0;
 let trueCuratorCameraToken=0;
@@ -9767,63 +9827,196 @@ function trueProcessRemainingEventRollsBeforeClose(){
     events.processedTimedRolls[date]=[...done];
     cal.hour=originalHour;cal.minute=originalMinute;
 }
+let trueCalendarRolloverGeneration=0;
+let trueCalendarRolloverPending=false;
+let trueCalendarAdvanceBusy=false;
+function queueTrueCalendarAutosave(){
+    if(trueCalendarAutosaveQueued||document.hidden||trueCalendarLifecycleSuspended)return;
+    trueCalendarAutosaveQueued=true;
+    const autosaveGeneration=trueCalendarAutosaveGeneration;
+    const run=()=>{
+        if(autosaveGeneration!==trueCalendarAutosaveGeneration)return;
+        trueCalendarAutosaveQueued=false;
+        if(document.hidden||trueCalendarLifecycleSuspended||state.gameMode!=='true'||state.sandboxMode)return;
+        lastTrueCalendarAutoResumeWriteAt=Date.now();
+        lastTrueCalendarAutosavePerfAt=performance.now();
+        writeAutoResumeSnapshot(true);
+    };
+    if(typeof requestIdleCallback==='function')requestIdleCallback(run,{timeout:1500});
+    else setTimeout(run,0);
+}
 function advanceTrueCalendarTime(now=performance.now()) {
+    if(trueCalendarAdvanceBusy)return;
+    trueCalendarAdvanceBusy=true;
+    try{
     trueProcessEventPresentationQueue();
     if (state.gameMode !== 'true' || state.sandboxMode) return;
     const calendar=normaliseTrueCalendarState(),speed=Number(calendar.speed)||0;
-    if(!speed){trueCalendarLastDriverAt=now;return;}
+    if(state.gameMode!=='true'||state.sandboxMode||speed<=0){trueCalendarLastDriverAt=now;return;}
+    if(trueCalendarRolloverPending){trueCalendarLastDriverAt=now;return;}
     if(!trueCalendarLastDriverAt)trueCalendarLastDriverAt=now;
-    const elapsed=Math.max(0,Math.min(1000,now-trueCalendarLastDriverAt));
+    // Count genuine elapsed time, but bound a single callback to one open-day
+    // equivalent. Long browser/tab suspension must not trigger a multi-day
+    // catch-up storm when the page becomes active again.
+    const maxElapsed=TRUE_CALENDAR_INTERVAL_MS[speed]||4000;
+    const elapsed=Math.max(0,Math.min(maxElapsed,now-trueCalendarLastDriverAt));
     trueCalendarLastDriverAt=now;
     const rate=(TRUE_CALENDAR_MINUTES_PER_TICK[speed]||0)/(TRUE_CALENDAR_INTERVAL_MS[speed]||4000);
     trueCalendarMinuteRemainder+=elapsed*rate;
     let addMinutes=Math.floor(trueCalendarMinuteRemainder);
-    if(addMinutes<=0){updateTrueCalendarVisualClock();return;}
+    if(addMinutes<=0){updateTrueCalendarVisualClock();refreshTrueCalendarSpeedButtons();return;}
     trueCalendarMinuteRemainder-=addMinutes;
     let total=Number(calendar.hour)*60+Number(calendar.minute||0)+addMinutes;
     const close=19*60;
     if(total>=close){
+        trueCalendarRolloverPending=true;
+        trueProcessTimedEventRolls(close-1);
+        trueProcessDaytimeActivity(close-1);
         trueProcessRemainingEventRollsBeforeClose();
         const completedDate=calendar.date,completedTarget=trueGuestDailyTarget();
-        if(speed===3)trueGuestSimulateWholeDay();
-        trueApplyPublicPrestigeForCompletedDay(completedDate,speed===3?completedTarget:trueGuestRuntime.dailyEntered,completedTarget);
+        // Guests are already advanced continuously by the authoritative clock at
+        // every speed; do not run a second synthetic whole-day simulation at x3.
+        const completedAttendance=speed===3?completedTarget:trueGuestRuntime.dailyEntered;
+        trueApplyPublicPrestigeForCompletedDay(completedDate,completedAttendance,completedTarget);
         const oldMonth=calendar.date.slice(0,7),date=trueDateObject(calendar.date);date.setUTCDate(date.getUTCDate()+1);
-        calendar.date=trueDateString(date);calendar.hour=9;calendar.minute=0;trueCalendarMinuteRemainder=0;
-        const newMonth=calendar.date.slice(0,7),rolloverDate=calendar.date;
+        calendar.date=trueDateString(date);calendar.hour=9;calendar.minute=0;
+        // Closing ends the playable simulation day. Time beyond 19:00 belongs
+        // to the closed overnight period and must not advance tomorrow's 09:00
+        // clock. Keep only the sub-minute fraction already accumulated.
+        trueCalendarMinuteRemainder=Math.max(0,Math.min(0.999999,trueCalendarMinuteRemainder));
+        const newMonth=calendar.date.slice(0,7),rolloverDate=calendar.date,rolloverGeneration=++trueCalendarRolloverGeneration;
         requestAnimationFrame(()=>{
-            if(state.gameMode!=='true'||normaliseTrueCalendarState().date!==rolloverDate)return;
-            if(newMonth!==oldMonth)processTrueMonthChange(oldMonth,newMonth);
-            refreshTrueMarketplaceRolling(rolloverDate,{announce:true});processTrueScheduledEvents();trueProcessEventDay();
-            setTimeout(()=>{if(state.gameMode!=='true'||normaliseTrueCalendarState().date!==rolloverDate)return;trueTransferProcessDay();if(trueDevelopmentShouldEvaluateToday())trueDevelopmentEvaluateMonthly();processTrueRealZooManagementBudget(8);renderTrueSimulationPanel();writeAutoResumeSnapshot?.(true);},0);
+            if(state.gameMode!=='true'||normaliseTrueCalendarState().date!==rolloverDate||rolloverGeneration!==trueCalendarRolloverGeneration){
+                if(rolloverGeneration===trueCalendarRolloverGeneration){
+                    trueCalendarRolloverPending=false;
+                    if(state.gameMode!=='true'||state.sandboxMode)stopTrueCalendarTimer();
+                }
+                return;
+            }
+            try{
+                if(newMonth!==oldMonth)processTrueMonthChange(oldMonth,newMonth);
+                refreshTrueMarketplaceRolling(rolloverDate,{announce:true});
+                processTrueScheduledEvents();
+                trueProcessEventDay();
+                trueProcessTimedEventRolls();
+                trueProcessDaytimeActivity();
+                state.truePublicPrestigeLastAppliedAbsMinute=trueEventAbsoluteMinute?.()||0;
+            }catch(error){
+                console.error('True-mode rollover initialization failed:',error);
+                state.trueCalendarLastRolloverError={date:rolloverDate,stage:'initialization',message:String(error?.message||error),at:Date.now()};
+                if(rolloverGeneration===trueCalendarRolloverGeneration){
+                    trueCalendarRolloverPending=false;
+                    trueCalendarLastDriverAt=trueCalendarLifecycleSuspended?0:performance.now();
+                    restartTrueCalendarTimer();
+                    if(trueCalendarPendingSpeed!=null)queueMicrotask(trueApplyPendingCalendarSpeed);
+                }
+                return;
+            }
+            setTimeout(()=>{
+                if(state.gameMode!=='true'||normaliseTrueCalendarState().date!==rolloverDate||rolloverGeneration!==trueCalendarRolloverGeneration){
+                    if(rolloverGeneration===trueCalendarRolloverGeneration){
+                        trueCalendarRolloverPending=false;
+                        if(state.gameMode!=='true'||state.sandboxMode)stopTrueCalendarTimer();
+                    }
+                    return;
+                }
+                try{
+                    trueTransferProcessDay();
+                    if(trueDevelopmentShouldEvaluateToday())trueDevelopmentEvaluateMonthly();
+                    processTrueRealZooManagementBudget(8);
+                    if(document.getElementById('trueSimulationPanel'))renderTrueSimulationPanel();
+                    queueTrueCalendarAutosave();
+                    state.trueCalendarLastRolloverError=null;
+                }catch(error){
+                    console.error('True-mode new-day processing failed:',error);
+                    state.trueCalendarLastRolloverError={date:rolloverDate,stage:'daily-processing',message:String(error?.message||error),at:Date.now()};
+                }finally{
+                    if(rolloverGeneration===trueCalendarRolloverGeneration){
+                        trueCalendarRolloverPending=false;
+                        trueCalendarLastDriverAt=trueCalendarLifecycleSuspended?0:performance.now();
+                        restartTrueCalendarTimer();
+                        if(trueCalendarPendingSpeed!=null)queueMicrotask(trueApplyPendingCalendarSpeed);
+                    }
+                }
+            },0);
         });
-    }else{calendar.hour=Math.floor(total/60);calendar.minute=total%60;}
-    trueCalendarVisualTickStartedAt=now;trueCalendarVisualTickBaseMinutes=(Number(calendar.hour)||9)*60+(Number(calendar.minute)||0);
-    trueProcessTimedEventRolls();trueProcessDaytimeActivity();trueAdvancePublicPrestigeDuringDay();updateTurnDisplay();renderTrueSimulationPanel();
-    const wall=Date.now();if(wall-lastTrueCalendarAutoResumeWriteAt>=5000){lastTrueCalendarAutoResumeWriteAt=wall;writeAutoResumeSnapshot(true);}
+        refreshTrueCalendarTimerUi();
+    }else{
+        calendar.hour=Math.floor(total/60);calendar.minute=total%60;
+        trueProcessTimedEventRolls();trueProcessDaytimeActivity();trueAdvancePublicPrestigeDuringDay();
+        refreshTrueCalendarTimerUi();
+    }
+
+    if(!lastTrueCalendarAutosavePerfAt)lastTrueCalendarAutosavePerfAt=now;
+    if(now-lastTrueCalendarAutosavePerfAt>=TRUE_CALENDAR_AUTOSAVE_MS)queueTrueCalendarAutosave();
+    }catch(error){
+        if(trueCalendarRolloverPending)trueCalendarRolloverPending=false;
+        trueCalendarLastDriverAt=performance.now();
+        refreshTrueCalendarTimerUi();
+        console.error('True-mode calendar advancement failed:',error);
+    }finally{
+        trueCalendarAdvanceBusy=false;
+        if(trueCalendarPendingSpeed!=null&&!trueCalendarRolloverPending)queueMicrotask(trueApplyPendingCalendarSpeed);
+    }
 }
 let trueCalendarTimerSpeed = null;
-function stopTrueCalendarTimer() {
+let trueCalendarTimerGeneration=0;
+let trueCalendarLifecycleSuspended=false;
+function stopTrueCalendarTimer({preserveRollover=false}={}) {
+    trueCalendarTimerGeneration++;
+    if(!preserveRollover){
+        trueCalendarRolloverPending=false;
+        trueCalendarPendingSpeed=null;
+        trueCalendarAutosaveGeneration++;
+        trueCalendarAutosaveQueued=false;
+        resetTrueTimerHotpathCaches();
+    }
     if (trueCalendarTimer) clearInterval(trueCalendarTimer);
     trueCalendarTimer = null;
     trueCalendarTimerSpeed = null;
+    trueCalendarLastDriverAt=0;
 }
 
 function restartTrueCalendarTimer() {
+    if(document.hidden||trueCalendarLifecycleSuspended){
+        if(trueCalendarTimer)clearInterval(trueCalendarTimer);
+        trueCalendarTimer=null;trueCalendarTimerSpeed=null;trueCalendarLastDriverAt=0;
+        return;
+    }
     if (state.gameMode !== 'true' || state.sandboxMode) {
-        stopTrueCalendarTimer();
+        stopTrueCalendarTimer({preserveRollover:false});
         trueCalendarTimerSpeed=null;
+        trueCalendarPendingSpeed=null;
         return;
     }
     const speed = normaliseTrueCalendarState().speed;
     if (!speed) {
-        stopTrueCalendarTimer();
+        stopTrueCalendarTimer({preserveRollover:true});
         trueCalendarTimerSpeed=0;
+        trueGuestSetInteractionEnabled(true);
+        trueGuestRuntime.last=performance.now();
         return;
     }
-    if (trueCalendarTimer && trueCalendarTimerSpeed===speed) return;
-    stopTrueCalendarTimer();
-    trueCalendarTimerSpeed=speed;trueCalendarLastDriverAt=performance.now();trueCalendarMinuteRemainder=0;
-    trueCalendarTimer=setInterval(()=>advanceTrueCalendarTime(performance.now()),TRUE_CALENDAR_DRIVER_MS);
+    if (trueCalendarTimer && trueCalendarTimerSpeed===speed) {
+        if(!trueCalendarLastDriverAt)trueCalendarLastDriverAt=performance.now();
+        return;
+    }
+    stopTrueCalendarTimer({preserveRollover:true});
+    trueCalendarTimerSpeed=speed;trueCalendarLastDriverAt=performance.now();
+    trueGuestSetInteractionEnabled(speed!==3);
+    if(speed===3)closeTrueGuestInspector();
+    const timerGeneration=++trueCalendarTimerGeneration;
+    trueCalendarTimer=setInterval(()=>{
+        if(timerGeneration!==trueCalendarTimerGeneration)return;
+        try{
+            advanceTrueCalendarTime(performance.now());
+        }catch(error){
+            console.error('True-mode timer callback failed:',error);
+            trueCalendarAdvanceBusy=false;
+            if(trueCalendarRolloverPending)trueCalendarRolloverPending=false;
+            trueCalendarLastDriverAt=performance.now();
+        }
+    },TRUE_CALENDAR_DRIVER_MS);
 }
 
 function refreshTruePausedOverlay() {
@@ -9859,19 +10052,35 @@ function refreshTruePausedOverlay() {
         zooBoard.prepend(overlay);
     }
 
-    if (overlay) overlay.style.display = shouldShow ? 'block' : 'none';
+    if (overlay) {
+        const display=shouldShow?'block':'none';
+        if(overlay.style.display!==display)overlay.style.display=display;
+    }
 }
 
+let trueCalendarPendingSpeed=null;
+function trueApplyPendingCalendarSpeed(){
+    if(trueCalendarPendingSpeed==null||trueCalendarAdvanceBusy||trueCalendarRolloverPending||document.hidden||trueCalendarLifecycleSuspended)return;
+    const pending=trueCalendarPendingSpeed;trueCalendarPendingSpeed=null;
+    setTrueCalendarSpeed(pending);
+}
 function setTrueCalendarSpeed(speed) {
     const value = TRUE_CALENDAR_SPEEDS.includes(Number(speed)) ? Number(speed) : 0;
+    if(document.hidden||trueCalendarLifecycleSuspended){trueCalendarPendingSpeed=value;return;}
+    if(trueCalendarAdvanceBusy||trueCalendarRolloverPending){trueCalendarPendingSpeed=value;return;}
     const speedChangeNow=performance.now();
     advanceTrueCalendarTime(speedChangeNow);
-    normaliseTrueCalendarState().speed = value;trueCalendarLastDriverAt=speedChangeNow;
-    trueCalendarWholeDayStartedAt=value===3?speedChangeNow:0;
-    trueCalendarHourTickStartedAt=value===2?speedChangeNow:0;
-    trueCalendarVisualTickStartedAt=speedChangeNow;
-    const speedCalendar=normaliseTrueCalendarState();
-    trueCalendarVisualTickBaseMinutes=(Number(speedCalendar.hour)||9)*60+(Number(speedCalendar.minute)||0);
+    const calendar=normaliseTrueCalendarState();
+    if(Number(calendar.speed)===value){
+        refreshTrueCalendarSpeedButtons();
+        trueCalendarLastDriverAt=speedChangeNow;
+        trueGuestSetInteractionEnabled(value!==3);
+        if(value===3)closeTrueGuestInspector();
+        renderTrueSimulationPanel();updateTurnDisplay();refreshTruePausedOverlay();
+        return;
+    }
+    calendar.speed=value;trueCalendarLastDriverAt=speedChangeNow;
+    refreshTrueCalendarSpeedButtons();
     restartTrueCalendarTimer();
     trueGuestSetInteractionEnabled(value!==3);
     if(value===3)closeTrueGuestInspector();
@@ -9896,6 +10105,7 @@ function runTrueActivityAction(item) {
     item.unread = false;
     let rerender=true;
     if (item.action === 'marketplace') openTrueMarketplace();
+    else if(item.action==='marketplace-player-offer')openTrueMarketplacePlayerListings({listingId:item.playerListingId,offerId:item.listingOfferId});
     else if (item.action === 'event' && item.eventId) {
         const opened=openTrueEventDialog(item.eventId);
         rerender=!opened;
@@ -9917,7 +10127,7 @@ function trueGuestSimulationSpeedMultiplier(){
     if(speed<=0)return 0;
     if(speed===1)return 1;
     if(speed===2)return 12;
-    return 120;
+    return 36; // Max-speed calendar stays authoritative; visual guest movement is performance-capped.
 }
 function trueGuestPrestigeDailyTarget(){
     return Math.max(0,Math.min(2000,trueGuestAttendanceTargetForDate()));
@@ -10594,14 +10804,14 @@ function trueGuestTickFrame(now){
             }else trueGuestChooseDestination(g);
         }
     }
-    const rawDt=Math.min(.05,Math.max(0,(now-(trueGuestRuntime.last||now))/1000));trueGuestRuntime.last=now;
+    const rawDt=Math.min(1/30,Math.max(0,(now-(trueGuestRuntime.last||now))/1000));trueGuestRuntime.last=now;
     const calendar=normaliseTrueCalendarState();
     const calendarSpeed=Number(calendar.speed)||0;
-    const simSpeed=trueGuestSimulationSpeedMultiplier();
+    const simSpeed=trueCalendarRolloverPending?0:trueGuestSimulationSpeedMultiplier();
     const dt=rawDt*simSpeed;
     const target=trueGuestDailyTarget();
+    if(trueCalendarRolloverPending){trueGuestRuntime.last=now;return;}
     // The calendar is authoritative at every speed. Guests must read it
-    // directly; creating another interpolated fast clock here made guest
     // behaviour run ahead and could reintroduce apparent time snap-backs.
     const calendarHour=Number(calendar.hour)||9;
     if(trueGuestRuntime.dailyTargetDate!==calendar.date){
@@ -10993,6 +11203,7 @@ function renderTrueSimulationPanel() {
         button.textContent=speed===0?'⏸':speed===1?'▶':speed===2?'▶▶':'▶▶▶';
         button.title=speed===0?'Pause':speed===1?'Regular — 5 minutes per tick':speed===2?'Fast — 1 hour per tick':'Max — 10 hours per tick (simulate 09:00–19:00)';
         button.setAttribute('aria-label',button.title);
+        button.dataset.trueCalendarSpeed=String(speed);
         button.style.cssText=`min-width:34px;height:28px;padding:0 7px;border-radius:6px;border:1px solid #aaa69b;background:#fffdf6;color:#30291f;cursor:pointer;font-size:10px;font-weight:700;${state.trueCalendar.speed===speed?'outline:2px solid #9b8b48;outline-offset:1px;background:#fff;':''}`;
         button.addEventListener('pointerdown',event=>{if(event.button!==0)return;event.preventDefault();setTrueCalendarSpeed(speed);});
         button.addEventListener('click',event=>event.preventDefault());
@@ -20303,7 +20514,7 @@ const TRUE_DECORATION_PRESETS=[
     {name:'Grass',colour:'#C7DEA0'},
     {name:'Dark grass',colour:'#9FBD78'},
     {name:'Deep grass',colour:'#748F5B'},
-    {name:'Forest green',colour:'#637C50'}
+    {name:'Forest green',colour:'#66863F'}
 ];
 function normaliseTrueDecorations(){
     if(!Array.isArray(state.trueEnclosureDecorations))state.trueEnclosureDecorations=[];
@@ -20311,7 +20522,7 @@ function normaliseTrueDecorations(){
     else state.truePlacedDecorations=state.truePlacedDecorations.filter(d=>d&&['bush','rock','tree'].includes(d.kind)&&Number.isFinite(Number(d.x))&&Number.isFinite(Number(d.y)));
     if(!state.trueDecorationBrush||typeof state.trueDecorationBrush!=='object')state.trueDecorationBrush={colour:'#78AFC2',size:34};
     state.trueDecorationBrush.size=Math.max(8,Math.min(100,Number(state.trueDecorationBrush.size)||34));
-    if(!['paint','bush','rock','tree','erase'].includes(state.trueDecorationMode))state.trueDecorationMode='paint';
+    if(!['paint','line','rectangle','bush','rock','tree','erase'].includes(state.trueDecorationMode))state.trueDecorationMode='paint';
     state.trueDecorationObjectScale=Math.max(.1,Math.min(2,Number(state.trueDecorationObjectScale)||.5));
     if(!Number.isInteger(state.trueDecorationPreviewVariant))state.trueDecorationPreviewVariant=Math.floor(Math.random()*20);
     return state.trueEnclosureDecorations;
@@ -20359,6 +20570,13 @@ function trueDecorationVariantData(kind,variant=0){
     return {v,rand};
 }
 const trueDecorationGlyphCache=new Map();
+function trueDecorationGreenShade(variant=0,offset=0){
+    const a=[138,170,94],b=[112,144,67];
+    const seed=((Number(variant)||0)*37+offset*53+17)%101,t=seed/100;
+    const jitter=((seed*29)%9)-4;
+    const rgb=a.map((v,i)=>Math.max(0,Math.min(255,Math.round(v+(b[i]-v)*t+jitter))));
+    return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+}
 function trueDecorationGlyphSVG(kind,variant=0){
     const cacheKey=`natural2:${kind}:${((Math.floor(Number(variant)||0)%20)+20)%20}`;
     if(trueDecorationGlyphCache.has(cacheKey))return trueDecorationGlyphCache.get(cacheKey);
@@ -20380,29 +20598,29 @@ function trueDecorationGlyphSVG(kind,variant=0){
     }
     if(kind==='tree'){
         const blobs=[],n=7+(v%4);
-        const fills=['#748F5B','#809963','#8BA36A','#6F8957','#94AA72'];
+        const fills=Array.from({length:5},(_,i)=>trueDecorationGreenShade(v,i));
         for(let i=0;i<n;i++){
             const a=i*Math.PI*2/n+rand(i)*.38;
             const dist=7+rand(i+3)*9,rx=7.2+rand(i+8)*4.2,ry=6.5+rand(i+11)*4;
             const cx=32+Math.cos(a)*dist,cy=29+Math.sin(a)*dist*.78;
-            blobs.push(`<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${fills[(i+v)%fills.length]}" stroke="#687F53" stroke-width=".45" opacity=".97"/>`);
+            blobs.push(`<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${fills[(i+v)%fills.length]}" stroke="#708D4A" stroke-width=".45" opacity=".97"/>`);
         }
         const svg=`<svg viewBox="0 0 64 64">
           <ellipse cx="32" cy="38" rx="6.5" ry="10" fill="#75644C" opacity=".78"/>
-          <ellipse cx="33" cy="34" rx="17" ry="14" fill="#637C50" opacity=".30"/>
+          <ellipse cx="33" cy="34" rx="17" ry="14" fill="#66863F" opacity=".30"/>
           ${blobs.join('')}
-          <ellipse cx="${(25+rand(18)*8).toFixed(1)}" cy="${(20+rand(19)*5).toFixed(1)}" rx="${(7+rand(20)*3).toFixed(1)}" ry="${(5+rand(21)*2.5).toFixed(1)}" fill="#A8B985" opacity=".22"/>
+          <ellipse cx="${(25+rand(18)*8).toFixed(1)}" cy="${(20+rand(19)*5).toFixed(1)}" rx="${(7+rand(20)*3).toFixed(1)}" ry="${(5+rand(21)*2.5).toFixed(1)}" fill="#9AB875" opacity=".22"/>
         </svg>`;trueDecorationGlyphCache.set(cacheKey,svg);return svg;
     }
-    const fills=['#758E5C','#819963','#8CA36C','#6E8757','#94A974'];
+    const fills=Array.from({length:5},(_,i)=>trueDecorationGreenShade(v,i+7));
     const blobs=[],n=6+(v%4);
     for(let i=0;i<n;i++){
         const a=i*Math.PI*2/n+rand(i)*.42,dist=5+rand(i+4)*7;
         const rx=7.5+rand(i+7)*3.2,ry=6.7+rand(i+11)*3;
         const cx=24+Math.cos(a)*dist,cy=24+Math.sin(a)*dist*.78;
-        blobs.push(`<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${fills[(i+v)%fills.length]}" stroke="#687F53" stroke-width=".35"/>`);
+        blobs.push(`<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${fills[(i+v)%fills.length]}" stroke="#708D4A" stroke-width=".35"/>`);
     }
-    const svg=`<svg viewBox="0 0 48 48"><ellipse cx="24" cy="27" rx="15" ry="10" fill="#627B50" opacity=".22"/>${blobs.join('')}<ellipse cx="${(18+rand(17)*8).toFixed(1)}" cy="${(17+rand(18)*5).toFixed(1)}" rx="6" ry="4" fill="#A6B783" opacity=".18"/></svg>`;
+    const svg=`<svg viewBox="0 0 48 48"><ellipse cx="24" cy="27" rx="15" ry="10" fill="#66863F" opacity=".22"/>${blobs.join('')}<ellipse cx="${(18+rand(17)*8).toFixed(1)}" cy="${(17+rand(18)*5).toFixed(1)}" rx="6" ry="4" fill="#9AB875" opacity=".18"/></svg>`;
     trueDecorationGlyphCache.set(cacheKey,svg);return svg;
 }
 function trueDecorationObjectSize(kind,scale=.5,baseSize=null){
@@ -20423,6 +20641,18 @@ function trueErasePlacedDecorationsAt(x,y,r){
     });
     return before!==state.truePlacedDecorations.length;
 }
+const TRUE_DECORATION_FOLIAGE_BRUSHES=[
+    'assets/decorations/brushes/Acrylic-01/Acrylic-01_01.png',
+    'assets/decorations/brushes/Acrylic-01/Acrylic-01_02.png',
+    'assets/decorations/brushes/Acrylic-01/Acrylic-01_03.png',
+    'assets/decorations/brushes/Acrylic-01/Acrylic-01_04.png'
+];
+function trueDecorationFoliageAsset(variant=0){return TRUE_DECORATION_FOLIAGE_BRUSHES[Math.abs(Number(variant)||0)%TRUE_DECORATION_FOLIAGE_BRUSHES.length];}
+function trueDecorationFoliageElement(kind,variant=0){
+    const el=document.createElement('div'),asset=trueDecorationFoliageAsset(variant),shade=trueDecorationGreenShade(variant,kind==='tree'?11:3);
+    Object.assign(el.style,{width:'100%',height:'100%',background:shade,WebkitMaskImage:`url("${asset}")`,maskImage:`url("${asset}")`,WebkitMaskSize:'contain',maskSize:'contain',WebkitMaskRepeat:'no-repeat',maskRepeat:'no-repeat',WebkitMaskPosition:'center',maskPosition:'center'});
+    return el;
+}
 function refreshTruePlacedDecorationVisuals(){
     document.getElementById('truePlacedDecorationLowLayer')?.remove();
     document.getElementById('truePlacedDecorationTreeLayer')?.remove();
@@ -20434,8 +20664,8 @@ function refreshTruePlacedDecorationVisuals(){
     if(state.gameOptions?.showTopLayerTrees===false){trees.style.opacity='0';trees.style.visibility='hidden';}
     for(const d of state.truePlacedDecorations){
         const el=document.createElement('div'),size=trueDecorationObjectSize(d.kind,d.scale,d.baseSize);
-        el.innerHTML=trueDecorationGlyphSVG(d.kind,d.variant);
-        const glyph=el.querySelector('svg');if(glyph)Object.assign(glyph.style,{display:'block',width:'100%',height:'100%',overflow:'visible'});
+        if(d.kind==='bush'||d.kind==='tree')el.appendChild(trueDecorationFoliageElement(d.kind,d.variant));
+        else{el.innerHTML=trueDecorationGlyphSVG(d.kind,d.variant);const glyph=el.querySelector('svg');if(glyph)Object.assign(glyph.style,{display:'block',width:'100%',height:'100%',overflow:'visible'});}
         Object.assign(el.style,{position:'absolute',left:`${d.x}px`,top:`${d.y}px`,width:`${size}px`,height:`${size}px`,display:'block',visibility:'visible',opacity:'1',overflow:'visible',zIndex:'1',transform:`translate(-50%,-50%) rotate(${Number(d.rotation)||0}deg)`,pointerEvents:'none'});
         (d.kind==='tree'?trees:low).appendChild(el);
     }
@@ -20807,13 +21037,19 @@ function ensureTrueDecorationToolUI(){
     panel.innerHTML=`<div style="font-weight:900;font-size:12px;margin-bottom:8px">Decorations</div>
       <div style="font-size:10px;font-weight:900;margin-bottom:5px">TERRAIN PAINT</div>
       <div data-swatches style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px"></div>
-      <div style="display:flex;gap:6px;margin-top:8px"><input data-custom type="color" value="${cssColourToHex(brush.colour)}" title="Custom colour" style="width:36px;height:28px;padding:0"><button data-paint type="button" style="flex:1">Paint</button><button data-erase type="button">Eraser</button></div>
-      <label style="display:grid;grid-template-columns:52px 1fr 34px;align-items:center;gap:6px;font-size:11px;font-weight:800;margin-top:9px">Size <input data-size type="range" min="8" max="100" step="2" value="${brush.size}"><span data-size-value>${brush.size}</span></label>
+      <div style="display:flex;gap:6px;margin-top:8px"><input data-custom type="color" value="${cssColourToHex(brush.colour)}" title="Custom colour" style="width:36px;height:28px;padding:0"><button data-paint type="button" style="flex:1">Brush</button><button data-erase type="button">Eraser</button></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px"><button data-line type="button">Line</button><button data-rectangle type="button">Rectangle</button></div>
+      <div style="display:grid;grid-template-columns:52px 1fr;align-items:center;gap:6px;margin-top:9px">
+        <label for="trueDecorationSize" style="font-size:11px;font-weight:800">Size</label>
+        <input id="trueDecorationSize" data-size type="range" min="8" max="100" step="2" value="${brush.size}" style="min-width:0;width:100%">
+        <span></span>
+        <label style="display:flex;align-items:center;gap:2px;width:max-content;font-size:10px"><input data-size-value type="number" min="8" max="100" step="1" value="${Math.round(brush.size)}" aria-label="Decoration size percentage" style="box-sizing:border-box;width:42px;font:inherit;font-size:10px;padding:2px 3px;text-align:right;border:1px solid rgba(70,58,38,.55);border-radius:3px;background:#fffaf0;color:inherit"><span>%</span></label>
+      </div>
       <div style="font-size:10px;font-weight:900;margin:11px 0 5px">MAP DECORATIONS</div>
       <div data-objects style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px"></div>
       <div style="font-size:10px;opacity:.72;margin-top:5px">Selected map decoration size: <b data-object-scale>50%</b></div>
       <div style="display:flex;gap:6px;margin-top:9px"><button data-undo type="button" style="flex:1">Undo</button><button data-clear type="button">Clear all</button></div>
-      <div style="font-size:10px;opacity:.68;margin-top:8px">Bushes and rocks stay within the zoo perimeter. Trees may be placed anywhere. Each placement previews one of 20 variants. The Size slider affects paint, eraser, bushes, rocks and trees. Ctrl + scroll changes the shared size. Middle-drag pans the zoo. Right-drag always erases. Ctrl+Z undoes; Ctrl+Shift+Z redoes.</div>`;
+      <div style="font-size:10px;opacity:.68;margin-top:8px">Bushes and rocks stay within the zoo perimeter. Trees may be placed anywhere. Each placement previews one of 20 variants. The Size slider affects paint, lines, rectangles, eraser, bushes, rocks and trees. Ctrl + scroll changes the shared size. Middle-drag pans the zoo. Right-drag always erases. Ctrl+Z undoes; Ctrl+Shift+Z redoes.</div>`;
     const sw=panel.querySelector('[data-swatches]');
     for(const preset of TRUE_DECORATION_PRESETS){
         const b=document.createElement('button');b.type='button';b.title=preset.name;b.setAttribute('aria-label',preset.name);
@@ -20822,15 +21058,20 @@ function ensureTrueDecorationToolUI(){
     }
     const objects=panel.querySelector('[data-objects]');
     for(const kind of ['bush','rock','tree']){
-        const b=document.createElement('button');b.type='button';b.title=kind[0].toUpperCase()+kind.slice(1);b.innerHTML=trueDecorationGlyphSVG(kind,0);
+        const b=document.createElement('button');b.type='button';b.title=kind[0].toUpperCase()+kind.slice(1);if(kind==='bush'||kind==='tree')b.appendChild(trueDecorationFoliageElement(kind,0));else b.innerHTML=trueDecorationGlyphSVG(kind,0);
         Object.assign(b.style,{height:'48px',padding:'3px',borderRadius:'6px',border:state.trueDecorationMode===kind?'2px solid #4f6540':'1px solid #8b806d',background:'rgba(255,255,255,.24)',cursor:'pointer'});
         b.querySelector('svg')?.style.setProperty('width','100%');b.querySelector('svg')?.style.setProperty('height','100%');
         b.addEventListener('click',()=>{state.trueDecorationMode=kind;state.trueDecorationObjectScale=.5;state.trueDecorationPreviewVariant=Math.floor(Math.random()*20);ensureTrueDecorationToolUI();});objects.appendChild(b);
     }
-    panel.querySelectorAll('[data-undo],[data-clear],[data-paint],[data-erase]').forEach(b=>Object.assign(b.style,{font:'inherit',fontSize:'10px',fontWeight:'800',padding:'5px 7px',borderRadius:'5px',border:'1px solid currentColor',background:'transparent',cursor:'pointer'}));
-    panel.querySelector('[data-size]').addEventListener('input',e=>{brush.size=Number(e.target.value);panel.querySelector('[data-size-value]').textContent=e.target.value;const c=document.getElementById('trueDecorationBrushCursor');if(c&&['bush','rock','tree'].includes(state.trueDecorationMode)){const size=trueDecorationObjectSize(state.trueDecorationMode,state.trueDecorationObjectScale,state.trueDecorationBrush?.size);c.style.width=`${size}px`;c.style.height=`${size}px`;}});
+    panel.querySelectorAll('[data-undo],[data-clear],[data-paint],[data-erase],[data-line],[data-rectangle]').forEach(b=>Object.assign(b.style,{font:'inherit',fontSize:'10px',fontWeight:'800',padding:'5px 7px',borderRadius:'5px',border:'1px solid currentColor',background:'transparent',cursor:'pointer'}));
+    const sizeSlider=panel.querySelector('[data-size]'),sizeInput=panel.querySelector('[data-size-value]');
+    const applySize=value=>{const next=Math.max(8,Math.min(100,Math.round(Number(value)||8)));brush.size=next;sizeSlider.value=next;sizeInput.value=next;const c=document.getElementById('trueDecorationBrushCursor');if(c&&['bush','rock','tree'].includes(state.trueDecorationMode)){const size=trueDecorationObjectSize(state.trueDecorationMode,state.trueDecorationObjectScale,state.trueDecorationBrush?.size);c.style.width=`${size}px`;c.style.height=`${size}px`;}};
+    sizeSlider.addEventListener('input',e=>applySize(e.target.value));
+    sizeInput.addEventListener('change',e=>applySize(e.target.value));
+    sizeInput.addEventListener('keydown',e=>{if(e.key==='Enter'){applySize(e.target.value);e.target.blur();}});
     panel.querySelector('[data-custom]').addEventListener('input',e=>{brush.colour=e.target.value;state.trueDecorationMode='paint';});
-    const paintButton=panel.querySelector('[data-paint]'),eraseButton=panel.querySelector('[data-erase]');
+    const paintButton=panel.querySelector('[data-paint]'),eraseButton=panel.querySelector('[data-erase]'),
+        lineButton=panel.querySelector('[data-line]'),rectangleButton=panel.querySelector('[data-rectangle]');
     const setModeButtonState=(button,selected)=>{
         button.setAttribute('aria-pressed',selected?'true':'false');
         Object.assign(button.style,selected?{
@@ -20841,8 +21082,12 @@ function ensureTrueDecorationToolUI(){
     };
     setModeButtonState(paintButton,state.trueDecorationMode==='paint');
     setModeButtonState(eraseButton,state.trueDecorationMode==='erase');
+    setModeButtonState(lineButton,state.trueDecorationMode==='line');
+    setModeButtonState(rectangleButton,state.trueDecorationMode==='rectangle');
     paintButton.addEventListener('click',()=>{state.trueDecorationMode='paint';ensureTrueDecorationToolUI();});
     eraseButton.addEventListener('click',()=>{state.trueDecorationMode='erase';ensureTrueDecorationToolUI();});
+    lineButton.addEventListener('click',()=>{state.trueDecorationMode='line';ensureTrueDecorationToolUI();});
+    rectangleButton.addEventListener('click',()=>{state.trueDecorationMode='rectangle';ensureTrueDecorationToolUI();});
     panel.querySelector('[data-undo]').addEventListener('click',()=>trueDecorationUndo());
     panel.querySelector('[data-clear]').addEventListener('click',()=>{
         const before=trueDecorationHistorySnapshot();
@@ -20851,6 +21096,16 @@ function ensureTrueDecorationToolUI(){
         refreshTrueDecorationVisuals();syncActiveZooIntoLocalMatch?.();writeAutoResumeSnapshot?.(true);
     });
     const br=button.getBoundingClientRect(),pr=panel.getBoundingClientRect();panel.style.left=`${Math.max(8,br.left-pr.width-12)}px`;panel.style.top=`${Math.max(8,Math.min(innerHeight-pr.height-8,br.top))}px`;
+}
+function trueDecorationShapePoints(mode,start,end){
+    if(mode==='line')return [{x:start.x,y:start.y},{x:end.x,y:end.y}];
+    if(mode==='rectangle'){
+        return [
+            {x:start.x,y:start.y},{x:end.x,y:start.y},{x:end.x,y:end.y},
+            {x:start.x,y:end.y},{x:start.x,y:start.y}
+        ];
+    }
+    return [{x:start.x,y:start.y}];
 }
 function setupTrueDecorationInteractions(){
     if(zooCanvas.dataset.trueDecorationReady==='1')return;zooCanvas.dataset.trueDecorationReady='1';
@@ -20874,7 +21129,8 @@ function setupTrueDecorationInteractions(){
         const size=objectMode?trueDecorationObjectSize(mode,state.trueDecorationObjectScale,state.trueDecorationBrush?.size):Math.max(8,Math.min(100,Number(state.trueDecorationBrush?.size)||34));
         const eraserCursor=erase||mode==='erase',previewKey=objectMode?`${mode}:${state.trueDecorationPreviewVariant}`:(eraserCursor?'eraser':'brush');
         if(c.dataset.previewKey!==previewKey){
-            c.innerHTML=objectMode?trueDecorationGlyphSVG(mode,state.trueDecorationPreviewVariant):(eraserCursor?'<span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:18px;font-weight:900;line-height:1;color:#514638;text-shadow:0 1px 1px #fff">×</span>':'');
+            if(objectMode&&(mode==='bush'||mode==='tree')){c.replaceChildren(trueDecorationFoliageElement(mode,state.trueDecorationPreviewVariant));}
+            else c.innerHTML=objectMode?trueDecorationGlyphSVG(mode,state.trueDecorationPreviewVariant):(eraserCursor?'<span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:18px;font-weight:900;line-height:1;color:#514638;text-shadow:0 1px 1px #fff">×</span>':'');
             c.dataset.previewKey=previewKey;
         }
         c.style.border=objectMode?'0':(eraserCursor?'2px dashed rgba(76,63,49,.95)':'2px solid rgba(25,25,25,.82)');
@@ -20892,7 +21148,7 @@ function setupTrueDecorationInteractions(){
         const brush=state.trueDecorationBrush,step=e.deltaY<0?4:-4;brush.size=Math.max(8,Math.min(100,(Number(brush.size)||34)+step));
         cursor(point(e),false);
         const slider=document.querySelector('#trueDecorationToolPanel [data-size]'),value=document.querySelector('#trueDecorationToolPanel [data-size-value]');
-        if(slider)slider.value=brush.size;if(value)value.textContent=brush.size;
+        if(slider)slider.value=brush.size;if(value)value.value=Math.round(brush.size);
     },{passive:false});
     zooCanvas.addEventListener('pointerdown',e=>{
         if(!trueDecorationToolActive||state.gameMode!=='true'||state.sandboxMode||state.visitingZoo||(e.button!==0&&e.button!==1&&e.button!==2))return;
@@ -20916,8 +21172,9 @@ function setupTrueDecorationInteractions(){
             refreshTrueDecorationVisuals();syncActiveZooIntoLocalMatch?.();writeAutoResumeSnapshot?.(true);cursor(p,false);return;
         }
         const enc=trueDecorationEnclosureAtPoint(p.x,p.y);if(!enc)return;
-        const stroke={enclosureId:enc.id,colour:brush.colour,size:brush.size,erase:false,createdAt:Date.now(),points:[p]};
-        state.trueEnclosureDecorations.push(stroke);trueDecorationDrag={pointerId:e.pointerId,stroke,enclosure:enc,last:p,erase:false,historyBefore};zooCanvas.setPointerCapture?.(e.pointerId);cursor(p,false);refreshTrueDecorationVisuals(false);
+        const shapeMode=mode==='line'||mode==='rectangle'?mode:null;
+        const stroke={enclosureId:enc.id,colour:brush.colour,size:brush.size,erase:false,createdAt:Date.now(),points:shapeMode?trueDecorationShapePoints(shapeMode,p,p):[p]};
+        state.trueEnclosureDecorations.push(stroke);trueDecorationDrag={pointerId:e.pointerId,stroke,enclosure:enc,last:p,start:p,shapeMode,erase:false,historyBefore};zooCanvas.setPointerCapture?.(e.pointerId);cursor(p,false);refreshTrueDecorationVisuals(false);
     });
     zooCanvas.addEventListener('pointermove',e=>{
         const p=point(e);cursor(p,Boolean(trueDecorationDrag?.erase||(e.buttons&2)));
@@ -20929,6 +21186,10 @@ function setupTrueDecorationInteractions(){
             else if(d.stroke&&hit&&String(hit.id)===String(d.enclosure?.id)&&Math.hypot(p.x-d.last.x,p.y-d.last.y)>=2){d.stroke.points.push(p);d.last=p;}
             else if(d.stroke&&hit&&String(hit.id)!==String(d.enclosure?.id)&&trueDecorationBrushFullyInside(hit,p.x,p.y,r)){const stroke={enclosureId:hit.id,colour:d.stroke.colour,size:d.stroke.size,erase:true,createdAt:d.stroke.createdAt,points:[p]};state.trueEnclosureDecorations.push(stroke);d.stroke=stroke;d.enclosure=hit;d.last=p;}
             refreshTrueDecorationVisuals(true);return;
+        }
+        if(d.shapeMode){
+            d.stroke.points=trueDecorationShapePoints(d.shapeMode,d.start,p);d.last=p;
+            refreshTrueDecorationVisuals(false);return;
         }
         if(hit&&String(hit.id)!==String(d.enclosure.id)&&trueDecorationBrushFullyInside(hit,p.x,p.y,r)){
             const stroke={enclosureId:hit.id,colour:d.stroke.colour,size:d.stroke.size,erase:d.erase,createdAt:d.stroke.createdAt,points:[p]};
@@ -29263,6 +29524,10 @@ function writeAutoResumeSnapshot(force = false) {
 }
 
 function persistCurrentCameraForReload() {
+    lastTrueCalendarAutoResumeWriteAt=Date.now();
+    lastTrueCalendarAutosavePerfAt=performance.now();
+    trueCalendarAutosaveGeneration++;
+    trueCalendarAutosaveQueued=false;
     if(localMultiplayerBrowserTransport&&localClassicMatch){
         const transport=localMultiplayerBrowserTransport;
         if(transport.role==='host'&&!state.visitingZoo&&state.historyViewTurn===null)
@@ -38756,21 +39021,30 @@ function trueApplyPublicPrestigeForCompletedDay(date,entered,target,{partial=fal
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return visibleZooPrestige();
     const underlying=trueUnderlyingPrestige();
     let shown=normaliseTruePublicPrestige();
+    const previousVisiblePrestige=Math.round(shown);
+    if(state.truePublicPrestigeRateDate!==String(date||'')){
+        state.truePublicPrestigeRateDate=String(date||'');
+        state.truePublicPrestigeAppliedDayFraction=0;
+    }
     const gap=underlying-shown;
     if(Math.abs(gap)<.01){
         state.truePublicPrestige=underlying;
         state.truePublicPrestigeLastDate=String(date||'');
         state.truePublicPrestigeLastAppliedAbsMinute=trueEventAbsoluteMinute?.()||0;
-        if(state.trueEnclosureBuilder)trueEnclosureCellCapacity?.();
-        trueEvaluateLandExpansionUnlocks?.();
-        refreshTrueEnclosureCapacityBadge?.();
+        state.truePublicPrestigeAppliedDayFraction=Math.max(0,Math.min(1,((Number(normaliseTrueCalendarState().hour)||9)*60+(Number(normaliseTrueCalendarState().minute)||0)-540)/600));
         return visibleZooPrestige();
     }
 
     const expected=Math.max(1,Number(target)||trueGuestAttendanceTargetForDate(date)||1);
-    const exposure=Math.max(0,Math.min(1.35,(Number(entered)||0)/expected));
+    const rawExposure=Math.max(0,Math.min(1.35,(Number(entered)||0)/expected));
     const publicityCatchup=trueEventModifierProduct('public-prestige-catchup-multiplier',{date});
-
+    const calForExposure=normaliseTrueCalendarState();
+    const minuteForExposure=(Number(calForExposure.hour)||9)*60+(Number(calForExposure.minute)||0);
+    const dayProgress=Math.max(0,Math.min(1,(minuteForExposure-9*60)/600));
+    // During the open day, use at least scheduled progress toward today's attendance
+    // target. This keeps visible-prestige convergence stable across clock speeds while
+    // still allowing genuinely above-target attendance to improve exposure.
+    const exposure=partial?Math.max(rawExposure,dayProgress):rawExposure;
     const exposureFactor=Math.max(.28,exposure);
     const dailyRate=(gap>0?.18:.12)*exposureFactor*publicityCatchup;
 
@@ -38780,27 +39054,36 @@ function trueApplyPublicPrestigeForCompletedDay(date,entered,target,{partial=fal
         const nowAbs=trueEventAbsoluteMinute?.()||0;
         const lastAbs=Number(state.truePublicPrestigeLastAppliedAbsMinute);
         const elapsed=Number.isFinite(lastAbs)&&lastAbs>0?Math.max(0,nowAbs-lastAbs):0;
-        const fraction=Math.min(.20,elapsed/600);
+        const fraction=Math.min(1,elapsed/600);
         if(fraction<=0)return visibleZooPrestige();
-        rate*=fraction;
+        const remainingFraction=Math.max(0,1-(Number(state.truePublicPrestigeAppliedDayFraction)||0));
+        const appliedFraction=Math.min(remainingFraction,fraction);
+        if(appliedFraction<=0)return visibleZooPrestige();
+        rate=1-Math.pow(Math.max(0,1-rate),appliedFraction);
+        state.truePublicPrestigeAppliedDayFraction=Math.min(1,(Number(state.truePublicPrestigeAppliedDayFraction)||0)+appliedFraction);
         state.truePublicPrestigeLastAppliedAbsMinute=nowAbs;
     }else{
-        const nowAbs=trueEventAbsoluteMinute?.()||0;
-        const lastAbs=Number(state.truePublicPrestigeLastAppliedAbsMinute);
-        const elapsed=Number.isFinite(lastAbs)&&lastAbs>0?Math.max(0,nowAbs-lastAbs):600;
-        rate*=Math.min(1,elapsed/600);
-        state.truePublicPrestigeLastAppliedAbsMinute=nowAbs;
+        // A completed zoo day is the settlement point. Partial intraday updates
+        // already moved prestige incrementally; do not scale the closing settlement
+        // by only the few minutes since the last 250 ms timer callback.
+        const remainingFraction=Math.max(0,1-(Number(state.truePublicPrestigeAppliedDayFraction)||0));
+        rate=1-Math.pow(Math.max(0,1-rate),remainingFraction);
+        state.truePublicPrestigeAppliedDayFraction=1;
+        state.truePublicPrestigeLastAppliedAbsMinute=trueEventAbsoluteMinute?.()||0;
     }
 
     let move=gap*rate;
-    if(Math.abs(move)<.04)move=Math.sign(gap)*Math.min(Math.abs(gap),.04);
+    if(!partial&&Math.abs(move)<.04)move=Math.sign(gap)*Math.min(Math.abs(gap),.04);
     shown+=move;
     if((gap>0&&shown>underlying)||(gap<0&&shown<underlying))shown=underlying;
     state.truePublicPrestige=shown;
     state.truePublicPrestigeLastDate=String(date||'');
-    if(state.trueEnclosureBuilder)trueEnclosureCellCapacity?.();
-    trueEvaluateLandExpansionUnlocks?.();
-    refreshTrueEnclosureCapacityBadge?.();
+    const nextVisiblePrestige=Math.round(shown);
+    if(nextVisiblePrestige!==previousVisiblePrestige){
+        if(state.trueEnclosureBuilder)trueEnclosureCellCapacity?.();
+        trueEvaluateLandExpansionUnlocks?.();
+        refreshTrueEnclosureCapacityBadge?.();
+    }
     return visibleZooPrestige();
 }
 
@@ -42242,6 +42525,16 @@ function normaliseTrueMarketplaceState() {
     if (!Array.isArray(state.trueMarketplace.playerListings)) state.trueMarketplace.playerListings = [];
     if (!Number.isFinite(Number(state.trueMarketplace.nextPlayerListingId))) state.trueMarketplace.nextPlayerListingId=1;
     state.trueMarketplace.nextPlayerListingId=Math.max(1,Math.floor(Number(state.trueMarketplace.nextPlayerListingId)));
+    for(const row of state.trueMarketplace.playerListings){
+        if(!row||typeof row!=='object')continue;
+        if(!['listed','completed','withdrawn','expired'].includes(row.status))row.status='listed';
+        if(!Array.isArray(row.offers))row.offers=[];
+        if(!row.population||typeof row.population!=='object')row.population={males:1,females:0,unknown:0};
+        for(const offer of row.offers){
+            if(!offer||typeof offer!=='object')continue;
+            if(!['pending','accepted','declined','unavailable'].includes(offer.status))offer.status='pending';
+        }
+    }
     for(const want of state.trueMarketplace.wants){
         if(want && (want.kind==='level'||want.kind==='sex-category')) want.status='expired';
     }
@@ -42928,21 +43221,34 @@ function trueMarketplaceGeneratePlayerListingOffers(){
             message:offeredAnimal
                 ?`${profile.name} would take ${animalDisplayName(row.animal)} and can offer ${animalDisplayName(offeredAnimal)} in return.`
                 :`${profile.name} has offered to take ${animalDisplayName(row.animal)} without asking for an exchange.`,
-            actionLabel:'Marketplace',action:'marketplace'});
+            actionLabel:'View offer',action:'marketplace-player-offer',playerListingId:row.id,listingOfferId:offer.id});
     }
     return made;
 }
+function trueMarketplaceCloseOfferActivity(offerId){
+    for(const item of state.trueActivityLog||[]){
+        if(item?.action==='marketplace-player-offer'&&String(item.listingOfferId||'')===String(offerId||'')){
+            item.action='';item.actionLabel='';item.unread=false;
+        }
+    }
+}
 function trueMarketplaceResolvePlayerOffer(row,offer,accept){
     if(!row||!offer||offer.status!=='pending')return false;
-    const animal=trueMarketplacePlayerListingAnimal(row);if(!animal){offer.status='unavailable';row.status='withdrawn';return false;}
+    const animal=trueMarketplacePlayerListingAnimal(row);if(!animal){
+        offer.status='unavailable';row.status='withdrawn';
+        alert('This Marketplace offer is no longer available because the listed population is no longer in your zoo.');
+        writeAutoResumeSnapshot?.(true);return false;
+    }
     const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===offer.sourceKey);
-    if(!accept){offer.status='declined';trueRelationshipRecord(offer.profile,offer.sourceKey,'marketplace-offer-declined',
+    if(!accept){offer.status='declined';trueMarketplaceCloseOfferActivity(offer.id);trueRelationshipRecord(offer.profile,offer.sourceKey,'marketplace-offer-declined',
         `Declined an offer for ${animalDisplayName(animal)}.`,{familiarity:1});writeAutoResumeSnapshot?.(true);return true;}
     const population=normaliseTruePopulationCounts(row.population||normaliseTrueAnimalPopulation(animal));
     trueMarketplaceReleasePlayerListingReservation(row);
     const available=trueTransferAvailableCounts(animal);
     if(population.males>available.males||population.females>available.females||population.unknown>available.unknown){
-        trueTransferReserve(animal,population,row.reservationId);offer.status='unavailable';return false;
+        trueTransferReserve(animal,population,row.reservationId);offer.status='unavailable';
+        alert('This Marketplace offer can no longer be completed because the listed individuals are no longer available.');
+        writeAutoResumeSnapshot?.(true);return false;
     }
     if(record)trueWorldPopulationAdd(record,animal,population,{type:'transfer-in',text:`Population received from ${state.zooName||'the player zoo'} via Marketplace.`,otherZooKey:'player'});
     trueTransferSubtract(animal,population);
@@ -42956,7 +43262,7 @@ function trueMarketplaceResolvePlayerOffer(row,offer,accept){
         if(holding){incoming.enclosureId=holding.id;incoming.slotIndex=0;incoming.x=holding.x;incoming.y=holding.y;}
         state.animals.push(incoming);
     }
-    row.status='completed';offer.status='accepted';delete animal.trueMarketplaceListed;
+    row.status='completed';offer.status='accepted';trueMarketplaceCloseOfferActivity(offer.id);delete animal.trueMarketplaceListed;
     trueRelationshipRecord(offer.profile,offer.sourceKey,'marketplace-player-transfer',
         `Completed a Marketplace transfer involving ${animalDisplayName(animal)}.`,{trust:4,familiarity:2});
     addTrueActivity({type:'action',title:'Marketplace transfer completed',
@@ -42979,23 +43285,25 @@ function trueMarketplaceListingAmountChooser(animal,onDone){
     const actions=document.createElement('div');Object.assign(actions.style,{display:'flex',justifyContent:'flex-end',gap:'8px'});const cancel=gameButton('Cancel',()=>shade.remove()),list=gameButton('List selected',()=>{if(selected.males+selected.females+selected.unknown<=0)return;if(onDone({...selected})!==false)shade.remove();});
     const refreshList=()=>{const ok=selected.males+selected.females+selected.unknown>0;list.disabled=!ok;list.style.opacity=ok?'1':'.45';list.style.cursor=ok?'pointer':'default';};refreshList();actions.append(cancel,list);box.append(actions);shade.append(box);shade.onclick=e=>{if(e.target===shade)shade.remove();};document.body.append(shade);
 }
-function openTrueMarketplacePlayerListings(){
+function openTrueMarketplacePlayerListings({listingId=null,offerId=null}={}){
     if(state.gameMode!=='true'||state.visitingZoo)return;
     closeTrueMarketplace();
     const overlay=document.createElement('div');overlay.id='trueMarketplaceOverlay';
     Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:'100000',background:'rgba(20,18,14,.66)',display:'flex',alignItems:'center',justifyContent:'center',padding:'18px'});
     const panel=document.createElement('div');Object.assign(panel.style,{width:'min(900px,95vw)',maxHeight:'88vh',overflow:'auto',background:'#f5f0e5',color:'#2b251d',border:'1px solid #8b7b63',borderRadius:'14px',padding:'18px',boxSizing:'border-box'});
     const head=document.createElement('div');Object.assign(head.style,{display:'flex',justifyContent:'space-between',alignItems:'center'});
-    const title=document.createElement('div');title.innerHTML='<div style="font-size:22px;font-weight:900">Offer animals</div><div style="font-size:12px;opacity:.65">List a population and wait for zoos in your network to make an offer</div>';
+    const title=document.createElement('div');
+    const pendingCount=trueMarketplacePlayerActiveListings().reduce((n,row)=>n+(row.offers||[]).filter(o=>o.status==='pending').length,0);
+    title.innerHTML=`<div style="font-size:22px;font-weight:900">Offer animals${pendingCount?` · ${pendingCount} pending offer${pendingCount===1?'':'s'}`:''}</div><div style="font-size:12px;opacity:.65">List a population and wait for zoos in your network to make an offer</div>`;
     const styleOfferButton=b=>Object.assign(b.style,{height:'32px',padding:'0 11px',border:'1px solid #8b7b63',borderRadius:'7px',background:'#766344',color:'#fff',fontWeight:'800',cursor:'pointer'});
     const close=document.createElement('button');close.textContent='Close';styleOfferButton(close);close.onclick=closeTrueMarketplace;head.append(title,close);panel.appendChild(head);
     const active=trueMarketplacePlayerActiveListings();
     for(const row of active){
-        const card=document.createElement('div');Object.assign(card.style,{marginTop:'14px',padding:'12px',border:'1px solid #b5a78d',borderRadius:'9px'});
+        const card=document.createElement('div');card.dataset.playerListingId=String(row.id);Object.assign(card.style,{marginTop:'14px',padding:'12px',border:'1px solid #b5a78d',borderRadius:'9px'});
         const h=document.createElement('div');h.textContent=`${animalDisplayName(row.animal)} · ${truePopulationNotation(row.population)} · listed until ${formatTrueDate(row.expiresDate,false)}`;h.style.fontWeight='900';card.appendChild(h);
         for(const offer of row.offers||[]){
             if(offer.status!=='pending')continue;
-            const line=document.createElement('div');Object.assign(line.style,{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'10px',marginTop:'8px'});
+            const line=document.createElement('div');line.dataset.listingOfferId=String(offer.id);Object.assign(line.style,{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'10px',marginTop:'8px'});
             const text=document.createElement('span');text.textContent=offer.offeredAnimal?`${offer.profile?.name}: ${animalDisplayName(offer.offeredAnimal)} in return`:`${offer.profile?.name}: can take them without an exchange`;
             const actions=document.createElement('span');
             for(const [label,val] of [['Accept',true],['Decline',false]]){const b=document.createElement('button');b.textContent=label;b.style.marginLeft='5px';styleOfferButton(b);b.onclick=()=>{trueMarketplaceResolvePlayerOffer(row,offer,val);openTrueMarketplacePlayerListings();};actions.appendChild(b);}
@@ -43003,6 +43311,20 @@ function openTrueMarketplacePlayerListings(){
         }
         if(!(row.offers||[]).some(o=>o.status==='pending')){const wait=document.createElement('div');wait.textContent='No current offers. The listing remains visible to the network.';wait.style.opacity='.65';card.appendChild(wait);}
         const withdraw=document.createElement('button');withdraw.textContent='Withdraw listing';styleOfferButton(withdraw);withdraw.style.marginTop='9px';withdraw.onclick=()=>{trueMarketplaceWithdrawPlayerListing(row);openTrueMarketplacePlayerListings();};card.appendChild(withdraw);panel.appendChild(card);
+    }
+    const history=normaliseTrueMarketplaceState().playerListings.filter(r=>r&&r.status!=='listed').slice(-8).reverse();
+    if(history.length){
+        const historyTitle=document.createElement('div');historyTitle.textContent='Recent listing history';Object.assign(historyTitle.style,{fontWeight:'900',marginTop:'18px',borderTop:'1px solid #c6baa3',paddingTop:'12px'});panel.appendChild(historyTitle);
+        for(const row of history){
+            const line=document.createElement('div');Object.assign(line.style,{display:'flex',justifyContent:'space-between',gap:'12px',padding:'5px 0',opacity:'.72'});
+            const accepted=(row.offers||[]).find(o=>o.status==='accepted');
+            const label=row.status==='completed'&&accepted
+                ?`Completed · ${accepted.profile?.name||'Zoo'}${accepted.offeredAnimal?` · received ${animalDisplayName(accepted.offeredAnimal)}`:''}`
+                :row.status==='expired'?'Expired':row.status==='withdrawn'?'Withdrawn':'Completed';
+            const animalName=animalDisplayName(row.animal)||'Animal';
+            line.append(Object.assign(document.createElement('span'),{textContent:`${animalName} · ${truePopulationNotation(row.population)}`}),Object.assign(document.createElement('span'),{textContent:label}));
+            panel.appendChild(line);
+        }
     }
     const listedIds=new Set(active.map(r=>String(r.animalId)));
     const animals=(state.animals||[]).filter(a=>a&&!a.trueArrivalPending&&!a.reservedForTrade&&a.reservedEnclosureId==null&&!listedIds.has(String(a.id)));
@@ -43021,6 +43343,15 @@ function openTrueMarketplacePlayerListings(){
     }
     if(!active.length&&!animals.length){const empty=document.createElement('div');empty.textContent='No populations are currently available to list.';empty.style.marginTop='18px';panel.appendChild(empty);}
     overlay.onclick=e=>{if(e.target===overlay)closeTrueMarketplace();};overlay.appendChild(panel);document.body.appendChild(overlay);
+    if(listingId!=null||offerId!=null){
+        const esc=value=>globalThis.CSS?.escape?CSS.escape(String(value)):String(value).replace(/["\\]/g,'\\$&');
+        const target=(offerId!=null&&overlay.querySelector(`[data-listing-offer-id="${esc(offerId)}"]`))||
+            (listingId!=null&&overlay.querySelector(`[data-player-listing-id="${esc(listingId)}"]`));
+        if(target){
+            target.scrollIntoView({block:'center',behavior:'smooth'});
+            target.animate?.([{background:'rgba(214,190,112,.38)'},{background:'transparent'}],{duration:1600,easing:'ease-out'});
+        }
+    }
 }
 
 function openTrueMarketplace() {
@@ -43038,8 +43369,12 @@ function openTrueMarketplace() {
     heading.innerHTML='<div style="font-size:22px;font-weight:900;letter-spacing:.01em">Zoo Marketplace</div><div style="font-size:12px;opacity:.65;margin-top:2px">Browse current transfer opportunities across your zoo network</div>';
     const topActions=document.createElement('div');Object.assign(topActions.style,{display:'flex',gap:'7px',alignItems:'center'});
     const browse=document.createElement('button'),offerMine=document.createElement('button'),close=document.createElement('button');
-    browse.type=offerMine.type=close.type='button';browse.textContent='Browse all';offerMine.textContent='Offer animals';close.textContent='Close';
+    browse.type=offerMine.type=close.type='button';browse.textContent='Browse all';
+    const activePlayerListings=trueMarketplacePlayerActiveListings();
+    const pendingPlayerOffers=activePlayerListings.reduce((n,row)=>n+(row.offers||[]).filter(o=>o.status==='pending').length,0);
+    offerMine.textContent=pendingPlayerOffers?`Your listings · ${pendingPlayerOffers} offer${pendingPlayerOffers===1?'':'s'}`:'Offer animals';close.textContent='Close';
     for(const b of [browse,offerMine,close])Object.assign(b.style,{height:'34px',padding:'0 12px',border:'1px solid #8b7b63',borderRadius:'7px',background:'#fffaf0',fontWeight:'800',cursor:'pointer'});
+    if(pendingPlayerOffers)Object.assign(offerMine.style,{background:'#766344',color:'#fff'});
     offerMine.addEventListener('click',openTrueMarketplacePlayerListings);
     close.addEventListener('click',closeTrueMarketplace);topActions.append(browse,offerMine,close);head.append(heading,topActions);panel.appendChild(head);
 

@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.52";
+const ZOO_CURATOR_VERSION = "V2.44.55";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -8212,6 +8212,7 @@ function trueCreateCombinationOfferEvent(today=normaliseTrueCalendarState().date
     const c=trueCombinationOfferCandidate(today);if(!c)return null;
     const resident=c.exhibit.residents[Math.floor(seededRoll(`combination-resident|${c.exhibit.enclosure.id}|${today}`).roll*c.exhibit.residents.length)]||c.exhibit.residents[0];
     const event={id:`ze-${events.nextId++}`,kind:'combination-offer',status:'active',createdDate:today,expiresDate:addTrueDays(today,7),
+        informational:true,choiceType:'combination-offer',
         sourceKey:c.sourceKey,profile:cloneForSave(c.profile),animal:cloneForSave(c.offered),population:cloneForSave(c.pop),
         targetEnclosureId:c.exhibit.enclosure.id,targetResidentId:resident.id,targetResident:cloneForSave(resident),
         title:'A suggestion for the exhibit',
@@ -8226,18 +8227,28 @@ function trueAcceptCombinationOffer(event){
     if(!event||event.status!=='active'||event.kind!=='combination-offer')return false;
     const enclosure=(state.enclosures||[]).find(e=>String(e?.id)===String(event.targetEnclosureId));
     const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===event.sourceKey);
-    if(!enclosure||!record||trueEnclosureIsCurrentBackstage(enclosure))return false;
+    if(!enclosure||!record||trueEnclosureIsCurrentBackstage(enclosure)){
+        alert('This offer can no longer be accepted because the suggested exhibit or source zoo is no longer available.');
+        return false;
+    }
     const residents=animalsInWholeEnclosure(enclosure).filter(a=>a&&!a.trueArrivalPending);
     const capacity=Math.max(1,enclosure.cells?.length||1),used=new Set(residents.map(a=>Number(a.slotIndex)).filter(Number.isInteger));
     const freeSlot=Array.from({length:capacity},(_,i)=>i).find(i=>!used.has(i));
     const incoming={...cloneForSave(event.animal),id:state.nextId++,population:cloneForSave(event.population),enclosureId:enclosure.id,slotIndex:freeSlot};
     if(freeSlot==null||!residents.length||!residents.every(a=>animalsAreCompatible(a,incoming))||
        !animalsFormCompatibilityChain([...residents,incoming])||
-       !enclosureAnimalSizeSpaceStatus(capacity,[...residents,incoming]).valid)return false;
+       !enclosureAnimalSizeSpaceStatus(capacity,[...residents,incoming]).valid){
+        alert('This offer can no longer be accepted because the suggested exhibit no longer has a valid compatible space for these animals.');
+        return false;
+    }
     const sourcePop=trueWorldPopulation(record,event.animal,{create:true,reason:'combination exhibit offer'});
     const available=normaliseTrueAnimalPopulation(sourcePop?.population);
     const requested=normaliseTrueAnimalPopulation(event.population);
-    if(requested.males>available.males||requested.females>available.females||requested.unknown>available.unknown)return false;
+    if(requested.males>available.males||requested.females>available.females||requested.unknown>available.unknown){
+        alert(`${event.profile?.name||'The other zoo'} no longer has the offered population available.`);
+        event.status='unavailable';event.resolvedDate=normaliseTrueCalendarState().date;
+        writeAutoResumeSnapshot?.(true);return false;
+    }
     trueWorldPopulationRemove(record,event.animal,requested,{type:'transfer-out',text:`Population sent to ${state.zooName||'the player zoo'} for a mixed-species exhibit.`,otherZooKey:'player'});
     state.animals.push(incoming);
     event.status='resolved';event.resolvedDate=normaliseTrueCalendarState().date;event.playerReply='Accepted';
@@ -9065,7 +9076,7 @@ function openTrueEventDialog(id){
         ${footerHtml}`;
     const actions=document.createElement('div');actions.style.cssText='display:flex;justify-content:flex-end;gap:8px;margin-top:20px;';
     const button=(label,fn,primary=false)=>{const b=document.createElement('button');b.type='button';b.textContent=label;const dark=document.body.classList.contains('zoo-dark-mode');b.style.cssText=`min-height:32px;padding:6px 12px;border-radius:4px;border:1px solid ${dark?'#706a5d':'#9d8e6e'};background:${primary?(dark?'#665b45':'#766344'):(dark?'#22211f':'#fffaf0')};color:${primary?'#fff':(dark?'#eee6d3':'#514633')};font:700 12px Arial,sans-serif;cursor:pointer;`;b.onclick=fn;return b;};
-    if(active&&event.informational){
+    if(active&&(event.informational||trueEventRequiresDecision(event))){
         if(event.kind==='population-pressure'&&event.choiceType==='population-pressure'){
             actions.style.justifyContent='space-between';
             actions.append(
@@ -9506,9 +9517,29 @@ function processTrueMonthChange(previousMonth, currentMonth) {
 }
 
 
+let trueCalendarVisualMinute=null,trueCalendarVisualDate='',trueCalendarVisualTargetMinute=null,trueCalendarVisualTargetDate='',trueCalendarVisualLastStepAt=0;
+function trueCalendarMinuteOfDay(calendar){return Math.max(540,Math.min(1140,(Number(calendar?.hour)||9)*60+(Number(calendar?.minute)||0)));}
+function trueResetCalendarVisualProgress(){
+    const c=normaliseTrueCalendarState();trueCalendarVisualMinute=trueCalendarMinuteOfDay(c);trueCalendarVisualDate=c.date;
+    trueCalendarVisualTargetMinute=trueCalendarVisualMinute;trueCalendarVisualTargetDate=c.date;trueCalendarVisualLastStepAt=performance.now();
+}
+function trueQueueCalendarVisualTarget(c=normaliseTrueCalendarState()){
+    const target=trueCalendarMinuteOfDay(c);
+    if(trueCalendarVisualMinute==null||!trueCalendarVisualDate){trueCalendarVisualMinute=target;trueCalendarVisualDate=c.date;}
+    if(c.date!==trueCalendarVisualDate){trueCalendarVisualMinute=target;trueCalendarVisualDate=c.date;}
+    trueCalendarVisualTargetMinute=target;trueCalendarVisualTargetDate=c.date;
+}
+function trueCalendarVisualStepDelay(){
+    const speed=Number(normaliseTrueCalendarState().speed)||0;
+    if(speed===1)return 800;if(speed===2)return 55;if(speed===3)return 16;return Infinity;
+}
 function trueCalendarDisplayParts(){
-    const calendar=normaliseTrueCalendarState();
-    return {hour:Math.max(9,Math.min(19,Number(calendar.hour)||9)),minute:Math.max(0,Math.min(59,Number(calendar.minute)||0)),date:calendar.date};
+    const calendar=normaliseTrueCalendarState();trueQueueCalendarVisualTarget(calendar);
+    const now=performance.now(),delay=trueCalendarVisualStepDelay();
+    if(trueCalendarVisualTargetDate===trueCalendarVisualDate&&trueCalendarVisualMinute<trueCalendarVisualTargetMinute&&now-trueCalendarVisualLastStepAt>=delay){
+        trueCalendarVisualMinute++;trueCalendarVisualLastStepAt=now;
+    }
+    return {hour:Math.floor(trueCalendarVisualMinute/60),minute:trueCalendarVisualMinute%60,date:trueCalendarVisualDate};
 }
 function updateTrueCalendarVisualClock(){
     const el=document.getElementById('trueCalendarVisualClock');
@@ -9866,12 +9897,18 @@ function advanceTrueCalendarTime(now=performance.now()) {
     let addMinutes=Math.floor(trueCalendarMinuteRemainder);
     if(addMinutes<=0){updateTrueCalendarVisualClock();refreshTrueCalendarSpeedButtons();return;}
     trueCalendarMinuteRemainder-=addMinutes;
-    let total=Number(calendar.hour)*60+Number(calendar.minute||0)+addMinutes;
+    const startTotal=Number(calendar.hour)*60+Number(calendar.minute||0);
+    let total=startTotal+addMinutes;
     const close=19*60;
+    // Acceleration traverses every crossed game minute in sequence. Scheduled systems
+    // therefore experience 10:01, 10:02, 10:03... rather than a jump to the target.
+    const processUntil=Math.min(total,close-1);
+    for(let minute=startTotal+1;minute<=processUntil;minute++){
+        calendar.hour=Math.floor(minute/60);calendar.minute=minute%60;
+        trueProcessTimedEventRolls(minute);trueProcessDaytimeActivity(minute);
+    }
     if(total>=close){
         trueCalendarRolloverPending=true;
-        trueProcessTimedEventRolls(close-1);
-        trueProcessDaytimeActivity(close-1);
         trueProcessRemainingEventRollsBeforeClose();
         const completedDate=calendar.date,completedTarget=trueGuestDailyTarget();
         // Guests are already advanced continuously by the authoritative clock at
@@ -9885,7 +9922,9 @@ function advanceTrueCalendarTime(now=performance.now()) {
         // clock. Keep only the sub-minute fraction already accumulated.
         trueCalendarMinuteRemainder=Math.max(0,Math.min(0.999999,trueCalendarMinuteRemainder));
         const newMonth=calendar.date.slice(0,7),rolloverDate=calendar.date,rolloverGeneration=++trueCalendarRolloverGeneration;
+        trueCalendarVisualTargetMinute=18*60+59;
         requestAnimationFrame(()=>{
+            trueResetCalendarVisualProgress();
             if(state.gameMode!=='true'||normaliseTrueCalendarState().date!==rolloverDate||rolloverGeneration!==trueCalendarRolloverGeneration){
                 if(rolloverGeneration===trueCalendarRolloverGeneration){
                     trueCalendarRolloverPending=false;
@@ -9943,7 +9982,7 @@ function advanceTrueCalendarTime(now=performance.now()) {
         refreshTrueCalendarTimerUi();
     }else{
         calendar.hour=Math.floor(total/60);calendar.minute=total%60;
-        trueProcessTimedEventRolls();trueProcessDaytimeActivity();trueAdvancePublicPrestigeDuringDay();
+        trueAdvancePublicPrestigeDuringDay();
         refreshTrueCalendarTimerUi();
     }
 
@@ -9978,6 +10017,7 @@ function stopTrueCalendarTimer({preserveRollover=false}={}) {
 }
 
 function restartTrueCalendarTimer() {
+    if(trueCalendarVisualMinute==null)trueResetCalendarVisualProgress();
     if(document.hidden||trueCalendarLifecycleSuspended){
         if(trueCalendarTimer)clearInterval(trueCalendarTimer);
         trueCalendarTimer=null;trueCalendarTimerSpeed=null;trueCalendarLastDriverAt=0;
@@ -18579,7 +18619,7 @@ function trueMaybeUnlockFirstNewSpeciesExpansion(arrivals=[]){
     });
     return true;
 }
-const TRUE_LAND_EXPANSION_PRESTIGE_MILESTONES=[100,225,400,650,950,1300,1700,2150];
+const TRUE_LAND_EXPANSION_PRESTIGE_MILESTONES=[25,50,85,130,190,275,400,600];
 function trueLandExpansionEligibleLevel(prestige=visibleZooPrestige()){
     const p=Math.max(0,Number(prestige)||0);
     return TRUE_LAND_EXPANSION_PRESTIGE_MILESTONES.filter(x=>p>=x).length;

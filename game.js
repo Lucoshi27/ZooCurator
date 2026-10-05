@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.118";
+const ZOO_CURATOR_VERSION = "V2.44.144";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -743,10 +743,9 @@ function availableNextLevelFiles(category, level) {
     );
 }
 
-function hasNextLevelInventory(category, level) {
+function hasNextLevelInventory(category, level, owned=playerOwnedCardKeys()) {
     const nextLevel=Number(level)+1;
     if(!category||!Number.isFinite(nextLevel)||nextLevel<2||nextLevel>5)return false;
-    const owned=playerOwnedCardKeys();
     for(const file of levelFiles(category,nextLevel)){
         if(!owned.has(animalCardKey(category,nextLevel,file)))return true;
     }
@@ -4023,28 +4022,27 @@ function collectionCurrentCohabitationPairs() {
     ensureClassicOccupancyCache();
 
     for (const enclosure of state.enclosures || []) {
-        const seenGroups = new Set();
-        for (const slotIndex of getAllSlots(enclosure)) {
-            const group = enclosureGroupForSlot(enclosure, slotIndex);
+        const slots=classicOccupancyByEnclosure.get(String(enclosure.id));
+        if(!slots?.size)continue;
+        for (const group of classicRenderGroups(enclosure)) {
             if (!group || group.length <= 1) continue;
-            let groupKey='';
-            if(group.length===2){
-                const a=Number(group[0]),b=Number(group[1]);groupKey=a<b?`${a},${b}`:`${b},${a}`;
-            }else groupKey=[...group].sort((a,b)=>a-b).join(',');
-            if (seenGroups.has(groupKey)) continue;
-            seenGroups.add(groupKey);
-
             const occupants=[];
+            const seenAnimalIds=new Set();
             for(const groupSlot of group){
-                const atSlot=classicOccupancyBySlot.get(`${enclosure.id}:${groupSlot}`);
-                if(atSlot?.length)occupants.push(...atSlot);
+                const atSlot=slots.get(Number(groupSlot));
+                if(!atSlot?.length)continue;
+                for(const animal of atSlot){
+                    if(!animal||seenAnimalIds.has(animal.id))continue;
+                    seenAnimalIds.add(animal.id);
+                    occupants.push(animal);
+                }
             }
             for (let i = 0; i < occupants.length; i++) {
                 for (let j = i + 1; j < occupants.length; j++) {
                     const a = occupants[i], b = occupants[j];
-                    if (!a || !b || a.id === b.id) continue;
-                    const ids = [Number(a.id), Number(b.id)].sort((x,y)=>x-y);
-                    pairs.set(`${ids[0]}|${ids[1]}`, { a, b });
+                    if (a.id === b.id) continue;
+                    const aid=Number(a.id),bid=Number(b.id);
+                    pairs.set(aid<bid?`${aid}|${bid}`:`${bid}|${aid}`, { a, b });
                 }
             }
         }
@@ -4076,7 +4074,7 @@ function updateCollectionCohabitation() {
         }
     }
 
-    for (const pairKey of [...state.collectionCohabitationActive.keys()]) {
+    for (const pairKey of state.collectionCohabitationActive.keys()) {
         if (!current.has(pairKey)) state.collectionCohabitationActive.delete(pairKey);
     }
 
@@ -4782,12 +4780,14 @@ let classicOccupancyBySlot=new Map();
 let classicReservedOccupancyBySlot=new Map();
 let classicOccupancyByEnclosure=new Map();
 let classicReservedOccupancyByEnclosure=new Map();
+let classicReservedOccupancyCount=0;
 function invalidateClassicOccupancyCache(){classicOccupancyRevision++;}
 function ensureClassicOccupancyCache(){
     if(classicOccupancyCacheAnimals===state.animals&&classicOccupancyCacheRevision===classicOccupancyRevision)return;
     classicOccupancyCacheAnimals=state.animals;classicOccupancyCacheRevision=classicOccupancyRevision;
     classicOccupancyBySlot=new Map();classicReservedOccupancyBySlot=new Map();
     classicOccupancyByEnclosure=new Map();classicReservedOccupancyByEnclosure=new Map();
+    classicReservedOccupancyCount=0;
     const add=(slotMap,enclosureMap,enclosureId,slotIndex,animal)=>{
         const key=`${enclosureId}:${slotIndex}`;
         let list=slotMap.get(key);if(!list){list=[];slotMap.set(key,list);}list.push(animal);
@@ -4801,6 +4801,7 @@ function ensureClassicOccupancyCache(){
         }
         if(animal?.reservedEnclosureId!=null&&animal?.reservedSlotIndex!=null){
             add(classicReservedOccupancyBySlot,classicReservedOccupancyByEnclosure,animal.reservedEnclosureId,animal.reservedSlotIndex,animal);
+            classicReservedOccupancyCount++;
         }
     }
 }
@@ -5494,8 +5495,10 @@ function canPlaceStartingAnimal(animal, enclosure, slotIndex) {
 
 function hasSafeLevelOneDrawSpace() {
     ensureClassicOccupancyCache();
+    const enclosure10NeedsLevel4=!state.sandboxMode&&!state.enclosure10Unlocked;
+    const hasLevel4=enclosure10NeedsLevel4?level4IsInZoo():false;
     return state.enclosures.some(enclosure => {
-        if (!state.sandboxMode && enclosure.number === 10 && !state.enclosure10Unlocked && !level4IsInZoo()) {
+        if (enclosure.number===10&&enclosure10NeedsLevel4&&!hasLevel4) {
             return false;
         }
         const groups = GROUPS[enclosure.number] || [];
@@ -5598,30 +5601,36 @@ function nextLevelOneHasEligibleDestination() {
         state.nextDrawReadyPromise = null;
     }
 
-    if (!state.nextDrawSpec && availableLevelOneDrawSpecs().length === 0) {
-        return false;
+    if (!state.nextDrawSpec) {
+        const used=playerOwnedCardKeys();
+        let drawable=false;
+        for(const category of Object.keys(FOLDERS)){
+            if(!state.activeCategories.has(category))continue;
+            for(const filename of levelFiles(category,1)){
+                if(!used.has(animalCardKey(category,1,filename))){drawable=true;break;}
+            }
+            if(drawable)break;
+        }
+        if(!drawable)return false;
     }
 
     if (!hasSafeLevelOneDrawSpace()) return false;
 
     if (state.nextDrawSpec) {
         ensureClassicOccupancyCache();
-        return eligibleDestinationsForAnimal(state.nextDrawSpec).some(({ enclosure, slotIndex }) => {
-            const group = enclosureGroupForSlot(enclosure, slotIndex);
-            if (!group) return false;
-
-            if(group.length>1){
-                for(const groupSlot of group){
-                    const key=`${enclosure.id}:${groupSlot}`;
-                    if((classicReservedOccupancyBySlot.get(key)||[]).length)return false;
-                    if((classicOccupancyBySlot.get(key)||[]).length)return false;
-                }
-                return true;
+        for(const enclosure of state.enclosures)for(const slotIndex of getAllSlots(enclosure)){
+            if(!canPlace(state.nextDrawSpec,enclosure,slotIndex))continue;
+            const group=enclosureGroupForSlot(enclosure,slotIndex);
+            if(!group)continue;
+            let free=true;
+            for(const groupSlot of group){
+                const key=`${enclosure.id}:${groupSlot}`;
+                if((classicReservedOccupancyBySlot.get(key)||[]).length||
+                   (classicOccupancyBySlot.get(key)||[]).length){free=false;break;}
             }
-            const key=`${enclosure.id}:${slotIndex}`;
-            return !(classicReservedOccupancyBySlot.get(key)||[]).length &&
-                   !(classicOccupancyBySlot.get(key)||[]).length;
-        });
+            if(free)return true;
+        }
+        return false;
     }
 
     return true;
@@ -11925,15 +11934,16 @@ function refreshExchangeGlowSuppression() {
 function eligibleExchangeCategories() {
     const counts = exchangeGroupCounts();
     const categories = new Set();
+    const owned=playerOwnedCardKeys();
 
     for (const [key, count] of counts) {
         if (count < 3) continue;
 
-        const parts = String(key).split('|');
-        const level = Number(parts.pop());
-        const category = parts.join('|');
+        const separator=String(key).lastIndexOf('|');
+        const level=Number(String(key).slice(separator+1));
+        const category=String(key).slice(0,separator);
 
-        if (hasNextLevelInventory(category, level)) {
+        if (hasNextLevelInventory(category, level, owned)) {
             categories.add(category);
         }
     }
@@ -18902,8 +18912,9 @@ function normaliseTrueBuiltEnclosureOccupancy(){
             if(Number.isInteger(slot)&&slot>=0&&slot<capacity&&!used.has(slot)){
                 animal.slotIndex=slot; used.add(slot); continue;
             }
-            const free=Array.from({length:capacity},(_,i)=>i).find(i=>!used.has(i));
-            if(free===undefined){
+            let free=-1;
+            for(let i=0;i<capacity;i++)if(!used.has(i)){free=i;break;}
+            if(free<0){
                 animal.enclosureId=null; animal.slotIndex=null;
             }else{
                 animal.slotIndex=free; used.add(free);
@@ -18999,98 +19010,106 @@ function trueBuiltWorldCells(enclosure, atCol=null, atRow=null){
 }
 
 
-function trueGeneratedLayoutHasVariedFrontage(enclosures,entranceCol,bounds,entranceSide='bottom'){
+function trueGeneratedLayoutHasVariedFrontage(enclosures,entranceCol,bounds,entranceSide='bottom',precomputedCells=null){
     if(!bounds||enclosures.length<2)return false;
-    const occupied=new Set();
-    for(const enc of enclosures)for(const c of trueBuiltWorldCells(enc))
-        occupied.add(trueBuilderCellKey(c.col,c.row));
-    const start=entranceSide==='top'?{col:entranceCol,row:0}:{col:entranceCol,row:bounds.rows-1};
-    const inside=c=>c.col>=0&&c.col<bounds.cols&&c.row>=0&&c.row<bounds.rows;
-    const free=c=>inside(c)&&!occupied.has(trueBuilderCellKey(c.col,c.row));
-    if(!free(start))return false;
-    const reachable=new Set(),queue=[start];
-    while(queue.length){
-        const c=queue.shift(),k=trueBuilderCellKey(c.col,c.row);
-        if(reachable.has(k)||!free(c))continue;
-        reachable.add(k);
-        for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]])queue.push({col:c.col+dc,row:c.row+dr});
+    const groups=precomputedCells||enclosures.map(enc=>trueBuiltWorldCells(enc));
+    const cols=bounds.cols,rows=bounds.rows,size=cols*rows,blocked=new Uint8Array(size);
+    for(const cells of groups)for(const c of cells)
+        if(c.col>=0&&c.col<cols&&c.row>=0&&c.row<rows)blocked[c.row*cols+c.col]=1;
+    const startRow=entranceSide==='top'?0:rows-1,start=startRow*cols+entranceCol;
+    if(entranceCol<0||entranceCol>=cols||blocked[start])return false;
+    const reachable=new Uint8Array(size),queue=[start];reachable[start]=1;
+    const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+    for(let qi=0;qi<queue.length;qi++){
+        const index=queue[qi],col=index%cols,row=(index/cols)|0;
+        for(const [dc,dr] of dirs){
+            const nc=col+dc,nr=row+dr;
+            if(nc<0||nc>=cols||nr<0||nr>=rows)continue;
+            const next=nr*cols+nc;
+            if(reachable[next]||blocked[next])continue;
+            reachable[next]=1;queue.push(next);
+        }
     }
 
     let multiFrontage=0;
-    for(const enc of enclosures){
-        const cells=trueBuiltWorldCells(enc),own=new Set(cells.map(c=>trueBuilderCellKey(c.col,c.row)));
-        const sides=new Set();
+    for(const cells of groups){
+        let sideMask=0;
         for(const c of cells){
-            for(const [dc,dr,label] of [[0,-1,'top'],[1,0,'right'],[0,1,'bottom'],[-1,0,'left']]){
-                const nk=trueBuilderCellKey(c.col+dc,c.row+dr);
-                if(!own.has(nk)&&reachable.has(nk))sides.add(label);
+            for(const [dc,dr,bit] of [[0,-1,1],[1,0,2],[0,1,4],[-1,0,8]]){
+                const nc=c.col+dc,nr=c.row+dr;
+                if(nc>=0&&nc<cols&&nr>=0&&nr<rows&&reachable[nr*cols+nc])sideMask|=bit;
             }
         }
-        if(sides.size>=2)multiFrontage++;
+        if(sideMask&&(sideMask&(sideMask-1)))multiFrontage++;
     }
     if(multiFrontage<2)return false;
 
-    const all=[...occupied].map(k=>k.split(',').map(Number));
-    const rows=new Set(all.map(([,r])=>r)),cols=new Set(all.map(([c])=>c));
-    if(rows.size===1||cols.size===1)return false;
-    return true;
+    let firstCol=null,firstRow=null,multipleCols=false,multipleRows=false;
+    for(const cells of groups)for(const c of cells){
+        if(firstCol===null){firstCol=c.col;firstRow=c.row;continue;}
+        if(c.col!==firstCol)multipleCols=true;
+        if(c.row!==firstRow)multipleRows=true;
+        if(multipleCols&&multipleRows)break;
+    }
+    return multipleRows&&multipleCols;
 }
-function trueGeneratedLayoutHasClusterCohesion(enclosures,bounds){
-    if(!bounds||enclosures.length<3)return false;
-    const cells=enclosures.map(enc=>trueBuiltWorldCells(enc));
-    const all=cells.flat();
 
+function trueGeneratedLayoutHasClusterCohesion(enclosures,bounds,precomputedCells=null){
+    if(!bounds||enclosures.length<3)return false;
+    const cells=precomputedCells||enclosures.map(enc=>trueBuiltWorldCells(enc));
+    let totalCells=0,minCol=Infinity,maxCol=-Infinity,minRow=Infinity,maxRow=-Infinity;
+    let interiorCells=0,interiorEnclosures=0,boundaryOnly=0;
+    const centres=[];
+    for(const group of cells){
+        totalCells+=group.length;
+        let sumCol=0,sumRow=0,hasInterior=false,allBoundary=true;
+        for(const c of group){
+            sumCol+=c.col;sumRow+=c.row;
+            if(c.col<minCol)minCol=c.col;if(c.col>maxCol)maxCol=c.col;
+            if(c.row<minRow)minRow=c.row;if(c.row>maxRow)maxRow=c.row;
+            const interior=c.col>0&&c.col<bounds.cols-1&&c.row>0&&c.row<bounds.rows-1;
+            if(interior){interiorCells++;hasInterior=true;allBoundary=false;}
+            else if(!(c.col===0||c.row===0||c.col===bounds.cols-1||c.row===bounds.rows-1))
+                allBoundary=false;
+        }
+        if(hasInterior)interiorEnclosures++;
+        if(allBoundary)boundaryOnly++;
+        centres.push({col:sumCol/group.length,row:sumRow/group.length});
+    }
+
+    let close=0;
     for(let i=0;i<cells.length;i++){
         let nearest=Infinity;
         for(let j=0;j<cells.length;j++)if(i!==j)
-            for(const a of cells[i])for(const b of cells[j])
-                nearest=Math.min(nearest,Math.abs(a.col-b.col)+Math.abs(a.row-b.row));
+            for(const a of cells[i])for(const b of cells[j]){
+                const distance=Math.abs(a.col-b.col)+Math.abs(a.row-b.row);
+                if(distance<nearest)nearest=distance;
+            }
         if(nearest>3)return false;
-    }
-    let close=0;
-    for(let i=0;i<cells.length;i++){
-        let near=false;
-        for(let j=0;j<cells.length&&!near;j++)if(i!==j)
-            near=cells[i].some(a=>cells[j].some(b=>Math.abs(a.col-b.col)+Math.abs(a.row-b.row)<=2));
-        if(near)close++;
+        if(nearest<=2)close++;
     }
     if(close<Math.ceil(enclosures.length*.65))return false;
 
-    const touchesBoundary=group=>group.some(c=>
-        c.col===0||c.row===0||c.col===bounds.cols-1||c.row===bounds.rows-1
-    );
-    const entirelyBoundary=group=>group.every(c=>
-        c.col===0||c.row===0||c.col===bounds.cols-1||c.row===bounds.rows-1
-    );
-    const boundaryOnly=cells.filter(entirelyBoundary).length;
     if(enclosures.length>=5&&boundaryOnly>Math.floor(enclosures.length*.55))return false;
-
-    const interiorCells=all.filter(c=>
-        c.col>0&&c.col<bounds.cols-1&&c.row>0&&c.row<bounds.rows-1
-    ).length;
-    if(bounds.cols>=5&&bounds.rows>=4&&interiorCells<Math.max(2,Math.ceil(all.length*.22)))return false;
-
-    const centres=cells.map(group=>({
-        col:group.reduce((n,c)=>n+c.col,0)/group.length,
-        row:group.reduce((n,c)=>n+c.row,0)/group.length
-    }));
-    const bandCounts=(axis)=>centres.reduce((map,p)=>{
-        const k=Math.round(p[axis]);map.set(k,(map.get(k)||0)+1);return map;
-    },new Map());
-    for(const axis of ['row','col']){
-        const counts=[...bandCounts(axis).values()].sort((a,b)=>b-a);
-        if(counts[0]>=Math.ceil(enclosures.length*.72))return false;
-        if(enclosures.length>=6&&(counts[0]||0)+(counts[1]||0)>=Math.ceil(enclosures.length*.86))return false;
+    if(bounds.cols>=5&&bounds.rows>=4&&interiorCells<Math.max(2,Math.ceil(totalCells*.22)))return false;
+    const rowBands=new Map(),colBands=new Map();
+    for(const centre of centres){
+        const row=Math.round(centre.row),col=Math.round(centre.col);
+        rowBands.set(row,(rowBands.get(row)||0)+1);
+        colBands.set(col,(colBands.get(col)||0)+1);
+    }
+    for(const bands of [rowBands,colBands]){
+        let first=0,second=0;
+        for(const count of bands.values()){
+            if(count>first){second=first;first=count;}
+            else if(count>second)second=count;
+        }
+        if(first>=Math.ceil(enclosures.length*.72))return false;
+        if(enclosures.length>=6&&first+second>=Math.ceil(enclosures.length*.86))return false;
     }
 
-    const spanC=Math.max(...all.map(c=>c.col))-Math.min(...all.map(c=>c.col))+1;
-    const spanR=Math.max(...all.map(c=>c.row))-Math.min(...all.map(c=>c.row))+1;
-    const occupied=all.length,boxArea=spanC*spanR;
-    if(boxArea>occupied*1.85&&spanC>=4&&spanR>=4)return false;
-
-    const interiorEnclosures=cells.filter(group=>group.some(c=>
-        c.col>0&&c.col<bounds.cols-1&&c.row>0&&c.row<bounds.rows-1
-    )).length;
+    const spanC=maxCol-minCol+1,spanR=maxRow-minRow+1,boxArea=spanC*spanR;
+    if(boxArea>totalCells*1.85&&spanC>=4&&spanR>=4)return false;
     if(enclosures.length>=5&&interiorEnclosures<2)return false;
     return true;
 }
@@ -19187,31 +19206,44 @@ if(typeof window!=='undefined'){
     window.trueLayoutDiagnostic=trueStartingLayoutDiagnostic;
 }
 
-function trueGeneratedLayoutHasConstructiveAccess(enclosures,entranceCol,bounds,entranceSide='bottom'){
+function trueGeneratedLayoutHasConstructiveAccess(enclosures,entranceCol,bounds,entranceSide='bottom',precomputedCells=null){
     const cols=Math.max(1,Number(bounds?.cols)||0),rows=Math.max(1,Number(bounds?.rows)||0);
     if(!cols||!rows||!enclosures?.length)return false;
-    const key=(c,r)=>`${c},${r}`,dirs=[[1,0],[-1,0],[0,1],[0,-1]];
-    const occupied=new Set(),groups=[];
-    for(const enc of enclosures){
-        const cells=trueBuiltWorldCells(enc);
+    const dirs=[[1,0],[-1,0],[0,1],[0,-1]],size=cols*rows;
+    const blocked=new Uint8Array(size),groups=[];
+    for(let i=0;i<enclosures.length;i++){
+        const cells=precomputedCells?.[i]||trueBuiltWorldCells(enclosures[i]);
         groups.push(cells);
-        for(const c of cells)occupied.add(key(c.col,c.row));
+        for(const c of cells)if(c.col>=0&&c.col<cols&&c.row>=0&&c.row<rows)
+            blocked[c.row*cols+c.col]=1;
     }
-    const startRow=entranceSide==='top'?0:rows-1,start=key(entranceCol,startRow);
-    if(occupied.has(start))return false;
-    const seen=new Set([start]),queue=[[entranceCol,startRow]];
+    const startRow=entranceSide==='top'?0:rows-1,start=startRow*cols+entranceCol;
+    if(entranceCol<0||entranceCol>=cols||blocked[start])return false;
+    const seen=new Uint8Array(size),queue=[start];seen[start]=1;
     for(let qi=0;qi<queue.length;qi++){
-        const [c,r]=queue[qi];
+        const index=queue[qi],c=index%cols,r=(index/cols)|0;
         for(const [dc,dr] of dirs){
-            const nc=c+dc,nr=r+dr,nk=key(nc,nr);
-            if(nc<0||nc>=cols||nr<0||nr>=rows||seen.has(nk)||occupied.has(nk))continue;
-            seen.add(nk);queue.push([nc,nr]);
+            const nc=c+dc,nr=r+dr;
+            if(nc<0||nc>=cols||nr<0||nr>=rows)continue;
+            const next=nr*cols+nc;
+            if(seen[next]||blocked[next])continue;
+            seen[next]=1;queue.push(next);
         }
     }
-    return groups.every(cells=>cells.some(c=>dirs.some(([dc,dr])=>{
-        const nc=c.col+dc,nr=c.row+dr;
-        return nc>=0&&nc<cols&&nr>=0&&nr<rows&&seen.has(key(nc,nr));
-    })));
+    for(const cells of groups){
+        let reachable=false;
+        for(const c of cells){
+            for(const [dc,dr] of dirs){
+                const nc=c.col+dc,nr=c.row+dr;
+                if(nc>=0&&nc<cols&&nr>=0&&nr<rows&&seen[nr*cols+nc]){
+                    reachable=true;break;
+                }
+            }
+            if(reachable)break;
+        }
+        if(!reachable)return false;
+    }
+    return true;
 }
 
 function repairTrueBuiltEnclosureGeometry(){
@@ -19228,8 +19260,11 @@ function repairTrueBuiltEnclosureGeometry(){
         const eps=2;
         let top=false,bottom=false,left=false,right=false;
         for(const enc of occupiedEnclosures){
-            for(const c of trueBuiltWorldCells(enc)){
-                const x=c.col*TRUE_ENC_CELL_W,y=c.row*TRUE_ENC_CELL_H;
+            const baseCol=Math.round((Number(enc.x)||0)/TRUE_ENC_CELL_W);
+            const baseRow=Math.round((Number(enc.y)||0)/TRUE_ENC_CELL_H);
+            const cells=trueCanonicalCellList(enc.cells||[]);
+            for(const c of cells){
+                const x=(baseCol+c.col)*TRUE_ENC_CELL_W,y=(baseRow+c.row)*TRUE_ENC_CELL_H;
                 if(Math.abs(y-grounds.y)<=eps)top=true;
                 if(Math.abs((y+TRUE_ENC_CELL_H)-(grounds.y+grounds.h))<=eps)bottom=true;
                 if(Math.abs(x-grounds.x)<=eps)left=true;
@@ -19239,9 +19274,12 @@ function repairTrueBuiltEnclosureGeometry(){
         return top&&bottom&&left&&right;
     };
     if(Number(b.geometryVersion)>=43)return false;
+    const canonicalCellsById=new Map(occupiedEnclosures.map(
+        enc=>[String(enc.id),trueCanonicalCellList(enc.cells||[])]
+    ));
     const enclosures=occupiedEnclosures.slice()
       .sort((a,b)=>{
-          const ac=trueCanonicalCellList(a.cells||[]),bc=trueCanonicalCellList(b.cells||[]);
+          const ac=canonicalCellsById.get(String(a.id))||[],bc=canonicalCellsById.get(String(b.id))||[];
           if(bc.length!==ac.length)return bc.length-ac.length;
           return (Number(a.y)||0)-(Number(b.y)||0)||
                  (Number(a.x)||0)-(Number(b.x)||0)||
@@ -19252,20 +19290,22 @@ function repairTrueBuiltEnclosureGeometry(){
         .map(enc=>String(enc.id)));
     if(dormantIds.size){
         state.enclosures=(state.enclosures||[]).filter(enc=>!dormantIds.has(String(enc?.id)));
-        for(const id of dormantIds){
-            const stale=currentEnclosures.find(enc=>String(enc.id)===id);
-            if(stale)trueInvalidateEnclosureGeometry(stale);
-        }
+        for(const stale of currentEnclosures)
+            if(dormantIds.has(String(stale.id)))trueInvalidateEnclosureGeometry(stale);
     }
     if(!enclosures.length){b.geometryVersion=43;return false;}
 
-    const dims=enc=>{
-        const c=trueCanonicalCellList(enc.cells||[]);
-        return{
-            w:Math.max(...c.map(x=>x.col))-Math.min(...c.map(x=>x.col))+1,
-            h:Math.max(...c.map(x=>x.row))-Math.min(...c.map(x=>x.row))+1
-        };
-    };
+    const dimensionsById=new Map();
+    for(const enc of enclosures){
+        const cells=canonicalCellsById.get(String(enc.id))||[];
+        let minCol=Infinity,maxCol=-Infinity,minRow=Infinity,maxRow=-Infinity;
+        for(const cell of cells){
+            if(cell.col<minCol)minCol=cell.col;if(cell.col>maxCol)maxCol=cell.col;
+            if(cell.row<minRow)minRow=cell.row;if(cell.row>maxRow)maxRow=cell.row;
+        }
+        dimensionsById.set(String(enc.id),cells.length
+            ?{w:maxCol-minCol+1,h:maxRow-minRow+1}:{w:1,h:1});
+    }
     const original=enclosures.map(enc=>({enc,x:Number(enc.x)||0,y:Number(enc.y)||0}));
     const zooSeed=String(state.zooName||state.playerZooName||'Zoo Curator');
     let seed=2166136261;
@@ -19273,9 +19313,9 @@ function repairTrueBuiltEnclosureGeometry(){
     const rand=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
 
     const envelopes=[];
-    const requiredCells=enclosures.reduce(
-        (sum,enc)=>sum+trueCanonicalCellList(enc.cells||[]).length,0
-    );
+    let requiredCells=0;
+    for(const enc of enclosures)
+        requiredCells+=(canonicalCellsById.get(String(enc.id))||[]).length;
     const layoutDiag={
         startedAt:new Date().toISOString(),
         requiredCells,
@@ -19336,30 +19376,27 @@ function repairTrueBuiltEnclosureGeometry(){
     for(const envelope of searchEnvelopes){
         if(chosen||totalSearchBudget<=0)break;
         const {cols,rows}=envelope;
-        const entranceCols=[...Array(cols).keys()]
-            .map(col=>({col,tie:rand()}))
-            .sort((a,c)=>Math.abs((a.col+.5)-cols/2)-Math.abs((c.col+.5)-cols/2)||a.tie-c.tie)
-            .slice(0,Math.min(3,cols))
-            .map(entry=>entry.col);
+        const entranceCandidates=[];
+        for(let col=0;col<cols;col++)entranceCandidates.push({
+            col,tie:rand(),distance:Math.abs((col+.5)-cols/2)
+        });
+        entranceCandidates.sort((a,c)=>a.distance-c.distance||a.tie-c.tie);
+        const entranceCols=entranceCandidates.slice(0,Math.min(3,cols)).map(entry=>entry.col);
         for(const entranceCol of entranceCols){
             if(totalSearchBudget<=0)break;
             const candidates=[];
             for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){
                 if(row===rows-1&&col===entranceCol)continue;
-                candidates.push({col,row,tie:rand()});
+                const tie=rand();
+                const edgeDistance=Math.min(col,cols-1-col,row,rows-1-row);
+                const perimeterBand=edgeDistance===0?0:edgeDistance===1?1:2;
+                candidates.push({
+                    col,row,tie,
+                    band:perimeterBand+(perimeterBand===2&&tie<.32?-1:0),
+                    distanceBand:Math.floor(Math.hypot(col-entranceCol,(rows-1)-row+.25)/2)
+                });
             }
-            candidates.sort((a,c)=>{
-                const da=Math.hypot(a.col-entranceCol,(rows-1)-a.row+.25);
-                const dc=Math.hypot(c.col-entranceCol,(rows-1)-c.row+.25);
-                const edgeDistanceA=Math.min(a.col,cols-1-a.col,a.row,rows-1-a.row);
-                const edgeDistanceC=Math.min(c.col,cols-1-c.col,c.row,rows-1-c.row);
-                const perimeterBandA=edgeDistanceA===0?0:edgeDistanceA===1?1:2;
-                const perimeterBandC=edgeDistanceC===0?0:edgeDistanceC===1?1:2;
-                const interiorVarietyA=(perimeterBandA===2&&a.tie<.32)?-1:0;
-                const interiorVarietyC=(perimeterBandC===2&&c.tie<.32)?-1:0;
-                return (perimeterBandA+interiorVarietyA)-(perimeterBandC+interiorVarietyC)
-                    ||Math.floor(da/2)-Math.floor(dc/2)||a.tie-c.tie;
-            });
+            candidates.sort((a,c)=>a.band-c.band||a.distanceBand-c.distanceBand||a.tie-c.tie);
 
             const placed=[],used=new Set();
             let searchBudget=Math.min(14000,totalSearchBudget);
@@ -19381,8 +19418,13 @@ function repairTrueBuiltEnclosureGeometry(){
                 if(index>=enclosures.length){
                     layoutDiag.completedPlacements++;
                     if(!entranceHasInteriorAccess())return diagReject('entrance-throat-blocked');
+                    const leafWorldCells=placed.map(p=>
+                        (canonicalCellsById.get(String(p.enc.id))||[]).map(c=>({
+                            col:p.col+c.col,row:p.row+c.row
+                        }))
+                    );
                     if(!trueGeneratedLayoutHasConstructiveAccess(
-                        enclosures,entranceCol,{cols,rows},'bottom'
+                        enclosures,entranceCol,{cols,rows},'bottom',leafWorldCells
                     ))return diagReject('constructive-access-unreachable-enclosure');
 
                     const occupiedCount=used.size;
@@ -19391,14 +19433,17 @@ function repairTrueBuiltEnclosureGeometry(){
                     if(openCount<3)return diagReject('fewer-than-3-free-canvas-cells');
 
                     if(preferIrregularFootprint){
-                        const occupiedCells=placed.flatMap(p=>trueBuiltWorldCells(p.enc,p.col,p.row));
-                        const occ=new Set(occupiedCells.map(c=>trueBuilderCellKey(c.col,c.row)));
-                        const minC=Math.min(...occupiedCells.map(c=>c.col));
-                        const maxC=Math.max(...occupiedCells.map(c=>c.col));
-                        const minR=Math.min(...occupiedCells.map(c=>c.row));
-                        const maxR=Math.max(...occupiedCells.map(c=>c.row));
-                        const corners=[[minC,minR],[maxC,minR],[minC,maxR],[maxC,maxR]];
-                        const openCorners=corners.filter(([c,r])=>!occ.has(trueBuilderCellKey(c,r))).length;
+                        const occ=new Set();
+                        let minC=Infinity,maxC=-Infinity,minR=Infinity,maxR=-Infinity;
+                        for(const cells of leafWorldCells)for(const cell of cells){
+                            const col=cell.col,row=cell.row;
+                            occ.add(trueBuilderCellKey(col,row));
+                            if(col<minC)minC=col;if(col>maxC)maxC=col;
+                            if(row<minR)minR=row;if(row>maxR)maxR=row;
+                        }
+                        let openCorners=0;
+                        for(const [col,row] of [[minC,minR],[maxC,minR],[minC,maxR],[maxC,maxR]])
+                            if(!occ.has(trueBuilderCellKey(col,row)))openCorners++;
                         if(openCorners<1)return diagReject('irregular-footprint-preference');
                     }
 
@@ -19411,29 +19456,34 @@ function repairTrueBuiltEnclosureGeometry(){
                     if(!accessibleBackup)accessibleBackup={
                         cols,rows,entranceCol,placed:placed.map(p=>({...p}))
                     };
-                    const perimeterEnclosures=enclosures.filter(enc=>trueBuiltWorldCells(enc).some(c=>
-                        c.col===0||c.col===cols-1||c.row===0||c.row===rows-1
-                    )).length;
+                    let perimeterEnclosures=0;
+                    for(const p of placed){
+                        const cells=canonicalCellsById.get(String(p.enc.id))||[];
+                        if(cells.some(c=>
+                            p.col+c.col===0||p.col+c.col===cols-1||
+                            p.row+c.row===0||p.row+c.row===rows-1
+                        ))perimeterEnclosures++;
+                    }
                     const preferredPerimeterCount=Math.max(2,Math.ceil(enclosures.length*.6));
                     if(perimeterEnclosures<preferredPerimeterCount)
                         return diagReject('perimeter-enclosure-preference');
                     if(!trueGeneratedLayoutHasVariedFrontage(
-                        enclosures,entranceCol,{cols,rows},'bottom'
+                        enclosures,entranceCol,{cols,rows},'bottom',leafWorldCells
                     ))return diagReject('varied-frontage-aesthetic');
                     if(!trueGeneratedLayoutHasClusterCohesion(
-                        enclosures,{cols,rows}
+                        enclosures,{cols,rows},leafWorldCells
                     ))return diagReject('cluster-cohesion-aesthetic');
                     layoutDiag.strictCandidates++;
                     chosen={cols,rows,entranceCol,placed:placed.map(p=>({...p}))};
                     return true;
                 }
-                const enc=enclosures[index],d=dims(enc);
+                const enc=enclosures[index],d=dimensionsById.get(String(enc.id));
                 for(const at of candidates){
                     if(at.col+d.w>cols||at.row+d.h>rows){layoutDiag.failureReasons['shape-outside-envelope']=(layoutDiag.failureReasons['shape-outside-envelope']||0)+1;continue;}
-                    const worldCells=trueBuiltWorldCells(enc,at.col,at.row);
+                    const localCells=canonicalCellsById.get(String(enc.id))||[];
                     const keys=[];let free=true;
-                    for(const cell of worldCells){
-                        const cc=cell.col,rr=cell.row,key=trueBuilderCellKey(cc,rr);
+                    for(const cell of localCells){
+                        const cc=at.col+cell.col,rr=at.row+cell.row,key=trueBuilderCellKey(cc,rr);
                         const blocksEntranceApproach=
                             cc===entranceCol&&(rr===rows-1||(rows>=3&&rr===rows-2));
                         if(cc<0||cc>=cols||rr<0||rr>=rows||used.has(key)||blocksEntranceApproach){
@@ -19462,12 +19512,15 @@ function repairTrueBuiltEnclosureGeometry(){
         trueInvalidateEnclosureGeometry(p.enc);
     }
 
+    let chosenWorldCells=null;
     if(chosen){
-        const occupiedKeys=new Set(chosen.placed.flatMap(p=>
-            trueBuiltWorldCells(p.enc,p.col,p.row).map(c=>trueBuilderCellKey(c.col,c.row))
-        ));
+        chosenWorldCells=chosen.placed.map(p=>
+            (canonicalCellsById.get(String(p.enc.id))||[]).map(c=>({col:p.col+c.col,row:p.row+c.row}))
+        );
+        let occupiedCount=0;
+        for(const cells of chosenWorldCells)occupiedCount+=cells.length;
         const totalCells=chosen.cols*chosen.rows;
-        const openCells=totalCells-occupiedKeys.size;
+        const openCells=totalCells-occupiedCount;
         if(openCells<3){
             layoutDiag.finalFailure='final-fewer-than-3-free-canvas-cells';chosen=null;
         }
@@ -19485,81 +19538,106 @@ function repairTrueBuiltEnclosureGeometry(){
         b.zooGrounds={x:0,y:0,w:groundCols*TRUE_ENC_CELL_W,h:groundRows*TRUE_ENC_CELL_H};
 
         let entranceCol=Math.max(0,Math.min(groundCols-1,chosen.entranceCol));
-        const bottomOccupied=new Set(chosen.placed.flatMap(p=>trueBuiltWorldCells(p.enc,p.col,p.row))
+        const bottomOccupied=new Set(chosenWorldCells.flat()
             .filter(c=>c.row===groundRows-1).map(c=>c.col));
         if(bottomOccupied.has(entranceCol)){
-            const open=[...Array(groundCols).keys()].filter(c=>!bottomOccupied.has(c));
-            if(open.length)entranceCol=open.sort((a,c)=>Math.abs(a-entranceCol)-Math.abs(c-entranceCol))[0];
+            let nearest=-1,nearestDistance=Infinity;
+            for(let c=0;c<groundCols;c++)if(!bottomOccupied.has(c)){
+                const distance=Math.abs(c-entranceCol);
+                if(distance<nearestDistance){nearest=c;nearestDistance=distance;}
+            }
+            if(nearest>=0)entranceCol=nearest;
         }
         b.zooEntrance={side:'bottom',t:((entranceCol+.5)*TRUE_ENC_CELL_W)/b.zooGrounds.w};
 
-        const occupied=new Set(chosen.placed.flatMap(p=>
-            trueBuiltWorldCells(p.enc,p.col,p.row).map(c=>trueBuilderCellKey(c.col,c.row))
-        ));
-        const parseKey=k=>k.split(',').map(Number);
-        const neighbours=(c,r)=>[[c+1,r],[c-1,r],[c,r+1],[c,r-1]]
-            .filter(([x,y])=>x>=0&&x<groundCols&&y>=0&&y<groundRows);
-        const entranceKey=trueBuilderCellKey(entranceCol,groundRows-1);
-        const visitor=new Set([entranceKey]);
-        const enclosureGroups=chosen.placed.map(p=>trueBuiltWorldCells(p.enc,p.col,p.row));
-        const frontageKeys=group=>{
-            const own=new Set(group.map(c=>trueBuilderCellKey(c.col,c.row))),out=new Set();
-            for(const c of group)for(const [nc,nr] of neighbours(c.col,c.row)){
-                const k=trueBuilderCellKey(nc,nr);
-                if(!own.has(k)&&!occupied.has(k))out.add(k);
+        const gridSize=groundCols*groundRows,occupiedGrid=new Uint8Array(gridSize);
+        for(const cells of chosenWorldCells)for(const c of cells)
+            occupiedGrid[c.row*groundCols+c.col]=1;
+        const entranceIndex=(groundRows-1)*groundCols+entranceCol;
+        const visitorGrid=new Uint8Array(gridSize);visitorGrid[entranceIndex]=1;
+        const visitor=[entranceIndex],enclosureGroups=chosenWorldCells;
+        const frontages=enclosureGroups.map(group=>{
+            const out=new Set();
+            for(const c of group)for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]]){
+                const nc=c.col+dc,nr=c.row+dr;
+                if(nc<0||nc>=groundCols||nr<0||nr>=groundRows)continue;
+                const index=nr*groundCols+nc;
+                if(!occupiedGrid[index])out.add(index);
             }
             return out;
-        };
-        const frontages=enclosureGroups.map(frontageKeys);
-        const served=new Set();
-        const markServed=()=>frontages.forEach((set,i)=>{
-            if([...set].some(k=>visitor.has(k)))served.add(i);
         });
+        const served=new Uint8Array(enclosureGroups.length);
+        let servedCount=0;
+        const markServed=()=>{
+            for(let i=0;i<frontages.length;i++)if(!served[i]){
+                for(const index of frontages[i])if(visitorGrid[index]){
+                    served[i]=1;servedCount++;break;
+                }
+            }
+        };
         markServed();
         let pathGuard=0;
-        while(served.size<enclosureGroups.length&&pathGuard++<enclosureGroups.length+4){
-            const queue=[...visitor],prev=new Map(),seen=new Set(queue);
-            let hit=null,hitIndex=-1;
-            for(let qi=0;qi<queue.length&&!hit;qi++){
-                const key=queue[qi],[c,r]=parseKey(key);
-                for(let i=0;i<frontages.length;i++)if(!served.has(i)&&frontages[i].has(key)){
-                    hit=key;hitIndex=i;break;
+        while(servedCount<enclosureGroups.length&&pathGuard++<enclosureGroups.length+4){
+            const queue=visitor.slice(),prev=new Int32Array(gridSize);prev.fill(-1);
+            const seen=new Uint8Array(gridSize);
+            for(const index of queue)seen[index]=1;
+            let hit=-1,hitIndex=-1;
+            for(let qi=0;qi<queue.length&&hit<0;qi++){
+                const index=queue[qi],c=index%groundCols,r=(index/groundCols)|0;
+                for(let i=0;i<frontages.length;i++)if(!served[i]&&frontages[i].has(index)){
+                    hit=index;hitIndex=i;break;
                 }
-                if(hit)break;
-                for(const [nc,nr] of neighbours(c,r)){
-                    const nk=trueBuilderCellKey(nc,nr);
-                    if(seen.has(nk)||occupied.has(nk))continue;
-                    seen.add(nk);prev.set(nk,key);queue.push(nk);
+                if(hit>=0)break;
+                for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]]){
+                    const nc=c+dc,nr=r+dr;
+                    if(nc<0||nc>=groundCols||nr<0||nr>=groundRows)continue;
+                    const next=nr*groundCols+nc;
+                    if(seen[next]||occupiedGrid[next])continue;
+                    seen[next]=1;prev[next]=index;queue.push(next);
                 }
             }
-            if(!hit)break;
-            let k=hit;
-            while(k&&!visitor.has(k)){visitor.add(k);k=prev.get(k);}
-            served.add(hitIndex);markServed();
+            if(hit<0)break;
+            for(let index=hit;index>=0&&!visitorGrid[index];index=prev[index]){
+                visitorGrid[index]=1;visitor.push(index);
+            }
+            if(!served[hitIndex]){served[hitIndex]=1;servedCount++;}
+            markServed();
         }
-        if(served.size!==enclosureGroups.length){
-            layoutDiag.finalFailure=`INVARIANT: validated constructive access but path served ${served.size}/${enclosureGroups.length}`;
+        if(servedCount!==enclosureGroups.length){
+            layoutDiag.finalFailure=`INVARIANT: validated constructive access but path served ${servedCount}/${enclosureGroups.length}`;
             chosen=null;
         }else{
-            const property=new Set([...occupied,...visitor]);
+            const propertyGrid=new Uint8Array(gridSize),property=[];
+            for(let index=0;index<gridSize;index++)if(occupiedGrid[index]||visitorGrid[index]){
+                propertyGrid[index]=1;property.push(index);
+            }
             const targetCells=Math.min(TRUE_STARTING_GROUNDS_MAX_CELLS,
-                Math.max(property.size,targetStartingPropertyCells));
-            while(property.size<targetCells){
-                const frontier=[];
-                for(const key of visitor){
-                    const [c,r]=parseKey(key);
-                    for(const [nc,nr] of neighbours(c,r)){
-                        const nk=trueBuilderCellKey(nc,nr);
-                        if(property.has(nk)||occupied.has(nk))continue;
+                Math.max(property.length,targetStartingPropertyCells));
+            while(property.length<targetCells){
+                let best=-1,bestEdge=2,bestTie=Infinity;
+                const considered=new Uint8Array(gridSize);
+                for(const index of visitor){
+                    const c=index%groundCols,r=(index/groundCols)|0;
+                    for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]]){
+                        const nc=c+dc,nr=r+dr;
+                        if(nc<0||nc>=groundCols||nr<0||nr>=groundRows)continue;
+                        const next=nr*groundCols+nc;
+                        if(propertyGrid[next]||occupiedGrid[next]||considered[next])continue;
+                        considered[next]=1;
                         const edge=(nc===0||nc===groundCols-1||nr===0||nr===groundRows-1)?1:0;
-                        frontier.push({k:nk,c:nc,r:nr,edge,tie:rand()});
+                        const tie=rand();
+                        if(edge<bestEdge||(edge===bestEdge&&tie<bestTie)){
+                            best=next;bestEdge=edge;bestTie=tie;
+                        }
                     }
                 }
-                if(!frontier.length)break;
-                frontier.sort((a,b)=>a.edge-b.edge||a.tie-b.tie);
-                property.add(frontier[0].k);visitor.add(frontier[0].k);
+                if(best<0)break;
+                propertyGrid[best]=1;property.push(best);
+                if(!visitorGrid[best]){visitorGrid[best]=1;visitor.push(best);}
             }
-            b.startingGroundsCells=[...property];
+            b.startingGroundsCells=property.map(index=>
+                trueBuilderCellKey(index%groundCols,(index/groundCols)|0)
+            );
 
             const oldBackstageIds=new Set((b.backstageEnclosureIds||[]).map(String));
             if(oldBackstageIds.size){
@@ -19573,35 +19651,49 @@ function repairTrueBuiltEnclosureGeometry(){
             trueInvalidateEnclosureGeometry();
 
             const publicSet=new Set(b.startingGroundsCells);
-            const occupiedPublic=new Set();
-            for(const enc of state.enclosures||[])if(enc?.trueBuilt&&!trueEnclosureIsCurrentBackstage(enc))
-                for(const c of trueBuiltWorldCells(enc))occupiedPublic.add(trueBuilderCellKey(c.col,c.row));
             const dirs=[['top',0,-1],['right',1,0],['bottom',0,1],['left',-1,0]];
-            const publicPts=[...publicSet].map(k=>k.split(',').map(Number));
-            const minPC=Math.min(...publicPts.map(p=>p[0])),maxPC=Math.max(...publicPts.map(p=>p[0]));
-            const minPR=Math.min(...publicPts.map(p=>p[1])),maxPR=Math.max(...publicPts.map(p=>p[1]));
+            let minPC=Infinity,maxPC=-Infinity,minPR=Infinity,maxPR=-Infinity;
+            for(const index of property){
+                const c=index%groundCols,r=(index/groundCols)|0;
+                if(c<minPC)minPC=c;if(c>maxPC)maxPC=c;
+                if(r<minPR)minPR=r;if(r>maxPR)maxPR=r;
+            }
             let backstageCells=null,backstageSide=null,backstageFreeCell=null,backstagePenCells=null;
             const targetBackstageCells=2;
-            for(const [side,dc,dr] of dirs.slice().sort(()=>rand()-.5)){
-                const candidates=[];
-                for(const key of publicSet){
-                    const [c,r]=key.split(',').map(Number);
-                    const onOuter=side==='top'?r===minPR:side==='bottom'?r===maxPR:side==='left'?c===minPC:c===maxPC;
-                    if(!onOuter||occupiedPublic.has(key))continue;
-
-                    const tangent=(side==='top'||side==='bottom')?[1,0]:[0,1];
+            const outerPublic={top:[],right:[],bottom:[],left:[]};
+            for(const index of property){
+                if(occupiedGrid[index])continue;
+                const c=index%groundCols,r=(index/groundCols)|0;
+                if(r===minPR)outerPublic.top.push([c,r]);
+                if(r===maxPR)outerPublic.bottom.push([c,r]);
+                if(c===minPC)outerPublic.left.push([c,r]);
+                if(c===maxPC)outerPublic.right.push([c,r]);
+            }
+            const shuffledDirs=dirs.slice();
+            for(let i=shuffledDirs.length-1;i>0;i--){
+                const j=Math.floor(rand()*(i+1));
+                [shuffledDirs[i],shuffledDirs[j]]=[shuffledDirs[j],shuffledDirs[i]];
+            }
+            for(const [side,dc,dr] of shuffledDirs){
+                let pick=null,candidateCount=0;
+                const horizontal=side==='top'||side==='bottom';
+                for(const [c,r] of outerPublic[side]){
+                    const tc=horizontal?1:0,tr=horizontal?0:1;
                     for(const sign of [-1,1]){
-                        const free={col:c+dc,row:r+dr};
-                        const penFront={col:c+dc+tangent[0]*sign,row:r+dr+tangent[1]*sign};
-                        const publicBesidePen={col:c+tangent[0]*sign,row:r+tangent[1]*sign};
-                        if(!publicSet.has(trueBuilderCellKey(publicBesidePen.col,publicBesidePen.row)))continue;
-                        const cells=[free,penFront];
-                        if(cells.some(x=>publicSet.has(trueBuilderCellKey(x.col,x.row))))continue;
-                        candidates.push({free,pen:[penFront],cells});
+                        const fc=c+dc,fr=r+dr,pc=fc+tc*sign,pr=fr+tr*sign;
+                        const besideC=c+tc*sign,besideR=r+tr*sign;
+                        if(besideC<0||besideC>=groundCols||besideR<0||besideR>=groundRows||
+                           !propertyGrid[besideR*groundCols+besideC])continue;
+                        if(fc>=0&&fc<groundCols&&fr>=0&&fr<groundRows&&propertyGrid[fr*groundCols+fc])continue;
+                        if(pc>=0&&pc<groundCols&&pr>=0&&pr<groundRows&&propertyGrid[pr*groundCols+pc])continue;
+                        candidateCount++;
+                        if(rand()*candidateCount<1){
+                            const free={col:fc,row:fr},penFront={col:pc,row:pr};
+                            pick={free,pen:[penFront],cells:[free,penFront]};
+                        }
                     }
                 }
-                if(candidates.length){
-                    const pick=candidates[Math.floor(rand()*candidates.length)];
+                if(pick){
                     backstageCells=pick.cells;backstageFreeCell=pick.free;backstagePenCells=pick.pen;backstageSide=side;
                     break;
                 }
@@ -20238,37 +20330,70 @@ function trueCompactConnectedCells(count){
 function trueRepairOpeningCompatibility(){
     if(state.gameMode!=='true'||state.sandboxMode||state.gameOptions?.enforceAnimalCombinations===false)return true;
     const enclosures=(state.enclosures||[]).filter(e=>e?.trueBuilt&&!trueEnclosureIsCurrentBackstage(e));
-    const illegal=()=>{
-        for(const enc of enclosures){
-            const residents=classicAnimalsByEnclosure(enc.id);
-            if(residents.length>1&&!animalsFormCompatibilityChain(residents))return {enc,residents};
+    const residentsByEnclosure=()=>new Map(enclosures.map(enc=>[
+        String(enc.id),classicAnimalsByEnclosure(enc.id)
+    ]));
+    let guard=50;
+    while(guard-->0){
+        const residentMap=residentsByEnclosure();
+        const problem=enclosures.map(enc=>({enc,residents:residentMap.get(String(enc.id))||[]}))
+            .find(entry=>entry.residents.length>1&&!animalsFormCompatibilityChain(entry.residents));
+        if(!problem)return true;
+
+        // Try every resident, not only the last one. A mixed opening group can often be
+        // repaired by moving a different species while the last resident has no legal home.
+        let destination=null,moving=null;
+        for(let movingIndex=problem.residents.length-1;movingIndex>=0&&!destination;movingIndex--){
+            const candidate=problem.residents[movingIndex];
+            for(const enc of enclosures){
+                if(String(enc.id)===String(problem.enc.id))continue;
+                const residents=residentMap.get(String(enc.id))||[];
+                if(residents.length&&
+                   !animalsFormCompatibilityChain([...residents,candidate]))continue;
+                const capacity=Math.max(1,trueBuiltWorldCells(enc).length);
+                const occupied=new Uint8Array(capacity);
+                for(const a of residents){
+                    const slot=Number(a.slotIndex);
+                    if(slot>=0&&slot<capacity)occupied[slot]=1;
+                }
+                const slot=occupied.findIndex(value=>!value);
+                if(slot<0)continue;
+                moving=candidate;destination={enc,slot};break;
+            }
         }
-        return null;
-    };
-    let guard=50,problem;
-    while((problem=illegal())&&guard-->0){
-        const moving=problem.residents[problem.residents.length-1];
-        let destination=null;
-        for(const enc of enclosures){
-            if(String(enc.id)===String(problem.enc.id))continue;
-            const capacity=Math.max(1,trueBuiltWorldCells(enc).length);
-            const residents=classicAnimalsByEnclosure(enc.id);
-            const occupied=new Uint8Array(capacity);
-            for(const a of residents){const slot=Number(a.slotIndex);if(slot>=0&&slot<capacity)occupied[slot]=1;}
-            for(let slot=0;slot<capacity;slot++){
-                if(occupied[slot])continue;
-                if(!residents.length||animalsFormCompatibilityChain([...residents,moving])){
-                    destination={enc,slot};break;
+
+        // Opening generation must not fail merely because every compatible converted
+        // enclosure is full. True enclosures are cell-based and can safely gain one
+        // compact cell here; this preserves all 5-7 opening animals instead of aborting.
+        if(!destination){
+            outer:
+            for(let movingIndex=problem.residents.length-1;movingIndex>=0;movingIndex--){
+                const candidate=problem.residents[movingIndex];
+                for(const enc of enclosures){
+                    if(String(enc.id)===String(problem.enc.id))continue;
+                    const residents=residentMap.get(String(enc.id))||[];
+                    if(residents.length&&
+                       !animalsFormCompatibilityChain([...residents,candidate]))continue;
+                    const oldCapacity=Math.max(1,trueBuiltWorldCells(enc).length);
+                    enc.cells=trueCompactCellShape(oldCapacity+1);
+                    trueInvalidateEnclosureGeometry(enc);
+                    moving=candidate;destination={enc,slot:oldCapacity};
+                    break outer;
                 }
             }
-            if(destination)break;
         }
-        if(!destination)return false;
+        if(!destination||!moving)return false;
+        const builder=normaliseTrueEnclosureBuilderState();
+        builder.totalSpaces=Math.max(Number(builder.totalSpaces)||0,trueBuilderUsedSpaces());
         moving.enclosureId=destination.enc.id;
         moving.slotIndex=destination.slot;
         clearAnimalZooReservation(moving);
     }
-    return !illegal();
+    const finalResidents=residentsByEnclosure();
+    return enclosures.every(enc=>{
+        const residents=finalResidents.get(String(enc.id))||[];
+        return residents.length<2||animalsFormCompatibilityChain(residents);
+    });
 }
 
 function truePrepareOpeningZooChallenges(){
@@ -20276,6 +20401,10 @@ function truePrepareOpeningZooChallenges(){
     const animals=(state.animals||[]).filter(a=>a&&a.enclosureId!=null);
     const enclosures=(state.enclosures||[]).filter(e=>e?.trueBuilt);
     if(!animals.length||!enclosures.length)return false;
+    const residentsByEnclosure=new Map(enclosures.map(e=>[String(e.id),[]]));
+    for(const animal of animals)
+        residentsByEnclosure.get(String(animal.enclosureId))?.push(animal);
+    const residentsOf=enc=>residentsByEnclosure.get(String(enc.id))||[];
 
     for(const animal of animals){
         animal.population=trueKnownSexLegalPopulation(
@@ -20284,7 +20413,7 @@ function truePrepareOpeningZooChallenges(){
     }
 
     for(const enc of enclosures){
-        const residents=animals.filter(a=>String(a.enclosureId)===String(enc.id));
+        const residents=residentsOf(enc);
         if(!residents.length)continue;
         const required=Math.max(1,...residents.map(trueAnimalManagedEnclosureCells));
         enc.cells=trueCompactConnectedCells(required);
@@ -20314,13 +20443,13 @@ function truePrepareOpeningZooChallenges(){
         break;
     }
 
-    const occupied=enclosures.filter(enc=>animals.some(a=>String(a.enclosureId)===String(enc.id)));
+    const occupied=enclosures.filter(enc=>residentsOf(enc).length);
     const shuffled=[...occupied].sort((a,b)=>
         seededRoll(`opening-space|${state.zooName}|${a.id}`).roll-
         seededRoll(`opening-space|${state.zooName}|${b.id}`).roll);
     let smallEnc=null,bigEnc=null;
     for(const enc of shuffled){
-        const residents=animals.filter(a=>String(a.enclosureId)===String(enc.id));
+        const residents=residentsOf(enc);
         const required=Math.max(1,...residents.map(trueAnimalManagedEnclosureCells));
         if(required>1){smallEnc=enc;break;}
     }
@@ -20331,7 +20460,7 @@ function truePrepareOpeningZooChallenges(){
     if(!smallEnc){
         smallEnc=shuffled[0]||null;
         if(smallEnc){
-            const animal=animals.find(a=>String(a.enclosureId)===String(smallEnc.id));
+            const animal=residentsOf(smallEnc)[0];
             if(animal){
                 const p=normaliseTrueAnimalPopulation(animal);
                 while(trueAnimalManagedEnclosureCells(animal)<2){
@@ -20344,7 +20473,7 @@ function truePrepareOpeningZooChallenges(){
 
     const setRelative=(enc,delta)=>{
         if(!enc)return;
-        const residents=animals.filter(a=>String(a.enclosureId)===String(enc.id));
+        const residents=residentsOf(enc);
         const required=Math.max(1,...residents.map(trueAnimalManagedEnclosureCells));
         const count=Math.max(1,residents.length,required+delta);
         enc.cells=trueCompactConnectedCells(count);
@@ -20359,7 +20488,7 @@ function truePrepareOpeningZooChallenges(){
         for(const enc of enclosures){
             if(used<=9||protectedIds.has(String(enc.id)))continue;
             const current=trueCanonicalCellList(enc.cells||[]).length;
-            const residents=animals.filter(a=>String(a.enclosureId)===String(enc.id));
+            const residents=residentsOf(enc);
             const managedFloor=Math.max(1,residents.length,...residents.map(trueAnimalManagedEnclosureCells));
             if(current<=managedFloor)continue;
             const remove=Math.min(current-managedFloor,used-9);
@@ -20367,17 +20496,17 @@ function truePrepareOpeningZooChallenges(){
             trueInvalidateEnclosureGeometry(enc);used-=remove;
         }
     }
+    const enclosureById=new Map(enclosures.map(e=>[String(e.id),e]));
     const undersizedSpecies=()=>{
         const out=[];
         for(const animal of animals){
-            const enc=enclosures.find(e=>String(e.id)===String(animal.enclosureId));
+            const enc=enclosureById.get(String(animal.enclosureId));
             if(!enc)continue;
             const cells=Math.max(1,trueCanonicalCellList(enc.cells||[]).length);
             if(cells<trueAnimalManagedEnclosureCells(animal))out.push({animal,enc,cells});
         }
         return out;
     };
-    const residentsOf=enc=>animals.filter(a=>String(a.enclosureId)===String(enc.id));
     const enclosureRequirement=enc=>Math.max(1,...residentsOf(enc).map(trueAnimalManagedEnclosureCells));
 
     for(const enc of enclosures){
@@ -23211,22 +23340,20 @@ function renderZoo() {
                 state.gameOptions?.enforceMinimumExhibitSize !== false;
             if(state.gameMode!=='true'){
                 ensureClassicOccupancyCache();
-                for(const [slotKey,animals] of classicOccupancyBySlot){
-                    const split=slotKey.lastIndexOf(':');
-                    const enclosureKey=slotKey.slice(0,split),slotIndex=Number(slotKey.slice(split+1));
-                    if(!animals?.length)continue;
-                    occupiedEnclosureIds.add(enclosureKey);
-                    let bySlot=visibleAnimalsByEnclosure.get(enclosureKey);
-                    if(!bySlot){bySlot=new Map();visibleAnimalsByEnclosure.set(enclosureKey,bySlot);}
-                    bySlot.set(slotIndex,animals[0]);
+                for(const [enclosureKey,slots] of classicOccupancyByEnclosure){
+                    let visible=null;
+                    for(const [slotIndex,animals] of slots){
+                        if(!animals?.length)continue;
+                        occupiedEnclosureIds.add(enclosureKey);
+                        (visible||(visible=new Map())).set(Number(slotIndex),animals[0]);
+                    }
+                    if(visible)visibleAnimalsByEnclosure.set(enclosureKey,visible);
                 }
-                for(const [slotKey,animals] of classicReservedOccupancyBySlot){
-                    const split=slotKey.lastIndexOf(':');
-                    const enclosureKey=slotKey.slice(0,split),slotIndex=Number(slotKey.slice(split+1));
-                    if(!animals?.length)continue;
-                    let bySlot=reservedAnimalsByEnclosure.get(enclosureKey);
-                    if(!bySlot){bySlot=new Map();reservedAnimalsByEnclosure.set(enclosureKey,bySlot);}
-                    bySlot.set(slotIndex,animals[0]);
+                for(const [enclosureKey,slots] of classicReservedOccupancyByEnclosure){
+                    let reserved=null;
+                    for(const [slotIndex,animals] of slots)
+                        if(animals?.length)(reserved||(reserved=new Map())).set(Number(slotIndex),animals[0]);
+                    if(reserved)reservedAnimalsByEnclosure.set(enclosureKey,reserved);
                 }
                 if(husbandrySizeRulesEnabled){
                     for(const animal of state.animals||[])if(animal?.id!=null)
@@ -23247,14 +23374,14 @@ function renderZoo() {
             const husbandryProblemEnclosureIds=new Set();
             for(const enclosure of state.enclosures||[]){
                 const enclosureKey=String(enclosure.id);
-                const visible=visibleAnimalsByEnclosure.get(enclosureKey) || new Map();
-                const reserved=reservedAnimalsByEnclosure.get(enclosureKey) || null;
-                const bySlot=new Map();
+                const visible=visibleAnimalsByEnclosure.get(enclosureKey);
+                const reserved=reservedAnimalsByEnclosure.get(enclosureKey);
+                let bySlot=null;
                 for(const group of classicRenderGroups(enclosure)){
                     const seenAnimalIds=new Set();
                     const occupants=[];
                     for(const slotIndex of group){
-                        for(const animal of [visible.get(Number(slotIndex)),reserved?.get(Number(slotIndex))]){
+                        for(const animal of [visible?.get(Number(slotIndex)),reserved?.get(Number(slotIndex))]){
                             if(!animal||seenAnimalIds.has(animal.id))continue;
                             seenAnimalIds.add(animal.id);
                             occupants.push(animal);
@@ -23267,9 +23394,10 @@ function renderZoo() {
                         animalSizeById
                     );
                     if(status.invalid) husbandryProblemEnclosureIds.add(enclosureKey);
+                    bySlot||(bySlot=new Map());
                     for(const slotIndex of group) bySlot.set(Number(slotIndex),status);
                 }
-                husbandryStatusByEnclosure.set(enclosureKey,bySlot);
+                if(bySlot)husbandryStatusByEnclosure.set(enclosureKey,bySlot);
             }
             return {
                 occupiedEnclosureIds,
@@ -24302,8 +24430,6 @@ function renderExchange() {
     const categories =
         eligibleExchangeCategories();
 
-    enqueueMicrotask(refreshYellowExchangeHintState);
-
     const ready =
         (
             categories.length > 0 ||
@@ -24329,6 +24455,7 @@ function renderExchange() {
         return;
     }
     exchangeRenderSignature=exchangeSignature;
+    enqueueMicrotask(refreshYellowExchangeHintState);
     exchange1.dataset.rendered='1';
     exchange2.dataset.rendered='1';
     resultBox.dataset.rendered='1';
@@ -24449,8 +24576,14 @@ function startResultDrag(event) {
     const dragImage = document.createElement('img');
     dragImage.className = 'dragging-animal dragging-result';
     dragImage.src = animalBackPath(state.result.category, state.result.level);
-    dragImage.style.width = `${sourceRect.width}px`;
-    dragImage.style.height = `${sourceRect.height}px`;
+    Object.assign(dragImage.style,{
+        position:'fixed',
+        width:`${sourceRect.width}px`,
+        height:`${sourceRect.height}px`,
+        objectFit:'contain',
+        pointerEvents:'none',
+        zIndex:'10020'
+    });
     document.body.appendChild(dragImage);
 
     state.drag = {
@@ -25675,15 +25808,21 @@ function cloneForSave(value) {
 }
 
 function currentVisualSnapshot() {
+    const copy=typeof structuredClone==='function'
+        ? structuredClone
+        : cloneForSave;
     return {
         turn: state.turn,
         zooName: state.zooName,
-        enclosures: cloneForSave(state.enclosures),
-        animals: cloneForSave(state.animals),
+        enclosures: copy(state.enclosures),
+        animals: copy(state.animals),
         zoom: state.zoom
     };
 }
 
+let classicHistoryControlsLastTurn=null;
+let classicHistoryControlsLastViewTurn=null;
+let classicHistoryControlsLastLength=-1;
 function captureTurnSnapshot() {
     if (
         !state.loaded ||
@@ -25708,7 +25847,15 @@ function captureTurnSnapshot() {
         }
     }
 
-    updateHistoryControls();
+    const visibleTurn=Number(state.turn)||0,viewTurn=state.historyViewTurn;
+    if(classicHistoryControlsLastTurn!==visibleTurn||
+       classicHistoryControlsLastViewTurn!==viewTurn||
+       classicHistoryControlsLastLength!==history.length){
+        classicHistoryControlsLastTurn=visibleTurn;
+        classicHistoryControlsLastViewTurn=viewTurn;
+        classicHistoryControlsLastLength=history.length;
+        updateHistoryControls();
+    }
 }
 
 function resetTurnHistory() {
@@ -29683,7 +29830,7 @@ function writeAutoResumeSnapshot(force = false) {
         state.historyViewTurn !== null
     ) return false;
 
-    const resumeGame = multiplayerOwnedGameStateForResume();
+    const resumeGame = localClassicMatch ? multiplayerOwnedGameStateForResume() : exportCurrentGameState();
     const resumeTurn = Number(resumeGame?.state?.turn);
     const turn = Number.isFinite(resumeTurn) ? resumeTurn : (Number(state.turn) || 0);
     if (!force && lastAutoResumeTurn === turn) return false;
@@ -31423,11 +31570,18 @@ function updateHistoryControls() {
     const returnButton = document.getElementById('returnCurrentTurn');
     if (!slider || !label) return;
 
-    const turns = state.turnHistory
-        .map(item => Number(item?.turn))
-        .filter(Number.isFinite);
-    const minimum = turns.length ? Math.min(...turns) : state.turn;
-    const maximum = turns.length ? Math.max(...turns, Number(state.turn)||1) : state.turn;
+    const history=state.turnHistory||[];
+    let minimum=Number(history[0]?.turn),maximum=Number(history[history.length-1]?.turn);
+    if(!Number.isFinite(minimum)||!Number.isFinite(maximum)){
+        minimum=maximum=Number(state.turn)||1;
+        for(const item of history){
+            const turn=Number(item?.turn);
+            if(!Number.isFinite(turn))continue;
+            if(turn<minimum)minimum=turn;
+            if(turn>maximum)maximum=turn;
+        }
+    }
+    maximum=Math.max(maximum,Number(state.turn)||1);
 
     slider.min = String(minimum);
     slider.max = String(maximum);
@@ -31582,7 +31736,10 @@ function resetDrawCardFromTheirOfferMode(){
 function refreshDrawAvailabilityState() {
     if (!drawCard) return false;
 
-    clearOrphanedZooSlotReservations();
+    if(state.gameMode!=='true'){
+        ensureClassicOccupancyCache();
+        if(classicReservedOccupancyCount)clearOrphanedZooSlotReservations();
+    }
 
     if (state.gameMode === 'true') {
         drawCard.style.display = 'none';
@@ -31842,6 +31999,8 @@ function startAnimalDrag(
     animal,
     location
 ) {
+    if(state.drag?.image&&!state.drag.image.isConnected)state.drag=null;
+    removeOrphanedAnimalDragImages();
     if (trueEnclosureBuilderActive || areaToolActive) return;
 
     if(localClassicMatch?.viewingPlayerId &&
@@ -32027,11 +32186,14 @@ function startAnimalDrag(
 
     applyLocalizedAnimalImage(dragImage, animal);
 
-    dragImage.style.width =
-        dragWidth + 'px';
-
-    dragImage.style.height =
-        dragHeight + 'px';
+    Object.assign(dragImage.style,{
+        position:'fixed',
+        width:dragWidth+'px',
+        height:dragHeight+'px',
+        objectFit:'contain',
+        pointerEvents:'none',
+        zIndex:'10020'
+    });
 
     document.body.appendChild(
         dragImage
@@ -34942,6 +35104,14 @@ document.addEventListener(
             state.drag = null;
             refreshDrawAvailabilityState();
         }
+        else if(state.drag?.type==='animal'){
+            const cancelledAnimalDrag=state.drag;
+            restoreDraggedAnimal();
+            cancelledAnimalDrag.image?.remove();
+            state.drag=null;
+            renderAfterTransientAnimalDrag(cancelledAnimalDrag);
+            refreshDrawAvailabilityState();
+        }
         else if (state.drag?.type === 'trade-result') {
             const cancelledTradeDrag = state.drag;
             cancelledTradeDrag.image?.remove();
@@ -35566,11 +35736,14 @@ async function createLevelOneForDraw(destination) {
 
     state.drawCommitInProgress = true;
     refreshDrawAvailabilityState();
+    let placed=false;
     try {
-        return await createLevelOneForDrawUnlocked(destination);
+        placed=await createLevelOneForDrawUnlocked(destination);
+        return placed;
     } finally {
         state.drawCommitInProgress = false;
         refreshDrawAvailabilityState();
+        if(placed)removeOrphanedAnimalDragImages();
     }
 }
 
@@ -35609,10 +35782,15 @@ function startDrawDrag(event) {
     const source = drawCard.querySelector('img');
     const image = document.createElement('img');
     image.className = 'dragging-animal dragging-result';
-    image.style.pointerEvents = 'none';
     image.src = source?.src || animalBackPath('Carnivora',1);
-    image.style.width = `${rect.width}px`;
-    image.style.height = `${rect.height}px`;
+    Object.assign(image.style,{
+        position:'fixed',
+        width:`${rect.width}px`,
+        height:`${rect.height}px`,
+        objectFit:'contain',
+        pointerEvents:'none',
+        zIndex:'10020'
+    });
     document.body.appendChild(image);
     state.drag = {
         type:'draw-result',

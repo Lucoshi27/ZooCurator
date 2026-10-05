@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.144";
+const ZOO_CURATOR_VERSION = "V2.44.152";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -5166,9 +5166,11 @@ function slotIsCompatibilityMatch(enclosure, slotIndex, candidateAnimals = compa
     });
 }
 
+const EMPTY_COMPATIBILITY_GLOW_KEYS=new Set();
 function currentCompatibilityGlowKeys(candidateAnimals = compatibilityHintAnimals()) {
-    const keys = new Set();
-    if (visitingAnotherZooForActionUI() || trueLayoutToolEditingActive() || !candidateAnimals.length) return keys;
+    if(visitingAnotherZooForActionUI()||trueLayoutToolEditingActive()||!candidateAnimals.length)
+        return EMPTY_COMPATIBILITY_GLOW_KEYS;
+    const keys=new Set();
     const activeIntent=(!state.drag&&state.compatibilityIntentActiveAnimal)||null;
     const candidates=activeIntent&&animalIsSatisfiedInCombinationExhibit(activeIntent)
         ? candidateAnimals.filter(animal=>animal?.id!==activeIntent.id)
@@ -11483,24 +11485,20 @@ function renderTrueSimulationPanel() {
     renderTrueIncomingTransferOverlay();
 }
 
+let turnDisplaySignature='';
 function updateTurnDisplay() {
-    if (state.gameMode === 'true' && !state.sandboxMode) {
-        turnOrder.style.display = 'none';
-        if(playerZooName)playerZooName.style.visibility='hidden';
-        return;
-    }
-    if(playerZooName)playerZooName.style.visibility='';
-    turnOrder.style.display = '';
-    if (state.sandboxMode) {
-        turnOrder.textContent = 'Turn ∞ · SANDBOX';
-        return;
-    }
-    if (state.historyViewTurn !== null) {
-        turnOrder.textContent = `Turn ${state.historyViewTurn} · VIEWING`;
-        return;
-    }
-
-    turnOrder.textContent = `Turn ${state.turn}`;
+    const trueHidden=state.gameMode==='true'&&!state.sandboxMode;
+    const text=trueHidden?'':state.sandboxMode
+        ? 'Turn ∞ · SANDBOX'
+        : state.historyViewTurn!==null
+            ? `Turn ${state.historyViewTurn} · VIEWING`
+            : `Turn ${state.turn}`;
+    const signature=`${trueHidden?'1':'0'}|${text}`;
+    if(signature===turnDisplaySignature)return;
+    turnDisplaySignature=signature;
+    turnOrder.style.display=trueHidden?'none':'';
+    if(playerZooName)playerZooName.style.visibility=trueHidden?'hidden':'';
+    if(!trueHidden)turnOrder.textContent=text;
 }
 
 const ZOO_COLOUR_SCHEMES = {
@@ -11854,25 +11852,29 @@ function updatePrestigeDisplay() {
     if (!element) return;
     element.removeAttribute('title');
     if (state.visitingZoo) {
-        element.textContent = `Prestige ${currentZooPrestige()}`;
+        const text=`Prestige ${currentZooPrestige()}`;
+        if(element.textContent!==text)element.textContent=text;
         return;
     }
     if (state.sandboxMode) {
-        element.textContent = `Prestige ${currentZooPrestige()}`;
+        const text=`Prestige ${currentZooPrestige()}`;
+        if(element.textContent!==text)element.textContent=text;
         return;
     }
-    const underlyingPrestige = currentZooPrestige();
+    const prestigeBreakdown=state.gameMode==='true'?null:zooPrestigeBreakdown();
+    const underlyingPrestige=prestigeBreakdown?Math.ceil(Math.max(0,prestigeBreakdown.current)):currentZooPrestige();
     const prestige = state.gameMode==='true' ? visibleZooPrestige() : underlyingPrestige;
     state.highestZooPrestige = Math.max(
         Number(state.highestZooPrestige) || 0,
         state.gameMode==='true' ? prestige : underlyingPrestige
     );
-    element.textContent = `Prestige ${prestige}`;
+    const prestigeText=`Prestige ${prestige}`;
+    if(element.textContent!==prestigeText)element.textContent=prestigeText;
     if(state.gameMode==='true'){
         unbindPrestigeBreakdownHover(element);
         bindTruePrestigeTestingHover(element);
     }else{
-        bindPrestigeBreakdownHover(element, () => zooPrestigeBreakdown());
+        bindPrestigeBreakdownHover(element,()=>prestigeBreakdown);
     }
 }
 
@@ -11917,18 +11919,17 @@ function exchangeGroupCounts() {
     return counts;
 }
 
+let lastExchangeGlowCountsRef=null;
 function refreshExchangeGlowSuppression() {
-    const counts = exchangeGroupCounts();
+    const counts=exchangeGroupCounts();
+    if(counts===lastExchangeGlowCountsRef)return;
+    lastExchangeGlowCountsRef=counts;
     const increased=new Set();
-    for(const [key,count] of counts){
+    for(const [key,count] of counts)
         if(count>(state.lastExchangeGroupCounts.get(key)||0))increased.add(key);
-    }
-    if(increased.size){
-        for(const animal of state.animals||[]){
-            if(animal&&increased.has(exchangeGroupKey(animal)))state.suppressedExchangeGlowIds.delete(animal.id);
-        }
-    }
-    state.lastExchangeGroupCounts = new Map(counts);
+    if(increased.size)for(const animal of state.animals||[])
+        if(animal&&increased.has(exchangeGroupKey(animal)))state.suppressedExchangeGlowIds.delete(animal.id);
+    state.lastExchangeGroupCounts=new Map(counts);
 }
 
 function eligibleExchangeCategories() {
@@ -12518,9 +12519,12 @@ function setupAnimalCard(
 
     }
 
-    const trackerKey = progressionKey(animal.category, animal.level);
-    if (
+    const progressionGlowActive=
         !layoutToolEditing &&
+        (state.progressionGlowHoverKey||state.progressionGlowPinnedKeys.size);
+    const trackerKey=progressionGlowActive?progressionKey(animal.category,animal.level):null;
+    if (
+        progressionGlowActive &&
         (state.progressionGlowHoverKey === trackerKey ||
         state.progressionGlowPinnedKeys.has(trackerKey))
     ) {
@@ -12533,8 +12537,8 @@ function setupAnimalCard(
     if (
         !layoutToolEditing &&
         !visitingActionUI && (
-            cardRenderContext?.exchangeGlowEligibleIds
-                ? cardRenderContext.exchangeGlowEligibleIds.has(animal.id)
+            cardRenderContext?.exchangeGlowPrecomputed
+                ? !!cardRenderContext.exchangeGlowEligibleIds?.has(animal.id)
                 : shouldGlowForExchange(animal)
         )
     ) {
@@ -20150,8 +20154,12 @@ function trueRefreshCustomAreaMembership(area){
     area.enclosureIds=(state.enclosures||[]).filter(enc=>areaCellsForPhysicalEnclosure(enc).some(c=>keys.has(trueAreaCellKey(c.col,c.row)))).map(enc=>enc.id);
     if(state.gameMode!=='true')area.classicLogicalKeys=classicAreaLogicalKeysForCells(cells);
 }
+let classicAreaReconcileSignature='';
 function reconcileClassicCustomAreaCells(){
     if(state.gameMode==='true')return false;
+    const signature=`${Number(state.areaPlacementRevision)||0}|${state.enclosures?.length||0}|${state.customAreas?.length||0}|`+
+        (state.customAreas||[]).map(area=>`${area?.id??''}:${area?.classicLogicalKeys?.join(',')||''}:${area?.cells?.length||0}`).join(';');
+    if(signature===classicAreaReconcileSignature)return false;
     const units=classicAreaLogicalUnits();
     const byLogicalKey=new Map(units.map(unit=>[unit.logicalKey,unit]));
     let changed=false;
@@ -20185,6 +20193,8 @@ function reconcileClassicCustomAreaCells(){
         }
     }
     if(changed)trueRefreshAreaHierarchy();
+    classicAreaReconcileSignature=`${Number(state.areaPlacementRevision)||0}|${state.enclosures?.length||0}|${state.customAreas?.length||0}|`+
+        (state.customAreas||[]).map(area=>`${area?.id??''}:${area?.classicLogicalKeys?.join(',')||''}:${area?.cells?.length||0}`).join(';');
     return changed;
 }
 function trueCommitPaintedAreaCells(cells,targetId=null){
@@ -22895,7 +22905,7 @@ function classicAreaIsNested(area,areas){
 function renderCustomAreas(){
     const areaRenderTarget=ensureClassicAreaVisualLayer();
     if(state.gameMode!=='true')ensureClassicAreaVisualPolishStyles();
-    trueRefreshAreaHierarchy();normaliseCustomAreaZOrder();
+    else{trueRefreshAreaHierarchy();normaliseCustomAreaZOrder();}
     const generated = state.gameMode==='true' ? [] : (generatedModernGeographicAreas||[]);
     const orderedAreas=[...generated,...(state.customAreas||[])].sort((a,b)=>(Number(a.zOrder)||0)-(Number(b.zOrder)||0));
     const areaOrderIndexByArea=new Map(orderedAreas.map((area,index)=>[area,index]));
@@ -23414,12 +23424,13 @@ function renderZoo() {
     const occupiedEnclosureIds=enclosureRenderContext.occupiedEnclosureIds;
 
     if(state.gameMode!=='true'){
-        const exchangeGlowEligibleIds=new Set();
         const exchangeGlowActive =
             state.exchangeEligibilityHoverActive &&
             !state.outgoingOfferHoverSuppressesExchangeGlow &&
             state.gameOptions.showEligibilityGlows !== false;
+        let exchangeGlowEligibleIds=null;
         if(exchangeGlowActive){
+            exchangeGlowEligibleIds=new Set();
             const counts=exchangeGroupCounts();
             const focusKey=activeExchangeGlowFocusKey();
             const eligibleKeys=new Set(),nextLevelEligibility=new Map();
@@ -23443,6 +23454,7 @@ function renderZoo() {
         enclosureRenderContext.cardRenderContext={
             layoutToolEditing:false,
             visitingActionUI:visitingAnotherZooForActionUI(),
+            exchangeGlowPrecomputed:true,
             exchangeGlowEligibleIds
         };
     }
@@ -23451,8 +23463,9 @@ function renderZoo() {
     profiledZooRenderStage('zoo.custom-areas', () => renderCustomAreas());
 
     profiledZooRenderStage('zoo.enclosure-context', () => {
-        const themesByEnclosure=new Map();
+        let themesByEnclosure=null;
         const addTheme=(enclosureId,theme)=>{
+            themesByEnclosure||(themesByEnclosure=new Map());
             const key=String(enclosureId);
             let list=themesByEnclosure.get(key);
             if(!list){list=[];themesByEnclosure.set(key,list);}
@@ -24012,27 +24025,19 @@ function renderEnclosure(
             Object.assign(slot.style,{position:'absolute',left:`${(cell.col-bounds.minCol)*TRUE_ENC_CELL_W+(TRUE_ENC_CELL_W-ANIMAL_W)/2}px`,top:`${(cell.row-bounds.minRow)*TRUE_ENC_CELL_H+(TRUE_ENC_CELL_H-ANIMAL_H)/2}px`,width:`${ANIMAL_W}px`,height:`${ANIMAL_H}px`,transform:'none',margin:'0',padding:'0'});
         }
 
-        const compatibilityKey =
-            slotCompatibilityGlowKey(enclosure.id, slotIndex);
-
-        if (
-            compatibilityGlowKeys
-                ? compatibilityGlowKeys.has(compatibilityKey)
-                : slotIsCompatibilityMatch(enclosure, slotIndex)
-        ) {
-            slot.classList.add('compatibility-match-glow');
-        }
-        else if (
-            state.compatibilityGlowFadeKeys.has(compatibilityKey) &&
-            renderNow < state.compatibilityGlowHoldUntil
-        ) {
-            slot.classList.add('compatibility-match-glow');
-        }
-        else if (
-            state.compatibilityGlowFadeKeys.has(compatibilityKey) &&
-            renderNow < state.compatibilityGlowFadeUntil
-        ) {
-            slot.classList.add('compatibility-match-glow-fading');
+        const compatibilityActive=
+            (compatibilityGlowKeys?.size||0)>0 ||
+            (state.compatibilityGlowFadeKeys?.size||0)>0;
+        if(compatibilityActive){
+            const compatibilityKey=slotCompatibilityGlowKey(enclosure.id,slotIndex);
+            if(compatibilityGlowKeys?.has(compatibilityKey)){
+                slot.classList.add('compatibility-match-glow');
+            }else if(state.compatibilityGlowFadeKeys.has(compatibilityKey)){
+                if(renderNow<state.compatibilityGlowHoldUntil)
+                    slot.classList.add('compatibility-match-glow');
+                else if(renderNow<state.compatibilityGlowFadeUntil)
+                    slot.classList.add('compatibility-match-glow-fading');
+            }
         }
 
         const animal =
@@ -31899,18 +31904,28 @@ function renderAll(persist = true) {
     if(state.gameMode!=='true'||state.sandboxMode){
         trueEnclosureBuilderActive=false;trueEnclosureBuilderSelectedId=null;trueEnclosureBuilderSelectedCell=null;trueEnclosureBuilderDrag=null;
         document.body.classList.remove('true-enclosure-builder-active');
+        if(state.gameMode!=='true'){
+            document.getElementById('areaToolButton')?.style.setProperty('display','none');
+            document.getElementById('trueEnclosureBuilderButton')?.style.setProperty('display','none');
+            document.getElementById('trueViewTogglePanel')?.style.setProperty('display','none');
+            document.getElementById('trueSimulationPanel')?.style.setProperty('display','none');
+        }
     }
-    ensureAreaToolUI();
-    ensureTrueEnclosureBuilderUI();
+    if(state.gameMode==='true'){
+        ensureAreaToolUI();
+        ensureTrueEnclosureBuilderUI();
+    }
 
     profiledZooRenderStage('identity', () => updateZooIdentityFromLivingCollection());
     profiledZooRenderStage('draw-availability', () => refreshDrawAvailabilityState());
-    profiledZooRenderStage('true-mode-ui', () => {
-        ensureTrueViewToggleUI();
-        ensureTrueMarketplaceButton();
-        renderTrueSimulationPanel();
-        if (state.gameMode === 'true') restartTrueCalendarTimer(); else stopTrueCalendarTimer();
-    });
+    if(state.gameMode==='true'){
+        profiledZooRenderStage('true-mode-ui', () => {
+            ensureTrueViewToggleUI();
+            ensureTrueMarketplaceButton();
+            renderTrueSimulationPanel();
+            restartTrueCalendarTimer();
+        });
+    }else stopTrueCalendarTimer();
 
     profiledZooRenderStage('opponent-stock', () => rotateOpponentTradeStocksIfNeeded(true, true));
     profiledZooRenderStage('exchange-glow-state', () => refreshExchangeGlowSuppression());
@@ -31927,12 +31942,9 @@ function renderAll(persist = true) {
     profiledZooRenderStage('progression-ui', () => renderProgressTracker());
     profiledZooRenderStage('prestige', () => updatePrestigeDisplay());
     profiledZooRenderStage('turn-ui', () => updateTurnDisplay());
-    if (persist) {
-        profiledZooRenderStage('history-snapshot', () => captureTurnSnapshot());
-        profiledZooRenderStage('autoresume-save', () => {
-            if(state.gameMode==='true')writeAutoResumeSnapshot();
-            else queueClassicAutoResumeSnapshot();
-        });
+    if(persist){
+        profiledZooRenderStage('history-snapshot',captureTurnSnapshot);
+        profiledZooRenderStage('autoresume-save',state.gameMode==='true'?writeAutoResumeSnapshot:queueClassicAutoResumeSnapshot);
     }
 
     queueDocumentLocalisation();
@@ -44280,6 +44292,18 @@ function classicTradeOfferStillLive(offer) {
     return stock.some(animal=>animal && animalCardKey(animal)===key);
 }
 
+let classicTradePruneSignature='';
+
+function classicTradePruneStateSignature(){
+    return [
+        Number(state.turn)||0,
+        Number(state.opponentStockCycle)||0,
+        state.tradeOffers?.length||0,
+        state.tradeOffers?.map(offer=>`${offer?.opponentIndex??''}:${offer?.animal?.id??animalCardKey(offer?.animal||{})}`).join('|')||'',
+        state.autonomousTradeOffer?`${state.autonomousTradeOffer.opponentIndex??''}:${state.autonomousTradeOffer.animal?.id??animalCardKey(state.autonomousTradeOffer.animal||{})}`:'-'
+    ].join('\u001e');
+}
+
 function pruneUnavailableIncomingTradeOffers() {
     state.tradeOffers = (state.tradeOffers || []).filter(classicTradeOfferStillLive);
 
@@ -45598,7 +45622,11 @@ function renderTrade() {
         return;
     }
 
-    pruneUnavailableIncomingTradeOffers();
+    const pruneSignature=classicTradePruneStateSignature();
+    if(classicTradePruneSignature!==pruneSignature){
+        pruneUnavailableIncomingTradeOffers();
+        classicTradePruneSignature=classicTradePruneStateSignature();
+    }
 
     if(multiplayerAITradesDisabled()){
         state.autonomousTradeOffer=null;

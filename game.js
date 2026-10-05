@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.78";
+const ZOO_CURATOR_VERSION = "V2.44.88";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -1193,9 +1193,7 @@ function clearTradeEligibleGlow(immediate = true) {
     tradeEligibleGlowHideTimer = null;
     tradeEligibleGlowActive = false;
 
-    const cards = [
-        ...document.querySelectorAll('.animal-card.trade-eligible-glow')
-    ];
+    const cards=document.querySelectorAll('.animal-card.trade-eligible-glow');
 
     cards.forEach(card => {
         clearTimeout(card._tradeGlowFadeTimer);
@@ -1258,7 +1256,7 @@ function applyTradeEligibleGlow() {
         ? null
         : normalTradeInterestAllowedIds();
 
-    const cards = [...document.querySelectorAll('.animal-card[data-animal-id]')];
+    const cards=document.querySelectorAll('.animal-card[data-animal-id]');
     let cursor = 0;
 
     const processTradeGlowBatch = () => {
@@ -2511,7 +2509,7 @@ function connectedEnclosureThemeGroups() {
         while (unseen.size) {
             const firstId = unseen.values().next().value;
             unseen.delete(firstId);
-            const first = state.enclosures.find(e => e.id === firstId);
+            const first = enclosureByIdFast(firstId);
             if (!first) continue;
             const component = [first];
             for (let i = 0; i < component.length; i++) {
@@ -2788,7 +2786,7 @@ function generatedGroupModernArea(group,index=0){
     const name=String(generatedAreaCustomNameStore().get(geoIdentity)||defaultName);
     const key=`auto:${group?.theme?.geographicKey||group?.theme?.key||name}:${areaMembershipSignature(group)}`;
     const saved=state.areaLabelPositions instanceof Map ? state.areaLabelPositions.get(key) : null;
-    const geometry=trueAreaGeometryFromCells(cells);
+    const geometry=areaCellGeometry(cells);
     if(!(state.generatedAreaOverrides instanceof Map))
         state.generatedAreaOverrides=restoredMap(state.generatedAreaOverrides);
     const presentationOverride=state.generatedAreaOverrides.get(geoIdentity)||{};
@@ -6841,7 +6839,7 @@ function createStartingZoo(options = {}) {
         repairTrueBuiltEnclosureGeometry();
         initialiseTrueZooGroundsFromCurrentLayout(false);
         updateDiscoveredCategoryLevels();
-        state.truePublicPrestige=trueUnderlyingPrestige();
+        state.truePublicPrestige=currentZooPrestige();
         state.truePublicPrestigeLastDate=normaliseTrueCalendarState().date;
         state.trueGuestAttendanceDays={};
     }
@@ -7864,7 +7862,7 @@ function trueCreateWorldNewsEvent(candidate,today,kind){
     trueRelationshipRecord(candidate.profile,candidate.sourceKey,`event-${kind}`,`${zoo} shared a ${kind.replaceAll('-',' ')} concerning ${species}.`,relationshipImpact);
 
     if(kind==='husbandry-exchange'){
-        const owned=(state.animals||[]).find(a=>a&&!a.trueArrivalPending&&animalCardKey(a)===animalCardKey(candidate.animal));
+        const owned=classicAnimalsByCardKey(candidate.animal).find(a=>!a.trueArrivalPending);
         if(owned){
             trueEventAddModifier({type:'birth-chance-multiplier',value:1.15,untilDate:addTrueDays(today,10),animalKey:animalCardKey(owned),sourceEventId:event.id,text:`Husbandry knowledge shared by ${zoo} is supporting this breeding population.`});
             values.owned_species='yes';
@@ -7888,7 +7886,7 @@ function trueScheduleEventFollowUp(event,days,type='event-follow-up'){
 function trueResolvePopulationPressureFollowUp(eventId){
     const original=trueEventById(eventId);if(!original||original.populationPressureFollowUpResolved)return;
     original.populationPressureFollowUpResolved=true;
-    const animal=(state.animals||[]).find(a=>original.animal&&animalCardKey(a)===animalCardKey(original.animal));
+    const animal=classicAnimalsByCardKey(original.animal)[0];
     const surplus=truePlayerPopulationSurplus(animal);if(!animal||!surplus)return;
     const records=trueEventEligibleSourceRecords('population-pressure-follow-up').filter(record=>trueDestinationCanReceiveSurplus(record,animal,surplus.population));
     if(!records.length)return; // no second gameplay effect => deliberately no follow-up card
@@ -7908,7 +7906,7 @@ function trueResolveEventFollowUp(eventId){
     const rel=trueRelationshipForProfile(original.profile,original.sourceKey);
 
     if(original.kind==='population-advice'){
-        const animal=(state.animals||[]).find(a=>a&&!a.trueArrivalPending&&original.animal&&animalCardKey(a)===animalCardKey(original.animal));
+        const animal=classicAnimalsByCardKey(original.animal).find(a=>!a.trueArrivalPending);
         if(!animal)return;
         const surplus=truePlayerPopulationSurplus(animal);
         const easing=Boolean(surplus);
@@ -7972,7 +7970,7 @@ function trueEnclosureManagedSpaceAssessment(enclosure){
 }
 function trueHusbandryConditionForAnimal(animal){
     if(!animal||animal.enclosureId==null)return {bad:false,spaceBad:false,groupBad:false};
-    const enc=(state.enclosures||[]).find(e=>String(e.id)===String(animal.enclosureId));
+    const enc=enclosureByIdFast(animal.enclosureId);
     if(!enc?.trueBuilt)return {bad:false,spaceBad:false,groupBad:false};
     const enclosureSpace=trueEnclosureManagedSpaceAssessment(enc);
     const cells=enclosureSpace.cells,required=enclosureSpace.required;
@@ -8028,12 +8026,6 @@ function truePopulationExactRepairOptions(animal){
     }
     return best;
 }
-function truePopulationExactRepair(animal,seedKey=''){
-    const options=truePopulationExactRepairOptions(animal);
-    if(options.send&&options.receive)
-        return seededRoll(`exact-group-repair-direction|${animalCardKey(animal)}|${seedKey}`).roll<.65?options.send:options.receive;
-    return options.send||options.receive||null;
-}
 function trueConcernZooWithExactRepair(animal,repair,today){
     if(!repair)return null;
     const records=state.realZooData?.zoos||[];
@@ -8076,7 +8068,7 @@ function trueCreateWelfareProtestAfterDeclinedHelp(parent){
 }
 function trueAcceptExactHusbandryRepair(event){
     if(!event||event.status!=='active'||!event.husbandryExactRepair)return false;
-    const animal=(state.animals||[]).find(a=>String(a.id)===String(event.animal?.id));if(!animal)return false;
+    const animal=classicAnimalById(event.animal?.id);if(!animal)return false;
     const repair=event.husbandryExactRepair,pop=normaliseTrueAnimalPopulation(repair.population);
     const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===event.sourceKey);if(!record)return false;
     if(repair.mode==='send'){
@@ -8105,7 +8097,7 @@ function trueAcceptExactHusbandryRepair(event){
 
 function trueAcceptHusbandryReliefOffer(event){
     if(!event||event.status!=='active'||!event.husbandryReliefPopulation)return false;
-    const animal=(state.animals||[]).find(a=>String(a.id)===String(event.animal?.id));
+    const animal=classicAnimalById(event.animal?.id);
     if(!animal)return false;
     const wanted=normaliseTrueAnimalPopulation(event.husbandryReliefPopulation);
     const available=trueTransferAvailableCounts(animal);
@@ -8191,7 +8183,7 @@ function trueResolveRepairedHusbandryEvents(animal,today){
 
         let spaceRepaired=true;
         if(dimensions.space){
-            const enc=(state.enclosures||[]).find(e=>String(e.id)===String(event.enclosureId));
+            const enc=enclosureByIdFast(event.enclosureId);
             if(enc?.trueBuilt){
                 const assessment=trueEnclosureManagedSpaceAssessment(enc);
                 spaceRepaired=assessment.cells>=assessment.required;
@@ -8307,7 +8299,7 @@ function trueCreateCombinationOfferEvent(today=normaliseTrueCalendarState().date
 }
 function trueAcceptCombinationOffer(event){
     if(!event||event.status!=='active'||event.kind!=='combination-offer')return false;
-    const enclosure=(state.enclosures||[]).find(e=>String(e?.id)===String(event.targetEnclosureId));
+    const enclosure=enclosureByIdFast(event.targetEnclosureId);
     const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===event.sourceKey);
     if(!enclosure||!record||trueEnclosureIsCurrentBackstage(enclosure)){
         alert('This offer can no longer be accepted because the suggested exhibit or source zoo is no longer available.');
@@ -8345,7 +8337,7 @@ function trueEvaluateHusbandryConcernsForDay(){
     const today=normaliseTrueCalendarState().date,store=normaliseTrueHusbandryConcernState(),live=new Set();
     let created=null;
     for(const animal of state.animals||[]){
-        const enclosure=(state.enclosures||[]).find(e=>String(e?.id)===String(animal?.enclosureId));
+        const enclosure=enclosureByIdFast(animal?.enclosureId);
         if(enclosure&&trueEnclosureIsCurrentBackstage(enclosure))continue;
         const key=String(animal.id),condition=trueHusbandryConditionForAnimal(animal);live.add(key);
         let row=store[key];
@@ -8378,7 +8370,7 @@ function trueEvaluateHusbandryConcernsForDay(){
             if(event.status!=='active'||!event.welfareConcern||String(event.animal?.id)!==String(key))continue;
             const dimensions=event.welfareDimensions||{space:true,group:true};
             if(dimensions.space&&!dimensions.group){
-                const enc=(state.enclosures||[]).find(e=>String(e.id)===String(event.enclosureId));
+                const enc=enclosureByIdFast(event.enclosureId);
                 if(enc?.trueBuilt){
                     const assessment=trueEnclosureManagedSpaceAssessment(enc);
                     if(assessment.cells<assessment.required)continue;
@@ -8770,7 +8762,7 @@ function trueMaybeGeneratePriorityGroupRepair(today,slotIndex=0){
     const events=normaliseTrueEventState(),store=normaliseTrueHusbandryConcernState();
     const candidates=[];
     for(const animal of state.animals||[]){
-        const enclosure=(state.enclosures||[]).find(e=>String(e?.id)===String(animal?.enclosureId));
+        const enclosure=enclosureByIdFast(animal?.enclosureId);
         if(!enclosure||trueEnclosureIsCurrentBackstage(enclosure))continue;
         const condition=trueHusbandryConditionForAnimal(animal);
         if(!condition.groupBad)continue;
@@ -8972,7 +8964,7 @@ function closeTrueEventDialog(force=false){
 function trueResolvePopulationPressureChoice(event,choice){
     if(!event||event.status!=='active'||event.kind!=='population-pressure')return false;
     const today=normaliseTrueCalendarState().date;
-    const animal=(state.animals||[]).find(a=>event.animal&&animalCardKey(a)===animalCardKey(event.animal))||event.animal;
+    const animal=classicAnimalsByCardKey(event.animal)[0]||event.animal;
     if(choice==='manage'){
         trueEventAddModifier({type:'birth-chance-multiplier',value:.55,untilDate:addTrueDays(today,10),animalKey:animalCardKey(animal),sourceEventId:event.id,text:'Keepers are deliberately easing breeding pressure while the group is reviewed.'});
         event.choiceResult='Keepers will ease breeding pressure while the group is reviewed.';
@@ -9501,7 +9493,7 @@ function trueEnsureDailyEvent(today=normaliseTrueCalendarState().date,allowAddit
     };
     const pressure=trueEventPopulationPressureCandidates();
     const attendanceYesterday=Number(state.trueGuestAttendanceDays?.[addTrueDays(today,-1)]?.target)||0;
-    const expectedAttendance=Math.max(1,Math.round(trueUnderlyingPrestige()));
+    const expectedAttendance=Math.max(1,Math.round(currentZooPrestige()));
     const softAdversityBlocked=trueEventRecentSoftAdversity(today,5)||trueEventRecentRecoveryWindow(today,3);
     if(pressure.length&&internalRoll<.20){
         const chosen=pressure[Math.floor(seededRoll(`daily-zoo-population-pressure|${state.zooName}|${today}|${seedSuffix}`).roll*pressure.length)];
@@ -9822,7 +9814,7 @@ function trueCuratorCameraTo(worldX,worldY,targetZoom,duration=900,onDone=null){
 function trueCuratorCameraToAnimal(animal){
     if(!animal||!zooBoard)return;
     const card=document.querySelector(`.animal-card[data-animal-id="${Number(animal.id)}"]`);
-    const enc=animal.enclosureId==null?null:(state.enclosures||[]).find(e=>String(e.id)===String(animal.enclosureId));
+    const enc=animal.enclosureId==null?null:enclosureByIdFast(animal.enclosureId);
     const startZoom=Number(state.zoom)||1,boardRect=zooBoard.getBoundingClientRect();
     let x,y;
     if(card){
@@ -10267,12 +10259,6 @@ function trueGuestDailyTarget(){
     }
     return trueGuestPrestigeDailyTarget();
 }
-function trueGuestSetDailyTarget(value){
-    state.trueGuestDailyTarget=Math.max(0,Math.min(2000,Math.round(Number(value)||0)));
-    state.trueGuestDailyTargetManual=true;
-    renderTrueSimulationPanel();
-    ensureTrueGuestSimulation();
-}
 function trueGuestLayer(){
     let layer=document.getElementById('trueGuestLayer');
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo){layer?.remove();return null;}
@@ -10627,11 +10613,13 @@ function trueGuestEnclosureLabel(id){
     return names.slice(0,2).join(' + ')||'Enclosure';
 }
 function closeTrueGuestInspector(){document.getElementById('trueGuestInspector')?.remove();}
+let trueGuestFavouriteSpeciesPoolCache=null;
 function trueGuestFavouriteSpeciesPool(){
+    if(trueGuestFavouriteSpeciesPoolCache)return trueGuestFavouriteSpeciesPoolCache;
     const pool=[];
     for(const category of Object.keys(FOLDERS||{}))for(let level=1;level<=5;level++)
         for(const filename of levelFiles(category,level)||[])pool.push({category,level,filename:cleanFilename(filename)});
-    return pool;
+    return trueGuestFavouriteSpeciesPoolCache=pool;
 }
 function trueGuestFavouriteAnimal(g){
     if(!g)return null;
@@ -10645,7 +10633,7 @@ function trueGuestFavouriteAnimal(g){
         g.favouriteAnimalName=animalDisplayName(favourite);
         g.favouriteVisits=Number(g.favouriteVisits)||0;
     }
-    const resident=(state.animals||[]).find(a=>a?.enclosureId!=null&&!a?.trueArrivalPending&&animalCardKey(a)===animalCardKey(g.favouriteAnimal));
+    const resident=classicAnimalsByCardKey(g.favouriteAnimal).find(a=>a.enclosureId!=null&&!a.trueArrivalPending);
     g.favouriteAnimalId=resident?.id??null;
     g.favouriteEnclosureId=resident?.enclosureId??null;
     return resident||null;
@@ -12394,7 +12382,7 @@ function setupAnimalCard(
                 window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up);
                 const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('.slot.empty-slot');
                 if(target){
-                    const enclosure=state.enclosures.find(x=>String(x.id)===String(target.dataset.enclosureId));
+                    const enclosure=enclosureByIdFast(target.dataset.enclosureId);
                     const slotIndex=Number(target.dataset.slotIndex);
                     if(enclosure && canPlace(animal,enclosure,slotIndex)){
                         if (placeAnimal(animal,enclosure,slotIndex)) {
@@ -12664,7 +12652,7 @@ function trueAnimalPopulationTotal(animal) {
 function trueSexCountsDiagnostic(){
     const rows=(state.animals||[]).filter(Boolean).map(animal=>{
         const p=normaliseTrueAnimalPopulation(animal)||{males:0,females:0,unknown:0};
-        const enclosure=(state.enclosures||[]).find(e=>String(e?.id)===String(animal.enclosureId));
+        const enclosure=enclosureByIdFast(animal.enclosureId);
         return {
             id:animal.id,
             animal:animalDisplayName(animal),
@@ -16157,7 +16145,7 @@ function renderAnimalInformation(animal) {
 
     const currentExhibitPartnerNames = new Set();
     if (animal.enclosureId !== null && animal.enclosureId !== undefined) {
-        const enclosure = state.enclosures.find(item => item.id === animal.enclosureId);
+        const enclosure = enclosureByIdFast(animal.enclosureId);
         const group = enclosure ? enclosureGroupForSlot(enclosure, animal.slotIndex) : null;
         if (enclosure && group) {
             for (const occupant of animalsInEnclosureGroup(enclosure, group, animal.id, false)) {
@@ -16641,11 +16629,8 @@ function normaliseTrueRealZooWorld() {
     if(!Number.isFinite(Number(state.trueRealZooWorld.nextSweepIndex))) state.trueRealZooWorld.nextSweepIndex=0;
     return state.trueRealZooWorld;
 }
-function trueWorldZooKey(recordOrName) {
-    return realZooVisitLayoutKey(recordOrName);
-}
 function trueWorldZooState(recordOrName,{create=true}={}) {
-    const world=normaliseTrueRealZooWorld(), key=trueWorldZooKey(recordOrName);
+    const world=normaliseTrueRealZooWorld(), key=realZooTemplateKey(recordOrName);
     if(!key) return null;
     let zoo=world.zoos[key]||null;
     if(!zoo && create){
@@ -16681,7 +16666,7 @@ function trueWorldPopulation(recordOrName,animal,{create=false,reason='world int
     const key=animalCardKey(animal);if(!key)return null;
     let entry=store[key]||null;
     if(!entry&&create){
-        const generated=trueGeneratedPopulation(animal,`real-zoo|${trueWorldZooKey(recordOrName)}|${key}`);
+        const generated=trueGeneratedPopulation(animal,`real-zoo|${realZooTemplateKey(recordOrName)}|${key}`);
         entry=store[key]={
             animal:cloneForSave(animal),
             population:{...generated.population},
@@ -17499,11 +17484,11 @@ function realZooRecordByName(name) {
     const wanted=normaliseGeographyPart(name||'');
     return (state.realZooData?.zoos||[]).find(r=>normaliseGeographyPart(r?.name||'')===wanted)||null;
 }
-function realZooVisitLayoutKey(recordOrName) {
+function realZooTemplateKey(recordOrName) {
     return normaliseGeographyPart(typeof recordOrName === 'string' ? recordOrName : recordOrName?.name || '');
 }
 function captureRealZooVisitLayout(recordOrName) {
-    const key=realZooVisitLayoutKey(recordOrName);
+    const key=realZooTemplateKey(recordOrName);
     if(!key) return;
     const data={};
     for(const field of REAL_ZOO_VISIT_LAYOUT_KEYS) data[field]=cloneForSave(state[field]);
@@ -18567,7 +18552,6 @@ function trueBuiltEnclosureDerived(enclosure){
     };
     trueEnclosureDerivedCache.set(enclosure,cached);return cached;
 }
-function trueBuiltEnclosureBounds(enclosure){return trueBuiltEnclosureDerived(enclosure);}
 function trueEnclosureWidth(enclosure){return enclosure?.trueBuilt?trueBuiltEnclosureDerived(enclosure).w:ENCLOSURE_W;}
 function trueEnclosureHeight(enclosure){return enclosure?.trueBuilt?trueBuiltEnclosureDerived(enclosure).h:ENCLOSURE_H;}
 function trueEnclosureSpatialIndex(){
@@ -18783,54 +18767,6 @@ function trueApplyLandExpansionParcel(rawCells){
     writeAutoResumeSnapshot?.(true);syncActiveZooIntoLocalMatch?.();
     return true;
 }
-function trueApplyLandExpansion(side){
-    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return false;
-    const builder=normaliseTrueEnclosureBuilderState();
-    if((Number(builder.landExpansionCredits)||0)<1)return false;
-    if(!['top','right','bottom','left'].includes(side))return false;
-    if(!trueLandExpansionOptions().some(option=>option.side===side))return false;
-    const grounds=trueZooGroundsBounds();if(!grounds)return false;
-    const old={...grounds},oldEntrance=trueZooEntranceSpec(old);
-    const oldEntrancePoint=trueEntrancePointAtPerimeter(trueEntrancePerimeterPosition(oldEntrance,old),old);
-    const bands=trueLandExpansionParcelCells();
-    const dx=bands*TRUE_ENC_CELL_W,dy=bands*TRUE_ENC_CELL_H;
-    if((side==='left'&&old.x<dx)||(side==='top'&&old.y<dy))return false;
-    if(side==='left'){grounds.x=old.x-dx;grounds.w=old.w+dx;}
-    else if(side==='right')grounds.w+=dx;
-    else if(side==='top'){grounds.y=old.y-dy;grounds.h=old.h+dy;}
-    else grounds.h+=dy;
-
-    const u=trueClosestPerimeterPosition(oldEntrancePoint.x,oldEntrancePoint.y,grounds);
-    builder.zooEntrance=trueNearestAccessibleEntranceSpec(u,grounds);
-    builder.landExpansionCredits=Math.max(0,(Number(builder.landExpansionCredits)||0)-1);
-    builder.landExpansionLevel=Math.max(0,Number(builder.landExpansionLevel)||0)+1;
-    const planningEvents=normaliseTrueEventState().items.filter(e=>e.status==='active'&&e.kind==='grounds-expansion-approval');
-    for(const event of planningEvents){
-        if(builder.landExpansionCredits>0){
-            event.message=`The zoo still has ${builder.landExpansionCredits} approved grounds expansion${builder.landExpansionCredits===1?'':'s'} available.`;
-        }else{
-            event.status='resolved';
-            event.resolvedDate=normaliseTrueCalendarState().date;
-            event.resolution='Approved grounds expansion completed';
-        }
-    }
-    builder.zooGroundsVersion=Math.max(3,Number(builder.zooGroundsVersion)||0);
-    state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
-    trueInvalidateEnclosureGeometry();
-    trueGuestRuntime.layoutSig='';
-    trueGuestRuntime.walk=null;
-    renderAll();
-    refreshTrueEnclosureCapacityBadge();
-    const groundCols=Math.max(1,Math.round(grounds.w/TRUE_ENC_CELL_W));
-    const groundRows=Math.max(1,Math.round(grounds.h/TRUE_ENC_CELL_H));
-    addTrueActivity({
-        type:'development',
-        title:'Zoo grounds expanded',
-        message:`The ${side} side of the zoo grounds has been extended. The grounds now span approximately ${groundCols} × ${groundRows} construction cells.`
-    });
-    writeAutoResumeSnapshot?.(true);
-    return true;
-}
 function trueOpenLandExpansionChooser(){
     document.getElementById('trueLandExpansionChooser')?.remove();
     const b=normaliseTrueEnclosureBuilderState();
@@ -18976,26 +18912,6 @@ function trueBuiltWorldCells(enclosure, atCol=null, atRow=null){
     const derived=trueBuiltEnclosureDerived(enclosure);
     return derived.normalizedCells.map(c=>({col:baseCol+c.col,row:baseRow+c.row}));
 }
-function trueGeneratedSightlineClear(from,to,occupied,targetKeys,bounds=null){
-    const dx=to.x-from.x,dy=to.y-from.y;
-    const steps=Math.max(1,Math.ceil(Math.max(Math.abs(dx),Math.abs(dy))*8));
-    let enteredInterior=false;
-    for(let i=1;i<steps;i++){
-        const t=i/steps;
-        const px=from.x+dx*t,py=from.y+dy*t;
-        const col=Math.floor(px),row=Math.floor(py);
-        const key=trueBuilderCellKey(col,row);
-        if(occupied.has(key)&&!targetKeys.has(key))return false;
-        if(bounds){
-            const inside=col>=0&&col<bounds.cols&&row>=0&&row<bounds.rows;
-            if(!inside)continue; // short segment from the gate into the grounds
-            const perimeter=col===0||col===bounds.cols-1||row===0||row===bounds.rows-1;
-            if(!perimeter)enteredInterior=true;
-            if(perimeter&&!targetKeys.has(key))return false;
-        }
-    }
-    return !bounds||enteredInterior;
-}
 
 
 function trueGeneratedLayoutHasVariedFrontage(enclosures,entranceCol,bounds,entranceSide='bottom'){
@@ -19100,9 +19016,18 @@ function trueStartingLayoutDiagnosticSnapshot(){
     const allBuilt=(state.enclosures||[]).filter(e=>e?.trueBuilt);
     const occupiedIds=new Set((state.animals||[]).filter(a=>a?.enclosureId!=null&&!a?.trueArrivalPending).map(a=>String(a.enclosureId)));
     const enclosures=allBuilt.filter(e=>occupiedIds.has(String(e.id)));
+    const tutorialStartingDuplicate=(state.animals||[]).find(a=>a?.trueTutorialStartingDuplicate)||null;
+    const backstageEnclosures=trueBackstageEnclosures();
+    const backstageIds=new Set(backstageEnclosures.map(e=>String(e.id)));
+    const animalIdsByEnclosure=new Map();
+    for(const a of state.animals||[])if(a?.enclosureId!=null){
+        const key=String(a.enclosureId);
+        if(!animalIdsByEnclosure.has(key))animalIdsByEnclosure.set(key,[]);
+        animalIdsByEnclosure.get(key).push(a.id);
+    }
     const rows=enclosures.map(enc=>({
         id:enc.id,
-        animalIds:(state.animals||[]).filter(a=>a?.enclosureId===enc.id).map(a=>a.id),
+        animalIds:animalIdsByEnclosure.get(String(enc.id))||[],
         cells:trueCanonicalCellList(enc.cells||[]).length,
         shape:trueCanonicalCellList(enc.cells||[]).map(c=>`${c.col},${c.row}`).join(' '),
         x:Number(enc.x)||0,y:Number(enc.y)||0
@@ -19140,11 +19065,11 @@ function trueStartingLayoutDiagnosticSnapshot(){
             backstageEnclosureCells:(state.enclosures||[]).filter(trueEnclosureIsCurrentBackstage).reduce((n,e)=>n+trueBuiltWorldCells(e).length,0),
             enclosureCellsAvailable:trueEnclosureCellsAvailable(),
             duplicatedSpeciesCount:(()=>{const m=new Map();for(const a of state.animals||[]){const k=`${a.category}|${Number(a.level)||1}|${cleanFilename(a.filename)}`;m.set(k,(m.get(k)||0)+1);}return [...m.values()].filter(n=>n===2).length;})(),
-            backstageAnimalIds:(()=>{const ids=new Set(trueBackstageEnclosures().map(e=>String(e.id)));return (state.animals||[]).filter(a=>ids.has(String(a.enclosureId))).map(a=>a.id);})(),
-            tutorialDuplicateAnimalId:(state.animals||[]).find(a=>a?.trueTutorialStartingDuplicate)?.id??null,
-            tutorialDuplicateSpecies:(()=>{const a=(state.animals||[]).find(x=>x?.trueTutorialStartingDuplicate);return a?`${a.category}|${Number(a.level)||1}|${cleanFilename(a.filename)}`:null;})(),
-            tutorialDuplicateInBackstage:(()=>{const a=(state.animals||[]).find(x=>x?.trueTutorialStartingDuplicate);return !!a&&trueBackstageEnclosures().some(e=>String(e.id)===String(a.enclosureId));})(),
-            tutorialDuplicatePublicCopy:(()=>{const a=(state.animals||[]).find(x=>x?.trueTutorialStartingDuplicate);if(!a)return false;const k=`${a.category}|${Number(a.level)||1}|${cleanFilename(a.filename)}`;return (state.animals||[]).some(x=>x!==a&&x?.enclosureId!=null&&!trueBackstageEnclosures().some(e=>String(e.id)===String(x.enclosureId))&&`${x.category}|${Number(x.level)||1}|${cleanFilename(x.filename)}`===k);})(),
+            backstageAnimalIds:(()=>{const ids=backstageIds;return (state.animals||[]).filter(a=>ids.has(String(a.enclosureId))).map(a=>a.id);})(),
+            tutorialDuplicateAnimalId:tutorialStartingDuplicate?.id??null,
+            tutorialDuplicateSpecies:(()=>{const a=tutorialStartingDuplicate;return a?`${a.category}|${Number(a.level)||1}|${cleanFilename(a.filename)}`:null;})(),
+            tutorialDuplicateInBackstage:(()=>{const a=tutorialStartingDuplicate;return !!a&&backstageIds.has(String(a.enclosureId));})(),
+            tutorialDuplicatePublicCopy:(()=>{const a=tutorialStartingDuplicate;if(!a)return false;const k=`${a.category}|${Number(a.level)||1}|${cleanFilename(a.filename)}`;return (state.animals||[]).some(x=>x!==a&&x?.enclosureId!=null&&!backstageIds.has(String(x.enclosureId))&&`${x.category}|${Number(x.level)||1}|${cleanFilename(x.filename)}`===k);})(),
             guestAccessible:false,
             entranceUsesBackstage:(()=>{const eb=trueZooGroundsBounds();if(!eb)return false;const es=trueZooEntranceSpec(eb);return trueEntranceInteriorCells(es,eb).some(c=>trueCellIsBackstage(c.col,c.row));})(),
             overlapsPublic:(()=>{const p=new Set(b.startingGroundsCells||[]);return (b.backstageCells||[]).some(k=>p.has(k));})(),
@@ -19613,7 +19538,7 @@ function repairTrueBuiltEnclosureGeometry(){
                     color:'#6A7858',
                     colour:'#6A7858',
                     cells:backstageAreaCells,
-                    geometry:trueAreaGeometryFromCells(backstageAreaCells),
+                    geometry:areaCellGeometry(backstageAreaCells),
                     enclosureIds:[...b.backstageEnclosureIds],
                     tags:['Backstage'],
                     tag:'Backstage',
@@ -20017,7 +19942,7 @@ function trueAreaBuilderState(){
 }
 function trueAreaRect(area){
     if(area?.geometry&&Number(area.geometry.w)>0&&Number(area.geometry.h)>0)return area.geometry;
-    const es=(area?.enclosureIds||[]).map(id=>state.enclosures.find(e=>String(e.id)===String(id))).filter(Boolean);if(!es.length)return null;
+    const es=(area?.enclosureIds||[]).map(id=>enclosureByIdFast(id)).filter(Boolean);if(!es.length)return null;
     const minX=Math.min(...es.map(e=>e.x)),minY=Math.min(...es.map(e=>e.y)),maxX=Math.max(...es.map(e=>e.x+trueEnclosureWidth(e))),maxY=Math.max(...es.map(e=>e.y+trueEnclosureHeight(e)));
     return {x:minX,y:minY,w:maxX-minX,h:maxY-minY};
 }
@@ -20027,7 +19952,6 @@ function trueAreaCells(area){
     const r=trueAreaRect(area);if(!r)return [];const a=areaSnapWorldPoint(r.x,r.y),b=areaSnapWorldPoint(r.x+r.w,r.y+r.h),out=[];
     for(let row=Math.min(a.row,b.row);row<Math.max(a.row,b.row);row++)for(let col=Math.min(a.col,b.col);col<Math.max(a.col,b.col);col++)out.push({col,row});return out;
 }
-function trueAreaGeometryFromCells(cells){return areaCellGeometry(cells);}
 function trueAreaCellsConnected(cells){
     if(!cells?.length)return false;
     if(state.gameMode!=='true'){
@@ -20069,7 +19993,7 @@ function reconcileClassicCustomAreaCells(){
         const after=next.map(c=>trueAreaCellKey(c.col,c.row)).sort().join('|');
         if(before!==after){
             area.cells=next;
-            area.geometry=trueAreaGeometryFromCells(next);
+            area.geometry=areaCellGeometry(next);
             changed=true;
         }
 
@@ -20085,8 +20009,8 @@ function reconcileClassicCustomAreaCells(){
 }
 function trueCommitPaintedAreaCells(cells,targetId=null){
     cells=[...new Map((cells||[]).map(c=>[trueAreaCellKey(c.col,c.row),c])).values()];if(!cells.length||!cells.every(c=>areaCellInsideWorkspace(c))||!trueAreaCellsConnected(cells))return false;
-    if(targetId!=null){const area=(state.customAreas||[]).find(a=>String(a.id)===String(targetId));if(!area)return false;const merged=[...new Map([...trueAreaCells(area),...cells].map(c=>[trueAreaCellKey(c.col,c.row),c])).values()];if(!trueAreaCellsConnected(merged))return false;truePushBuilderUndo('area-add');area.cells=merged;area.geometry=trueAreaGeometryFromCells(merged);trueRefreshCustomAreaMembership(area);trueAreaBuilderSelectedId=String(area.id);}
-    else{const a=trueAreaBuilderState();truePushBuilderUndo('area-new');normaliseCustomAreaZOrder();const area={id:`custom-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,name:a.type==='house'?'House':'Area',color:a.color,type:a.type,lineStyle:'solid',zOrder:Math.max(-1,...(state.customAreas||[]).map(x=>Number(x.zOrder)||0))+1,cells,geometry:trueAreaGeometryFromCells(cells),enclosureIds:[],_new:true};trueRefreshCustomAreaMembership(area);state.customAreas.push(area);trueAreaBuilderSelectedId=String(area.id);}
+    if(targetId!=null){const area=(state.customAreas||[]).find(a=>String(a.id)===String(targetId));if(!area)return false;const merged=[...new Map([...trueAreaCells(area),...cells].map(c=>[trueAreaCellKey(c.col,c.row),c])).values()];if(!trueAreaCellsConnected(merged))return false;truePushBuilderUndo('area-add');area.cells=merged;area.geometry=areaCellGeometry(merged);trueRefreshCustomAreaMembership(area);trueAreaBuilderSelectedId=String(area.id);}
+    else{const a=trueAreaBuilderState();truePushBuilderUndo('area-new');normaliseCustomAreaZOrder();const area={id:`custom-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,name:a.type==='house'?'House':'Area',color:a.color,type:a.type,lineStyle:'solid',zOrder:Math.max(-1,...(state.customAreas||[]).map(x=>Number(x.zOrder)||0))+1,cells,geometry:areaCellGeometry(cells),enclosureIds:[],_new:true};trueRefreshCustomAreaMembership(area);state.customAreas.push(area);trueAreaBuilderSelectedId=String(area.id);}
     trueRefreshAreaHierarchy();state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;renderAll();refreshTrueEnclosureCapacityBadge();return true;
 }
 function trueDeletePaintedAreaCell(id,col,row){
@@ -20099,7 +20023,7 @@ function trueDeletePaintedAreaCell(id,col,row){
         state.customAreas=state.customAreas.filter(a=>a!==area);
         trueAreaBuilderSelectedId=null;trueAreaBuilderSelectedCell=null;
     }else{
-        area.cells=remaining;area.geometry=trueAreaGeometryFromCells(remaining);trueRefreshCustomAreaMembership(area);
+        area.cells=remaining;area.geometry=areaCellGeometry(remaining);trueRefreshCustomAreaMembership(area);
         if(String(trueAreaBuilderSelectedId)===String(area.id)){
             const fallback=remaining[0];
             trueAreaBuilderSelectedCell=fallback?{...fallback}:null;
@@ -20203,7 +20127,7 @@ function trueBuilderAccessReport(candidateCells=[],exceptId=null){
     const candidateBlocked=!candidateIsBackstage&&after.blocked.some(enc=>enc.id==='__candidate__');
     const newlyCutOff=after.blocked.filter(enc=>{
         if(enc.id==='__candidate__'||beforeBlockedIds.has(enc.id))return false;
-        const actual=(state.enclosures||[]).find(e=>String(e?.id)===String(enc.id));
+        const actual=enclosureByIdFast(enc.id);
         return !actual?.trueBackstage;
     });
     const blockedCells=[
@@ -21324,7 +21248,7 @@ function commitTruePaintedEnclosureCells(worldCells,targetId=null){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo||!worldCells?.length)return false;
     worldCells=[...new Map(worldCells.map(c=>[trueBuilderCellKey(c.col,c.row),c])).values()];
     if(!worldCells.every(c=>trueWorldCellInsideZooGrounds(c.col,c.row)))return false;
-    const target=targetId==null?null:(state.enclosures||[]).find(e=>e?.trueBuilt&&String(e.id)===String(targetId));
+    const target=targetId==null?null:(enclosureByIdFast(targetId)?.trueBuilt?enclosureByIdFast(targetId):null);
     if(target){
         const own=new Set(trueBuiltWorldCells(target).map(c=>trueBuilderCellKey(c.col,c.row)));
         const additions=worldCells.filter(c=>!own.has(trueBuilderCellKey(c.col,c.row)));
@@ -21379,7 +21303,7 @@ function commitTruePaintedEnclosureCells(worldCells,targetId=null){
     return true;
 }
 function trueDeleteBuiltEnclosureCell(enclosureId,worldCol,worldRow){
-    const enc=(state.enclosures||[]).find(e=>e?.trueBuilt&&String(e.id)===String(enclosureId));if(!enc)return false;
+    const enc=(enclosureByIdFast(enclosureId)?.trueBuilt?enclosureByIdFast(enclosureId):null);if(!enc)return false;
     const world=trueBuiltWorldCells(enc);
     const victim=world.find(c=>c.col===worldCol&&c.row===worldRow);if(!victim)return false;
 
@@ -21438,12 +21362,12 @@ function setupTrueEnclosureBuilderInteractions(){
         const occupied=trueBuilderOccupiedWorldCells(drag.targetId),painted=[...drag.cells.values()];
         let invalid=drag.blocked||painted.some(c=>occupied.has(trueBuilderCellKey(c.col,c.row))||!trueWorldCellInsideZooGrounds(c.col,c.row));
         let worldCells=[...painted];
-        if(drag.targetId!=null){const target=(state.enclosures||[]).find(e=>String(e.id)===String(drag.targetId));if(target)worldCells=[...trueBuiltWorldCells(target),...painted];}
+        if(drag.targetId!=null){const target=enclosureByIdFast(drag.targetId);if(target)worldCells=[...trueBuiltWorldCells(target),...painted];}
         worldCells=[...new Map(worldCells.map(c=>[trueBuilderCellKey(c.col,c.row),c])).values()];if(!worldCells.length)return;
         const access=trueBuilderAccessReport(worldCells,drag.targetId);
         if(!access.ok)invalid=true;
         const previewTarget=drag.targetId!=null
-            ?(state.enclosures||[]).find(e=>e?.trueBuilt&&String(e.id)===String(drag.targetId))
+            ?(enclosureByIdFast(drag.targetId)?.trueBuilt?enclosureByIdFast(drag.targetId):null)
             :null;
         const existingCount=previewTarget?trueBuiltWorldCells(previewTarget).length:0;
         const addedCount=Math.max(0,worldCells.length-existingCount);
@@ -23055,7 +22979,7 @@ function refreshTrueEnclosureBuilderSelection() {
     document.getElementById('trueEnclosureBlockedHint')?.remove();
     zooCanvas.querySelectorAll('.enclosure.true-builder-selected').forEach(node=>node.classList.remove('true-builder-selected'));
     if(!trueEnclosureBuilderActive||trueEnclosureBuilderSelectedId==null||!trueEnclosureBuilderSelectedCell)return;
-    const enclosure=(state.enclosures||[]).find(enc=>String(enc.id)===String(trueEnclosureBuilderSelectedId));
+    const enclosure=enclosureByIdFast(trueEnclosureBuilderSelectedId);
     if(!enclosure?.trueBuilt)return;
     const element=zooCanvas.querySelector(`.enclosure[data-enclosure-id="${CSS.escape(String(enclosure.id))}"]`);
     if(!element)return;
@@ -23124,6 +23048,7 @@ function classicCachedAnimalEnclosureSize(animal){
     return size;
 }
 function renderZoo() {
+    invalidateClassicDropDomCache();
     ensureClassicAnimalCardDelegation();
     hideHusbandryPopup();
 
@@ -23429,7 +23354,7 @@ function renderZoo() {
 
 function sandboxAnimalHasCompatibilityConflict(animal) {
     if (!state.sandboxMode || !animal || animal.enclosureId == null) return false;
-    const enclosure = state.enclosures.find(e => e.id === animal.enclosureId);
+    const enclosure = enclosureByIdFast(animal.enclosureId);
     if (!enclosure) return false;
     const group = enclosureGroupForSlot(enclosure, animal.slotIndex);
     if (!group || group.length <= 1) return false;
@@ -23863,7 +23788,7 @@ function renderEnclosure(
             slotIndex;
 
         if(enclosure.trueBuilt){
-            const bounds=trueBuiltEnclosureBounds(enclosure);
+            const bounds=trueBuiltEnclosureDerived(enclosure);
             const cell=(enclosure.cells||[{col:0,row:0}])[Number(slotIndex)]||{col:0,row:0};
             Object.assign(slot.style,{position:'absolute',left:`${(cell.col-bounds.minCol)*TRUE_ENC_CELL_W+(TRUE_ENC_CELL_W-ANIMAL_W)/2}px`,top:`${(cell.row-bounds.minRow)*TRUE_ENC_CELL_H+(TRUE_ENC_CELL_H-ANIMAL_H)/2}px`,width:`${ANIMAL_W}px`,height:`${ANIMAL_H}px`,transform:'none',margin:'0',padding:'0'});
         }
@@ -24836,8 +24761,23 @@ async function completeExchange(destination = null, autoPlace = false) {
     return committed;
 }
 
+let classicDropDomCacheRoot=null,classicDropDomCacheSlots=[],classicDropDomCacheEnclosures=[];
+function classicDropDomElements(){
+    if(classicDropDomCacheRoot!==zooBoard){
+        classicDropDomCacheRoot=zooBoard;
+        classicDropDomCacheSlots=[];classicDropDomCacheEnclosures=[];
+    }
+    if(!classicDropDomCacheSlots.length&&zooBoard){
+        classicDropDomCacheSlots=[...zooBoard.querySelectorAll('.slot')];
+        classicDropDomCacheEnclosures=[...zooBoard.querySelectorAll('.enclosure')];
+    }
+    return {slots:classicDropDomCacheSlots,enclosures:classicDropDomCacheEnclosures};
+}
+function invalidateClassicDropDomCache(){
+    classicDropDomCacheSlots=[];classicDropDomCacheEnclosures=[];
+}
 function levelOneDrawDropDestinationAtPoint(clientX, clientY) {
-    const slotElements = [...zooBoard.querySelectorAll('.slot')];
+    const slotElements=classicDropDomElements().slots;
 
     for (const slot of slotElements) {
         const rect = slot.getBoundingClientRect();
@@ -24846,9 +24786,7 @@ function levelOneDrawDropDestinationAtPoint(clientX, clientY) {
             clientY < rect.top || clientY > rect.bottom
         ) continue;
 
-        const enclosure = state.enclosures.find(
-            item => item.id === Number(slot.dataset.enclosureId)
-        );
+        const enclosure = enclosureByIdFast(slot.dataset.enclosureId);
         const slotIndex = Number(slot.dataset.slotIndex);
         if (!enclosure || animalAtSlot(enclosure.id, slotIndex)) continue;
         if (enclosure.number === 10 && !state.enclosure10Unlocked && !level4IsInZoo()) continue;
@@ -24863,7 +24801,7 @@ function levelOneDrawDropDestinationAtPoint(clientX, clientY) {
         if (occupants.length === 0) return { enclosure, slotIndex };
     }
 
-    const enclosureElements = [...zooBoard.querySelectorAll('.enclosure')];
+    const enclosureElements=classicDropDomElements().enclosures;
     for (const element of enclosureElements) {
         const rect = element.getBoundingClientRect();
         if (
@@ -24871,9 +24809,7 @@ function levelOneDrawDropDestinationAtPoint(clientX, clientY) {
             clientY < rect.top || clientY > rect.bottom
         ) continue;
 
-        const enclosure = state.enclosures.find(
-            item => item.id === Number(element.dataset.enclosureId)
-        );
+        const enclosure = enclosureByIdFast(element.dataset.enclosureId);
         if (!enclosure) continue;
         if (enclosure.number === 10 && !state.enclosure10Unlocked && !level4IsInZoo()) continue;
 
@@ -24896,7 +24832,7 @@ function levelOneDrawDropDestinationAtPoint(clientX, clientY) {
 function resultDropDestinationAtPoint(clientX, clientY, prospectiveAnimal) {
     if (!prospectiveAnimal) return null;
 
-    const slotElements = [...zooBoard.querySelectorAll('.slot')];
+    const slotElements=classicDropDomElements().slots;
 
     for (const slot of slotElements) {
         const rect = slot.getBoundingClientRect();
@@ -24909,9 +24845,7 @@ function resultDropDestinationAtPoint(clientX, clientY, prospectiveAnimal) {
             continue;
         }
 
-        const enclosure = state.enclosures.find(
-            item => item.id === Number(slot.dataset.enclosureId)
-        );
+        const enclosure = enclosureByIdFast(slot.dataset.enclosureId);
         const slotIndex = Number(slot.dataset.slotIndex);
 
         if (
@@ -24922,7 +24856,7 @@ function resultDropDestinationAtPoint(clientX, clientY, prospectiveAnimal) {
         }
     }
 
-    const enclosureElements = [...zooBoard.querySelectorAll('.enclosure')];
+    const enclosureElements=classicDropDomElements().enclosures;
 
     for (const element of enclosureElements) {
         const rect = element.getBoundingClientRect();
@@ -24935,9 +24869,7 @@ function resultDropDestinationAtPoint(clientX, clientY, prospectiveAnimal) {
             continue;
         }
 
-        const enclosure = state.enclosures.find(
-            item => item.id === Number(element.dataset.enclosureId)
-        );
+        const enclosure = enclosureByIdFast(element.dataset.enclosureId);
         if (!enclosure) continue;
 
         const legalSlots = getAllSlots(enclosure)
@@ -25028,9 +24960,7 @@ function resultDropDestination(event, prospectiveAnimal = null) {
 
     const slot = target.closest('.slot');
     if (slot) {
-        const enclosure = state.enclosures.find(
-            item => item.id === Number(slot.dataset.enclosureId)
-        );
+        const enclosure = enclosureByIdFast(slot.dataset.enclosureId);
         const slotIndex = Number(slot.dataset.slotIndex);
 
         if (
@@ -25046,9 +24976,7 @@ function resultDropDestination(event, prospectiveAnimal = null) {
     const enclosureElement = target.closest('.enclosure');
     if (!enclosureElement) return null;
 
-    const enclosure = state.enclosures.find(
-        item => item.id === Number(enclosureElement.dataset.enclosureId)
-    );
+    const enclosure = enclosureByIdFast(enclosureElement.dataset.enclosureId);
     if (!enclosure) return null;
 
     const free = getAllSlots(enclosure).find(
@@ -26150,7 +26078,6 @@ function writeLocalMultiplayerReconnectIdentity(matchId,playerId,token){
     if(!matchId||!playerId||!token)return;
     try{localStorage.setItem(localMultiplayerReconnectStorageKey(matchId),JSON.stringify({playerId,token}));}catch(_){}
 }
-function clearLocalMultiplayerReconnectIdentity(matchId){try{localStorage.removeItem(localMultiplayerReconnectStorageKey(matchId));}catch(_){}}
 function localMultiplayerPlayerConnected(id){return localClassicMatch?.players?.[id]?.connected!==false;}
 function nextConnectedRegisteredMultiplayerPlayer(afterId){
     const roster=localClassicMatch?.playerIds||[];if(!roster.length)return null;
@@ -26513,9 +26440,6 @@ let pendingMultiplayerSetup={
     turnMode:'simultaneous',
     activeCategories:Object.keys(FOLDERS)
 };
-function multiplayerMatchRules(){
-    return localClassicMatch?.rules||null;
-}
 function multiplayerCategoriesLocked(){
     return !!(localClassicMatch&&Array.isArray(localClassicMatch.rules?.activeCategories));
 }
@@ -26705,7 +26629,7 @@ function receiveMultiplayerLiveLayout(message){
  if(!expectedTarget||String(message.targetPlayerId||'')!==String(expectedTarget.playerId||''))return false;
  const key=String(message.senderPlayerId||''),payload=message.payload||{};let entry=multiplayerRemoteAnimalDrags.get(key);
  if(payload.ended){entry?.el?.remove?.();multiplayerRemoteAnimalDrags.delete(key);return true;}
- const animal=(state.animals||[]).find(a=>String(a?.id)===String(payload.animalId)),x=Number(payload.x),y=Number(payload.y);if(!animal||!Number.isFinite(x)||!Number.isFinite(y))return false;
+ const animal=classicAnimalById(payload.animalId),x=Number(payload.x),y=Number(payload.y);if(!animal||!Number.isFinite(x)||!Number.isFinite(y))return false;
  if(!entry){const el=document.createElement('img');el.className='dragging-animal multiplayer-live-animal-drag';applyLocalizedAnimalImage(el,animal);Object.assign(el.style,{position:'fixed',pointerEvents:'none',zIndex:'9998',opacity:'.72'});document.body.appendChild(el);entry={el,sequence:0};multiplayerRemoteAnimalDrags.set(key,entry);}
  const seq=Number(message.sequence)||0;if(seq&&seq<=entry.sequence)return false;entry.sequence=seq;const r=zooCanvas.getBoundingClientRect(),z=Math.max(.01,Number(state.zoom)||1);
  entry.el.style.width=`${ANIMAL_W*z}px`;entry.el.style.height=`${ANIMAL_H*z}px`;
@@ -27850,7 +27774,7 @@ async function enableLocalMultiplayerBrowserTransport({role='host',playerId=null
                     const localTargetId=serverPlayer?.seat?`player-${Number(serverPlayer.seat)}`:null;
                     if(localTargetId&&String(localClassicMatch?.viewingPlayerId||'')===localTargetId&&
                        message.authoritativeMove===true&&message.animalId!=null&&message.destination){
-                        const moved=(state.animals||[]).find(a=>String(a?.id)===String(message.animalId));
+                        const moved=classicAnimalById(message.animalId);
                         const enclosure=(state.enclosures||[]).find(e=>
                             String(e?.id)===String(message.destination?.enclosureId));
                         const slotIndex=Number(message.destination?.slotIndex);
@@ -28687,7 +28611,7 @@ async function applyLocalMultiplayerActionEnvelope(action){
             if(!switched)return {ok:false,reason:'seat'};
         }
         const draft=localHumanTradeDraft(action.playerId);
-        const offered=(state.animals||[]).find(a=>String(a.id)===String(action.payload?.offeredAnimalId));
+        const offered=classicAnimalById(action.payload?.offeredAnimalId);
         const requested=draft?.requestedPlayerId?directTradeAnimal(draft.requestedPlayerId,draft.requestedAnimalId):null;
         if(!draft?.requestedPlayerId||!requested||!offered)return {ok:false,reason:'trade-draft'};
         const softlockReason=humanTradeSoftlockReason(
@@ -28757,7 +28681,7 @@ async function applyLocalMultiplayerActionEnvelope(action){
             multiplayerServerPlayerForLocalId(requestedPlayerId)?.playerId||null;
         draft.requestedAnimalId=requestedAnimalId;
         draft.requestedAnimalIdentity=cloneForSave(action.payload?.requestedAnimalIdentity||null);
-        cancelAITradingForHumanTrade();
+        
         syncActiveZooIntoLocalMatch();
         localClassicMatch.revision++;
         recordLocalMultiplayerEvent('trade-draft-staged',{playerId:action.playerId,requestedPlayerId,requestedAnimalId});
@@ -28771,13 +28695,13 @@ async function applyLocalMultiplayerActionEnvelope(action){
                 : await switchLocalClassicMatchPlayer(action.playerId);
             if(!switched)return {ok:false,reason:'seat'};
         }
-        const animal=(state.animals||[]).find(a=>String(a.id)===String(action.payload?.animalId));
+        const animal=classicAnimalById(action.payload?.animalId);
         const destination=multiplayerDestinationFromWire(action.payload?.destination);
         if(!animal||!destination)return {ok:false,reason:'move-target'};
 
         const outgoingId=action.payload?.outgoingOfferId;
         if(outgoingId!=null){
-            const outgoing=(state.animals||[]).find(a=>String(a.id)===String(outgoingId));
+            const outgoing=classicAnimalById(outgoingId);
             if(!outgoing)return {ok:false,reason:'outgoing-offer'};
             if(!state.outgoingOffer||String(state.outgoingOffer.id)!==String(outgoing.id)){
                 state.outgoingOffer=outgoing;
@@ -28919,7 +28843,7 @@ function multiplayerTradeDestinationToWireAfterOutgoing(destination,incoming,out
     const slotIndex=Number(destination.slotIndex);
     if(!Number.isInteger(slotIndex)||!getAllSlots(destination.enclosure).includes(slotIndex))return null;
     const wire={enclosureId:destination.enclosure.id,slotIndex};
-    const outgoing=(state.animals||[]).find(a=>String(a?.id)===String(outgoingId));
+    const outgoing=classicAnimalById(outgoingId);
     if(!incoming){wire.clientPlacementValidated=false;return wire;}
     if(!outgoing){
         wire.clientPlacementValidated=canPlace(incoming,destination.enclosure,slotIndex)===true;
@@ -28951,7 +28875,7 @@ function multiplayerDestinationToWire(destination,animal=null){
 }
 function multiplayerDestinationFromWire(payload){
     if(!payload||payload.enclosureId==null||payload.slotIndex==null)return null;
-    const enclosure=(state.enclosures||[]).find(e=>String(e.id)===String(payload.enclosureId));
+    const enclosure=enclosureByIdFast(payload.enclosureId);
     if(!enclosure)return null;
     const slotIndex=Number(payload.slotIndex);
     if(!Number.isInteger(slotIndex)||!getAllSlots(enclosure).includes(slotIndex))return null;
@@ -29004,7 +28928,7 @@ function applyAuthoritativePreparedClassicState(requested){
     if(requested.type===CLASSIC_GAME_ACTION.COMPLETE_EXCHANGE){
         const ids=Array.isArray(prepared.exchangeAnimalIds)?prepared.exchangeAnimalIds:[];
         if(ids.length!==2)return false;
-        const selected=ids.map(id=>(state.animals||[]).find(a=>String(a.id)===String(id)));
+        const selected=ids.map(id=>classicAnimalById(id));
         if(selected.some(a=>!a))return false;
         if(selected[0].category!==selected[1].category||selected[0].level!==selected[1].level)return false;
         const result=prepared.exchangeResult;
@@ -29030,7 +28954,7 @@ function applyAuthoritativePreparedClassicState(requested){
 
     if(requested.type===CLASSIC_GAME_ACTION.ACCEPT_TRADE){
         if(prepared.outgoingOfferId==null)return false;
-        const outgoing=(state.animals||[]).find(a=>String(a.id)===String(prepared.outgoingOfferId));
+        const outgoing=classicAnimalById(prepared.outgoingOfferId);
         if(!outgoing)return false;
         state.outgoingOffer=outgoing;
         state.selectedTradeOpponent=prepared.selectedTradeOpponent??state.selectedTradeOpponent;
@@ -29185,15 +29109,10 @@ async function dispatchLocalMultiplayerAction(playerId,type,payload={}){
     const envelope=createLocalMultiplayerActionEnvelope(playerId,type,payload);
     return applyLocalMultiplayerActionEnvelope(cloneForSave(envelope));
 }
-async function simulateLocalPeerAction(type,payload={}){
-    const playerId=localMultiplayerPeerReplica?.playerId;
-    if(!playerId)return {ok:false,reason:'no-peer'};
-    return applyLocalMultiplayerActionEnvelope(cloneForSave(createLocalMultiplayerActionEnvelope(playerId,type,payload)));
-}
 async function sendLocalMultiplayerAnimalMove(playerId,animalId,destination){
     if(serverAuthoritativeMultiplayerActive()&&
        playerId===localClassicMatch?.activePlayerId){
-        const movingAnimal=(state.animals||[]).find(a=>String(a?.id)===String(animalId));
+        const movingAnimal=classicAnimalById(animalId);
         const wireDestination=multiplayerDestinationToWire(destination,movingAnimal);
         const t=localMultiplayerBrowserTransport;
 
@@ -29228,7 +29147,7 @@ async function sendLocalMultiplayerAnimalMove(playerId,animalId,destination){
         t.durableOwnZooSnapshot=cloneForSave(response.zoo);
         t.durableZooQueuedSnapshot=null;t.durableZooQueuedSignature='';
 
-        const live=(state.animals||[]).find(a=>String(a?.id)===String(animalId));
+        const live=classicAnimalById(animalId);
         if(live&&response.destination){
             live.enclosureId=response.destination.enclosureId;
             live.slotIndex=Number(response.destination.slotIndex);
@@ -29354,15 +29273,11 @@ async function returnToActiveLocalClassicZoo(){
         await importGameState(cloneForSave(target.snapshot),{deferRender:false});
         const privateVisitState=localClassicMatch.privateVisitState;
         if(privateVisitState){
-            if(!humanTradeBlocksAITrading()){
-                state.autonomousTradeOffer=cloneForSave(privateVisitState.autonomousTradeOffer);
+            state.autonomousTradeOffer=cloneForSave(privateVisitState.autonomousTradeOffer);
                 state.tradeOffers=cloneForSave(privateVisitState.tradeOffers||[]);
                 state.selectedTradeOpponent=privateVisitState.selectedTradeOpponent;
                 state.outgoingOffer=cloneForSave(privateVisitState.outgoingOffer);
                 state.nextAutonomousOfferTurn=privateVisitState.nextAutonomousOfferTurn;
-            }else{
-                cancelAITradingForHumanTrade();
-            }
             delete localClassicMatch.privateVisitState;
         }
         invalidateMultiplayerViewedZooAreaCaches();
@@ -30142,7 +30057,7 @@ function importGameState(saveData, { deferRender = false } = {}) {
     repairLoadedNextId();
 
     for (const id of legacyHandIds) {
-        const animal = state.animals.find(item => Number(item?.id) === id);
+        const animal = classicAnimalById(id);
         if (!animal || animal.enclosureId != null) continue;
         const destination = randomEligibleDestinationForAnimal(animal);
         if (destination) {
@@ -30350,9 +30265,6 @@ function loadLocalRealZooTemplates() {
     }
 }
 
-function realZooTemplateKey(recordOrName) {
-    return normaliseGeographyPart(typeof recordOrName === 'string' ? recordOrName : recordOrName?.name || '');
-}
 
 function localRealZooTemplate(recordOrName) {
     const key = realZooTemplateKey(recordOrName);
@@ -31802,7 +31714,7 @@ function startAnimalDrag(
 
             const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.slot.empty-slot');
             if (target) {
-                const targetEnc = state.enclosures.find(x => String(x.id) === String(target.dataset.enclosureId));
+                const targetEnc = enclosureByIdFast(target.dataset.enclosureId);
                 const targetSlot = Number(target.dataset.slotIndex);
                 if (targetEnc && canPlace(animal, targetEnc, targetSlot)) {
                     animal.enclosureId = null;
@@ -32139,7 +32051,7 @@ function restoreDraggedAnimal() {
 
     if(drag.originalWasPublicTradeListing){
         if(drag.originalEnclosureId!=null&&drag.originalSlotIndex!=null){
-            const enclosure=state.enclosures.find(e=>String(e.id)===String(drag.originalEnclosureId));
+            const enclosure=enclosureByIdFast(drag.originalEnclosureId);
             if(enclosure){
                 animal.enclosureId=enclosure.id;
                 animal.slotIndex=drag.originalSlotIndex;
@@ -32451,7 +32363,7 @@ function trueTransferCreateFromAcceptedProposal(proposal){
     const id=state.trueTransferNextId++,incomings=requested.map((animal,i)=>({legId:`in-${i+1}`,animal:{...animal},population:trueTransferPop(animal),completed:false,
         backstageEnclosureId:backstagePlan?.[i]?.enclosureId??null})),outgoings=[];
     for(let i=0;i<offered.length;i++){
-        const animal=offered[i],sourceId=animal.truePopulationTradeSourceId??animal.id,live=state.animals.find(a=>Number(a.id)===Number(sourceId));
+        const animal=offered[i],sourceId=animal.truePopulationTradeSourceId??animal.id,live=classicAnimalById(sourceId);
         const leg={legId:`out-${i+1}`,animalId:live?.id??sourceId??null,animal:{...animal},population:trueTransferPop(animal),completed:false};
         if(live){
             const available=trueTransferAvailableCounts(live);
@@ -32481,9 +32393,11 @@ function trueTransferSyncAcceptedProposals(){
 }
 function trueTransferCreateArrivalCards(t){
     trueTransferNormaliseLegs(t);const made=[];
+    const transferId=Number(t.id);
     for(const leg of t.incomings){
         if(leg.completed)continue;
-        let a=state.animals.find(x=>Number(x.trueIncomingTransferId)===Number(t.id)&&String(x.trueIncomingTransferLegId)===String(leg.legId));
+        const legId=String(leg.legId);
+        let a=state.animals.find(x=>Number(x.trueIncomingTransferId)===transferId&&String(x.trueIncomingTransferLegId)===legId);
         if(!a){
             const z=Math.max(.01,Number(state.zoom)||1),idx=made.length;
             const x=(Number(zooBoard?.scrollLeft)||0)/z+(Number(zooBoard?.clientWidth)||900)/(2*z)-ANIMAL_W/2+idx*36;
@@ -32517,7 +32431,7 @@ function trueTransferCompleteOutgoing(t){
     trueTransferNormaliseLegs(t);
     for(const leg of t.outgoings){
         if(leg.completed)continue;
-        const a=state.animals.find(x=>Number(x.id)===Number(leg.animalId));
+        const a=classicAnimalById(leg.animalId);
         if(a){trueTransferSubtract(a,leg.population);if(trueAnimalPopulationTotal(a)<=0)state.animals=state.animals.filter(x=>x!==a);}
         leg.completed=true;
     }
@@ -32626,7 +32540,7 @@ function trueTransferProcessDay(){
 }
 function trueTransferAfterPlacement(animal){
     if(!animal?.trueArrivalPending||animal.enclosureId==null)return;
-    const enc=(state.enclosures||[]).find(e=>String(e.id)===String(animal.enclosureId));
+    const enc=enclosureByIdFast(animal.enclosureId);
     if(enc&&trueEnclosureIsCurrentBackstage(enc))return;
     const t=normaliseTrueTransfers().find(x=>Number(x.id)===Number(animal.trueIncomingTransferId));if(t)trueTransferFinish(t,animal);
     renderTrueSimulationPanel();
@@ -32645,9 +32559,6 @@ function trueSubtractPopulation(animal,part){
 function trueAddPopulation(animal,part){
     const p=normaliseTrueAnimalPopulation(animal);
     for(const k of ['males','females','unknown']) p[k]+=(Number(part?.[k])||0);
-}
-function trueSplitDraggedPopulationToSlot(animal,enclosure,slotIndex){
-    return null;
 }
 function trueRemapTransferPopulationSource(oldId,newId){
     for(const t of normaliseTrueTransfers()){
@@ -32681,8 +32592,7 @@ let trueSexIndicatorLastAnimalId=null;
 let trueSexIndicatorGeneration=new Map();
 let trueLoosePopulationCollapseTimers=new Map();
 function trueSameSpeciesPopulations(animal){
-    const key=animalCardKey(animal);
-    return (state.animals||[]).filter(a=>a&&a.id!==animal.id&&animalCardKey(a)===key&&trueAnimalPopulationTotal(a)>0);
+    return classicAnimalsByCardKey(animal).filter(a=>a.id!==animal.id&&trueAnimalPopulationTotal(a)>0);
 }
 function truePopulationDefaultSplit(animal){
     const available=trueTransferAvailableCounts(animal),part={males:0,females:0,unknown:0};
@@ -32717,13 +32627,13 @@ function trueSplitPopulationCard(animal,card){
 }
 function truePopulationWorldPoint(animal){
     if(animal.trueLoosePopulation&&Number.isFinite(animal.x)&&Number.isFinite(animal.y))return{x:animal.x,y:animal.y};
-    const enc=state.enclosures.find(e=>String(e.id)===String(animal.enclosureId));if(!enc)return{x:0,y:0};
-    if(enc.trueBuilt){const b=trueBuiltEnclosureBounds(enc),c=enc.cells?.[animal.slotIndex];if(c)return{x:enc.x+(c.col-b.minCol)*TRUE_ENC_CELL_W,y:enc.y+(c.row-b.minRow)*TRUE_ENC_CELL_H};}
+    const enc=enclosureByIdFast(animal.enclosureId);if(!enc)return{x:0,y:0};
+    if(enc.trueBuilt){const b=trueBuiltEnclosureDerived(enc),c=enc.cells?.[animal.slotIndex];if(c)return{x:enc.x+(c.col-b.minCol)*TRUE_ENC_CELL_W,y:enc.y+(c.row-b.minRow)*TRUE_ENC_CELL_H};}
     return{x:enc.x,y:enc.y};
 }
 function trueNearestSameSpeciesPopulation(animal){
     const here=truePopulationWorldPoint(animal),others=trueSameSpeciesPopulations(animal);let best=null,bestD=Infinity;
-    for(const other of others){const p=truePopulationWorldPoint(other),d=Math.hypot(p.x-here.x,p.y-here.y);if(d<bestD){bestD=d;best=other;}}
+    for(const other of others){const p=truePopulationWorldPoint(other),d=(p.x-here.x)**2+(p.y-here.y)**2;if(d<bestD){bestD=d;best=other;}}
     return best;
 }
 function trueMoveSexBetweenPopulationCards(from,to,sex){
@@ -32856,9 +32766,10 @@ function attachTruePopulationCardUI(card,animal){
 }
 function trueAutoCollapseLoosePopulation(animalId){
     trueLoosePopulationCollapseTimers.delete(animalId);
-    const animal=(state.animals||[]).find(a=>String(a?.id)===String(animalId));
+    const animal=classicAnimalById(animalId);
     if(!animal?.trueLoosePopulation||animal.enclosureId!=null||animal.trueArrivalPending)return false;
-    let target=(state.animals||[]).find(a=>String(a?.id)===String(animal.trueSplitReturnTargetId)&&a!==animal&&animalCardKey(a)===animalCardKey(animal));
+    let target=classicAnimalById(animal.trueSplitReturnTargetId);
+    if(target===animal||animalCardKey(target)!==animalCardKey(animal))target=null;
     if(!target)target=trueNearestSameSpeciesPopulation(animal);
     if(!target)return false;
     trueAddPopulation(target,normaliseTrueAnimalPopulation(animal));
@@ -33005,7 +32916,7 @@ function tryClassicOccupiedCardSwap(event,animal){
         if(where.type!=='enclosure')continue;
         const eid=card.enclosureId,si=card.slotIndex;
         card.enclosureId=null;card.slotIndex=null;
-        const enclosure=state.enclosures.find(e=>String(e.id)===String(where.enclosureId));
+        const enclosure=enclosureByIdFast(where.enclosureId);
         if(!enclosure||!canPlace(card,enclosure,where.slotIndex))legal=false;
         card.enclosureId=eid;card.slotIndex=si;
         if(!legal)break;
@@ -33064,26 +32975,18 @@ function tryDropOnExactSlot(
 
     if(state.gameMode==='true'&&!state.sandboxMode){
         const occupiedId=Number(target.closest('.animal-card')?.dataset?.animalId);
-        const occupied=Number.isFinite(occupiedId)?state.animals.find(a=>Number(a.id)===occupiedId):null;
+        const occupied=Number.isFinite(occupiedId)?classicAnimalById(occupiedId):null;
         if(occupied && animalCardKey(occupied)===animalCardKey(animal)){
             if(animal.trueArrivalPending) return trueTransferMergeArrivalIntoTarget(animal,occupied);
             return trueMergeDraggedPopulationIntoTarget(animal,occupied);
         }
     }
 
-    const enclosure =
-        state.enclosures.find(
-            item =>
-                item.id ===
-                enclosureId
-        );
+    const enclosure=enclosureByIdFast(enclosureId);
 
     if (!enclosure) {
         return false;
     }
-
-    const splitResult=trueSplitDraggedPopulationToSlot(animal,enclosure,slotIndex);
-    if(splitResult!==null) return splitResult;
 
     const placed=placeAnimal(animal,enclosure,slotIndex);
     if(placed) trueTransferAfterPlacement(animal);
@@ -33121,12 +33024,7 @@ function tryDropOnEnclosure(
                 .enclosureId
         );
 
-    const enclosure =
-        state.enclosures.find(
-            item =>
-                item.id ===
-                enclosureId
-        );
+    const enclosure=enclosureByIdFast(enclosureId);
 
     if (!enclosure) {
         return false;
@@ -33185,11 +33083,7 @@ function tryDropOnEnclosure(
             event.clientY -
             centerY;
 
-        const distance =
-            Math.sqrt(
-                dx * dx +
-                dy * dy
-            );
+        const distance=dx*dx+dy*dy;
 
         if (
             distance <
@@ -33211,9 +33105,6 @@ function tryDropOnEnclosure(
     ) {
         return false;
     }
-
-    const splitResult=trueSplitDraggedPopulationToSlot(animal,enclosure,best);
-    if(splitResult!==null) return splitResult;
 
     const placed=placeAnimal(animal,enclosure,best);
     if(placed) trueTransferAfterPlacement(animal);
@@ -33839,7 +33730,7 @@ async function finishHumanTradeRequestDrag(event){
             enclosureId:drag.animal?.enclosureId??null,
             slotIndex:Number.isFinite(Number(drag.animal?.slotIndex))?Number(drag.animal.slotIndex):null
         });
-        cancelAITradingForHumanTrade();
+        
         localClassicMatch.revision++;
         recordLocalMultiplayerEvent('trade-draft-staged',{
             playerId:ownerId,requestedPlayerId:drag.requestedPlayerId,
@@ -33871,7 +33762,7 @@ async function finishHumanTradeRequestDrag(event){
             enclosureId:drag.animal?.enclosureId??null,
             slotIndex:Number.isFinite(Number(drag.animal?.slotIndex))?Number(drag.animal.slotIndex):null
         });
-        cancelAITradingForHumanTrade();
+        
         localClassicMatch.revision++;
         recordLocalMultiplayerEvent('trade-draft-staged',{
             playerId:ownerId,requestedPlayerId:drag.requestedPlayerId,
@@ -33898,7 +33789,7 @@ function refreshClassicEnclosureCards(enclosureIds) {
 
     const targets=[];
     for(const id of ids){
-        const enclosure=state.enclosures.find(item=>String(item.id)===id);
+        const enclosure=enclosureByIdFast(id);
         const oldElement=layer.querySelector(
             `.enclosure[data-enclosure-id="${CSS.escape(id)}"]`
         );
@@ -34256,7 +34147,7 @@ function finishAnimalDrag(event) {
          Number(animal.slotIndex)!==Number(drag.originalSlotIndex));
     if(peerOwnsDrag&&movedWithinZoo&&drag.originalEnclosureId!=null){
         const destination={
-            enclosure:state.enclosures.find(e=>String(e.id)===String(animal.enclosureId)),
+            enclosure:enclosureByIdFast(animal.enclosureId),
             slotIndex:animal.slotIndex
         };
         if(!serverAuthoritativeMultiplayerActive()){
@@ -34859,7 +34750,7 @@ document.addEventListener(
             cancelled.image?.remove();
             state.drag=null;
             const released=cancelled.releasedRequestedPlacement;
-            const animal=(state.animals||[]).find(a=>String(a?.id)===String(released?.animalId));
+            const animal=classicAnimalById(released?.animalId);
             if(animal&&released){
                 animal.enclosureId=released.enclosureId;
                 animal.slotIndex=released.slotIndex;
@@ -36072,7 +35963,7 @@ function removeSandboxAnimalById(animalId) {
 function removeSandboxEnclosureById(enclosureId) {
     if (!state.sandboxMode) return false;
     const id = Number(enclosureId);
-    const enclosure = state.enclosures.find(item => item.id === id);
+    const enclosure = enclosureByIdFast(id);
     if (!enclosure) return false;
 
     const animalIds = new Set(
@@ -38815,7 +38706,7 @@ function bindTruePrestigeTestingHover(node){
         if(!inside||!e.ctrlKey){hide();return;}
         const b=zooPrestigeBreakdown();
         const p=ensurePrestigeBreakdownPopup();
-        p.textContent=`VISIBLE / PUBLIC PRESTIGE: ${visibleZooPrestige()}\nUNDERLYING CURRENT PRESTIGE: ${trueUnderlyingPrestige()}\n\n${prestigeBreakdownText(b)}\n\nTesting view · release Ctrl to hide`;
+        p.textContent=`VISIBLE / PUBLIC PRESTIGE: ${visibleZooPrestige()}\nUNDERLYING CURRENT PRESTIGE: ${currentZooPrestige()}\n\n${prestigeBreakdownText(b)}\n\nTesting view · release Ctrl to hide`;
         p.style.display='block';positionSmallPopup(p,node);
     };
     node.addEventListener('mouseenter',e=>{inside=true;show(e);});
@@ -38983,11 +38874,8 @@ function currentZooPrestige() {
     return Math.ceil(Math.max(0, zooPrestigeBreakdown().current));
 }
 
-function trueUnderlyingPrestige(){
-    return currentZooPrestige();
-}
 function normaliseTruePublicPrestige(){
-    const underlying=trueUnderlyingPrestige();
+    const underlying=currentZooPrestige();
     if(state.truePublicPrestige==null||state.truePublicPrestige===''||!Number.isFinite(Number(state.truePublicPrestige))||
        (Number(state.truePublicPrestige)<=0&&underlying>0)){
         state.truePublicPrestige=underlying;
@@ -39024,7 +38912,7 @@ function trueGuestAttendanceTargetForDate(date=normaliseTrueCalendarState().date
     state.trueGuestAttendanceDays=(state.trueGuestAttendanceDays&&typeof state.trueGuestAttendanceDays==='object'&&!Array.isArray(state.trueGuestAttendanceDays))
         ?state.trueGuestAttendanceDays:{};
     if(Number.isFinite(Number(state.trueGuestAttendanceDays[date])))return Number(state.trueGuestAttendanceDays[date]);
-    const underlying=trueUnderlyingPrestige();
+    const underlying=currentZooPrestige();
     const eventAttendance=trueEventModifierProduct('attendance-multiplier',{date});
     const target=Math.max(0,Math.round(underlying*trueGuestAttendanceVariation(date)*eventAttendance));
     state.trueGuestAttendanceDays[date]=target;
@@ -39034,7 +38922,7 @@ function trueGuestAttendanceTargetForDate(date=normaliseTrueCalendarState().date
 }
 function trueApplyPublicPrestigeForCompletedDay(date,entered,target,{partial=false}={}){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return visibleZooPrestige();
-    const underlying=trueUnderlyingPrestige();
+    const underlying=currentZooPrestige();
     let shown=normaliseTruePublicPrestige();
     const previousVisiblePrestige=Math.round(shown);
     if(state.truePublicPrestigeRateDate!==String(date||'')){
@@ -40080,7 +39968,7 @@ function generateRealZooTradeOffers(outgoing, pendingEmergencyTrade = null, supp
 }
 
 function createRealAutonomousOpponentOffer() {
-    if (localClassicMatch && humanTradeBlocksAITrading()) return false;
+    
     if (state.outgoingOffer || state.autonomousTradeOffer) return false;
 
     if (Math.random() > tradeFrequencyFactor()) return false;
@@ -40498,7 +40386,7 @@ function directTradeSnapshotCanReceiveAfterOutgoing(snapshot,incoming,outgoing){
     try{
         state=candidate.state||candidate;
         const outgoingId=String(outgoing.id);
-        const liveOutgoing=(state.animals||[]).find(a=>String(a?.id)===outgoingId);
+        const liveOutgoing=classicAnimalById(outgoingId);
         if(liveOutgoing){
             state.animals=state.animals.filter(a=>String(a?.id)!==outgoingId);
         }
@@ -40543,78 +40431,6 @@ function directTradeAvailableAnimals(playerId,{syncActive=true}={}){
     }
     return directTradeSnapshotAnimals(playerId,{syncActive}).filter(a=>a?.id!=null&&!reserved.has(`${playerId}:${a.id}`));
 }
-function chooseDirectTradeAnimal(playerId,title,{syncActive=true}={}){
-    const animals=directTradeAvailableAnimals(playerId,{syncActive});
-    return new Promise(resolve=>{
-        const shade=document.createElement('div');
-        shade.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.38);display:flex;align-items:center;justify-content:center';
-        const box=document.createElement('div');
-        box.style.cssText='width:min(560px,90vw);max-height:78vh;overflow:auto;background:#efe3c2;border:1px solid #796b52;border-radius:9px;padding:15px;box-shadow:0 12px 36px #0005;color:#3d3325';
-        const heading=document.createElement('div'); heading.textContent=title; heading.style.cssText='font-size:18px;font-weight:800;margin-bottom:10px';
-        const grid=document.createElement('div'); grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px';
-        for(const animal of animals){
-            const b=document.createElement('button'); b.type='button';
-            b.textContent=`L${animal.level||'?'} · ${animal.category||''} · ${directTradeAnimalName(animal)}`;
-            b.style.cssText='text-align:left;padding:7px;cursor:pointer';
-            b.onclick=()=>{shade.remove();resolve(animal);}; grid.appendChild(b);
-        }
-        if(!animals.length){const empty=document.createElement('div');empty.textContent='No animals available.';grid.appendChild(empty);}
-        const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.style.cssText='margin-top:10px;float:right';
-        cancel.onclick=()=>{shade.remove();resolve(null);};
-        box.append(heading,grid,cancel);shade.appendChild(box);document.body.appendChild(shade);
-    });
-}
-async function createDirectHumanTradeOffer(){
-    if(!localClassicMatch)return false;
-    const from=localClassicMatch.activePlayerId,to=localClassicMatch.playerIds.find(id=>id!==from);
-    if(!to)return false;
-    syncActiveZooIntoLocalMatch();
-    const offered=await chooseDirectTradeAnimal(from,`Offer from ${localMultiplayerPlayerLabel(from)}`);
-    if(!offered)return false;
-
-    const offeredKey=animalCardKey(offered);
-    const fromKeys=new Set(directTradeSnapshotAnimals(from,{syncActive:false}).map(animalCardKey));
-    const toKeys=new Set(directTradeSnapshotAnimals(to,{syncActive:false}).map(animalCardKey));
-    const opponentAnimals=directTradeAvailableAnimals(to,{syncActive:false}).filter(requested=>{
-        const requestedKey=animalCardKey(requested);
-        if(requestedKey===offeredKey)return false;
-        const senderWouldDuplicate=fromKeys.has(requestedKey) && requestedKey!==offeredKey;
-        const receiverWouldDuplicate=toKeys.has(offeredKey) && offeredKey!==requestedKey;
-        return !senderWouldDuplicate && !receiverWouldDuplicate;
-    });
-
-    const requested=await new Promise(resolve=>{
-        const animals=opponentAnimals;
-        const shade=document.createElement('div');
-        shade.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.38);display:flex;align-items:center;justify-content:center';
-        const box=document.createElement('div');
-        box.style.cssText='width:min(560px,90vw);max-height:78vh;overflow:auto;background:#efe3c2;border:1px solid #796b52;border-radius:9px;padding:15px;box-shadow:0 12px 36px #0005;color:#3d3325';
-        const heading=document.createElement('div');heading.textContent=`Request from ${localMultiplayerPlayerLabel(to)}`;heading.style.cssText='font-size:18px;font-weight:800;margin-bottom:10px';
-        const grid=document.createElement('div');grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px';
-        for(const animal of animals){
-            const b=document.createElement('button');b.type='button';
-            b.textContent=`L${animal.level||'?'} · ${animal.category||''} · ${directTradeAnimalName(animal)}`;
-            b.style.cssText='text-align:left;padding:7px;cursor:pointer';
-            b.onclick=()=>{shade.remove();resolve(animal);};grid.appendChild(b);
-        }
-        if(!animals.length){const empty=document.createElement('div');empty.textContent='No opponent animals available.';grid.appendChild(empty);}
-        const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.style.cssText='margin-top:10px;float:right';
-        cancel.onclick=()=>{shade.remove();resolve(null);};
-        box.append(heading,grid,cancel);shade.appendChild(box);
-        setTimeout(()=>document.body.appendChild(shade),0);
-    });
-    if(!requested)return false;
-    pendingDirectHumanTrades().push({
-        id:`player-trade-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
-        fromPlayerId:from,toPlayerId:to,offeredAnimalId:offered.id,requestedAnimalId:requested.id,
-        status:'pending',createdRevision:localClassicMatch.revision
-    });
-    localClassicMatch.revision++;
-    renderVisitedZooQuickTabs();
-    renderTrade();
-    return true;
-}
-
 function nextDirectTradeAnimalId(snapshot){
     const animals=Array.isArray(snapshot?.state?.animals)?snapshot.state.animals:[];
     const used=new Set(animals.map(animal=>String(animal?.id)));
@@ -40728,7 +40544,7 @@ async function acceptDirectHumanTradeOffer(id,destination=null,{skipActiveSync=f
     return true;
 }
 function resumeAITradingAfterHumanTrade(){
-    if(state.gameMode==='true'||state.sandboxMode||humanTradeBlocksAITrading())return;
+    if(state.gameMode==='true'||state.sandboxMode)return;
     scheduleNextAutonomousOpponentOffer();
 }
 function declineDirectHumanTradeOffer(id,playerId=localClassicMatch?.activePlayerId){
@@ -42271,7 +42087,7 @@ function clearAutonomousOpponentOffer(resetTimer = true) {
 function createAutonomousOpponentOffer() {
     if (state.gameMode === 'true') return false;
     if (multiplayerAITradesDisabled()) return false;
-    if (localClassicMatch && humanTradeBlocksAITrading()) return false;
+    
     if (isRealOpponentMode()) return createRealAutonomousOpponentOffer();
     if (state.outgoingOffer || state.autonomousTradeOffer) return false;
 
@@ -42322,10 +42138,6 @@ function updateAutonomousOpponentOffer() {
             renderTrade();
         }
         state.nextAutonomousOfferTurn=Infinity;
-        return;
-    }
-    if (localClassicMatch && humanTradeBlocksAITrading()) {
-        cancelAITradingForHumanTrade();
         return;
     }
     if (state.autonomousTradeOffer) {
@@ -42590,18 +42402,6 @@ function trueMarketplacePopulation(animal, zooName = '', listingSalt = '') {
     return { males: 1, females: 1, unknown: 0 };
 }
 
-function trueMarketplaceWillingness(animal, profile) {
-    const level = Math.max(1, Number(animal?.level) || 1);
-    const playerPrestige = visibleZooPrestige();
-    const opponentPrestige = Math.max(1, Number(profile?.prestige) || playerPrestige);
-    const requiredShare = ({1:0,2:0,3:.50,4:.70,5:.90})[level] ?? 0;
-    if (requiredShare && playerPrestige < opponentPrestige * requiredShare) {
-        return level >= 5 ? 'Very reluctant' : 'Reluctant';
-    }
-    if (level >= 4) return 'Selective';
-    if (level === 3) return 'Open to a strong offer';
-    return 'Open to offers';
-}
 
 function trueMarketplaceSupplyPlan(animal, population, profile, seedKey='') {
     const total=trueAnimalPopulationTotal(population);
@@ -43147,7 +42947,7 @@ function trueMarketplaceDatabaseValue(entry,key){
 }
 
 function trueMarketplacePlayerListingAnimal(row){
-    return (state.animals||[]).find(a=>String(a?.id)===String(row?.animalId))||null;
+    return classicAnimalById(row?.animalId)||null;
 }
 function trueMarketplacePlayerActiveListings(){
     const market=normaliseTrueMarketplaceState(),today=String(state.trueCalendar?.date||'2026-04-18');
@@ -43541,7 +43341,7 @@ function ensureTrueMarketplaceButton() {
 
 function trueTradeSourceAnimal(outgoing = state.outgoingOffer) {
     if (!outgoing?.truePopulationTradeSourceId) return null;
-    return (state.animals || []).find(a => a.id === outgoing.truePopulationTradeSourceId) || null;
+    return classicAnimalById(outgoing.truePopulationTradeSourceId);
 }
 
 function truePopulationNotation(population) {
@@ -43625,7 +43425,7 @@ function openTruePopulationSelector(animal, options = {}) {
 }
 
 function beginTruePartialTrade(animal, selected, pendingEmergencyTrade = null, capturedLiveOffers = []) {
-    const source = (state.animals || []).find(a => a.id === animal.id) || animal;
+    const source = classicAnimalById(animal.id) || animal;
     const sourcePopulation = normaliseTrueAnimalPopulation(source);
     if (!sourcePopulation) return false;
     const males=Math.min(sourcePopulation.males, Math.max(0, selected.males|0));
@@ -44243,7 +44043,7 @@ function truePendingProposalCommittedPopulation(sourceId,excludeProposalId=null)
 }
 function trueProposalOutgoingStillAvailable(animal,excludeProposalId=null){
     const sourceId=Number(animal?.truePopulationTradeSourceId??animal?.id);
-    const live=state.animals.find(a=>Number(a.id)===sourceId);
+    const live=classicAnimalById(sourceId);
     if(!live)return false;
     const livePop=normaliseTrueAnimalPopulation(live);
     const committed=truePendingProposalCommittedPopulation(sourceId,excludeProposalId);
@@ -44838,12 +44638,6 @@ function renderTrueTransferProposal() {
     trueApplyDesktopHeaderGeometry();
     return true;
 }
-
-function cancelAITradingForHumanTrade(){
-    return false;
-}
-function humanTradeBlocksAITrading(){ return false; }
-
 function directHumanTradeHasParticipant(offer,playerId){
     return !!offer&&!!playerId&&
         (offer.fromPlayerId===playerId||offer.toPlayerId===playerId);
@@ -44865,7 +44659,7 @@ function activeDirectHumanTradeDraft(){
 function startDirectHumanTradeResultDrag(event,offer){
     if(!offer||offer.status!=='pending'||offer.toPlayerId!==localClassicMatch?.activePlayerId||state.drag||state.pan)return;
     const incoming=directTradeAnimal(offer.fromPlayerId,offer.offeredAnimalId);
-    const outgoing=state.animals.find(a=>String(a.id)===String(offer.requestedAnimalId));
+    const outgoing=classicAnimalById(offer.requestedAnimalId);
     if(!incoming||!outgoing)return;
 
     event.preventDefault();event.stopPropagation();
@@ -44907,7 +44701,7 @@ async function finishDirectHumanTradeResultDrag(event){
     drag.image?.remove();state.drag=null;
 
     const restore=()=>{
-        const animal=state.animals.find(a=>String(a.id)===String(released?.animalId));
+        const animal=classicAnimalById(released?.animalId);
         if(animal&&released){animal.enclosureId=released.enclosureId;animal.slotIndex=released.slotIndex;}
     };
     const serverTrade=serverAuthoritativeMultiplayerActive();
@@ -44962,7 +44756,7 @@ function directHumanTradeSenderClaimAnimal(offer){
     if(!offer)return null;
     const transferId=String(offer.requestedTransferId??'');
     if(transferId){
-        const live=(state.animals||[]).find(a=>String(a?.id)===transferId);
+        const live=classicAnimalById(transferId);
         if(live)return live;
         const senderSnapshot=localClassicMatch?.players?.[offer.fromPlayerId]?.snapshot;
         const snap=(senderSnapshot?.state?.animals||[]).find(a=>String(a?.id)===transferId);
@@ -45082,7 +44876,7 @@ async function finishDirectHumanTradeSenderClaimDrag(event){
         x:incoming.x??null,y:incoming.y??null
     };
 
-    const liveCopy=(state.animals||[]).find(a=>String(a?.id)===String(incoming?.id));
+    const liveCopy=classicAnimalById(incoming?.id);
     if(!liveCopy){renderTrade();return;}
     liveCopy.enclosureId=placement.enclosureId;liveCopy.slotIndex=placement.slotIndex;
     liveCopy.x=placement.x;liveCopy.y=placement.y;
@@ -45168,7 +44962,7 @@ function renderDirectHumanTradeCards(){
 
     if(!offer&&!draft)return false;
 
-    cancelAITradingForHumanTrade();
+    
     outgoingOfferBox.style.display='';
     incomingOfferBox.style.display='';
     outgoingOfferBox.innerHTML='';
@@ -45558,6 +45352,18 @@ function classicAnimalById(id){
         classicAnimalByIdCacheAnimals=state.animals;classicAnimalByIdCacheLength=length;classicAnimalByIdCacheNextId=nextId;
     }
     return classicAnimalByIdCache.get(String(id))||null;
+}
+let classicAnimalsByCardKeyCacheAnimals=null,classicAnimalsByCardKeyCacheLength=-1,classicAnimalsByCardKeyCacheNextId=-1,classicAnimalsByCardKeyCache=new Map();
+function classicAnimalsByCardKey(animal){
+    const key=animalCardKey(animal);if(!key)return [];
+    const length=state.animals?.length||0,nextId=Number(state.nextId)||0;
+    if(classicAnimalsByCardKeyCacheAnimals!==state.animals||classicAnimalsByCardKeyCacheLength!==length||classicAnimalsByCardKeyCacheNextId!==nextId){
+        const map=new Map();
+        for(const a of state.animals||[]){if(!a)continue;const k=animalCardKey(a);if(!map.has(k))map.set(k,[]);map.get(k).push(a);}
+        classicAnimalsByCardKeyCache=map;classicAnimalsByCardKeyCacheAnimals=state.animals;
+        classicAnimalsByCardKeyCacheLength=length;classicAnimalsByCardKeyCacheNextId=nextId;
+    }
+    return classicAnimalsByCardKeyCache.get(key)||[];
 }
 function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=null, autonomousOverride=null) {
     const offer=offerOverride||selectedTradeOffer();
@@ -46544,10 +46350,6 @@ function wakeMobileTradeArea() {
     document.getElementById('opponentTradeArea')?.classList.remove('trade-hud-idle');
 }
 
-function refreshMobileTradeAreaVisibility() {
-    document.getElementById('opponentTradeArea')?.classList.remove('trade-hud-idle');
-}
-
 document.addEventListener('pointerdown', event => {
     if (!window.matchMedia('(max-width: 700px)').matches) return;
     if (event.target.closest('#opponentTradeArea, #opponentZoos')) {
@@ -46562,7 +46364,7 @@ const mobileTradeObserver =
             if (mobileTradeMutationFrame) return;
             mobileTradeMutationFrame = requestAnimationFrame(() => {
                 mobileTradeMutationFrame = 0;
-                refreshMobileTradeAreaVisibility();
+                wakeMobileTradeArea();
             });
         })
         : null;
@@ -46587,7 +46389,7 @@ function refreshResponsiveTradeLayout() {
     mobileTradeResizeFrame = requestAnimationFrame(() => {
         mobileTradeResizeFrame = 0;
         ensureTradeAreaLayout();
-        refreshMobileTradeAreaVisibility();
+        wakeMobileTradeArea();
     });
 }
 

@@ -5445,25 +5445,6 @@
             "female_group"
           ]
         },
-        "Blesbok.png": {
-          "scientific_name": "Damaliscus pygargus phillipsi",
-          "tags": [
-            "grassland",
-            "savanna"
-          ],
-          "wild_regions": [
-            "AT20",
-            "AT21",
-            "AT22"
-          ],
-          "space_requirement": 3,
-          "population_profiles": [
-            "harem",
-            "bachelor_group",
-            "female_group",
-            "large_group"
-          ]
-        },
         "Blue Duiker.png": {
           "scientific_name": "Philantomba monticola",
           "tags": [

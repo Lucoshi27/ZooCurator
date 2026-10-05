@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.63";
+const ZOO_CURATOR_VERSION = "V2.44.71";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -763,7 +763,7 @@ function emergencyTradeNeeded() {
     );
 }
 
-function emergencyTradeSelection(writeState = true) {
+function emergencyTradeSelectionUncached(writeState = true) {
     if (!emergencyTradeNeeded()) return null;
 
     const playerAnimals = state.animals.filter(animal =>
@@ -954,6 +954,16 @@ function emergencyTradeSelection(writeState = true) {
     };
 }
 
+let emergencyTradePreviewCacheKey='',emergencyTradePreviewCacheValue=null,emergencyTradePreviewCacheHasValue=false;
+function emergencyTradeSelection(writeState=true){
+    if(writeState)return emergencyTradeSelectionUncached(true);
+    const key=`${Number(state.turn)||0}|${tradeOfferWindow()}|${state.animals?.length||0}|${Number(state.nextId)||0}|${state.unlockedOpponentCount||0}`;
+    if(emergencyTradePreviewCacheHasValue&&emergencyTradePreviewCacheKey===key)return emergencyTradePreviewCacheValue;
+    const value=emergencyTradeSelectionUncached(false);
+    emergencyTradePreviewCacheKey=key;emergencyTradePreviewCacheValue=value;emergencyTradePreviewCacheHasValue=true;
+    return value;
+}
+
 function emergencyTradeForAnimal(outgoing, writeState = true) {
     if (!outgoing) return null;
     const rescue = emergencyTradeSelection(writeState);
@@ -968,7 +978,7 @@ function simultaneousTradeOfferCap() {
     return Math.max(1, Math.floor(state.animals.length / 3));
 }
 
-function normalTradeInterestAllowedIds() {
+function normalTradeInterestAllowedIdsUncached() {
     const cap = normalTradeInterestCap();
     if (cap <= 0) return new Set();
 
@@ -995,6 +1005,15 @@ function normalTradeInterestAllowedIds() {
             .slice(0, cap)
             .map(entry => entry.id)
     );
+}
+
+let normalTradeInterestCacheKey='',normalTradeInterestCache=null;
+function normalTradeInterestAllowedIds(){
+    const key=`${tradeOfferWindow()}|${state.animals?.length||0}|${Number(state.nextId)||0}|${normalTradeInterestCap()}`;
+    if(normalTradeInterestCache&&normalTradeInterestCacheKey===key)return normalTradeInterestCache;
+    normalTradeInterestCache=normalTradeInterestAllowedIdsUncached();
+    normalTradeInterestCacheKey=key;
+    return normalTradeInterestCache;
 }
 
 function normalTradeInterestAllowed(animal, allowedIds = null) {
@@ -1184,7 +1203,6 @@ function clearTradeEligibleGlow(immediate = true) {
         if (immediate) {
             card.classList.remove('trade-eligible-glow-fading');
             card.classList.remove('trade-eligible-glow');
-            refreshAnimalGlowPrecedence(card.parentElement || document);
             return;
         }
 
@@ -1197,6 +1215,7 @@ function clearTradeEligibleGlow(immediate = true) {
             refreshAnimalGlowPrecedence(card.parentElement || document);
         }, 1000);
     });
+    if(immediate&&cards.length)refreshAnimalGlowPrecedence();
 }
 
 function applyTradeEligibleGlow() {
@@ -1231,9 +1250,6 @@ function applyTradeEligibleGlow() {
     tradeEligibleGlowActive = true;
 
     const workToken = ++tradeEligibleGlowWorkToken;
-    const animalById = new Map();
-    for (const animal of state.animals) animalById.set(animal.id, animal);
-
     const emergencySnapshot = state.autonomousTradeOffer
         ? null
         : emergencyTradeSelection(false);
@@ -1248,18 +1264,18 @@ function applyTradeEligibleGlow() {
     const processTradeGlowBatch = () => {
         if (workToken !== tradeEligibleGlowWorkToken || !tradeEligibleGlowActive) return;
 
-        const end = Math.min(cards.length, cursor + 1);
+        const end = Math.min(cards.length, cursor + 12);
         for (; cursor < end; cursor++) {
             const card = cards[cursor];
-            const animal = animalById.get(Number(card.dataset.animalId));
+            const animal = classicAnimalById(card.dataset.animalId);
             card.classList.toggle(
                 'trade-eligible-glow',
                 Boolean(animal && animalCouldReceiveTradeInterest(animal, emergencySnapshot, normalInterestIds))
             );
         }
 
-        refreshAnimalGlowPrecedence();
-        if (cursor < cards.length) requestAnimationFrame(processTradeGlowBatch);
+        if(cursor<cards.length)requestAnimationFrame(processTradeGlowBatch);
+        else refreshAnimalGlowPrecedence();
     };
 
     requestAnimationFrame(processTradeGlowBatch);
@@ -3948,12 +3964,13 @@ function collectionMarkEnteredZoo(animal) {
         const source = lineage?.originalFrom && lineage.originalFrom !== (state.zooName || 'Your Zoo')
             ? lineage.originalFrom
             : null;
-        record.acquisitions.push({
-            turn: Number(state.turn) || 0,
-            animalId,
-            from: source
-        });
-        record.acquisitions.sort((a, b) => Number(a.turn) - Number(b.turn));
+        const acquisition={turn:Number(state.turn)||0,animalId,from:source};
+        const last=record.acquisitions[record.acquisitions.length-1];
+        if(!last||Number(last.turn)<=acquisition.turn)record.acquisitions.push(acquisition);
+        else{
+            const at=record.acquisitions.findIndex(item=>Number(item.turn)>acquisition.turn);
+            if(at<0)record.acquisitions.push(acquisition);else record.acquisitions.splice(at,0,acquisition);
+        }
     }
 
     if (record.firstZooTurn == null) record.firstZooTurn = state.turn;
@@ -4008,26 +4025,23 @@ function collectionTrackVisibleTradeOffers() {
 
 function collectionCurrentCohabitationPairs() {
     const pairs = new Map();
-    const occupancy=new Map();
-    for(const animal of state.animals||[]){
-        if(animal?.enclosureId==null||animal?.slotIndex==null)continue;
-        const key=`${animal.enclosureId}:${animal.slotIndex}`;
-        let list=occupancy.get(key);if(!list){list=[];occupancy.set(key,list);}
-        list.push(animal);
-    }
+    ensureClassicOccupancyCache();
 
     for (const enclosure of state.enclosures || []) {
         const seenGroups = new Set();
         for (const slotIndex of getAllSlots(enclosure)) {
             const group = enclosureGroupForSlot(enclosure, slotIndex);
             if (!group || group.length <= 1) continue;
-            const groupKey = [...group].sort((a,b)=>a-b).join(',');
+            let groupKey='';
+            if(group.length===2){
+                const a=Number(group[0]),b=Number(group[1]);groupKey=a<b?`${a},${b}`:`${b},${a}`;
+            }else groupKey=[...group].sort((a,b)=>a-b).join(',');
             if (seenGroups.has(groupKey)) continue;
             seenGroups.add(groupKey);
 
             const occupants=[];
             for(const groupSlot of group){
-                const atSlot=occupancy.get(`${enclosure.id}:${groupSlot}`);
+                const atSlot=classicOccupancyBySlot.get(`${enclosure.id}:${groupSlot}`);
                 if(atSlot?.length)occupants.push(...atSlot);
             }
             for (let i = 0; i < occupants.length; i++) {
@@ -4043,8 +4057,11 @@ function collectionCurrentCohabitationPairs() {
     return pairs;
 }
 
+let collectionCohabitationLastAnimals=null,collectionCohabitationLastLength=-1,collectionCohabitationLastTurn=-1,collectionCohabitationLastPlacementRevision=-1;
 function updateCollectionCohabitation() {
     if (state.sandboxMode) return;
+    const turn=Number(state.turn)||0,revision=Number(state.areaPlacementRevision)||0,length=state.animals?.length||0;
+    if(collectionCohabitationLastAnimals===state.animals&&collectionCohabitationLastLength===length&&collectionCohabitationLastTurn===turn&&collectionCohabitationLastPlacementRevision===revision)return;
     if (!(state.collectionCohabitationActive instanceof Map)) {
         state.collectionCohabitationActive = new Map();
     }
@@ -4090,6 +4107,10 @@ function updateCollectionCohabitation() {
             }
         }
     }
+    collectionCohabitationLastAnimals=state.animals;
+    collectionCohabitationLastLength=length;
+    collectionCohabitationLastTurn=turn;
+    collectionCohabitationLastPlacementRevision=revision;
 }
 
 function syncCollectionState() {
@@ -4680,11 +4701,8 @@ function getGroups(enclosure) {
 }
 
 function getAllSlots(enclosure) {
-
-    return getGroups(
-        enclosure
-    ).flat();
-
+    if(!enclosure?.trueBuilt)return classicRenderSlots(enclosure);
+    return getGroups(enclosure).flat();
 }
 
 const CLASSIC_ENCLOSURE_GROUP_CACHE = new Map();
@@ -4772,19 +4790,27 @@ let classicOccupancyCacheRevision=-1;
 let classicOccupancyRevision=0;
 let classicOccupancyBySlot=new Map();
 let classicReservedOccupancyBySlot=new Map();
+let classicOccupancyByEnclosure=new Map();
+let classicReservedOccupancyByEnclosure=new Map();
 function invalidateClassicOccupancyCache(){classicOccupancyRevision++;}
 function ensureClassicOccupancyCache(){
     if(classicOccupancyCacheAnimals===state.animals&&classicOccupancyCacheRevision===classicOccupancyRevision)return;
     classicOccupancyCacheAnimals=state.animals;classicOccupancyCacheRevision=classicOccupancyRevision;
     classicOccupancyBySlot=new Map();classicReservedOccupancyBySlot=new Map();
+    classicOccupancyByEnclosure=new Map();classicReservedOccupancyByEnclosure=new Map();
+    const add=(slotMap,enclosureMap,enclosureId,slotIndex,animal)=>{
+        const key=`${enclosureId}:${slotIndex}`;
+        let list=slotMap.get(key);if(!list){list=[];slotMap.set(key,list);}list.push(animal);
+        const enclosureKey=String(enclosureId);
+        let bySlot=enclosureMap.get(enclosureKey);if(!bySlot){bySlot=new Map();enclosureMap.set(enclosureKey,bySlot);}
+        let slotList=bySlot.get(Number(slotIndex));if(!slotList){slotList=[];bySlot.set(Number(slotIndex),slotList);}slotList.push(animal);
+    };
     for(const animal of state.animals||[]){
         if(animal?.enclosureId!=null&&animal?.slotIndex!=null){
-            const key=`${animal.enclosureId}:${animal.slotIndex}`;
-            let list=classicOccupancyBySlot.get(key);if(!list){list=[];classicOccupancyBySlot.set(key,list);}list.push(animal);
+            add(classicOccupancyBySlot,classicOccupancyByEnclosure,animal.enclosureId,animal.slotIndex,animal);
         }
         if(animal?.reservedEnclosureId!=null&&animal?.reservedSlotIndex!=null){
-            const key=`${animal.reservedEnclosureId}:${animal.reservedSlotIndex}`;
-            let list=classicReservedOccupancyBySlot.get(key);if(!list){list=[];classicReservedOccupancyBySlot.set(key,list);}list.push(animal);
+            add(classicReservedOccupancyBySlot,classicReservedOccupancyByEnclosure,animal.reservedEnclosureId,animal.reservedSlotIndex,animal);
         }
     }
 }
@@ -4900,7 +4926,37 @@ function rebuildCompatibilityGraphs() {
     state.compatibilityEffectiveGraph = effective;
 }
 
-function animalsAreCompatible(a, b) {
+let compatibilityPairCacheGraph=null;
+let compatibilityPairCache=new Map();
+function clearCompatibilityPairCacheIfNeeded(){
+    if(compatibilityPairCacheGraph!==state.compatibilityEffectiveGraph){
+        compatibilityPairCacheGraph=state.compatibilityEffectiveGraph;
+        compatibilityPairCache=new Map();
+    }
+}
+const EMPTY_COMPATIBILITY_GROUP_SET=new Set();
+let compatibilityProxyMembershipGraph=null;
+let compatibilityProxyMembershipCache={groupsByAnimal:new Map(),completeGroups:new Set()};
+function compatibilityProxyMembership(){
+    if(compatibilityProxyMembershipGraph===state.compatibilityEffectiveGraph)return compatibilityProxyMembershipCache;
+    const proxy=state.compatibilityData?.proxy_compatibility;
+    const groupsByAnimal=new Map();
+    for(const [groupName,members] of Object.entries(proxy?.groups||{})){
+        if(!Array.isArray(members))continue;
+        for(const member of members){
+            const name=compatibilityName(member);if(!name)continue;
+            let groups=groupsByAnimal.get(name);if(!groups){groups=new Set();groupsByAnimal.set(name,groups);}
+            groups.add(String(groupName));
+        }
+    }
+    compatibilityProxyMembershipCache={
+        groupsByAnimal,
+        completeGroups:new Set((proxy?.complete_groups||[]).map(String))
+    };
+    compatibilityProxyMembershipGraph=state.compatibilityEffectiveGraph;
+    return compatibilityProxyMembershipCache;
+}
+function animalsAreCompatibleUncached(a, b) {
     if (!a || !b) return false;
 
     const aName = compatibilityAnimalName(a);
@@ -4916,24 +4972,10 @@ function animalsAreCompatible(a, b) {
         return false;
     }
 
-    const groupsForAnimal = animalName => {
-        const result = new Set();
-        for (const [groupName, membersRaw] of Object.entries(proxy.groups)) {
-            if (!Array.isArray(membersRaw)) continue;
-            if (membersRaw.some(member => compatibilityName(member) === animalName)) {
-                result.add(groupName);
-            }
-        }
-        return result;
-    };
-
-    const aGroups = groupsForAnimal(aName);
-    const bGroups = groupsForAnimal(bName);
-
-    const completeGroups = new Set(
-        (Array.isArray(proxy.complete_groups) ? proxy.complete_groups : [])
-            .map(String)
-    );
+    const membership=compatibilityProxyMembership();
+    const aGroups=membership.groupsByAnimal.get(aName)||EMPTY_COMPATIBILITY_GROUP_SET;
+    const bGroups=membership.groupsByAnimal.get(bName)||EMPTY_COMPATIBILITY_GROUP_SET;
+    const completeGroups=membership.completeGroups;
 
     for (const groupName of aGroups) {
         if (bGroups.has(groupName) && completeGroups.has(groupName)) {
@@ -4972,8 +5014,32 @@ function animalsAreCompatible(a, b) {
     return false;
 }
 
+
+function animalsAreCompatible(a,b){
+    if(!a||!b)return false;
+    clearCompatibilityPairCacheIfNeeded();
+    const aName=compatibilityAnimalName(a),bName=compatibilityAnimalName(b);
+    if(!aName||!bName)return false;
+    const key=aName<bName?`${aName}\u001f${bName}`:`${bName}\u001f${aName}`;
+    if(compatibilityPairCache.has(key))return compatibilityPairCache.get(key);
+    const result=animalsAreCompatibleUncached(a,b);
+    compatibilityPairCache.set(key,result);
+    return result;
+}
+
+const CLASSIC_SLOT_GROUP_CACHE=new Map();
 function enclosureGroupForSlot(enclosure, slotIndex) {
-    return getGroups(enclosure).find(group => group.includes(slotIndex)) || null;
+    if(!enclosure)return null;
+    if(enclosure.trueBuilt)return getGroups(enclosure).find(group=>group.includes(slotIndex))||null;
+    const number=Number(enclosure.number);
+    let slotMap=CLASSIC_SLOT_GROUP_CACHE.get(number);
+    if(!slotMap){
+        slotMap=new Map();
+        for(const group of classicRenderGroups(enclosure))
+            for(const slot of group)slotMap.set(Number(slot),group);
+        CLASSIC_SLOT_GROUP_CACHE.set(number,slotMap);
+    }
+    return slotMap.get(Number(slotIndex))||null;
 }
 
 function classicMoveStaysInSameLogicalExhibit(drag, animal) {
@@ -4985,9 +5051,7 @@ function classicMoveStaysInSameLogicalExhibit(drag, animal) {
         animal?.enclosureId==null ||
         String(drag.originalEnclosureId)!==String(animal.enclosureId)
     ) return false;
-    const enclosure=state.enclosures.find(
-        item=>String(item.id)===String(animal.enclosureId)
-    );
+    const enclosure=enclosureByIdFast(animal.enclosureId);
     if(!enclosure)return false;
     const fromGroup=enclosureGroupForSlot(enclosure,Number(drag.originalSlotIndex));
     const toGroup=enclosureGroupForSlot(enclosure,Number(animal.slotIndex));
@@ -5055,12 +5119,21 @@ function compatibilityHintAnimals() {
     return [];
 }
 
+let enclosureByIdCacheArray=null,enclosureByIdCacheLength=-1,enclosureByIdCache=new Map();
+function enclosureByIdFast(id){
+    const list=state.enclosures||[];
+    if(enclosureByIdCacheArray!==list||enclosureByIdCacheLength!==list.length){
+        enclosureByIdCache=new Map(list.filter(Boolean).map(enclosure=>[String(enclosure.id),enclosure]));
+        enclosureByIdCacheArray=list;enclosureByIdCacheLength=list.length;
+    }
+    return enclosureByIdCache.get(String(id))||null;
+}
 function animalIsSatisfiedInCombinationExhibit(animal) {
     if (!animal || animal.enclosureId === null || animal.enclosureId === undefined) {
         return false;
     }
 
-    const enclosure = state.enclosures.find(item => item.id === animal.enclosureId);
+    const enclosure = enclosureByIdFast(animal.enclosureId);
     if (!enclosure) return false;
 
     const group = enclosureGroupForSlot(enclosure, animal.slotIndex);
@@ -5085,14 +5158,6 @@ function slotIsCompatibilityMatch(enclosure, slotIndex, candidateAnimals = compa
     if (occupants.length === 0) return false; // not "available due to a match"
 
     return candidateAnimals.some(animal => {
-        if (
-            !state.drag &&
-            state.compatibilityIntentActiveAnimal?.id === animal?.id &&
-            animalIsSatisfiedInCombinationExhibit(animal)
-        ) {
-            return false;
-        }
-
         if (animal?.enclosureId !== null && animal?.enclosureId !== undefined &&
             animal.enclosureId === enclosure.id) {
             return false;
@@ -5112,11 +5177,16 @@ function slotIsCompatibilityMatch(enclosure, slotIndex, candidateAnimals = compa
 
 function currentCompatibilityGlowKeys(candidateAnimals = compatibilityHintAnimals()) {
     const keys = new Set();
-    if (visitingAnotherZooForActionUI() || trueLayoutToolEditingActive()) return keys;
+    if (visitingAnotherZooForActionUI() || trueLayoutToolEditingActive() || !candidateAnimals.length) return keys;
+    const activeIntent=(!state.drag&&state.compatibilityIntentActiveAnimal)||null;
+    const candidates=activeIntent&&animalIsSatisfiedInCombinationExhibit(activeIntent)
+        ? candidateAnimals.filter(animal=>animal?.id!==activeIntent.id)
+        : candidateAnimals;
+    if(!candidates.length)return keys;
 
     for (const enclosure of state.enclosures) {
         for (const slotIndex of getAllSlots(enclosure)) {
-            if (slotIsCompatibilityMatch(enclosure, slotIndex, candidateAnimals)) {
+            if (slotIsCompatibilityMatch(enclosure, slotIndex, candidates)) {
                 keys.add(slotCompatibilityGlowKey(enclosure.id, slotIndex));
             }
         }
@@ -5660,7 +5730,7 @@ function placeAnimal(
     if(state.gameMode==='true'){delete animal.trueLoosePopulation;delete animal.x;delete animal.y;}
     clearAnimalZooReservation(animal);
     collectionMarkEnteredZoo(animal);
-    updateCollectionCohabitation();
+    if(state.gameMode==='true')updateCollectionCohabitation();
 
     checkEnclosure10Unlock();
     state.areaPlacementRevision = (Number(state.areaPlacementRevision) || 0) + 1;
@@ -11893,23 +11963,21 @@ function refreshContextualExchangeEligibilityGlows() {
         localClassicCanShowProgressionActionGlows();
 
     const focusKey = activeExchangeGlowFocusKey();
-    const animalById=new Map((state.animals||[]).filter(Boolean).map(animal=>[
-        String(animal.id),animal
-    ]));
     const eligibleKeys=new Set();
     if(active){
+        const availability=new Map();
         for(const [key,count] of exchangeGroupCounts()){
-            if(count<3)continue;
+            if(count<3||focusKey&&key!==focusKey)continue;
             const parts=String(key).split('|');
-            const level=Number(parts.pop());
-            const category=parts.join('|');
-            if(hasNextLevelInventory(category,level)&&(!focusKey||key===focusKey))
-                eligibleKeys.add(key);
+            const level=Number(parts.pop()),category=parts.join('|'),lookup=`${category}|${level}`;
+            let available=availability.get(lookup);
+            if(available===undefined){available=hasNextLevelInventory(category,level);availability.set(lookup,available);}
+            if(available)eligibleKeys.add(key);
         }
     }
 
     document.querySelectorAll('.animal-card[data-animal-id]').forEach(card => {
-        const animal=animalById.get(String(card.dataset.animalId));
+        const animal=classicAnimalById(card.dataset.animalId);
         const eligible=Boolean(
             active &&
             animal &&
@@ -12319,12 +12387,10 @@ function setupAnimalCard(
     image.dataset.animalId =
         animal.id;
 
-    image.addEventListener('pointerenter', () => {
-        if (state.sandboxMode) sandboxHoveredAnimalId = animal.id;
-    });
-    image.addEventListener('pointerleave', () => {
-        if (state.sandboxMode && sandboxHoveredAnimalId === animal.id) sandboxHoveredAnimalId = null;
-    });
+    if(state.sandboxMode){
+        image.addEventListener('pointerenter',()=>{sandboxHoveredAnimalId=animal.id;});
+        image.addEventListener('pointerleave',()=>{if(sandboxHoveredAnimalId===animal.id)sandboxHoveredAnimalId=null;});
+    }
 
     applyLocalizedAnimalImage(image, animal);
 
@@ -12470,58 +12536,45 @@ function setupAnimalCard(
         image.style.animationDelay = `${-elapsed}ms`;
     }
 
-    image.addEventListener(
-        'mouseenter',
-        () => {
-
-            requestHoverPreview(
-                animal
-            );
-            requestCompatibilityIntent(
-                animal
-            );
-
-        }
-    );
-
-    image.addEventListener(
-        'mouseleave',
-        () => {
-            hideHoverPreviewIfAllowed(animal);
-            finishCompatibilityIntent(animal);
-        }
-    );
-
-    image.addEventListener(
-        'pointerdown',
-        event => {
-
-            if (
-                event.button !== 0
-            ) {
-                return;
-            }
-
-            if (areaToolActive) return;
-
-            if (state.visitingZoo) return;
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            if (event.pointerType === 'touch' && zooTouchPointers.size >= 2) return;
-
-            startAnimalDrag(
-                event,
-                animal,
-                location
-            );
-
-        }
-    );
+    if(location==='enclosure'&&!state.sandboxMode){
+        image.dataset.classicDelegatedAnimal='1';
+    }else{
+        image.addEventListener('mouseenter',()=>{requestHoverPreview(animal);requestCompatibilityIntent(animal);});
+        image.addEventListener('mouseleave',()=>{hideHoverPreviewIfAllowed(animal);finishCompatibilityIntent(animal);});
+        image.addEventListener('pointerdown',event=>{
+            if(event.button!==0||areaToolActive||state.visitingZoo)return;
+            event.preventDefault();event.stopPropagation();
+            if(event.pointerType==='touch'&&zooTouchPointers.size>=2)return;
+            startAnimalDrag(event,animal,location);
+        });
+    }
 
 }
 
+let classicAnimalDelegationRoot=null;
+function ensureClassicAnimalCardDelegation(){
+    const root=zooLayer||document.getElementById('zoo-layer')||document.getElementById('zooLayer');
+    if(!root||classicAnimalDelegationRoot===root)return;
+    classicAnimalDelegationRoot=root;
+    const cardFromEvent=event=>event.target?.closest?.('.animal-card[data-classic-delegated-animal="1"]');
+    root.addEventListener('mouseover',event=>{
+        const card=cardFromEvent(event);if(!card||card.contains(event.relatedTarget))return;
+        const animal=classicAnimalById(card.dataset.animalId);if(!animal)return;
+        requestHoverPreview(animal);requestCompatibilityIntent(animal);
+    });
+    root.addEventListener('mouseout',event=>{
+        const card=cardFromEvent(event);if(!card||card.contains(event.relatedTarget))return;
+        const animal=classicAnimalById(card.dataset.animalId);if(!animal)return;
+        hideHoverPreviewIfAllowed(animal);finishCompatibilityIntent(animal);
+    });
+    root.addEventListener('pointerdown',event=>{
+        const card=cardFromEvent(event);if(!card||event.button!==0||areaToolActive||state.visitingZoo)return;
+        const animal=classicAnimalById(card.dataset.animalId);if(!animal)return;
+        event.preventDefault();event.stopPropagation();
+        if(event.pointerType==='touch'&&zooTouchPointers.size>=2)return;
+        startAnimalDrag(event,animal,'enclosure');
+    });
+}
 const COMPATIBILITY_INTENT_DELAY = 180;
 
 function cancelCompatibilityIntent(animal = null) {
@@ -12796,12 +12849,13 @@ function hideHoverPreviewIfAllowed(animal) {
     scheduleHoverPreviewHide(animal);
 }
 
+const ANIMAL_DISPLAY_NAME_CACHE=new Map();
 function animalDisplayName(animal) {
-    return String(animal?.filename || '')
-        .replace(/\.[^.]+$/, '')
-        .replace(/_+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
+    const filename=String(animal?.filename||'');
+    if(ANIMAL_DISPLAY_NAME_CACHE.has(filename))return ANIMAL_DISPLAY_NAME_CACHE.get(filename);
+    const name=filename.replace(/\.[^.]+$/,'').replace(/_+/g,' ').replace(/\s+/g,' ').trim();
+    ANIMAL_DISPLAY_NAME_CACHE.set(filename,name);
+    return name;
 }
 
 function animalDatabaseKey(name) {
@@ -12814,29 +12868,33 @@ function animalDatabaseKey(name) {
         .toLowerCase();
 }
 
+let inventoryEntryCacheInventory=null,inventoryEntryCache=new Map();
 function inventoryEntryForAnimal(animal) {
     if (!animal || !state.inventory?.animals) return null;
+    if(inventoryEntryCacheInventory!==state.inventory){inventoryEntryCacheInventory=state.inventory;inventoryEntryCache=new Map();}
+    const cacheKey=animalCardKey(animal);
+    if(inventoryEntryCache.has(cacheKey))return inventoryEntryCache.get(cacheKey);
     const categorySource = state.inventory.animals[animal.category];
-    if (!categorySource) return null;
+    if (!categorySource){inventoryEntryCache.set(cacheKey,null);return null;}
     const levelSource = categorySource[String(animal.level)] ?? categorySource[animal.level];
-    if (!levelSource) return null;
+    if (!levelSource){inventoryEntryCache.set(cacheKey,null);return null;}
     const wanted = animalDatabaseKey(animal.filename);
 
     if (!Array.isArray(levelSource) && typeof levelSource === 'object') {
         for (const [filename, value] of Object.entries(levelSource)) {
             if (animalDatabaseKey(filename) !== wanted) continue;
-            return value && typeof value === 'object' && !Array.isArray(value)
-                ? value
-                : { tags: Array.isArray(value) ? value : [] };
+            const result=value&&typeof value==='object'&&!Array.isArray(value)?value:{tags:Array.isArray(value)?value:[]};
+            inventoryEntryCache.set(cacheKey,result);return result;
         }
     }
     if (Array.isArray(levelSource)) {
-        return levelSource.find(item =>
+        const result=levelSource.find(item =>
             item && typeof item === 'object' &&
             animalDatabaseKey(item.file ?? item.filename ?? item.path ?? item.name ?? '') === wanted
         ) || null;
+        inventoryEntryCache.set(cacheKey,result);return result;
     }
-    return null;
+    inventoryEntryCache.set(cacheKey,null);return null;
 }
 
 function animalSpaceRequirement(animal) {
@@ -23209,7 +23267,17 @@ function ensureZooEnclosureLayer() {
     return layer;
 }
 
+const CLASSIC_ANIMAL_SIZE_CACHE=new Map();
+function classicCachedAnimalEnclosureSize(animal){
+    if(!animal)return 1;
+    const key=animalCardKey(animal);
+    if(CLASSIC_ANIMAL_SIZE_CACHE.has(key))return CLASSIC_ANIMAL_SIZE_CACHE.get(key);
+    const size=animalEnclosureSize(animal);
+    CLASSIC_ANIMAL_SIZE_CACHE.set(key,size);
+    return size;
+}
 function renderZoo() {
+    ensureClassicAnimalCardDelegation();
     hideHusbandryPopup();
 
     if(state.gameMode==='true'&&!state.sandboxMode){
@@ -23278,16 +23346,38 @@ function renderZoo() {
             const husbandrySizeRulesEnabled =
                 state.gameMode!=='true' &&
                 state.gameOptions?.enforceMinimumExhibitSize !== false;
-            for(const animal of state.animals||[]){
-                if(husbandrySizeRulesEnabled && animal?.id!=null){
-                    animalSizeById.set(animal.id,animalEnclosureSize(animal));
-                }
-                if(animal?.enclosureId!=null){
-                    const enclosureKey=String(animal.enclosureId);
+            if(state.gameMode!=='true'){
+                ensureClassicOccupancyCache();
+                for(const [slotKey,animals] of classicOccupancyBySlot){
+                    const split=slotKey.lastIndexOf(':');
+                    const enclosureKey=slotKey.slice(0,split),slotIndex=Number(slotKey.slice(split+1));
+                    if(!animals?.length)continue;
                     occupiedEnclosureIds.add(enclosureKey);
-                    addToSlotIndex(visibleAnimalsByEnclosure,animal.enclosureId,animal.slotIndex,animal);
+                    let bySlot=visibleAnimalsByEnclosure.get(enclosureKey);
+                    if(!bySlot){bySlot=new Map();visibleAnimalsByEnclosure.set(enclosureKey,bySlot);}
+                    bySlot.set(slotIndex,animals[0]);
                 }
-                addToSlotIndex(reservedAnimalsByEnclosure,animal?.reservedEnclosureId,animal?.reservedSlotIndex,animal);
+                for(const [slotKey,animals] of classicReservedOccupancyBySlot){
+                    const split=slotKey.lastIndexOf(':');
+                    const enclosureKey=slotKey.slice(0,split),slotIndex=Number(slotKey.slice(split+1));
+                    if(!animals?.length)continue;
+                    let bySlot=reservedAnimalsByEnclosure.get(enclosureKey);
+                    if(!bySlot){bySlot=new Map();reservedAnimalsByEnclosure.set(enclosureKey,bySlot);}
+                    bySlot.set(slotIndex,animals[0]);
+                }
+                if(husbandrySizeRulesEnabled){
+                    for(const animal of state.animals||[])if(animal?.id!=null)
+                        animalSizeById.set(animal.id,classicCachedAnimalEnclosureSize(animal));
+                }
+            }else{
+                for(const animal of state.animals||[]){
+                    if(animal?.enclosureId!=null){
+                        const enclosureKey=String(animal.enclosureId);
+                        occupiedEnclosureIds.add(enclosureKey);
+                        addToSlotIndex(visibleAnimalsByEnclosure,animal.enclosureId,animal.slotIndex,animal);
+                    }
+                    addToSlotIndex(reservedAnimalsByEnclosure,animal?.reservedEnclosureId,animal?.reservedSlotIndex,animal);
+                }
             }
 
             const husbandryStatusByEnclosure=new Map();
@@ -23341,14 +23431,16 @@ function renderZoo() {
         if(exchangeGlowActive){
             const counts=exchangeGroupCounts();
             const focusKey=activeExchangeGlowFocusKey();
-            const eligibleKeys=new Set();
+            const eligibleKeys=new Set(),nextLevelEligibility=new Map();
             for(const [key,count] of counts){
                 if(count<3)continue;
+                if(focusKey&&key!==focusKey)continue;
                 const parts=String(key).split('|');
                 const level=Number(parts.pop());
-                const category=parts.join('|');
-                if(hasNextLevelInventory(category,level) && (!focusKey || key===focusKey))
-                    eligibleKeys.add(key);
+                const category=parts.join('|'),lookupKey=`${category}|${level}`;
+                let eligible=nextLevelEligibility.get(lookupKey);
+                if(eligible===undefined){eligible=hasNextLevelInventory(category,level);nextLevelEligibility.set(lookupKey,eligible);}
+                if(eligible)eligibleKeys.add(key);
             }
             for(const animal of state.animals||[]){
                 if(
@@ -34005,26 +34097,28 @@ function refreshClassicEnclosureCards(enclosureIds) {
     }
 
     const targetIdSet=new Set(ids);
-    const targetAnimals=[];
-    const occupiedEnclosureIds=new Set();
-    for(const animal of state.animals||[]){
-        if(animal?.enclosureId!=null){
-            const key=String(animal.enclosureId);
-            occupiedEnclosureIds.add(key);
-            if(targetIdSet.has(key))targetAnimals.push(animal);
-        }else if(
-            animal?.reservedEnclosureId!=null &&
-            targetIdSet.has(String(animal.reservedEnclosureId))
-        ){
-            targetAnimals.push(animal);
+    ensureClassicOccupancyCache();
+    const targetAnimals=[],targetAnimalIds=new Set(),occupiedEnclosureIds=new Set();
+    for(const [slotKey,animals] of classicOccupancyBySlot){
+        const split=slotKey.lastIndexOf(':'),enclosureKey=slotKey.slice(0,split);
+        if(animals?.length)occupiedEnclosureIds.add(enclosureKey);
+        if(!targetIdSet.has(enclosureKey))continue;
+        for(const animal of animals||[])if(!targetAnimalIds.has(animal.id)){
+            targetAnimalIds.add(animal.id);targetAnimals.push(animal);
         }
-        if(animal?.reservedEnclosureId!=null)
-            occupiedEnclosureIds.add(String(animal.reservedEnclosureId));
+    }
+    for(const [slotKey,animals] of classicReservedOccupancyBySlot){
+        const split=slotKey.lastIndexOf(':'),enclosureKey=slotKey.slice(0,split);
+        if(animals?.length)occupiedEnclosureIds.add(enclosureKey);
+        if(!targetIdSet.has(enclosureKey))continue;
+        for(const animal of animals||[])if(!targetAnimalIds.has(animal.id)){
+            targetAnimalIds.add(animal.id);targetAnimals.push(animal);
+        }
     }
 
     const compatibilityGlowKeys=new Set();
     const compatibilityCandidates=compatibilityHintAnimals();
-    if(!visitingAnotherZooForActionUI() && !trueLayoutToolEditingActive()){
+    if(compatibilityCandidates.length&&!visitingAnotherZooForActionUI() && !trueLayoutToolEditingActive()){
         for(const target of targets){
             for(const slotIndex of getAllSlots(target.enclosure)){
                 if(slotIsCompatibilityMatch(
@@ -34055,11 +34149,8 @@ function refreshClassicEnclosureCards(enclosureIds) {
             for(const key of [...relevantKeys])if(key!==focusKey)relevantKeys.delete(key);
         }
         if(relevantKeys.size){
-            const counts=new Map([...relevantKeys].map(key=>[key,0]));
-            for(const animal of state.animals||[]){
-                const key=exchangeGroupKey(animal);
-                if(counts.has(key))counts.set(key,counts.get(key)+1);
-            }
+            const allCounts=exchangeGroupCounts();
+            const counts=new Map([...relevantKeys].map(key=>[key,allCounts.get(key)||0]));
             const eligibleKeys=new Set();
             for(const [key,count] of counts){
                 if(count<3)continue;
@@ -34116,30 +34207,21 @@ function refreshClassicEnclosureCards(enclosureIds) {
     const husbandrySizeRulesEnabled=
         state.gameMode!=='true' &&
         state.gameOptions?.enforceMinimumExhibitSize !== false;
-    for(const animal of targetAnimals){
-        addTargetAnimal(
-            visibleAnimalsByEnclosure,
-            animal?.enclosureId,
-            animal?.slotIndex,
-            animal
-        );
-        addTargetAnimal(
-            reservedAnimalsByEnclosure,
-            animal?.reservedEnclosureId,
-            animal?.reservedSlotIndex,
-            animal
-        );
-        if(
-            husbandrySizeRulesEnabled &&
-            animal?.id!=null &&
-            (
-                targetIdSet.has(String(animal?.enclosureId)) ||
-                targetIdSet.has(String(animal?.reservedEnclosureId))
-            )
-        ){
-            animalSizeById.set(animal.id,animalEnclosureSize(animal));
+    for(const id of targetIdSet){
+        const sourceVisible=classicOccupancyByEnclosure.get(id),sourceReserved=classicReservedOccupancyByEnclosure.get(id);
+        if(sourceVisible){
+            const visible=new Map();
+            for(const [slot,list] of sourceVisible)if(list?.length)visible.set(slot,list[0]);
+            if(visible.size)visibleAnimalsByEnclosure.set(id,visible);
+        }
+        if(sourceReserved){
+            const reserved=new Map();
+            for(const [slot,list] of sourceReserved)if(list?.length)reserved.set(slot,list[0]);
+            if(reserved.size)reservedAnimalsByEnclosure.set(id,reserved);
         }
     }
+    if(husbandrySizeRulesEnabled)for(const animal of targetAnimals)
+        if(animal?.id!=null)animalSizeById.set(animal.id,classicCachedAnimalEnclosureSize(animal));
 
     const husbandryStatusByEnclosure=new Map();
     const husbandryProblemEnclosureIds=new Set();
@@ -45459,8 +45541,25 @@ function renderDirectHumanTradeCards(){
     return true;
 }
 
+let classicTradeRenderSignature='';
+function classicTradeUiSignature(){
+    const offer=selectedTradeOffer();
+    const outgoing=state.outgoingOffer;
+    const autonomous=state.autonomousTradeOffer;
+    return [
+        state.gameOptions?.animalLanguage||'en',
+        Number(state.turn)||0,
+        outgoing?`${outgoing.id}|${animalCardKey(outgoing)}|${outgoing.reservedEnclosureId??''}|${outgoing.reservedSlotIndex??''}`:'-',
+        offer?`${offer.opponentIndex}|${animalCardKey(offer.animal)}`:'-',
+        state.selectedTradeOpponent??'-',
+        autonomous?`${autonomous.opponentIndex}|${animalCardKey(autonomous.animal)}|${autonomous.expiresTurn??''}`:'-',
+        state.tradeOffers?.length||0
+    ].join('\u001e');
+}
 function renderTrade() {
     if (!outgoingOfferBox || !incomingOfferBox) return;
+    if(state.gameMode==='true'||state.sandboxMode||localClassicMatch||serverAuthoritativeMultiplayerActive())
+        classicTradeRenderSignature='';
 
     const viewingOtherHumanZoo=!!localClassicMatch?.viewingPlayerId &&
         localClassicMatch.viewingPlayerId!==localClassicMatch.activePlayerId;
@@ -45531,9 +45630,7 @@ function renderTrade() {
        !activeDirectHumanTrade()&&!activeDirectHumanTradeDraft()&&
        selectedMultiplayerPublicListingPlayerId&&renderSelectedMultiplayerPublicListing()){
         const publicOwn=ownServerTradeListing();
-        const publicOwnAnimal=(state.animals||[]).find(
-                a=>String(a?.id)===String(publicOwn?.animalId)
-            )||publicOwn?.animal;
+        const publicOwnAnimal=classicAnimalById(publicOwn?.animalId)||publicOwn?.animal;
         outgoingOfferBox.innerHTML='';
         outgoingOfferBox.classList.toggle('trade-filled',Boolean(publicOwnAnimal));
         if(publicOwnAnimal){
@@ -45569,6 +45666,9 @@ function renderTrade() {
     }
 
     clearDirectHumanTradeActions();
+    const ordinaryTradeSignature=classicTradeUiSignature();
+    if(classicTradeRenderSignature===ordinaryTradeSignature)return;
+    classicTradeRenderSignature=ordinaryTradeSignature;
     outgoingOfferBox.onclick=null;
     outgoingOfferBox.style.cursor='';
     outgoingOfferBox.title='';
@@ -45665,6 +45765,15 @@ function moveTradeResultDragImage(event){
     state.drag.image.style.left=`${event.clientX-state.drag.offsetX}px`;
     state.drag.image.style.top=`${event.clientY-state.drag.offsetY}px`;
 }
+let classicAnimalByIdCacheAnimals=null,classicAnimalByIdCacheLength=-1,classicAnimalByIdCacheNextId=-1,classicAnimalByIdCache=new Map();
+function classicAnimalById(id){
+    const length=state.animals?.length||0,nextId=Number(state.nextId)||0;
+    if(classicAnimalByIdCacheAnimals!==state.animals||classicAnimalByIdCacheLength!==length||classicAnimalByIdCacheNextId!==nextId){
+        classicAnimalByIdCache=new Map((state.animals||[]).filter(Boolean).map(animal=>[String(animal.id),animal]));
+        classicAnimalByIdCacheAnimals=state.animals;classicAnimalByIdCacheLength=length;classicAnimalByIdCacheNextId=nextId;
+    }
+    return classicAnimalByIdCache.get(String(id))||null;
+}
 function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=null, autonomousOverride=null) {
     const offer=offerOverride||selectedTradeOffer();
     if(!offer) return false;
@@ -45680,7 +45789,7 @@ function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=nu
         return false;
     }
     const outgoingSourceId=Number(state.outgoingOffer.truePopulationTradeSourceId??state.outgoingOffer.id);
-    if(!state.animals.some(animal=>Number(animal?.id)===outgoingSourceId)){
+    if(!classicAnimalById(outgoingSourceId)){
         state.outgoingOffer=null;
         state.tradeOffers=[];
         state.selectedTradeOpponent=null;
@@ -45731,11 +45840,12 @@ function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=nu
     }
 
     const stock=state.opponentTradeStocks[offer.opponentIndex]||[];
+    const incomingKey=animalCardKey(incoming),incomingId=incoming.id==null?null:String(incoming.id);
     state.opponentTradeStocks[offer.opponentIndex] = isRealOpponentMode()
-        ? stock.filter(a => animalCardKey(a) !== animalCardKey(incoming))
-        : stock.filter(a => incoming.id!=null
-            ? String(a?.id)!==String(incoming.id)
-            : animalCardKey(a)!==animalCardKey(incoming));
+        ? stock.filter(a => animalCardKey(a) !== incomingKey)
+        : stock.filter(a => incomingId!=null
+            ? String(a?.id)!==incomingId
+            : animalCardKey(a)!==incomingKey);
 
     if (!isRealOpponentMode()) {
         const outgoingForOpponent = state.outgoingOffer;
@@ -45897,6 +46007,15 @@ async function finishTradeResultDrag(event) {
         }
     }
 }
+let classicOpponentTradeIndexesArray=null,classicOpponentTradeIndexesLength=-1,classicOpponentTradeIndexesCache=new Set();
+function classicOpponentTradeOfferIndexes(){
+    const offers=state.tradeOffers||[];
+    if(classicOpponentTradeIndexesArray!==offers||classicOpponentTradeIndexesLength!==offers.length){
+        classicOpponentTradeIndexesCache=new Set(offers.map(o=>o?.opponentIndex).filter(Number.isInteger));
+        classicOpponentTradeIndexesArray=offers;classicOpponentTradeIndexesLength=offers.length;
+    }
+    return classicOpponentTradeIndexesCache;
+}
 function setupOpponentTradeClicks() {
     ensureOpponentZooElements();
     for (let i = 0; i < 6; i++) {
@@ -45905,7 +46024,7 @@ function setupOpponentTradeClicks() {
         el.dataset.tradeClickBound = '1';
 
         el.addEventListener('mouseenter', () => {
-            const hasTrade = state.tradeOffers.some(o => o.opponentIndex === i) || state.autonomousTradeOffer?.opponentIndex === i;
+            const hasTrade = classicOpponentTradeOfferIndexes().has(i) || state.autonomousTradeOffer?.opponentIndex === i;
             if (hasTrade || state.gameMode === 'true') showOpponentInfoPopup(i, el);
         });
         el.addEventListener('mouseleave', scheduleOpponentInfoHide);
@@ -45918,7 +46037,7 @@ function setupOpponentTradeClicks() {
                 return;
             }
 
-            const hasPlayerOffer = state.tradeOffers.some(o => o.opponentIndex === i);
+            const hasPlayerOffer = classicOpponentTradeOfferIndexes().has(i);
             const hasAutonomousOffer = state.autonomousTradeOffer?.opponentIndex === i;
             if (!hasPlayerOffer && !hasAutonomousOffer) return;
 

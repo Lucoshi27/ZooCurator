@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.111";
+const ZOO_CURATOR_VERSION = "V2.44.114";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -3628,19 +3628,27 @@ function playerOwnedCardKeys() {
 function removePlayerClaimedCardFromOpponents(category, level, filename) {
     if (trueModeAllowsDuplicateSpecies()) return;
     const key = animalCardKey(category, level, filename);
+    let offersNeedFilter=false;
     for (let i = 0; i < state.opponentTradeStocks.length; i++) {
         const before = state.opponentTradeStocks[i] || [];
-        const removed = before.some(a => animalCardKey(a) === key);
+        let removed=false;
+        const kept=[];
+        for(const animal of before){
+            if(animalCardKey(animal)===key)removed=true;
+            else kept.push(animal);
+        }
         if (!removed) continue;
-        state.opponentTradeStocks[i] = before.filter(a => animalCardKey(a) !== key);
+        state.opponentTradeStocks[i] = kept;
+        offersNeedFilter=true;
         if (state.autonomousTradeOffer?.opponentIndex === i &&
             animalCardKey(state.autonomousTradeOffer.animal) === key) {
             state.autonomousTradeOffer = null;
             scheduleNextAutonomousOpponentOffer();
         }
-        state.tradeOffers = state.tradeOffers.filter(o => animalCardKey(o.animal) !== key);
         fillOpponentTradeStock(i);
     }
+    if(offersNeedFilter)
+        state.tradeOffers=state.tradeOffers.filter(o=>animalCardKey(o.animal)!==key);
 }
 
 function createAnimal(category, level, filename = null) {
@@ -24480,6 +24488,8 @@ function assertClassicCoreInvariants(context='Classic action') {
 
     const ids = new Set();
     const occupied = new Set();
+    const enclosureById=new Map((state.enclosures||[]).map(e=>[String(e?.id),e]));
+    const slotsByEnclosure=new Map();
     let maxId = 0;
     for (const animal of state.animals || []) {
         const id = Number(animal?.id);
@@ -24491,13 +24501,16 @@ function assertClassicCoreInvariants(context='Classic action') {
         if (animal.enclosureId == null || animal.slotIndex == null) {
             throw new Error(`${context}: owned animal ${id} is not placed`);
         }
-        const enclosure = (state.enclosures || []).find(
-            item => String(item?.id) === String(animal.enclosureId)
-        );
+        const enclosure=enclosureById.get(String(animal.enclosureId));
         if (!enclosure) {
             throw new Error(`${context}: animal ${id} references missing enclosure ${animal.enclosureId}`);
         }
-        if (!getAllSlots(enclosure).includes(Number(animal.slotIndex))) {
+        let validSlots=slotsByEnclosure.get(enclosure);
+        if(!validSlots){
+            validSlots=new Set(getAllSlots(enclosure).map(Number));
+            slotsByEnclosure.set(enclosure,validSlots);
+        }
+        if (!validSlots.has(Number(animal.slotIndex))) {
             throw new Error(`${context}: animal ${id} references invalid slot ${animal.slotIndex}`);
         }
         const slotKey = `${animal.enclosureId}:${animal.slotIndex}`;
@@ -24716,6 +24729,7 @@ function finalizeClassicProgressionCommit(context = 'Classic action') {
 function commitClassicTurn() {
     state.turn++;
     updateAutonomousOpponentOffer();
+    if(!localClassicMatch)return;
 
     if (localClassicMatch) {
         syncActiveZooIntoLocalMatch();
@@ -42501,9 +42515,10 @@ function generateOpponentTradeOffers(outgoing, pendingEmergencyTrade = null, sup
 
     const locked = predictedPlayerTradeOffers(outgoing);
     state.tradeOffers = materializeLockedPlayerTradeOffers(outgoing, locked);
-    state.selectedTradeOpponent = state.tradeOffers.length
-        ? state.tradeOffers.map(o => o.opponentIndex).sort((a, b) => a - b)[0]
-        : null;
+    state.selectedTradeOpponent = null;
+    for(const offer of state.tradeOffers)
+        if(state.selectedTradeOpponent==null||offer.opponentIndex<state.selectedTradeOpponent)
+            state.selectedTradeOpponent=offer.opponentIndex;
 
     if(!suppressRender)renderTrade();
     preloadAnimals(state.tradeOffers.map(offer => offer.animal));
@@ -44092,9 +44107,10 @@ function pruneUnavailableIncomingTradeOffers() {
         !state.tradeOffers.some(offer => offer.opponentIndex === state.selectedTradeOpponent) &&
         state.autonomousTradeOffer?.opponentIndex !== state.selectedTradeOpponent
     ) {
-        state.selectedTradeOpponent = state.tradeOffers.length
-            ? state.tradeOffers.map(offer => offer.opponentIndex).sort((a, b) => a - b)[0]
-            : (state.autonomousTradeOffer?.opponentIndex ?? null);
+        let firstOpponent=null;
+        for(const offer of state.tradeOffers)
+            if(firstOpponent==null||offer.opponentIndex<firstOpponent)firstOpponent=offer.opponentIndex;
+        state.selectedTradeOpponent=firstOpponent??state.autonomousTradeOffer?.opponentIndex??null;
     }
 }
 
@@ -45640,6 +45656,7 @@ function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=nu
     if(autonomous && !outgoingFitsAutonomousOffer(state.outgoingOffer,offer)) return false;
 
     const outgoingForHistory = state.outgoingOffer;
+    const realOpponentMode=isRealOpponentMode();
     const truePartialTradeSource = trueTradeSourceAnimal(outgoingForHistory);
     const tradeProfile = state.opponentProfiles[offer.opponentIndex];
     const tradeZooName = tradeProfile?.name || `Zoo ${offer.opponentIndex + 1}`;
@@ -45649,14 +45666,15 @@ function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=nu
     }
 
     if(destination) {
-        const needsRealZooId = isRealOpponentMode() && !Number.isInteger(incoming.id);
+        const liveEnclosure=(state.enclosures||[]).find(e=>
+            String(e?.id)===String(destination.enclosure?.id));
+        if(!liveEnclosure||!canPlace(incoming,liveEnclosure,destination.slotIndex))return false;
+        destination={...destination,enclosure:liveEnclosure};
+        const needsRealZooId = realOpponentMode && !Number.isInteger(incoming.id);
 
-        if (needsRealZooId) {
-            if (!canPlace(incoming, destination.enclosure, destination.slotIndex)) return false;
-            incoming.id = state.nextId++;
-        }
+        if (needsRealZooId) incoming.id = state.nextId++;
 
-        if(!placeAnimal(incoming,destination.enclosure,destination.slotIndex)) {
+        if(!placeAnimal(incoming,liveEnclosure,destination.slotIndex)) {
             if (needsRealZooId) {
                 state.nextId--;
                 incoming.id = null;
@@ -45670,7 +45688,7 @@ function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=nu
 
     releaseOutgoingTradeReservation();
 
-    if (isRealOpponentMode()) {
+    if (realOpponentMode) {
         const realProfile = state.opponentProfiles[offer.opponentIndex];
         updateRealZooSessionAfterTrade(
             realProfile?.realZooRecord,
@@ -45681,13 +45699,13 @@ function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=nu
 
     const stock=state.opponentTradeStocks[offer.opponentIndex]||[];
     const incomingKey=animalCardKey(incoming),incomingId=incoming.id==null?null:String(incoming.id);
-    state.opponentTradeStocks[offer.opponentIndex] = isRealOpponentMode()
+    state.opponentTradeStocks[offer.opponentIndex] = realOpponentMode
         ? stock.filter(a => animalCardKey(a) !== incomingKey)
         : stock.filter(a => incomingId!=null
             ? String(a?.id)!==incomingId
             : animalCardKey(a)!==incomingKey);
 
-    if (!isRealOpponentMode()) {
+    if (!realOpponentMode) {
         const outgoingForOpponent = state.outgoingOffer;
         if (
             outgoingForOpponent &&
@@ -45770,7 +45788,7 @@ function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=nu
     }
     state.autonomousTradeOffer=null;
     clearOrphanedZooSlotReservations();
-    if (isRealOpponentMode()) clearRealOpponentDisplay();
+    if (realOpponentMode) clearRealOpponentDisplay();
     if (state.gameMode !== 'true') scheduleNextAutonomousOpponentOffer();
 
     state.tradeHistory.push({
@@ -46646,7 +46664,7 @@ window.addEventListener('resize', refreshResponsiveTradeLayout);
 
 window.visualViewport?.addEventListener('resize', refreshResponsiveTradeLayout);
 
-setTimeout(refreshMobileTradeAreaVisibility, 0);
+setTimeout(refreshResponsiveTradeLayout, 0);
 
 function loadNonEssentialGameData() {
     loadTrueEventCatalogue();

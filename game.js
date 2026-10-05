@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.73";
+const ZOO_CURATOR_VERSION = "V2.44.76";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -2173,11 +2173,7 @@ function truePopulationStructureTotalRange(structure={},profile={}){
     const m=bounds('males'),f=bounds('females'),u=bounds('unknown'),o=bounds('offspring');
     return [Math.max(1,m[0]+f[0]+u[0]),Math.max(1,m[1]+f[1]+u[1]+o[1])];
 }
-function truePopulationAcceptableTotalRanges(animal){
-    const profile=truePopulationProfile(animal),template=TRUE_POPULATION_PROFILE_TEMPLATES[profile.template]||TRUE_POPULATION_PROFILE_TEMPLATES.pair;
-    const structures=Array.isArray(profile.structures)&&profile.structures.length?profile.structures:template.structures;
-    return structures.map(structure=>truePopulationStructureTotalRange(structure,profile));
-}
+
 function truePopulationStructureBounds(structure={},profile={},key){
     const raw=structure[key]??profile[key];
     if(Number.isFinite(Number(raw))){const n=Math.max(0,Math.round(Number(raw)));return [n,n];}
@@ -2383,14 +2379,7 @@ const TROPICAL_HOUSE_HABITAT_TAGS = new Set([
     'rainforest','wetland','semi-aquatic','aquatic','forest'
 ]);
 
-function animalQualifiesForTropicalHouse(animal) {
-    const tags = new Set(
-        inventoryTagsForAnimal(animal)
-            .map(tag => String(tag).trim().toLowerCase())
-    );
-    if (![...TROPICAL_HOUSE_HABITAT_TAGS].some(tag => tags.has(tag))) return false;
-    return [...TROPICAL_HOUSE_GEOGRAPHY_TAGS].some(tag => tags.has(tag));
-}
+
 
 const ENCLOSURE_AREA_ADJACENCY_TOLERANCE = 8;
 
@@ -4755,12 +4744,7 @@ function clearAnimalZooReservation(animal) {
     delete animal.reservedEnclosureId;
     delete animal.reservedSlotIndex;
 }
-function animalOccupiesZooSlot(animal, enclosureId, slotIndex) {
-    return Boolean(animal) && (
-        (animal.enclosureId === enclosureId && animal.slotIndex === slotIndex) ||
-        (animal.reservedEnclosureId === enclosureId && animal.reservedSlotIndex === slotIndex)
-    );
-}
+
 function hasPendingPlayerAction() {
     return state.exchange.some(Boolean) || Boolean(state.result) || Boolean(state.outgoingOffer);
 }
@@ -7553,9 +7537,7 @@ function trueEventEligibleSourceRecords(seedSuffix='general'){
     );
     return selected.map(row=>row.record);
 }
-function trueEventEligibleSourceKeys(seedSuffix='general'){
-    return new Set(trueEventEligibleSourceRecords(seedSuffix).map(realZooHoldingKey));
-}
+
 
 function trueEventPlayerPopulationCandidates(){
     return (state.animals||[]).filter(animal=>{
@@ -8120,29 +8102,7 @@ function trueAcceptExactHusbandryRepair(event){
     closeTrueEventDialog(true);renderAll();renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);return true;
 }
 
-function trueHusbandryReliefPopulation(animal,condition){
-    if(!animal||!condition?.groupBad)return null;
-    const current=normaliseTrueAnimalPopulation(animal);
-    const total=current.males+current.females+current.unknown;
-    if(total<=1)return null;
-    let best=null;
-    for(let m=0;m<=current.males;m++)for(let f=0;f<=current.females;f++)for(let u=0;u<=current.unknown;u++){
-        const removed=m+f+u;if(removed<=0||removed>=total)continue;
-        const remaining={
-            males:current.males-m,
-            females:current.females-f,
-            unknown:current.unknown-u
-        };
-        const probe={...animal,population:remaining};
-        if(!truePopulationGroupSizeStatus(probe).valid)continue;
-        const sexes=(m>0?1:0)+(f>0?1:0)+(u>0?1:0);
-        const score=[removed,sexes,u>0?1:0,f>0&&m===0?1:0];
-        if(!best||score.some((v,i)=>v<best.score[i]&&score.slice(0,i).every((x,j)=>x===best.score[j]))){
-            best={population:{males:m,females:f,unknown:u},remaining,score};
-        }
-    }
-    return best;
-}
+
 function trueAcceptHusbandryReliefOffer(event){
     if(!event||event.status!=='active'||!event.husbandryReliefPopulation)return false;
     const animal=(state.animals||[]).find(a=>String(a.id)===String(event.animal?.id));
@@ -10642,9 +10602,7 @@ function trueGuestRefreshInterestCache(){
     trueGuestInterestCache={signature,options,byEnclosure,groupInterests:new Map()};
     return trueGuestInterestCache;
 }
-function trueGuestInterestOptions(){
-    return trueGuestRefreshInterestCache().options;
-}
+
 function trueGuestAssignInterest(g){
     if(g?.interestCategory)return g.interestCategory;
     const cache=trueGuestRefreshInterestCache();
@@ -14338,20 +14296,7 @@ function buildGeographicAdjacencyIndex(units){
     geographicAdjacencyGeometryCache={signature:geometrySignature,index};
     return index;
 }
-function verifyGeographicAdjacencyOptimization(){
-    const units=geographicLogicalExhibits();
-    const optimized=buildGeographicAdjacencyIndex(units);
-    const exhaustive=new Map(units.map(unit=>[geographicLogicalCellKey(unit),[]]));
-    for(let i=0;i<units.length;i++)for(let j=i+1;j<units.length;j++){
-        if(!geographicUnitsAdjacent(units[i],units[j]))continue;
-        const a=geographicLogicalCellKey(units[i]),b=geographicLogicalCellKey(units[j]);
-        exhaustive.get(a)?.push(b);exhaustive.get(b)?.push(a);
-    }
-    const normalized=map=>[...map.entries()].map(([k,v])=>[k,[...v].sort()]).sort((a,b)=>a[0].localeCompare(b[0]));
-    const ok=JSON.stringify(normalized(optimized))===JSON.stringify(normalized(exhaustive));
-    return {ok,units:units.length,optimizedEdges:[...optimized.values()].reduce((n,v)=>n+v.length,0)/2,
-        exhaustiveEdges:[...exhaustive.values()].reduce((n,v)=>n+v.length,0)/2};
-}
+
 
 function buildGeographicAnimalIndex(){
     const byEnclosure=new Map();
@@ -14500,17 +14445,7 @@ function geographicConnectedComponents(eligible){
     }
     return out;
 }
-function geographicFootprintCells(enclosure){
-    if(state.gameMode==='true'){
-        return trueBuiltWorldCells(enclosure);
-    }
-    const stepX=ENCLOSURE_W+ENCLOSURE_GAP;
-    const stepY=ENCLOSURE_H+ENCLOSURE_GAP;
-    return [{
-        col:Math.round((Number(enclosure.x)||0)/stepX),
-        row:Math.round((Number(enclosure.y)||0)/stepY)
-    }];
-}
+
 
 function geographicCandidateSupport(unit,candidate,level){
     const candidateKey=level==='bioregion'
@@ -14647,36 +14582,7 @@ function geographicCandidateComponents(units,level,entries,minimum){
     }
     return out;
 }
-function verifyGeographicCandidateIndexOptimization(){
-    const units=geographicLogicalExhibits();
-    activeGeographicAnimalIndex=buildGeographicAnimalIndex();
-    activeGeographicResidentCache=new Map();
-    activeGeographicQualificationCache=new Map();
-    const indexed=buildGeographicCandidateUnitIndex(units);
-    const mismatches=[];
-    const data=trueAreaNamesData||{};
-    const defs=[
-        ['realm',data.realms||{}],
-        ['subregion',data.subrealms||{}],
-        ['bioregion',data.bioregions||{}]
-    ];
-    for(const [level,entries] of defs){
-        for(const rawKey of Object.keys(entries)){
-            const key=level==='bioregion'?normalizeOneEarthCode(rawKey):String(rawKey).toLowerCase();
-            const oldSet=new Set(units.filter(unit=>enclosureGeographicQualification(unit,level,key)?.qualifies)
-                .map(geographicLogicalCellKey));
-            const newSet=new Set((indexed[level].get(key)||[])
-                .filter(unit=>enclosureGeographicQualification(unit,level,key)?.qualifies)
-                .map(geographicLogicalCellKey));
-            if(oldSet.size!==newSet.size||[...oldSet].some(k=>!newSet.has(k)))
-                mismatches.push({level,key,old:oldSet.size,indexed:newSet.size});
-        }
-    }
-    activeGeographicAnimalIndex=null;
-    activeGeographicResidentCache=null;
-    activeGeographicQualificationCache=null;
-    return {ok:mismatches.length===0,mismatches};
-}
+
 
 function geographicAnimalRegionCodes(animal){
     const entry=inventoryEntryForAnimal(animal)||{};
@@ -18115,9 +18021,7 @@ function trueZooGroundCellSet(){
     if(!raw.length)return null;
     return new Set(raw.map(String));
 }
-function trueZooUsesIrregularGroundMask(){
-    return state.gameMode==='true'&&!state.sandboxMode&&!!trueZooGroundCellSet()?.size;
-}
+
 function trueBackstageCellSet(){
     const raw=Array.isArray(state.trueEnclosureBuilder?.backstageCells)?state.trueEnclosureBuilder.backstageCells:[];
     return raw.length?new Set(raw.map(String)):null;
@@ -18825,14 +18729,7 @@ function trueSetRecentLandExpansionHighlight(cells){
         if(state.gameMode==='true'&&!state.visitingZoo)ensureTrueZooGroundsVisual();
     },4250);
 }
-function trueGroundsOwnCell(col,row){
-    const mask=trueZooGroundCellSet();
-    if(mask?.size)return mask.has(trueBuilderCellKey(col,row));
-    const grounds=trueZooGroundsBounds();if(!grounds)return false;
-    const c0=Math.round(grounds.x/TRUE_ENC_CELL_W),r0=Math.round(grounds.y/TRUE_ENC_CELL_H);
-    const cols=Math.max(1,Math.round(grounds.w/TRUE_ENC_CELL_W)),rows=Math.max(1,Math.round(grounds.h/TRUE_ENC_CELL_H));
-    return col>=c0&&col<c0+cols&&row>=r0&&row<r0+rows;
-}
+
 function trueApplyLandExpansionParcel(rawCells){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return false;
     const builder=normaliseTrueEnclosureBuilderState();
@@ -19099,54 +18996,8 @@ function trueGeneratedSightlineClear(from,to,occupied,targetKeys,bounds=null){
     }
     return !bounds||enteredInterior;
 }
-function trueGeneratedLayoutHasStraightSightlines(enclosures,entranceCell,bounds=null){
-    const occupied=new Set();
-    const worlds=new Map();
-    for(const enc of enclosures){
-        const cells=trueBuiltWorldCells(enc);
-        worlds.set(enc,cells);
-        for(const c of cells)occupied.add(trueBuilderCellKey(c.col,c.row));
-    }
-    const from=bounds
-        ? {x:entranceCell.col+.5,y:0.001}
-        : {x:entranceCell.col+.5,y:entranceCell.row+.5};
-    return enclosures.every(enc=>{
-        const cells=worlds.get(enc)||[];
-        const targetKeys=new Set(cells.map(c=>trueBuilderCellKey(c.col,c.row)));
-        return cells.some(c=>trueGeneratedSightlineClear(
-            from,{x:c.col+.5,y:c.row+.5},occupied,targetKeys,bounds
-        ));
-    });
-}
-function trueGeneratedLayoutHasInteriorAccess(enclosures,entranceCol,bounds,entranceSide='bottom'){
-    if(!bounds||bounds.cols<3||bounds.rows<2)return false;
-    const occupied=new Set();
-    for(const enc of enclosures)for(const c of trueBuiltWorldCells(enc))
-        occupied.add(trueBuilderCellKey(c.col,c.row));
 
-    const start=entranceSide==='top'
-        ? {col:entranceCol,row:0}
-        : {col:entranceCol,row:bounds.rows-1};
-    const inside=c=>c.col>=0&&c.col<bounds.cols&&c.row>=0&&c.row<bounds.rows;
-    const free=c=>inside(c)&&!occupied.has(trueBuilderCellKey(c.col,c.row));
-    if(!free(start))return false;
-    const reachable=new Set(),queue=[start];
-    while(queue.length){
-        const c=queue.shift(),k=trueBuilderCellKey(c.col,c.row);
-        if(reachable.has(k)||!free(c))continue;
-        reachable.add(k);
-        for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]])
-            queue.push({col:c.col+dc,row:c.row+dr});
-    }
-    const everyEnclosureAccessible=enclosures.every(enc=>trueBuiltWorldCells(enc).some(c=>
-        [[1,0],[-1,0],[0,1],[0,-1]].some(([dc,dr])=>
-            reachable.has(trueBuilderCellKey(c.col+dc,c.row+dr))
-        )
-    ));
-    if(!everyEnclosureAccessible)return false;
 
-    return true;
-}
 function trueGeneratedLayoutHasVariedFrontage(enclosures,entranceCol,bounds,entranceSide='bottom'){
     if(!bounds||enclosures.length<2)return false;
     const occupied=new Set();
@@ -20577,30 +20428,7 @@ function truePrepareOpeningZooChallenges(){
     return true;
 }
 
-function trueResizeStartingEnclosuresToSpeciesNeeds(){
-    if(state.gameMode!=='true'||state.sandboxMode)return false;
-    let changed=false;
-    for(const enc of state.enclosures||[]){
-        if(!enc?.trueBuilt)continue;
-        const occupants=(state.animals||[]).filter(a=>String(a?.enclosureId)===String(enc.id));
-        if(!occupants.length)continue;
-        const baselineLevel=Math.max(...occupants.map(animalSpaceRequirement));
-        const low=Math.max(1,baselineLevel-1),high=Math.min(7,baselineLevel+1);
-        const current=Math.max(1,trueCanonicalCellList(enc.cells||[]).length);
-        const currentLevel=current>=13?7:current>=9?6:current>=6?5:current>=4?4:current;
-        if(currentLevel>=low&&currentLevel<=high)continue;
-        const targetLevel=Math.max(low,Math.min(high,currentLevel));
-        const targetCells=[0,1,2,3,4,6,9,13][targetLevel]||1;
-        enc.cells=trueCompactConnectedCells(targetCells);
-        trueInvalidateEnclosureGeometry(enc);changed=true;
-    }
-    if(changed){
-        const b=normaliseTrueEnclosureBuilderState();
-        b.geometryVersion=0;
-        b.totalSpaces=Math.max(Number(b.totalSpaces)||0,trueBuilderUsedSpaces());
-    }
-    return changed;
-}
+
 
 function trueCompactCellShape(count){
     count=Math.max(1,Math.round(Number(count)||1));
@@ -30617,44 +30445,7 @@ function buildRealZooLayoutTemplate(record) {
     };
 }
 
-function canonicaliseProceduralRealZooGridSpacing(){
-    const enclosures=Array.isArray(state.enclosures)?state.enclosures:[];
-    if(enclosures.length<2)return false;
-    const stepX=ENCLOSURE_W+ENCLOSURE_GAP;
-    const stepY=ENCLOSURE_H+ENCLOSURE_GAP;
-    const xs=[...new Set(enclosures.map(e=>Number(e.x)).filter(Number.isFinite))].sort((a,b)=>a-b);
-    const ys=[...new Set(enclosures.map(e=>Number(e.y)).filter(Number.isFinite))].sort((a,b)=>a-b);
-    if(!xs.length||!ys.length)return false;
 
-    const positiveDeltas=values=>values.slice(1)
-        .map((value,index)=>value-values[index])
-        .filter(delta=>Number.isFinite(delta)&&delta>1);
-    const xDeltas=positiveDeltas(xs),yDeltas=positiveDeltas(ys);
-    const sourceStepX=xDeltas.length?Math.min(...xDeltas):stepX;
-    const sourceStepY=yDeltas.length?Math.min(...yDeltas):stepY;
-    const originX=xs[0],originY=ys[0];
-
-    let changed=false;
-    for(const enclosure of enclosures){
-        const gx=Math.round((Number(enclosure.x)-originX)/sourceStepX);
-        const gy=Math.round((Number(enclosure.y)-originY)/sourceStepY);
-        const x=originX+gx*stepX;
-        const y=originY+gy*stepY;
-        if(Math.abs(Number(enclosure.x)-x)>.01||Math.abs(Number(enclosure.y)-y)>.01)changed=true;
-        enclosure.x=x;
-        enclosure.y=y;
-    }
-    if(changed){
-        state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
-        invalidateConnectedAreaReconciliation();
-        renderedConnectedAreaGroups=[];
-        renderedConnectedAreaGroupsSignature='';
-        stableConnectedAreaGroups=[];
-        stableConnectedAreaGroupsSignature='';
-        generatedModernGeographicAreas=[];
-    }
-    return changed;
-}
 
 async function pregenerateAllRealZooLayouts() {
     const records = (state.realZooData?.zoos || []).filter(record => record?.name && Array.isArray(record.animals) && record.animals.length);
@@ -36900,22 +36691,9 @@ function realZooPlacementUnits(record, animals) {
     return units;
 }
 
-function realZooTargetFreeSpaces(animalCount) {
-    if (animalCount <= 10) return 6;
-    if (animalCount <= 20) return 7;
-    if (animalCount <= 35) return 8;
-    if (animalCount <= 60) return 10;
-    if (animalCount <= 100) return 12;
-    return 14;
-}
 
-function realZooPlanFreeSpaces(plans) {
-    return (plans || []).reduce((total, plan) => {
-        const capacity = enclosureSlotCapacity(plan.number);
-        const occupied = (plan.units || []).reduce((count, unit) => count + unit.length, 0);
-        return total + Math.max(0, capacity - occupied);
-    }, 0);
-}
+
+
 
 function realZooPackingKey(unit){
     const animals=(unit||[]).filter(Boolean);
@@ -39899,7 +39677,7 @@ function realZooSessionAnimalNames(record) {
 }
 
 let playerOwnedTradeKeysAnimals=null,playerOwnedTradeKeysOutgoing=null,playerOwnedTradeKeysCache=null,playerOwnedTradeKeysLength=-1,playerOwnedTradeKeysNextId=-1;
-function invalidatePlayerOwnedTradeKeys(){playerOwnedTradeKeysAnimals=null;playerOwnedTradeKeysOutgoing=null;playerOwnedTradeKeysCache=null;playerOwnedTradeKeysLength=-1;playerOwnedTradeKeysNextId=-1;}
+
 function playerOwnedTradeKeys() {
     if(playerOwnedTradeKeysCache&&playerOwnedTradeKeysAnimals===state.animals&&playerOwnedTradeKeysOutgoing===state.outgoingOffer&&playerOwnedTradeKeysLength===(state.animals?.length||0)&&playerOwnedTradeKeysNextId===Number(state.nextId||0))return playerOwnedTradeKeysCache;
     const keys = new Set();
@@ -41034,6 +40812,18 @@ function ensureOtherZoosUI() {
         historyButton.addEventListener('click', openTradeHistoryMenu);
     }
     if (historyButton.parentElement !== header) header.appendChild(historyButton);
+    if(window.innerWidth>=701&&state.gameMode!=='true'){
+        header.style.removeProperty('position');
+        header.style.removeProperty('right');
+        header.style.removeProperty('left');
+        header.style.removeProperty('top');
+        header.style.removeProperty('z-index');
+        header.style.margin='0 0 8px';
+        header.style.display='flex';
+        header.style.justifyContent='flex-end';
+        historyButton.style.position='static';
+        historyButton.style.margin='0';
+    }
 
     if (!document.getElementById('opponentInfoPopup')) {
         const popup = document.createElement('div');
@@ -42236,102 +42026,46 @@ function fitProgressTrackerAroundActions() {
 let opponentTradePositionRaf=0;
 function positionOpponentTradeArea(immediate=false) {
     if(!immediate){
-        if(opponentTradePositionRaf)cancelAnimationFrame(opponentTradePositionRaf);
+        if(opponentTradePositionRaf)return;
         opponentTradePositionRaf=requestAnimationFrame(()=>{
             opponentTradePositionRaf=0;
             positionOpponentTradeArea(true);
         });
         return;
     }
+    const area=document.getElementById('opponentTradeArea');
+    if(!area)return;
 
-    const area = document.getElementById('opponentTradeArea');
-    if (!area) return;
-
-    if (window.matchMedia('(max-width: 700px)').matches) {
+    if(window.matchMedia('(max-width: 700px)').matches){
         area.classList.remove('laptop-trade-below-header');
-        area.style.position = '';
-        area.style.left = '';
-        area.style.right = '';
-        area.style.top = '';
-        area.style.display = '';
-        area.style.visibility = '';
-        area.style.opacity = '';
+        for(const property of ['position','left','right','top','display','visibility','opacity'])
+            area.style.removeProperty(property);
         area.style.removeProperty('--trade-card-height');
         area.style.removeProperty('--trade-card-width');
         area.style.removeProperty('--trade-card-gap');
         return;
     }
 
-    refreshDesktopPeripheralHeaderScale();
+    const scale=desktopUiScale();
+    const cardWidth=122,cardHeight=176,cardGap=14,tradeScale=scale*1.12;
+    area.style.setProperty('--trade-card-height',`${cardHeight}px`);
+    area.style.setProperty('--trade-card-width',`${cardWidth}px`);
+    area.style.setProperty('--trade-card-gap',`${cardGap}px`);
 
-    const opponents = document.getElementById('opponentZoos');
-    const rowReference = exchange1 || drawCard || resultBox;
-    if (!opponents || !rowReference) return;
-
-    fitProgressTrackerAroundActions();
-
-    const opponentRect = opponents.getBoundingClientRect();
-    const rowRect = rowReference.getBoundingClientRect();
-    const scale = desktopUiScale();
-
-    const cardWidth = 122;
-    const cardHeight = 176;
-    const cardGap = 14;
-    const tradeScale = scale * 1.12;
-    const visualAreaWidth = ((cardWidth * 2) + cardGap) * tradeScale;
-    const gapBeforeOpponents = 22 * tradeScale;
-    const screenPadding = 12;
-
-    area.style.setProperty('--trade-card-height', `${cardHeight}px`);
-    area.style.setProperty('--trade-card-width', `${cardWidth}px`);
-    area.style.setProperty('--trade-card-gap', `${cardGap}px`);
-
-    let left = opponentRect.left - gapBeforeOpponents - visualAreaWidth;
-
-    if(window.innerWidth <= 1366){
-        const lastAction = resultBox || exchange2 || exchange1 || drawCard;
-        const actionRect = lastAction?.getBoundingClientRect();
-        if(actionRect){
-            const bandLeft = actionRect.right + (8 * scale);
-            const bandRight = opponentRect.left - (8 * scale);
-            const bandWidth = bandRight - bandLeft;
-            if(bandWidth >= visualAreaWidth){
-                left = bandLeft + ((bandWidth - visualAreaWidth) / 2);
-            }else{
-                left = bandLeft;
-            }
-        }
-    }
-    left = Math.max(screenPadding, Math.min(left, window.innerWidth - visualAreaWidth - screenPadding));
-
+    // One desktop placement rule: the pair is fixed to the right edge.
     area.classList.remove('laptop-trade-below-header');
-    area.style.position = 'fixed';
-    area.style.left = `${Math.round(left)}px`;
-    area.style.right = 'auto';
-    const visualTradeHeight = cardHeight * tradeScale;
-    const headerRect = document.getElementById('actionMenu')?.getBoundingClientRect();
-    const alignedTop = headerRect
-        ? headerRect.top + ((headerRect.height - visualTradeHeight) / 2)
-        : rowRect.top - ((visualTradeHeight - rowRect.height) / 2);
-    area.style.top = `${Math.round(alignedTop)}px`;
+    area.style.position='fixed';
+    area.style.left='auto';
+    area.style.right='12px';
 
-    const metaRow = document.getElementById('collectionTurnRow');
-    const gameOptions = document.getElementById('primaryHeaderControlStack') ||
-        document.getElementById('multiplayerSettingsHeaderRow') ||
-        document.getElementById('gameOptionsButton') ||
-        document.querySelector('#headerLeft .game-options-button');
-    if (metaRow && gameOptions && headerRect) {
-        metaRow.style.transform = 'none';
-        const rowNow = metaRow.getBoundingClientRect();
-        const optionsRect = gameOptions.getBoundingClientRect();
-        const targetTop = optionsRect.bottom + ((headerRect.bottom - optionsRect.bottom - rowNow.height) / 2);
-        const deltaVisual = targetTop - rowNow.top;
-        const parentScale = desktopUiScale() * 1.12;
-        metaRow.style.transform = `translateY(${deltaVisual / Math.max(0.01, parentScale)}px)`;
-    }
-    area.style.display = 'flex';
-    area.style.visibility = 'visible';
-    area.style.opacity = '1';
+    const headerRect=document.getElementById('actionMenu')?.getBoundingClientRect();
+    const visualHeight=cardHeight*tradeScale;
+    area.style.top=`${Math.round(headerRect
+        ? headerRect.top+(headerRect.height-visualHeight)/2
+        : 8)}px`;
+    area.style.display='flex';
+    area.style.visibility='visible';
+    area.style.opacity='1';
 }
 
 function ensureTradeAreaLayout() {
@@ -42350,7 +42084,6 @@ function ensureTradeAreaLayout() {
     if (outgoingOfferBox.parentElement !== area) area.appendChild(outgoingOfferBox);
     if (incomingOfferBox.parentElement !== area) area.appendChild(incomingOfferBox);
 
-    refreshDesktopPeripheralHeaderScale();
     positionOpponentTradeArea();
 }
 

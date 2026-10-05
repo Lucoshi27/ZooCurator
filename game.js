@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.76";
+const ZOO_CURATOR_VERSION = "V2.44.78";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -20464,7 +20464,15 @@ function convertCurrentTrueZooToBuiltEnclosures(){
             const id=gi===0?card.id:nextId++;ids.push(id);
             const residents=(state.animals||[]).filter(animal=>
                 String(animal.enclosureId)===String(card.id)&&group.includes(Number(animal.slotIndex)));
-            const targetCells=trueGeneratedEnclosureTargetCells(residents,Math.max(1,group.length));
+            // A converted True enclosure must always have at least one physical cell/slot
+            // per animal already assigned to this Classic enclosure group. The generated
+            // husbandry target can legitimately be smaller than the resident count; using
+            // it directly made normaliseTrueBuiltEnclosureOccupancy() eject the overflow
+            // animals and could leave compatibility repair with nowhere safe to move them.
+            const targetCells=Math.max(
+                residents.length,
+                trueGeneratedEnclosureTargetCells(residents,Math.max(1,group.length))
+            );
             const cells=trueCompactCellShape(targetCells);
             const localCol=gi%2,localRow=Math.floor(gi/2);
             replacements.push({id,trueBuilt:true,cells,x:(Number(card.x)||0)+localCol*(TRUE_ENC_CELL_W*2),y:(Number(card.y)||0)+localRow*TRUE_ENC_CELL_H,sourceEnclosureNumber:card.number});
@@ -20482,6 +20490,17 @@ function convertCurrentTrueZooToBuiltEnclosures(){
     b.converted=true;
     b.geometryVersion=0;
     b.totalSpaces=Math.max(Number(b.totalSpaces)||0,trueBuilderUsedSpaces());
+    normaliseTrueBuiltEnclosureOccupancy();
+    // Conversion is not allowed to unplace opening animals. If a future enclosure-shape
+    // rule undersizes a converted enclosure, grow it and normalize once more.
+    for(const enc of state.enclosures||[]){
+        if(!enc?.trueBuilt)continue;
+        const residents=(state.animals||[]).filter(a=>String(a?.enclosureId)===String(enc.id));
+        if(residents.length>(enc.cells?.length||0)){
+            enc.cells=trueCompactCellShape(residents.length);
+            trueInvalidateEnclosureGeometry(enc);
+        }
+    }
     normaliseTrueBuiltEnclosureOccupancy();
     repairTrueBuiltEnclosureGeometry();
     normaliseTrueEnclosureArchitecture();
@@ -42024,6 +42043,13 @@ function fitProgressTrackerAroundActions() {
 }
 
 let opponentTradePositionRaf=0;
+function visibleOpponentZooButtonsRect(){
+    const buttons=[...document.querySelectorAll('#opponentZoos .opponent-name')]
+        .map(visibleElementRect)
+        .filter(Boolean);
+    return unionRects(buttons);
+}
+
 function positionOpponentTradeArea(immediate=false) {
     if(!immediate){
         if(opponentTradePositionRaf)return;
@@ -42033,6 +42059,7 @@ function positionOpponentTradeArea(immediate=false) {
         });
         return;
     }
+
     const area=document.getElementById('opponentTradeArea');
     if(!area)return;
 
@@ -42048,21 +42075,46 @@ function positionOpponentTradeArea(immediate=false) {
 
     const scale=desktopUiScale();
     const cardWidth=122,cardHeight=176,cardGap=14,tradeScale=scale*1.12;
+    const visualWidth=(cardWidth*2+cardGap)*tradeScale;
+    const visualHeight=cardHeight*tradeScale;
+    const gapToZoos=Math.max(8,Math.round(12*scale));
+
     area.style.setProperty('--trade-card-height',`${cardHeight}px`);
     area.style.setProperty('--trade-card-width',`${cardWidth}px`);
     area.style.setProperty('--trade-card-gap',`${cardGap}px`);
-
-    // One desktop placement rule: the pair is fixed to the right edge.
     area.classList.remove('laptop-trade-below-header');
     area.style.position='fixed';
-    area.style.left='auto';
-    area.style.right='12px';
+
+    // Desktop rule: trade cells sit immediately LEFT of the visible zoo-name buttons.
+    // This follows the actual buttons at every desktop width instead of the viewport edge.
+    const zooButtons=visibleOpponentZooButtonsRect();
+    if(zooButtons){
+        area.style.left='auto';
+        area.style.right=`${Math.max(0,Math.round(window.innerWidth-zooButtons.left+gapToZoos))}px`;
+    }else{
+        // Before zoo buttons exist, reserve their normal right-hand column rather than
+        // letting the trade cells jump all the way to the viewport edge.
+        const fallbackZooColumn=Math.max(150,Math.round(190*scale));
+        area.style.left='auto';
+        area.style.right=`${fallbackZooColumn+gapToZoos}px`;
+    }
 
     const headerRect=document.getElementById('actionMenu')?.getBoundingClientRect();
-    const visualHeight=cardHeight*tradeScale;
-    area.style.top=`${Math.round(headerRect
+    const actions=actionControlsRect();
+    let top=Math.round(headerRect
         ? headerRect.top+(headerRect.height-visualHeight)/2
-        : 8)}px`;
+        : 8);
+
+    // On narrower desktop/laptop widths, keep the same horizontal relationship to the
+    // zoo buttons but drop the trade pair below the header if it would cover actions.
+    const projectedRight=window.innerWidth-parseFloat(area.style.right||0);
+    const projectedLeft=projectedRight-visualWidth;
+    if(actions && projectedLeft < actions.right+8){
+        top=Math.round(Math.max(headerRect?.bottom||0,actions.bottom||0)+8);
+        area.classList.add('laptop-trade-below-header');
+    }
+
+    area.style.top=`${top}px`;
     area.style.display='flex';
     area.style.visibility='visible';
     area.style.opacity='1';

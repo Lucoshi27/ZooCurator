@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.71";
+const ZOO_CURATOR_VERSION = "V2.44.73";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -12553,10 +12553,10 @@ function setupAnimalCard(
 
 let classicAnimalDelegationRoot=null;
 function ensureClassicAnimalCardDelegation(){
-    const root=zooLayer||document.getElementById('zoo-layer')||document.getElementById('zooLayer');
+    const root=document.getElementById('zooCanvas');
     if(!root||classicAnimalDelegationRoot===root)return;
     classicAnimalDelegationRoot=root;
-    const cardFromEvent=event=>event.target?.closest?.('.animal-card[data-classic-delegated-animal="1"]');
+    const cardFromEvent=event=>event.target instanceof Element?event.target.closest('.animal-card[data-classic-delegated-animal="1"]'):null;
     root.addEventListener('mouseover',event=>{
         const card=cardFromEvent(event);if(!card||card.contains(event.relatedTarget))return;
         const animal=classicAnimalById(card.dataset.animalId);if(!animal)return;

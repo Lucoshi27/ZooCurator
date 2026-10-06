@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.181";
+const ZOO_CURATOR_VERSION = "V2.44.182";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -46081,7 +46081,7 @@ function renderTrade() {
     const ordinaryTradeSignature=classicTradeUiSignature();
     if(classicTradeRenderSignature===ordinaryTradeSignature){
         const staleDecline=document.getElementById('declineOpponentOffer');
-        if(staleDecline && !selectedTradeOffer()) staleDecline.style.display='none';
+        if(staleDecline && (!selectedTradeOffer() || state.outgoingOffer)) staleDecline.style.display='none';
         return;
     }
     classicTradeRenderSignature=ordinaryTradeSignature;
@@ -46122,7 +46122,8 @@ function renderTrade() {
     let decline = document.getElementById('declineOpponentOffer');
     const visibleAutonomousOffer =
         Boolean(state.autonomousTradeOffer) &&
-        Boolean(offer);
+        Boolean(offer) &&
+        !state.outgoingOffer;
     if (visibleAutonomousOffer) {
         if (!decline) {
             decline=document.createElement('button');

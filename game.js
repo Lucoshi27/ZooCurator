@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.165";
+const ZOO_CURATOR_VERSION = "V2.44.169";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -647,6 +647,13 @@ const playerZooName = $('playerZooName');
 const turnOrder = $('turnOrder');
 
 const drawCard = $('drawCard');
+let drawCardImageCache=null;
+function drawCardImage(){
+    if(!drawCard)return null;
+    if(!drawCardImageCache||!drawCardImageCache.isConnected||drawCardImageCache.parentElement!==drawCard)
+        drawCardImageCache=drawCard.querySelector('img');
+    return drawCardImageCache;
+}
 
 const exchange1 = $('exchange1');
 const exchange2 = $('exchange2');
@@ -4771,6 +4778,8 @@ function releaseOutgoingTradeReservation() {
     if (state.outgoingOffer) clearAnimalZooReservation(state.outgoingOffer);
 }
 function clearOrphanedZooSlotReservations(){
+    ensureClassicOccupancyCache();
+    if(!classicReservedOccupancyCount)return false;
     const legitimate=new Set();
     if(state.outgoingOffer?.id!=null)legitimate.add(String(state.outgoingOffer.id));
     for(const animal of (state.exchange||[])){
@@ -5612,24 +5621,36 @@ function tradeIncomingHasDestinationAfterOutgoing(incoming, outgoing) {
     return result;
 }
 
+let classicLevelOneDrawableCacheRevision=-1;
+let classicLevelOneDrawableCategorySignature='';
+let classicLevelOneDrawableCache=true;
+function hasAnyDrawableLevelOneCard(){
+    const categorySignature=[...state.activeCategories].join('|');
+    if(classicLevelOneDrawableCacheRevision===classicOccupancyRevision&&
+       classicLevelOneDrawableCategorySignature===categorySignature)
+        return classicLevelOneDrawableCache;
+    const used=playerOwnedCardKeys();
+    let drawable=false;
+    for(const category of Object.keys(FOLDERS)){
+        if(!state.activeCategories.has(category))continue;
+        for(const filename of levelFiles(category,1)){
+            if(!used.has(animalCardKey(category,1,filename))){drawable=true;break;}
+        }
+        if(drawable)break;
+    }
+    classicLevelOneDrawableCacheRevision=classicOccupancyRevision;
+    classicLevelOneDrawableCategorySignature=categorySignature;
+    classicLevelOneDrawableCache=drawable;
+    return drawable;
+}
+
 function nextLevelOneHasEligibleDestination() {
     if (state.nextDrawSpec && !levelOneSpecStillDrawable(state.nextDrawSpec)) {
         state.nextDrawSpec = null;
         state.nextDrawReadyPromise = null;
     }
 
-    if (!state.nextDrawSpec) {
-        const used=playerOwnedCardKeys();
-        let drawable=false;
-        for(const category of Object.keys(FOLDERS)){
-            if(!state.activeCategories.has(category))continue;
-            for(const filename of levelFiles(category,1)){
-                if(!used.has(animalCardKey(category,1,filename))){drawable=true;break;}
-            }
-            if(drawable)break;
-        }
-        if(!drawable)return false;
-    }
+    if (!state.nextDrawSpec&&!hasAnyDrawableLevelOneCard()) return false;
 
     if (!hasSafeLevelOneDrawSpace()) return false;
 
@@ -11947,7 +11968,15 @@ function refreshExchangeGlowSuppression() {
     state.lastExchangeGroupCounts=new Map(counts);
 }
 
+let eligibleExchangeCategoriesCacheKey='';
+let eligibleExchangeCategoriesCache=[];
 function eligibleExchangeCategories() {
+    const cacheKey=[
+        classicOccupancyRevision,Number(state.nextId)||0,state.animals?.length||0,
+        state.outgoingOffer?.id||'',state.exchange?.map(a=>a?.id||'-').join(',')||'',
+        state.result?.id||'',[...state.activeCategories].join(',')
+    ].join('|');
+    if(cacheKey===eligibleExchangeCategoriesCacheKey)return eligibleExchangeCategoriesCache;
     const counts = exchangeGroupCounts();
     const categories = new Set();
     const owned=playerOwnedCardKeys();
@@ -11964,7 +11993,9 @@ function eligibleExchangeCategories() {
         }
     }
 
-    return [...categories];
+    eligibleExchangeCategoriesCacheKey=cacheKey;
+    eligibleExchangeCategoriesCache=[...categories];
+    return eligibleExchangeCategoriesCache;
 }
 
 function isExchangeEligible(animal) {
@@ -12638,7 +12669,7 @@ function ensureClassicAnimalCardDelegation(){
         const animal=classicAnimalById(card.dataset.animalId);if(!animal)return;
         event.preventDefault();event.stopPropagation();
         if(event.pointerType==='touch'&&zooTouchPointers.size>=2)return;
-        startAnimalDrag(event,animal,'enclosure');
+        startAnimalDrag(event,animal,'enclosure',card);
     });
 }
 const COMPATIBILITY_INTENT_DELAY = 180;
@@ -16553,7 +16584,7 @@ function holdingEvidenceCombination(record, animal) {
     return null;
 }
 function cachedHoldingLayoutInfo(record, animal){
-    const cached=realZooVisitLayouts.get(realZooVisitLayoutKey(record)); if(!cached)return null;
+    const cached=realZooVisitLayouts.get(realZooTemplateKey(record)); if(!cached)return null;
     const target=(cached.animals||[]).find(a=>animalCardKey(a)===animalCardKey(animal)); if(!target)return null;
     const enc=(cached.enclosures||[]).find(e=>e.id===target.enclosureId); if(!enc)return null;
     const group=(GROUPS[enc.number]||[]).find(g=>g.includes(Number(target.slotIndex)))||[target.slotIndex];
@@ -17626,7 +17657,7 @@ function captureRealZooVisitLayout(recordOrName) {
 }
 function restoreRealZooVisitLayout(record, layout) {
     if(!layout) return false;
-    const key=realZooVisitLayoutKey(record);
+    const key=realZooTemplateKey(record);
     if(key&&layout.prestige&&Number.isFinite(Number(layout.prestige.current)))
         realZooLivePrestige.set(key,cloneForSave(layout.prestige));
     for(const field of REAL_ZOO_VISIT_LAYOUT_KEYS) {
@@ -17763,7 +17794,7 @@ async function visitRealZoo(record) {
     const sessionHoldings=cloneForSave(state.realZooSessionHoldings);
     const dirty=cloneForSave(state.realZooTradeDirtyZoos);
     try {
-        const layoutKey=realZooVisitLayoutKey(record);
+        const layoutKey=realZooTemplateKey(record);
         const cached=realZooVisitLayouts.get(layoutKey);
         const worldLayout=state.gameMode==='true'?trueWorldZooState(record,{create:false})?.liveLayout:null;
         if(cached||worldLayout){
@@ -31859,7 +31890,7 @@ function resetDrawCardFromTheirOfferMode(){
     drawCard.dataset.multiplayerTheirOffer='false';
     drawCard.dataset.label=state.gameOptions.animalLanguage==='nl'?'TREK KAART':'DRAW CARD';
     drawCard.title='';
-    const image=drawCard.querySelector('img');
+    const image=drawCardImage();
     if(image){
         const canonicalBack=animalBackPath('Carnivores',1);
         if(!image.getAttribute('src')||!/\/(?:Carnivores|Carnivora)\/1\/Back\.png(?:$|[?#])/i.test(image.src)||
@@ -31869,6 +31900,7 @@ function resetDrawCardFromTheirOfferMode(){
         image.style.removeProperty('filter');
     }
 }
+let classicDrawAvailabilitySignature='';
 function refreshDrawAvailabilityState() {
     if (!drawCard) return false;
 
@@ -31890,7 +31922,7 @@ function refreshDrawAvailabilityState() {
             drawCard.setAttribute('aria-disabled','false');
             drawCard.classList.remove('draw-no-space');
             drawCard.style.cursor='default';
-            const image=drawCard.querySelector('img');
+            const image=drawCardImage();
             if(image){
                 image.style.setProperty('opacity','0','important');
                 image.style.setProperty('filter','none','important');
@@ -31918,23 +31950,27 @@ function refreshDrawAvailabilityState() {
     drawCard.setAttribute('aria-disabled', drawUnavailable ? 'true' : 'false');
     drawCard.style.cursor = drawUnavailable ? 'not-allowed' : '';
 
-    const image = drawCard.querySelector('img');
-    if (image) {
-        image.style.setProperty('opacity', drawUnavailable ? '0.38' : '', 'important');
-        image.style.setProperty(
-            'filter',
-            drawUnavailable ? 'grayscale(1) brightness(.72) contrast(.82)' : '',
-            'important'
-        );
-    }
+    const drawUiSignature=`${drawUnavailable}|${noOpenSpace}|${state.drawCommitInProgress}|${actionPending}|${state.visitingZoo}`;
+    if(drawUiSignature!==classicDrawAvailabilitySignature){
+        classicDrawAvailabilitySignature=drawUiSignature;
+        const image = drawCardImage();
+        if (image) {
+            image.style.setProperty('opacity', drawUnavailable ? '0.38' : '', 'important');
+            image.style.setProperty(
+                'filter',
+                drawUnavailable ? 'grayscale(1) brightness(.72) contrast(.82)' : '',
+                'important'
+            );
+        }
 
-    drawCard.title = state.visitingZoo
+        drawCard.title = state.visitingZoo
         ? 'Drawing cards is disabled while visiting another zoo.'
         : noOpenSpace
         ? 'No eligible enclosure space is available for the next Level 1 card.'
         : (state.drawCommitInProgress
             ? 'Finishing the current draw…'
             : (actionPending ? 'Finish the current exchange or trade first.' : ''));
+    }
 
     if (
         drawUnavailable &&
@@ -32140,8 +32176,13 @@ function refreshClassicAnimalDragStartVisuals(source, animal, location) {
 function startAnimalDrag(
     event,
     animal,
-    location
+    location,
+    sourceElement = null
 ) {
+    const resolvedDragSource =
+        (sourceElement instanceof Element ? sourceElement : null) ||
+        (event.target instanceof Element ? event.target.closest('.animal-card') : null) ||
+        (event.currentTarget instanceof Element ? event.currentTarget : null);
     if(state.drag?.image&&!state.drag.image.isConnected)state.drag=null;
     if(state.drag&&!zooPrimaryPointerDown){
         const staleDrag=state.drag;
@@ -32151,13 +32192,14 @@ function startAnimalDrag(
     }
     removeOrphanedAnimalDragImages();
     if (trueEnclosureBuilderActive || areaToolActive) return;
+    if(!(resolvedDragSource instanceof Element))return;
 
     if(localClassicMatch?.viewingPlayerId &&
        localClassicMatch.viewingPlayerId!==localClassicMatch.activePlayerId &&
        location==='enclosure'){
         if(state.drag||state.pan)return;
         event.preventDefault();event.stopPropagation();
-        const source=event.currentTarget,rect=source.getBoundingClientRect();
+        const source=resolvedDragSource,rect=source.getBoundingClientRect();
         const ghost=document.createElement('img');
         ghost.className='dragging-animal';
         applyLocalizedAnimalImage(ghost,animal);
@@ -32194,7 +32236,7 @@ function startAnimalDrag(
     if (state.visitingZoo) return;
 
     if (state.sandboxMode && location === 'enclosure') {
-        const source = event.currentTarget;
+        const source = resolvedDragSource;
         const sourceRect = source.getBoundingClientRect();
         const originalEnclosureId = animal.enclosureId;
         const originalSlotIndex = animal.slotIndex;
@@ -32292,7 +32334,7 @@ function startAnimalDrag(
     }
 
     const source =
-        event.currentTarget;
+        resolvedDragSource;
 
     const sourceRect =
         source.getBoundingClientRect();
@@ -39904,7 +39946,7 @@ function realZooStartingPrestige(record) {
 }
 
 function realZooStoredPrestigeSummary(record) {
-    const liveKey=realZooVisitLayoutKey(record);
+    const liveKey=realZooTemplateKey(record);
     const exactLive=liveKey ? realZooLivePrestige.get(liveKey) : null;
     if(exactLive && Number.isFinite(Number(exactLive.current))) return exactLive;
     const live=liveKey ? (realZooVisitLayouts.get(liveKey) || (state.gameMode==='true' ? trueWorldZooState(record,{create:false})?.liveLayout : null)) : null;
@@ -39916,7 +39958,7 @@ function realZooStoredPrestigeSummary(record) {
 }
 function realZooPrestige(record) {
     if (!record || typeof record !== 'object') return 0;
-    if (state.visitingZoo && realZooVisitLayoutKey(record)===realZooVisitLayoutKey(state.visitingZoo.name)) return currentZooPrestige();
+    if (state.visitingZoo && realZooTemplateKey(record)===realZooTemplateKey(state.visitingZoo.name)) return currentZooPrestige();
     const original = realZooOriginalPrestige(record);
     const currentNames = realZooSessionAnimalNames(record);
     const holdingsChanged = currentNames.length !== (record.animals || []).length ||
@@ -45835,8 +45877,16 @@ function renderTrade() {
 
     const pruneSignature=classicTradePruneStateSignature();
     if(classicTradePruneSignature!==pruneSignature){
+        const tradeCountBefore=state.tradeOffers?.length||0;
+        const autonomousBefore=state.autonomousTradeOffer;
+        const selectedBefore=state.selectedTradeOpponent;
         pruneUnavailableIncomingTradeOffers();
-        classicTradePruneSignature=classicTradePruneStateSignature();
+        classicTradePruneSignature=
+            tradeCountBefore===(state.tradeOffers?.length||0)&&
+            autonomousBefore===state.autonomousTradeOffer&&
+            selectedBefore===state.selectedTradeOpponent
+                ? pruneSignature
+                : classicTradePruneStateSignature();
     }
 
     if(multiplayerAITradesDisabled()){

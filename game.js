@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.182";
+const ZOO_CURATOR_VERSION = "V2.44.187";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -118,6 +118,25 @@ function checkZooInterfaceCompatibility() {
 }
 
 window.__zooCompatibilityIssues = checkZooInterfaceCompatibility();
+
+// Prevent transparent/white edge texels from bleeding into scaled animal-card rasters.
+// A fractional clip is enough to keep browser interpolation inside the PNG at high zoo
+// zoom and also applies to the fixed-position drag copy.
+(function installAnimalCardRasterEdgeFix(){
+    if(document.getElementById('animalCardRasterEdgeFix'))return;
+    const style=document.createElement('style');
+    style.id='animalCardRasterEdgeFix';
+    style.textContent=`
+        img.animal-card,
+        img.dragging-animal {
+            display:block;
+            clip-path:inset(0.35px);
+            -webkit-clip-path:inset(0.35px);
+        }
+    `;
+    document.head.appendChild(style);
+})();
+
 
 const ANIMAL_ROOT = 'assets/animals/';
 const ENCLOSURE_ROOT = 'assets/Enclosures/';
@@ -4809,8 +4828,15 @@ function ensureClassicOccupancyCache(){
         let bySlot=enclosureMap.get(enclosureKey);if(!bySlot){bySlot=new Map();enclosureMap.set(enclosureKey,bySlot);}
         let slotList=bySlot.get(Number(slotIndex));if(!slotList){slotList=[];bySlot.set(Number(slotIndex),slotList);}slotList.push(animal);
     };
+    const nonVisibleAnimalIds=new Set();
+    for(const exchangeAnimal of state.exchange||[])
+        if(exchangeAnimal?.id!=null)nonVisibleAnimalIds.add(String(exchangeAnimal.id));
+    if(state.outgoingOffer?.id!=null)nonVisibleAnimalIds.add(String(state.outgoingOffer.id));
+
     for(const animal of state.animals||[]){
-        if(animal?.enclosureId!=null&&animal?.slotIndex!=null){
+        const logicallyOutsideZoo =
+            animal?.id!=null && nonVisibleAnimalIds.has(String(animal.id));
+        if(!logicallyOutsideZoo&&animal?.enclosureId!=null&&animal?.slotIndex!=null){
             add(classicOccupancyBySlot,classicOccupancyByEnclosure,animal.enclosureId,animal.slotIndex,animal);
         }
         if(animal?.reservedEnclosureId!=null&&animal?.reservedSlotIndex!=null){
@@ -25055,8 +25081,10 @@ async function completeExchange(destination = null, autoPlace = false) {
             forName: animalDisplayName(newAnimal),
             forLevel: newAnimal.level
         });
+        clearAnimalZooReservation(animal);
     }
     state.animals = state.animals.filter(animal => !exchangedIdSet.has(animal.id));
+    invalidateClassicOccupancyCache();
     state.exchange = [null, null];
     invalidateExchangeGroupCounts();
     state.result = null;
@@ -33802,6 +33830,31 @@ function tryDropOnExchange(
         return false;
     }
 
+    // Exchange is a real location, not an overlay on top of an enclosure location.
+    // Preserve the source slot only as a reservation, then immediately remove the
+    // animal's visible enclosure coordinates before exposing it through state.exchange.
+    // This prevents occupancy/cache/render code from ever seeing one animal in both
+    // the enclosure and Exchange at the same time.
+    const exchangeDrag =
+        state.drag?.type === 'animal' &&
+        state.drag.animal?.id === animal.id
+            ? state.drag : null;
+    const reserveEnclosureId =
+        exchangeDrag?.originalEnclosureId ??
+        animal.reservedEnclosureId ??
+        animal.enclosureId ??
+        null;
+    const reserveSlotIndex =
+        exchangeDrag?.originalSlotIndex ??
+        animal.reservedSlotIndex ??
+        animal.slotIndex ??
+        null;
+
+    removeAnimalFromLocations(animal);
+    clearAnimalZooReservation(animal);
+    if (reserveEnclosureId != null && reserveSlotIndex != null)
+        reserveAnimalZooSlot(animal, reserveEnclosureId, reserveSlotIndex);
+
     state.exchange[index] =
         animal;
     state.exchangeGlowFocusKey = exchangeGroupKey(animal);
@@ -33809,10 +33862,6 @@ function tryDropOnExchange(
     state.exchangeEligibilityHoverActive =
         !state.sandboxMode &&
         state.gameOptions.showEligibilityGlows !== false;
-
-    if (state.drag?.type === 'animal' && state.drag.animal?.id === animal.id) {
-        reserveAnimalZooSlot(animal, state.drag.originalEnclosureId, state.drag.originalSlotIndex);
-    }
 
     if (
         state.exchange[0] &&
@@ -34411,14 +34460,14 @@ function refreshClassicEnclosureCards(enclosureIds) {
             targetAnimalIds.add(animal.id);targetAnimals.push(animal);
         }
     }
-    for(const [slotKey,animals] of classicReservedOccupancyBySlot){
-        const split=slotKey.lastIndexOf(':'),enclosureKey=slotKey.slice(0,split);
-        if(animals?.length)occupiedEnclosureIds.add(enclosureKey);
-        if(!targetIdSet.has(enclosureKey))continue;
-        for(const animal of animals||[])if(!targetAnimalIds.has(animal.id)){
-            targetAnimalIds.add(animal.id);targetAnimals.push(animal);
-        }
-    }
+    // Reserved occupancy is intentionally NOT visible occupancy. Animals moved into
+    // Exchange/Trade keep their old slot reserved so another card cannot be placed
+    // there until the action resolves, but they must not be fed back into the
+    // targeted visible-card render set. Doing so could make a vacated slot render a
+    // different Level 1 animal after the second Exchange card was staged.
+    //
+    // Keep reservations in reservedAnimalsByEnclosure below so placement and
+    // husbandry calculations still see the slot as blocked.
 
     const compatibilityGlowKeys=new Set();
     const compatibilityCandidates=compatibilityHintAnimals();
@@ -34515,7 +34564,14 @@ function refreshClassicEnclosureCards(enclosureIds) {
         const sourceVisible=classicOccupancyByEnclosure.get(id),sourceReserved=classicReservedOccupancyByEnclosure.get(id);
         if(sourceVisible){
             const visible=new Map();
-            for(const [slot,list] of sourceVisible)if(list?.length)visible.set(slot,list[0]);
+            for(const [slot,list] of sourceVisible){
+                const animal=(list||[]).find(candidate=>
+                    candidate?.enclosureId!=null &&
+                    String(candidate.enclosureId)===id &&
+                    Number(candidate.slotIndex)===Number(slot)
+                );
+                if(animal)visible.set(Number(slot),animal);
+            }
             if(visible.size)visibleAnimalsByEnclosure.set(id,visible);
         }
         if(sourceReserved){
@@ -40865,13 +40921,40 @@ function proposalForPublicListing(listing){
 async function proposePublicMultiplayerTrade(listing){
     const own=ownServerTradeListing();
     if(!own?.animalId||!listing?.animalId||String(own.playerId)===String(listing.playerId))return false;
-    const toLocal=multiplayerLocalPlayerIdForServerId(listing.playerId);
+
+    // A listing card can remain under the pointer while a remote player changes or
+    // withdraws that listing. Re-resolve both sides at commit time rather than
+    // sending a proposal based on the drag-start snapshot.
+    const liveOther=multiplayerPublicTradeListings.find(x=>
+        String(x?.playerId||'')===String(listing.playerId||''));
+    if(!liveOther||String(liveOther.animalId||'')!==String(listing.animalId||'')){
+        showGameNotice?.('That trade offer changed before you could propose the trade.');
+        renderTrade?.();
+        return false;
+    }
+    const ownLocalId=localClassicMatch?.activePlayerId;
+    const ownSnapshot=localClassicMatch?.players?.[ownLocalId]?.snapshot;
+    const ownAnimals=ownSnapshot?.state?.animals;
+    if(Array.isArray(ownAnimals)&&!ownAnimals.some(a=>String(a?.id)===String(own.animalId))){
+        showGameNotice?.('Your offered animal is no longer available for that trade.');
+        renderTrade?.();
+        return false;
+    }
+    const toLocal=multiplayerLocalPlayerIdForServerId(liveOther.playerId);
     if(!toLocal)return false;
+    const otherSnapshot=localClassicMatch?.players?.[toLocal]?.snapshot;
+    const otherAnimals=otherSnapshot?.state?.animals;
+    if(Array.isArray(otherAnimals)&&!otherAnimals.some(a=>String(a?.id)===String(liveOther.animalId))){
+        showGameNotice?.('That animal is no longer available for trade.');
+        renderTrade?.();
+        return false;
+    }
+
     const tradeId=`player-trade-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
-    const result=await dispatchLocalMultiplayerAction(localClassicMatch.activePlayerId,'send-human-trade-offer',{
-        tradeId,offeredAnimalId:own.animalId,requestedPlayerId:toLocal,requestedAnimalId:listing.animalId
+    const result=await dispatchLocalMultiplayerAction(ownLocalId,'send-human-trade-offer',{
+        tradeId,offeredAnimalId:own.animalId,requestedPlayerId:toLocal,requestedAnimalId:liveOther.animalId
     });
-    if(result?.ok)showGameNotice?.(`Trade proposed to ${listing.zooName||'the other zoo'}.`);
+    if(result?.ok)showGameNotice?.(`Trade proposed to ${liveOther.zooName||listing.zooName||'the other zoo'}.`);
     return !!result?.ok;
 }
 function startPublicTradeListingDrag(event,listing){
@@ -42636,6 +42719,12 @@ function positionOpponentTradeArea(immediate=false) {
     // positioned through their parent #opponentTradeArea, so moving the individual
     // cells with CSS transforms is ineffective once this routine lays the area out.
     const otherZoosLabelClearance=Math.round(92*scale);
+    // Wide desktop screens leave the zoo column visually farther inward than the
+    // 1080p layout. Add clearance only from 2000 CSS px upward so 1080p and laptop
+    // layouts keep their established placement exactly unchanged.
+    const wideDesktopTradeOffset=window.innerWidth>=2000
+        ? Math.round(Math.min(72,44+(window.innerWidth-2000)*0.07)*scale)
+        : 0;
 
     area.style.setProperty('--trade-card-height',`${cardHeight}px`);
     area.style.setProperty('--trade-card-width',`${cardWidth}px`);
@@ -42649,14 +42738,14 @@ function positionOpponentTradeArea(immediate=false) {
     if(zooButtons){
         area.style.left='auto';
         area.style.right=`${Math.max(0,Math.round(
-            window.innerWidth-zooButtons.left+gapToZoos+otherZoosLabelClearance
+            window.innerWidth-zooButtons.left+gapToZoos+otherZoosLabelClearance+wideDesktopTradeOffset
         ))}px`;
     }else{
         // Before zoo buttons exist, reserve their normal right-hand column rather than
         // letting the trade cells jump all the way to the viewport edge.
         const fallbackZooColumn=Math.max(150,Math.round(190*scale));
         area.style.left='auto';
-        area.style.right=`${fallbackZooColumn+gapToZoos+otherZoosLabelClearance}px`;
+        area.style.right=`${fallbackZooColumn+gapToZoos+otherZoosLabelClearance+wideDesktopTradeOffset}px`;
     }
 
     const headerRect=document.getElementById('actionMenu')?.getBoundingClientRect();

@@ -492,16 +492,14 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT9",
+            "AT10"
           ],
           "population_profiles": [
             "breeding_group",
             "bachelor_group"
-          ]
+          ],
+          "geography_note": "Restricted to arid southwestern southern Africa: chiefly the Kalahari/Karoo system, with western Namibian and extreme southwestern Angolan occurrence. Removed blanket southern-African regions."
         },
         "Red Fox.png": {
           "scientific_name": "Vulpes vulpes",
@@ -775,35 +773,6 @@
             "breeding_group"
           ]
         },
-        "Black-Backed Jackal.png": {
-          "scientific_name": "Lupulella mesomelas",
-          "tags": [
-            "savanna",
-            "grassland",
-            "shrubland",
-            "desert",
-            "woodland"
-          ],
-          "wild_regions": [
-            "AT14",
-            "AT15",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
-          ],
-          "space_requirement": 2,
-          "population_profiles": [
-            "pair",
-            "small_breeding_group"
-          ],
-          "geography_note": "Audit confirms a genuinely disjunct distribution: East Africa/Horn and southern Africa, separated by a large central-African gap. No West/Central African AT regions added.",
-          "population_note": "Core social unit is a monogamous breeding pair with dependent or retained young; family helpers can remain with the parents."
-        },
         "Caracal.png": {
           "scientific_name": "Caracal caracal",
           "tags": [
@@ -828,10 +797,6 @@
             "AT21",
             "AT22",
             "AT23",
-            "PA18",
-            "PA19",
-            "PA20",
-            "PA21",
             "PA23",
             "PA24",
             "PA25",
@@ -839,16 +804,22 @@
             "PA27",
             "PA29",
             "PA30",
+            "PA31",
             "PA32",
             "PA33",
             "IM1",
             "IM2",
-            "IM3"
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Very broad dry/open-country cat across Africa, Arabia and into Southwest/South Asia. Dense equatorial rainforest is largely avoided; genuine North African and Asian occurrence retained."
         },
         "Common Genet.png": {
           "scientific_name": "Genetta genetta",
@@ -861,11 +832,7 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT1",
             "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -874,16 +841,28 @@
             "AT12",
             "AT13",
             "AT16",
+            "AT17",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
+            "AT23",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
+            "PA22",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Broad African genet with native southwestern European populations. False African oceanic-island codes removed; mainland African and genuine Iberian/Balearic-range context retained."
         },
         "Corsac Fox.png": {
           "scientific_name": "Vulpes corsac",
@@ -1258,9 +1237,7 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT2",
             "AT7",
             "AT8",
             "AT9",
@@ -1268,11 +1245,8 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
-            "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -1282,7 +1256,8 @@
           "space_requirement": 2,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Widespread sub-Saharan African cat, but absent from true rainforest cores and oceanic islands. Removed Amsterdam/St Paul, Mascarenes, Seychelles/Comoros, St Helena/Ascension and Central/North Congolian rainforest blanket assignments."
         },
         "Siberian Weasel.png": {
           "scientific_name": "Mustela sibirica",
@@ -1396,19 +1371,18 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT2",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Southern African dry grassland and shrubland mongoose. Existing compact range confirmed."
         },
         "Yellow-Throated Marten.png": {
           "scientific_name": "Martes flavigula",
@@ -1480,7 +1454,8 @@
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Widespread sub-Saharan African civet from Senegal/Mauritania east to the Horn and south to northeastern Namibia, Botswana and South Africa. Introduced São Tomé occurrence excluded; no Arabian range."
         },
         "African Wild Dog.png": {
           "scientific_name": "Lycaon pictus",
@@ -1497,9 +1472,7 @@
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
             "AT16",
-            "AT19",
             "AT20",
             "AT21",
             "AT22",
@@ -1509,7 +1482,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group"
-          ]
+          ],
+          "geography_note": "Current resident-range emphasis: fragmented populations concentrated in southern and East Africa, with small Central/West African remnants. Dense Congo rainforest excluded; historical range is not used to fill former occupancy."
         },
         "American Black Bear.png": {
           "scientific_name": "Ursus americanus",
@@ -1566,25 +1540,19 @@
             "nocturnal"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT21"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Disjunct arid/semi-arid range: eastern population from southern Sudan/Ethiopia/Somalia through Kenya to SW Tanzania, and southern population from Angola/Namibia/Botswana to Mozambique/South Africa. Removed blanket Sub-Saharan region set."
         },
         "Bobcat.png": {
           "scientific_name": "Lynx rufus",
@@ -1775,21 +1743,20 @@
             "AT9",
             "AT10",
             "AT11",
-            "AT13",
-            "AT16",
-            "AT18",
-            "AT19",
+            "AT12",
             "AT20",
             "AT21",
             "AT22",
             "AT23",
+            "PA25",
             "PA29"
           ],
           "space_requirement": 4,
           "population_profiles": [
             "solitary",
             "bachelor_group"
-          ]
+          ],
+          "geography_note": "Fragmented African open-country distribution plus surviving Iranian population context; AT2/AT16 removed from overly broad shared African array."
         },
         "Cougar.png": {
           "scientific_name": "Puma concolor",
@@ -2092,33 +2059,39 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
             "PA27",
-            "PA28",
             "PA29",
             "PA30",
             "PA31",
             "PA32",
             "PA33",
-            "PA34",
-            "PA35",
-            "PA36",
-            "PA37",
-            "PA38",
-            "PA39",
-            "PA40",
             "IM1",
             "IM2",
             "IM3",
             "IM4",
             "IM5",
-            "IM6"
+            "IM6",
+            "IM7",
+            "IM8",
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM13",
+            "IM15",
+            "IM16",
+            "IM17",
+            "IM18"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Wetland/grassland cat from northeastern Africa and the Middle East through South and Southeast Asia. African oceanic-island or sub-Saharan blanket assignments excluded."
         },
         "Margay.png": {
           "scientific_name": "Leopardus wiedii",
@@ -2176,40 +2149,6 @@
             "pair"
           ]
         },
-        "Side-Striped Jackal.png": {
-          "scientific_name": "Lupulella adusta",
-          "tags": [
-            "forest",
-            "savanna",
-            "shrubland",
-            "grassland",
-            "wetland",
-            "woodland"
-          ],
-          "wild_regions": [
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
-            "AT15",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22"
-          ],
-          "space_requirement": 2,
-          "population_profiles": [
-            "pair",
-            "small_breeding_group"
-          ],
-          "geography_note": "Audit retains broad sub-Saharan coverage from West Africa through the Horn and southwards, but removes AT23 to avoid overpainting the driest/southern fringe. Species is absent or marginal in the arid western parts of southern Africa.",
-          "population_note": "Usually solitary or paired while foraging, but monogamous pairs and their offspring form the normal family unit; occasional larger aggregations are not treated as a routine profile."
-        },
         "Spotted Hyena.png": {
           "scientific_name": "Crocuta crocuta",
           "tags": [
@@ -2220,9 +2159,6 @@
             "desert"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -2230,10 +2166,8 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
+            "AT15",
             "AT16",
-            "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -2243,7 +2177,8 @@
           "space_requirement": 4,
           "population_profiles": [
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Current patchy sub-Saharan distribution, especially fragmented in West/Central Africa but still broad across East and southern Africa. North African historical range excluded."
         },
         "Stoat.png": {
           "scientific_name": "Mustela erminea",
@@ -2280,24 +2215,6 @@
           ],
           "geography_note": "Broad native Holarctic Eurasian distribution retained. European and northern Eurasian coverage is appropriate; no Mediterranean expansion added.",
           "population_note": "Solitary territorial mustelid outside reproductive encounters."
-        },
-        "Swift Fox.png": {
-          "scientific_name": "Vulpes velox",
-          "tags": [
-            "grassland",
-            "shrubland"
-          ],
-          "wild_regions": [
-            "NA12",
-            "NA20"
-          ],
-          "space_requirement": 1,
-          "population_profiles": [
-            "pair",
-            "small_breeding_group"
-          ],
-          "geography_note": "Audit tightened to the Northern Prairie (NA12) and Southern Prairie Mixed Grasslands (NA20). NA21 Midwestern Tallgrass Prairie & Forest Transition removed because the species' modern/core distribution is the drier shortgrass/mixed-grass Great Plains farther west.",
-          "population_note": "Generally monogamous, with the breeding pair and pups forming the normal social unit; retained daughters may occasionally help rear a later litter."
         },
         "Wolverine.png": {
           "scientific_name": "Gulo gulo",
@@ -2380,7 +2297,6 @@
             "AT12",
             "AT13",
             "AT16",
-            "AT19",
             "AT20",
             "AT21",
             "AT22",
@@ -2390,7 +2306,8 @@
           "population_profiles": [
             "breeding_group",
             "bachelor_group"
-          ]
+          ],
+          "geography_note": "Current fragmented sub-Saharan lion range in savanna, grassland and shrubland. Broad open-country distribution retained; dense rainforest systems are not treated as continuous range."
         },
         "Amur Leopard.png": {
           "scientific_name": "Panthera pardus",
@@ -2478,30 +2395,32 @@
             "bachelor_group"
           ]
         },
-        "Blanford's Fox.png": {
-          "scientific_name": "Vulpes cana",
+        "Black-Backed Jackal.png": {
+          "scientific_name": "Lupulella mesomelas",
           "tags": [
-            "desert",
+            "savanna",
+            "grassland",
             "shrubland",
-            "rocky",
-            "mountain"
+            "desert",
+            "woodland"
           ],
           "wild_regions": [
-            "PA29",
-            "PA30",
-            "PA31",
-            "PA32",
-            "PA33",
-            "PA34",
-            "PA35"
+            "AT2",
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT21",
+            "AT22"
           ],
-          "space_requirement": 1,
+          "space_requirement": 2,
           "population_profiles": [
             "pair",
             "small_breeding_group"
           ],
-          "geography_note": "Final audit retains the conservative PA29–35 treatment for its discontinuous Sinai/Arabian/Iranian-Central Asian rocky-desert range. No Ethiopian/Horn AT region is used.",
-          "population_note": "Pair/family-unit treatment retained; small body size and rocky-arid ecology fit space level 1 despite its high rarity level."
+          "geography_note": "Two major eastern and southern African population systems in open and dry habitats. Existing range retained; similarity to Kori Bustard is biologically plausible.",
+          "population_note": "Core social unit is a monogamous breeding pair with dependent or retained young; family helpers can remain with the parents."
         },
         "Clouded Leopard.png": {
           "scientific_name": "Neofelis nebulosa",
@@ -2623,16 +2542,6 @@
             "riverine"
           ],
           "wild_regions": [
-            "PA18",
-            "PA19",
-            "PA20",
-            "PA21",
-            "PA23",
-            "PA24",
-            "PA25",
-            "PA26",
-            "PA27",
-            "PA28",
             "AT2",
             "AT7",
             "AT8",
@@ -2646,13 +2555,24 @@
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
+            "AT23",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
+            "PA22",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Broad African species with native North African and southwestern European populations; African range is patchy around humid forest interiors and extreme deserts. Genuine Iberian range retained."
         },
         "Gray Fox.png": {
           "scientific_name": "Urocyon cinereoargenteus",
@@ -2710,7 +2630,6 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT1",
             "AT2",
             "AT7",
             "AT8",
@@ -2720,26 +2639,17 @@
             "AT12",
             "AT13",
             "AT16",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
             "AT23",
-            "PA18",
-            "PA19",
-            "PA20",
-            "PA21",
             "PA23",
             "PA24",
             "PA25",
             "PA26",
             "PA27",
-            "PA28",
             "PA29",
-            "PA30",
-            "PA32",
-            "PA33",
             "IM1",
             "IM2",
             "IM3",
@@ -2747,12 +2657,17 @@
             "IM5",
             "IM6",
             "IM7",
-            "IM8"
+            "IM8",
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12"
           ],
           "space_requirement": 3,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Very broad African-to-South Asian species. False Afrotropical oceanic-island codes AT1/AT18 removed while genuine North African, Arabian and South Asian range is retained."
         },
         "Jaguar.png": {
           "scientific_name": "Panthera onca",
@@ -3146,20 +3061,21 @@
             "woodland"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
             "AT9",
             "AT10",
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
-            "AT22"
+            "AT22",
+            "AT23"
           ],
           "space_requirement": 1,
           "population_profiles": [
@@ -3167,7 +3083,7 @@
             "pair",
             "small_breeding_group"
           ],
-          "geography_note": "Audit trims AT23. Native range extends from Senegal to the Red Sea coast and south into southern Africa, but the species is absent from true deserts; broad forest-fringe, savanna, shrubland and grassland use retained.",
+          "geography_note": "One of Africa's most widespread mongooses, from Senegal to the Red Sea and south to South Africa. Zanzibar occurrence is native/current; erroneous Cape Verde records do not expand wild_regions.",
           "population_note": "Generally solitary/small-unit mongoose; provisional profile retained pending zoo-specific husbandry evidence."
         },
         "Sloth Bear.png": {
@@ -3338,6 +3254,24 @@
           "population_profiles": [
             "solitary"
           ]
+        },
+        "Swift Fox.png": {
+          "scientific_name": "Vulpes velox",
+          "tags": [
+            "grassland",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "NA12",
+            "NA20"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "small_breeding_group"
+          ],
+          "geography_note": "Audit tightened to the Northern Prairie (NA12) and Southern Prairie Mixed Grasslands (NA20). NA21 Midwestern Tallgrass Prairie & Forest Transition removed because the species' modern/core distribution is the drier shortgrass/mixed-grass Great Plains farther west.",
+          "population_note": "Generally monogamous, with the breeding pair and pups forming the normal social unit; retained daughters may occasionally help rear a later litter."
         }
       },
       "5": {
@@ -3350,26 +3284,21 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT18",
-            "AT19",
-            "AT20",
             "AT21",
-            "AT22",
-            "AT23"
+            "AT22"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Disjunct eastern and southern African open-country distribution. Existing broad array confirmed as appropriate."
         },
         "Andean Mountain Cat.png": {
           "scientific_name": "Leopardus jacobita",
@@ -3436,6 +3365,31 @@
           "population_profiles": [
             "solitary"
           ]
+        },
+        "Blanford's Fox.png": {
+          "scientific_name": "Vulpes cana",
+          "tags": [
+            "desert",
+            "shrubland",
+            "rocky",
+            "mountain"
+          ],
+          "wild_regions": [
+            "PA29",
+            "PA30",
+            "PA31",
+            "PA32",
+            "PA33",
+            "PA34",
+            "PA35"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "small_breeding_group"
+          ],
+          "geography_note": "Final audit retains the conservative PA29–35 treatment for its discontinuous Sinai/Arabian/Iranian-Central Asian rocky-desert range. No Ethiopian/Horn AT region is used.",
+          "population_note": "Pair/family-unit treatment retained; small body size and rocky-arid ecology fit space level 1 despite its high rarity level."
         },
         "Brown Hyena.png": {
           "scientific_name": "Parahyaena brunnea",
@@ -3669,7 +3623,8 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT9",
+            "AT7",
+            "AT8",
             "AT10",
             "AT11",
             "AT12",
@@ -3678,18 +3633,16 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
-            "AT21",
-            "AT22"
+            "AT21"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
           ],
-          "geography_note": "Audit trims AT23 and keeps the broad sub-Saharan map constrained by wetland/river habitat tags. The species is tied to freshwater wetlands and well-watered cover, so arid interiors are not implied.",
+          "geography_note": "Wetland-associated mainland African species from Senegal through Congo/East Africa to southern Africa. Oceanic islands and driest Kalahari/Horn-coastal blanket regions removed.",
           "population_note": "Primarily solitary; pair allowance retained for managed breeding rather than representing a naturally stable large group."
         },
         "Pampas Cat.png": {
@@ -3723,6 +3676,37 @@
             "solitary"
           ]
         },
+        "Side-Striped Jackal.png": {
+          "scientific_name": "Lupulella adusta",
+          "tags": [
+            "forest",
+            "savanna",
+            "shrubland",
+            "grassland",
+            "wetland",
+            "woodland"
+          ],
+          "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT11",
+            "AT12",
+            "AT13",
+            "AT15",
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21"
+          ],
+          "space_requirement": 2,
+          "population_profiles": [
+            "pair",
+            "small_breeding_group"
+          ],
+          "geography_note": "Central/eastern African woodland-savanna species extending into parts of West and southern Africa; removed oceanic islands and arid southwest/Horn-coastal overreach.",
+          "population_note": "Usually solitary or paired while foraging, but monogamous pairs and their offspring form the normal family unit; occasional larger aggregations are not treated as a routine profile."
+        },
         "White-Tailed Mongoose.png": {
           "scientific_name": "Ichneumia albicauda",
           "tags": [
@@ -3733,27 +3717,33 @@
             "dry-forest"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
             "AT9",
             "AT10",
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
-            "AT22"
+            "AT22",
+            "AT23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27",
+            "PA29"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
           ],
-          "geography_note": "Audit trims AT23 as an over-broad arid/southern fringe assignment. Broad sub-Saharan savanna, woodland, shrubland and dry-forest range retained; desert cores excluded.",
+          "geography_note": "Widespread sub-Saharan mongoose from West Africa to the Horn and southeast South Africa, with genuine Arabian Peninsula populations from Saudi Arabia/Yemen through Oman/UAE. Arabian range added rather than treating it as an African-Civet clone.",
           "population_note": "Predominantly solitary; pair allowance retained for managed breeding."
         }
       }
@@ -3849,18 +3839,15 @@
             "savanna",
             "grassland"
           ],
-          "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5"
-          ],
+          "wild_regions": [],
           "space_requirement": 2,
           "population_profiles": [
             "pair",
             "harem",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Domestic animal derived from African wild ass; wild_regions intentionally empty because the card represents the domestic donkey rather than a wild taxon."
         },
         "European Roe Deer.png": {
           "scientific_name": "Capreolus capreolus",
@@ -4437,10 +4424,10 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20"
+            "AT10",
+            "AT11",
+            "AT12",
+            "AT13"
           ],
           "space_requirement": 3,
           "population_profiles": [
@@ -4448,7 +4435,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Wetland antelope of south-central African floodplains, chiefly the Okavango/Upper Zambezi, Kafue and Bangweulu systems. False AT18 oceanic-island assignment and West African displacement removed."
         },
         "Plains Zebra.png": {
           "scientific_name": "Equus quagga",
@@ -4458,24 +4446,22 @@
             "shrubland"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
             "AT13",
-            "AT14",
-            "AT15",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT21"
           ],
           "space_requirement": 4,
           "population_profiles": [
             "harem",
             "bachelor_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Open grassland/savanna zebra from East Africa south through Zambia/Zimbabwe/Botswana/Namibia to South Africa. False oceanic-island code AT18 and West/Central forest overreach removed."
         },
         "Red River Hog.png": {
           "scientific_name": "Potamochoerus porcus",
@@ -4485,20 +4471,20 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT11",
             "AT12",
             "AT13",
             "AT14",
             "AT15",
-            "AT16"
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "breeding_group"
-          ]
+          ],
+          "geography_note": "West and Central African forest species from Upper Guinea through the Congo basin, extending locally toward the Great Lakes. Old shared forest-template range included inappropriate East/southern African regions."
         },
         "Reeve's Muntjac.png": {
           "scientific_name": "Muntiacus reevesi",
@@ -4637,7 +4623,6 @@
             "shrubland"
           ],
           "wild_regions": [
-            "PA24",
             "PA25",
             "AT23"
           ],
@@ -4647,7 +4632,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Sahara/Sahel desert antelope; retained Southern Sahara and Sahel bioregions rather than blanket sub-Saharan Africa."
         },
         "American Bison.png": {
           "scientific_name": "Bos bison",
@@ -4690,10 +4676,7 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT8"
           ],
           "space_requirement": 3,
           "population_profiles": [
@@ -4701,7 +4684,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Native Highveld grasslands of South Africa; modern extra-limital ranch populations excluded."
         },
         "Blue Sheep.png": {
           "scientific_name": "Pseudois nayaur",
@@ -4741,16 +4725,11 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12"
           ],
           "space_requirement": 4,
           "population_profiles": [
@@ -4758,7 +4737,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Eastern and southern African savannas/woodlands; West African, Sahel, Congo forest and island regions removed."
         },
         "Bongo.png": {
           "scientific_name": "Tragelaphus eurycerus",
@@ -4768,21 +4748,22 @@
           ],
           "wild_regions": [
             "AT7",
-            "AT8",
-            "AT9",
-            "AT11",
             "AT12",
             "AT13",
             "AT14",
             "AT15",
-            "AT16"
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT21"
           ],
           "space_requirement": 4,
           "population_profiles": [
             "harem",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Disjunct forest antelope range: western/central African lowland forests plus isolated montane populations in Kenya and adjacent East African highlands. Shared template replaced with a range reflecting both western and eastern populations."
         },
         "Chacoan Peccary.png": {
           "scientific_name": "Catagonus wagneri",
@@ -4807,15 +4788,13 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
             "AT20",
             "AT21",
-            "AT22",
             "AT23"
           ],
           "space_requirement": 4,
@@ -4824,7 +4803,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Broad savanna and woodland species across eastern and southern Africa with historical/current western Sahel-Sudanian occurrence; Congo rainforest and coastal forests excluded."
         },
         "Common Warthog.png": {
           "scientific_name": "Phacochoerus africanus",
@@ -4836,9 +4816,6 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -4846,10 +4823,8 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -4860,7 +4835,8 @@
           "population_profiles": [
             "solitary",
             "female_group"
-          ]
+          ],
+          "geography_note": "Broad open-country distribution confirmed: northern savanna/Sahel from Mauritania to Ethiopia, Horn populations, East/Central Africa, and southern Africa."
         },
         "Common Waterbuck.png": {
           "scientific_name": "Kobus ellipsiprymnus",
@@ -4878,12 +4854,8 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
+            "AT15",
             "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
             "AT21"
           ],
           "space_requirement": 4,
@@ -4892,7 +4864,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Mainland sub-Saharan water-associated antelope from central/eastern Africa into south-central and southeastern Africa. False AT18 island assignment and West African/oceanic blanket regions removed."
         },
         "Dama Gazelle.png": {
           "scientific_name": "Nanger dama",
@@ -4965,16 +4938,12 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12"
           ],
           "space_requirement": 3,
           "population_profiles": [
@@ -4982,7 +4951,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Eastern and southern African savannas and woodlands; removed Congo rainforest, West Africa and Sahel blanket assignments."
         },
         "Javan Banteng.png": {
           "scientific_name": "Bos javanicus",
@@ -5138,15 +5108,14 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9"
+            "AT19"
           ],
           "space_requirement": 3,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Current native range is restricted to the Upper Guinean forest zone of Liberia, Sierra Leone, Guinea and Côte d'Ivoire. Extinct Nigerian population excluded."
         },
         "Père David's Deer.png": {
           "scientific_name": "Elaphurus davidianus",
@@ -5198,8 +5167,6 @@
           ],
           "wild_regions": [
             "AT7",
-            "AT8",
-            "AT9",
             "AT11",
             "AT12",
             "AT13",
@@ -5207,7 +5174,6 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21"
@@ -5217,7 +5183,8 @@
             "harem",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Disjunct swamp/wet-forest antelope: small West African populations plus major Congo Basin, Great Lakes, Zambezi/Okavango systems. Dry southern AT8/AT10 removed."
         },
         "Somali Wild Ass.png": {
           "scientific_name": "Equus africanus",
@@ -5281,9 +5248,11 @@
             "desert"
           ],
           "wild_regions": [
+            "AT2",
             "AT8",
             "AT9",
-            "AT10"
+            "AT10",
+            "AT11"
           ],
           "space_requirement": 3,
           "population_profiles": [
@@ -5291,7 +5260,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Southwestern/southern African arid and open-country antelope. Existing range confirmed; equality with Yellow Mongoose is ecologically plausible rather than treated as corruption."
         },
         "Visayan Warty Pig.png": {
           "scientific_name": "Sus cebifrons",
@@ -5421,14 +5391,11 @@
             "grassland"
           ],
           "wild_regions": [
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT7",
+            "AT8",
+            "AT11",
+            "AT12",
+            "AT13"
           ],
           "space_requirement": 4,
           "population_profiles": [
@@ -5436,7 +5403,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Southern/east-central African sable-antelope range centered on Angola/Zambia/DRC-Tanzania south through Malawi, Mozambique, Zimbabwe and northern South Africa. False AT18 oceanic-island assignment removed."
         },
         "Black Wildebeest.png": {
           "scientific_name": "Connochaetes gnou",
@@ -5446,9 +5414,8 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT8",
+            "AT9"
           ],
           "space_requirement": 4,
           "population_profiles": [
@@ -5456,7 +5423,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Native open grasslands of the South African Highveld/Karoo transition; extra-limital introductions excluded."
         },
         "Cape Buffalo.png": {
           "scientific_name": "Syncerus caffer",
@@ -5467,16 +5435,20 @@
             "riverine"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
             "AT13",
             "AT14",
+            "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT21"
           ],
           "space_requirement": 5,
           "population_profiles": [
@@ -5484,7 +5456,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "African buffalo species-level range across suitable sub-Saharan savanna, woodland and forest mosaics. False AT18 island assignment removed; broad mainland range retained."
         },
         "Chinese Goral.png": {
           "scientific_name": "Naemorhedus griseus",
@@ -5550,7 +5523,8 @@
           ],
           "wild_regions": [
             "AT9",
-            "AT10"
+            "AT10",
+            "AT11"
           ],
           "space_requirement": 4,
           "population_profiles": [
@@ -5558,7 +5532,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Arid southwestern Africa centered on Namibia, Botswana and the Kalahari, with northern South African/Angolan margins; unrelated eastern/western regions removed."
         },
         "Greater Kudu.png": {
           "scientific_name": "Tragelaphus strepsiceros",
@@ -5568,26 +5543,20 @@
             "shrubland"
           ],
           "wild_regions": [
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT21"
           ],
           "space_requirement": 4,
           "population_profiles": [
             "harem",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Broad eastern and southern African woodland/bushland range; retained genuine Horn/Great Lakes margins but excluded West Africa, Congo rainforest and islands."
         },
         "Hippopotamus.png": {
           "scientific_name": "Hippopotamus amphibius",
@@ -5598,9 +5567,6 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -5609,9 +5575,9 @@
             "AT12",
             "AT13",
             "AT14",
+            "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -5623,7 +5589,8 @@
             "breeding_group",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Current fragmented mainland sub-Saharan freshwater range. False oceanic-island codes AT3/AT4/AT5/AT18 removed; Madagascar excluded."
         },
         "Indian Muntjac.png": {
           "scientific_name": "Muntiacus muntjak",
@@ -5721,13 +5688,10 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT4",
-            "AT5",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14"
+            "AT15",
+            "AT16",
+            "AT21",
+            "AT23"
           ],
           "space_requirement": 5,
           "population_profiles": [
@@ -5735,7 +5699,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Current Kordofan giraffe range: southern Chad, northern Central African Republic, northern Cameroon, northwestern DRC and western South Sudan. Removed impossible island/coastal/equatorial blanket assignments; retained every OneEarth bioregion genuinely intersecting that fragmented range."
         },
         "Lowland Anoa.png": {
           "scientific_name": "Bubalus depressicornis",
@@ -5854,19 +5819,17 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT7",
+            "AT8",
+            "AT11"
           ],
           "space_requirement": 4,
           "population_profiles": [
             "harem",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Southeastern African thicket/woodland distribution from Malawi/Mozambique/Zimbabwe into eastern South Africa; unrelated western/northern regions removed."
         },
         "Okapi.png": {
           "scientific_name": "Okapia johnstoni",
@@ -5931,12 +5894,12 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
+            "AT13",
+            "AT14",
             "AT15",
             "AT16",
-            "AT17"
+            "AT17",
+            "AT19"
           ],
           "space_requirement": 4,
           "population_profiles": [
@@ -5944,7 +5907,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Forest buffalo distribution centered on West and Central African rainforest systems, extending into the Congo basin. Old East/southern African savanna-style array removed."
         },
         "Red Duiker.png": {
           "scientific_name": "Cephalophus natalensis",
@@ -5954,21 +5918,17 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22"
+            "AT7",
+            "AT8",
+            "AT11",
+            "AT12"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Southeastern African forest/thicket duiker from southern Tanzania through Malawi and Mozambique to eastern Zimbabwe, Eswatini and eastern South Africa. False AT18 island and West/Central overreach removed."
         },
         "Reticulated Giraffe.png": {
           "scientific_name": "Giraffa reticulata",
@@ -5978,11 +5938,8 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14"
+            "AT21",
+            "AT22"
           ],
           "space_requirement": 5,
           "population_profiles": [
@@ -5990,7 +5947,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Current native range is concentrated in northern/northeastern Kenya with small populations in southern Ethiopia and southern Somalia. Limited to the Lake Turkana-Sudd/Horn and South Red Sea-Gulf of Aden dryland systems; Congo and southern-African regions removed."
         },
         "Rothschild's Giraffe.png": {
           "scientific_name": "Giraffa rothschildi",
@@ -6000,9 +5958,9 @@
             "grassland"
           ],
           "wild_regions": [
-            "AT13",
-            "AT14",
-            "AT16"
+            "AT11",
+            "AT12",
+            "AT21"
           ],
           "space_requirement": 5,
           "population_profiles": [
@@ -6010,7 +5968,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Rothschild's/Nubian giraffe populations represented by their native East African range in Uganda and western Kenya. Greater subequatorial savanna, Victoria-Albertine and northern East African grassland systems retained; Central Congo removed."
         },
         "Southern Pudu.png": {
           "scientific_name": "Pudu puda",
@@ -6096,20 +6055,18 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT13",
-            "AT14",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12"
           ],
           "space_requirement": 5,
           "population_profiles": [
             "harem",
             "female_group"
-          ]
+          ],
+          "geography_note": "Current/native southern African white-rhinoceros range centered on South Africa, Namibia, Botswana, Zimbabwe and historically adjacent south-central savannas; old Central/West African and AT18 island assignments removed."
         },
         "White-Tailed Deer.png": {
           "scientific_name": "Odocoileus virginianus",
@@ -6206,12 +6163,9 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT9",
+            "AT10",
+            "AT11"
           ],
           "space_requirement": 5,
           "population_profiles": [
@@ -6219,7 +6173,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Angolan giraffe is a southwestern African form, centered on Namibia with range into Angola and Botswana. Corrected a severely displaced former array that included St Helena, West Africa, Sudan and East Africa."
         },
         "Baird's Tapir.png": {
           "scientific_name": "Tapirus bairdii",
@@ -6256,23 +6211,20 @@
             "desert"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT21"
           ],
           "space_requirement": 5,
           "population_profiles": [
             "solitary",
             "female_group"
-          ]
+          ],
+          "geography_note": "Current fragmented eastern and southern African range. West/Central African and false AT18 oceanic-island assignments removed; extinct historical range does not expand wild_regions."
         },
         "Blue Duiker.png": {
           "scientific_name": "Philantomba monticola",
@@ -6282,26 +6234,24 @@
             "shrubland"
           ],
           "wild_regions": [
+            "AT2",
             "AT7",
             "AT8",
-            "AT9",
+            "AT11",
+            "AT12",
             "AT13",
             "AT14",
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT19"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Forest-associated species from West/Central Africa through East African coastal/highland forests to southeastern Africa and the eastern/southern Cape. False AT18 island assignment and dry Sahel/Horn blanket regions removed."
         },
         "Cuvier's Gazelle.png": {
           "scientific_name": "Gazella cuvieri",
@@ -6312,15 +6262,17 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT1",
-            "AT2"
+            "AT2",
+            "PA23",
+            "PA24"
           ],
           "space_requirement": 3,
           "population_profiles": [
             "harem",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Northwest African mountain and steppe gazelle of Morocco, Algeria and Tunisia. Sub-Saharan and oceanic-island assignments excluded."
         },
         "Dall Sheep.png": {
           "scientific_name": "Ovis dalli",
@@ -6354,7 +6306,6 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT7",
             "AT21",
             "AT22"
           ],
@@ -6363,7 +6314,8 @@
             "harem",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Horn of Africa and dry bushlands of northern/eastern Kenya and adjacent Ethiopia/Somalia; removed unrelated sub-Saharan regions."
         },
         "Kiang.png": {
           "scientific_name": "Equus kiang",
@@ -6394,19 +6346,13 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT2",
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
             "AT21",
             "AT22",
             "AT23"
@@ -6415,7 +6361,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Patchily distributed rocky-country antelope from the Horn/Ethiopian highlands through East Africa to southern Africa and southwest Angola/Namibia. Forest-belt regions inherited from the old broad template removed."
         },
         "Masai Giraffe.png": {
           "scientific_name": "Giraffa tippelskirchi",
@@ -6425,11 +6372,10 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT10",
+            "AT7",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14"
+            "AT21"
           ],
           "space_requirement": 5,
           "population_profiles": [
@@ -6437,7 +6383,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "East African giraffe centered on Kenya and Tanzania with adjacent populations; range distinguished from southeastern African forest taxa."
         },
         "Mountain Goat.png": {
           "scientific_name": "Oreamnos americanus",
@@ -6475,17 +6422,11 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT10",
+            "AT7",
+            "AT8",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT21"
           ],
           "space_requirement": 2,
           "population_profiles": [
@@ -6493,7 +6434,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Discontinuous montane grassland populations in Ethiopia/East Africa and southeastern/southern Africa. Sahel, Congo forest, southwest desert and false AT18 island assignments removed."
         },
         "Nubian Ibex.png": {
           "scientific_name": "Capra nubiana",
@@ -6665,22 +6607,23 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
             "AT11",
             "AT12",
             "AT13",
             "AT14",
             "AT15",
             "AT16",
-            "AT17"
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Broad West/Central African forest and dense-vegetation species extending east to western Uganda/Kenya and south into Zambia/northern Angola. Range separated from the narrower White-Crested Turaco template."
         }
       }
     },
@@ -6696,8 +6639,7 @@
             "rocky"
           ],
           "wild_regions": [
-            "PA27",
-            "AT2"
+            "PA23"
           ],
           "space_requirement": 3,
           "population_profiles": [
@@ -6705,7 +6647,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Current native range is restricted to fragmented populations in Morocco and Algeria (Rif, Middle/High Atlas and Tellian Atlas). Gibraltar is introduced and excluded."
         },
         "Bolivian Squirrel Monkey.png": {
           "scientific_name": "Saimiri boliviensis",
@@ -6986,17 +6929,18 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT11",
             "AT12",
             "AT13",
             "AT14",
             "AT15",
-            "AT16"
+            "AT16",
+            "AT21"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Riverine/swamp forest monkey from Cameroon/CAR through the Congo basin to Uganda, western Kenya, South Sudan and southwestern Ethiopia; rebuilt from its documented west-to-east range."
         },
         "Emperor Tamarin.png": {
           "scientific_name": "Saguinus imperator",
@@ -7049,12 +6993,9 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9"
+            "AT19",
+            "AT20",
+            "AT23"
           ],
           "space_requirement": 3,
           "population_profiles": [
@@ -7062,7 +7003,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "West African green monkey: Atlantic West Africa and adjoining Sudanian/Sahel savannas from Senegal/Gambia eastward. Caribbean/Cape Verde introductions excluded."
         },
         "Hamadryas Baboon.png": {
           "scientific_name": "Papio hamadryas",
@@ -7218,14 +7160,9 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT11",
-            "AT12",
             "AT13",
-            "AT14",
-            "AT15"
+            "AT17",
+            "AT19"
           ],
           "space_requirement": 3,
           "population_profiles": [
@@ -7233,7 +7170,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Narrow Atlantic coastal-forest distribution from western Nigeria through southern Cameroon, mainland Equatorial Guinea and Gabon to the Gabon-Congo border; removed unrelated inland/eastern African regions."
         },
         "Crowned Lemur.png": {
           "scientific_name": "Eulemur coronatus",
@@ -7256,16 +7194,13 @@
             "wetland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8"
+            "AT19"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Upper Guinean forest endemic from Sierra Leone and Liberia into western Côte d'Ivoire; removed Indian Ocean islands and East/Southern African codes."
         },
         "Gelada Baboon.png": {
           "scientific_name": "Theropithecus gelada",
@@ -7275,15 +7210,15 @@
             "rocky"
           ],
           "wild_regions": [
-            "AT10",
-            "AT11"
+            "AT21"
           ],
           "space_requirement": 4,
           "population_profiles": [
             "harem",
             "bachelor_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Ethiopian Highlands endemic; restricted to the Horn/highland bioregion rather than southern African savannas."
         },
         "Lion-Tailed Macaque.png": {
           "scientific_name": "Macaca silenus",
@@ -7309,13 +7244,8 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT8",
-            "AT9",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
-            "AT15"
+            "AT16",
+            "AT17"
           ],
           "space_requirement": 4,
           "population_profiles": [
@@ -7323,7 +7253,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "West-central African rainforest species south of the Sanaga River, from southern Cameroon through mainland Equatorial Guinea and Gabon into Congo."
         },
         "Mantled Guereza.png": {
           "scientific_name": "Colobus guereza",
@@ -7334,22 +7265,22 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
             "AT15",
             "AT16",
             "AT17",
-            "AT18"
+            "AT20",
+            "AT21",
+            "AT23"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "harem",
             "bachelor_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Species-level Colobus guereza range spans Nigeria/Cameroon east across the northern Congo basin to South Sudan/Ethiopia, Uganda, Kenya and northern Tanzania. Retains genuine gallery-forest penetration into savanna systems."
         },
         "Patas Monkey.png": {
           "scientific_name": "Erythrocebus patas",
@@ -7360,17 +7291,9 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14"
+            "AT20",
+            "AT21",
+            "AT23"
           ],
           "space_requirement": 3,
           "population_profiles": [
@@ -7378,7 +7301,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Sahelian/Sudanian open-country primate ranging in a broad band south of the Sahara from Senegal east to South Sudan/Ethiopia and south locally to Kenya."
         },
         "Pied Tamarin.png": {
           "scientific_name": "Saguinus bicolor",
@@ -7419,26 +7343,22 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
             "AT16",
             "AT17",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
+            "AT23",
+            "AT12",
+            "AT15"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Dry woodland/savanna galago distributed from Senegal across the Sahel to Eritrea/Ethiopia/Somalia and south around the Lake Victoria region; old West-African-only shared template expanded eastward."
         },
         "Siamang.png": {
           "scientific_name": "Symphalangus syndactylus",
@@ -7546,9 +7466,8 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT15",
-            "AT16",
-            "AT17"
+            "AT13",
+            "AT14"
           ],
           "space_requirement": 3,
           "population_profiles": [
@@ -7556,7 +7475,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Central African species south of the Congo River in DRC/Angola forest systems; removed northern Congo and Gulf-of-Guinea overreach."
         },
         "Brown-Mantled Tamarin.png": {
           "scientific_name": "Leontocebus fuscicollis",
@@ -7597,22 +7517,23 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT11",
             "AT12",
             "AT13",
             "AT14",
             "AT15",
             "AT16",
-            "AT17"
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT23"
           ],
           "space_requirement": 5,
           "population_profiles": [
             "breeding_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Species-level chimpanzee range from Upper Guinea through Gulf of Guinea and Congo forests east to Uganda/Tanzania, with savanna-forest mosaics at northern/western margins. Southern African and oceanic-island regions excluded."
         },
         "Drill.png": {
           "scientific_name": "Mandrillus leucophaeus",
@@ -7621,9 +7542,7 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT8",
-            "AT9",
-            "AT15"
+            "AT17"
           ],
           "space_requirement": 4,
           "population_profiles": [
@@ -7631,7 +7550,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Restricted Cross-Sanaga forest species of southeastern Nigeria, western/southwestern Cameroon and Bioko; represented by the Gulf of Guinea coastal-forest bioregion."
         },
         "François' Langur.png": {
           "scientific_name": "Trachypithecus francoisi",
@@ -7749,22 +7669,19 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
+            "AT13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Southern lesser galago is a southern African savanna/woodland species from Angola/Namibia/Botswana through Zambia/Zimbabwe and southern DRC toward Mozambique and South Africa; northern Sahel/Horn/West African regions excluded."
         },
         "Owl-Faced Monkey.png": {
           "scientific_name": "Cercopithecus hamlyni",
@@ -7773,14 +7690,14 @@
             "mountain"
           ],
           "wild_regions": [
-            "AT15",
-            "AT16",
-            "AT17"
+            "AT12",
+            "AT15"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Albertine Rift/eastern Congo montane-forest monkey; restricted to the Albertine and adjacent North Congolian systems."
         },
         "Pygmy Slow Loris.png": {
           "scientific_name": "Xanthonycticebus pygmaeus",
@@ -7864,19 +7781,15 @@
             "riverine"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
             "AT21",
-            "AT22",
-            "AT23"
+            "AT22"
           ],
           "space_requirement": 3,
           "population_profiles": [
@@ -7884,7 +7797,8 @@
             "bachelor_group",
             "female_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Widespread eastern and southern African monkey following savanna, woodland and riverine habitats; central south-tropical reach distinguishes it from Aardwolf."
         },
         "Western Lowland Gorilla.png": {
           "scientific_name": "Gorilla gorilla",
@@ -7901,7 +7815,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group"
-          ]
+          ],
+          "geography_note": "West-central African lowland forest range retained across North Congolian and Gulf-of-Guinea forest systems."
         }
       },
       "5": {
@@ -7981,14 +7896,15 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT16",
-            "AT17"
+            "AT13",
+            "AT14"
           ],
           "space_requirement": 5,
           "population_profiles": [
             "breeding_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Endemic to DRC forests south of the Congo River; corrected from northern/Gulf-of-Guinea codes to Central and South Congolian systems."
         },
         "Bornean Orangutan.png": {
           "scientific_name": "Pongo pygmaeus",
@@ -8065,7 +7981,8 @@
           "population_profiles": [
             "harem",
             "bachelor_group"
-          ]
+          ],
+          "geography_note": "Eastern DRC/Uganda/Rwanda montane and lowland populations centered on the Albertine Rift and eastern North Congolian forests."
         },
         "Golden Snub-Nosed Monkey.png": {
           "scientific_name": "Rhinopithecus roxellana",
@@ -8187,25 +8104,25 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT1",
             "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23",
             "AT12",
-            "AT13",
-            "AT16"
+            "AT15",
+            "PA23",
+            "PA24"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Hystrix cristata spans North Africa plus a broad West-to-East African belt; North-African/Palearctic component restored. European Italian occurrence is not used here to inflate native African-themed geography."
         },
         "Azara's Agouti.png": {
           "scientific_name": "Dasyprocta azarae",
@@ -8487,18 +8404,15 @@
           ],
           "wild_regions": [
             "AU3",
-            "AU4",
-            "AU5",
-            "AU6",
-            "AU7",
-            "AU8"
+            "AU4"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Native to eastern and southeastern Australia including Tasmania; introduced populations outside Australia excluded."
         },
         "Red-Rumped Agouti.png": {
           "scientific_name": "Dasyprocta leporina",
@@ -8555,16 +8469,13 @@
           ],
           "wild_regions": [
             "AU3",
-            "AU4",
-            "AU5",
-            "AU6",
-            "AU7",
-            "AU8"
+            "AU4"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Using Petaurus breviceps sensu current split: southeastern/eastern Australian population; former broad northern populations assigned to other Petaurus taxa are excluded."
         }
       },
       "2": {
@@ -8666,12 +8577,17 @@
             "nocturnal"
           ],
           "wild_regions": [
+            "AT2",
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
             "AT13",
-            "AT14",
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -8682,7 +8598,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Widespread sub-Saharan porcupine in most vegetated habitats, absent from the southwestern coastal desert. Broad range is legitimate and differs from the rocky, patchy Klipspringer distribution."
         },
         "Capybara.png": {
           "scientific_name": "Hydrochoerus hydrochaeris",
@@ -8745,27 +8662,12 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "PA18",
-            "PA19",
-            "PA20",
-            "PA21",
-            "PA23",
-            "PA24",
-            "PA25",
-            "PA26",
-            "PA27",
-            "PA28",
-            "PA29",
-            "PA30",
             "AT2",
             "AT7",
             "AT8",
-            "AT9",
-            "AT10",
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT15",
             "AT16",
             "AT17",
@@ -8773,17 +8675,28 @@
             "AT20",
             "AT21",
             "AT22",
-            "AT23",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
+            "PA22",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27",
+            "PA29",
+            "PA30",
             "IM1",
             "IM2",
-            "IM3",
-            "IM4"
+            "IM3"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Cave-roosting fruit bat with a discontinuous range across much of sub-Saharan Africa plus the Nile/North Africa, eastern Mediterranean and Middle East. Old all-purpose wetland/reptile-style African array refined."
         },
         "Large Hairy Armadillo.png": {
           "scientific_name": "Chaetophractus villosus",
@@ -8837,9 +8750,11 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT1",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
             "PA27",
-            "PA28",
             "PA29",
             "PA30",
             "PA31",
@@ -8847,20 +8762,19 @@
             "PA33",
             "PA34",
             "PA35",
-            "PA36",
-            "PA37",
-            "PA38",
-            "PA39",
-            "PA40",
-            "PA41",
             "IM1",
             "IM2",
-            "IM3"
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Dry-country hedgehog from the eastern Mediterranean/Middle East through Central and South Asia. No sub-Saharan or Afrotropical-island range."
         },
         "North American Porcupine.png": {
           "scientific_name": "Erethizon dorsatum",
@@ -8967,24 +8881,19 @@
             "dry-forest"
           ],
           "wild_regions": [
+            "AU4",
             "AU5",
             "AU6",
             "AU7",
-            "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU8"
           ],
           "space_requirement": 3,
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Arid and semi-arid mainland Australia; removed Queensland rainforest and all Australasian-island/Pacific regions."
         },
         "Round-Eared Elephant Shrew.png": {
           "scientific_name": "Macroscelides proboscideus",
@@ -8996,6 +8905,7 @@
             "nocturnal"
           ],
           "wild_regions": [
+            "AT2",
             "AT9",
             "AT10"
           ],
@@ -9003,7 +8913,8 @@
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Macroscelides proboscideus sensu current split is the Karoo round-eared sengi of South Africa, southern Namibia and extreme southwestern Botswana; restricted to Cape/Karoo/Namib-adjacent drylands."
         },
         "Six-Banded Armadillo.png": {
           "scientific_name": "Euphractus sexcinctus",
@@ -9039,17 +8950,15 @@
           ],
           "wild_regions": [
             "AU3",
-            "AU4",
-            "AU5",
-            "AU6",
-            "AU7"
+            "AU4"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair",
             "female_group"
-          ]
+          ],
+          "geography_note": "Eastern and southeastern mainland Australia only; removed western/interior regions outside the native range."
         }
       },
       "3": {
@@ -9063,18 +8972,17 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
-            "AU3",
-            "AU4",
-            "IM18"
+            "AU8",
+            "AU9",
+            "AU13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Northern tropical Australia plus southern New Guinea; corrected erroneous New Zealand/Lord Howe/eastern-temperate/Indomalayan assignments."
         },
         "Black-and-Rufous Elephant Shrew.png": {
           "scientific_name": "Rhynchocyon petersi",
@@ -9084,16 +8992,15 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT13",
-            "AT14",
-            "AT15",
-            "AT16"
+            "AT7",
+            "AT12"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Rhynchocyon petersi is an East African coastal/lowland and montane forest species of Kenya and Tanzania, including Zanzibar; Congo-basin blanket regions removed."
         },
         "Brazilian Porcupine.png": {
           "scientific_name": "Coendou prehensilis",
@@ -9134,28 +9041,20 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
             "AU3",
             "AU4",
             "AU5",
             "AU6",
             "AU7",
             "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15",
-            "AU16"
+            "AU9"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Native across Australia including Tasmania. New Zealand is introduced and excluded; Pacific, New Guinea, Sulawesi and subantarctic regions removed."
         },
         "Eastern Wallaroo.png": {
           "scientific_name": "Osphranter robustus",
@@ -9167,28 +9066,19 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
             "AU3",
             "AU4",
-            "AU5",
-            "AU6",
             "AU7",
             "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU9"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Eastern wallaroo/euro range across eastern and inland mainland Australia; all offshore Australasian island regions removed."
         },
         "European Hamster.png": {
           "scientific_name": "Cricetus cricetus",
@@ -9281,26 +9171,15 @@
           ],
           "wild_regions": [
             "AU3",
-            "AU4",
-            "AU5",
-            "AU6",
-            "AU7",
-            "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15",
-            "AU16"
+            "AU4"
           ],
           "space_requirement": 3,
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Macropus giganteus is the Eastern Grey Kangaroo: eastern and southeastern Australia including Tasmania; western Australia and offshore island bioregions removed."
         },
         "Indian Flying Fox.png": {
           "scientific_name": "Pteropus medius",
@@ -9366,18 +9245,14 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AU3",
-            "AU4",
-            "AU5",
-            "AU6",
-            "AU7",
-            "AU16"
+            "AU3"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Coastal and subcoastal southeastern Australia including Tasmania; removed western, interior and subantarctic regions."
         },
         "Lowland Paca.png": {
           "scientific_name": "Cuniculus paca",
@@ -9493,16 +9368,15 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AU8",
-            "AU9",
-            "AU10",
-            "AU11"
+            "AU5",
+            "AU6"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Current/native southwestern and southern Australian range; corrected erroneous northern-Australia and Pacific-island codes."
         }
       },
       "4": {
@@ -9516,9 +9390,7 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT2",
             "AT7",
             "AT8",
             "AT9",
@@ -9526,10 +9398,8 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -9540,7 +9410,8 @@
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Genuinely widespread mainland sub-Saharan species, but not an oceanic-island animal and generally absent from the wettest Congo rainforest core. Broad range retained where suitable savanna, woodland, grassland and dryland habitat occurs."
         },
         "African Brush-Tailed Porcupine.png": {
           "scientific_name": "Atherurus africanus",
@@ -9550,18 +9421,22 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
+            "AT12",
+            "AT13",
+            "AT14",
             "AT15",
             "AT16",
-            "AT17"
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Forest and forest-mosaic porcupine from Upper Guinea through Gulf of Guinea and Congo forests east to Uganda/Kenya/South Sudan; broad dry southern-African regions removed."
         },
         "Brown Dorcopsis.png": {
           "scientific_name": "Dorcopsis muelleri",
@@ -9589,20 +9464,13 @@
           ],
           "wild_regions": [
             "AU3",
-            "AU4",
-            "AU5",
-            "AU6",
-            "AU7",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15",
-            "AU16"
+            "AU4"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Southeastern Australia and Tasmania; removed interior/western Australia and all Australasian island spillover."
         },
         "Coruro.png": {
           "scientific_name": "Spalacopus cyanus",
@@ -9627,14 +9495,15 @@
             "wetland"
           ],
           "wild_regions": [
-            "IM18"
+            "AU13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Native to southern New Guinea and the Aru Islands, all within OneEarth New Guinea & Surrounding Islands (AU13). Corrected erroneous IM18 Sumatra/Malaysia assignment."
         },
         "Goodfellow's Tree-Kangaroo.png": {
           "scientific_name": "Dendrolagus goodfellowi",
@@ -9687,19 +9556,14 @@
           "wild_regions": [
             "AU3",
             "AU4",
-            "AU5",
-            "AU6",
-            "AU7",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU9"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "female_group"
-          ]
+          ],
+          "geography_note": "Native eastern Australia from Queensland through New South Wales/Victoria into South Australia; removed New Guinea, Solomon, Sulawesi and other island regions."
         },
         "Nine-Banded Armadillo.png": {
           "scientific_name": "Dasypus novemcinctus",
@@ -9779,33 +9643,28 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT1",
             "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
             "AT21",
             "AT22",
             "AT23",
-            "PA33",
-            "PA36",
-            "PA37"
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group",
             "bachelor_group"
-          ]
+          ],
+          "geography_note": "Rocky-country mammal with discontinuous African and Arabian/Levant populations; broad open-country template narrowed away from unrelated wetland/flamingo geography."
         },
         "Short-Beaked Echidna.png": {
           "scientific_name": "Tachyglossus aculeatus",
@@ -9818,8 +9677,6 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
             "AU3",
             "AU4",
             "AU5",
@@ -9827,19 +9684,13 @@
             "AU7",
             "AU8",
             "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15",
-            "AU16",
-            "IM18"
+            "AU13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Native throughout Australia including Tasmania and in southern/eastern New Guinea; introduced/irrelevant NZ, Pacific, Sulawesi and Indomalayan codes removed."
         },
         "West Indian Manatee.png": {
           "scientific_name": "Trichechus manatus",
@@ -9893,18 +9744,16 @@
             "grassland"
           ],
           "wild_regions": [
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13"
+            "AU4",
+            "AU7"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group",
             "bachelor_group",
             "female_group"
-          ]
+          ],
+          "geography_note": "Restricted to rocky ranges of South Australia, New South Wales and southwestern Queensland; removed tropical/Pacific/New Guinea regions."
         }
       },
       "5": {
@@ -10066,20 +9915,14 @@
           "wild_regions": [
             "AU3",
             "AU4",
-            "AU5",
-            "AU6",
-            "AU7",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15",
-            "AU16"
+            "AU9"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Eastern Australian freshwater systems and Tasmania; removed western/interior Australia and all offshore Australasian island spillover."
         },
         "Red and White Giant Flying Squirrel.png": {
           "scientific_name": "Petaurista alborufus",
@@ -10155,13 +9998,14 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AU16"
+            "AU3"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Wild native population is Tasmania; AU16 is the Subantarctic Antipodes Islands and was erroneous."
         },
         "White-Striped Dorcopsis.png": {
           "scientific_name": "Dorcopsis hageni",
@@ -10169,13 +10013,14 @@
             "rainforest"
           ],
           "wild_regions": [
-            "AU1"
+            "AU13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Endemic to northern New Guinea; corrected erroneous AU1 New Zealand assignment."
         }
       }
     },
@@ -10190,6 +10035,7 @@
             "coastal"
           ],
           "wild_regions": [
+            "AT6",
             "AT7",
             "AT8",
             "AT9",
@@ -10206,13 +10052,16 @@
             "AT21",
             "AT22",
             "AT23",
-            "PA27"
+            "PA26",
+            "PA27",
+            "PA29"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Extremely widespread native African wetland bird including Madagascar, plus native Middle-Eastern populations in Iraq/Iran and Yemen. Introduced European populations excluded."
         },
         "Common Raven.png": {
           "scientific_name": "Corvus corax",
@@ -10352,27 +10201,20 @@
             "temperate-forest"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
             "AU3",
             "AU4",
             "AU5",
             "AU6",
             "AU7",
             "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU9"
           ],
           "space_requirement": 3,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Native across most of mainland Australia; Tasmania population is extinct and all non-Australian Australasian regions removed."
         },
         "Greater Rhea.png": {
           "scientific_name": "Rhea americana",
@@ -10403,23 +10245,20 @@
             "savanna"
           ],
           "wild_regions": [
+            "AT7",
             "AT8",
-            "AT9",
+            "AT10",
             "AT11",
             "AT12",
             "AT13",
-            "AT16",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT21"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Eastern and southern African wetland-grassland crane: eastern DRC/Uganda/Kenya south through Tanzania, Zambia and Mozambique, plus Zimbabwe/South Africa and small populations west to Angola/Namibia."
         },
         "Laughing Kookaburra.png": {
           "scientific_name": "Dacelo novaeguineae",
@@ -10432,15 +10271,14 @@
           "wild_regions": [
             "AU3",
             "AU4",
-            "AU5",
-            "AU6",
-            "AU7"
+            "AU9"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Native eastern Australia; western Australian and New Zealand populations are introduced and excluded."
         },
         "Red-Crowned Crane.png": {
           "scientific_name": "Grus japonensis",
@@ -10543,54 +10381,15 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14"
-          ],
-          "space_requirement": 1,
-          "population_profiles": [
-            "pair",
-            "breeding_group"
-          ]
-        },
-        "Black Crowned Crane.png": {
-          "scientific_name": "Balearica pavonina",
-          "tags": [
-            "wetland",
-            "grassland",
-            "savanna"
-          ],
-          "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13"
-          ],
-          "space_requirement": 1,
-          "population_profiles": [
-            "pair",
-            "breeding_group"
-          ]
-        },
-        "Blue Crane.png": {
-          "scientific_name": "Grus paradisea",
-          "tags": [
-            "grassland",
-            "wetland",
-            "shrubland"
-          ],
-          "wild_regions": [
+            "AT13",
+            "AT16",
+            "AT19",
             "AT20",
             "AT21",
             "AT22",
@@ -10600,7 +10399,49 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Intra-African migrant breeding across the Sahel from Senegal to Ethiopia/Somalia and moving through East Africa to southern Africa in the non-breeding season. Regular seasonal range is included."
+        },
+        "Black Crowned Crane.png": {
+          "scientific_name": "Balearica pavonina",
+          "tags": [
+            "wetland",
+            "grassland",
+            "savanna"
+          ],
+          "wild_regions": [
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT23"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "West African/Sahel-Sudanian crane of shallow wetlands and grasslands from Senegal east toward Sudan/Ethiopia; oceanic islands and southern-African blanket codes excluded."
+        },
+        "Blue Crane.png": {
+          "scientific_name": "Grus paradisea",
+          "tags": [
+            "grassland",
+            "wetland",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "AT2",
+            "AT8",
+            "AT9"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Southern African grassland crane concentrated in South Africa, with marginal occurrence in Namibia/Botswana. Old Sahel/Horn-style array removed."
         },
         "Common Ostrich.png": {
           "scientific_name": "Struthio camelus",
@@ -10611,31 +10452,24 @@
             "desert"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT2",
             "AT7",
             "AT8",
             "AT9",
             "AT10",
             "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
+            "AT23",
+            "PA25"
           ],
           "space_requirement": 3,
           "population_profiles": [
             "harem",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Native African ostrich distribution across Sahel/Horn/East African and southern African open drylands, with Saharan margins retained. Oceanic islands, humid Congo/West African forest cores and extinct/introduced-only areas excluded."
         },
         "Glossy Ibis.png": {
           "scientific_name": "Plegadis falcinellus",
@@ -10646,10 +10480,24 @@
             "grassland"
           ],
           "wild_regions": [
-            "NA25",
-            "NA27",
-            "NT22",
-            "NT23",
+            "AT2",
+            "AT6",
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
+            "AT13",
+            "AT14",
+            "AT15",
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23",
             "PA18",
             "PA19",
             "PA20",
@@ -10666,35 +10514,6 @@
             "PA31",
             "PA32",
             "PA33",
-            "PA34",
-            "PA35",
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
-            "PA45",
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
-            "AT15",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23",
             "IM1",
             "IM2",
             "IM3",
@@ -10707,13 +10526,18 @@
             "IM10",
             "IM11",
             "IM12",
-            "IM13"
+            "IM13",
+            "AU9",
+            "AU13",
+            "AU14",
+            "AU15"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Cosmopolitan wetland bird. Regular native/breeding range spans southern/eastern Europe, Africa including Madagascar, central/southern Asia, Southeast Asia, New Guinea and Australia; vagrant-only northern European occurrence excluded."
         },
         "Hamerkop.png": {
           "scientific_name": "Scopus umbretta",
@@ -10723,9 +10547,7 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT6",
             "AT7",
             "AT8",
             "AT9",
@@ -10737,7 +10559,6 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -10748,7 +10569,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Widespread African wetland bird; Madagascar included. Broad continental occurrence is legitimate rather than a savanna-template artifact."
         },
         "Lesser Rhea.png": {
           "scientific_name": "Rhea pennata",
@@ -10775,9 +10597,6 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -10785,11 +10604,9 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -10800,7 +10617,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Widespread sub-Saharan scavenging/wetland stork. Central African occurrence retained and AT15 added; broad mobility means substantial overlap with savanna mammals is real, but the exact inherited array was too restrictive."
         },
         "Northern Bald Ibis.png": {
           "scientific_name": "Geronticus eremita",
@@ -10886,13 +10704,13 @@
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT21"
+            "AT13"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Savanna/woodland bird from Kenya/Tanzania south through Angola/Zambia/Zimbabwe/Mozambique/Botswana into northeastern South Africa. Similar to Plains Zebra geographically but not identical; Horn-of-Africa extension removed."
         },
         "White-Naped Crane.png": {
           "scientific_name": "Grus vipio",
@@ -10927,9 +10745,7 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT6",
             "AT7",
             "AT8",
             "AT9",
@@ -10941,7 +10757,6 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -10952,7 +10767,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Extremely widespread resident/nomadic African wetland stork including Madagascar. Middle-Eastern and European records are vagrancy only and are excluded."
         }
       },
       "3": {
@@ -10983,12 +10799,8 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
-            "AT9",
             "AT11",
             "AT12",
             "AT13",
@@ -10996,14 +10808,17 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
-            "AT19"
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT23"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Sub-Saharan wetland species with broad tropical African occurrence and seasonal movements; oceanic islands and driest southwest/Horn regions excluded."
         },
         "American White Ibis.png": {
           "scientific_name": "Eudocimus albus",
@@ -11041,9 +10856,7 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT2",
             "AT7",
             "AT8",
             "AT9",
@@ -11055,7 +10868,6 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -11066,7 +10878,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Very widespread resident African wetland rail. Broad mainland range is legitimate, but its geography is separated from unrelated Egyptian Fruit Bat and Nile Crocodile template matches."
         },
         "Black-Faced Ibis.png": {
           "scientific_name": "Theristicus melanopis",
@@ -11100,17 +10913,16 @@
             "riverine"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
-            "AU3",
-            "AU4",
-            "IM18"
+            "AU8",
+            "AU9",
+            "AU13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Northern Australia and southern New Guinea; corrected NZ/Lord Howe/eastern-temperate and Indomalayan assignments."
         },
         "Common Trumpeter.png": {
           "scientific_name": "Psophia crepitans",
@@ -11155,9 +10967,6 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -11169,18 +10978,16 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT21"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Sub-Saharan wetland/grassland ibis from West/Central Africa through East Africa to southern Africa; dry Horn/Sahel fringe trimmed relative to the inherited broad template."
         },
         "Madagascar Ibis.png": {
           "scientific_name": "Lophotibis cristata",
@@ -11206,32 +11013,21 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
-            "AT9",
-            "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT15",
             "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
             "AT20",
             "AT21",
-            "AT22",
             "AT23"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Patchy sub-Saharan wetland species: southern Sahel/West Africa and more continuous Nile/East/south-central African occurrence to northern Botswana, Mozambique and eastern South Africa."
         },
         "Southern Cassowary.png": {
           "scientific_name": "Casuarius casuarius",
@@ -11240,16 +11036,16 @@
             "wetland"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
-            "AU3",
-            "IM18"
+            "AU9",
+            "AU13",
+            "AU14"
           ],
           "space_requirement": 3,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Native to New Guinea, adjacent Aru/Seram-area islands and northeastern Queensland; corrected erroneous NZ/Lord Howe/Indomalayan codes."
         },
         "Straw-Necked Ibis.png": {
           "scientific_name": "Threskiornis spinicollis",
@@ -11259,27 +11055,20 @@
             "savanna"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
             "AU3",
             "AU4",
             "AU5",
             "AU6",
             "AU7",
             "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU9"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Australia and Tasmania; removed New Guinea, Sulawesi, Solomon, Vanuatu and other island spillover."
         },
         "Sunbittern.png": {
           "scientific_name": "Eurypyga helias",
@@ -11321,28 +11110,20 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
             "AU3",
             "AU4",
             "AU5",
             "AU6",
             "AU7",
             "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15",
-            "AU16"
+            "AU9"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Native throughout Australia including Tasmania; removed New Zealand, Pacific islands, New Guinea, Sulawesi and subantarctic codes."
         }
       },
       "4": {
@@ -11363,6 +11144,8 @@
             "AT14",
             "AT15",
             "AT16",
+            "AT17",
+            "AT19",
             "AT20",
             "AT21",
             "AT22",
@@ -11373,7 +11156,8 @@
             "pair",
             "breeding_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Widespread sub-Saharan wetland stork with native Madagascar occurrence. Broad river, marsh and floodplain distribution retained; extreme arid regions excluded."
         },
         "Asian Woolly-Necked Stork.png": {
           "scientific_name": "Ciconia episcopus",
@@ -11460,11 +11244,8 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT1",
             "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT6",
             "AT7",
             "AT8",
             "AT9",
@@ -11476,12 +11257,20 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
             "AT23",
+            "PA9",
+            "PA10",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15",
+            "PA16",
+            "PA17",
             "PA18",
             "PA19",
             "PA20",
@@ -11505,16 +11294,6 @@
             "PA38",
             "PA39",
             "PA40",
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
-            "PA45",
-            "PA46",
-            "PA47",
-            "PA48",
-            "PA49",
-            "PA50",
             "IM1",
             "IM2",
             "IM3",
@@ -11527,13 +11306,21 @@
             "IM10",
             "IM11",
             "IM12",
-            "IM13"
+            "IM13",
+            "IM14",
+            "IM15",
+            "IM16",
+            "IM17",
+            "IM18",
+            "AU9",
+            "AU13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Very widespread freshwater grebe across Europe, much of Asia, Southeast Asia/west Pacific, New Guinea and most of Africa including Madagascar. Arid interiors without suitable wetlands remain ecological gaps within broad regions."
         },
         "Madagascar Sacred Ibis.png": {
           "scientific_name": "Threskiornis bernieri",
@@ -11665,22 +11452,20 @@
             "grassland"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT10",
+            "AT11",
+            "AT12",
             "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT21"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Three principal populations: south-central Africa (especially Zambia/Botswana/Angola/DRC/Tanzania/Zimbabwe), isolated Ethiopian population, and eastern South Africa. Similarity to Grey Crowned Crane is genuine at OneEarth resolution."
         }
       },
       "5": {
@@ -11747,27 +11532,17 @@
             "riverine"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
-            "AU3",
             "AU4",
-            "AU5",
-            "AU6",
             "AU7",
             "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU9"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Northern and eastern mainland Australia with inland occurrences; all New Zealand/Pacific/New Guinea/Sulawesi codes removed."
         },
         "Corncrake.png": {
           "scientific_name": "Crex crex",
@@ -11869,23 +11644,21 @@
             "shrubland"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT18",
-            "AT19",
-            "AT20",
             "AT21",
-            "AT22",
-            "AT23"
+            "AT22"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "solitary",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Open-country bustard with eastern and southern African populations. Existing broad savanna/dryland range confirmed."
         },
         "Little Bustard.png": {
           "scientific_name": "Tetrax tetrax",
@@ -11992,7 +11765,8 @@
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Widespread African wetland spoonbill from sub-Saharan mainland to Madagascar. Madagascar is native and deliberately retained; unrelated oceanic-island systems are excluded."
         },
         "Chilean Flamingo.png": {
           "scientific_name": "Phoenicopterus chilensis",
@@ -12114,59 +11888,15 @@
             "coastal"
           ],
           "wild_regions": [
-            "PA18",
-            "PA19",
-            "PA20",
-            "PA21",
-            "PA22",
-            "PA23",
-            "PA24",
-            "PA27",
-            "PA28",
-            "PA29",
-            "PA30",
-            "PA31",
-            "PA32",
-            "PA33",
-            "PA34",
-            "PA35",
-            "PA36",
-            "PA37",
-            "PA38",
-            "PA39",
-            "PA40",
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
-            "AT9",
-            "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
             "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
-          ],
-          "space_requirement": 1,
-          "population_profiles": [
-            "breeding_group"
-          ]
-        },
-        "Greater Flamingo.png": {
-          "scientific_name": "Phoenicopterus roseus",
-          "tags": [
-            "wetland",
-            "coastal"
-          ],
-          "wild_regions": [
+            "AT23",
             "PA18",
             "PA19",
             "PA20",
@@ -12183,26 +11913,53 @@
             "PA31",
             "PA32",
             "PA33",
-            "PA34",
-            "PA35",
-            "AT1",
+            "IM1",
+            "IM2",
+            "IM3",
+            "IM4",
+            "IM5"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "breeding_group"
+          ],
+          "geography_note": "Very wide Old World pelican with African breeding/non-breeding populations plus southeastern Europe, western/central Asia and South Asia. False African oceanic-island and Congo-forest blanket codes removed."
+        },
+        "Greater Flamingo.png": {
+          "scientific_name": "Phoenicopterus roseus",
+          "tags": [
+            "wetland",
+            "coastal"
+          ],
+          "wild_regions": [
             "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
             "AT16",
-            "AT19",
             "AT20",
             "AT21",
             "AT22",
             "AT23",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
+            "PA22",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27",
+            "PA28",
+            "PA29",
+            "PA30",
+            "PA31",
+            "PA32",
+            "PA33",
             "IM1",
             "IM2",
             "IM3",
@@ -12213,7 +11970,8 @@
           "population_profiles": [
             "breeding_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Highly mobile saline-wetland species; broad Africa–Mediterranean–Asia range remains appropriate and is not reduced merely to break a duplicate."
         },
         "Harbour Seal.png": {
           "scientific_name": "Phoca vitulina",
@@ -12811,13 +12569,8 @@
             "coastal"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
-            "AT9",
-            "AT10",
             "AT11",
             "AT12",
             "AT13",
@@ -12825,18 +12578,17 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
-            "AT23",
-            "PA33"
+            "AT23"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Widespread sub-Saharan freshwater and coastal pelican from West/Central Africa through East Africa to southern Africa. False oceanic-island codes AT3/AT4/AT5/AT18 removed."
         },
         "Small-Spotted Catshark.png": {
           "scientific_name": "Scyliorhinus canicula",
@@ -13519,7 +13271,8 @@
           "population_profiles": [
             "solitary",
             "breeding_group"
-          ]
+          ],
+          "geography_audit_note": "Deferred to marine-range audit: oceanic/marine distribution should not be approximated by blanket terrestrial Australasian bioregions."
         },
         "Grey Reef Shark.png": {
           "scientific_name": "Carcharhinus amblyrhynchos",
@@ -13687,25 +13440,30 @@
             "coastal"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
+            "AT23",
+            "PA25",
+            "PA27",
+            "IM1",
+            "IM2",
+            "IM3"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Highly mobile African flamingo concentrated at alkaline lakes and pans in East and southern Africa, with West African/Sahel and South Asian populations. False AT18 island assignment and humid forest blanket regions removed."
         },
         "Magellanic Penguin.png": {
           "scientific_name": "Spheniscus magellanicus",
@@ -13767,7 +13525,8 @@
           "population_profiles": [
             "breeding_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Oceanic-island range is intentional for this species; AT3 is not removed merely because it is a diagnostic error code on mainland taxa. Retained pending/subject to island-level species-complex mapping."
         },
         "Sand Tiger Shark.png": {
           "scientific_name": "Carcharias taurus",
@@ -17487,18 +17246,9 @@
             "PA50",
             "PA51",
             "PA52",
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
             "AT11",
             "AT12",
-            "AT13",
             "AT16",
             "AT19",
             "AT20",
@@ -17523,7 +17273,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Black Kite sensu Milvus migrans: broad Eurasian breeding/resident range, with western Palearctic migrants wintering chiefly in the Sahel and sub-Saharan Africa. Resident African Yellow-Billed Kite is handled separately as Milvus aegyptius, so its blanket African range is not duplicated here."
         },
         "Common Buzzard.png": {
           "scientific_name": "Buteo buteo",
@@ -17834,7 +17585,16 @@
             "nocturnal"
           ],
           "wild_regions": [
+            "AT2",
+            "PA9",
             "PA10",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15",
+            "PA16",
+            "PA17",
             "PA18",
             "PA19",
             "PA20",
@@ -17857,23 +17617,14 @@
             "PA37",
             "PA38",
             "PA39",
-            "PA40",
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
-            "PA45",
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5"
+            "PA40"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Palearctic owl from Europe and North Africa east through the Middle East and Central Asia. False Afrotropical oceanic-island codes removed; North African occurrence retained."
         },
         "Snowy Owl.png": {
           "scientific_name": "Bubo scandiacus",
@@ -18033,6 +17784,24 @@
             "nocturnal"
           ],
           "wild_regions": [
+            "AT2",
+            "AT6",
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
+            "AT13",
+            "AT14",
+            "AT15",
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23",
             "PA9",
             "PA10",
             "PA11",
@@ -18054,37 +17823,15 @@
             "PA27",
             "PA28",
             "PA29",
-            "PA30",
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT6",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
-            "AT15",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "PA30"
           ],
           "taxonomy_geography_note": "Scientific name Tyto alba is Western Barn Owl under the modern split; New World barn owls are American Barn Owl Tyto furcata.",
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Pass-42 regression corrected: broad African range retained and the genuine western Palearctic/European–North African range restored. Madagascar retained where represented by the broad Western Barn Owl card concept."
         },
         "White-Tailed Eagle.png": {
           "scientific_name": "Haliaeetus albicilla",
@@ -18664,21 +18411,13 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
-            "AT9",
-            "AT10",
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
-            "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -18689,7 +18428,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Broad sub-Saharan vulture, strongest in West and East Africa with sparse range-edge populations in southern Africa; oceanic islands and dense Congo rainforest core excluded."
         },
         "Indian Eagle-Owl.png": {
           "scientific_name": "Bubo bengalensis",
@@ -18725,31 +18465,27 @@
             "rocky"
           ],
           "wild_regions": [
-            "AT1",
             "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT15",
             "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
             "AT20",
             "AT21",
             "AT22",
             "AT23",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
             "PA22",
             "PA23",
             "PA24",
+            "PA25",
+            "PA26",
             "PA27",
             "PA28",
             "PA29",
@@ -18762,7 +18498,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Broad African and southern Palearctic falcon range retained; its wide African coverage is genuine."
         },
         "Long-Eared Owl.png": {
           "scientific_name": "Asio otus",
@@ -18775,37 +18512,7 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "NA5",
-            "NA6",
-            "NA7",
-            "NA8",
-            "NA9",
-            "NA10",
-            "NA11",
-            "NA12",
-            "NA13",
-            "NA14",
-            "NA15",
-            "NA16",
-            "NA17",
-            "NA18",
-            "NA19",
-            "NA20",
-            "NA21",
-            "NA23",
-            "NA24",
-            "NA25",
-            "NA29",
-            "NA30",
-            "NA31",
-            "PA1",
-            "PA2",
-            "PA3",
-            "PA4",
-            "PA5",
-            "PA6",
-            "PA7",
-            "PA8",
+            "AT2",
             "PA9",
             "PA10",
             "PA11",
@@ -18830,6 +18537,7 @@
             "PA30",
             "PA31",
             "PA32",
+            "PA33",
             "PA34",
             "PA35",
             "PA36",
@@ -18841,21 +18549,14 @@
             "PA42",
             "PA43",
             "PA44",
-            "PA45",
-            "PA49",
-            "PA50",
-            "PA51",
-            "PA52",
-            "AT1",
-            "AT10",
-            "AT11",
-            "AT12"
+            "PA45"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Primarily Holarctic owl with North African populations/winter occurrence. False AT1 oceanic-island assignment removed; broad Palearctic range retained."
         },
         "Monk Vulture.png": {
           "scientific_name": "Aegypius monachus",
@@ -19097,26 +18798,23 @@
             "nocturnal"
           ],
           "wild_regions": [
+            "AT2",
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT15",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
             "AT20",
             "AT21",
-            "AT22",
-            "AT23"
+            "AT22"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Primarily eastern and southern African open-country owl with southwestern and Horn extensions; central/western rainforest and oceanic-island blanket assignments removed."
         },
         "Steller's Sea Eagle.png": {
           "scientific_name": "Haliaeetus pelagicus",
@@ -19302,7 +19000,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Widespread mainland sub-Saharan eagle tied to lakes, rivers and wetlands from West/Central Africa through East Africa to southern Africa. Oceanic islands and driest interior regions excluded."
         },
         "African Wood Owl.png": {
           "scientific_name": "Strix woodfordii",
@@ -19313,9 +19012,9 @@
             "nocturnal"
           ],
           "wild_regions": [
+            "AT2",
             "AT7",
             "AT8",
-            "AT9",
             "AT11",
             "AT12",
             "AT13",
@@ -19326,14 +19025,14 @@
             "AT19",
             "AT20",
             "AT21",
-            "AT22",
-            "AT23"
+            "AT22"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Very widespread woodland/forest owl from Senegambia through the Congo Basin and Ethiopia/East Africa to southern Africa. Previous Sitatunga-identical wetland footprint was too narrow."
         },
         "American Kestrel.png": {
           "scientific_name": "Falco sparverius",
@@ -19480,31 +19179,27 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
             "AT16",
-            "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
+            "AT23",
+            "PA24",
+            "PA25"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Extensive but increasingly fragmented sub-Saharan savanna/woodland range from southern Mauritania/Senegal across the Sahel and East Africa to Namibia, Botswana and northeastern South Africa; southwest Arabian occurrence represented separately."
         },
         "Bearded Vulture.png": {
           "scientific_name": "Gypaetus barbatus",
@@ -19514,11 +19209,9 @@
             "grassland"
           ],
           "wild_regions": [
-            "AT1",
             "AT2",
-            "AT10",
-            "AT11",
             "AT12",
+            "AT21",
             "PA18",
             "PA19",
             "PA20",
@@ -19553,7 +19246,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Mountain specialist with fragmented populations in North Africa, East African highlands and the Palearctic/Himalayan belt. Oceanic-island code AT1 and lowland African blanket regions removed."
         },
         "Boreal Owl.png": {
           "scientific_name": "Aegolius funereus",
@@ -19739,23 +19433,19 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14"
+            "AT16",
+            "AT17",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Northern sub-Saharan species of the Sahel/Sudanian belt and Horn/East African dry country; removed oceanic islands and southern/central African overreach."
         },
         "Gyrfalcon.png": {
           "scientific_name": "Falco rusticolus",
@@ -19889,11 +19579,12 @@
             "rocky"
           ],
           "wild_regions": [
-            "AT1",
             "AT2",
-            "AT10",
-            "AT11",
-            "AT12",
+            "AT16",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23",
             "PA18",
             "PA19",
             "PA20",
@@ -19928,7 +19619,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Open dry-country buzzard centered on North Africa, southeastern Europe, the Middle East and Central/South Asia, with regular Sahel/Horn occurrence. Oceanic-island and tropical central/southern African overreach removed."
         },
         "Mottled Owl.png": {
           "scientific_name": "Strix virgata",
@@ -20057,8 +19749,6 @@
           ],
           "wild_regions": [
             "AT7",
-            "AT8",
-            "AT9",
             "AT11",
             "AT12",
             "AT13",
@@ -20066,13 +19756,18 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18"
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "West/Central African moist-forest and palm-associated raptor extending east to South Sudan/Kenyan coast and south through Angola to northeastern coastal South Africa. Broad western range restored."
         },
         "Red-Tailed Hawk.png": {
           "scientific_name": "Buteo jamaicensis",
@@ -20130,48 +19825,10 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
             "AT16",
-            "AT17"
-          ],
-          "space_requirement": 2,
-          "population_profiles": [
-            "pair",
-            "breeding_group"
-          ]
-        },
-        "Secretary Bird.png": {
-          "scientific_name": "Sagittarius serpentarius",
-          "tags": [
-            "savanna",
-            "grassland",
-            "shrubland"
-          ],
-          "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -20182,7 +19839,34 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Sahelian and East African vulture: Senegal/Gambia/Mali east to Sudan/South Sudan/Ethiopia, then south through Kenya/Tanzania to Mozambique. Southern-African migrant footprint of Abdim's Stork removed."
+        },
+        "Secretary Bird.png": {
+          "scientific_name": "Sagittarius serpentarius",
+          "tags": [
+            "savanna",
+            "grassland",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
+          ],
+          "space_requirement": 2,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Sub-Saharan open-grassland and savanna raptor; North African AT2 and central forest-oriented AT16 removed from inherited broad template."
         },
         "Short-Eared Owl.png": {
           "scientific_name": "Asio flammeus",
@@ -20282,31 +19966,22 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
             "AT20",
             "AT21",
             "AT22",
             "AT23",
-            "PA33",
-            "PA36",
-            "PA37",
-            "PA38",
-            "PA39",
-            "PA40",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27",
+            "PA29",
             "IM1",
             "IM2",
             "IM3"
@@ -20315,7 +19990,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Open-country eagle across sub-Saharan Africa with additional South Asian population; North-African/central-forest template regions removed."
         },
         "Tropical Screech Owl.png": {
           "scientific_name": "Megascops choliba",
@@ -20361,9 +20037,6 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -20371,11 +20044,7 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
-            "AT15",
             "AT16",
-            "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -20386,7 +20055,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Widespread sub-Saharan owl outside deep rainforest, with strongest occurrence in eastern and southern Africa and patchier West African populations."
         },
         "White-Backed Vulture.png": {
           "scientific_name": "Gyps africanus",
@@ -20396,9 +20066,6 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -20406,10 +20073,7 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
-            "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -20420,7 +20084,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Very widespread sub-Saharan vulture from Senegal/Gambia/Mali through the Sahel and Horn to southern Africa, but generally absent from heavily forested equatorial interiors."
         }
       },
       "4": {
@@ -20568,28 +20233,30 @@
             "mountain"
           ],
           "wild_regions": [
-            "AT1",
             "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT16",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
             "PA27",
             "PA28",
             "PA29",
             "PA30",
             "PA31",
             "PA32",
-            "PA33",
-            "PA34",
-            "PA35",
-            "PA36",
-            "PA37"
+            "PA33"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Barbary Falcon concept retained for the North African/Middle Eastern peregrine form: Canary/North African desert and mountain systems east through Egypt, the Red Sea/Horn fringe and Arabia/Levant. Oceanic Afrotropical island codes removed."
         },
         "Barred Owl.png": {
           "scientific_name": "Strix varia",
@@ -20639,7 +20306,6 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT1",
             "AT2",
             "PA18",
             "PA19",
@@ -20670,7 +20336,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Primarily Mediterranean-to-Indomalayan rocky-country eagle. In Africa its established breeding range is North African, reaching the northern Sahara fringe; sub-Saharan occurrences are dispersal/vagrancy and do not expand the regular wild_regions."
         },
         "Booted Eagle.png": {
           "scientific_name": "Hieraaetus pennatus",
@@ -20734,21 +20401,23 @@
             "IM11",
             "IM12",
             "IM13",
-            "IM14",
             "IM15",
             "IM16",
             "IM17",
             "IM18",
-            "AU1",
-            "AU2",
-            "AU3",
-            "AU4"
+            "AU8",
+            "AU9",
+            "AU12",
+            "AU13",
+            "AU14",
+            "AU15"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Widespread coastal/wetland raptor from the Indian subcontinent through Southeast Asia, Indonesia and New Guinea to northern/eastern Australia and the Bismarck/Solomon region. Broad cross-realm range is genuine."
         },
         "Eastern Imperial Eagle.png": {
           "scientific_name": "Aquila heliaca",
@@ -21104,9 +20773,6 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -21114,10 +20780,7 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
-            "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -21128,7 +20791,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Very widespread but patchy sub-Saharan raptor from West Africa through East Africa to southern Africa. Added legitimate western occurrence while retaining broad savanna/woodland range."
         },
         "Merlin.png": {
           "scientific_name": "Falco columbarius",
@@ -21354,28 +21018,18 @@
             "IM1",
             "IM2",
             "IM3",
-            "AT1",
-            "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
             "AT16",
-            "AT17",
-            "AT18"
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT23"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Breeds from northwestern Africa and southern Europe east through the Levant/Central Asia, with western populations wintering across the Sahel to Ethiopia and western Kenya. Previous oceanic-island and southern-African blanket codes removed."
         },
         "Striped Owl.png": {
           "scientific_name": "Asio clamator",
@@ -21416,30 +21070,26 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT1",
             "AT2",
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
+            "AT23",
+            "PA25",
+            "PA27"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Patchy rocky/mountainous African range from Eritrea/Ethiopia south through East and southern Africa, with isolated Sahel/Saharan massifs and marginal Arabian occurrence; forest and island codes excluded."
         },
         "Western Honey Buzzard.png": {
           "scientific_name": "Pernis apivorus",
@@ -21556,9 +21206,6 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -21566,10 +21213,7 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
-            "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
@@ -21580,7 +21224,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Patchily widespread sub-Saharan vulture from Senegambia east to Eritrea/Ethiopia/Somalia and south to South Africa, generally outside forested regions."
         },
         "Yellow-Billed Kite.png": {
           "scientific_name": "Milvus aegyptius",
@@ -21591,9 +21236,8 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT2",
+            "AT6",
             "AT7",
             "AT8",
             "AT9",
@@ -21605,18 +21249,20 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
+            "AT23",
+            "PA25",
+            "PA27"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Occurs virtually throughout sub-Saharan Africa and is native on Madagascar and the Comoros, extending north along coastal East Africa to Egypt and into southwestern Arabia. AT6 retained deliberately for Madagascar; unrelated oceanic-island codes removed."
         },
         "Yellow-Headed Caracara.png": {
           "scientific_name": "Milvago chimachima",
@@ -21884,43 +21530,35 @@
             "mangrove"
           ],
           "wild_regions": [
-            "IM4",
+            "IM1",
+            "IM2",
+            "IM3",
             "IM5",
             "IM6",
-            "IM7",
             "IM8",
             "IM9",
             "IM10",
             "IM11",
             "IM12",
             "IM13",
-            "IM14",
             "IM15",
             "IM16",
             "IM17",
             "IM18",
-            "AU1",
-            "AU2",
             "AU3",
             "AU4",
-            "AU5",
-            "AU6",
-            "AU7",
             "AU8",
             "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
             "AU13",
             "AU14",
-            "AU15",
-            "AU16"
+            "AU15"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Coastal and large-waterway species from India/Sri Lanka through Southeast Asia and Indonesia to New Guinea and Australia including Tasmania. Broad Indo-Australasian range is genuine; unrelated Pacific/NZ regions excluded."
         }
       }
     },
@@ -22004,27 +21642,20 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
             "AU3",
             "AU4",
             "AU5",
             "AU6",
             "AU7",
             "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU9"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Native across mainland Australia and Tasmania; removed all non-Australian Australasian island regions."
         },
         "Orange-Winged Amazon.png": {
           "scientific_name": "Amazona amazonica",
@@ -22351,21 +21982,18 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
             "AT15",
-            "AT16"
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Primarily West African forest turaco under the current card concept, concentrated from Senegambia/Guinea east through the Upper Guinea and western Lower Guinea forests. Congo/East/southern African template regions removed."
         },
         "Hyacinth Macaw.png": {
           "scientific_name": "Anodorhynchus hyacinthinus",
@@ -22397,13 +22025,14 @@
             "grassland"
           ],
           "wild_regions": [
-            "AU16"
+            "AU1"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Endemic to New Zealand's South Island; corrected AU16 Subantarctic Antipodes Islands."
         },
         "Lilacine Amazon.png": {
           "scientific_name": "Amazona lilacina",
@@ -22431,26 +22060,20 @@
             "riverine"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
             "AU3",
+            "AU4",
             "AU5",
             "AU6",
             "AU7",
             "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU9"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Native Australian range only; removed New Zealand, Pacific, New Guinea, Sulawesi and other island spillover."
         },
         "Livingstone's Turaco.png": {
           "scientific_name": "Tauraco livingstonii",
@@ -22459,20 +22082,17 @@
             "mountain"
           ],
           "wild_regions": [
-            "AT14",
-            "AT15",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21"
+            "AT7",
+            "AT8",
+            "AT11",
+            "AT12"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Southeastern African forest turaco from Tanzania/Malawi through Mozambique and eastern Zimbabwe to northeastern South Africa. Existing range confirmed."
         },
         "Mealy Amazon.png": {
           "scientific_name": "Amazona farinosa",
@@ -22531,23 +22151,18 @@
             "shrubland"
           ],
           "wild_regions": [
+            "AU4",
             "AU5",
             "AU6",
             "AU7",
-            "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU8"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Arid and semi-arid inland Australia; removed New Guinea and surrounding Australasian/Pacific islands."
         },
         "Purple-Crested Turaco.png": {
           "scientific_name": "Gallirex porphyreolophus",
@@ -22557,23 +22172,18 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT13",
-            "AT14",
-            "AT15",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT7",
+            "AT8",
+            "AT11",
+            "AT12",
+            "AT13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Southeastern African woodland/forest turaco; slightly broader westward/south-central reach than Livingstone's Turaco. Duplicate equality removed."
         },
         "Red-Lored Amazon.png": {
           "scientific_name": "Amazona autumnalis",
@@ -22630,20 +22240,17 @@
             "mountain"
           ],
           "wild_regions": [
+            "AT7",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT15",
-            "AT16",
-            "AT17",
-            "AT18"
+            "AT21"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Montane and coastal forest hornbill of Ethiopia and East Africa south through Tanzania to Malawi/Mozambique. Southern highveld region inherited through the Mountain Reedbuck match removed."
         },
         "Solomons Corella.png": {
           "scientific_name": "Cacatua ducorpsii",
@@ -22685,17 +22292,15 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8"
+            "AT19",
+            "AT20"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Upper Guinea endemic from Guinea-Bissau/Guinea through Sierra Leone and Liberia to western Côte d'Ivoire, with only marginal southern Mali occurrence; old oceanic-island and East/Southern African codes removed."
         },
         "Toco Toucan.png": {
           "scientific_name": "Ramphastos toco",
@@ -22729,23 +22334,19 @@
             "riverine"
           ],
           "wild_regions": [
-            "AT13",
-            "AT14",
-            "AT15",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT7",
+            "AT8",
+            "AT10",
+            "AT11",
+            "AT12",
+            "AT13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Resident eastern/south-central African forest hornbill: DRC/Burundi/Kenya/Tanzania through Malawi, Zambia, Mozambique and Zimbabwe to Botswana, Namibia's Caprivi and eastern South Africa. West African, Horn dryland and oceanic-island codes excluded."
         },
         "Vinaceous-Breasted Amazon.png": {
           "scientific_name": "Amazona vinacea",
@@ -22855,6 +22456,7 @@
             "AT11",
             "AT12",
             "AT13",
+            "AT15",
             "AT16",
             "AT17",
             "AT19",
@@ -22867,7 +22469,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Widespread African woodland/savanna hornbill from West Africa and the Sahel through Central/East Africa into southern Africa. Added missing western/central forest-edge region AT15 rather than retaining the warthog-identical template."
         },
         "Bearded Barbet.png": {
           "scientific_name": "Lybius dubius",
@@ -22876,17 +22479,18 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8"
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT23"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "West African resident of wooded Sahel and savanna from Senegambia/Guinea-Bissau east through southern Chad and south to Guinea, Côte d'Ivoire, Ghana, Togo, Benin, Nigeria, Cameroon and northwestern CAR. Old oceanic-island and southern-African assignments removed."
         },
         "Black-Necked Aracari.png": {
           "scientific_name": "Pteroglossus aracari",
@@ -23069,16 +22673,15 @@
             "wetland"
           ],
           "wild_regions": [
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU3",
+            "AU4"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Native southeastern Australia; removed Solomon, New Guinea, Sulawesi and southeast Indonesian island codes."
         },
         "Meyer's Parrot.png": {
           "scientific_name": "Poicephalus meyeri",
@@ -23088,15 +22691,15 @@
             "shrubland"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
+            "AT15",
             "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
             "AT21",
             "AT22",
             "AT23"
@@ -23105,7 +22708,8 @@
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Species-level range combining all Meyer's Parrot subspecies: southern Chad/northeastern Cameroon east to Eritrea and western Ethiopia, then south through Uganda/Kenya/Tanzania and south-central Africa to Namibia, Botswana, Mozambique and northern South Africa."
         },
         "Palm Cockatoo.png": {
           "scientific_name": "Probosciger aterrimus",
@@ -23114,15 +22718,15 @@
             "savanna"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
-            "IM18"
+            "AU9",
+            "AU13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Cape York Peninsula and New Guinea/Aru region; corrected erroneous NZ/Lord Howe/Indomalayan assignments."
         },
         "Papuan Hornbill.png": {
           "scientific_name": "Rhyticeros plicatus",
@@ -23164,20 +22768,22 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
-            "AT12",
-            "AT13",
-            "AT14"
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Red-billed Hornbill complex mapped at the current card's species-level concept: Sahel/Sudanian dry country east to Somalia/northern Tanzania plus southern populations from Angola through Botswana/Namibia/Zimbabwe to northern South Africa; humid West/Central forest cores excluded."
         },
         "Red-Crowned Amazon.png": {
           "scientific_name": "Amazona viridigenalis",
@@ -23257,27 +22863,20 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
             "AU3",
             "AU4",
             "AU5",
             "AU6",
             "AU7",
             "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU9"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Australian mainland distribution; removed New Zealand, Pacific, New Guinea and Indonesian island spillover."
         },
         "Rhinoceros Hornbill.png": {
           "scientific_name": "Buceros rhinoceros",
@@ -23320,22 +22919,20 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT15",
             "AT16",
-            "AT17"
+            "AT17",
+            "AT20",
+            "AT21"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Riverine forest and woodland species in a belt from eastern Nigeria/Cameroon across Central Africa to western Kenya. Southern and far-western regions inherited from the duplicate template removed."
         },
         "White-Fronted Amazon.png": {
           "scientific_name": "Amazona albifrons",
@@ -23403,18 +23000,19 @@
             "rainforest"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
+            "AT13",
+            "AT14",
             "AT15",
             "AT16",
-            "AT17"
+            "AT17",
+            "AT19"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "West/Central African lowland rainforest hornbill from Upper Guinea east through Cameroon/Gabon/Congo into the Congo basin; old East/southern-African-style duplicate array removed."
         },
         "Blue-Headed Macaw.png": {
           "scientific_name": "Primolius couloni",
@@ -23482,22 +23080,22 @@
             "savanna"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT10",
+            "AT11",
+            "AT12",
             "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
+            "AT15",
             "AT21",
-            "AT22",
-            "AT23"
+            "AT22"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Eastern and southern African wooded-habitat hornbill from southern Ethiopia/Somalia through East Africa to South Africa, extending west through DRC to Angola. Oceanic islands and West African forest/Sahel overreach excluded."
         },
         "Diademed Amazon.png": {
           "scientific_name": "Amazona diadema",
@@ -23568,18 +23166,21 @@
             "rainforest"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
+            "AT12",
+            "AT13",
+            "AT14",
             "AT15",
             "AT16",
-            "AT17"
+            "AT17",
+            "AT19",
+            "AT21"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Central/East African rainforest hornbill from Cameroon/CAR through Congo/DRC to Uganda and western Kenya/Tanzania, with Albertine Rift occurrence; old duplicate array corrected."
         },
         "Hartlaub's Turaco.png": {
           "scientific_name": "Tauraco hartlaubi",
@@ -23657,9 +23258,6 @@
             "shrubland"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
             "AT7",
             "AT8",
             "AT9",
@@ -23667,20 +23265,18 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
-            "AT22",
             "AT23"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Broad mainland sub-Saharan woodland species from West Africa through the Sahel and East Africa to southern Africa. Somalia is primarily vagrant/non-breeding; oceanic islands and deep rainforest-core blanket assignments excluded."
         },
         "Red-Fan Parrot.png": {
           "scientific_name": "Deroptyus accipitrinus",
@@ -23730,17 +23326,16 @@
             "mountain"
           ],
           "wild_regions": [
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18"
+            "AT11",
+            "AT12",
+            "AT13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "South-central/eastern African montane-forest turaco centered on the Albertine Rift and adjacent highlands, extending through Zambia/Angola into Malawi/Tanzania. Oceanic-island code AT18 and West African forest assignments removed."
         },
         "White-Crowned Parrot.png": {
           "scientific_name": "Pionus senilis",
@@ -23979,18 +23574,15 @@
             "mountain"
           ],
           "wild_regions": [
-            "AU5",
-            "AU6",
-            "AU7",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU3",
+            "AU4"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Southeastern Australia; removed western Australia, New Guinea, Sulawesi and southeast Indonesian island codes."
         },
         "Great Blue Turaco.png": {
           "scientific_name": "Corythaeola cristata",
@@ -23998,18 +23590,22 @@
             "rainforest"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
+            "AT12",
+            "AT13",
+            "AT14",
             "AT15",
             "AT16",
-            "AT17"
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "West/Central African forest turaco extending east into the Great Lakes/Albertine region; old identical range shared with unrelated taxa replaced."
         },
         "Guyana Toucanet.png": {
           "scientific_name": "Selenidera piperivora",
@@ -24068,13 +23664,14 @@
             "rainforest"
           ],
           "wild_regions": [
-            "IM14"
+            "AU14"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Sulawesi endemic also occurring on nearby Lembeh, Togian, Muna and Buton/Butung; corrected IM14 (Nansei Islands) to AU14 Sulawesi & Maluku Islands."
         },
         "Lear's Macaw.png": {
           "scientific_name": "Anodorhynchus leari",
@@ -24099,13 +23696,14 @@
             "mountain"
           ],
           "wild_regions": [
-            "OC1"
+            "AU1"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "North Island New Zealand taxon; corrected OC1 Easter Island to AU1 New Zealand."
         },
         "Oriental Pied Hornbill.png": {
           "scientific_name": "Anthracoceros albirostris",
@@ -24429,20 +24027,16 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AU5",
-            "AU6",
-            "AU7",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15",
-            "AU16"
+            "AU3",
+            "AU4",
+            "AU5"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "pair",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Southeastern and southern Australia including Tasmania; removed New Guinea, Solomon, Sulawesi, southeast Indonesian and subantarctic codes."
         }
       }
     },
@@ -24460,13 +24054,15 @@
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
+            "AT23",
+            "PA25"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Sahelian and southern-Sahara tortoise from West Africa east toward Sudan/Eritrea/Ethiopia. Southern-African implication from its former duplicate pairing removed."
         },
         "Boa Constrictor.png": {
           "scientific_name": "Boa constrictor",
@@ -24542,22 +24138,16 @@
           "wild_regions": [
             "AU3",
             "AU4",
-            "AU5",
-            "AU6",
             "AU7",
             "AU8",
             "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15"
+            "AU13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Australia plus southern New Guinea for the species complex; removed Pacific, Sulawesi and southeast Indonesian spillover."
         },
         "Central Bearded Dragon.png": {
           "scientific_name": "Pogona vitticeps",
@@ -24569,19 +24159,17 @@
             "rocky"
           ],
           "wild_regions": [
+            "AU4",
+            "AU5",
             "AU7",
-            "AU8",
-            "AU9",
-            "AU10",
-            "AU11",
-            "AU12",
-            "AU13"
+            "AU8"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Arid/semi-arid eastern and central mainland Australia; removed Pacific/New Guinea island regions."
         },
         "Chinese Water Dragon.png": {
           "scientific_name": "Physignathus cocincinus",
@@ -24707,13 +24295,14 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AU1",
-            "IM18"
+            "AU9",
+            "AU13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Native to New Guinea and surrounding islands plus Cape York Peninsula, Queensland. Removed erroneous New Zealand assignment and corrected New Guinea to AU13."
         },
         "Hermann's Tortoise.png": {
           "scientific_name": "Testudo hermanni",
@@ -25214,20 +24803,19 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT11",
-            "AT12",
             "AT13",
             "AT14",
             "AT15",
-            "AT16"
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "West and Central African forest-swamp crocodile from the Upper Guinea forests through Lower Guinea and the Congo basin. East/southern African regions from the shared template removed."
         },
         "Egyptian Tortoise.png": {
           "scientific_name": "Testudo kleinmanni",
@@ -25302,16 +24890,15 @@
             "grassland"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
-            "AU3",
-            "AU4",
-            "IM18"
+            "AU8",
+            "AU9",
+            "AU13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Northern Australia and southern New Guinea; corrected NZ/Lord Howe/eastern-temperate/Indomalayan assignments."
         },
         "Gila Monster.png": {
           "scientific_name": "Heloderma suspectum",
@@ -25359,26 +24946,22 @@
             "shrubland"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT15",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
             "AT20",
             "AT21",
-            "AT22",
-            "AT23"
+            "AT22"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Eastern and southern African open-country tortoise, with Horn/East African and southern dryland/grassland coverage; Congo and West African rainforest blanket regions removed."
         },
         "Malagasy Tree Boa.png": {
           "scientific_name": "Sanzinia madagascariensis",
@@ -25480,14 +25063,14 @@
             "riverine"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
-            "IM18"
+            "AU8",
+            "AU13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Southern New Guinea and northern Australian river systems; corrected NZ/Lord Howe/Indomalayan assignments."
         },
         "Radiated Tortoise.png": {
           "scientific_name": "Astrochelys radiata",
@@ -25537,14 +25120,14 @@
             "riverine"
           ],
           "wild_regions": [
-            "AU1",
-            "IM18"
+            "AU13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "New Guinea-region freshwater turtle; corrected erroneous AU1 New Zealand and IM18 Sumatra/Malaysia codes."
         },
         "Rhinoceros Iguana.png": {
           "scientific_name": "Cyclura cornuta",
@@ -25572,22 +25155,16 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT14"
+            "AT16",
+            "AT19",
+            "AT20",
+            "AT23"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "West/Central African savanna monitor, concentrated from Senegal across the Sudanian/Sahel belt into northern Cameroon/CAR and adjacent savanna; rainforest core, East/Southern Africa and oceanic islands removed."
         },
         "Spectacled Caiman.png": {
           "scientific_name": "Caiman crocodilus",
@@ -25629,19 +25206,15 @@
             "rocky"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
-            "AU3",
-            "AU5",
             "AU6",
             "AU7",
-            "AU8",
-            "AU9"
+            "AU8"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Arid and tropical northern/central/western Australia; removed NZ/Lord Howe/eastern-temperate codes."
         },
         "Western Diamondback Rattlesnake.png": {
           "scientific_name": "Crotalus atrox",
@@ -25711,31 +25284,18 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
             "AT8",
-            "AT9",
             "AT10",
             "AT11",
             "AT12",
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
+            "AT13"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Card resolved as Pelomedusa subrufa sensu stricto under modern taxonomy, not the former continent-wide Pelomedusa subrufa complex. Native range represented from southern Angola/Namibia through Botswana and southeastern DRC to Malawi/Tanzania and northeastern South Africa. Madagascar excluded because its population is introduced."
         },
         "Asian Forest Tortoise.png": {
           "scientific_name": "Manouria emys",
@@ -26055,19 +25615,23 @@
             "semi-aquatic"
           ],
           "wild_regions": [
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
+            "PA22",
+            "PA23",
+            "PA24",
             "PA25",
             "PA26",
-            "PA27",
-            "PA28",
-            "PA29",
-            "AT1",
-            "AT2"
+            "PA27"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Mediterranean freshwater turtle range in southern Europe, North Africa and adjacent western Asia. False AT1 oceanic-island assignment removed."
         },
         "Monocled Cobra.png": {
           "scientific_name": "Naja kaouthia",
@@ -26102,9 +25666,7 @@
             "savanna"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT2",
             "AT7",
             "AT8",
             "AT9",
@@ -26116,17 +25678,18 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
+            "AT23",
+            "PA25"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Widespread African freshwater crocodile. Broad African array remains appropriate; PA25 retained for Nile/Sahara-linked range context. Duplicate equality with unrelated taxa is broken by their corrections."
         },
         "Nile Monitor.png": {
           "scientific_name": "Varanus niloticus",
@@ -26137,13 +25700,10 @@
             "semi-aquatic"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT2",
             "AT7",
             "AT8",
             "AT9",
-            "AT10",
             "AT11",
             "AT12",
             "AT13",
@@ -26151,17 +25711,18 @@
             "AT15",
             "AT16",
             "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
-            "AT23"
+            "AT23",
+            "PA25"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Water-associated monitor across most of sub-Saharan Africa and north along the Nile into Egypt. Oceanic islands and the driest southwest coastal desert removed; Nile-linked North African overlap retained."
         },
         "Puff Adder.png": {
           "scientific_name": "Bitis arietans",
@@ -26172,9 +25733,7 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
+            "AT2",
             "AT7",
             "AT8",
             "AT9",
@@ -26182,23 +25741,20 @@
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
-            "AT17",
-            "AT18",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
             "AT23",
-            "PA33",
-            "PA36",
-            "PA37"
+            "PA24",
+            "PA25"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Very widespread across sub-Saharan Africa outside true rainforest and extreme desert, with an isolated Moroccan population and southwestern Arabian occurrence. Forest-core regions removed; Arabian/North-African edge retained."
         },
         "Red Tegu.png": {
           "scientific_name": "Salvator rufescens",
@@ -26341,28 +25897,21 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT10",
             "AT11",
             "AT12",
             "AT13",
             "AT14",
+            "AT15",
             "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
-            "AT20",
             "AT21",
-            "AT22",
-            "AT23"
+            "AT22"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Kinixys belliana under the modern narrower species concept: central/eastern Africa from Angola/DRC/Burundi through East Africa and the Horn. Older literature's Senegal-to-South-Africa range included taxa now treated separately; introduced Madagascar records excluded."
         },
         "Black Mamba.png": {
           "scientific_name": "Dendroaspis polylepis",
@@ -26373,24 +25922,23 @@
             "rocky"
           ],
           "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
             "AT10",
             "AT11",
             "AT12",
             "AT13",
-            "AT14",
             "AT16",
-            "AT17",
-            "AT18",
-            "AT19",
             "AT20",
             "AT21",
-            "AT22",
-            "AT23"
+            "AT22"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Open woodland, savanna and rocky-country snake widespread across eastern, central and southern Africa. Sahel-wide AT23 treatment removed; disputed far-western records do not drive the map."
         },
         "Black-Headed Python.png": {
           "scientific_name": "Aspidites melanocephalus",
@@ -26402,21 +25950,16 @@
             "dry-forest"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
-            "AU3",
-            "AU4",
-            "AU5",
             "AU6",
+            "AU7",
             "AU8",
-            "AU9",
-            "AU10",
-            "AU11"
+            "AU9"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Northern and central mainland Australia; removed NZ/Lord Howe/southern and Pacific-island spillover."
         },
         "Borneo Earless Monitor.png": {
           "scientific_name": "Lanthanotus borneensis",
@@ -26461,25 +26004,22 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AT3",
-            "AT4",
-            "AT5",
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
             "AT12",
             "AT13",
             "AT14",
             "AT15",
             "AT16",
-            "AT17"
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT23"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Python sebae (Northern/Central African rock python), not the southern Python natalensis: West/Central African and northern East African distribution across savanna, woodland, forest-edge and wetland systems; southern African range excluded."
         },
         "Central American Wood Turtle.png": {
           "scientific_name": "Rhinoclemmys pulcherrima",
@@ -26653,20 +26193,16 @@
             "coastal"
           ],
           "wild_regions": [
-            "AT10",
+            "AT7",
+            "AT8",
             "AT11",
-            "AT12",
-            "AT13",
-            "AT14",
-            "AT16",
-            "AT17",
-            "AT18",
-            "AT19"
+            "AT12"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Coastal and southeastern East African forest/woodland snake from Kenya/Tanzania through Mozambique into northeastern South Africa. Existing compact range confirmed."
         },
         "False Gharial.png": {
           "scientific_name": "Tomistoma schlegelii",
@@ -26699,17 +26235,14 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
-            "AU3",
-            "AU4",
             "AU8",
             "AU9"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Endemic to tropical northern Australia; removed NZ/Lord Howe/eastern-temperate codes."
         },
         "Green Bush Viper.png": {
           "scientific_name": "Atheris squamigera",
@@ -26718,17 +26251,20 @@
             "wetland"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
+            "AT12",
+            "AT13",
+            "AT14",
             "AT15",
             "AT16",
-            "AT17"
+            "AT17",
+            "AT19",
+            "AT21"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Central and East African forest viper associated with Congo-basin and Albertine/eastern forests; old duplicated West/southern savanna-style array removed."
         },
         "Indonesian Pit Viper.png": {
           "scientific_name": "Trimeresurus insularis",
@@ -26820,19 +26356,13 @@
           "wild_regions": [
             "AU3",
             "AU4",
-            "AU5",
-            "AU6",
-            "AU7",
-            "AU12",
-            "AU13",
-            "AU14",
-            "AU15",
-            "AU16"
+            "AU9"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Eastern Australian mainland; removed western/interior and all offshore Australasian island spillover."
         },
         "Mitchell's Water Monitor.png": {
           "scientific_name": "Varanus mitchelli",
@@ -26842,17 +26372,13 @@
             "riverine"
           ],
           "wild_regions": [
-            "AU1",
-            "AU2",
-            "AU3",
-            "AU4",
-            "AU8",
-            "AU9"
+            "AU8"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Restricted to tropical northern Australia; removed NZ/Lord Howe/eastern-temperate/Queensland-rainforest blanket codes."
         },
         "Morelet's Crocodile.png": {
           "scientific_name": "Crocodylus moreletii",
@@ -26930,30 +26456,35 @@
             "coastal"
           ],
           "wild_regions": [
-            "IM4",
+            "IM1",
+            "IM2",
+            "IM3",
             "IM5",
             "IM6",
-            "IM7",
             "IM8",
             "IM9",
             "IM10",
             "IM11",
             "IM12",
             "IM13",
-            "IM14",
             "IM15",
             "IM16",
             "IM17",
             "IM18",
-            "AU1",
-            "AU2",
-            "AU3",
-            "AU4"
+            "AU8",
+            "AU9",
+            "AU10",
+            "AU11",
+            "AU12",
+            "AU13",
+            "AU14",
+            "AU15"
           ],
           "space_requirement": 3,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Established Indo-Pacific range from eastern India/Sri Lanka through Southeast Asia and Indonesia to New Guinea, northern Australia, Solomon Islands and Vanuatu. Broad range intentionally retained; New Zealand excluded."
         },
         "Siamese Crocodile.png": {
           "scientific_name": "Crocodylus siamensis",
@@ -26986,17 +26517,19 @@
             "rainforest"
           ],
           "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
+            "AT13",
+            "AT14",
             "AT15",
             "AT16",
-            "AT17"
+            "AT17",
+            "AT19",
+            "AT20"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "West and Central African river/forest crocodile under the broad card concept; distribution follows Upper Guinean and Congo-basin waters rather than East/southern African savannas."
         },
         "Smooth-Fronted Caiman.png": {
           "scientific_name": "Paleosuchus trigonatus",
@@ -27120,6 +26653,7 @@
             "savanna"
           ],
           "wild_regions": [
+            "AT15",
             "AT16",
             "AT17",
             "AT19",
@@ -27127,14 +26661,15 @@
             "AT21",
             "AT22",
             "AT23",
-            "PA23",
-            "PA24",
-            "PA25"
+            "AT12",
+            "AT13",
+            "AT14"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Crocodylus suchus currently ranges from Mauritania through West/Central Africa as far east as Uganda; Congo/Great-Lakes coverage added while southern/eastern open-country template regions remain excluded."
         },
         "West African Mud Turtle.png": {
           "scientific_name": "Pelusios castaneus",
@@ -27411,17 +26946,16 @@
             "rocky"
           ],
           "wild_regions": [
-            "AU2",
-            "AU3",
-            "AU4",
             "AU5",
             "AU6",
-            "AU7"
+            "AU7",
+            "AU8"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Arid and semi-arid mainland Australia; removed Lord Howe/eastern-temperate regions."
         },
         "Red-Headed River Turtle.png": {
           "scientific_name": "Podocnemis erythrocephala",
@@ -27530,13 +27064,14 @@
             "coastal"
           ],
           "wild_regions": [
-            "OC1"
+            "AU1"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Native/relict distribution is New Zealand, chiefly offshore islands and conservation translocations. Corrected OC1 (Easter Island) to AU1 New Zealand."
         }
       }
     }

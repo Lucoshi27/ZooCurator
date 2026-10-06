@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.176";
+const ZOO_CURATOR_VERSION = "V2.44.179";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -23431,13 +23431,19 @@ function renderZoo() {
                     }
                 }
             }else{
-                for(const animal of state.animals||[]){
-                    if(animal?.enclosureId!=null){
-                        const enclosureKey=String(animal.enclosureId);
-                        occupiedEnclosureIds.add(enclosureKey);
-                        addToSlotIndex(visibleAnimalsByEnclosure,animal.enclosureId,animal.slotIndex,animal);
-                    }
-                    addToSlotIndex(reservedAnimalsByEnclosure,animal?.reservedEnclosureId,animal?.reservedSlotIndex,animal);
+                ensureClassicOccupancyCache();
+                for(const [enclosureKey,slots] of classicOccupancyByEnclosure){
+                    occupiedEnclosureIds.add(enclosureKey);
+                    const visible=new Map();
+                    for(const [slotIndex,animals] of slots)
+                        if(animals?.length)visible.set(Number(slotIndex),animals[0]);
+                    if(visible.size)visibleAnimalsByEnclosure.set(enclosureKey,visible);
+                }
+                for(const [enclosureKey,slots] of classicReservedOccupancyByEnclosure){
+                    const reserved=new Map();
+                    for(const [slotIndex,animals] of slots)
+                        if(animals?.length)reserved.set(Number(slotIndex),animals[0]);
+                    if(reserved.size)reservedAnimalsByEnclosure.set(enclosureKey,reserved);
                 }
             }
 
@@ -24469,7 +24475,7 @@ function renderExchange() {
         return;
     }
     for (const node of [exchange1, exchange2, resultBox]) {
-        if (node) node.style.display = '';
+        if (node && node.style.display) node.style.display = '';
     }
 
     if (state.sandboxMode) {
@@ -30379,6 +30385,31 @@ function resetTransientStateForImport() {
     document.getElementById('truePopulationSelectorBackdrop')?.remove();
 }
 
+const LEGACY_ANIMAL_PLACEMENT_MIGRATIONS=Object.freeze({
+    'Asian Elephant':Object.freeze({fromCategory:'Other Mammals',fromLevel:4,toCategory:'Ungulates',toLevel:4}),
+    'African Elephant':Object.freeze({fromCategory:'Other Mammals',fromLevel:5,toCategory:'Ungulates',toLevel:5})
+});
+function migrateLegacyAnimalPlacementRecord(value){
+    if(!value||typeof value!=='object')return value;
+    const name=String(value.name||value.filename||'').replace(/\.png$/i,'');
+    const rule=LEGACY_ANIMAL_PLACEMENT_MIGRATIONS[name];
+    if(!rule)return value;
+    const category=canonicalAnimalCategory(value.category);
+    const level=Number(value.level);
+    if(category===rule.fromCategory && level===rule.fromLevel){
+        value.category=rule.toCategory;
+        value.level=rule.toLevel;
+    }
+    // Some old save records persist an explicit image/path string as well as category/level.
+    for(const key of ['path','image','imagePath','src','filenamePath']){
+        if(typeof value[key]!=='string')continue;
+        value[key]=value[key]
+            .replace(/Other Mammals\/4\/Asian Elephant\.png/gi,'Ungulates/4/Asian Elephant.png')
+            .replace(/Other Mammals\/5\/African Elephant\.png/gi,'Ungulates/5/African Elephant.png');
+    }
+    return value;
+}
+
 function migrateLegacyAnimalCategories(value,seen=new WeakSet()){
     if(!value||typeof value!=='object')return value;
     if(seen.has(value))return value;
@@ -30412,11 +30443,15 @@ function migrateLegacyAnimalCategories(value,seen=new WeakSet()){
         return value;
     }
     if(typeof value.category==='string')value.category=canonicalAnimalCategory(value.category);
+    migrateLegacyAnimalPlacementRecord(value);
     for(const key of Object.keys(value)){
         const item=value[key];
         if(key==='category')continue;
         if(typeof item==='string'){
             if(item==='Carnivora')value[key]='Carnivores';
+            else value[key]=item
+                .replace(/Other Mammals\/4\/Asian Elephant\.png/gi,'Ungulates/4/Asian Elephant.png')
+                .replace(/Other Mammals\/5\/African Elephant\.png/gi,'Ungulates/5/African Elephant.png');
         }else migrateLegacyAnimalCategories(item,seen);
         if(key==='Carnivora'&&key!=='Carnivores'){
             if(!Object.prototype.hasOwnProperty.call(value,'Carnivores'))value.Carnivores=value[key];
@@ -42882,6 +42917,7 @@ function opponentAnimalsGroupedByCategory(stock) {
         .join('\n\n');
 }
 
+let classicOpponentRowsRenderSignature='';
 function renderOpponentTradeState() {
     const opponentContainer = document.getElementById('opponentZoos');
     const opponentTradeArea = document.getElementById('opponentTradeArea');
@@ -42896,6 +42932,21 @@ function renderOpponentTradeState() {
     ensureTradeAreaLayout();
     positionOpponentTradeArea();
     const realMode = isRealOpponentMode();
+    const opponentRowsSignature=[
+        realMode?'1':'0',
+        state.gameMode,
+        state.unlockedOpponentCount,
+        state.selectedTradeOpponent??'-',
+        state.autonomousTradeOffer?.opponentIndex??'-',
+        (state.tradeOffers||[]).map(o=>o.opponentIndex).join(','),
+        state.opponentProfiles.slice(0,6).map(profile=>
+            `${profile?.name||''}:${(profile?.favourites||[]).slice(0,3).map(category=>
+                `${category}=${state.categoryColours[category]||CATEGORY_COLOURS[category]||'#888'}`
+            ).join(',')}`
+        ).join('|')
+    ].join('\u001e');
+    if(opponentRowsSignature===classicOpponentRowsRenderSignature)return;
+    classicOpponentRowsRenderSignature=opponentRowsSignature;
     const offeredOpponents=new Set((state.tradeOffers||[]).map(o=>o.opponentIndex));
     for (let i = 0; i < 6; i++) {
         const el = $(`opponentName${i + 1}`);
@@ -46055,8 +46106,7 @@ function renderTrade() {
     let decline = document.getElementById('declineOpponentOffer');
     const visibleAutonomousOffer =
         Boolean(state.autonomousTradeOffer) &&
-        Boolean(offer) &&
-        Boolean(selectedTradeOffer());
+        Boolean(offer);
     if (visibleAutonomousOffer) {
         if (!decline) {
             decline=document.createElement('button');

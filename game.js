@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.179";
+const ZOO_CURATOR_VERSION = "V2.44.181";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -23518,7 +23518,7 @@ function renderZoo() {
                     !state.suppressedExchangeGlowIds.has(animal.id)
                 ) exchangeGlowEligibleIds.add(animal.id);
             };
-            for(const slots of visibleAnimalsByEnclosure.values())
+            for(const slots of enclosureRenderContext.visibleAnimalsByEnclosure.values())
                 for(const animal of slots.values())addExchangeGlowAnimal(animal);
             for(const animal of state.exchange||[])addExchangeGlowAnimal(animal);
         }
@@ -34383,6 +34383,7 @@ async function finishHumanTradeRequestDrag(event){
 
 function refreshClassicEnclosureCards(enclosureIds) {
     if(state.gameMode==='true'||state.sandboxMode)return false;
+    if(state.drag?.type==='animal')return false;
     const ids=[...new Set((enclosureIds||[]).filter(id=>id!=null).map(String))];
     if(!ids.length)return false;
 
@@ -34759,10 +34760,25 @@ function finishAnimalDrag(event) {
         );
     if(movedOutOfEnclosure){
         discardClassicAnimalDragSourceNode(drag);
-        // The old cell must be rendered from authoritative occupancy, never from
-        // the transient drag DOM. This prevents another same-category card from
-        // appearing in the vacated source slot.
+        clearExchangeGlowFocusIfIdle();
+        prepareExchangeGlowAfterAnimalDrag(drag);
+        drag.image?.remove();
+        // Finish the drag before touching enclosure DOM. Exchange/trade is a transfer
+        // out of the zoo layout, not an enclosure relocation; allowing it to continue
+        // into relocation/renderAll can invalidate the whole enclosure layer.
+        state.drag=null;
+        invalidateClassicOccupancyCache();
         refreshClassicEnclosureCards([drag.originalEnclosureId]);
+        renderExchange();
+        renderTrade();
+        refreshDrawAvailabilityState();
+        renderProgressTracker();
+        updatePrestigeDisplay();
+        updateTurnDisplay();
+        captureTurnSnapshot();
+        writeAutoResumeSnapshot();
+        queueDocumentLocalisation();
+        return;
     }
 
     const peerOwnsDrag=localClassicMatch && (

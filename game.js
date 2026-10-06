@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.169";
+const ZOO_CURATOR_VERSION = "V2.44.176";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -660,16 +660,6 @@ const exchange2 = $('exchange2');
 const resultBox = $('result');
 const outgoingOfferBox = $('outgoingOffer');
 const incomingOfferBox = $('ingoingOffer');
-const classicTradeCellLayoutStyle=document.createElement('style');
-classicTradeCellLayoutStyle.id='classicTradeCellLayoutFix';
-classicTradeCellLayoutStyle.textContent=`
-body:not(.true-mode) #outgoingOffer,
-body:not(.true-mode) #ingoingOffer{
-    transform:translateX(-28px);
-}
-`;
-document.head.appendChild(classicTradeCellLayoutStyle);
-
 const zooBoard = $('zooBoard');
 const zooCanvas = $('zooCanvas');
 
@@ -17642,6 +17632,9 @@ function realZooRecordByName(name) {
 function realZooTemplateKey(recordOrName) {
     return normaliseGeographyPart(typeof recordOrName === 'string' ? recordOrName : recordOrName?.name || '');
 }
+function realZooVisitLayoutKey(recordOrName) {
+    return realZooTemplateKey(recordOrName);
+}
 function captureRealZooVisitLayout(recordOrName) {
     const key=realZooTemplateKey(recordOrName);
     if(!key) return;
@@ -23431,8 +23424,11 @@ function renderZoo() {
                     if(reserved)reservedAnimalsByEnclosure.set(enclosureKey,reserved);
                 }
                 if(husbandrySizeRulesEnabled){
-                    for(const animal of state.animals||[])if(animal?.id!=null)
-                        animalSizeById.set(animal.id,classicCachedAnimalEnclosureSize(animal));
+                    for(const slots of visibleAnimalsByEnclosure.values()){
+                        for(const animal of slots.values()){
+                            if(animal?.id!=null)animalSizeById.set(animal.id,classicCachedAnimalEnclosureSize(animal));
+                        }
+                    }
                 }
             }else{
                 for(const animal of state.animals||[]){
@@ -23509,12 +23505,16 @@ function renderZoo() {
                 if(eligible===undefined){eligible=hasNextLevelInventory(category,level);nextLevelEligibility.set(lookupKey,eligible);}
                 if(eligible)eligibleKeys.add(key);
             }
-            for(const animal of state.animals||[]){
+            const addExchangeGlowAnimal=animal=>{
                 if(
+                    animal &&
                     eligibleKeys.has(exchangeGroupKey(animal)) &&
                     !state.suppressedExchangeGlowIds.has(animal.id)
                 ) exchangeGlowEligibleIds.add(animal.id);
-            }
+            };
+            for(const slots of visibleAnimalsByEnclosure.values())
+                for(const animal of slots.values())addExchangeGlowAnimal(animal);
+            for(const animal of state.exchange||[])addExchangeGlowAnimal(animal);
         }
         enclosureRenderContext.cardRenderContext={
             layoutToolEditing:false,
@@ -32339,13 +32339,10 @@ function startAnimalDrag(
     const sourceRect =
         source.getBoundingClientRect();
 
-    const dragWidth =
-        ANIMAL_W *
-        state.zoom;
-
-    const dragHeight =
-        ANIMAL_H *
-        state.zoom;
+    // Match the exact rendered source-card box. Using nominal ANIMAL_W/H here can
+    // differ by a fractional CSS pixel after browser scaling and expose a white hairline.
+    const dragWidth = sourceRect.width;
+    const dragHeight = sourceRect.height;
 
     const relativeX =
         (
@@ -32381,7 +32378,11 @@ function startAnimalDrag(
         position:'fixed',
         width:dragWidth+'px',
         height:dragHeight+'px',
-        objectFit:'contain',
+        objectFit:'fill',
+        display:'block',
+        overflow:'hidden',
+        border:'0',
+        outline:'0',
         pointerEvents:'none',
         zIndex:'10020'
     });
@@ -34612,6 +34613,18 @@ function restoreClassicAnimalDragSourceNode(drag) {
     return true;
 }
 
+function discardClassicAnimalDragSourceNode(drag) {
+    if(state.gameMode==='true'||drag?.type!=='animal'||drag.location!=='enclosure')return false;
+    const node=drag.transientSourceNode;
+    if(node?.isConnected)node.remove();
+    drag.transientSourceNode=null;
+    drag.transientSourceParent=null;
+    drag.transientSourceNextSibling=null;
+    drag.transientSourceSlot=null;
+    return true;
+}
+
+
 function renderAfterTransientAnimalDrag(drag) {
     const restoredSource=profiledZooRenderStage(
         'drag-finish.targeted-classic',
@@ -34700,6 +34713,22 @@ function finishAnimalDrag(event) {
     }
 
     beginCompatibilityGlowFade(drag.compatibilityGlowKeys);
+
+    const movedOutOfEnclosure =
+        drag.location==='enclosure' &&
+        drag.originalEnclosureId!=null &&
+        animal.enclosureId==null &&
+        (
+            state.exchange.some(item=>item?.id===animal.id) ||
+            state.outgoingOffer?.id===animal.id
+        );
+    if(movedOutOfEnclosure){
+        discardClassicAnimalDragSourceNode(drag);
+        // The old cell must be rendered from authoritative occupancy, never from
+        // the transient drag DOM. This prevents another same-category card from
+        // appearing in the vacated source slot.
+        refreshClassicEnclosureCards([drag.originalEnclosureId]);
+    }
 
     const peerOwnsDrag=localClassicMatch && (
         localMultiplayerPeerReplica?.playerId===localClassicMatch.activePlayerId ||
@@ -42552,6 +42581,10 @@ function positionOpponentTradeArea(immediate=false) {
     const visualWidth=(cardWidth*2+cardGap)*tradeScale;
     const visualHeight=cardHeight*tradeScale;
     const gapToZoos=Math.max(8,Math.round(12*scale));
+    // Keep a dedicated clear lane for the "Other Zoos" heading. The trade cells are
+    // positioned through their parent #opponentTradeArea, so moving the individual
+    // cells with CSS transforms is ineffective once this routine lays the area out.
+    const otherZoosLabelClearance=Math.round(92*scale);
 
     area.style.setProperty('--trade-card-height',`${cardHeight}px`);
     area.style.setProperty('--trade-card-width',`${cardWidth}px`);
@@ -42564,13 +42597,15 @@ function positionOpponentTradeArea(immediate=false) {
     const zooButtons=visibleOpponentZooButtonsRect();
     if(zooButtons){
         area.style.left='auto';
-        area.style.right=`${Math.max(0,Math.round(window.innerWidth-zooButtons.left+gapToZoos))}px`;
+        area.style.right=`${Math.max(0,Math.round(
+            window.innerWidth-zooButtons.left+gapToZoos+otherZoosLabelClearance
+        ))}px`;
     }else{
         // Before zoo buttons exist, reserve their normal right-hand column rather than
         // letting the trade cells jump all the way to the viewport edge.
         const fallbackZooColumn=Math.max(150,Math.round(190*scale));
         area.style.left='auto';
-        area.style.right=`${fallbackZooColumn+gapToZoos}px`;
+        area.style.right=`${fallbackZooColumn+gapToZoos+otherZoosLabelClearance}px`;
     }
 
     const headerRect=document.getElementById('actionMenu')?.getBoundingClientRect();
@@ -45977,7 +46012,11 @@ function renderTrade() {
 
     clearDirectHumanTradeActions();
     const ordinaryTradeSignature=classicTradeUiSignature();
-    if(classicTradeRenderSignature===ordinaryTradeSignature)return;
+    if(classicTradeRenderSignature===ordinaryTradeSignature){
+        const staleDecline=document.getElementById('declineOpponentOffer');
+        if(staleDecline && !selectedTradeOffer()) staleDecline.style.display='none';
+        return;
+    }
     classicTradeRenderSignature=ordinaryTradeSignature;
     collectionTrackVisibleTradeOffers();
     outgoingOfferBox.onclick=null;
@@ -46014,7 +46053,11 @@ function renderTrade() {
         ? '<span>HUN<br>AANBOD</span>'
         : '<span>THEIR<br>OFFER</span>';
     let decline = document.getElementById('declineOpponentOffer');
-    if (state.autonomousTradeOffer) {
+    const visibleAutonomousOffer =
+        Boolean(state.autonomousTradeOffer) &&
+        Boolean(offer) &&
+        Boolean(selectedTradeOffer());
+    if (visibleAutonomousOffer) {
         if (!decline) {
             decline=document.createElement('button');
             decline.id='declineOpponentOffer';

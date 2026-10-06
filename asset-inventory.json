@@ -1,7 +1,52 @@
 {
   "animals": {
-    "Carnivora": {
+    "Carnivores": {
       "1": {
+        "American Mink.png": {
+          "scientific_name": "Neogale vison",
+          "tags": [
+            "wetland",
+            "river",
+            "boreal-forest",
+            "temperate-forest",
+            "grassland",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "NA4",
+            "NA5",
+            "NA6",
+            "NA7",
+            "NA8",
+            "NA9",
+            "NA10",
+            "NA11",
+            "NA12",
+            "NA13",
+            "NA14",
+            "NA15",
+            "NA16",
+            "NA17",
+            "NA18",
+            "NA19",
+            "NA20",
+            "NA21",
+            "NA22",
+            "NA23",
+            "NA24",
+            "NA25",
+            "NA27",
+            "NA28",
+            "NA31"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "solitary",
+            "temporary_breeding_pair"
+          ],
+          "geography_note": "Native North American range retained across Alaska, Canada and most of the contiguous US, but not high-Arctic tundra or introduced Eurasian range. Habitat audit emphasizes riparian/wetland systems within forest, grassland and shrubland landscapes.",
+          "population_note": "Normally solitary and territorial, especially adults; temporary breeding pairing only."
+        },
         "Arctic Fox.png": {
           "scientific_name": "Vulpes lagopus",
           "space_requirement": 2,
@@ -284,6 +329,63 @@
             "breeding_group"
           ]
         },
+        "European Pine Marten.png": {
+          "scientific_name": "Martes martes",
+          "tags": [
+            "temperate-forest",
+            "boreal-forest",
+            "woodland"
+          ],
+          "wild_regions": [
+            "PA9",
+            "PA10",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15",
+            "PA16",
+            "PA17",
+            "PA18",
+            "PA19"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "solitary",
+            "temporary_breeding_pair"
+          ],
+          "geography_note": "Audit tightened: forested Europe from Iberia/British Isles through central, northern and eastern Europe; PA20 removed to avoid overpainting the driest southeastern/Mediterranean fringe.",
+          "population_note": "Predominantly solitary and territorial; adults associate chiefly for mating."
+        },
+        "European Polecat.png": {
+          "scientific_name": "Mustela putorius",
+          "tags": [
+            "temperate-forest",
+            "grassland",
+            "wetland",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "PA9",
+            "PA10",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15",
+            "PA16",
+            "PA17",
+            "PA18",
+            "PA19"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "solitary",
+            "temporary_breeding_pair"
+          ],
+          "geography_note": "Audit tightened to its established western/central/eastern European native range. PA20 removed as an over-broad southeastern/Mediterranean assignment.",
+          "population_note": "Primarily solitary; temporary breeding pairing is the appropriate managed-zoo abstraction."
+        },
         "European Wild Cat.png": {
           "scientific_name": "Felis silvestris",
           "space_requirement": 1,
@@ -342,6 +444,43 @@
             "pair",
             "breeding_group"
           ]
+        },
+        "Least Weasel.png": {
+          "scientific_name": "Mustela nivalis",
+          "tags": [
+            "grassland",
+            "shrubland",
+            "temperate-forest",
+            "tundra"
+          ],
+          "wild_regions": [
+            "PA1",
+            "PA2",
+            "PA3",
+            "PA4",
+            "PA5",
+            "PA6",
+            "PA7",
+            "PA8",
+            "PA9",
+            "PA10",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15",
+            "PA16",
+            "PA17",
+            "PA18",
+            "PA19"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "solitary",
+            "temporary_breeding_pair"
+          ],
+          "geography_note": "Audit tightened slightly: very broad Palearctic native range retained, but PA20 removed to avoid blanket coverage of the warmest southeastern/Mediterranean fringe.",
+          "population_note": "Normally solitary and territorial; temporary breeding pairing only."
         },
         "Meerkat.png": {
           "scientific_name": "Suricata suricatta",
@@ -498,6 +637,36 @@
             "bachelor_group"
           ]
         },
+        "Stone Marten.png": {
+          "scientific_name": "Martes foina",
+          "tags": [
+            "rocky",
+            "temperate-forest",
+            "shrubland",
+            "grassland"
+          ],
+          "wild_regions": [
+            "PA9",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15",
+            "PA16",
+            "PA17",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA29"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "solitary",
+            "temporary_breeding_pair"
+          ],
+          "geography_note": "Widespread from continental Europe and the Mediterranean through the Balkans/Black Sea region into western Asia; PA29 included for its Southwest Asian extension.",
+          "population_note": "Primarily solitary and territorial; no routine stable social group."
+        },
         "Striped Skunk.png": {
           "scientific_name": "Mephitis mephitis",
           "space_requirement": 1,
@@ -606,6 +775,35 @@
             "breeding_group"
           ]
         },
+        "Black-Backed Jackal.png": {
+          "scientific_name": "Lupulella mesomelas",
+          "tags": [
+            "savanna",
+            "grassland",
+            "shrubland",
+            "desert",
+            "woodland"
+          ],
+          "wild_regions": [
+            "AT14",
+            "AT15",
+            "AT16",
+            "AT17",
+            "AT18",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
+          ],
+          "space_requirement": 2,
+          "population_profiles": [
+            "pair",
+            "small_breeding_group"
+          ],
+          "geography_note": "Audit confirms a genuinely disjunct distribution: East Africa/Horn and southern Africa, separated by a large central-African gap. No West/Central African AT regions added.",
+          "population_note": "Core social unit is a monogamous breeding pair with dependent or retained young; family helpers can remain with the parents."
+        },
         "Caracal.png": {
           "scientific_name": "Caracal caracal",
           "tags": [
@@ -712,6 +910,58 @@
             "pair",
             "breeding_group"
           ]
+        },
+        "Coyote.png": {
+          "scientific_name": "Canis latrans",
+          "tags": [
+            "grassland",
+            "shrubland",
+            "desert",
+            "temperate-forest",
+            "boreal-forest",
+            "woodland"
+          ],
+          "wild_regions": [
+            "NA4",
+            "NA5",
+            "NA6",
+            "NA7",
+            "NA8",
+            "NA9",
+            "NA10",
+            "NA11",
+            "NA12",
+            "NA13",
+            "NA14",
+            "NA15",
+            "NA16",
+            "NA17",
+            "NA18",
+            "NA19",
+            "NA20",
+            "NA21",
+            "NA22",
+            "NA23",
+            "NA24",
+            "NA25",
+            "NA27",
+            "NA28",
+            "NA29",
+            "NA30",
+            "NA31",
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
+          ],
+          "space_requirement": 2,
+          "population_profiles": [
+            "pair",
+            "small_breeding_group",
+            "breeding_group"
+          ],
+          "geography_note": "Audit removes NA3 North Alaskan Tundra as over-generous. Modern range still spans Alaska/Canada, nearly all contiguous US and Mexico into Central America; broad habitat tolerance retained.",
+          "population_note": "Coyotes form durable breeding pairs and commonly live as family units; larger packs are generally extended families rather than wolf-like unrelated packs."
         },
         "Eurasian Lynx.png": {
           "scientific_name": "Lynx lynx",
@@ -1033,6 +1283,45 @@
           "population_profiles": [
             "solitary"
           ]
+        },
+        "Siberian Weasel.png": {
+          "scientific_name": "Mustela sibirica",
+          "tags": [
+            "boreal-forest",
+            "temperate-forest",
+            "subtropical-forest",
+            "shrubland",
+            "grassland",
+            "mountain",
+            "wetland"
+          ],
+          "wild_regions": [
+            "PA3",
+            "PA4",
+            "PA5",
+            "PA6",
+            "PA7",
+            "PA8",
+            "PA31",
+            "PA32",
+            "PA33",
+            "PA34",
+            "PA35",
+            "PA41",
+            "PA42",
+            "PA43",
+            "PA44",
+            "PA45",
+            "PA49",
+            "PA50"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "solitary",
+            "temporary_breeding_pair"
+          ],
+          "geography_note": "Audit removes IM5–IM7 as too coarse/over-generous. Native range is Palearctic Asia from west of the Urals across Siberia to the Far East and south through China/Korea to Taiwan and the Himalayas; represented here with PA regions only.",
+          "population_note": "Generally solitary outside the reproductive period; no evidence for a normal stable group profile."
         },
         "Tayra.png": {
           "scientific_name": "Eira barbara",
@@ -1575,6 +1864,28 @@
             "solitary"
           ]
         },
+        "European Mink.png": {
+          "scientific_name": "Mustela lutreola",
+          "tags": [
+            "wetland",
+            "river",
+            "temperate-forest",
+            "grassland",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "PA9",
+            "PA14",
+            "PA17"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "solitary",
+            "temporary_breeding_pair"
+          ],
+          "geography_note": "Final audit: current native range only, represented conservatively as three separated OneEarth-region remnants corresponding to SW France/northern Spain and the Danube/eastern-European refugia. Historical European range is intentionally excluded. Habitat tags emphasize riparian and wetland dependence.",
+          "population_note": "Semi-aquatic mustelid that is normally solitary outside breeding; no stable pair/group profile."
+        },
         "Fishing Cat.png": {
           "scientific_name": "Prionailurus viverrinus",
           "tags": [
@@ -1865,6 +2176,40 @@
             "pair"
           ]
         },
+        "Side-Striped Jackal.png": {
+          "scientific_name": "Lupulella adusta",
+          "tags": [
+            "forest",
+            "savanna",
+            "shrubland",
+            "grassland",
+            "wetland",
+            "woodland"
+          ],
+          "wild_regions": [
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
+            "AT13",
+            "AT14",
+            "AT15",
+            "AT16",
+            "AT17",
+            "AT18",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22"
+          ],
+          "space_requirement": 2,
+          "population_profiles": [
+            "pair",
+            "small_breeding_group"
+          ],
+          "geography_note": "Audit retains broad sub-Saharan coverage from West Africa through the Horn and southwards, but removes AT23 to avoid overpainting the driest/southern fringe. Species is absent or marginal in the arid western parts of southern Africa.",
+          "population_note": "Usually solitary or paired while foraging, but monogamous pairs and their offspring form the normal family unit; occasional larger aggregations are not treated as a routine profile."
+        },
         "Spotted Hyena.png": {
           "scientific_name": "Crocuta crocuta",
           "tags": [
@@ -1899,6 +2244,60 @@
           "population_profiles": [
             "breeding_group"
           ]
+        },
+        "Stoat.png": {
+          "scientific_name": "Mustela erminea",
+          "tags": [
+            "tundra",
+            "boreal-forest",
+            "temperate-forest",
+            "grassland",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "PA1",
+            "PA2",
+            "PA3",
+            "PA4",
+            "PA5",
+            "PA6",
+            "PA7",
+            "PA8",
+            "PA9",
+            "PA10",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15",
+            "PA16",
+            "PA17"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "solitary",
+            "temporary_breeding_pair"
+          ],
+          "geography_note": "Broad native Holarctic Eurasian distribution retained. European and northern Eurasian coverage is appropriate; no Mediterranean expansion added.",
+          "population_note": "Solitary territorial mustelid outside reproductive encounters."
+        },
+        "Swift Fox.png": {
+          "scientific_name": "Vulpes velox",
+          "tags": [
+            "grassland",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "NA12",
+            "NA20"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "small_breeding_group"
+          ],
+          "geography_note": "Audit tightened to the Northern Prairie (NA12) and Southern Prairie Mixed Grasslands (NA20). NA21 Midwestern Tallgrass Prairie & Forest Transition removed because the species' modern/core distribution is the drier shortgrass/mixed-grass Great Plains farther west.",
+          "population_note": "Generally monogamous, with the breeding pair and pups forming the normal social unit; retained daughters may occasionally help rear a later litter."
         },
         "Wolverine.png": {
           "scientific_name": "Gulo gulo",
@@ -2015,6 +2414,53 @@
             "solitary"
           ]
         },
+        "Asiatic Black Bear.png": {
+          "scientific_name": "Ursus thibetanus",
+          "tags": [
+            "boreal-forest",
+            "temperate-forest",
+            "subtropical-forest",
+            "dry-forest",
+            "mountain",
+            "shrubland",
+            "grassland",
+            "wetland"
+          ],
+          "wild_regions": [
+            "PA29",
+            "PA31",
+            "PA32",
+            "PA33",
+            "PA34",
+            "PA35",
+            "PA41",
+            "PA42",
+            "PA43",
+            "PA44",
+            "PA45",
+            "PA49",
+            "PA50",
+            "IM1",
+            "IM2",
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8",
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12"
+          ],
+          "space_requirement": 4,
+          "population_profiles": [
+            "solitary",
+            "temporary_breeding_pair"
+          ],
+          "geography_note": "Audit trims the previous blanket Indomalayan assignment. Native range is patchy from SE Iran/Pakistan through the Himalayas, China and mainland Southeast Asia, plus Russian Far East/Koreas, Taiwan and Japan. IM13/16/17 removed to avoid overpainting areas beyond the documented mainland range; Malaysia remains excluded.",
+          "population_note": "Primarily solitary outside mating and mother-young associations; retain solitary with temporary breeding pairing."
+        },
         "Asiatic Lion.png": {
           "scientific_name": "Panthera leo persica",
           "tags": [
@@ -2031,6 +2477,31 @@
             "breeding_group",
             "bachelor_group"
           ]
+        },
+        "Blanford's Fox.png": {
+          "scientific_name": "Vulpes cana",
+          "tags": [
+            "desert",
+            "shrubland",
+            "rocky",
+            "mountain"
+          ],
+          "wild_regions": [
+            "PA29",
+            "PA30",
+            "PA31",
+            "PA32",
+            "PA33",
+            "PA34",
+            "PA35"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "small_breeding_group"
+          ],
+          "geography_note": "Final audit retains the conservative PA29–35 treatment for its discontinuous Sinai/Arabian/Iranian-Central Asian rocky-desert range. No Ethiopian/Horn AT region is used.",
+          "population_note": "Pair/family-unit treatment retained; small body size and rocky-arid ecology fit space level 1 despite its high rarity level."
         },
         "Clouded Leopard.png": {
           "scientific_name": "Neofelis nebulosa",
@@ -2182,6 +2653,51 @@
             "solitary",
             "pair"
           ]
+        },
+        "Gray Fox.png": {
+          "scientific_name": "Urocyon cinereoargenteus",
+          "tags": [
+            "temperate-forest",
+            "subtropical-forest",
+            "dry-forest",
+            "woodland",
+            "shrubland",
+            "grassland"
+          ],
+          "wild_regions": [
+            "NA10",
+            "NA11",
+            "NA12",
+            "NA15",
+            "NA16",
+            "NA17",
+            "NA18",
+            "NA19",
+            "NA20",
+            "NA21",
+            "NA22",
+            "NA23",
+            "NA24",
+            "NA25",
+            "NA27",
+            "NA28",
+            "NA29",
+            "NA30",
+            "NA31",
+            "NT22",
+            "NT23",
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
+          ],
+          "space_requirement": 2,
+          "population_profiles": [
+            "pair",
+            "small_breeding_group"
+          ],
+          "geography_note": "Broad southern North American to Central American/northern South American range retained. Habitat audit emphasizes wooded/brushy landscapes; open northern plains and high-Arctic/boreal interiors remain excluded.",
+          "population_note": "Usually organized around a breeding pair and offspring; not treated as a stable large-pack canid."
         },
         "Honey Badger.png": {
           "scientific_name": "Mellivora capensis",
@@ -2361,6 +2877,23 @@
             "pair"
           ]
         },
+        "Narrow-Striped Boky.png": {
+          "scientific_name": "Mungotictis decemlineata",
+          "tags": [
+            "dry-forest"
+          ],
+          "wild_regions": [
+            "AT6"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "female_group",
+            "bachelor_group",
+            "breeding_group"
+          ],
+          "geography_note": "Final audit confirms AT6 only. Endemic to western Madagascar, especially the dry deciduous forests of central and southern Menabe; no separate mainland-African region is appropriate.",
+          "population_note": "Field studies show stable female units of 1–3 adult females plus offspring and separate male associations of 2–4 adults; therefore generic pair-only treatment is inappropriate."
+        },
         "North Chinese Leopard.png": {
           "scientific_name": "Panthera pardus japonensis",
           "tags": [
@@ -2532,6 +3065,35 @@
             "breeding_group"
           ]
         },
+        "Sable.png": {
+          "scientific_name": "Martes zibellina",
+          "tags": [
+            "boreal-forest",
+            "temperate-forest",
+            "conifer-forest",
+            "mountain"
+          ],
+          "wild_regions": [
+            "PA3",
+            "PA4",
+            "PA5",
+            "PA6",
+            "PA7",
+            "PA8",
+            "PA31",
+            "PA32",
+            "PA33",
+            "PA41",
+            "PA42"
+          ],
+          "space_requirement": 2,
+          "population_profiles": [
+            "solitary",
+            "temporary_breeding_pair"
+          ],
+          "geography_note": "Audit tightened to the native forest belt from the Urals across Siberia and the Russian Far East, with extensions into Mongolia, China, North Korea and Hokkaido. PA2 removed as overly Arctic; no range south into the broader East Asian/Indomalayan belt.",
+          "population_note": "Solitary and territorial for most of the year; space 2 retained because it is a larger, highly active arboreal/terrestrial marten."
+        },
         "Sand Cat.png": {
           "scientific_name": "Felis margarita",
           "tags": [
@@ -2572,6 +3134,41 @@
           "population_profiles": [
             "solitary"
           ]
+        },
+        "Slender Mongoose.png": {
+          "scientific_name": "Herpestes sanguineus",
+          "tags": [
+            "forest",
+            "savanna",
+            "shrubland",
+            "grassland",
+            "dry-forest",
+            "woodland"
+          ],
+          "wild_regions": [
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
+            "AT13",
+            "AT14",
+            "AT15",
+            "AT16",
+            "AT17",
+            "AT18",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "solitary",
+            "pair",
+            "small_breeding_group"
+          ],
+          "geography_note": "Audit trims AT23. Native range extends from Senegal to the Red Sea coast and south into southern Africa, but the species is absent from true deserts; broad forest-fringe, savanna, shrubland and grassland use retained.",
+          "population_note": "Generally solitary/small-unit mongoose; provisional profile retained pending zoo-specific husbandry evidence."
         },
         "Sloth Bear.png": {
           "scientific_name": "Melursus ursinus",
@@ -2909,6 +3506,23 @@
             "solitary"
           ]
         },
+        "Ethiopian Wolf.png": {
+          "scientific_name": "Canis simensis",
+          "tags": [
+            "mountain",
+            "grassland",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "AT21"
+          ],
+          "space_requirement": 3,
+          "population_profiles": [
+            "breeding_group"
+          ],
+          "geography_note": "Final audit confirms AT21 only. Ethiopian Wolf is restricted to isolated Afroalpine highlands of Ethiopia (including Bale, Arsi, Simien and northern highland populations), so no broader East African AT regions are justified.",
+          "population_note": "Highly social canid living in territorial packs, commonly 3–13 individuals; pack/breeding-group treatment is more appropriate than pair-based profiles."
+        },
         "Fanaloka.png": {
           "scientific_name": "Fossa fossana",
           "tags": [
@@ -2962,6 +3576,25 @@
           "population_profiles": [
             "solitary"
           ]
+        },
+        "Grandidier's Vontsira.png": {
+          "scientific_name": "Galidictis grandidieri",
+          "tags": [
+            "dry-forest",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "AT6"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "small_breeding_group"
+          ],
+          "geography_note": "Final audit confirms AT6 only. Extremely restricted endemic of southwestern Madagascar's spiny/dry vegetation mosaic; Madagascar Island remains the appropriate OneEarth region.",
+          "population_note": "Best-supported zoo abstraction is a stable adult pair, sometimes accompanied by offspring. Evidence is limited and some field work suggests more complex/possibly less pair-bonded spatial organisation, so no larger routine group profile is added.",
+          "taxonomy_note": "Retained as a species for Zoo Curator. IUCN and Zootierliste recognize Galidictis grandidieri as a species; ITIS currently treats it as Galidictis fasciata grandidieri. Do not create a separate subspecies card if taxonomy changes.",
+          "rarity_note": "Zootierliste current holdings: 1 European non-EU holder (Chester); level 5 retained."
         },
         "Iberian Lynx.png": {
           "scientific_name": "Lynx pardinus",
@@ -3026,6 +3659,39 @@
             "solitary"
           ]
         },
+        "Marsh Mongoose.png": {
+          "scientific_name": "Atilax paludinosus",
+          "tags": [
+            "wetland",
+            "river",
+            "grassland",
+            "savanna",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
+            "AT13",
+            "AT14",
+            "AT15",
+            "AT16",
+            "AT17",
+            "AT18",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "solitary",
+            "pair"
+          ],
+          "geography_note": "Audit trims AT23 and keeps the broad sub-Saharan map constrained by wetland/river habitat tags. The species is tied to freshwater wetlands and well-watered cover, so arid interiors are not implied.",
+          "population_note": "Primarily solitary; pair allowance retained for managed breeding rather than representing a naturally stable large group."
+        },
         "Pampas Cat.png": {
           "scientific_name": "Leopardus colocola",
           "tags": [
@@ -3056,6 +3722,39 @@
           "population_profiles": [
             "solitary"
           ]
+        },
+        "White-Tailed Mongoose.png": {
+          "scientific_name": "Ichneumia albicauda",
+          "tags": [
+            "savanna",
+            "grassland",
+            "shrubland",
+            "woodland",
+            "dry-forest"
+          ],
+          "wild_regions": [
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
+            "AT13",
+            "AT14",
+            "AT15",
+            "AT16",
+            "AT17",
+            "AT18",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "solitary",
+            "pair"
+          ],
+          "geography_note": "Audit trims AT23 as an over-broad arid/southern fringe assignment. Broad sub-Saharan savanna, woodland, shrubland and dry-forest range retained; desert cores excluded.",
+          "population_note": "Predominantly solitary; pair allowance retained for managed breeding."
         }
       }
     },
@@ -3275,6 +3974,23 @@
             "large_group"
           ]
         },
+        "Pot-Bellied Pig.png": {
+          "scientific_name": "Sus scrofa domesticus",
+          "tags": [
+            "domestic",
+            "grassland",
+            "shrubland",
+            "dry-forest"
+          ],
+          "wild_regions": [],
+          "space_requirement": 1,
+          "population_profiles": [
+            "female_group",
+            "bachelor_group",
+            "large_group"
+          ],
+          "geography_note": "Domestic Vietnamese pig breed associated with northern Vietnam/Red River Delta; no wild bioregion distribution assigned."
+        },
         "Red Deer.png": {
           "scientific_name": "Cervus elaphus",
           "tags": [
@@ -3304,6 +4020,44 @@
             "PA29"
           ],
           "space_requirement": 3,
+          "population_profiles": [
+            "harem",
+            "bachelor_group",
+            "female_group",
+            "large_group"
+          ]
+        },
+        "Shetland Pony.png": {
+          "scientific_name": "Equus caballus",
+          "tags": [
+            "domestic",
+            "grassland",
+            "coastal",
+            "shrubland"
+          ],
+          "wild_regions": [],
+          "space_requirement": 2,
+          "population_profiles": [
+            "harem",
+            "bachelor_group",
+            "female_group",
+            "large_group"
+          ],
+          "geography_note": "Domestic breed originating in the Shetland Islands, Scotland; no wild bioregion distribution assigned."
+        },
+        "Watusi.png": {
+          "scientific_name": "Bos taurus",
+          "tags": [
+            "domestic",
+            "savanna",
+            "grassland"
+          ],
+          "wild_regions": [
+            "AT13",
+            "AT14",
+            "AT16"
+          ],
+          "space_requirement": 2,
           "population_profiles": [
             "harem",
             "bachelor_group",
@@ -3420,26 +4174,6 @@
             "IM2",
             "IM3",
             "IM4"
-          ],
-          "space_requirement": 2,
-          "population_profiles": [
-            "harem",
-            "bachelor_group",
-            "female_group",
-            "large_group"
-          ]
-        },
-        "Watusi.png": {
-          "scientific_name": "Bos taurus",
-          "tags": [
-            "domestic",
-            "savanna",
-            "grassland"
-          ],
-          "wild_regions": [
-            "AT13",
-            "AT14",
-            "AT16"
           ],
           "space_requirement": 2,
           "population_profiles": [
@@ -4646,6 +5380,39 @@
             "large_group"
           ]
         },
+        "Asian Elephant.png": {
+          "scientific_name": "Elephas maximus",
+          "tags": [
+            "rainforest",
+            "dry-forest",
+            "grassland",
+            "wetland"
+          ],
+          "wild_regions": [
+            "IM1",
+            "IM2",
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8",
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM13",
+            "IM16",
+            "IM17"
+          ],
+          "space_requirement": 6,
+          "population_profiles": [
+            "female_group",
+            "bachelor_group",
+            "large_group"
+          ],
+          "geography_note": "Existing game geography retained unchanged when moved from Other Mammals to Ungulates."
+        },
         "Black Sable Antelope.png": {
           "scientific_name": "Hippotragus niger",
           "tags": [
@@ -4718,6 +5485,34 @@
             "female_group",
             "large_group"
           ]
+        },
+        "Chinese Goral.png": {
+          "scientific_name": "Naemorhedus griseus",
+          "tags": [
+            "mountain",
+            "rocky",
+            "temperate-forest",
+            "conifer-forest",
+            "shrubland",
+            "grassland"
+          ],
+          "wild_regions": [
+            "PA41",
+            "PA42",
+            "PA43",
+            "PA44",
+            "PA45",
+            "PA49",
+            "PA50"
+          ],
+          "space_requirement": 2,
+          "population_profiles": [
+            "solitary",
+            "pair",
+            "female_group",
+            "bachelor_group"
+          ],
+          "geography_note": "Native to eastern/central Asia; Chinese goral range centred on China and adjacent mainland East/Southeast Asia. wild_regions use the game's OneEarth PA codes."
         },
         "Common Hog Deer.png": {
           "scientific_name": "Axis porcinus",
@@ -5369,6 +6164,40 @@
         }
       },
       "5": {
+        "African Elephant.png": {
+          "scientific_name": "Loxodonta africana",
+          "tags": [
+            "savanna",
+            "grassland",
+            "shrubland",
+            "dry-forest",
+            "wetland",
+            "riverine",
+            "desert"
+          ],
+          "wild_regions": [
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
+            "AT13",
+            "AT16",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
+          ],
+          "space_requirement": 7,
+          "population_profiles": [
+            "female_group",
+            "bachelor_group",
+            "large_group"
+          ],
+          "geography_note": "Existing game geography retained unchanged when moved from Other Mammals to Ungulates."
+        },
         "Angolan Giraffe.png": {
           "scientific_name": "Giraffa giraffa",
           "tags": [
@@ -5704,6 +6533,32 @@
             "solitary",
             "pair"
           ]
+        },
+        "Saiga.png": {
+          "scientific_name": "Saiga tatarica",
+          "tags": [
+            "grassland",
+            "shrubland",
+            "desert"
+          ],
+          "wild_regions": [
+            "PA31",
+            "PA32",
+            "PA33",
+            "PA34",
+            "PA35",
+            "PA36",
+            "PA37",
+            "PA38"
+          ],
+          "space_requirement": 3,
+          "population_profiles": [
+            "harem",
+            "bachelor_group",
+            "female_group",
+            "large_group"
+          ],
+          "geography_note": "Native steppe and semi-desert of Central Asia; principally Kazakhstan, with populations/range extending into adjacent parts of Russia, Mongolia and Uzbekistan. wild_regions use the game's OneEarth PA codes."
         },
         "Sambar.png": {
           "scientific_name": "Rusa unicolor",
@@ -8708,38 +9563,6 @@
             "breeding_group"
           ]
         },
-        "Asian Elephant.png": {
-          "scientific_name": "Elephas maximus",
-          "tags": [
-            "rainforest",
-            "dry-forest",
-            "grassland",
-            "wetland"
-          ],
-          "wild_regions": [
-            "IM1",
-            "IM2",
-            "IM3",
-            "IM4",
-            "IM5",
-            "IM6",
-            "IM7",
-            "IM8",
-            "IM9",
-            "IM10",
-            "IM11",
-            "IM12",
-            "IM13",
-            "IM16",
-            "IM17"
-          ],
-          "space_requirement": 6,
-          "population_profiles": [
-            "female_group",
-            "bachelor_group",
-            "large_group"
-          ]
-        },
         "Brown Dorcopsis.png": {
           "scientific_name": "Dorcopsis muelleri",
           "tags": [
@@ -9085,39 +9908,6 @@
         }
       },
       "5": {
-        "African Elephant.png": {
-          "scientific_name": "Loxodonta africana",
-          "tags": [
-            "savanna",
-            "grassland",
-            "shrubland",
-            "dry-forest",
-            "wetland",
-            "riverine",
-            "desert"
-          ],
-          "wild_regions": [
-            "AT7",
-            "AT8",
-            "AT9",
-            "AT10",
-            "AT11",
-            "AT12",
-            "AT13",
-            "AT16",
-            "AT19",
-            "AT20",
-            "AT21",
-            "AT22",
-            "AT23"
-          ],
-          "space_requirement": 7,
-          "population_profiles": [
-            "female_group",
-            "bachelor_group",
-            "large_group"
-          ]
-        },
         "Bear Cuscus.png": {
           "scientific_name": "Ailurops ursinus",
           "tags": [
@@ -26852,7 +27642,7 @@
         "safari": {
           "category": {
             "Ungulates": 2.5,
-            "Carnivora": 1.2,
+            "Carnivores": 1.2,
             "Other Birds": 1.15
           },
           "tags": {
@@ -26864,7 +27654,7 @@
         },
         "forest": {
           "category": {
-            "Carnivora": 1.2,
+            "Carnivores": 1.2,
             "Ungulates": 1.15
           },
           "tags": {
@@ -26919,7 +27709,7 @@
         "alpine": {
           "category": {
             "Ungulates": 1.25,
-            "Carnivora": 1.15,
+            "Carnivores": 1.15,
             "Birds of Prey": 1.1
           },
           "tags": {

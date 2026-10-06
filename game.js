@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.152";
+const ZOO_CURATOR_VERSION = "V2.44.165";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -166,9 +166,14 @@ const ZOOM_STEP = 0.1;
 
 const ENCLOSURE_GAP = 20;
 
+const LEGACY_CATEGORY_ALIASES=Object.freeze({Carnivora:'Carnivores'});
+function canonicalAnimalCategory(category){
+    return typeof category==='string'?(LEGACY_CATEGORY_ALIASES[category]||category):category;
+}
+
 const CATEGORY_COLOURS = {
     'Birds of Prey': '#A26248',
-    'Carnivora': '#A24848',
+    'Carnivores': '#A24848',
     'Marine Mania': '#A24894',
     'Tropical Birds': '#7248A2',
     'Primates': '#4875A2',
@@ -180,7 +185,7 @@ const CATEGORY_COLOURS = {
 
 const CATEGORY_PROGRESSION_ORDER = [
     'Birds of Prey',
-    'Carnivora',
+    'Carnivores',
     'Marine Mania',
     'Tropical Birds',
     'Primates',
@@ -192,7 +197,7 @@ const CATEGORY_PROGRESSION_ORDER = [
 
 const FOLDERS = {
     'Birds of Prey': 'birds of prey',
-    'Carnivora': 'carnivora',
+    'Carnivores': 'carnivores',
     'Marine Mania': 'marine mania',
     'Tropical Birds': 'tropical birds',
     'Primates': 'primates',
@@ -648,6 +653,15 @@ const exchange2 = $('exchange2');
 const resultBox = $('result');
 const outgoingOfferBox = $('outgoingOffer');
 const incomingOfferBox = $('ingoingOffer');
+const classicTradeCellLayoutStyle=document.createElement('style');
+classicTradeCellLayoutStyle.id='classicTradeCellLayoutFix';
+classicTradeCellLayoutStyle.textContent=`
+body:not(.true-mode) #outgoingOffer,
+body:not(.true-mode) #ingoingOffer{
+    transform:translateX(-28px);
+}
+`;
+document.head.appendChild(classicTradeCellLayoutStyle);
 
 const zooBoard = $('zooBoard');
 const zooCanvas = $('zooCanvas');
@@ -1428,12 +1442,11 @@ function cleanFilename(filename) {
 }
 
 function getFolder(category) {
-
+    category=canonicalAnimalCategory(category);
     return (
         FOLDERS[category] ||
         String(category).toLowerCase()
     );
-
 }
 
 function animalPath(
@@ -1795,6 +1808,7 @@ function getCategorySource(category) {
         return null;
     }
 
+    category=canonicalAnimalCategory(category);
     const folder =
         getFolder(category);
 
@@ -2018,6 +2032,7 @@ function levelFilesUncached(
 }
 
 function levelFiles(category,level){
+    category=canonicalAnimalCategory(category);
     const key=`${category}\u001f${Number(level)}`;
     const cached=LEVEL_FILES_CACHE.get(key);
     if(cached)return cached;
@@ -3375,9 +3390,9 @@ const SPECIALIST_STARTING_CATEGORIES = Object.freeze({
     reptile: ['Reptiles'],
     farm: ['Ungulates'],
     tropical: ['Tropical Birds', 'Primates', 'Reptiles'],
-    safari: ['Ungulates', 'Carnivora'],
-    forest: ['Other Mammals', 'Other Birds', 'Carnivora'],
-    alpine: ['Ungulates', 'Carnivora', 'Birds of Prey']
+    safari: ['Ungulates', 'Carnivores'],
+    forest: ['Other Mammals', 'Other Birds', 'Carnivores'],
+    alpine: ['Ungulates', 'Carnivores', 'Birds of Prey']
 });
 
 function specialistStartingCategories(zooType = state.zooType) {
@@ -12242,6 +12257,7 @@ function translatedAnimalCardUrl(animal) {
     return promise;
 }
 
+let localizedAnimalImageTokenCounter=0;
 function applyLocalizedAnimalImage(image,animal) {
     const source=animalImage(animal);
     image.src=source;
@@ -12251,7 +12267,7 @@ function applyLocalizedAnimalImage(image,animal) {
         return;
     }
 
-    const token=`${animal?.id??''}|${animalCardKey(animal)}|${Date.now()}|${Math.random()}`;
+    const token=String(++localizedAnimalImageTokenCounter);
     image.dataset.localizedImageToken=token;
     translatedAnimalCardUrl(animal).then(url=>{
         if(image.dataset.localizedImageToken===token&&state.gameOptions.animalLanguage==='nl')image.src=url;
@@ -12423,7 +12439,7 @@ function setupAnimalCard(
     image.dataset.animalId =
         animal.id;
 
-    if(state.sandboxMode){
+    if(state.sandboxMode&&!cardRenderContext?.delegatedClassicEnclosureCards){
         image.addEventListener('pointerenter',()=>{sandboxHoveredAnimalId=animal.id;});
         image.addEventListener('pointerleave',()=>{if(sandboxHoveredAnimalId===animal.id)sandboxHoveredAnimalId=null;});
     }
@@ -12433,7 +12449,10 @@ function setupAnimalCard(
     image.draggable =
         false;
 
-    if (state.compatibilityAnimalHoverIds?.has(animal.id)) {
+    if (
+        (cardRenderContext?.compatibilityAnimalGlowActive ?? ((state.compatibilityAnimalHoverIds?.size||0)>0)) &&
+        state.compatibilityAnimalHoverIds.has(animal.id)
+    ) {
         const now = renderNow;
 
         if (now < state.compatibilityAnimalHoverHoldUntil) {
@@ -12510,18 +12529,21 @@ function setupAnimalCard(
             'enclosure-animal'
         );
 
-        const glowStarted = state.visitingZoo ? 0 : Number(state.newPlacementGlowStartedAt[animal.id] || 0);
-        const glowElapsed = glowStarted ? renderNow - glowStarted : Infinity;
-        if (!layoutToolEditing && glowElapsed >= 0 && glowElapsed < 4000) {
-            image.classList.add('new-placement-glow');
-            image.style.animationDelay = `${-glowElapsed}ms`;
+        if(cardRenderContext?.newPlacementGlowActive ?? !state.visitingZoo){
+            const glowStarted=state.visitingZoo?0:Number(state.newPlacementGlowStartedAt[animal.id]||0);
+            const glowElapsed=glowStarted?renderNow-glowStarted:Infinity;
+            if(!layoutToolEditing&&glowElapsed>=0&&glowElapsed<4000){
+                image.classList.add('new-placement-glow');
+                image.style.animationDelay=`${-glowElapsed}ms`;
+            }
         }
 
     }
 
     const progressionGlowActive=
         !layoutToolEditing &&
-        (state.progressionGlowHoverKey||state.progressionGlowPinnedKeys.size);
+        (cardRenderContext?.progressionGlowActive ??
+         !!(state.progressionGlowHoverKey||state.progressionGlowPinnedKeys.size));
     const trackerKey=progressionGlowActive?progressionKey(animal.category,animal.level):null;
     if (
         progressionGlowActive &&
@@ -12575,7 +12597,7 @@ function setupAnimalCard(
         image.style.animationDelay = `${-elapsed}ms`;
     }
 
-    if(location==='enclosure'&&!state.sandboxMode){
+    if(cardRenderContext?.delegatedClassicEnclosureCards||(location==='enclosure'&&!state.sandboxMode)){
         image.dataset.classicDelegatedAnimal='1';
     }else{
         image.addEventListener('mouseenter',()=>{requestHoverPreview(animal);requestCompatibilityIntent(animal);});
@@ -12592,10 +12614,15 @@ function setupAnimalCard(
 
 let classicAnimalDelegationRoot=null;
 function ensureClassicAnimalCardDelegation(){
-    const root=document.getElementById('zooCanvas');
-    if(!root||classicAnimalDelegationRoot===root)return;
+    const root=document;
+    if(classicAnimalDelegationRoot===root)return;
     classicAnimalDelegationRoot=root;
-    const cardFromEvent=event=>event.target instanceof Element?event.target.closest('.animal-card[data-classic-delegated-animal="1"]'):null;
+    const cardFromEvent=event=>{
+        const card=event.target instanceof Element
+            ? event.target.closest('.animal-card[data-classic-delegated-animal="1"]')
+            : null;
+        return card&&zooCanvas?.contains(card)?card:null;
+    };
     root.addEventListener('mouseover',event=>{
         const card=cardFromEvent(event);if(!card||card.contains(event.relatedTarget))return;
         const animal=classicAnimalById(card.dataset.animalId);if(!animal)return;
@@ -23280,6 +23307,13 @@ function classicCachedAnimalEnclosureSize(animal){
 function renderZoo() {
     invalidateClassicDropDomCache();
     ensureClassicAnimalCardDelegation();
+    if(!zooPrimaryPointerDown&&state.drag?.image){
+        const staleDrag=state.drag;
+        if(staleDrag.type==='animal')restoreDraggedAnimal();
+        staleDrag.image.remove();
+        state.drag=null;
+    }
+    removeOrphanedAnimalDragImages();
     hideHusbandryPopup();
 
     if(state.gameMode==='true'&&!state.sandboxMode){
@@ -23454,6 +23488,10 @@ function renderZoo() {
         enclosureRenderContext.cardRenderContext={
             layoutToolEditing:false,
             visitingActionUI:visitingAnotherZooForActionUI(),
+            compatibilityAnimalGlowActive:(state.compatibilityAnimalHoverIds?.size||0)>0,
+            newPlacementGlowActive:!state.visitingZoo&&Object.keys(state.newPlacementGlowStartedAt||{}).length>0,
+            progressionGlowActive:!!(state.progressionGlowHoverKey||state.progressionGlowPinnedKeys.size),
+            delegatedClassicEnclosureCards:true,
             exchangeGlowPrecomputed:true,
             exchangeGlowEligibleIds
         };
@@ -26282,13 +26320,19 @@ function scheduleDurableOwnZooStateCommit(snapshot=null,delayMs=180){
     return true;
 }
 
-function syncActiveZooIntoLocalMatch() {
+let localMultiplayerLastSyncedStateRevision=-1;
+let localMultiplayerLastSyncedPlayerId=null;
+function syncActiveZooIntoLocalMatch({force=false}={}) {
     if (!localClassicMatch) return false;
     if(realZooVisitTransitionActive||state.visitingZoo)return false;
     if (localClassicMatch.viewingPlayerId &&
         localClassicMatch.viewingPlayerId !== localClassicMatch.activePlayerId) return false;
     const player = localClassicMatch.players?.[localClassicMatch.activePlayerId];
     if (!player) return false;
+    const activePlayerId=localClassicMatch.activePlayerId;
+    const syncRevision=`${Number(state.turn)||0}:${Number(state.nextId)||0}:${state.animals?.length||0}:${state.enclosures?.length||0}:${Number(localClassicMatch.revision)||0}`;
+    if(!force&&player.snapshot&&localMultiplayerLastSyncedPlayerId===activePlayerId&&
+       localMultiplayerLastSyncedStateRevision===syncRevision)return true;
     const reconnectTransport=localMultiplayerBrowserTransport;
     if(reconnectTransport?.serverReturning===true&&!reconnectTransport.durableOwnZooSnapshot)
         return false;
@@ -26297,6 +26341,8 @@ function syncActiveZooIntoLocalMatch() {
        localClassicMatch.awaitingLocalZooSetup &&
        !player.snapshot)return false;
     player.snapshot = exportCurrentGameState();
+    localMultiplayerLastSyncedPlayerId=activePlayerId;
+    localMultiplayerLastSyncedStateRevision=syncRevision;
     scheduleDurableOwnZooStateCommit(player.snapshot);
     const transport=localMultiplayerBrowserTransport;
     if(transport?.role==='peer'&&
@@ -26375,6 +26421,7 @@ let localMultiplayerSyncScheduleToken=0;
 let localMultiplayerSyncScheduledReason='state-change';
 function scheduleLocalMultiplayerSync(reason='state-change'){
     if(!localMultiplayerOutboundSink||!localClassicMatch)return false;
+    localMultiplayerLastSyncedStateRevision=-1;
     localMultiplayerSyncScheduledReason=String(reason||localMultiplayerSyncScheduledReason||'state-change');
     if(localMultiplayerSyncMicrotaskPending)return true;
     localMultiplayerSyncMicrotaskPending=true;
@@ -26451,6 +26498,7 @@ function setLocalMultiplayerOutboundSink(handler=null){
 }
 async function applyLocalMultiplayerSyncPacketToReplica(packet,replica=localMultiplayerPeerReplica){
     if(!replica||!packet||packet.protocol!=='zoo-curator-classic-multiplayer-v1')return false;
+    migrateLegacyAnimalCategories(packet);
     const revision=Number(packet.matchRevision);
     if(!Number.isFinite(revision)||revision<replica.revision)return false;
     replica.revision=revision;replica.turnPlayerId=packet.turnPlayerId||replica.turnPlayerId;
@@ -26484,8 +26532,14 @@ async function applyLocalMultiplayerSyncPacketToReplica(packet,replica=localMult
         return incoming;
     });
     const incomingTradeIds=new Set(replica.pendingPlayerTrades.map(o=>String(o?.id||'')));
+    const terminalTradeIds=new Set(
+        [...previousTrades.values()]
+            .filter(o=>o?.id&&['accepted','completed','declined','cancelled','invalid'].includes(o.status))
+            .map(o=>String(o.id))
+    );
     for(const previous of previousTrades.values()){
-        if(!previous?.id||incomingTradeIds.has(String(previous.id)))continue;
+        const id=String(previous?.id||'');
+        if(!id||incomingTradeIds.has(id)||terminalTradeIds.has(id))continue;
         if(previous.status==='pending'||previous.status==='accepted-awaiting-sender-claim')
             replica.pendingPlayerTrades.push(previous);
     }
@@ -26687,7 +26741,7 @@ function emitLocalMultiplayerSync(reason='state-change'){
     const packet=getLocalMultiplayerSyncPacket(localMultiplayerPeerReplica?.cursor||null);
     if(!packet)return null;
     packet.reason=reason;packet.sentByPlayerId=localClassicMatch.activePlayerId;
-    if(localMultiplayerOutboundSink)localMultiplayerOutboundSink(cloneForSave(packet));
+    if(localMultiplayerOutboundSink)localMultiplayerOutboundSink(packet);
     return packet;
 }
 function enableLocalMultiplayerPeerSimulation(playerId=null){
@@ -27077,9 +27131,10 @@ function clearOrphanedHumanTradeDragVisuals(){
 
 function applyAuthoritativeHumanTradeMessage(message){
     if(!localClassicMatch||message?.action!=='human-trade'||message?.type!=='action-committed')return false;
+    migrateLegacyAnimalCategories(message);
     const incoming=normaliseAuthoritativeHumanTradeForLocalUI(message.trade);
     if(!incoming?.id)return false;
-    if(incoming.status==='accepted-awaiting-sender-claim'||incoming.status==='completed')
+    if(['accepted','completed','declined','cancelled','invalid'].includes(incoming.status))
         clearOrphanedHumanTradeDragVisuals();
 
     if(!Array.isArray(localClassicMatch.pendingPlayerTrades))
@@ -27111,6 +27166,12 @@ function applyAuthoritativeHumanTradeMessage(message){
                 return false;
             }
         }
+    }
+    if(state.drag?.type==='direct-human-trade-sender-claim'&&
+       String(state.drag.humanTradeOfferId)===String(incoming.id)&&
+       incoming.status!=='accepted-awaiting-sender-claim'){
+        state.drag.image?.remove();
+        state.drag=null;
     }
     const preservedSenderClaim=offer.senderClaimAnimal?cloneForSave(offer.senderClaimAnimal):null;
     Object.assign(offer,cloneForSave(incoming));
@@ -27170,9 +27231,10 @@ function applyAuthoritativeHumanTradeMessage(message){
     }
 
     const ownServerId=String(localMultiplayerBrowserTransport?.serverPlayerId||'');
-    const ownUpdate=(message.zooUpdates||[]).find(
-        u=>String(u?.playerId||'')===ownServerId
-    );
+    let ownUpdate=null;
+    for(const update of message.zooUpdates||[]){
+        if(String(update?.playerId||'')===ownServerId){ownUpdate=update;break;}
+    }
     const ownUpdateRevision=Math.max(0,Number(ownUpdate?.revision)||0);
     const latestOwnRevision=Math.max(
         0,Number(localMultiplayerBrowserTransport?.durableZooRevision)||0
@@ -27255,7 +27317,11 @@ function applyAuthoritativeHumanTradeMessage(message){
 
             clearOrphanedZooSlotReservations?.();
             refreshDrawAvailabilityState?.();
-            localClassicMatch.players[localClassicMatch.activePlayerId].snapshot=cloneForSave(exportCurrentGameState());
+            const activePlayerId=localClassicMatch.activePlayerId;
+            localClassicMatch.players[activePlayerId].snapshot=exportCurrentGameState();
+            localMultiplayerLastSyncedPlayerId=activePlayerId;
+            localMultiplayerLastSyncedStateRevision=
+                `${Number(state.turn)||0}:${Number(state.nextId)||0}:${state.animals?.length||0}:${state.enclosures?.length||0}:${Number(localClassicMatch.revision)||0}`;
             clearOrphanedHumanTradeDragVisuals();
             renderTrade?.();
             renderVisitedZooQuickTabs?.();
@@ -27309,7 +27375,12 @@ function applyAuthoritativeHumanTradeMessage(message){
         Number(localClassicMatch.revision)||0,
         Number(message.revision)||0
     );
+    directHumanTradePruneSignature='';
+    directHumanTradeRenderSignature='';
     pruneTerminalDirectHumanTrades?.();
+    const prunedTrades=localClassicMatch.pendingPlayerTrades||[];
+    directHumanTradePruneSignature=`${prunedTrades.length}|${Object.keys(localClassicMatch.players||{}).join(',')}|`+
+        prunedTrades.map(o=>`${o?.id??''}:${o?.status??''}:${o?.fromPlayerId??''}:${o?.toPlayerId??''}`).join(';');
     renderTrade?.();
     renderVisitedZooQuickTabs?.();
     return true;
@@ -28880,16 +28951,26 @@ async function applyLocalMultiplayerActionEnvelope(action){
             return {ok:false,reason:'illegal-placement'};
         }
 
-        const liveCopy=cloneForSave(incoming);
+        let liveCopy=authoritativeTransferId
+            ? (state.animals||[]).find(a=>String(a?.id)===authoritativeTransferId)
+            : null;
+        if(liveCopy){
+            if(animalCardKey(liveCopy)!==animalCardKey(incoming))
+                return {ok:false,reason:'claim-animal-changed'};
+        }else{
+            liveCopy=cloneForSave(incoming);
+            state.animals.push(liveCopy);
+        }
         liveCopy.enclosureId=destination.enclosure.id;
         liveCopy.slotIndex=destination.slotIndex;
-        state.animals.push(liveCopy);
+        liveCopy.x=incoming.x??null;liveCopy.y=incoming.y??null;
         repairLoadedNextId();
 
         offer.senderClaimAnimal=null;
         offer.status='accepted';
         offer.claimedRevision=++localClassicMatch.revision;
-        syncActiveZooIntoLocalMatch();
+        localMultiplayerLastSyncedStateRevision=-1;
+        syncActiveZooIntoLocalMatch({force:true});
         recordLocalMultiplayerEvent('trade-completed',{
             offerId:offer.id,fromPlayerId:offer.fromPlayerId,toPlayerId:offer.toPlayerId,
             revision:localClassicMatch.revision
@@ -28942,10 +29023,9 @@ async function applyLocalMultiplayerActionEnvelope(action){
         );
         if(softlockReason)return {ok:false,reason:'no-legal-post-trade-placement'};
         const offeredKey=animalCardKey(offered),requestedKey=animalCardKey(requested);
-        const fromOthers=(state.animals||[]).filter(a=>String(a.id)!==String(offered.id));
         const targetAnimals=localClassicMatch.players[draft.requestedPlayerId]?.snapshot?.state?.animals||[];
         if(offeredKey===requestedKey||
-           fromOthers.some(a=>animalCardKey(a)===requestedKey)||
+           (state.animals||[]).some(a=>String(a.id)!==String(offered.id)&&animalCardKey(a)===requestedKey)||
            targetAnimals.some(a=>String(a.id)!==String(requested.id)&&animalCardKey(a)===offeredKey)){
             return {ok:false,reason:'duplicate-species'};
         }
@@ -29209,6 +29289,8 @@ async function loadBrowserAuthoritySeat(playerId){
     if(localClassicMatch.activePlayerId===playerId)return true;
     syncActiveZooIntoLocalMatch();
     localClassicMatch.activePlayerId=playerId;
+    localMultiplayerLastSyncedStateRevision=-1;
+    localMultiplayerLastSyncedPlayerId=null;
     autoResumeWriteSuppressed=true;
     try{
         await importGameState(cloneForSave(localClassicMatch.players[playerId].snapshot),{deferRender:true});
@@ -30266,11 +30348,59 @@ function resetTransientStateForImport() {
     document.getElementById('truePopulationSelectorBackdrop')?.remove();
 }
 
+function migrateLegacyAnimalCategories(value,seen=new WeakSet()){
+    if(!value||typeof value!=='object')return value;
+    if(seen.has(value))return value;
+    seen.add(value);
+    if(Array.isArray(value)){
+        for(let i=0;i<value.length;i++){
+            const item=value[i];
+            if(typeof item==='string')value[i]=canonicalAnimalCategory(item);
+            else migrateLegacyAnimalCategories(item,seen);
+        }
+        return value;
+    }
+    if(value instanceof Set){
+        const migrated=[...value].map(item=>typeof item==='string'?canonicalAnimalCategory(item):item);
+        value.clear();
+        for(const item of migrated){
+            if(item&&typeof item==='object')migrateLegacyAnimalCategories(item,seen);
+            value.add(item);
+        }
+        return value;
+    }
+    if(value instanceof Map){
+        const entries=[...value.entries()];
+        value.clear();
+        for(let [key,item] of entries){
+            if(typeof key==='string')key=canonicalAnimalCategory(key);
+            if(typeof item==='string')item=canonicalAnimalCategory(item);
+            else migrateLegacyAnimalCategories(item,seen);
+            value.set(key,item);
+        }
+        return value;
+    }
+    if(typeof value.category==='string')value.category=canonicalAnimalCategory(value.category);
+    for(const key of Object.keys(value)){
+        const item=value[key];
+        if(key==='category')continue;
+        if(typeof item==='string'){
+            if(item==='Carnivora')value[key]='Carnivores';
+        }else migrateLegacyAnimalCategories(item,seen);
+        if(key==='Carnivora'&&key!=='Carnivores'){
+            if(!Object.prototype.hasOwnProperty.call(value,'Carnivores'))value.Carnivores=value[key];
+            delete value.Carnivora;
+        }
+    }
+    return value;
+}
+
 function importGameState(saveData, { deferRender = false } = {}) {
     lifetimeCollectionLastMergeSignature='';
     if (!saveData || !saveData.state) {
         throw new Error(uiText('This save file does not contain a valid Zoo Curator game.'));
     }
+    migrateLegacyAnimalCategories(saveData);
 
     areaSignatureTaskCache=null;
     areaSignatureTaskShape='';
@@ -31731,8 +31861,9 @@ function resetDrawCardFromTheirOfferMode(){
     drawCard.title='';
     const image=drawCard.querySelector('img');
     if(image){
-        const canonicalBack=animalBackPath('Carnivora',1);
-        if(!image.getAttribute('src')||!/\/Carnivora\/1\/Back\.png(?:$|[?#])/i.test(image.src))
+        const canonicalBack=animalBackPath('Carnivores',1);
+        if(!image.getAttribute('src')||!/\/(?:Carnivores|Carnivora)\/1\/Back\.png(?:$|[?#])/i.test(image.src)||
+           /\/Carnivora\/1\/Back\.png(?:$|[?#])/i.test(image.src))
             image.src=canonicalBack;
         image.style.removeProperty('opacity');
         image.style.removeProperty('filter');
@@ -32012,6 +32143,12 @@ function startAnimalDrag(
     location
 ) {
     if(state.drag?.image&&!state.drag.image.isConnected)state.drag=null;
+    if(state.drag&&!zooPrimaryPointerDown){
+        const staleDrag=state.drag;
+        if(staleDrag.type==='animal')restoreDraggedAnimal();
+        staleDrag.image?.remove();
+        state.drag=null;
+    }
     removeOrphanedAnimalDragImages();
     if (trueEnclosureBuilderActive || areaToolActive) return;
 
@@ -32210,6 +32347,8 @@ function startAnimalDrag(
     document.body.appendChild(
         dragImage
     );
+    dragImage.style.left=(event.clientX-relativeX*dragWidth)+'px';
+    dragImage.style.top=(event.clientY-relativeY*dragHeight)+'px';
 
     const draggedExchangeEligible =
         location === 'enclosure' &&
@@ -34997,6 +35136,32 @@ zooBoard.addEventListener(
     }
 );
 
+let zooPrimaryPointerDown=false;
+document.addEventListener('pointerdown',event=>{
+    if(event.button===0)zooPrimaryPointerDown=true;
+},true);
+document.addEventListener('pointerup',()=>{zooPrimaryPointerDown=false;},true);
+document.addEventListener('pointercancel',()=>{
+    // Do not clear state.drag here: the existing bubble-phase pointercancel
+    // handler below restores animals/results/reservations safely.
+    zooPrimaryPointerDown=false;
+},true);
+window.addEventListener('blur',()=>{
+    zooPrimaryPointerDown=false;
+    const drag=state.drag;
+    if(drag?.type==='animal'){
+        restoreDraggedAnimal();
+        drag.image?.remove();
+        state.drag=null;
+        renderAfterTransientAnimalDrag(drag);
+        refreshDrawAvailabilityState();
+    }else if(drag?.image){
+        drag.image.remove();
+        state.drag=null;
+    }
+    removeOrphanedAnimalDragImages();
+});
+
 document.addEventListener(
     'pointermove',
     event => {
@@ -35794,7 +35959,7 @@ function startDrawDrag(event) {
     const source = drawCard.querySelector('img');
     const image = document.createElement('img');
     image.className = 'dragging-animal dragging-result';
-    image.src = source?.src || animalBackPath('Carnivora',1);
+    image.src = source?.src || animalBackPath('Carnivores',1);
     Object.assign(image.style,{
         position:'fixed',
         width:`${rect.width}px`,
@@ -40786,10 +40951,19 @@ function pruneTerminalDirectHumanTrades(){
     const finished=valid.filter(o=>terminal.has(o?.status)).slice(-8);
     localClassicMatch.pendingPlayerTrades=[...finished,...active];
 }
+let directHumanTradePruneSignature='';
 function pendingDirectHumanTrades(){
     if(!localClassicMatch)return [];
-    pruneTerminalDirectHumanTrades();
     if(!Array.isArray(localClassicMatch.pendingPlayerTrades))localClassicMatch.pendingPlayerTrades=[];
+    const trades=localClassicMatch.pendingPlayerTrades;
+    const signature=`${trades.length}|${Object.keys(localClassicMatch.players||{}).join(',')}|`+
+        trades.map(o=>`${o?.id??''}:${o?.status??''}:${o?.fromPlayerId??''}:${o?.toPlayerId??''}`).join(';');
+    if(signature!==directHumanTradePruneSignature){
+        pruneTerminalDirectHumanTrades();
+        const pruned=localClassicMatch.pendingPlayerTrades;
+        directHumanTradePruneSignature=`${pruned.length}|${Object.keys(localClassicMatch.players||{}).join(',')}|`+
+            pruned.map(o=>`${o?.id??''}:${o?.status??''}:${o?.fromPlayerId??''}:${o?.toPlayerId??''}`).join(';');
+    }
     return localClassicMatch.pendingPlayerTrades;
 }
 function directTradeAnimalName(a){return a?.name||a?.english_name||a?.fileName||a?.filename||'Animal';}
@@ -40909,12 +41083,14 @@ async function acceptDirectHumanTradeOffer(id,destination=null,{skipActiveSync=f
         return false;
     }
 
-    const offeredKey=animalCardKey(offeredNow), requestedKey=animalCardKey(requestedNow);
-    const fromOtherKeys=new Set((fromSnap.state.animals||[])
-        .filter(a=>String(a.id)!==String(offer.offeredAnimalId)).map(animalCardKey));
-    const toOtherKeys=new Set((toSnap.state.animals||[])
-        .filter(a=>String(a.id)!==String(offer.requestedAnimalId)).map(animalCardKey));
-    if(offeredKey===requestedKey || fromOtherKeys.has(requestedKey) || toOtherKeys.has(offeredKey)){
+    const offeredKey=animalCardKey(offeredNow),requestedKey=animalCardKey(requestedNow);
+    const senderWouldDuplicate=(fromSnap.state.animals||[]).some(a=>
+        String(a.id)!==String(offer.offeredAnimalId)&&animalCardKey(a)===requestedKey
+    );
+    const receiverWouldDuplicate=(toSnap.state.animals||[]).some(a=>
+        String(a.id)!==String(offer.requestedAnimalId)&&animalCardKey(a)===offeredKey
+    );
+    if(offeredKey===requestedKey||senderWouldDuplicate||receiverWouldDuplicate){
         offer.status='invalid';
         resumeAITradingAfterHumanTrade();
         renderTrade();renderVisitedZooQuickTabs();
@@ -40969,7 +41145,9 @@ async function acceptDirectHumanTradeOffer(id,destination=null,{skipActiveSync=f
     try{await importGameState(cloneForSave(toSnap),{deferRender:false});}
     finally{autoResumeWriteSuppressed=false;}
     localClassicMatch.activePlayerId=offer.toPlayerId;
-    syncActiveZooIntoLocalMatch();
+    localMultiplayerLastSyncedStateRevision=-1;
+    localMultiplayerLastSyncedPlayerId=null;
+    syncActiveZooIntoLocalMatch({force:true});
     renderTrade();
     renderVisitedZooQuickTabs();
     persistHumanTradeBoundary('human-trade-accepted-awaiting-claim');
@@ -40983,7 +41161,7 @@ function resumeAITradingAfterHumanTrade(){
 function declineDirectHumanTradeOffer(id,playerId=localClassicMatch?.activePlayerId){
     const offer=pendingDirectHumanTrades().find(o=>o.id===id&&o.status==='pending');
     if(!offer||!directHumanTradeHasParticipant(offer,playerId)||offer.toPlayerId!==playerId)return false;
-    offer.status='declined';offer.declinedRevision=++localClassicMatch.revision;
+    offer.status='declined';offer.declinedRevision=++localClassicMatch.revision;directHumanTradeRenderSignature='';
     resumeAITradingAfterHumanTrade();
     renderVisitedZooQuickTabs();renderTrade();
     persistHumanTradeBoundary('human-trade-declined');
@@ -45108,10 +45286,15 @@ function directHumanTradeHasParticipant(offer,playerId){
 function activeDirectHumanTrade(){
     if(!localClassicMatch)return null;
     const ownerId=localClassicMatch.activePlayerId;
-    const active=pendingDirectHumanTrades().filter(o=>(o.status==='pending'||o.status==='accepted-awaiting-sender-claim')&&directHumanTradeHasParticipant(o,ownerId));
-    return active.find(o=>String(o.id)===String(selectedHumanTradeProposalId))||
-        active.find(o=>o.status==='accepted-awaiting-sender-claim')||
-        active.find(o=>o.status==='pending')||null;
+    let selected=null,claim=null,pending=null;
+    for(const offer of pendingDirectHumanTrades()){
+        if((offer.status!=='pending'&&offer.status!=='accepted-awaiting-sender-claim')||
+           !directHumanTradeHasParticipant(offer,ownerId))continue;
+        if(String(offer.id)===String(selectedHumanTradeProposalId))selected=offer;
+        if(!claim&&offer.status==='accepted-awaiting-sender-claim')claim=offer;
+        if(!pending&&offer.status==='pending')pending=offer;
+    }
+    return selected||claim||pending||null;
 }
 function activeDirectHumanTradeDraft(){
     if(!localClassicMatch)return null;
@@ -45246,9 +45429,14 @@ function startDirectHumanTradeSenderClaimDrag(event,offer){
     const image=document.createElement('img');
     image.className='dragging-animal';
     applyLocalizedAnimalImage(image,incoming);
-    image.style.width=`${rect.width}px`;
-    image.style.height=`${rect.height}px`;
-    image.style.pointerEvents='none';
+    Object.assign(image.style,{
+        position:'fixed',
+        width:`${rect.width}px`,
+        height:`${rect.height}px`,
+        objectFit:'contain',
+        pointerEvents:'none',
+        zIndex:'10020'
+    });
     document.body.appendChild(image);
     state.drag={
         type:'direct-human-trade-sender-claim',
@@ -45284,7 +45472,8 @@ function authoritativeHumanTradeDropDestination(event,dragRect=null){
     return null;
 }
 async function finishDirectHumanTradeSenderClaimDrag(event){
-    const drag=state.drag;if(!drag||drag.type!=='direct-human-trade-sender-claim')return;
+    const drag=state.drag;if(!drag||drag.type!=='direct-human-trade-sender-claim'||drag.finishing)return;
+    drag.finishing=true;
     const dragRect=drag.image?.getBoundingClientRect?.()||null;
     const incoming=drag.incomingAnimal;
     drag.image?.remove();state.drag=null;
@@ -45298,7 +45487,11 @@ async function finishDirectHumanTradeSenderClaimDrag(event){
     if(!offer||!directHumanTradeHasParticipant(offer,localClassicMatch?.activePlayerId)||
        offer.fromPlayerId!==localClassicMatch?.activePlayerId||
        offer.status!=='accepted-awaiting-sender-claim')return;
-    if(!destination){renderTrade();return;}
+    if(!destination){
+        directHumanTradeRenderSignature='';
+        renderTrade();
+        return;
+    }
 
     const incomingKey=animalCardKey(incoming);
     const authoritativeTransferId=String(offer.requestedTransferId??incoming?.id??'');
@@ -45352,7 +45545,8 @@ async function finishDirectHumanTradeSenderClaimDrag(event){
     offer.senderClaimAnimal=null;
     offer.status='accepted';
     offer.claimedRevision=++localClassicMatch.revision;
-    syncActiveZooIntoLocalMatch();
+    localMultiplayerLastSyncedStateRevision=-1;
+    syncActiveZooIntoLocalMatch({force:true});
     recordLocalMultiplayerEvent('trade-completed',{
         offerId:offer.id,
         fromPlayerId:offer.fromPlayerId,
@@ -45421,13 +45615,30 @@ function clearDirectHumanTradeActions(){
     document.getElementById('cancelHumanTradeOffer')?.remove();
     document.getElementById('withdrawPublicTradeListing')?.remove();
 }
+let directHumanTradeRenderSignature='';
+function currentDirectHumanTradeRenderSignature(){
+    if(!localClassicMatch)return '';
+    const activeId=localClassicMatch.activePlayerId;
+    const offer=activeDirectHumanTrade();
+    const draft=activeDirectHumanTradeDraft();
+    return [
+        activeId,offer?.id||'',offer?.status||'',offer?.updatedAt||'',
+        offer?.offeredAnimalId||'',offer?.requestedAnimalId||'',
+        draft?.requestedPlayerId||'',draft?.requestedAnimalId||'',draft?.offeredAnimalId||'',
+        selectedHumanTradeProposalId||'',state.drag?.type||'',state.drag?.humanTradeOfferId||''
+    ].join('|');
+}
 function renderDirectHumanTradeCards(){
     if(!localClassicMatch||!outgoingOfferBox||!incomingOfferBox)return false;
     const activeId=localClassicMatch.activePlayerId;
     const offer=activeDirectHumanTrade();
     const draft=activeDirectHumanTradeDraft();
 
-    if(!offer&&!draft)return false;
+    
+    if(!offer&&!draft){directHumanTradeRenderSignature='';return false;}
+    const renderSignature=currentDirectHumanTradeRenderSignature();
+    if(renderSignature===directHumanTradeRenderSignature)return true;
+    directHumanTradeRenderSignature=renderSignature;
 
     
     outgoingOfferBox.style.display='';
@@ -47002,6 +47213,8 @@ async function startGame() {
             'Loading animal inventory...',
             12000
         );
+        migrateLegacyAnimalCategories(state.inventory);
+        LEVEL_FILES_CACHE.clear();
 
         loadZooGeographyData();
         loadTrueAreaNamesData();

@@ -119,24 +119,13 @@ function checkZooInterfaceCompatibility() {
 
 window.__zooCompatibilityIssues = checkZooInterfaceCompatibility();
 
-// Prevent transparent/white edge texels from bleeding into scaled animal-card rasters.
-// A fractional clip is enough to keep browser interpolation inside the PNG at high zoo
-// zoom and also applies to the fixed-position drag copy.
-(function installAnimalCardRasterEdgeFix(){
-    if(document.getElementById('animalCardRasterEdgeFix'))return;
-    const style=document.createElement('style');
-    style.id='animalCardRasterEdgeFix';
-    style.textContent=`
-        img.animal-card,
-        img.dragging-animal {
-            display:block;
-            clip-path:inset(0.35px);
-            -webkit-clip-path:inset(0.35px);
-        }
-    `;
-    document.head.appendChild(style);
+// Do not clip the animal-card element itself: the exchange/trade eligibility
+// effects are drawn outside its box and clip-path trims them to corner slivers.
+// Keep the full card paintable at every zoom level.
+(function restoreUnclippedAnimalCardGlows(){
+    const old=document.getElementById('animalCardRasterEdgeFix');
+    if(old) old.remove();
 })();
-
 
 const ANIMAL_ROOT = 'assets/animals/';
 const ENCLOSURE_ROOT = 'assets/Enclosures/';
@@ -191,39 +180,39 @@ function canonicalAnimalCategory(category){
 }
 
 const CATEGORY_COLOURS = {
-    'Birds of Prey': '#A26248',
-    'Carnivores': '#A24848',
-    'Marine Mania': '#A24894',
-    'Tropical Birds': '#7248A2',
-    'Primates': '#4875A2',
-    'Reptiles': '#488FA2',
-    'Other Mammals': '#49A248',
-    'Other Birds': '#A29448',
-    'Ungulates': '#A27C48'
+    "Birds of Prey": "#A26248",
+    "Carnivores": "#A24848",
+    "Primates": "#4875A2",
+    "Reptiles": "#488FA2",
+    "Other Mammals": "#49A248",
+    "Ungulates": "#A27C48",
+    "Invertebrates": "#8C9B55",
+    "Landbirds": "#B28C50",
+    "Perching Birds": "#8263B5",
+    "Waterfowl": "#4A95B3",
+    "Freshwater": "#478A99",
+    "Marine Life": "#A24894"
 };
 
 const CATEGORY_PROGRESSION_ORDER = [
-    'Birds of Prey',
-    'Carnivores',
-    'Marine Mania',
-    'Tropical Birds',
-    'Primates',
-    'Reptiles',
-    'Other Mammals',
-    'Other Birds',
-    'Ungulates'
+    "Carnivores", "Ungulates", "Primates", "Other Mammals",
+    "Landbirds", "Waterfowl", "Perching Birds", "Birds of Prey",
+    "Freshwater", "Marine Life", "Reptiles", "Invertebrates"
 ];
 
 const FOLDERS = {
-    'Birds of Prey': 'birds of prey',
-    'Carnivores': 'carnivores',
-    'Marine Mania': 'marine mania',
-    'Tropical Birds': 'tropical birds',
-    'Primates': 'primates',
-    'Reptiles': 'reptiles',
-    'Other Mammals': 'other mammals',
-    'Other Birds': 'other birds',
-    'Ungulates': 'ungulates'
+    "Birds of Prey": "birds of prey",
+    "Carnivores": "carnivores",
+    "Primates": "primates",
+    "Reptiles": "reptiles",
+    "Other Mammals": "other mammals",
+    "Ungulates": "ungulates",
+    "Invertebrates": "invertebrates",
+    "Landbirds": "landbirds",
+    "Perching Birds": "perching birds",
+    "Waterfowl": "waterfowl",
+    "Freshwater": "freshwater",
+    "Marine Life": "marine life"
 };
 
 const GROUPS = {
@@ -3400,14 +3389,14 @@ function normaliseZooTypes(value) {
 }
 
 const SPECIALIST_STARTING_CATEGORIES = Object.freeze({
-    aquarium: ['Marine Mania'],
-    bird: ['Other Birds', 'Tropical Birds'],
+    aquarium: ['Marine Life', 'Freshwater'],
+    bird: ['Landbirds', 'Perching Birds', 'Waterfowl'],
     raptor: ['Birds of Prey'],
     reptile: ['Reptiles'],
     farm: ['Ungulates'],
-    tropical: ['Tropical Birds', 'Primates', 'Reptiles'],
+    tropical: ['Perching Birds', 'Primates', 'Reptiles'],
     safari: ['Ungulates', 'Carnivores'],
-    forest: ['Other Mammals', 'Other Birds', 'Carnivores'],
+    forest: ['Other Mammals', 'Landbirds', 'Carnivores'],
     alpine: ['Ungulates', 'Carnivores', 'Birds of Prey']
 });
 
@@ -7558,18 +7547,18 @@ function trueEventProfileIsAquarium(profile,record=null){
     const aquatic=v=>{const t=String(v||'').toLowerCase();return t.includes('aquarium')||t.includes('marine mania')||t.includes('marine')||t.includes('aquatic')||t.includes('sea life')||t.includes('sealife')||t.includes('ocean');};
     if(normaliseZooTypes(profile?.zooTypes||profile?.zoo_types||record?.zoo_types||record?.zooTypes||'general').some(aquatic))return true;
     const favourites=[...(Array.isArray(profile?.favourites)?profile.favourites:[]),...(Array.isArray(record?.favoured_categories)?record.favoured_categories:[]),...(Array.isArray(record?.favorite_categories)?record.favorite_categories:[])];
-    if(favourites.some(v=>String(v||'').toLowerCase()==='marine mania'))return true;
+    if(favourites.some(v=>['marine mania','marine life'].includes(String(v||'').toLowerCase())))return true;
     // Some specialist institutions in the opponent data are not typed as
     // "Aquarium". Recognise overwhelmingly Marine Mania collections too.
     const stock=record?realZooTradeAnimals(record,true):[];
     if(stock.length>=3){
-        const marine=stock.filter(a=>String(a?.category||a?.categoryName||'').toLowerCase()==='marine mania').length;
+        const marine=stock.filter(a=>['marine mania','marine life'].includes(String(a?.category||a?.categoryName||'').toLowerCase())).length;
         if(marine/stock.length>=.60)return true;
     }
     return false;
 }
 function truePlayerHasMarineManiaAnimal(){
-    return (state.animals||[]).some(animal=>animal&&!animal.trueArrivalPending&&trueAnimalPopulationTotal(animal)>0&&String(animal.category||animal.categoryName||'').trim().toLowerCase()==='marine mania');
+    return (state.animals||[]).some(animal=>animal&&!animal.trueArrivalPending&&trueAnimalPopulationTotal(animal)>0&&['marine mania','marine life'].includes(String(animal.category||animal.categoryName||'').trim().toLowerCase()));
 }
 function trueEventAquariumSourceAllowed(record,index=0){
     const profile=realZooProfile(record,index);
@@ -9153,6 +9142,15 @@ function openTrueEventDialog(id){
         closeTrueEventDialog(true);
     }
     const listing=trueMarketplaceListingById(event.listingId);
+    // Older saved offers may have no listingId even though their source is a
+    // real zoo. Recover their decision path as an independent event instead
+    // of displaying a misleading Close-only popup.
+    if(event.status==='active'&&!event.informational&&!event.independentEvent&&
+       ['breeding-success','priority-contact','emergency-placement','transfer-opportunity'].includes(event.kind)&&
+       !listing&&event.sourceKey&&event.animal){
+        const source=(state.realZooData?.zoos||[]).find(row=>realZooHoldingKey(row)===event.sourceKey);
+        if(source){event.independentEvent=true;event.listingId=null;writeAutoResumeSnapshot?.(true);}
+    }
     const overlay=document.createElement('div');overlay.id='trueEventDialogOverlay';overlay.dataset.eventId=String(event.id);
     overlay.style.cssText='position:fixed;inset:0;z-index:100050;pointer-events:none;';
     overlay.className='true-event-dialog-overlay';
@@ -9175,12 +9173,18 @@ function openTrueEventDialog(id){
         writeAutoResumeSnapshot?.(true);
     }
     if(requestedPlayerAnimal)event.playerAnimalId=requestedPlayerAnimal.id;
-    const active=event.status==='active'&&(event.informational?true:(isRequest?!!requestedPlayerAnimal:(event.independentEvent?true:!!listing&&listing.status==='available')));
+    const active=event.status==='active'&&(event.informational?true:(isRequest?!!requestedPlayerAnimal:(event.independentEvent?true:(listing?listing.status==='available':false))));
+    if(event.status==='active'&&!active&&!event.informational&&!isRequest&&
+       ['breeding-success','priority-contact','emergency-placement','transfer-opportunity'].includes(event.kind)){
+        event.status='unavailable';event.resolvedDate=normaliseTrueCalendarState().date;
+        event.resolution='The offering zoo or transfer listing is no longer available.';
+        writeAutoResumeSnapshot?.(true);
+    }
     const species=event.animal?animalDisplayName(event.animal):'';
     const specialties=trueRelationshipSpecialties(rel);
     const relationshipContext=specialties.length
-        ? `${trueRelationshipStage(rel.trust)} relationship · regular ${specialties[0].category} cooperation`
-        : `${trueRelationshipStage(rel.trust)} relationship`;
+        ? `${trueRelationshipStage(rel.trust)==='Unknown'?'New contact':trueRelationshipStage(rel.trust)+' relationship'} · regular ${specialties[0].category} cooperation`
+        : (trueRelationshipStage(rel.trust)==='Unknown'?'New contact':`${trueRelationshipStage(rel.trust)} relationship`);
     const metaLine=isPlayerBirth
         ?`${escapeHtml(state.zooName||'Your zoo')} · ${escapeHtml(formatTrueDate(event.createdDate,false))}`
         :isDevelopment
@@ -9207,10 +9211,10 @@ function openTrueEventDialog(id){
     if(event.message)bodyParts.push(`<div style="font-size:14px;line-height:1.5;margin-bottom:${event.detail?'8px':'14px'}">${escapeHtml(event.message)}</div>`);
     if(event.detail&&event.detail!==event.message)bodyParts.push(`<div style="font-size:13px;line-height:1.5;opacity:.82;margin-bottom:14px">${escapeHtml(event.detail)}</div>`);
     const replyChoices=active&&event.informational?trueEventReplyChoices(event):[];
-    const responseStatus=trueEventResponseStatus(event);
+    const responseStatus=event.status==='unavailable'?{label:'Offer unavailable',tone:'done',detail:event.resolution||'This offer can no longer be accepted.'}:trueEventResponseStatus(event);
     const responseStatusHtml=responseStatus?`<div class="true-event-response-status" data-tone="${escapeHtml(responseStatus.tone)}" style="margin:10px 0 4px;padding:8px 10px;border:1px solid rgba(86,72,43,.22);border-radius:7px;background:rgba(255,255,255,.18);font-size:12px;line-height:1.4"><strong>${escapeHtml(responseStatus.label)}</strong>${responseStatus.detail?`<div style="margin-top:2px;opacity:.76">${escapeHtml(responseStatus.detail)}</div>`:''}</div>`:'';
     const impact=trueEventImpactText(event,rel);
-    const impactHtml=(!replyChoices.length&&impact)?`<div style="font-size:12px;line-height:1.45;opacity:.76;margin-top:4px"><strong>Effect:</strong> ${escapeHtml(impact)}</div>`:'';
+    const impactHtml=(!active&&event.status!=='active'&&impact)?`<div style="font-size:12px;line-height:1.45;opacity:.76;margin-top:4px"><strong>Effect:</strong> ${escapeHtml(impact)}</div>`:'';
     const footerHtml=footer?`<div style="font-size:12px;opacity:.67;border-top:1px solid rgba(70,58,39,.17);padding-top:12px;margin-top:14px">${footer}</div>`:'';
     card.innerHTML=`<div style="font-size:10px;font-weight:900;letter-spacing:.12em;opacity:.55;margin-bottom:6px">${escapeHtml(topLabel)}</div>
         <div style="font-size:25px;font-weight:900;margin-bottom:5px">${escapeHtml(event.title)}</div>
@@ -14197,7 +14201,8 @@ function animalMapRangeEnvironment(animal,record=null){
     const explicit=String(inventory?.range_environment||inventory?.map_environment||'').trim().toLowerCase();
     if(['marine','ocean','sea'].includes(explicit))return 'marine';
     if(['freshwater','river','rivers','terrestrial','land'].includes(explicit))return explicit==='terrestrial'?'land':'freshwater';
-    if(String(animal?.category||record?.category||'').toLowerCase()==='marine mania')return 'marine';
+    if(['marine mania','marine life'].includes(String(animal?.category||record?.category||'').toLowerCase()))return 'marine';
+    if(String(animal?.category||record?.category||'').toLowerCase()==='freshwater')return 'freshwater';
     return 'land';
 }
 
@@ -30413,6 +30418,36 @@ function resetTransientStateForImport() {
     document.getElementById('truePopulationSelectorBackdrop')?.remove();
 }
 
+// Current-card destinations for the three retired animal categories. Generated from
+// asset-inventory; name-based because the retired categories split across five new ones.
+const REDISTRIBUTED_ANIMAL_PLACEMENTS=Object.freeze({"abdim's stork":["Waterfowl",2],"abyssinian ground hornbill":["Perching Birds",3],"adelie penguin":["Marine Life",5],"african grey hornbill":["Perching Birds",3],"african grey parrot":["Perching Birds",1],"african openbill":["Waterfowl",4],"african penguin":["Marine Life",1],"african pied hornbill":["Perching Birds",5],"african sacred ibis":["Waterfowl",1],"african spoonbill":["Waterfowl",1],"allen's gallinule":["Waterfowl",3],"american flamingo":["Waterfowl",2],"american white ibis":["Waterfowl",3],"andean flamingo":["Waterfowl",4],"asian houbara":["Landbirds",5],"asian woolly-necked stork":["Waterfowl",4],"atlantic manta ray":["Marine Life",5],"atlantic puffin":["Marine Life",4],"atlantic ridley turtle":["Marine Life",5],"atlantic spotted dolphin":["Marine Life",5],"australian ibis":["Waterfowl",4],"baltic seal":["Marine Life",4],"bearded barbet":["Perching Birds",3],"beluga":["Marine Life",4],"black crake":["Waterfowl",3],"black crowned crane":["Landbirds",2],"black hornbill":["Perching Birds",4],"black-casqued hornbill":["Perching Birds",4],"black-faced ibis":["Waterfowl",3],"black-headed ibis":["Waterfowl",4],"black-headed parrot":["Perching Birds",2],"black-necked aracari":["Perching Birds",3],"black-necked crane":["Landbirds",5],"blacktip reef shark":["Marine Life",2],"blue crane":["Landbirds",2],"blue-and-yellow macaw":["Perching Birds",1],"blue-cheeked amazon":["Perching Birds",3],"blue-eyed cockatoo":["Perching Birds",3],"blue-fronted amazon":["Perching Birds",1],"blue-headed macaw":["Perching Birds",4],"blue-headed parrot":["Perching Birds",3],"blue-throated macaw":["Perching Birds",2],"blue-winged kookaburra":["Perching Birds",3],"blue-winged macaw":["Perching Birds",2],"bluespotted ribbontail ray":["Marine Life",2],"bonnethead shark":["Marine Life",4],"bottlenose dolphin":["Marine Life",3],"brolga":["Waterfowl",5],"bronze-winged parrot":["Perching Birds",4],"brown-banded bambooshark":["Marine Life",2],"california sea lion":["Marine Life",2],"cape fur seal":["Marine Life",3],"channel-billed toucan":["Perching Birds",3],"chestnut-eared aracari":["Perching Birds",4],"chestnut-fronted macaw":["Perching Birds",3],"chilean flamingo":["Waterfowl",1],"chinstrap penguin":["Marine Life",4],"commerson's dolphin":["Marine Life",5],"common eagle ray":["Marine Life",3],"common ostrich":["Landbirds",2],"common raven":["Perching Birds",1],"common trumpeter":["Landbirds",3],"corncrake":["Waterfowl",5],"cownose ray":["Marine Life",2],"crimson-rumped toucanet":["Perching Birds",5],"crowned hornbill":["Perching Birds",4],"cuban amazon":["Perching Birds",2],"curl-crested aracari":["Perching Birds",5],"dalmatian pelican":["Waterfowl",1],"demoiselle crane":["Landbirds",1],"diademed amazon":["Perching Birds",4],"dugong":["Marine Life",5],"eastern yellow-billed hornbill":["Perching Birds",5],"emerald toucanet":["Perching Birds",5],"emperor penguin":["Marine Life",5],"emu":["Landbirds",1],"epaulette shark":["Marine Life",2],"eurasian spoonbill":["Waterfowl",1],"festive amazon":["Perching Birds",3],"fischer's turaco":["Perching Birds",3],"galah":["Perching Birds",1],"gang-gang cockatoo":["Perching Birds",5],"gentoo penguin":["Marine Life",3],"giant wood-rail":["Waterfowl",3],"glossy ibis":["Waterfowl",2],"golden-collared macaw":["Perching Birds",4],"great blue turaco":["Perching Birds",5],"great bustard":["Landbirds",5],"great green macaw":["Perching Birds",2],"great indian hornbill":["Perching Birds",4],"great white pelican":["Waterfowl",1],"greater flamingo":["Waterfowl",1],"greater rhea":["Landbirds",1],"green aracari":["Perching Birds",2],"green sawfish":["Marine Life",4],"green sea turtle":["Marine Life",3],"green turaco":["Perching Birds",2],"grey crowned crane":["Landbirds",1],"grey reef shark":["Marine Life",3],"grey seal":["Marine Life",2],"grey-cheeked hornbill":["Perching Birds",4],"guyana toucanet":["Perching Birds",5],"hadada ibis":["Waterfowl",3],"hamerkop":["Waterfowl",2],"harbour porpoise":["Marine Life",4],"harbour seal":["Marine Life",1],"harp seal":["Marine Life",5],"hartlaub's turaco":["Perching Birds",4],"hawksbill turtle":["Marine Life",4],"humboldt penguin":["Marine Life",1],"hyacinth macaw":["Perching Birds",2],"indian ocean humpback dolphin":["Marine Life",5],"ivory-billed aracari":["Perching Birds",5],"james's flamingo":["Waterfowl",4],"kea":["Perching Birds",2],"keel-billed toucan":["Perching Birds",5],"king penguin":["Marine Life",3],"knobbed hornbill":["Perching Birds",5],"kori bustard":["Landbirds",5],"laughing kookaburra":["Perching Birds",1],"lear's macaw":["Perching Birds",5],"lesser devil ray":["Marine Life",5],"lesser flamingo":["Waterfowl",3],"lesser rhea":["Landbirds",2],"lilac-crowned amazon":["Perching Birds",3],"lilacine amazon":["Perching Birds",2],"little bustard":["Landbirds",5],"little corella":["Perching Birds",2],"little grebe":["Waterfowl",4],"little penguin":["Marine Life",5],"livingstone's turaco":["Perching Birds",2],"long-billed corella":["Perching Birds",3],"macaroni penguin":["Marine Life",4],"madagascar ibis":["Waterfowl",3],"madagascar sacred ibis":["Waterfowl",4],"magellanic penguin":["Marine Life",3],"marabou stork":["Waterfowl",2],"mealy amazon":["Perching Birds",2],"melon-headed whale":["Marine Life",5],"meyer's parrot":["Perching Birds",3],"military macaw":["Perching Birds",2],"nicobar pigeon":["Perching Birds",1],"northern bald ibis":["Waterfowl",2],"northern cassowary":["Landbirds",5],"northern elephant seal":["Marine Life",5],"northern fur seal":["Marine Life",4],"northern kaka":["Perching Birds",5],"northern rufous hornbill":["Perching Birds",4],"nurse shark":["Marine Life",2],"nursehound":["Marine Life",2],"ocellated eagle ray":["Marine Life",4],"orange-winged amazon":["Perching Birds",1],"orca":["Marine Life",5],"oriental pied hornbill":["Perching Birds",5],"oriental stork":["Waterfowl",4],"orinoco dolphin":["Freshwater",5],"pacific parrotlet":["Perching Birds",4],"pacific white-sided dolphin":["Marine Life",5],"palawan hornbill":["Perching Birds",5],"pale-billed aracari":["Perching Birds",5],"palm cockatoo":["Perching Birds",3],"papuan hornbill":["Perching Birds",3],"peacock-eye stingray":["Freshwater",2],"philippine cockatoo":["Perching Birds",3],"pink cockatoo":["Perching Birds",2],"pink-backed pelican":["Waterfowl",2],"piping hornbill":["Perching Birds",5],"plate-billed mountain toucan":["Perching Birds",5],"purple-crested turaco":["Perching Birds",2],"red-and-green macaw":["Perching Birds",1],"red-and-yellow barbet":["Perching Birds",4],"red-bellied macaw":["Perching Birds",5],"red-billed hornbill":["Perching Birds",3],"red-billed woodhoopoe":["Perching Birds",4],"red-breasted toucan":["Perching Birds",5],"red-crested turaco":["Perching Birds",1],"red-crowned amazon":["Perching Birds",3],"red-crowned crane":["Landbirds",1],"red-fan parrot":["Perching Birds",4],"red-fronted macaw":["Perching Birds",3],"red-fronted parrot":["Perching Birds",3],"red-legged seriema":["Landbirds",2],"red-lored amazon":["Perching Birds",2],"red-shouldered macaw":["Perching Birds",2],"red-tailed amazon":["Perching Birds",3],"red-tailed black cockatoo":["Perching Birds",3],"rhinoceros hornbill":["Perching Birds",3],"risso's dolphin":["Marine Life",5],"rockhopper penguin":["Marine Life",3],"roseate spoonbill":["Waterfowl",1],"ross's turaco":["Perching Birds",5],"saddle-billed stork":["Waterfowl",3],"saffron toucanet":["Perching Birds",5],"sand tiger shark":["Marine Life",3],"sandbar shark":["Marine Life",3],"sandhill crane":["Landbirds",4],"sarus crane":["Landbirds",2],"scalloped hammerhead shark":["Marine Life",5],"scaly-headed parrot":["Perching Birds",4],"scarlet ibis":["Waterfowl",1],"scarlet macaw":["Perching Birds",1],"schalow's turaco":["Perching Birds",4],"sea otter":["Marine Life",4],"senegal parrot":["Perching Birds",1],"short-finned pilot whale":["Marine Life",5],"siberian crane":["Landbirds",4],"silvery-cheeked hornbill":["Perching Birds",2],"small-spotted catshark":["Marine Life",2],"solomons corella":["Perching Birds",2],"south american fur seal":["Marine Life",3],"south american sea lion":["Marine Life",3],"southern bald ibis":["Waterfowl",4],"southern cassowary":["Landbirds",3],"southern ground hornbill":["Landbirds",2],"southern rufous hornbill":["Perching Birds",5],"spectacled parrotlet":["Perching Birds",5],"spinner dolphin":["Marine Life",5],"spix's macaw":["Perching Birds",5],"spot-billed toucanet":["Perching Birds",5],"starry smooth-hound":["Marine Life",2],"steller sea lion":["Marine Life",4],"straw-necked ibis":["Waterfowl",3],"striped dolphin":["Marine Life",5],"sunbittern":["Waterfowl",3],"tanimbar corella":["Perching Birds",2],"tarictic hornbill":["Perching Birds",3],"tawny frogmouth":["Perching Birds",3],"tiger shark":["Marine Life",5],"timneh parrot":["Perching Birds",2],"toco toucan":["Perching Birds",2],"trumpeter hornbill":["Perching Birds",2],"umbrella cockatoo":["Perching Birds",1],"vinaceous-breasted amazon":["Perching Birds",2],"violet turaco":["Perching Birds",1],"von der decken's hornbill":["Perching Birds",2],"walrus":["Marine Life",4],"wattled crane":["Landbirds",4],"west indian manatee":["Freshwater",4],"western long-tailed hornbill":["Perching Birds",5],"western plantain-eater":["Perching Birds",5],"whale shark":["Marine Life",5],"white stork":["Waterfowl",1],"white-bellied parrot":["Perching Birds",2],"white-cheeked turaco":["Perching Birds",1],"white-crested turaco":["Perching Birds",3],"white-crowned hornbill":["Perching Birds",5],"white-crowned parrot":["Perching Birds",4],"white-fronted amazon":["Perching Birds",3],"white-naped crane":["Landbirds",2],"white-thighed hornbill":["Perching Birds",5],"white-throated toucan":["Perching Birds",4],"whitetip reef shark":["Marine Life",3],"wreathed hornbill":["Perching Birds",4],"wrinkled hornbill":["Perching Birds",4],"writhed hornbill":["Perching Birds",5],"xingu river ray":["Freshwater",2],"yangtze finless porpoise":["Freshwater",5],"yellow-billed amazon":["Perching Birds",4],"yellow-billed stork":["Waterfowl",2],"yellow-crested cockatoo":["Perching Birds",1],"yellow-crowned amazon":["Perching Birds",1],"yellow-faced parrot":["Perching Birds",4],"yellow-headed amazon":["Perching Birds",2],"yellow-naped amazon":["Perching Birds",2],"yellow-shouldered amazon":["Perching Birds",3],"yellow-tailed black cockatoo":["Perching Birds",5],"yucatan amazon":["Perching Birds",4],"zebra shark":["Marine Life",2]});
+// Migrate stored asset paths even when the card is represented by a bare string.
+function migrateRetiredCardPath(text){
+    if(typeof text!=='string')return text;
+    text=text.replace(/Death[’‘]s Head Cockroach\.png/gi,"Death's Head Cockroach.png");
+    return text.replace(/(other birds|tropical birds|marine mania)\/([1-5])\/([^/\\]+\.png)/gi,(whole,old,level,file)=>{
+        const destination=REDISTRIBUTED_ANIMAL_PLACEMENTS[file.replace(/\.png$/i,'').trim().toLowerCase()];
+        return destination?destination[0].toLowerCase()+'/'+destination[1]+'/'+file:whole;
+    });
+}
+const RETIRED_ANIMAL_CATEGORIES=new Set(['Other Birds','Tropical Birds','Marine Mania']);
+function migrateRedistributedAnimalRecord(value){
+    if(!value||typeof value!=='object')return value;
+    const oldCategory=canonicalAnimalCategory(value.category);
+    if(!RETIRED_ANIMAL_CATEGORIES.has(oldCategory))return value;
+    const name=String(value.name||value.filename||value.animalName||'').replace(/\.png$/i,'').trim().toLowerCase();
+    const target=REDISTRIBUTED_ANIMAL_PLACEMENTS[name];
+    if(!target)return value; // Never silently invent a replacement for missing species.
+    value.category=target[0];
+    value.level=target[1];
+    for(const key of ['path','image','imagePath','src','filenamePath']){
+        if(typeof value[key]!=='string')continue;
+        value[key]=value[key].replace(/(other birds|tropical birds|marine mania)\/([1-5])\/([^/]+\.png)/gi,
+            (whole,old,level,file)=>file.replace(/\.png$/i,'').toLowerCase()===name
+                ? target[0].toLowerCase()+'/'+target[1]+'/'+file : whole);
+    }
+    return value;
+}
 const LEGACY_ANIMAL_PLACEMENT_MIGRATIONS=Object.freeze({
     'Asian Elephant':Object.freeze({fromCategory:'Other Mammals',fromLevel:4,toCategory:'Ungulates',toLevel:4}),
     'African Elephant':Object.freeze({fromCategory:'Other Mammals',fromLevel:5,toCategory:'Ungulates',toLevel:5})
@@ -30445,7 +30480,7 @@ function migrateLegacyAnimalCategories(value,seen=new WeakSet()){
     if(Array.isArray(value)){
         for(let i=0;i<value.length;i++){
             const item=value[i];
-            if(typeof item==='string')value[i]=canonicalAnimalCategory(item);
+            if(typeof item==='string')value[i]=migrateRetiredCardPath(canonicalAnimalCategory(item));
             else migrateLegacyAnimalCategories(item,seen);
         }
         return value;
@@ -30463,8 +30498,8 @@ function migrateLegacyAnimalCategories(value,seen=new WeakSet()){
         const entries=[...value.entries()];
         value.clear();
         for(let [key,item] of entries){
-            if(typeof key==='string')key=canonicalAnimalCategory(key);
-            if(typeof item==='string')item=canonicalAnimalCategory(item);
+            if(typeof key==='string')key=migrateRetiredCardPath(canonicalAnimalCategory(key));
+            if(typeof item==='string')item=migrateRetiredCardPath(canonicalAnimalCategory(item));
             else migrateLegacyAnimalCategories(item,seen);
             value.set(key,item);
         }
@@ -30472,12 +30507,13 @@ function migrateLegacyAnimalCategories(value,seen=new WeakSet()){
     }
     if(typeof value.category==='string')value.category=canonicalAnimalCategory(value.category);
     migrateLegacyAnimalPlacementRecord(value);
+    migrateRedistributedAnimalRecord(value);
     for(const key of Object.keys(value)){
         const item=value[key];
         if(key==='category')continue;
         if(typeof item==='string'){
             if(item==='Carnivora')value[key]='Carnivores';
-            else value[key]=item
+            else value[key]=migrateRetiredCardPath(item)
                 .replace(/Other Mammals\/4\/Asian Elephant\.png/gi,'Ungulates/4/Asian Elephant.png')
                 .replace(/Other Mammals\/5\/African Elephant\.png/gi,'Ungulates/5/African Elephant.png');
         }else migrateLegacyAnimalCategories(item,seen);
@@ -42650,33 +42686,28 @@ function actionControlsRect() {
 function fitProgressTrackerAroundActions() {
     const tracker = document.getElementById('progressTracker');
     if (!tracker) return;
-
+    // Reset the prior fit before measuring, without changing the header size.
     tracker.style.removeProperty('transform');
     tracker.style.removeProperty('transform-origin');
-    tracker.style.removeProperty('position');
-    tracker.style.removeProperty('right');
-    tracker.style.removeProperty('z-index');
     tracker.classList.remove('laptop-header-fitted');
-
-    if (window.matchMedia('(max-width: 700px)').matches) {
-        tracker.style.removeProperty('width');
-        tracker.style.removeProperty('scale');
-        tracker.style.removeProperty('left');
-        tracker.style.removeProperty('top');
-        return;
-    }
-
+    if (window.matchMedia('(max-width: 700px)').matches) return;
+    const header = document.getElementById('actionMenu');
+    const table = tracker.querySelector('.progress-table');
+    if (!header || !table) return;
+    const bounds = tracker.getBoundingClientRect();
+    const tableBounds = table.getBoundingClientRect();
+    const headerBounds = header.getBoundingClientRect();
     const controls = actionControlsRect();
-    const natural = visibleElementRect(tracker);
-    if (!controls || !natural) return;
-
-    const gap = 12;
-    if (!rectsOverlap(natural, controls, gap)) return;
-
-    const availableWidth = Math.max(1, controls.left - gap - natural.left);
-    const collisionScale = Math.max(0.50, Math.min(1, availableWidth / natural.width));
-    tracker.style.transform = `scale(${collisionScale})`;
-    tracker.classList.add('laptop-header-fitted');
+    const width = Math.max(bounds.width, tableBounds.right - bounds.left, 1);
+    const height = Math.max(bounds.height, tableBounds.bottom - bounds.top, 1);
+    const availableWidth = Math.max(1, (controls ? controls.left - 12 : headerBounds.right - 8) - bounds.left);
+    const availableHeight = Math.max(1, headerBounds.bottom - bounds.top - 5);
+    const fit = Math.min(1, availableWidth / width, availableHeight / height);
+    if (fit < 0.999) {
+        tracker.style.transformOrigin = 'top left';
+        tracker.style.transform = `scale(${Math.max(0.1, fit)})`;
+        tracker.classList.add('laptop-header-fitted');
+    }
 }
 
 let opponentTradePositionRaf=0;
@@ -43573,7 +43604,7 @@ function trueMarketplaceDiverseSelection(candidates,maxNew){
     for(const candidate of candidates){
         const category=String(candidate?.animal?.category||'');
         const count=categoryCounts.get(category)||0;
-        if(!aquarium&&category==='Marine Mania'){
+        if(!aquarium&&(category==='Marine Life'||category==='Freshwater')){
             const marineCap=maxNew<=7?1:2;
             if(count>=marineCap)continue;
         }
@@ -43620,7 +43651,7 @@ function refreshTrueMarketplaceForMonth(monthKey = null, { announce=false, force
     let additions=trueMarketplaceDiverseSelection(selected,maxNew);
     if(!trueMarketplacePlayerIsAquarium() && currentAvailable+additions.length<minimum){
         const used=new Set(additions);
-        const nonMarine=ordered.filter(c=>!used.has(c)&&String(c?.animal?.category||'')!=='Marine Mania');
+        const nonMarine=ordered.filter(c=>!used.has(c)&&!['Marine Life','Freshwater'].includes(String(c?.animal?.category||'')));
         for(const c of nonMarine){
             additions.push(c);used.add(c);
             if(currentAvailable+additions.length>=minimum||additions.length>=maxNew)break;

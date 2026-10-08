@@ -6548,6 +6548,7 @@ function createStartingZoo(options = {}) {
             animal.enclosureId = null;
             animal.slotIndex = null;
         }
+        invalidateClassicOccupancyCache();
     }
 
     const STARTUP_SEARCH_NODE_LIMIT = Math.max(2500, startupRules.species * 700);
@@ -6593,11 +6594,13 @@ function createStartingZoo(options = {}) {
 
             animal.enclosureId = destination.enclosure.id;
             animal.slotIndex = destination.slotIndex;
+            invalidateClassicOccupancyCache();
 
             if (placeStartingCollectionBacktracking(animals, index + 1)) return true;
 
             animal.enclosureId = null;
             animal.slotIndex = null;
+            invalidateClassicOccupancyCache();
         }
 
         [animals[index], animals[bestIndex]] = [animals[bestIndex], animals[index]];
@@ -6619,6 +6622,7 @@ function createStartingZoo(options = {}) {
             const slotIndex = entry.group[0];
             state.animals[i].enclosureId = entry.enclosure.id;
             state.animals[i].slotIndex = slotIndex;
+            invalidateClassicOccupancyCache();
         }
         placed = true;
     }
@@ -6764,6 +6768,7 @@ function createStartingZoo(options = {}) {
 
             animal.enclosureId = destination.enclosure.id;
             animal.slotIndex = destination.slotIndex;
+            invalidateClassicOccupancyCache();
         }
 
         if (fallbackFailed) {

@@ -20468,9 +20468,11 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "pair",
-            "breeding_group"
-          ]
+            "pair"
+          ],
+          "population_note": "Adult cranes are primarily maintained as territorial breeding pairs; family groups with dependent offspring are temporary, not routine stable multi-pair breeding groups. Allow larger nonbreeding flocks only with suitable management.",
+          "geography_note": "Breeds in Eurasian steppe and semi-desert from the Black Sea and southern Russia through Kazakhstan and Mongolia to northeastern China, with small remnant western populations. Winters primarily in India and northeastern Africa. The wild_regions codes are a provisional broad seasonal distribution, not a verified breeding-only map; migration transit should not by itself justify a region.",
+          "migration_note": "Migratory; native seasonal breeding and wintering distributions are distinct. Region-code array does not currently encode season."
         },
         "Emu.png": {
           "scientific_name": "Dromaius novaehollandiae",
@@ -20492,10 +20494,10 @@
           ],
           "space_requirement": 3,
           "population_profiles": [
-            "pair",
-            "breeding_group"
+            "pair"
           ],
-          "geography_note": "Native across most of mainland Australia; Tasmania population is extinct and all non-Australian Australasian regions removed."
+          "geography_note": "Native across most of mainland Australia; Tasmania population is extinct and all non-Australian Australasian regions removed.",
+          "population_note": "Breeding pairs are the default adult social unit; managed groups can occur with careful introduction and ample space."
         },
         "Greater Rhea.png": {
           "scientific_name": "Rhea americana",
@@ -20515,7 +20517,8 @@
           "space_requirement": 3,
           "population_profiles": [
             "breeding_group"
-          ]
+          ],
+          "population_note": "Polygynous breeding groups with extensive paddock space; males may become territorial in the breeding season."
         },
         "Grey Crowned Crane.png": {
           "scientific_name": "Balearica regulorum",
@@ -20536,10 +20539,10 @@
           ],
           "space_requirement": 1,
           "population_profiles": [
-            "pair",
-            "breeding_group"
+            "pair"
           ],
-          "geography_note": "Eastern and southern African wetland-grassland crane: eastern DRC/Uganda/Kenya south through Tanzania, Zambia and Mozambique, plus Zimbabwe/South Africa and small populations west to Angola/Namibia."
+          "geography_note": "Eastern and southern African wetland-grassland crane: eastern DRC/Uganda/Kenya south through Tanzania, Zambia and Mozambique, plus Zimbabwe/South Africa and small populations west to Angola/Namibia.",
+          "population_note": "Adult cranes are primarily maintained as territorial breeding pairs; family groups with dependent offspring are temporary, not routine stable multi-pair breeding groups. Allow larger nonbreeding flocks only with suitable management."
         },
         "Red-Crowned Crane.png": {
           "scientific_name": "Grus japonensis",
@@ -20550,13 +20553,264 @@
             "coastal"
           ],
           "wild_regions": [
-            "PA2",
-            "PA3",
+            "PA46",
+            "PA47",
+            "PA48",
+            "PA49",
+            "PA50"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair"
+          ],
+          "population_note": "Adult cranes are primarily maintained as territorial breeding pairs; family groups with dependent offspring are temporary, not routine stable multi-pair breeding groups. Allow larger nonbreeding flocks only with suitable management.",
+          "geography_note": "Breeds in northeast Asia, especially Amur/Ussuri basin and northeast China, with resident population in Hokkaido; winters in Korea and eastern China. Removed western Siberian and Tibetan regions. OneEarth bioregion approximations, not precise occurrence polygons."
+        },
+        "Blue Eared Pheasant.png": {
+          "scientific_name": "Crossoptilon auritum",
+          "tags": [
+            "mountain",
+            "temperate-forest",
+            "conifer-forest",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "PA42",
+            "PA51",
+            "PA53"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Native to high-elevation mountains of central/western China, especially Qinghai, Gansu, Sichuan and Ningxia, on the northeastern Qinghai–Tibet Plateau. Field research at Wanglang (Sichuan) documents use of high-elevation shrub habitats. PA42–PA45 remains a provisional coarse regional assignment, not a confirmed polygon-level range. OneEarth region assignment revised in pass 6; region coverage is approximate and includes only native distribution, with boundary overlap needing map-level verification.",
+          "population_note": "Occurs in groups outside breeding season; breeding pairs and small managed groups are reasonable abstractions."
+        },
+        "California Quail.png": {
+          "scientific_name": "Callipepla californica",
+          "tags": [
+            "shrubland",
+            "grassland",
+            "dry-forest",
+            "woodland"
+          ],
+          "wild_regions": [
+            "NA31",
+            "NA29",
+            "NA30"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Native chiefly to the western United States and Baja California/northwestern Mexico; excludes eastern Great Plains and Great Lakes. Introduced populations outside native range omitted. OneEarth bioregion approximations, not precise occurrence polygons."
+        },
+        "Common Pheasant.png": {
+          "scientific_name": "Phasianus colchicus",
+          "tags": [
+            "grassland",
+            "shrubland",
+            "wetland",
+            "dry-forest"
+          ],
+          "wild_regions": [
+            "PA25",
+            "PA26",
+            "PA27",
+            "PA28",
+            "PA29",
+            "PA30",
+            "PA31",
+            "PA32",
+            "PA33",
+            "PA34",
+            "PA35",
+            "PA36",
+            "PA37",
+            "PA38",
+            "PA39",
+            "PA40",
             "PA41",
             "PA42",
             "PA43",
             "PA44",
             "PA45",
+            "IM13"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "breeding_group",
+            "bachelor_group"
+          ],
+          "geography_note": "Native populations span the Caucasus/Caspian region, Central Asia, eastern Siberia, mainland China and Taiwan (represented by IM13). Most European, North American and Australasian populations are introduced and excluded. The large PA-region range is an approximate footprint of fragmented native subspecies distributions, not continuous occupancy. Sources: Scientific Reports (2021), doi:10.1038/s41598-021-00567-1; birdfinding.info/common-pheasant/."
+        },
+        "Crested Partridge.png": {
+          "scientific_name": "Rollulus rouloul",
+          "tags": [
+            "rainforest"
+          ],
+          "wild_regions": [
+            "IM9",
+            "IM16",
+            "IM17",
+            "IM18"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Native to lowland rainforests of the Malay Peninsula, Sumatra and Borneo, with Java also reported; removed Indian, Himalayan and northern Indochinese regions. OneEarth bioregion approximations, not precise occurrence polygons."
+        },
+        "Domestic Turkey.png": {
+          "scientific_name": "Meleagris gallopavo domesticus",
+          "tags": [
+            "grassland",
+            "shrubland",
+            "dry-forest"
+          ],
+          "wild_regions": [],
+          "space_requirement": 1,
+          "population_profiles": [
+            "breeding_group"
+          ],
+          "geography_note": "Domestic form; no native wild distribution assigned. Do not copy the wild turkey range."
+        },
+        "Edwards's Pheasant.png": {
+          "scientific_name": "Lophura edwardsi",
+          "tags": [
+            "rainforest"
+          ],
+          "wild_regions": [
+            "IM12"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Historical native range restricted to lowland evergreen forest in central Viet Nam: Ha Tinh, Quang Binh, Quang Tri and Thua Thien Hue. Possibly extinct in the wild; last confirmed wild record in 2000. IM5 is provisional pending OneEarth boundary verification; no Laos extension. OneEarth region assignment revised in pass 6; region coverage is approximate and includes only native distribution, with boundary overlap needing map-level verification.",
+          "population_note": "Pair or carefully managed breeding group; species should not be treated as a widespread dry-forest pheasant."
+        },
+        "Eurasian Crane.png": {
+          "scientific_name": "Grus grus",
+          "tags": [
+            "wetland",
+            "grassland",
+            "riverine",
+            "boreal"
+          ],
+          "wild_regions": [
+            "PA4",
+            "PA5",
+            "PA6",
+            "PA7",
+            "PA8",
+            "PA9",
+            "PA10",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15",
+            "PA16",
+            "PA17",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
+            "PA22",
+            "PA27",
+            "PA28",
+            "PA29",
+            "PA30",
+            "PA31",
+            "PA32",
+            "PA33",
+            "PA34",
+            "PA35",
+            "PA36",
+            "PA37",
+            "PA38",
+            "PA39",
+            "PA40",
+            "PA41",
+            "PA42",
+            "PA43",
+            "PA44",
+            "PA45"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair"
+          ],
+          "population_note": "Adult cranes are primarily maintained as territorial breeding pairs; family groups with dependent offspring are temporary, not routine stable multi-pair breeding groups. Allow larger nonbreeding flocks only with suitable management.",
+          "geography_note": "Breeds across northern and western Europe, Russia and Siberia to northern Mongolia and northern China. Winters in western/southern Europe, northern and eastern Africa, the Middle East, India and southern/eastern China. Existing wild_regions are a provisional broad distribution and have not been validated against the exact OneEarth polygons; breeding, wintering and transit occurrences should be distinguished.",
+          "migration_note": "Migratory; native seasonal breeding and wintering distributions are distinct. Region-code array does not currently encode season."
+        },
+        "Eurasian Quail.png": {
+          "scientific_name": "Coturnix coturnix",
+          "tags": [
+            "grassland"
+          ],
+          "wild_regions": [
+            "PA9",
+            "PA10",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15",
+            "PA16",
+            "PA17",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA21",
+            "PA22",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27",
+            "PA28",
+            "PA29",
+            "PA30",
+            "PA31",
+            "PA32",
+            "PA33",
+            "PA34",
+            "PA35",
+            "PA36",
+            "PA37",
+            "PA38",
+            "PA39",
+            "PA40",
+            "PA41",
+            "PA42",
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Common Quail (Coturnix coturnix) breeds across Europe and western/central Asia and has wintering populations in Africa and southern Asia. Easternmost PA43–PA45 removed as an overly broad extension toward eastern Asia, where Japanese Quail (Coturnix japonica) is a distinct species. Remaining region codes are coarse year-round approximations and need boundary-level validation; migration corridors are not equivalent to continuous occupancy. Sources: IUCN 2018 species assessment; Animal Diversity Web geographic account; eBird seasonal range mapping."
+        },
+        "Golden Pheasant.png": {
+          "scientific_name": "Chrysolophus pictus",
+          "tags": [
+            "temperate-forest",
+            "mountain",
+            "shrubland"
+          ],
+          "wild_regions": [
             "PA49",
             "PA50",
             "PA51",
@@ -20566,7 +20820,253 @@
           "population_profiles": [
             "pair",
             "breeding_group"
+          ],
+          "geography_note": "Native to montane forests of central China; introduced populations elsewhere (including Britain) must not count toward wild_regions. Current PA codes provisional until region boundary verification. OneEarth region assignment revised in pass 6; region coverage is approximate and includes only native distribution, with boundary overlap needing map-level verification."
+        },
+        "Grey Peacock-Pheasant.png": {
+          "scientific_name": "Polyplectron bicalcaratum",
+          "tags": [
+            "rainforest",
+            "dry-forest"
+          ],
+          "wild_regions": [
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM13"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Mainland Southeast Asian forest species, from northeastern India/Myanmar into Indochina and southern China; removed western Indian regions. OneEarth bioregion approximations, not precise occurrence polygons."
+        },
+        "Helmeted Guineafowl.png": {
+          "scientific_name": "Numida meleagris",
+          "tags": [
+            "savanna",
+            "grassland",
+            "shrubland",
+            "dry-forest"
+          ],
+          "wild_regions": [
+            "AT2",
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT12",
+            "AT13",
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "breeding_group"
           ]
+        },
+        "Himalayan Monal.png": {
+          "scientific_name": "Lophophorus impejanus",
+          "tags": [
+            "mountain",
+            "temperate-forest",
+            "conifer-forest",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "IM5",
+            "IM10",
+            "PA41"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Himalayan mountain forests and alpine scrub from Afghanistan/Pakistan through Nepal/Bhutan into Tibet; removed Central Asian deserts and Kazakh steppe regions. OneEarth bioregion approximations, not precise occurrence polygons."
+        },
+        "Indian Peafowl.png": {
+          "scientific_name": "Pavo cristatus",
+          "tags": [
+            "dry-forest",
+            "grassland",
+            "shrubland",
+            "savanna"
+          ],
+          "wild_regions": [
+            "IM2",
+            "IM3",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "breeding_group"
+          ],
+          "geography_note": "Native to the Indian subcontinent and Sri Lanka, primarily dry/open woodland and forest edge; introduced populations omitted. OneEarth bioregion approximations, not precise occurrence polygons."
+        },
+        "King Quail.png": {
+          "scientific_name": "Synoicus chinensis",
+          "tags": [
+            "grassland",
+            "wetland",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "IM2",
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8",
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM13",
+            "IM15",
+            "IM16",
+            "IM17",
+            "IM18",
+            "AU1",
+            "AU2",
+            "AU3",
+            "AU9"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ]
+        },
+        "Lady Amherst's Pheasant.png": {
+          "scientific_name": "Chrysolophus amherstiae",
+          "tags": [
+            "mountain",
+            "temperate-forest",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "PA51",
+            "PA52",
+            "PA53",
+            "IM11"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Native to southwest China and adjacent northern Myanmar; introduced populations in Britain and elsewhere excluded. Current broad PA/IM region codes need polygon-level verification. OneEarth region assignment revised in pass 6; region coverage is approximate and includes only native distribution, with boundary overlap needing map-level verification."
+        },
+        "Reeves's Pheasant.png": {
+          "scientific_name": "Syrmaticus reevesii",
+          "tags": [
+            "temperate-forest",
+            "conifer-forest",
+            "mountain",
+            "shrubland"
+          ],
+          "wild_regions": [
+            "PA49",
+            "PA50",
+            "PA51",
+            "PA52"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Native to fragmented forest landscapes of central China, especially Henan, Hubei, Anhui and Guizhou; historical records also extend into adjoining provinces. Recent studies locate key habitats in Henan, Hubei, Anhui and Guizhou. Introduced European populations excluded. PA42–PA45 requires polygon verification before any pruning. OneEarth region assignment revised in pass 6; region coverage is approximate and includes only native distribution, with boundary overlap needing map-level verification."
+        },
+        "Silky Chicken.png": {
+          "scientific_name": "Gallus gallus domesticus",
+          "tags": [
+            "grassland",
+            "shrubland",
+            "dry-forest"
+          ],
+          "wild_regions": [],
+          "space_requirement": 1,
+          "population_profiles": [
+            "breeding_group"
+          ],
+          "geography_note": "Domestic chicken breed; no native wild distribution assigned. Do not copy the red junglefowl range."
+        },
+        "Silver Pheasant.png": {
+          "scientific_name": "Lophura nycthemera",
+          "tags": [
+            "rainforest",
+            "dry-forest",
+            "mountain"
+          ],
+          "wild_regions": [
+            "PA42",
+            "PA43",
+            "PA44",
+            "PA45",
+            "IM2",
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Native to forested mainland Southeast Asia and southern China, including Viet Nam, Laos, Myanmar and Thailand; do not treat every southern Chinese or Indomalayan bioregion as occupied."
+        },
+        "Swinhoe's Pheasant.png": {
+          "scientific_name": "Lophura swinhoii",
+          "tags": [
+            "temperate-forest",
+            "mountain"
+          ],
+          "wild_regions": [
+            "IM13"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Endemic resident of Taiwan, especially forested hills and mountains. One Earth assigns Taiwan Subtropical Evergreen Forests and South Taiwan Monsoon Rainforests to South China Subtropical Evergreen & Monsoon Forests (IM13). IM13 is a broad bioregion also covering mainland areas; Taiwan-only occupancy cannot be distinguished by this bioregion code alone."
+        },
+        "Temminck's Tragopan.png": {
+          "scientific_name": "Tragopan temminckii",
+          "tags": [
+            "mountain",
+            "temperate-forest",
+            "conifer-forest"
+          ],
+          "wild_regions": [
+            "PA51",
+            "PA52",
+            "PA53",
+            "IM5",
+            "IM10",
+            "IM11"
+          ],
+          "space_requirement": 1,
+          "population_profiles": [
+            "pair",
+            "breeding_group"
+          ],
+          "geography_note": "Native mountain-forest distribution from northeastern India and northern Myanmar through south-central China to northern Viet Nam; concentrated in southern/central China, not throughout East Asia. PA and IM codes provisional pending finer OneEarth matching. OneEarth region assignment revised in pass 6; region coverage is approximate and includes only native distribution, with boundary overlap needing map-level verification."
         }
       },
       "2": {
@@ -30241,7 +30741,8 @@
         },
         "aquarium": {
           "category": {
-            "Marine Mania": 3.0,
+            "Marine Life": 3.0,
+            "Freshwater": 3.0,
             "Reptiles": 1.15
           },
           "tags": {
@@ -30254,7 +30755,9 @@
         },
         "tropical": {
           "category": {
-            "Tropical Birds": 1.8,
+            "Perching Birds": 1.8,
+            "Landbirds": 1.35,
+            "Invertebrates": 1.2,
             "Primates": 1.35,
             "Reptiles": 1.35,
             "Other Mammals": 1.15
@@ -30272,7 +30775,7 @@
           "category": {
             "Ungulates": 2.5,
             "Carnivores": 1.2,
-            "Other Birds": 1.15
+            "Landbirds": 1.15
           },
           "tags": {
             "africa": 2.2,
@@ -30307,9 +30810,10 @@
         },
         "bird": {
           "category": {
-            "Other Birds": 2.5,
+            "Landbirds": 2.5,
+            "Perching Birds": 2.5,
+            "Waterfowl": 2.5,
             "Birds of Prey": 2.5,
-            "Tropical Birds": 2.5,
             "Reptiles": 1.1
           },
           "tags": {
@@ -30322,7 +30826,9 @@
         "reptile": {
           "category": {
             "Reptiles": 5.0,
-            "Marine Mania": 1.25,
+            "Freshwater": 1.25,
+            "Marine Life": 1.15,
+            "Invertebrates": 1.5,
             "Other Mammals": 1.1
           },
           "tags": {
@@ -30352,8 +30858,8 @@
         "raptor": {
           "category": {
             "Birds of Prey": 8.0,
-            "Other Birds": 1.15,
-            "Tropical Birds": 1.1
+            "Landbirds": 1.15,
+            "Perching Birds": 1.1
           },
           "tags": {
             "forest": 1.1,
@@ -30361,6 +30867,26 @@
             "wetland": 1.05
           },
           "description": "Raptor and falconry specialist. Very strongly favours Birds of Prey while retaining a small chance of other bird groups and habitat-associated species."
+        },
+        "butterfly": {
+          "category": {
+            "Invertebrates": 5.0
+          },
+          "tags": {
+            "tropical": 3.0,
+            "rainforest": 2.2
+          },
+          "description": "Butterfly garden: guarantees four distinct level-one butterflies at startup; strongly favours invertebrates and tropical/rainforest animals."
+        },
+        "insectarium": {
+          "category": {
+            "Invertebrates": 5.0
+          },
+          "tags": {
+            "tropical": 1.3,
+            "rainforest": 1.2
+          },
+          "description": "Invertebrate specialist with a broad insect collection."
         }
       }
     },

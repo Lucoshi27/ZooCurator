@@ -6302,6 +6302,13 @@
           "zoo": "Tierpark Rheine",
           "country": "Germany",
           "date": "since 1997"
+        },
+        {
+          "zoo": "EAZA Best Practice Guidelines (husbandry guidance, not an additional zoo record)",
+          "country": "Europe",
+          "date": "2019",
+          "source": "https://www.scribd.com/document/700941065/EAZA-Best-Practice-Guidelines",
+          "note": "CAUTION: EAZA capuchin guidelines strongly recommend against mixing New World capuchins with Old World monkeys. This is a general husbandry warning and does not independently verify or refute the historical Tierpark Rheine record. Retained for historical evidence; should be reviewed before being considered an unrestricted safe mix."
         }
       ]
     },
@@ -7272,6 +7279,13 @@
           "zoo": "Zoo Frankfurt",
           "country": "Germany",
           "date": "2021"
+        },
+        {
+          "zoo": "Lincoln Park Zoo",
+          "country": "United States",
+          "date": "2005",
+          "source": "https://pubmed.ncbi.nlm.nih.gov/18176938/",
+          "note": "Gentry & Margulis (2008) describe an established black howler and white-faced saki group before pied tamarins were introduced. The subsequent three-species mix failed due to escalating saki aggression; this is historical, conditional evidence, not a general endorsement of the three-species mix."
         }
       ]
     },
@@ -14229,6 +14243,13 @@
           "zoo": "Parc Zoologique de Lille",
           "country": "France",
           "date": "2018"
+        },
+        {
+          "zoo": "EAZA multi-zoo husbandry questionnaire",
+          "country": "Europe",
+          "date": "2021",
+          "source": "https://strapi.eaza.net/uploads/2021_White_Faced_Saki_Monkey_EAZA_Best_Practice_Guidelines_approved_930bff0550.pdf",
+          "note": "Appendix V reports both positive experiences (Calviac; Champrepus; Faunia; Wroclaw) and negative experiences (Halle). Managed/variable-outcome combination; provide separate retreats and monitor aggression. Not universally safe."
         }
       ]
     },
@@ -16373,6 +16394,13 @@
           "zoo": "Milwaukee County Zoo",
           "country": "United States",
           "date": "2022-09-24"
+        },
+        {
+          "zoo": "Zoologischer Stadtgarten Karlsruhe",
+          "country": "Germany",
+          "date": "2026-01-06",
+          "source": "https://zoo-karlsruhe.de/in-der-modernen-zootierhaltung-werden-haeufig-2026-01-06/",
+          "note": "Official zoo report explicitly describes Spring Tamarins (Goeldi’s Monkeys) and Cotton-Top Tamarins grooming each other in mixed-species housing."
         }
       ]
     },
@@ -16430,6 +16458,13 @@
           "zoo": "Zoo Hannover",
           "country": "Germany",
           "date": "2002"
+        },
+        {
+          "zoo": "Selected German zoological gardens (mixed-species husbandry survey)",
+          "country": "Germany",
+          "date": "2002",
+          "source": "https://www.dpz.eu/fileadmin/user_upload/Bibliothek/Primate_Report/PDF/Primate_Report_64__2002_.pdf",
+          "note": "Ziegler (2002), Association 3: Cotton-top tamarins and Choloepus hoffmanni housed together; adequate sloth resting space and separate food provision important because tamarins consume sloth food."
         }
       ]
     },
@@ -19599,6 +19634,13 @@
           "zoo": "Collection E mixed walkthrough",
           "country": "United Kingdom",
           "date": "2023"
+        },
+        {
+          "zoo": "Anonymized collection E (walk-through rainforest exhibit)",
+          "country": "Not disclosed in study",
+          "date": "2022-04-18 to 2022-04-23",
+          "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10339928/",
+          "note": "Peer-reviewed observational study explicitly identifies all five species in one mixed-species walk-through rainforest enclosure. This establishes shared exhibit residency, not direct interaction for each pair."
         }
       ]
     },
@@ -19645,6 +19687,13 @@
           "zoo": "Zoo Karlsruhe",
           "country": "Germany",
           "date": "2020-01-10"
+        },
+        {
+          "zoo": "Anonymized collection E (walk-through rainforest exhibit)",
+          "country": "Not disclosed in study",
+          "date": "2022-04-18 to 2022-04-23",
+          "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10339928/",
+          "note": "Peer-reviewed observational study explicitly identifies all five species in one mixed-species walk-through rainforest enclosure. This establishes shared exhibit residency, not direct interaction for each pair."
         }
       ]
     },
@@ -19671,6 +19720,13 @@
           "zoo": "Edinburgh Zoo",
           "country": "United Kingdom",
           "date": "2006"
+        },
+        {
+          "zoo": "Edinburgh Zoo",
+          "country": "United Kingdom",
+          "date": "2005",
+          "source": "https://zslpublications.onlinelibrary.wiley.com/doi/abs/10.1111/j.1748-1090.2005.tb00017.x",
+          "note": "Dalton & Buchanan-Smith, International Zoo Yearbook 39, 176–184: studied a successful mixed-species enclosure of Goeldi’s monkeys and pygmy marmosets."
         }
       ]
     },
@@ -19684,6 +19740,13 @@
           "zoo": "ZSL London Zoo",
           "country": "United Kingdom",
           "date": "2025"
+        },
+        {
+          "zoo": "Anonymized collection E (walk-through rainforest exhibit)",
+          "country": "Not disclosed in study",
+          "date": "2022-04-18 to 2022-04-23",
+          "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10339928/",
+          "note": "Peer-reviewed observational study explicitly identifies all five species in one mixed-species walk-through rainforest enclosure. This establishes shared exhibit residency, not direct interaction for each pair."
         }
       ]
     },
@@ -19741,6 +19804,13 @@
           "zoo": "Collection E mixed walkthrough",
           "country": "United Kingdom",
           "date": "2023"
+        },
+        {
+          "zoo": "Anonymized collection E (walk-through rainforest exhibit)",
+          "country": "Not disclosed in study",
+          "date": "2022-04-18 to 2022-04-23",
+          "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10339928/",
+          "note": "Peer-reviewed observational study explicitly identifies all five species in one mixed-species walk-through rainforest enclosure. This establishes shared exhibit residency, not direct interaction for each pair."
         }
       ]
     },
@@ -19772,6 +19842,13 @@
           "zoo": "Cleveland Metroparks Zoo",
           "country": "United States",
           "date": "2018"
+        },
+        {
+          "zoo": "EAZA multi-zoo husbandry questionnaire",
+          "country": "Europe",
+          "date": "2021",
+          "source": "https://strapi.eaza.net/uploads/2021_White_Faced_Saki_Monkey_EAZA_Best_Practice_Guidelines_approved_930bff0550.pdf",
+          "note": "Appendix V reports both positive experiences (Beauval; Calviac; La Flèche; Montpellier; Opole) and negative experiences (Bassin d’Arcachon; Den Lille Dyrehage; Marlow Bird Park). Managed/variable-outcome combination; provide separate retreats and monitor aggression. Not universally safe."
         }
       ]
     },
@@ -19894,6 +19971,13 @@
           "zoo": "Palm Beach Zoo & Conservation Society",
           "country": "United States",
           "date": "2025"
+        },
+        {
+          "zoo": "Zoo Atlanta",
+          "country": "USA",
+          "date": "2019",
+          "source": "https://zooatlanta.org/press-release/welcome-nutella/",
+          "note": "Zoo Atlanta identifies Hoffmann’s two-toed sloths and golden lion tamarins as cohabitants of its Brazilian Outpost mixed-species habitats."
         }
       ]
     },
@@ -20033,6 +20117,13 @@
           "zoo": "Cleveland Metroparks Zoo",
           "country": "United States",
           "date": "2018"
+        },
+        {
+          "zoo": "EAZA multi-zoo husbandry questionnaire",
+          "country": "Europe",
+          "date": "2021",
+          "source": "https://strapi.eaza.net/uploads/2021_White_Faced_Saki_Monkey_EAZA_Best_Practice_Guidelines_approved_930bff0550.pdf",
+          "note": "Appendix V reports both positive experiences (Beauval; Copenhagen; Frankfurt; GaiaZOO; Helsinki; Skansen Akvariet) and negative experiences (Champrepus; Drusillas; Peaugres). Managed/variable-outcome combination; provide separate retreats and monitor aggression. Not universally safe."
         }
       ]
     },
@@ -20118,6 +20209,13 @@
           "zoo": "ZSL London Zoo",
           "country": "United Kingdom",
           "date": "2025"
+        },
+        {
+          "zoo": "Anonymized collection E (walk-through rainforest exhibit)",
+          "country": "Not disclosed in study",
+          "date": "2022-04-18 to 2022-04-23",
+          "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10339928/",
+          "note": "Peer-reviewed observational study explicitly identifies all five species in one mixed-species walk-through rainforest enclosure. This establishes shared exhibit residency, not direct interaction for each pair."
         }
       ]
     },
@@ -20131,6 +20229,13 @@
           "zoo": "ZSL London Zoo",
           "country": "United Kingdom",
           "date": "2014-06-24"
+        },
+        {
+          "zoo": "Anonymized collection E (walk-through rainforest exhibit)",
+          "country": "Not disclosed in study",
+          "date": "2022-04-18 to 2022-04-23",
+          "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10339928/",
+          "note": "Peer-reviewed observational study explicitly identifies all five species in one mixed-species walk-through rainforest enclosure. This establishes shared exhibit residency, not direct interaction for each pair."
         }
       ]
     },
@@ -20175,6 +20280,13 @@
           "zoo": "Budapest Zoo and Botanical Garden",
           "country": "Hungary",
           "date": "2025-08-21"
+        },
+        {
+          "zoo": "Anonymized collection E (walk-through rainforest exhibit)",
+          "country": "Not disclosed in study",
+          "date": "2022-04-18 to 2022-04-23",
+          "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10339928/",
+          "note": "Peer-reviewed observational study explicitly identifies all five species in one mixed-species walk-through rainforest enclosure. This establishes shared exhibit residency, not direct interaction for each pair."
         }
       ]
     },
@@ -25649,6 +25761,13 @@
           "zoo": "London Zoo",
           "country": "United Kingdom",
           "date": "2023"
+        },
+        {
+          "zoo": "Anonymized collection E (walk-through rainforest exhibit)",
+          "country": "Not disclosed in study",
+          "date": "2022-04-18 to 2022-04-23",
+          "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10339928/",
+          "note": "Peer-reviewed observational study explicitly identifies all five species in one mixed-species walk-through rainforest enclosure. This establishes shared exhibit residency, not direct interaction for each pair."
         }
       ]
     },
@@ -25815,6 +25934,13 @@
           "zoo": "Collection E mixed walkthrough",
           "country": "United Kingdom",
           "date": "2023"
+        },
+        {
+          "zoo": "Anonymized collection E (walk-through rainforest exhibit)",
+          "country": "Not disclosed in study",
+          "date": "2022-04-18 to 2022-04-23",
+          "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10339928/",
+          "note": "Peer-reviewed observational study explicitly identifies all five species in one mixed-species walk-through rainforest enclosure. This establishes shared exhibit residency, not direct interaction for each pair."
         }
       ]
     },
@@ -29082,6 +29208,13 @@
           "zoo": "ZSL London Zoo",
           "country": "United Kingdom",
           "date": "2014-06-24"
+        },
+        {
+          "zoo": "Anonymized collection E (walk-through rainforest exhibit)",
+          "country": "Not disclosed in study",
+          "date": "2022-04-18 to 2022-04-23",
+          "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10339928/",
+          "note": "Peer-reviewed observational study explicitly identifies all five species in one mixed-species walk-through rainforest enclosure. This establishes shared exhibit residency, not direct interaction for each pair."
         }
       ]
     },
@@ -29095,6 +29228,13 @@
           "zoo": "ZSL London Zoo",
           "country": "United Kingdom",
           "date": "2025"
+        },
+        {
+          "zoo": "EAZA multi-zoo husbandry questionnaire",
+          "country": "Europe",
+          "date": "2021",
+          "source": "https://strapi.eaza.net/uploads/2021_White_Faced_Saki_Monkey_EAZA_Best_Practice_Guidelines_approved_930bff0550.pdf",
+          "note": "Appendix V reports both positive experiences (Avifauna) and negative experiences (Skansen Akvariet). Managed/variable-outcome combination; provide separate retreats and monitor aggression. Not universally safe."
         }
       ]
     },
@@ -32753,6 +32893,850 @@
           "note": "TerraZoo Rheinberg is specifically reported keeping Central American Green Iguana with Chinese Stripe-Necked Turtle and Chinese Box Turtle in the same mixed reptile exhibit, alongside several other reptiles."
         }
       ]
+    },
+    {
+      "animals": [
+        "Atlas Moth",
+        "Blue Clipper"
+      ],
+      "evidence": [
+        {
+          "zoo": "Pacific Science Center Tropical Butterfly House",
+          "country": "United States",
+          "source": "https://pacificsciencecenter.org/exhibit/tropical-butterfly-house/",
+          "note": "Both taxa are listed by the institution for its Tropical Butterfly House. Shared managed adult flight habitat is inferred from exhibit presentation; this is not a documented individual interaction or larval co-rearing."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Atlas Moth",
+        "Giant Owl Butterfly"
+      ],
+      "evidence": [
+        {
+          "zoo": "Pacific Science Center Tropical Butterfly House",
+          "country": "United States",
+          "source": "https://pacificsciencecenter.org/exhibit/tropical-butterfly-house/",
+          "note": "Both taxa are listed by the institution for its Tropical Butterfly House. Shared managed adult flight habitat is inferred from exhibit presentation; this is not a documented individual interaction or larval co-rearing."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Atlas Moth",
+        "Tiger Longwing"
+      ],
+      "evidence": [
+        {
+          "zoo": "Pacific Science Center Tropical Butterfly House",
+          "country": "United States",
+          "source": "https://pacificsciencecenter.org/exhibit/tropical-butterfly-house/",
+          "note": "Both taxa are listed by the institution for its Tropical Butterfly House. Shared managed adult flight habitat is inferred from exhibit presentation; this is not a documented individual interaction or larval co-rearing."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Atlas Moth",
+        "Malachite"
+      ],
+      "evidence": [
+        {
+          "zoo": "Florida Museum of Natural History — Butterfly Rainforest",
+          "country": "United States",
+          "source": "https://www.floridamuseum.ufl.edu/exhibits/blog/spring-2025-in-the-butterfly-rainforest/",
+          "note": "Institution documents both taxa in the Butterfly Rainforest exhibit; shared adult flight environment is supported by exhibit accounts, not necessarily simultaneous presence or individual interaction. Larvae are managed separately."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Atlas Moth",
+        "Postman"
+      ],
+      "evidence": [
+        {
+          "zoo": "Florida Museum of Natural History — Butterfly Rainforest",
+          "country": "United States",
+          "source": "https://www.floridamuseum.ufl.edu/exhibits/blog/spring-2025-in-the-butterfly-rainforest/",
+          "note": "Institution documents both taxa in the Butterfly Rainforest exhibit; shared adult flight environment is supported by exhibit accounts, not necessarily simultaneous presence or individual interaction. Larvae are managed separately."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Atlas Moth",
+        "Red Lacewing Butterfly"
+      ],
+      "evidence": [
+        {
+          "zoo": "Florida Museum of Natural History — Butterfly Rainforest",
+          "country": "United States",
+          "source": "https://www.floridamuseum.ufl.edu/exhibits/blog/summer-2025-in-the-butterfly-rainforest/",
+          "note": "Institution documents both taxa in the Butterfly Rainforest exhibit; shared adult flight environment is supported by exhibit accounts, not necessarily simultaneous presence or individual interaction. Larvae are managed separately."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Atlas Moth",
+        "Paper Kite Butterfly"
+      ],
+      "evidence": [
+        {
+          "zoo": "Florida Museum of Natural History — Butterfly Rainforest",
+          "country": "United States",
+          "source": "https://www.floridamuseum.ufl.edu/exhibits/blog/summer-2025-in-the-butterfly-rainforest/",
+          "note": "Institution documents both taxa in the Butterfly Rainforest exhibit; shared adult flight environment is supported by exhibit accounts, not necessarily simultaneous presence or individual interaction. Larvae are managed separately."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Atlas Moth",
+        "Common Morpho"
+      ],
+      "evidence": [
+        {
+          "zoo": "Florida Museum of Natural History — Butterfly Rainforest",
+          "country": "United States",
+          "source": "https://www.floridamuseum.ufl.edu/exhibits/blog/journey-of-metamorphosis/",
+          "note": "Institution documents both taxa in the Butterfly Rainforest exhibit; shared adult flight environment is supported by exhibit accounts, not necessarily simultaneous presence or individual interaction. Larvae are managed separately."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Blue Clipper",
+        "Emerald Peacock Swallowtail"
+      ],
+      "evidence": [
+        {
+          "zoo": "Florida Museum of Natural History — Butterfly Rainforest",
+          "country": "United States",
+          "date": "2024 summer",
+          "source": "https://www.floridamuseum.ufl.edu/exhibits/blog/summer-2024-in-the-butterfly-rainforest/",
+          "note": "All three butterfly species documented in the same seasonal free-flight exhibit report; this supports shared exhibit husbandry, not necessarily simultaneous individual interaction."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Blue Clipper",
+        "Malachite"
+      ],
+      "evidence": [
+        {
+          "zoo": "Florida Museum of Natural History — Butterfly Rainforest",
+          "country": "United States",
+          "date": "2024 summer",
+          "source": "https://www.floridamuseum.ufl.edu/exhibits/blog/summer-2024-in-the-butterfly-rainforest/",
+          "note": "All three butterfly species documented in the same seasonal free-flight exhibit report; this supports shared exhibit husbandry, not necessarily simultaneous individual interaction."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Emerald Peacock Swallowtail",
+        "Malachite"
+      ],
+      "evidence": [
+        {
+          "zoo": "Florida Museum of Natural History — Butterfly Rainforest",
+          "country": "United States",
+          "date": "2024 summer",
+          "source": "https://www.floridamuseum.ufl.edu/exhibits/blog/summer-2024-in-the-butterfly-rainforest/",
+          "note": "All three butterfly species documented in the same seasonal free-flight exhibit report; this supports shared exhibit husbandry, not necessarily simultaneous individual interaction."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Emerald Peacock Swallowtail",
+        "American Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Key West Butterfly & Nature Conservatory",
+          "country": "United States",
+          "date": "2023",
+          "source": "https://fla-keys.com/keysvoices/happy-20th-birthday-to-the-key-west-butterfly-nature-conservatory/",
+          "note": "The conservatory reports Emerald Swallowtail butterflies and its resident flamingos in the same butterfly habitat. Emerald Swallowtail is treated as the inventory’s Emerald Peacock Swallowtail (Papilio palinurus); identification is common-name-based, not confirmed by scientific name."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Postman",
+        "West Indian Manatee"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Postman",
+        "Atlantic Horseshoe Crab"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Tiger Longwing",
+        "West Indian Manatee"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Tiger Longwing",
+        "Atlantic Horseshoe Crab"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Thoas Swallowtail",
+        "West Indian Manatee"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Thoas Swallowtail",
+        "Atlantic Horseshoe Crab"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "One-Spotted Prepona",
+        "West Indian Manatee"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "One-Spotted Prepona",
+        "Atlantic Horseshoe Crab"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Dirce Beauty",
+        "West Indian Manatee"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Dirce Beauty",
+        "Atlantic Horseshoe Crab"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Malachite",
+        "West Indian Manatee"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Malachite",
+        "Atlantic Horseshoe Crab"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glasswing Butterfly",
+        "West Indian Manatee"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glasswing Butterfly",
+        "Atlantic Horseshoe Crab"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Banded Orange Heliconian",
+        "West Indian Manatee"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Banded Orange Heliconian",
+        "Atlantic Horseshoe Crab"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red Cracker",
+        "West Indian Manatee"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red Cracker",
+        "Atlantic Horseshoe Crab"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2023-03-18",
+          "source": "https://zoolex.org/gallery/show/1920/",
+          "note": "Species explicitly listed in same large Mangrove eco-display. Adult butterflies free-fly above separate aquatic habitats. Shared ecosystem, not direct unrestricted cohabitation; aquatic/terrestrial habitat zoning required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Postman",
+        "Red Titi"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2025-06-16",
+          "source": "https://www.burgerszoo.nl/media/iqpmn5wh/digitale-ziezoo-januari-2026_online.pdf",
+          "note": "Zoo 2026 report explicitly states red titis roam the tropical dry-forest Mangrove hall and generally leave the butterflies alone. Butterfly species independently listed in the same Mangrove ecosystem in 2023 (https://zoolex.org/gallery/show/1920/); individual butterfly species not re-confirmed in 2025. Managed large free-flight ecosystem; not a guarantee of zero predation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Tiger Longwing",
+        "Red Titi"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2025-06-16",
+          "source": "https://www.burgerszoo.nl/media/iqpmn5wh/digitale-ziezoo-januari-2026_online.pdf",
+          "note": "Zoo 2026 report explicitly states red titis roam the tropical dry-forest Mangrove hall and generally leave the butterflies alone. Butterfly species independently listed in the same Mangrove ecosystem in 2023 (https://zoolex.org/gallery/show/1920/); individual butterfly species not re-confirmed in 2025. Managed large free-flight ecosystem; not a guarantee of zero predation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Thoas Swallowtail",
+        "Red Titi"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2025-06-16",
+          "source": "https://www.burgerszoo.nl/media/iqpmn5wh/digitale-ziezoo-januari-2026_online.pdf",
+          "note": "Zoo 2026 report explicitly states red titis roam the tropical dry-forest Mangrove hall and generally leave the butterflies alone. Butterfly species independently listed in the same Mangrove ecosystem in 2023 (https://zoolex.org/gallery/show/1920/); individual butterfly species not re-confirmed in 2025. Managed large free-flight ecosystem; not a guarantee of zero predation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "One-Spotted Prepona",
+        "Red Titi"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2025-06-16",
+          "source": "https://www.burgerszoo.nl/media/iqpmn5wh/digitale-ziezoo-januari-2026_online.pdf",
+          "note": "Zoo 2026 report explicitly states red titis roam the tropical dry-forest Mangrove hall and generally leave the butterflies alone. Butterfly species independently listed in the same Mangrove ecosystem in 2023 (https://zoolex.org/gallery/show/1920/); individual butterfly species not re-confirmed in 2025. Managed large free-flight ecosystem; not a guarantee of zero predation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Dirce Beauty",
+        "Red Titi"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2025-06-16",
+          "source": "https://www.burgerszoo.nl/media/iqpmn5wh/digitale-ziezoo-januari-2026_online.pdf",
+          "note": "Zoo 2026 report explicitly states red titis roam the tropical dry-forest Mangrove hall and generally leave the butterflies alone. Butterfly species independently listed in the same Mangrove ecosystem in 2023 (https://zoolex.org/gallery/show/1920/); individual butterfly species not re-confirmed in 2025. Managed large free-flight ecosystem; not a guarantee of zero predation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Malachite",
+        "Red Titi"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2025-06-16",
+          "source": "https://www.burgerszoo.nl/media/iqpmn5wh/digitale-ziezoo-januari-2026_online.pdf",
+          "note": "Zoo 2026 report explicitly states red titis roam the tropical dry-forest Mangrove hall and generally leave the butterflies alone. Butterfly species independently listed in the same Mangrove ecosystem in 2023 (https://zoolex.org/gallery/show/1920/); individual butterfly species not re-confirmed in 2025. Managed large free-flight ecosystem; not a guarantee of zero predation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glasswing Butterfly",
+        "Red Titi"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2025-06-16",
+          "source": "https://www.burgerszoo.nl/media/iqpmn5wh/digitale-ziezoo-januari-2026_online.pdf",
+          "note": "Zoo 2026 report explicitly states red titis roam the tropical dry-forest Mangrove hall and generally leave the butterflies alone. Butterfly species independently listed in the same Mangrove ecosystem in 2023 (https://zoolex.org/gallery/show/1920/); individual butterfly species not re-confirmed in 2025. Managed large free-flight ecosystem; not a guarantee of zero predation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Banded Orange Heliconian",
+        "Red Titi"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2025-06-16",
+          "source": "https://www.burgerszoo.nl/media/iqpmn5wh/digitale-ziezoo-januari-2026_online.pdf",
+          "note": "Zoo 2026 report explicitly states red titis roam the tropical dry-forest Mangrove hall and generally leave the butterflies alone. Butterfly species independently listed in the same Mangrove ecosystem in 2023 (https://zoolex.org/gallery/show/1920/); individual butterfly species not re-confirmed in 2025. Managed large free-flight ecosystem; not a guarantee of zero predation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red Cracker",
+        "Red Titi"
+      ],
+      "evidence": [
+        {
+          "zoo": "Royal Burgers' Zoo — Burgers’ Mangrove",
+          "country": "Netherlands",
+          "date": "2025-06-16",
+          "source": "https://www.burgerszoo.nl/media/iqpmn5wh/digitale-ziezoo-januari-2026_online.pdf",
+          "note": "Zoo 2026 report explicitly states red titis roam the tropical dry-forest Mangrove hall and generally leave the butterflies alone. Butterfly species independently listed in the same Mangrove ecosystem in 2023 (https://zoolex.org/gallery/show/1920/); individual butterfly species not re-confirmed in 2025. Managed large free-flight ecosystem; not a guarantee of zero predation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Fischer's Turaco",
+        "Postman"
+      ],
+      "evidence": [
+        {
+          "zoo": "Marwell Zoo — Energy for Life Tropical House",
+          "country": "United Kingdom",
+          "date": "2018-10-15",
+          "source": "https://www.marwell.org.uk/zoo-news/new-arrivals-at-the-zoo/",
+          "note": "Marwell explicitly reported Postman butterflies in the Tropical House in October 2018; its March 2018 resident list names this partner species in the same Tropical House. Shared building/exhibit; unrestricted direct contact not individually verified.",
+          "additional_source": "https://www.marwell.org.uk/zoo-news/meet-the-animals-living-in-our-brand-new-tropical-house/",
+          "census_source": "https://www.marwell.org.uk/wp-content/uploads/2021/05/Biodiversity_trail_Post_16_Answers_2019_22022019092652.pdf",
+          "census_date": "2018-09",
+          "census_note": "Marwell September 2018 biodiversity census records 325 Postman butterflies together with 3 Javan chevrotains, 1 Fischer’s turaco and 4 Nicobar pigeons in the Tropical House population. Shared building is supported; unrestricted contact is not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Javan Chevrotain",
+        "Postman"
+      ],
+      "evidence": [
+        {
+          "zoo": "Marwell Zoo — Energy for Life Tropical House",
+          "country": "United Kingdom",
+          "date": "2018-10-15",
+          "source": "https://www.marwell.org.uk/zoo-news/new-arrivals-at-the-zoo/",
+          "note": "Marwell explicitly reported Postman butterflies in the Tropical House in October 2018; its March 2018 resident list names this partner species in the same Tropical House. Shared building/exhibit; unrestricted direct contact not individually verified.",
+          "additional_source": "https://www.marwell.org.uk/zoo-news/meet-the-animals-living-in-our-brand-new-tropical-house/",
+          "census_source": "https://www.marwell.org.uk/wp-content/uploads/2021/05/Biodiversity_trail_Post_16_Answers_2019_22022019092652.pdf",
+          "census_date": "2018-09",
+          "census_note": "Marwell September 2018 biodiversity census records 325 Postman butterflies together with 3 Javan chevrotains, 1 Fischer’s turaco and 4 Nicobar pigeons in the Tropical House population. Shared building is supported; unrestricted contact is not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Nicobar Pigeon",
+        "Postman"
+      ],
+      "evidence": [
+        {
+          "zoo": "Marwell Zoo — Energy for Life Tropical House",
+          "country": "United Kingdom",
+          "date": "2018-10-15",
+          "source": "https://www.marwell.org.uk/zoo-news/new-arrivals-at-the-zoo/",
+          "additional_source": "https://www.marwell.org.uk/zoo-news/meet-the-animals-living-in-our-brand-new-tropical-house/",
+          "note": "October 2018 report explicitly confirms Postman butterflies in Tropical House; March 2018 Tropical House resident list explicitly names free-flying Nicobar Pigeon. Same tropical-house habitat, though direct unrestricted contact and exact overlap dates are not independently confirmed.",
+          "census_source": "https://www.marwell.org.uk/wp-content/uploads/2021/05/Biodiversity_trail_Post_16_Answers_2019_22022019092652.pdf",
+          "census_date": "2018-09",
+          "census_note": "Marwell September 2018 biodiversity census records 325 Postman butterflies together with 3 Javan chevrotains, 1 Fischer’s turaco and 4 Nicobar pigeons in the Tropical House population. Shared building is supported; unrestricted contact is not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Rumped Agouti",
+        "Goeldi's Monkey"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoologischer Stadtgarten Karlsruhe — Exotenhaus communal aviary",
+          "country": "Germany",
+          "date": "undated zoo announcement (accessed 2026-10-09)",
+          "source": "https://zoo-karlsruhe.de/fr/facebook-post/neuzugang-im-exotenhaus-ein-schwarzsteiss-aguti-aus-dem-zoo-leipzig-ist/",
+          "note": "Official zoo announcement explicitly states that a Black-Rumped Agouti joined the shared aviary with Spring Tamarins (Goeldi’s Monkeys), Golden Parakeets and a sloth. The sloth is not identified to species in this announcement; Azara’s Agoutis are explicitly stated to have moved elsewhere."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Goeldi's Monkey",
+        "Sunbittern"
+      ],
+      "evidence": [
+        {
+          "zoo": "Anonymous EAZA zoo collections (multi-zoo husbandry survey)",
+          "country": "Europe (multi-country study)",
+          "date": "2024",
+          "source": "https://pure.port.ac.uk/ws/portalfiles/portal/83456899/A_comparative_multi-zoo_survey.pdf",
+          "note": "Peer-reviewed 2024 survey, Table 1: 1 mixed-species enclosure(s) housed Goeldi’s Monkey (Callimico goeldii) with this species. Zoo identities are anonymized; the survey documents co-housing, not universal welfare outcomes."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Goeldi's Monkey",
+        "Common Marmoset"
+      ],
+      "evidence": [
+        {
+          "zoo": "Anonymous EAZA zoo collections (multi-zoo husbandry survey)",
+          "country": "Europe (multi-country study)",
+          "date": "2024",
+          "source": "https://pure.port.ac.uk/ws/portalfiles/portal/83456899/A_comparative_multi-zoo_survey.pdf",
+          "note": "Peer-reviewed 2024 survey, Table 1: 2 mixed-species enclosure(s) housed Goeldi’s Monkey (Callimico goeldii) with this species. Zoo identities are anonymized; the survey documents co-housing, not universal welfare outcomes."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Goeldi's Monkey",
+        "Azara's Agouti"
+      ],
+      "evidence": [
+        {
+          "zoo": "Anonymous EAZA zoo collections (multi-zoo husbandry survey)",
+          "country": "Europe (multi-country study)",
+          "date": "2024",
+          "source": "https://pure.port.ac.uk/ws/portalfiles/portal/83456899/A_comparative_multi-zoo_survey.pdf",
+          "note": "Peer-reviewed 2024 survey, Table 1: 4 mixed-species enclosure(s) housed Goeldi’s Monkey (Callimico goeldii) with this species. Zoo identities are anonymized; the survey documents co-housing, not universal welfare outcomes."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Goeldi's Monkey",
+        "Lowland Paca"
+      ],
+      "evidence": [
+        {
+          "zoo": "Anonymous EAZA zoo collection (multi-zoo husbandry survey)",
+          "country": "Europe (multi-country study)",
+          "date": "2024",
+          "source": "https://www.mdpi.com/2673-5636/5/1/5",
+          "note": "Bartlett et al. (2024), Table 1: Lowland Paca (Cuniculus paca) co-housed with Goeldi’s Monkey (Callimico goeldii) in one surveyed mixed-species enclosure. Anonymous zoo; documented co-housing does not imply universally safe compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Faced Spider Monkey",
+        "White-Faced Saki"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaZoo",
+          "country": "Netherlands",
+          "date": "2021 (guidelines compilation)",
+          "source": "https://media.eaza.net/uploads/2021_White_Faced_Saki_Monkey_EAZA_Best_Practice_Guidelines_approved_930bff0550.pdf",
+          "note": "EAZA White-Faced Saki Best Practice Guidelines, Appendix IV, lists this species and zoo as a positive mixed-species housing experience. Requires suitable escape/separation spaces; not a guarantee for every individual."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Lowland Paca",
+        "White-Faced Saki"
+      ],
+      "evidence": [
+        {
+          "zoo": "Tierpark Berlin",
+          "country": "Germany",
+          "date": "2021 (guidelines compilation)",
+          "source": "https://media.eaza.net/uploads/2021_White_Faced_Saki_Monkey_EAZA_Best_Practice_Guidelines_approved_930bff0550.pdf",
+          "note": "EAZA White-Faced Saki Best Practice Guidelines, Appendix IV, lists this species and zoo as a positive mixed-species housing experience. Requires suitable escape/separation spaces; not a guarantee for every individual."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Sunbittern",
+        "White-Faced Saki"
+      ],
+      "evidence": [
+        {
+          "zoo": "Montpellier",
+          "country": "France",
+          "date": "2021 (guidelines compilation)",
+          "source": "https://media.eaza.net/uploads/2021_White_Faced_Saki_Monkey_EAZA_Best_Practice_Guidelines_approved_930bff0550.pdf",
+          "note": "EAZA White-Faced Saki Best Practice Guidelines, Appendix IV, lists this species and zoo as a positive mixed-species housing experience. Requires suitable escape/separation spaces; not a guarantee for every individual."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Channel-Billed Toucan",
+        "White-Faced Saki"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zurich",
+          "country": "Switzerland",
+          "date": "2021 (guidelines compilation)",
+          "source": "https://media.eaza.net/uploads/2021_White_Faced_Saki_Monkey_EAZA_Best_Practice_Guidelines_approved_930bff0550.pdf",
+          "note": "EAZA White-Faced Saki Best Practice Guidelines, Appendix IV, lists this species and zoo as a positive mixed-species housing experience. Requires suitable escape/separation spaces; not a guarantee for every individual."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Legged Seriema",
+        "White-Faced Saki"
+      ],
+      "evidence": [
+        {
+          "zoo": "AviFauna",
+          "country": "Netherlands",
+          "date": "2021 (guidelines compilation)",
+          "source": "https://media.eaza.net/uploads/2021_White_Faced_Saki_Monkey_EAZA_Best_Practice_Guidelines_approved_930bff0550.pdf",
+          "note": "EAZA White-Faced Saki Best Practice Guidelines, Appendix IV, lists this species and zoo as a positive mixed-species housing experience. Requires suitable escape/separation spaces; not a guarantee for every individual."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Addax",
+        "Capybara"
+      ],
+      "evidence": [
+        {
+          "zoo": "Gulf Breeze Zoo",
+          "country": "United States",
+          "date": "2017",
+          "source": "https://static1.squarespace.com/static/5302324de4b07a6f6407cbb5/t/593b2d5503596e06e974de37/1497050667464/AZA%2BUngulate%2BTAGs%2BMixed-Species%2BManual%2B2017.final.pdf",
+          "note": "AZA Ungulate TAGs Mixed-Species Manual, successful ungulate–non-ungulate mixes table; historical or current institutional reports, not necessarily ongoing."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Addax",
+        "Demoiselle Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Lee Richardson Zoo",
+          "country": "United States",
+          "date": "2017",
+          "source": "https://static1.squarespace.com/static/5302324de4b07a6f6407cbb5/t/593b2d5503596e06e974de37/1497050667464/AZA%2BUngulate%2BTAGs%2BMixed-Species%2BManual%2B2017.final.pdf",
+          "note": "AZA Ungulate TAGs Mixed-Species Manual, successful ungulate–non-ungulate mixes table; historical or current institutional reports, not necessarily ongoing."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Addax",
+        "Blue Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Lee Richardson Zoo",
+          "country": "United States",
+          "date": "2017",
+          "source": "https://static1.squarespace.com/static/5302324de4b07a6f6407cbb5/t/593b2d5503596e06e974de37/1497050667464/AZA%2BUngulate%2BTAGs%2BMixed-Species%2BManual%2B2017.final.pdf",
+          "note": "AZA Ungulate TAGs Mixed-Species Manual, successful ungulate–non-ungulate mixes table; historical or current institutional reports, not necessarily ongoing."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Addax",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Blank Park Zoo; Disney’s Animal Kingdom",
+          "country": "United States",
+          "date": "2017",
+          "source": "https://static1.squarespace.com/static/5302324de4b07a6f6407cbb5/t/593b2d5503596e06e974de37/1497050667464/AZA%2BUngulate%2BTAGs%2BMixed-Species%2BManual%2B2017.final.pdf",
+          "note": "AZA Ungulate TAGs Mixed-Species Manual, successful ungulate–non-ungulate mixes table; historical or current institutional reports, not necessarily ongoing."
+        }
+      ]
     }
   ],
   "proxy_compatibility": {
@@ -33795,6 +34779,49 @@
         "Red-Legged Seriema",
         "Brazilian Porcupine",
         "Linneaus's Two-Toed Sloth"
+      ],
+      "butterflies": [
+        "Common Morpho",
+        "Malachite",
+        "Monarch",
+        "Postman",
+        "Zebra Longwing",
+        "Glasswing Butterfly",
+        "Julia Heliconian",
+        "Paper Kite Butterfly",
+        "Tiger Longwing",
+        "Banded Orange Heliconian",
+        "Giant Owl Butterfly",
+        "Great Eggfly",
+        "Great Mormon",
+        "Great Orange Tip",
+        "Plain Tiger Butterfly",
+        "Red Lacewing Butterfly",
+        "Scarlet Mormon",
+        "Thoas Swallowtail",
+        "Blue Clipper",
+        "Chequered Swallowtail",
+        "Cydno Longwing",
+        "Dirce Beauty",
+        "Emerald Peacock Swallowtail",
+        "One-Spotted Prepona",
+        "Red Cracker",
+        "Tailed Jay",
+        "Grey Glassy Tiger",
+        "Mexican Silverspot",
+        "Oblong-Spotted Birdwing"
+      ],
+      "butterfly_house_atlas_moth": [
+        "Atlas Moth"
+      ],
+      "butterfly_house_pond_slider": [
+        "Pond Slider"
+      ],
+      "butterfly_house_nicobar_pigeon": [
+        "Nicobar Pigeon"
+      ],
+      "butterfly_house_linnaeus_sloth": [
+        "Linneaus's Two-Toed Sloth"
       ]
     },
     "complete_groups": [
@@ -33841,7 +34868,8 @@
       "amazon_freshwater_turtle_core",
       "small_pond_water_turtles",
       "large_amazon_river_turtles",
-      "giant_asian_hard_shelled_water_turtles"
+      "giant_asian_hard_shelled_water_turtles",
+      "butterflies"
     ],
     "group_links": [
       {
@@ -34270,6 +35298,56 @@
         "to": "large_toucan_robust_partners",
         "mode": "large_toucan_robust_partner_proxy",
         "note": "Conservative Zoo Curator proxy for large Ramphastos/Keel-Billed toucans, based on repeated zoo mixed-exhibit evidence. Only robust terrestrial/reptile/ground-bird/sloth partners are propagated. Bird-to-bird combinations such as macaws, Amazons and ibises remain direct evidence-only because large toucans can be predatory and aggressive, especially around breeding."
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_atlas_moth",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Gameplay-level mixed tropical butterfly-house compatibility with Atlas Moth (Attacus atlas). Pacific Science Center lists Atlas moth alongside free-flying butterfly species in its Tropical Butterfly House; London Zoo describes mixed butterfly-and-moth houses. This is not evidence that every listed butterfly/Atlas Moth pair was individually observed, nor that all life stages can cohabit without management. Adult flight area only; caterpillar rearing and pupae should be managed separately.",
+        "sources": [
+          "https://pacificsciencecenter.org/exhibit/tropical-butterfly-house/",
+          "https://www.londonzoo.org/whats-here/habitats/butterfly-paradise"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "green_iguanas",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Stratford-upon-Avon Butterfly Farm explicitly confirms free-roaming green iguanas in the same Rainforest Flight Area as free-flying tropical butterflies. Applies to managed adult butterfly exhibits; species-specific co-occurrence for every inventory butterfly and compatibility of caterpillars are not established.",
+        "sources": [
+          "https://butterflyfarm.co.uk/attraction/plan-your-visit/information",
+          "https://www.butterflyfarm.co.uk/attraction/our-displays/rainforest-flight-area"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_pond_slider",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Cambridge Butterfly Conservatory describes its indoor tropical garden with free-flying butterflies and red-eared slider turtles (Trachemys scripta elegans), a subspecies of the inventory Pond Slider (Trachemys scripta). Shared greenhouse with aquatic turtle habitat; adult butterflies only. Not evidence that every butterfly species was present simultaneously or that turtle ponds and butterfly breeding areas have no physical separation.",
+        "sources": [
+          "https://www.shopcambridge.ca/mobile/cambridgebutterfly/about",
+          "https://www.cambridgebutterfly.com/"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_nicobar_pigeon",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Cambridge Butterfly Conservatory lists Nicobar Pigeon (Caloenas nicobarica) as a bird living in its tropical greenhouse, which also holds approximately 2,000 free-flying butterflies and moths. This is shared managed adult flight-space evidence, not proof that all 29 inventory butterfly species were simultaneously present or that eggs and larvae are safe from birds.",
+        "sources": [
+          "https://www.cambridgebutterfly.com/birds-other-animals-in-the-conservatory/",
+          "https://www.cambridgebutterfly.com/guide-to-tropical-butterflies-moths/"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_linnaeus_sloth",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Tropical Butterfly House Sheffield announced in February 2019 that its identified Linnaeus two-toed sloth (Choloepus didactylus) would live in the company of butterflies, lorikeets and turtles. The facility independently lists butterfly species including Malachite, Postman, Glasswing and Zebra. This is managed adult-flight exhibit evidence, not proof every one of the 29 inventory butterfly species shared space at the same time. Inventory spelling Linneaus is preserved.",
+        "sources": [
+          "https://www.discoveranimals.co.uk/news/sheffield-welcome-new-sloth-tropical-butterfly-house/",
+          "https://www.butterflyhouse.co.uk/our-park/our-animals/beautiful-butterflies/"
+        ]
       }
     ]
   },
@@ -40338,6 +41416,20 @@
           "Chinese Stripe-Necked Turtle"
         ]
       ]
+    },
+    "butterfly_pass2_20261009": {
+      "added_direct_pairs_with_atlas_moth": [
+        "Blue Clipper",
+        "Giant Owl Butterfly",
+        "Tiger Longwing"
+      ],
+      "caution": "No bird, reptile or predatory arthropod pairs inferred from shared building. AMNH describes Atlas moth as a separate display, so it is not used as free-flight proof."
+    },
+    "butterfly_cross_category_pass9_20261009": {
+      "new_partner": "Nicobar Pigeon",
+      "added_proxy_pairs": 29,
+      "evidence_level": "official shared greenhouse species listing",
+      "caveat": "Managed adult butterfly habitat only; not species-by-species observation."
     }
   }
 }

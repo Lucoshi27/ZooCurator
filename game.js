@@ -3390,6 +3390,8 @@ function normaliseZooTypes(value) {
 
 const SPECIALIST_STARTING_CATEGORIES = Object.freeze({
     aquarium: ['Marine Life', 'Freshwater'],
+    butterfly: ['Invertebrates'],
+    insectarium: ['Invertebrates'],
     bird: ['Landbirds', 'Perching Birds', 'Waterfowl'],
     raptor: ['Birds of Prey'],
     reptile: ['Reptiles'],
@@ -3434,7 +3436,9 @@ function animalZooTypeWeight(animal, zooTypes, mode = 'generation') {
     const tags = new Set(animalInventoryTags(animal.category, animal.level, animal.filename));
     let multiplier = settings.baseline;
     for (const type of normaliseZooTypes(zooTypes)) {
-        const rules = settings.types?.[type];
+        const rules = settings.types?.[type] || (type === 'butterfly'
+            ? {category: {'Invertebrates': 5}, tags: {tropical: 3, rainforest: 2.2}}
+            : type === 'insectarium' ? {category: {'Invertebrates': 5}} : null);
         if (!rules || typeof rules !== 'object') continue;
         const categories = rules.category || rules.categories || {};
         const categoryKey = Object.keys(categories).find(key => key.toLowerCase() === String(animal.category).toLowerCase());
@@ -6264,7 +6268,7 @@ function randomAvailableStartingAnimal(levelChances, preferredCategories = null,
             const preferred = availableStartingCardsAtLevel(level, allowDuplicateSpecies)
                 .filter(candidate => preferredSet.has(candidate.category));
             if (preferred.length) {
-                if (level === 1) return randomCardByEqualCategory(preferred);
+                
                 return weightedCardByEqualCategory(
                     preferred,
                     candidate => animalZooTypeWeight(candidate, state.zooType, 'generation')
@@ -6276,7 +6280,7 @@ function randomAvailableStartingAnimal(levelChances, preferredCategories = null,
     for (let level = rolledLevel; level >= 1; level--) {
         const candidates = availableStartingCardsAtLevel(level, allowDuplicateSpecies);
         if (candidates.length) {
-            if (level === 1) return randomCardByEqualCategory(candidates);
+            
             return weightedRandomItem(
                 candidates,
                 candidate => animalZooTypeWeight(candidate, state.zooType, 'generation')
@@ -6307,10 +6311,22 @@ function randomAvailableStartingAnimal(levelChances, preferredCategories = null,
             activeCategories: state.activeCategories instanceof Set ? [...state.activeCategories] : state.activeCategories,
             fallbackCandidateCount: emergencyCandidates.length
         });
-        return randomCardByEqualCategory(emergencyCandidates);
+        return weightedCardByEqualCategory(emergencyCandidates, candidate => animalZooTypeWeight(candidate, state.zooType, 'generation'));
     }
 
     throw new Error(`No legal starting animal cards remain (mode=${state.gameMode}, duplicates=${allowDuplicateSpecies}, activeCategories=${state.activeCategories instanceof Set ? state.activeCategories.size : 'invalid'}, inventory=${state.inventory ? 'loaded' : 'missing'}).`);
+}
+
+const BUTTERFLY_GARDEN_LEVEL_ONE_SPECIES = Object.freeze([
+    'Common Morpho', 'Malachite', 'Monarch', 'Postman', 'Zebra Longwing'
+]);
+
+function butterflyGardenStartingCards() {
+    const wanted = new Set(BUTTERFLY_GARDEN_LEVEL_ONE_SPECIES.map(name => name.toLowerCase()));
+    return availableStartingCardsAtLevel(1, false).filter(card =>
+        card.category === 'Invertebrates' &&
+        wanted.has(String(card.filename || '').replace(/\.png$/i, '').trim().toLowerCase())
+    );
 }
 
 function createStartingZoo(options = {}) {
@@ -6435,6 +6451,14 @@ function createStartingZoo(options = {}) {
 
     const specialistCategories = specialistStartingCategories();
     const specialistQuota = specialistStartingQuota(startupRules.species);
+    const isButterflyGarden = normaliseZooTypes(state.zooType).includes('butterfly');
+    const isInsectarium = normaliseZooTypes(state.zooType).includes('insectarium');
+    const butterflyPool = isButterflyGarden ? shuffle(butterflyGardenStartingCards()) : [];
+    const butterflyMinimum = isButterflyGarden ? Math.min(4, startupRules.species) : 0;
+    if (isButterflyGarden && butterflyPool.length < butterflyMinimum) {
+        throw new Error(`Butterfly garden requires ${butterflyMinimum} distinct Level 1 butterflies; found ${butterflyPool.length}. Check the Invertebrates inventory and enabled categories.`);
+    }
+    const guaranteedButterflies = butterflyPool.slice(0, butterflyMinimum);
     let specialistCount = 0;
 
     let classicExchangeAnchorCards = [];
@@ -6449,6 +6473,11 @@ function createStartingZoo(options = {}) {
         let anchorCategories=[...levelOneByCategory.entries()]
             .filter(([,cards])=>cards.length>=3)
             .map(([category])=>category);
+        if(isButterflyGarden && levelOneByCategory.get('Invertebrates')?.length >= 3 &&
+            hasNextLevelInventory('Invertebrates', 1)) {
+            // Preserve the Classic three-card exchange tutorial using the butterfly category.
+            anchorCategories = ['Invertebrates'];
+        }
         if(specialistQuota>=3 && specialistCategories.length){
             const specialistAnchors=anchorCategories.filter(category=>
                 specialistCategories.includes(category));
@@ -6456,9 +6485,9 @@ function createStartingZoo(options = {}) {
         }
         if(anchorCategories.length){
             const anchorCategory=randomItem(anchorCategories);
-            classicExchangeAnchorCards=shuffle(
-                [...levelOneByCategory.get(anchorCategory)]
-            ).slice(0,3);
+            classicExchangeAnchorCards = isButterflyGarden && anchorCategory === 'Invertebrates'
+                ? guaranteedButterflies.slice(0, 3)
+                : shuffle([...levelOneByCategory.get(anchorCategory)]).slice(0, 3);
         }else{
             console.warn('Classic startup could not find a category with three distinct Level 1 cards and a Level 2 Exchange result.');
         }
@@ -6483,8 +6512,16 @@ function createStartingZoo(options = {}) {
             const source=(duplicatePool.length?duplicatePool:state.animals)[Math.floor(Math.random()*(duplicatePool.length?duplicatePool:state.animals).length)];
             startingCard={category:source.category,level:source.level,filename:source.filename};
             tutorialDuplicateSourceId=source.id;
+        }else if(guaranteedButterflies[i]){
+            startingCard = guaranteedButterflies[i];
         }else if(classicExchangeAnchorCards[i]){
             startingCard=classicExchangeAnchorCards[i];
+        }else if ((isButterflyGarden || isInsectarium) &&
+                  availableStartingCardsAtLevel(1, false).some(card => card.category === 'Invertebrates') &&
+                  Math.random() < 0.9) {
+            const invertebrates = availableStartingCardsAtLevel(1, false)
+                .filter(card => card.category === 'Invertebrates');
+            startingCard = weightedRandomItem(invertebrates, candidate => animalZooTypeWeight(candidate, state.zooType, 'generation'));
         }else{
             startingCard = randomAvailableStartingAnimal(
                 startupRules.levelChances,
@@ -7370,14 +7407,44 @@ function trueEventLifecycleCleanup(today=normaliseTrueCalendarState().date){
 function trueEventEngagementStillLive(event){
     if(!event)return false;
     const id=String(event.id||'');
-    if(id&&String(state.autonomousTradeOffer?.eventId||'')===id)return true;
+    if(id&&String(state.autonomousTradeOffer?.eventId||'')===id){
+        const offer=state.autonomousTradeOffer;
+        if(!['declined','rejected','expired','cancelled','fulfilled','completed'].includes(String(offer.proposalStatus||'').toLowerCase()))return true;
+    }
     return (state.trueTransferProposals||[]).some(proposal=>{
         if(!proposal||!['draft','pending'].includes(String(proposal.status||'')))return false;
         return String(proposal.offer?.eventId||'')===id;
     });
 }
+// Keep event notices in step with their linked marketplace offers.
+// Only terminal marketplace states close a notice; negotiating offers remain live.
+function trueSynchronizeEventMarketplaceStatuses(today=normaliseTrueCalendarState().date){
+    const events=normaliseTrueEventState();
+    const market=normaliseTrueMarketplaceState();
+    const listings=new Map((market.listings||[]).filter(Boolean).map(item=>[String(item.id),item]));
+    let changed=0;
+    for(const event of events.items){
+        if(!event||!['active','engaged'].includes(event.status)||!event.listingId)continue;
+        const listing=listings.get(String(event.listingId));
+        if(!listing)continue; // Independent real-zoo offers may survive a removed listing.
+        const status=String(listing.status||'');
+        if(!['completed','expired','withdrawn'].includes(status))continue;
+        if(event.status==='engaged'&&trueEventEngagementStillLive(event))continue;
+        event.status=status==='completed'?'resolved':status==='expired'?'expired':'unavailable';
+        event.resolvedDate=event.resolvedDate||today;
+        if(status==='expired')event.expiredDate=event.expiredDate||today;
+        event.resolution=event.resolution||(status==='completed'
+            ?'This transfer has been completed.'
+            :status==='expired'?'This transfer offer has expired.':'The offering zoo has withdrawn this transfer offer.');
+        changed++;
+    }
+    return changed;
+}
 function trueEventExpireActiveItems(today=normaliseTrueCalendarState().date){
     const events=normaliseTrueEventState();
+    // Marketplace expiration can occur independently of event expiration.
+    expireTrueMarketplaceListings(today);
+    trueSynchronizeEventMarketplaceStatuses(today);
     const landCredits=Math.max(0,Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0);
     let changed=0;
     for(const event of events.items){
@@ -7395,6 +7462,10 @@ function trueEventExpireActiveItems(today=normaliseTrueCalendarState().date){
         event.status='expired';
         event.expiredDate=today;
         if(!event.resolvedDate)event.resolvedDate=today;
+        if(event.listingId){
+            const listing=trueMarketplaceListingById(event.listingId);
+            if(listing?.status==='available')listing.status='expired';
+        }
         changed++;
     }
     return changed;
@@ -8779,21 +8850,58 @@ function trueQueueEventPresentation(event,scheduledMinute=null){
     if(!events.presentedEventIds||typeof events.presentedEventIds!=='object'||Array.isArray(events.presentedEventIds))events.presentedEventIds={};
     trueEventEnsurePartnerTab(event); // The zoo tab exists before the modal can open.
     if(events.presentedEventIds[event.id]||
+        !['active','engaged'].includes(event.status)||
         document.getElementById('trueEventDialogOverlay')?.dataset?.eventId===String(event.id)||
         events.presentationQueue.some(row=>String(row.id)===String(event.id)))return false;
     events.presentationQueue.push({id:event.id,scheduledAbs:trueEventAbsoluteMinute(event.createdDate,scheduledMinute)});
+    // Process the earliest due event first, even if an older save contains
+    // queued events in a different insertion order.
+    events.presentationQueue.sort((a,b)=>(Number(a.scheduledAbs)||0)-(Number(b.scheduledAbs)||0));
     setTimeout(()=>trueProcessEventPresentationQueue(),0);
     return true;
 }
+// Reserve the popup slot before requestAnimationFrame, preventing two queued
+// presentations from racing when multiple render/update paths run in one frame.
+let trueEventPresentationOpening=false;
 function trueProcessEventPresentationQueue(){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return false;
     const events=normaliseTrueEventState();
     if(!Array.isArray(events.presentationQueue)||!events.presentationQueue.length)return false;
-    if(document.getElementById('trueEventDialogOverlay'))return false;
+    // Old saves can contain unsorted rows; a future-dated first row must not
+    // prevent a due event further down the queue from being shown.
+    events.presentationQueue.sort((a,b)=>(Number(a?.scheduledAbs)||0)-(Number(b?.scheduledAbs)||0));
+    // Saved queues may contain duplicate IDs or resolved/expired notices.
+    // Remove these before checking due times so a stale future row cannot
+    // block a valid event, and never present the same event twice.
+    const seenQueuedIds=new Set();
+    events.presentationQueue=events.presentationQueue.filter(row=>{
+        if(!row?.id||seenQueuedIds.has(String(row.id)))return false;
+        const event=trueEventById(row.id);
+        if(!event||!['active','engaged'].includes(event.status))return false;
+        seenQueuedIds.add(String(row.id));
+        return true;
+    });
+    if(!events.presentationQueue.length)return false;
+    if(document.getElementById('trueEventDialogOverlay')||trueEventPresentationOpening)return false;
     if(!events.presentedEventIds||typeof events.presentedEventIds!=='object'||Array.isArray(events.presentedEventIds))events.presentedEventIds={};
     const now=trueEventAbsoluteMinute();
     const last=Number(events.lastEventPopupAbsMinute);
-    if(Number.isFinite(last)&&now-last<120)return false;
+    // Routine notices respect the popup cooldown. Unanswered decisions should
+    // not wait behind a routine notice or the cooldown, but still open one at a time.
+    const cooldownActive=Number.isFinite(last)&&now-last<TRUE_EVENT_POPUP_COOLDOWN_MINUTES;
+    // Prioritize due unanswered decisions, even if a future-dated routine
+    // notice is first. Do not let an informational popup delay a decision.
+    const decisionIndex=events.presentationQueue.findIndex(row=>{
+        const due=Number(row?.scheduledAbs);
+        if(Number.isFinite(due)&&now<due)return false;
+        const candidate=trueEventById(row?.id);
+        return candidate&&!events.presentedEventIds[row.id]&&trueEventRequiresDecision(candidate);
+    });
+    if(decisionIndex>0){
+        const [decision]=events.presentationQueue.splice(decisionIndex,1);
+        events.presentationQueue.unshift(decision);
+    }
+    if(cooldownActive&&decisionIndex<0)return false;
     while(events.presentationQueue.length){
         const row=events.presentationQueue[0];
         if(!row){events.presentationQueue.shift();continue;}
@@ -8802,9 +8910,21 @@ function trueProcessEventPresentationQueue(){
         if(events.presentedEventIds[row.id])continue;
         const event=trueEventById(row.id);
         if(!event||!['active','engaged'].includes(event.status))continue;
+        if(cooldownActive&&!trueEventRequiresDecision(event)){
+            events.presentationQueue.unshift(row);
+            return false;
+        }
         trueEventEnsurePartnerTab(event);
+        trueEventPresentationOpening=true;
         requestAnimationFrame(()=>{
-            const opened=openTrueEventDialog(event.id);
+            let opened=false;
+            try{
+                if(state.gameMode==='true'&&!state.sandboxMode&&!state.visitingZoo){
+                    opened=openTrueEventDialog(event.id);
+                }
+            }finally{
+                trueEventPresentationOpening=false;
+            }
             if(opened){
                 const liveEvents=normaliseTrueEventState();
                 if(!liveEvents.presentedEventIds||typeof liveEvents.presentedEventIds!=='object'||Array.isArray(liveEvents.presentedEventIds))liveEvents.presentedEventIds={};
@@ -8854,8 +8974,12 @@ function trueMaybeGeneratePriorityGroupRepair(today,slotIndex=0){
 function trueGenerateDailyEventSlot(slotIndex=0){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return null;
     const today=normaliseTrueCalendarState().date,events=normaliseTrueEventState();
-    const todaysEvents=(events.items||[]).filter(event=>event?.createdDate===today);
-    if(todaysEvents.length>=2)return null;
+    // Only scheduled rolls consume the two daily slots. Births, welfare,
+    // marketplace responses and other independently triggered events must not
+    // silently suppress the day's regular events.
+    const todaysScheduled=(events.items||[]).filter(event=>event?.createdDate===today&&
+        event.status!=='superseded'&&Number.isInteger(event.dailyScheduledSlot));
+    if(todaysScheduled.length>=2||todaysScheduled.some(event=>event.dailyScheduledSlot===slotIndex))return null;
     trueInvalidateEventOpportunitySnapshot();
     let event=trueMaybeGeneratePriorityGroupRepair(today,slotIndex);
     if(!event)event=trueMaybeGenerateSurplusRelief(today);
@@ -8863,15 +8987,18 @@ function trueGenerateDailyEventSlot(slotIndex=0){
     if(!event)event=trueGenerateRelationshipEventForDay(slotIndex);
     if(!event)event=trueEnsureDailyEvent(today,true,`slot-${slotIndex}`);
     if(event){
-        const signature=`${event.kind}|${animalCardKey(event.animal)}`;
-        const duplicate=(events.items||[]).some(other=>other!==event&&other?.createdDate===today&&
-            `${other.kind}|${animalCardKey(other.animal)}`===signature);
+        // A species-less keeper update is not a duplicate merely because it
+        // shares the generic daily-zoo-update kind with another update.
+        const signature=event.animal?`${event.kind}|${animalCardKey(event.animal)}`:null;
+        const duplicate=signature&&(events.items||[]).some(other=>other!==event&&other?.createdDate===today&&
+            other.status!=='superseded'&&other.animal&&`${other.kind}|${animalCardKey(other.animal)}`===signature);
         if(duplicate){
             event.status='superseded';
             event.resolvedDate=today;
             return null;
         }
         const schedule=trueEventRollScheduleForDate(today);
+        event.dailyScheduledSlot=slotIndex;
         trueQueueEventPresentation(event,schedule[slotIndex]);
     }
     return event;
@@ -8880,7 +9007,7 @@ let trueTimedRollCacheDate='',trueTimedRollCache=null,trueTimedRollCacheOwner=nu
 function trueProcessTimedEventRolls(minuteOverride=null){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return;
     const cal=normaliseTrueCalendarState(),events=normaliseTrueEventState(),date=cal.date;
-    const minute=Number.isFinite(Number(minuteOverride))?Number(minuteOverride):(Number(cal.hour)||0)*60+(Number(cal.minute)||0);
+    const minute=minuteOverride!=null&&Number.isFinite(Number(minuteOverride))?Number(minuteOverride):(Number(cal.hour)||0)*60+(Number(cal.minute)||0);
     const schedule=trueEventRollScheduleForDate(date);
     if(!events.processedTimedRolls||typeof events.processedTimedRolls!=='object'||Array.isArray(events.processedTimedRolls))events.processedTimedRolls={};
     const timedOwner=events.processedTimedRolls;
@@ -8987,6 +9114,14 @@ function trueGenerateRelationshipEventForDay(rollIndex=0){
 }
 
 function trueAcceptIndependentTransferEvent(event){
+    if(!event||event.status!=='active')return false;
+    // Keep an existing transfer proposal intact; the player must finish it first.
+    if(state.autonomousTradeOffer?.eventOpportunity &&
+       String(state.autonomousTradeOffer.eventId)!==String(event.id) &&
+       !['accepted','declined','rejected','completed','cancelled'].includes(String(state.autonomousTradeOffer.proposalStatus||''))){
+        addTrueActivity({type:'information',title:'Transfer proposal still open',message:'Finish or cancel your current transfer proposal before discussing another offer.'});
+        return false;
+    }
     const record=(state.realZooData?.zoos||[]).find(item=>realZooHoldingKey(item)===event.sourceKey);
     if(!record)return false;
     state.opponentProfiles=[realZooProfile(record,0)];
@@ -9016,7 +9151,10 @@ function trueAcceptIndependentTransferEvent(event){
 }
 function trueEventRequiresDecision(event){
     if(!event||event.status!=='active')return false;
-    if(event.kind==='player-zoo-birth')return true;
+    // A birth is an announcement, not a decision. Population pressure has
+    // management choices and must remain actionable across day changes.
+    if(event.kind==='player-zoo-birth')return false;
+    if(event.kind==='population-pressure')return true;
     if(event.welfareGroupHelpOffer)return true;
     return ['transfer-opportunity','animal-request','population-cooperation','surplus-relief','breeding-success','priority-contact','emergency-placement','combination-offer'].includes(event.kind);
 }
@@ -9024,7 +9162,14 @@ function closeTrueEventDialog(force=false){
     const overlay=document.getElementById('trueEventDialogOverlay');if(!overlay)return;
     const event=trueEventById(overlay.dataset?.eventId);
     if(!force&&trueEventRequiresDecision(event))return false;
-    overlay.remove();return true;
+    overlay.remove();
+    // A resolved/acknowledged dialog should release the next queued event.
+    // Defer until after the current click handler finishes its state updates;
+    // the queue processor still enforces one popup and routine cooldowns.
+    if(state.gameMode==='true'&&!state.sandboxMode&&!state.visitingZoo){
+        setTimeout(()=>trueProcessEventPresentationQueue(),0);
+    }
+    return true;
 }
 function trueResolvePopulationPressureChoice(event,choice){
     if(!event||event.status!=='active'||event.kind!=='population-pressure')return false;
@@ -9124,15 +9269,15 @@ function trueEventChoiceApply(event,choice){
 function trueEventResponseStatus(event){
     if(!event)return null;
     const kind=String(event.kind||'');
-    const actionable=['transfer-opportunity','animal-request','population-cooperation','surplus-relief','population-pressure'].includes(kind);
+    const actionable=['transfer-opportunity','animal-request','population-cooperation','surplus-relief','population-pressure','breeding-success','priority-contact','emergency-placement','combination-offer'].includes(kind);
     if(!actionable)return null;
     const status=String(event.status||'active');
     const reply=String(event.playerReply||event.response||event.decision||'').trim();
     if(['declined','rejected'].includes(status))return {label:'Declined',tone:'done',detail:reply||'You declined this proposal.'};
-    if(['accepted','completed','resolved'].includes(status))return {label:'Accepted',tone:'done',detail:reply||'You accepted this proposal.'};
+    if(['accepted','completed','resolved'].includes(status))return {label:reply||'Resolved',tone:'done',detail:event.resolution||'This proposal has been resolved.'};
     if(['engaged','pending-partner','waiting','awaiting-partner'].includes(status))
         return {label:'Waiting for the other zoo',tone:'waiting',detail:reply?`Your response: ${reply}`:'Your response has been sent.'};
-    if(reply||event.respondedDate||event.responseDate)
+    if(status!=='active'&&(reply||event.respondedDate||event.responseDate))
         return {label:'Response sent',tone:'waiting',detail:reply?`Your response: ${reply}`:'Your response has been sent.'};
     const due=event.expiresDate||event.respondBy||event.deadlineDate||'';
     return {label:'Awaiting your response',tone:'action',detail:due?`Respond by ${formatTrueDateLabel(due)}.`:'A response is expected.'};
@@ -9150,11 +9295,19 @@ function openTrueEventDialog(id){
     // Older saved offers may have no listingId even though their source is a
     // real zoo. Recover their decision path as an independent event instead
     // of displaying a misleading Close-only popup.
-    if(event.status==='active'&&!event.informational&&!event.independentEvent&&
-       ['breeding-success','priority-contact','emergency-placement','transfer-opportunity'].includes(event.kind)&&
-       !listing&&event.sourceKey&&event.animal){
-        const source=(state.realZooData?.zoos||[]).find(row=>realZooHoldingKey(row)===event.sourceKey);
-        if(source){event.independentEvent=true;event.listingId=null;writeAutoResumeSnapshot?.(true);}
+    // Real-zoo event offers are actionable even when their marketplace listing
+    // was never created (or has been discarded by a save/load cycle).
+    const transferKinds=['breeding-success','priority-contact','emergency-placement','transfer-opportunity'];
+    const sourceRecord=event.sourceKey?(state.realZooData?.zoos||[]).find(row=>realZooHoldingKey(row)===event.sourceKey):null;
+    if(!event.informational&&transferKinds.includes(event.kind)&&!listing&&sourceRecord&&event.animal){
+        if(event.status==='active'||(event.status==='unavailable'&&event.resolution==='The offering zoo or transfer listing is no longer available.')){
+            event.independentEvent=true;
+            event.listingId=null;
+            if(event.status==='unavailable'){
+                event.status='active';delete event.resolution;delete event.resolvedDate;
+            }
+            writeAutoResumeSnapshot?.(true);
+        }
     }
     const overlay=document.createElement('div');overlay.id='trueEventDialogOverlay';overlay.dataset.eventId=String(event.id);
     overlay.style.cssText='position:fixed;inset:0;z-index:100050;pointer-events:none;';
@@ -9178,7 +9331,13 @@ function openTrueEventDialog(id){
         writeAutoResumeSnapshot?.(true);
     }
     if(requestedPlayerAnimal)event.playerAnimalId=requestedPlayerAnimal.id;
-    const active=event.status==='active'&&(event.informational?true:(isRequest?!!requestedPlayerAnimal:(event.independentEvent?true:(listing?listing.status==='available':false))));
+    // Management, combination and husbandry events have their own response
+    // handlers; they do not depend on a marketplace listing. Without this
+    // exception they were rendered as inactive, with only a Close button.
+    const localDecision=event.kind==='population-pressure'||event.kind==='combination-offer'||
+        Boolean(event.welfareGroupHelpOffer||event.welfareConcern)||isPlayerBirth||Boolean(event.developmentEvent);
+    const active=event.status==='active'&&(event.informational||localDecision?true:
+        (isRequest?!!requestedPlayerAnimal:(event.independentEvent?!!sourceRecord:(listing?listing.status==='available':false))));
     if(event.status==='active'&&!active&&!event.informational&&!isRequest&&
        ['breeding-success','priority-contact','emergency-placement','transfer-opportunity'].includes(event.kind)){
         event.status='unavailable';event.resolvedDate=normaliseTrueCalendarState().date;
@@ -9209,7 +9368,7 @@ function openTrueEventDialog(id){
             ?`Resolution: ${escapeHtml(event.resolution||'Conditions corrected')}.`
             :'This concern remains tied to the current husbandry conditions for this population.';
         else if(isRequest)footer=event.status==='unavailable'?`<strong>Request closed:</strong> ${escapeHtml(event.resolution||'The requested population is no longer available to send.')}`:`<strong>Why they want them:</strong> ${escapeHtml(event.requestReason||trueMarketplaceWantLabel(event.want))}`;
-        else if(!event.informational)footer=`Why offered: ${escapeHtml(listing?.reason||(event.kind==='breeding-success'?'Recent breeding success':event.kind==='emergency-placement'?'A change in collection planning':'Population management'))}<br>Relationship: ${escapeHtml(relationshipContext)}${Number(rel.meaningfulTransfers)>0?` · ${Number(rel.meaningfulTransfers)} previous successful transfer${Number(rel.meaningfulTransfers)===1?'':'s'}`:''}`;
+        else if(!event.informational)footer=`Why offered: ${escapeHtml(listing?.reason||(event.kind==='breeding-success'?'Recent breeding success':event.kind==='emergency-placement'?'A change in collection planning':'Population management'))}${Number(rel.meaningfulTransfers)>0?` · ${Number(rel.meaningfulTransfers)} previous successful transfer${Number(rel.meaningfulTransfers)===1?'':'s'}`:''}`;
     }
     const topLabel=isKeeperUpdate?'KEEPER UPDATE':trueEventScaleLabel(event.scale||trueEventScaleFor(event.kind,event.animal,rel));
     const bodyParts=[];
@@ -9228,9 +9387,19 @@ function openTrueEventDialog(id){
         ${bodyParts.join('')}
         ${responseStatusHtml}${impactHtml}
         ${footerHtml}`;
+    // Shared terminal-state bookkeeping for dialog decisions. Side effects remain
+    // in their individual handlers, so this only consolidates event metadata.
+    const recordDialogDecision=(status,reply,details={})=>{
+        const today=normaliseTrueCalendarState().date;
+        event.status=status;
+        event.playerReply=reply;
+        event.respondedDate=today;
+        event.resolvedDate=today;
+        if(details.resolution!==undefined)event.resolution=details.resolution;
+    };
     const actions=document.createElement('div');actions.style.cssText='display:flex;justify-content:flex-end;gap:8px;margin-top:20px;';
     const button=(label,fn,primary=false)=>{const b=document.createElement('button');b.type='button';b.textContent=label;const dark=document.body.classList.contains('zoo-dark-mode');b.style.cssText=`min-height:32px;padding:6px 12px;border-radius:4px;border:1px solid ${dark?'#706a5d':'#9d8e6e'};background:${primary?(dark?'#665b45':'#766344'):(dark?'#22211f':'#fffaf0')};color:${primary?'#fff':(dark?'#eee6d3':'#514633')};font:700 12px Arial,sans-serif;cursor:pointer;`;b.onclick=fn;return b;};
-    if(active&&(event.informational||trueEventRequiresDecision(event))){
+    if(active&&(event.informational||event.kind==='population-pressure'||event.kind==='combination-offer'||event.welfareGroupHelpOffer||event.welfareConcern||isPlayerBirth)){
         if(event.kind==='population-pressure'&&event.choiceType==='population-pressure'){
             actions.style.justifyContent='space-between';
             actions.append(
@@ -9239,7 +9408,7 @@ function openTrueEventDialog(id){
             );
         }else if(event.kind==='combination-offer'){
             actions.append(button('Decline offer',()=>{
-                event.status='declined';event.playerReply='Declined';event.respondedDate=normaliseTrueCalendarState().date;event.resolvedDate=event.respondedDate;
+                recordDialogDecision('declined','Declined');
                 trueRelationshipRecord(event.profile,event.sourceKey,'combination-offer-declined',`Declined ${animalDisplayName(event.animal)} for the suggested mixed exhibit.`,{familiarity:.5});
                 closeTrueEventDialog(true);renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);trueProcessEventPresentationQueue();
             }));
@@ -9247,7 +9416,7 @@ function openTrueEventDialog(id){
         }else if(event.welfareGroupHelpOffer&&event.husbandryExactRepair){
             const repair=event.husbandryExactRepair,notation=truePopulationNotation(repair.population);
             actions.append(button('Decline help',()=>{
-                event.status='declined';event.playerReply='Declined';event.respondedDate=normaliseTrueCalendarState().date;event.resolvedDate=normaliseTrueCalendarState().date;
+                recordDialogDecision('declined','Declined');
                 trueRelationshipRecord(event.profile,event.sourceKey,'husbandry-help-declined',`Declined practical help with the ${animalDisplayName(event.animal)} group.`,{familiarity:.25});
                 closeTrueEventDialog(true);
                 trueCreateWelfareProtestAfterDeclinedHelp(event);
@@ -9343,7 +9512,7 @@ function openTrueEventDialog(id){
             controls,
             agree,
             button('Decline',()=>{
-                event.status='declined';event.playerReply='Declined';event.respondedDate=normaliseTrueCalendarState().date;event.resolvedDate=normaliseTrueCalendarState().date;
+                recordDialogDecision('declined','Declined');
                 event.resolution=`You declined ${event.profile?.name||'the zoo'}'s request. No animals were transferred.`;
                 trueRelationshipRecord(event.profile,event.sourceKey,'event-declined',`Declined ${event.title}.`,{familiarity:.15});
                 addTrueActivity({type:'information',title:'Animal request declined',message:`You declined ${event.profile?.name||'the zoo'}'s request for ${animalDisplayName(event.animal)}. The population remains at your zoo.`});
@@ -9353,7 +9522,7 @@ function openTrueEventDialog(id){
     }else if(active){
         actions.append(
             button('Decline',()=>{
-                event.status='declined';event.playerReply='Declined';event.respondedDate=normaliseTrueCalendarState().date;event.resolvedDate=normaliseTrueCalendarState().date;
+                recordDialogDecision('declined','Declined');
                 event.resolution=`You declined the opportunity from ${event.profile?.name||'the zoo'}. No transfer was arranged.`;
                 trueRelationshipRecord(event.profile,event.sourceKey,'event-declined',`Declined ${event.title}.`,{familiarity:.15});
                 addTrueActivity({type:'information',title:'Transfer opportunity declined',message:`You declined ${event.profile?.name||'the zoo'}'s ${animalDisplayName(event.animal)} transfer opportunity. No animals changed hands.`});
@@ -9371,22 +9540,30 @@ function openTrueEventDialog(id){
                 }
                 closeTrueEventDialog(true);renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
             }),
-            button(isRequest?'Discuss sending animal':'Discuss transfer',()=>{
+            button(isRequest?'Discuss sending animal':'Review transfer offer',()=>{
                 if(isRequest){trueAcceptAnimalRequestEvent(event);return;}
                 if(event.independentEvent){trueAcceptIndependentTransferEvent(event);return;}
+                if(!listing){
+                    // A restored offer without its marketplace listing cannot be opened.
+                    // Never mark it engaged or silently send a null listing to the market.
+                    event.status='unavailable';event.resolvedDate=normaliseTrueCalendarState().date;
+                    event.resolution='The transfer listing is no longer available.';
+                    closeTrueEventDialog(true);renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
+                    return;
+                }
                 event.status='engaged';event.respondedDate=normaliseTrueCalendarState().date;event.resolvedDate=normaliseTrueCalendarState().date;trueRelationshipRecord(event.profile,event.sourceKey,'event-engaged',`Responded to ${event.title}.`,{familiarity:1});closeTrueEventDialog(true);requestTrueMarketplaceAnimal(listing);writeAutoResumeSnapshot?.(true);
             },true)
         );
     }else if(event.status==='engaged'&&state.autonomousTradeOffer?.eventOpportunity&&
         String(state.autonomousTradeOffer.eventId)===String(event.id)){
         actions.append(
-            button('Close',closeTrueEventDialog),
+            button('Close',()=>closeTrueEventDialog(true)),
             button('Open transfer proposal',()=>{
                 closeTrueEventDialog();renderTrade();
                 requestAnimationFrame(()=>document.getElementById('trueTransferProposalPanel')?.scrollIntoView?.({behavior:'smooth',block:'nearest'}));
             },true)
         );
-    }else actions.append(button('Close',closeTrueEventDialog,true));
+    }else actions.append(button('Close',()=>closeTrueEventDialog(true),true));
     if(!actions.children.length)actions.append(button('Close',()=>closeTrueEventDialog(true),true));
     const sticky=trueEventRequiresDecision(event);
     const close=document.createElement('button');close.type='button';close.textContent='−';close.title='Minimize event';
@@ -10001,18 +10178,24 @@ function trueProcessRemainingEventRollsBeforeClose(){
         const minute=Number(schedule[i]);
         cal.hour=Math.floor(minute/60);cal.minute=minute%60;
         done.add(i);trueGenerateDailyEventSlot(i);
-        // A compressed day cannot actually display a modal at this simulated
-        // minute: openTrueEventDialog is deferred to requestAnimationFrame and
-        // would execute only after the calendar has rolled into tomorrow.
-        // Keep the event in Activity for manual viewing, but consume its automatic
-        // popup here so it can never masquerade as a next-morning event.
+        // During compressed time progression, routine notices remain in Activity
+        // instead of generating a burst of old popups the next morning.
+        // Do not discard actionable decisions (or queued events from other days).
         const generatedQueue=events.presentationQueue||[];
-        while(generatedQueue.length){
-            const queued=generatedQueue.shift();
+        const retained=[];
+        for(const queued of generatedQueue){
             if(!queued?.id)continue;
+            const event=trueEventById(queued.id);
+            if(!event||!['active','engaged'].includes(event.status))continue;
+            const belongsToDay=String(event.createdDate||'')===String(date);
+            if(!belongsToDay||event.choiceType){
+                retained.push(queued);
+                continue;
+            }
             events.presentedEventIds=events.presentedEventIds&&typeof events.presentedEventIds==='object'&&!Array.isArray(events.presentedEventIds)?events.presentedEventIds:{};
             events.presentedEventIds[queued.id]=trueEventAbsoluteMinute(date,minute);
         }
+        events.presentationQueue=retained;
     }
     events.processedTimedRolls[date]=[...done];
     cal.hour=originalHour;cal.minute=originalMinute;
@@ -21625,6 +21808,13 @@ function trueDeleteBuiltEnclosureCell(enclosureId,worldCol,worldRow){
     if(trueEnclosureCellOccupied(enc,worldCol,worldRow))return false;
 
     if(world.length===1){
+        // An empty backstage enclosure may already be allocated to an accepted
+        // incoming transfer; deleting it would strand that arrival.
+        const reservedForArrival=(state.trueTransfers||[]).some(t=>
+            !['completed','cancelled','failed'].includes(t?.status)&&
+            (t.incomings||[t.incoming].filter(Boolean)).some(leg=>
+                !leg?.completed&&String(leg?.backstageEnclosureId)===String(enclosureId)));
+        if(reservedForArrival)return false;
         truePushBuilderUndo('enclosure-cell-delete');
         state.enclosures=state.enclosures.filter(e=>e!==enc);
         for(const area of state.customAreas||[])area.enclosureIds=(area.enclosureIds||[]).filter(x=>String(x)!==String(enclosureId));
@@ -24195,7 +24385,13 @@ card.classList.add('sandbox-compatibility-conflict');
                 birthBadge.className='true-recent-birth-badge';
                 birthBadge.textContent='🎈';
                 birthBadge.title=`Recent birth${animal.trueRecentBirthDate?` · ${animal.trueRecentBirthDate}`:''}`;
-                Object.assign(birthBadge.style,{position:'absolute',right:'4px',top:'4px',zIndex:'18',fontSize:'22px',lineHeight:'1',filter:'drop-shadow(0 1px 2px rgba(0,0,0,.55))',pointerEvents:'auto',cursor:'help'});
+                // Keep the birth marker in the card's stacking context, but above
+                // the card image (including its hover/transform effects).
+                slot.style.isolation='isolate';
+                card.style.setProperty('z-index','1','important');
+                if(!enclosure.trueBuilt) card.style.setProperty('position','relative','important');
+                Object.assign(birthBadge.style,{position:'absolute',right:'4px',top:'4px',zIndex:'100',fontSize:'22px',lineHeight:'1',filter:'drop-shadow(0 1px 2px rgba(0,0,0,.55))',pointerEvents:'auto',cursor:'help'});
+                birthBadge.style.setProperty('z-index','100','important');
                 slot.appendChild(birthBadge);
             }
 
@@ -32948,7 +33144,9 @@ function trueBackstageEnclosureResidents(enc){
     return (state.animals||[]).filter(a=>
         String(a?.enclosureId)===String(enc.id)&&
         trueAnimalPopulationTotal(a)>0&&
-        !a?.trueLoosePopulation
+        // A loose incoming population is still physically occupying its holding pen.
+        // Excluding it could allow a second transfer to overlap the same enclosure.
+        (!a?.trueLoosePopulation||a?.trueIncomingTransferId!=null||a?.trueBackstageArrival)
     );
 }
 function trueBackstageEnclosureOccupied(enc){
@@ -32958,15 +33156,35 @@ function trueBackstageRequiredCells(animal){
     return Math.max(1,Number(trueAnimalManagedEnclosureCells?.(animal))||Number(trueAnimalMinimumEnclosureCells?.(animal))||1);
 }
 function trueBackstageAvailableEnclosure(animal,reservedIds=null){
-    const blocked=reservedIds||new Set(),required=trueBackstageRequiredCells(animal);
+    // Direct callers must also respect pens promised to pending arrivals.
+    const blocked=reservedIds==null?trueBackstagePendingEnclosureIds():new Set();
+    for(const id of reservedIds||[])blocked.add(String(id));
+    const required=trueBackstageRequiredCells(animal);
     const rows=trueBackstageEnclosures().filter(enc=>!blocked.has(String(enc.id))&&!trueBackstageEnclosureOccupied(enc))
         .map(enc=>({enc,cells:Math.max(1,trueBuiltWorldCells(enc).length)}));
     if(!rows.length)return null;
     rows.sort((a,b)=>Math.abs(a.cells-required)-Math.abs(b.cells-required)||b.cells-a.cells||Number(a.enc.id)-Number(b.enc.id));
     return rows[0].enc;
 }
-function trueBackstagePlanIncoming(animals){
-    const reserved=new Set(),plan=[];
+// Empty backstage pens may already be promised to a different pending transfer.
+// Treat those promises as occupied until the leg arrives or is completed.
+function trueBackstagePendingEnclosureIds(exceptTransferId=null){
+    const reserved=new Set();
+    for(const transfer of state.trueTransfers||[]){
+        if(!transfer||['completed','cancelled'].includes(transfer.status)||
+            (exceptTransferId!=null&&String(transfer.id)===String(exceptTransferId)))continue;
+        for(const leg of transfer.incomings|| (transfer.incoming?[transfer.incoming]:[])){
+            if(!leg||leg.completed||leg.backstageEnclosureId==null)continue;
+            const alreadyArrived=(state.animals||[]).some(a=>
+                String(a.trueIncomingTransferId)===String(transfer.id)&&
+                String(a.trueIncomingTransferLegId)===String(leg.legId));
+            if(!alreadyArrived)reserved.add(String(leg.backstageEnclosureId));
+        }
+    }
+    return reserved;
+}
+function trueBackstagePlanIncoming(animals,exceptTransferId=null){
+    const reserved=trueBackstagePendingEnclosureIds(exceptTransferId),plan=[];
     for(const animal of (animals||[]).filter(Boolean)){
         const enc=trueBackstageAvailableEnclosure(animal,reserved);
         if(!enc)return null;
@@ -33028,19 +33246,41 @@ function trueTransferCreateFromAcceptedProposal(proposal){
     const requested=(proposal.requestedOffers?.length?proposal.requestedOffers:(requestedLegacy?[requestedLegacy]:[])).filter(Boolean).slice(0,3);
     const offeredLegacy=proposal.offeredAnimal||proposal.offered||proposal.outgoingAnimal||proposal.outgoingOffer||null;
     const offered=(proposal.outgoingOffers?.length?proposal.outgoingOffers:(offeredLegacy?[offeredLegacy]:[])).filter(Boolean).slice(0,3);
+    // Validate every outgoing leg before creating any reservations or transfer records.
+    // Never silently reduce an agreed population or send an animal that has since moved.
+    const outgoingSources=[];
+    const allocatedBySource=new Map();
+    for(const animal of offered){
+        const sourceId=animal.truePopulationTradeSourceId??animal.id;
+        const live=classicAnimalById(sourceId);
+        const needed=trueTransferPop(animal);
+        const available=live?trueTransferAvailableCounts(live):null;
+        const sourceKey=String(sourceId);
+        const allocated=allocatedBySource.get(sourceKey)||{males:0,females:0,unknown:0};
+        if(!live||!['males','females','unknown'].some(k=>needed[k]>0)||
+            ['males','females','unknown'].some(k=>needed[k]+allocated[k]>(Number(available?.[k])||0))){
+            proposal.transferUnavailable=true;
+            return null;
+        }
+        for(const k of ['males','females','unknown'])allocated[k]+=needed[k];
+        allocatedBySource.set(sourceKey,allocated);
+        outgoingSources.push(live);
+    }
+    delete proposal.transferUnavailable;
     const backstagePlan=trueBackstagePlanIncoming(requested);
     if(requested.length&&!backstagePlan)proposal.backstageBlocked=true;
     else delete proposal.backstageBlocked;
     const id=state.trueTransferNextId++,incomings=requested.map((animal,i)=>({legId:`in-${i+1}`,animal:{...animal},population:trueTransferPop(animal),completed:false,
         backstageEnclosureId:backstagePlan?.[i]?.enclosureId??null})),outgoings=[];
     for(let i=0;i<offered.length;i++){
-        const animal=offered[i],sourceId=animal.truePopulationTradeSourceId??animal.id,live=classicAnimalById(sourceId);
-        const leg={legId:`out-${i+1}`,animalId:live?.id??sourceId??null,animal:{...animal},population:trueTransferPop(animal),completed:false};
-        if(live){
-            const available=trueTransferAvailableCounts(live);
-            for(const k of ['males','females','unknown'])leg.population[k]=Math.min(Number(leg.population[k])||0,Number(available[k])||0);
-            trueTransferReserve(live,leg.population,id);
-        }
+        const animal=offered[i],live=outgoingSources[i];
+        const leg={legId:`out-${i+1}`,animalId:live.id,animal:{...animal},population:trueTransferPop(animal),completed:false};
+        // Multiple legs can reference the same source card. Reserve their combined
+        // population once, rather than overwriting the previous leg's reservation.
+        const combined=outgoings.filter(x=>String(x.animalId)===String(live.id))
+            .reduce((sum,x)=>{for(const k of ['males','females','unknown'])sum[k]+=(Number(x.population?.[k])||0);return sum;},
+                {males:leg.population.males,females:leg.population.females,unknown:leg.population.unknown});
+        trueTransferReserve(live,combined,id);
         outgoings.push(leg);
     }
     const transfer={id,proposalId:proposal.id,zooId:proposal.zooId||proposal.partnerZooId||proposal.sourceZooId||null,
@@ -33059,124 +33299,336 @@ function trueTransferNormaliseLegs(t){
     return t;
 }
 function trueTransferSyncAcceptedProposals(){
-    if(state.gameMode!=='true')return;normaliseTrueTransfers();
-    for(const p of state.trueTransferProposals||[])if(p?.status==='accepted')trueTransferCreateFromAcceptedProposal(p);
+    if(state.gameMode!=='true')return;
+    normaliseTrueTransfers();
+    for(const p of state.trueTransferProposals||[]){
+        if(p?.status!=='accepted')continue;
+        const transfer=trueTransferCreateFromAcceptedProposal(p);
+        if(transfer){
+            delete p.transferUnavailableNoticeDate;
+            continue;
+        }
+        // A proposal can remain accepted after its animals were moved, split or
+        // reserved elsewhere. Keep it retryable, but explain the blockage once.
+        if(p.transferUnavailable&&!p.transferUnavailableNoticeDate){
+            p.transferUnavailableNoticeDate=normaliseTrueCalendarState().date;
+            addTrueActivity?.({type:'information',title:'Accepted transfer waiting',
+                message:'An accepted transfer cannot proceed because the agreed outgoing animals are no longer available. No animals have been removed. Free the required population or review the offer.'});
+        }
+    }
 }
 function trueTransferCreateArrivalCards(t){
     trueTransferNormaliseLegs(t);const made=[];
     const transferId=Number(t.id);
+    const reservedBackstageIds=new Set();
     for(const leg of t.incomings){
         if(leg.completed)continue;
         const legId=String(leg.legId);
         let a=state.animals.find(x=>Number(x.trueIncomingTransferId)===transferId&&String(x.trueIncomingTransferLegId)===legId);
+        if(a?.enclosureId!=null)reservedBackstageIds.add(String(a.enclosureId));
         if(!a){
+            // Other unfinished legs of this transfer may already have assigned
+            // holding pens even if their animal cards have not been created.
+            // Do not borrow those pens while recovering a missing leg.
+            const otherLegAssignments=new Set(t.incomings.filter(other=>
+                other!==leg&&!other.completed&&other.backstageEnclosureId!=null)
+                .map(other=>String(other.backstageEnclosureId)));
             const z=Math.max(.01,Number(state.zoom)||1),idx=made.length;
             const x=(Number(zooBoard?.scrollLeft)||0)/z+(Number(zooBoard?.clientWidth)||900)/(2*z)-ANIMAL_W/2+idx*36;
             const y=(Number(zooBoard?.scrollTop)||0)/z+(Number(zooBoard?.clientHeight)||700)/(2*z)-ANIMAL_H/2+idx*36;
             let backstage=(state.enclosures||[]).find(e=>
                 String(e?.id)===String(leg.backstageEnclosureId)&&
                 trueEnclosureIsCurrentBackstage(e)&&
-                !trueBackstageEnclosureOccupied(e)
+                !trueBackstageEnclosureOccupied(e)&&
+                !reservedBackstageIds.has(String(e.id))&&
+                !otherLegAssignments.has(String(e.id))&&
+                !trueBackstagePendingEnclosureIds(t.id).has(String(e.id))
             );
-            if(!backstage)backstage=trueBackstageAvailableEnclosure(leg.animal);
+            if(!backstage){
+                const unavailable=trueBackstagePendingEnclosureIds(t.id);
+                for(const id of reservedBackstageIds)unavailable.add(id);
+                for(const id of otherLegAssignments)unavailable.add(id);
+                backstage=trueBackstageAvailableEnclosure(leg.animal,unavailable);
+            }
             if(!backstage){t.backstageArrivalBlocked=true;continue;}
+            reservedBackstageIds.add(String(backstage.id));
             leg.backstageEnclosureId=backstage.id;
             a={...leg.animal,id:state.nextId++,population:{...leg.population},enclosureId:backstage.id,slotIndex:0,reservedEnclosureId:null,reservedSlotIndex:null,reservation:null,
                 trueIncomingTransferId:t.id,trueIncomingTransferLegId:leg.legId,trueArrivalPending:true,trueBackstageArrival:true,x:backstage.x,y:backstage.y};
             state.animals.push(a);
+            made.push(a);
         }
         if(a?.trueBackstageArrival){
+            // Only an unfinished incoming leg can remain a pending backstage arrival.
+            // Historical saves may retain this marker after placement.
             a.trueArrivalPending=true;
-            a.trueBackstageArrival=true;
         }
-        made.push(a);
     }
-    if(made.length){
+    // Existing arrival cards are not newly delivered animals. Do not announce
+    // them again or repeat species-unlock rewards on every transfer retry.
+    if(t.incomings.every(leg=>leg.completed||(state.animals||[]).some(a=>
+        String(a.trueIncomingTransferId)===String(t.id)&&String(a.trueIncomingTransferLegId)===String(leg.legId))))
         delete t.backstageArrivalBlocked;
-        trueMaybeUnlockFirstNewSpeciesExpansion(made);
-    }
+    if(made.length)trueMaybeUnlockFirstNewSpeciesExpansion(made);
     trueTransferMaybeFinish(t);
     return made;
 }
 function trueTransferCompleteOutgoing(t){
     trueTransferNormaliseLegs(t);
+    // Preflight the entire departure before modifying any population. Older saves
+    // can contain missing source cards or populations changed after reservation.
+    const due=new Map();
+    for(const leg of t.outgoings){
+        if(leg.completed)continue;
+        const key=String(leg.animalId),entry=due.get(key)||{animal:classicAnimalById(leg.animalId),males:0,females:0,unknown:0};
+        for(const k of ['males','females','unknown'])entry[k]+=Math.max(0,Number(leg.population?.[k])||0);
+        due.set(key,entry);
+    }
+    for(const entry of due.values()){
+        const pop=entry.animal?normaliseTrueAnimalPopulation(entry.animal):null;
+        // A different active transfer or Marketplace listing may reserve part of
+        // this card. Our own reservation is the population being dispatched, so
+        // exclude it while keeping every other reservation protected.
+        const otherReservations={males:0,females:0,unknown:0};
+        if(entry.animal)for(const reservation of trueTransferReservations(entry.animal)){
+            if(String(reservation.transferId)===String(t.id))continue;
+            for(const k of ['males','females','unknown'])otherReservations[k]+=Math.max(0,Number(reservation[k])||0);
+        }
+        if(!pop||['males','females','unknown'].some(k=>entry[k]+otherReservations[k]>(Number(pop[k])||0))){
+            t.outgoingUnavailable=true;
+            return false;
+        }
+    }
+    delete t.outgoingUnavailable;
     for(const leg of t.outgoings){
         if(leg.completed)continue;
         const a=classicAnimalById(leg.animalId);
-        if(a){trueTransferSubtract(a,leg.population);if(trueAnimalPopulationTotal(a)<=0)state.animals=state.animals.filter(x=>x!==a);}
+        trueTransferSubtract(a,leg.population);
+        if(trueAnimalPopulationTotal(a)<=0)state.animals=state.animals.filter(x=>x!==a);
         leg.completed=true;
     }
     for(const a of state.animals||[]){a.trueTransferReservations=trueTransferReservations(a).filter(r=>Number(r.transferId)!==Number(t.id));if(!a.trueTransferReservations.length)delete a.trueTransferReservations;}
     if(!t.incomings.length)trueTransferMaybeFinish(t);
+    return true;
+}
+// Terminal transfers must never keep animals reserved. Preserve reservations
+// belonging to other active transfers and negative marketplace listing IDs.
+function trueTransferReleaseTerminalReservations(){
+    const terminal=new Set(normaliseTrueTransfers()
+        .filter(t=>t&&['completed','cancelled'].includes(t.status))
+        .map(t=>String(t.id)));
+    if(!terminal.size)return;
+    for(const animal of state.animals||[]){
+        if(!animal||(!Array.isArray(animal.trueTransferReservations)&&!animal.trueTransferReservation))continue;
+        const kept=trueTransferReservations(animal).filter(r=>!terminal.has(String(r?.transferId)));
+        if(kept.length)animal.trueTransferReservations=kept;
+        else delete animal.trueTransferReservations;
+    }
 }
 function trueTransferMaybeFinish(t){
     trueTransferNormaliseLegs(t);
     if(t.incomings.every(x=>x.completed)&&t.outgoings.every(x=>x.completed)){
-        t.status='completed';t.completedDate=trueDateKey(trueCurrentDate());
-        const p=(state.trueTransferProposals||[]).find(x=>String(x.id)===String(t.proposalId));if(p)p.status='completed';
+        // Completion is idempotent: daily processing and placement callbacks may both reach here.
+        if(t.status!=='completed'){
+            t.status='completed';
+            t.completedDate=t.completedDate||trueDateKey(trueCurrentDate());
+        }
+        const p=(state.trueTransferProposals||[]).find(x=>String(x.id)===String(t.proposalId));
+        if(p&&p.status!=='completed')p.status='completed';
+        trueTransferReleaseTerminalReservations();
         return true;
     }return false;
 }
 function trueTransferFinish(t,animal){
-    if(!t||!animal)return false;trueTransferNormaliseLegs(t);
-    const leg=t.incomings.find(x=>String(x.legId)===String(animal.trueIncomingTransferLegId))||t.incomings.find(x=>!x.completed);
-    if(leg)leg.completed=true;
-    delete animal.trueArrivalPending;delete animal.trueIncomingTransferId;delete animal.trueIncomingTransferLegId;delete animal.trueLoosePopulation;delete animal.trueLooseCollapseDeadline;
+    if(!t||!animal||String(animal.trueIncomingTransferId)!==String(t.id)||
+        ['completed','cancelled'].includes(t.status))return false;
+    trueTransferNormaliseLegs(t);
+    const leg=t.incomings.find(x=>String(x.legId)===String(animal.trueIncomingTransferLegId));
+    if(!leg||leg.completed)return false;
+    leg.completed=true;
+    delete animal.trueArrivalPending;delete animal.trueIncomingTransferId;delete animal.trueIncomingTransferLegId;delete animal.trueBackstageArrival;delete animal.trueLoosePopulation;delete animal.trueLooseCollapseDeadline;
     trueTransferMaybeFinish(t);return true;
+}
+function trueTransferAnnounceArrivals(t,arrivals){
+    if(!t||!arrivals?.length)return;
+    const backstageIds=new Set(trueBackstageEnclosures().map(enc=>String(enc.id)));
+    const verified=arrivals.filter(a=>a&&state.animals.includes(a)&&backstageIds.has(String(a.enclosureId))&&trueAnimalPopulationTotal(a)>0);
+    if(!verified.length)return;
+    // Record per-leg announcements so delayed partial arrivals aren't silently skipped.
+    const announced=new Set((t.announcedArrivalLegIds||[]).map(String));
+    // Legacy saves have a boolean for a previously announced batch.
+    if(t.arrivalAnnounced&&!t.announcedArrivalLegIds?.length){
+        for(const a of verified)announced.add(String(a.trueIncomingTransferLegId));
+    }
+    const fresh=verified.filter(a=>!announced.has(String(a.trueIncomingTransferLegId)));
+    if(!fresh.length)return;
+    for(const a of fresh)announced.add(String(a.trueIncomingTransferLegId));
+    t.announcedArrivalLegIds=[...announced];t.arrivalAnnounced=true;
+    const names=fresh.map(animalDisplayName),label=names.length===1?names[0]:`${names.length} populations`;
+    addTrueActivity?.({type:'action',title:'Animal transfer arrived',
+        message:`${label} from ${t.zooName} ${fresh.length===1?'has':'have'} arrived in the backstage holding area.`,
+        transferId:t.id,transferLegId:fresh[0]?.trueIncomingTransferLegId||null,animal:fresh[0]||null,glowAnimal:true});
 }
 function trueTransferCompleteImmediately(t){
     if(!t)return [];
     trueTransferNormaliseLegs(t);
-    if(t.incomings.length){
-        const plan=trueBackstagePlanIncoming(t.incomings.filter(l=>!l.completed).map(l=>l.animal));
-        if(!plan){
-            t.backstageArrivalBlocked=true;
-            t.status='in-transit';
-            trueBackstageNotifyNoSpace(t);
-            return [];
-        }
-        for(let i=0;i<plan.length;i++){
-            const leg=t.incomings.filter(l=>!l.completed)[i];
-            if(leg)leg.backstageEnclosureId=plan[i].enclosureId;
+    // A restored save may contain an incoming card already placed in a regular
+    // enclosure, while its placement callback was interrupted by saving.
+    // Reconcile those legs before planning backstage space or retrying arrivals.
+    if(!['completed','cancelled'].includes(t.status)){
+        for(const leg of t.incomings){
+            if(leg.completed)continue;
+            const arrived=(state.animals||[]).find(a=>String(a.trueIncomingTransferId)===String(t.id)&&
+                String(a.trueIncomingTransferLegId)===String(leg.legId));
+            if(!arrived||arrived.enclosureId==null)continue;
+            const enc=enclosureByIdFast(arrived.enclosureId);
+            if(enc&&!trueEnclosureIsCurrentBackstage(enc))trueTransferFinish(t,arrived);
         }
     }
-    trueTransferCompleteOutgoing(t);
+    if(t.status==='completed'||t.status==='cancelled')return [];
+    if(t.incomings.length){
+        // An immediate-completion retry must only reserve pens for legs which
+        // have not already produced an animal. Existing arrivals already occupy
+        // their pens; planning every incomplete leg again falsely reports full.
+        const missing=t.incomings.filter(leg=>!leg.completed&&
+            !(state.animals||[]).some(a=>String(a.trueIncomingTransferId)===String(t.id)&&
+                String(a.trueIncomingTransferLegId)===String(leg.legId)));
+        if(missing.length){
+            const plan=trueBackstagePlanIncoming(missing.map(l=>l.animal),t.id);
+            if(!plan){
+                t.backstageArrivalBlocked=true;
+                t.status='in-transit';
+                trueBackstageNotifyNoSpace(t);
+                return [];
+            }
+            for(let i=0;i<plan.length;i++)missing[i].backstageEnclosureId=plan[i].enclosureId;
+        }
+    }
+    if(!trueTransferCompleteOutgoing(t))return [];
     if(t.status==='completed'&&!t.incomings.length)return [];
-    t.status='in-transit';
+    if(t.status!=='awaiting-placement')t.status='in-transit';
     const arrivals=trueTransferCreateArrivalCards(t);
-    if(arrivals.length){
-        const backstageIds=new Set(trueBackstageEnclosures().map(enc=>String(enc.id)));
-        const verified=arrivals.filter(a=>a&&state.animals.includes(a)&&backstageIds.has(String(a.enclosureId))&&trueAnimalPopulationTotal(a)>0);
-        if(!verified.length){
-            t.backstageArrivalBlocked=true;
-            t.status='in-transit';
-            return [];
-        }
-        t.status='awaiting-placement';
-        if(!t.arrivalAnnounced){
-            t.arrivalAnnounced=true;
-            const names=verified.map(animalDisplayName),label=names.length===1?names[0]:`${names.length} populations`;
-            addTrueActivity?.({type:'action',title:'Animal transfer arrived',
-                message:`${label} from ${t.zooName} ${verified.length===1?'has':'have'} arrived in the backstage holding area.`,
-                transferId:t.id,transferLegId:verified[0]?.trueIncomingTransferLegId||null,animal:verified[0]||null,glowAnimal:true});
-        }
-    }else if(t.backstageArrivalBlocked){
-        t.status='in-transit';
-        trueBackstageNotifyNoSpace(t);
-    }else trueTransferMaybeFinish(t);
+    // An existing backstage animal is not a new arrival, but still means the
+    // transfer is awaiting placement. Never regress a completed transfer.
+    if(t.status!=='completed'){
+        const pending=t.incomings.some(leg=>!leg.completed);
+        if(pending)t.status=t.backstageArrivalBlocked?'in-transit':'awaiting-placement';
+        else trueTransferMaybeFinish(t);
+    }
+    if(arrivals.length)trueTransferAnnounceArrivals(t,arrivals);
+    else if(t.backstageArrivalBlocked)trueBackstageNotifyNoSpace(t);
     return arrivals;
 }
+// Recover an impossible transfer only while no animal has moved in either direction.
+// Once a leg has been completed or an arrival exists, retain the record for manual recovery.
+function trueTransferCancelUnfulfilled(t,reason){
+    trueTransferNormaliseLegs(t);
+    if(t.outgoings.some(l=>l.completed)||t.incomings.some(l=>l.completed)||
+        (state.animals||[]).some(a=>String(a.trueIncomingTransferId)===String(t.id)))return false;
+    t.status='cancelled';t.cancelledDate=trueDateKey(trueCurrentDate());t.cancelReason=reason;
+    // The shared cleanup also repairs stale reservations on merged cards.
+    for(const animal of state.animals||[]){
+        const reservations=trueTransferReservations(animal).filter(r=>String(r.transferId)!==String(t.id));
+        if(reservations.length)animal.trueTransferReservations=reservations;
+        else delete animal.trueTransferReservations;
+    }
+    const proposal=(state.trueTransferProposals||[]).find(p=>String(p.id)===String(t.proposalId));
+    if(proposal){proposal.status='cancelled';proposal.transferUnavailable=true;}
+    addTrueActivity?.({type:'action',title:'Transfer cancelled',
+        message:`The transfer with ${t.zooName||'another zoo'} was cancelled because the agreed outgoing animals were unavailable. Any remaining reservations have been released.`});
+    return true;
+}
+function trueTransferUnavailableDays(t,today){
+    const start=String(t.outgoingUnavailableSince||today),a=Date.parse(start+'T12:00:00'),b=Date.parse(today+'T12:00:00');
+    return Number.isFinite(a)&&Number.isFinite(b)?Math.max(0,Math.floor((b-a)/86400000)):0;
+}
+// Reconcile stale arrival flags from older saves without deleting animal cards.
+// Only a confirmed completed incoming leg is safe to release automatically.
+function trueTransferReconcileTerminalArrivalFlags(){
+    const transfers=new Map(normaliseTrueTransfers().filter(t=>t&&t.id!=null).map(t=>[String(t.id),t]));
+    for(const animal of state.animals||[]){
+        if(!animal||animal.trueIncomingTransferId==null)continue;
+        const transfer=transfers.get(String(animal.trueIncomingTransferId));
+        if(!transfer){
+            // An orphaned arrival is a real animal: retain it and flag the
+            // missing record once rather than silently discarding its identity.
+            if(!animal.trueArrivalRecoveryNotified){
+                animal.trueArrivalRecoveryNotified=true;
+                addTrueActivity?.({type:'action',title:'Arrival needs attention',
+                    message:'An animal from an older transfer has no matching transfer record. It has been kept in the zoo; review its placement manually.'});
+            }
+            continue;
+        }
+        if(!['completed','cancelled'].includes(transfer.status))continue;
+        trueTransferNormaliseLegs(transfer);
+        if(transfer.status==='cancelled'){
+            // Do not turn a cancelled transfer's animal into an ordinary
+            // resident automatically: its history is ambiguous.
+            if(!transfer.cancelledArrivalRecoveryNotified){
+                transfer.cancelledArrivalRecoveryNotified=true;
+                addTrueActivity?.({type:'action',title:'Cancelled transfer arrival',
+                    message:`An animal linked to a cancelled transfer with ${transfer.zooName||'another zoo'} remains in the zoo. Its population has been preserved; review its placement manually.`});
+            }
+            continue;
+        }
+        const leg=transfer.incomings.find(l=>String(l.legId)===String(animal.trueIncomingTransferLegId));
+        // Cancelled or missing-leg arrivals are ambiguous: retain them for
+        // recovery instead of deleting animals or silently clearing their origin.
+        if(transfer.status!=='completed'||!leg?.completed){
+            // A terminal transfer with an unconfirmed leg cannot be reconciled
+            // by guessing. Flag it once so the player can inspect the animal.
+            if(!animal.trueArrivalRecoveryNotified){
+                animal.trueArrivalRecoveryNotified=true;
+                addTrueActivity?.({type:'action',title:'Arrival needs attention',
+                    message:'A completed transfer has an arrival whose individual transfer leg is missing or unfinished. The animal has been preserved for manual review.'});
+            }
+            continue;
+        }
+        // A card still backstage is likewise ambiguous and must not be treated
+        // as an established zoo resident solely because the transfer closed.
+        const enclosure=animal.enclosureId==null?null:enclosureByIdFast(animal.enclosureId);
+        if(!enclosure||trueEnclosureIsCurrentBackstage(enclosure)){
+            if(!animal.trueArrivalRecoveryNotified){
+                animal.trueArrivalRecoveryNotified=true;
+                addTrueActivity?.({type:'action',title:'Arrival awaiting placement',
+                    message:'An animal from a completed transfer is still in backstage holding or has no valid enclosure. Its population has been preserved; place it in a regular enclosure.'});
+            }
+            continue;
+        }
+        delete animal.trueArrivalRecoveryNotified;
+        delete animal.trueArrivalPending;
+        delete animal.trueIncomingTransferId;
+        delete animal.trueIncomingTransferLegId;
+        delete animal.trueBackstageArrival;
+        delete animal.trueLoosePopulation;
+        delete animal.trueLooseCollapseDeadline;
+    }
+}
 function trueTransferProcessDay(){
-    if(state.gameMode!=='true')return;trueTransferSyncAcceptedProposals();const today=trueDateKey(trueCurrentDate());
+    if(state.gameMode!=='true')return;trueTransferSyncAcceptedProposals();trueTransferReleaseTerminalReservations();trueTransferReconcileTerminalArrivalFlags();const today=trueDateKey(trueCurrentDate());
     for(const raw of normaliseTrueTransfers()){
         const t=trueTransferNormaliseLegs(raw);if(['completed','cancelled'].includes(t.status))continue;
-        if(['scheduled','in-transit'].includes(t.status)&&today>=t.arrivalDate){
+        // Repair saved transfers whose incoming animal was already moved out of
+        // backstage but the placement callback never marked its leg complete.
+        for(const leg of t.incomings){
+            if(leg.completed)continue;
+            const arrived=(state.animals||[]).find(a=>String(a.trueIncomingTransferId)===String(t.id)&&String(a.trueIncomingTransferLegId)===String(leg.legId));
+            if(arrived&&arrived.enclosureId!=null){
+                const enc=enclosureByIdFast(arrived.enclosureId);
+                if(enc&&!trueEnclosureIsCurrentBackstage(enc))trueTransferFinish(t,arrived);
+            }
+        }
+        if(trueTransferMaybeFinish(t))continue;
+        // Awaiting-placement transfers can still contain missing incoming legs
+        // after partial arrivals or a save/load; retry those without duplicating
+        // cards that have already arrived.
+        if(['scheduled','in-transit','awaiting-placement'].includes(t.status)&&today>=t.arrivalDate){
             const remainingIncoming=t.incomings.filter(l=>!l.completed);
             if(remainingIncoming.length){
                 const existing=remainingIncoming.filter(l=>state.animals.some(a=>Number(a.trueIncomingTransferId)===Number(t.id)&&String(a.trueIncomingTransferLegId)===String(l.legId)));
                 const missing=remainingIncoming.filter(l=>!existing.includes(l));
                 if(missing.length){
-                    const plan=trueBackstagePlanIncoming(missing.map(l=>l.animal));
+                    const plan=trueBackstagePlanIncoming(missing.map(l=>l.animal),t.id);
                     if(!plan){
                         t.backstageArrivalBlocked=true;t.status='in-transit';
                         if(t.lastBackstagePromptDate!==today){t.lastBackstagePromptDate=today;trueBackstageNotifyNoSpace(t);}
@@ -33185,10 +33637,26 @@ function trueTransferProcessDay(){
                     for(let i=0;i<missing.length;i++)missing[i].backstageEnclosureId=plan[i].enclosureId;
                 }
             }
-            trueTransferCompleteOutgoing(t);
-            if(t.status!=='completed')t.status='in-transit';
+            if(!trueTransferCompleteOutgoing(t)){
+                t.outgoingUnavailableSince=t.outgoingUnavailableSince||today;
+                // Allow three in-game days for a temporarily unavailable group to recover.
+                // Never auto-cancel a transfer that has already moved any animals.
+                if(trueTransferUnavailableDays(t,today)>=3&&trueTransferCancelUnfulfilled(t,'outgoing-unavailable'))continue;
+                if(t.lastOutgoingUnavailableNoticeDate!==today){
+                    t.lastOutgoingUnavailableNoticeDate=today;
+                    addTrueActivity?.({type:'action',title:'Transfer needs attention',message:`The outgoing animals for the transfer with ${t.zooName||'another zoo'} are no longer available in the agreed numbers. No animals have been moved.`});
+                }
+                continue;
+            }
+            delete t.outgoingUnavailableSince;
+            if(t.status!=='completed'&&t.status!=='awaiting-placement')t.status='in-transit';
             const arrivals=trueTransferCreateArrivalCards(t);
-            if(arrivals.length)t.status='awaiting-placement';else trueTransferMaybeFinish(t);
+            // A recovered transfer may already have all legs finished; do not
+            // downgrade completed status simply because an arrival card exists.
+            if(t.status!=='completed'){
+                if(t.incomings.some(l=>!l.completed))t.status=t.backstageArrivalBlocked?'in-transit':'awaiting-placement';
+                else trueTransferMaybeFinish(t);
+            }
             if(!arrivals.length&&t.backstageArrivalBlocked){
                 if(t.lastBackstagePromptDate!==today){
                     t.lastBackstagePromptDate=today;
@@ -33196,16 +33664,7 @@ function trueTransferProcessDay(){
                 }
                 continue;
             }
-            if(arrivals.length&&!t.arrivalAnnounced){
-                const backstageIds=new Set(trueBackstageEnclosures().map(enc=>String(enc.id)));
-                const verified=arrivals.filter(a=>a&&state.animals.includes(a)&&backstageIds.has(String(a.enclosureId))&&trueAnimalPopulationTotal(a)>0);
-                if(verified.length){t.arrivalAnnounced=true;const names=verified.map(animalDisplayName),label=names.length===1?names[0]:`${names.length} populations`;
-                    if(typeof addTrueActivity==='function'){
-                        const first=verified[0];
-                        addTrueActivity({type:'action',title:'Animal transfer arrived',message:`${label} from ${t.zooName} ${verified.length===1?'has':'have'} arrived in the backstage holding area.`,
-                            transferId:t.id,transferLegId:first?.trueIncomingTransferLegId||null,animal:first||null,glowAnimal:true});
-                    }}
-                }
+            if(arrivals.length)trueTransferAnnounceArrivals(t,arrivals);
         }
     }
 }
@@ -33217,10 +33676,28 @@ function trueTransferAfterPlacement(animal){
     renderTrueSimulationPanel();
 }
 function trueTransferMergeArrivalIntoTarget(animal,target){
-    if(!animal?.trueArrivalPending||!target)return false;
-    const t=normaliseTrueTransfers().find(x=>Number(x.id)===Number(animal.trueIncomingTransferId));if(!t)return false;
-    trueTransferAdd(target,normaliseTrueAnimalPopulation(animal));state.animals=state.animals.filter(x=>x!==animal);
-    trueTransferFinish(t,animal);state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;renderTrueSimulationPanel();return true;
+    if(!animal?.trueArrivalPending||!target||animal===target||!state.animals.includes(animal)||!state.animals.includes(target))return false;
+    // Never merge an arrival into another unfinished arrival: each incoming leg
+    // must retain its own identity until it is individually placed or merged.
+    if(target.trueArrivalPending||target.trueIncomingTransferId!=null)return false;
+    const t=normaliseTrueTransfers().find(x=>String(x.id)===String(animal.trueIncomingTransferId));
+    if(!t)return false;
+    trueTransferNormaliseLegs(t);
+    // Check the exact incoming leg before touching either population. A stale
+    // arrival card must not be merged twice or complete an unrelated leg.
+    const leg=t.incomings.find(l=>String(l.legId)===String(animal.trueIncomingTransferLegId));
+    if(!leg||leg.completed||!['scheduled','in-transit','awaiting-placement'].includes(t.status))return false;
+    if(animalCardKey(target)!==animalCardKey(animal))return false;
+    const population=normaliseTrueAnimalPopulation(animal);
+    if(!trueAnimalPopulationTotal(animal))return false;
+    // Finish the leg before removing its arrival card, and only mutate after
+    // all eligibility checks. The receiving population must not inherit the
+    // temporary arrival/transfer metadata.
+    if(!trueTransferFinish(t,animal))return false;
+    trueTransferAdd(target,population);
+    state.animals=state.animals.filter(x=>x!==animal);
+    state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
+    renderTrueSimulationPanel();return true;
 }
 
 function trueSubtractPopulation(animal,part){
@@ -33241,9 +33718,18 @@ function trueMergeDraggedPopulationIntoTarget(animal,targetAnimal){
     const drag=state.drag;
     if(state.gameMode!=='true'||state.sandboxMode||!drag||!['enclosure','true-loose'].includes(drag.location)) return false;
     if(!targetAnimal||targetAnimal.id===animal.id||animalCardKey(targetAnimal)!==animalCardKey(animal)) return false;
+    // Ordinary group merging must not absorb an incoming transfer card or
+    // transfer population into a pending arrival (which would lose leg tracking).
+    if(animal.trueArrivalPending||targetAnimal.trueArrivalPending||targetAnimal.trueIncomingTransferId!=null)return false;
     trueAddPopulation(targetAnimal,normaliseTrueAnimalPopulation(animal));
     const targetReservations=trueTransferReservations(targetAnimal);
-    for(const r of trueTransferReservations(animal))targetReservations.push({...r});
+    // A merged card can carry reservations from both sources for the same transfer.
+    // Coalesce them so the reservation is neither lost nor counted twice later.
+    for(const r of trueTransferReservations(animal)){
+        const existing=targetReservations.find(x=>String(x.transferId)===String(r.transferId));
+        if(existing){for(const k of ['males','females','unknown'])existing[k]=(Number(existing[k])||0)+(Number(r[k])||0);}
+        else targetReservations.push({...r});
+    }
     trueRemapTransferPopulationSource(animal.id,targetAnimal.id);
     clearAnimalZooReservation(animal);
     state.animals=state.animals.filter(a=>a!==animal);
@@ -33287,6 +33773,13 @@ function truePopulationDefaultSplit(animal){
 function trueSplitPopulationCard(animal,card){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo||animal?.trueArrivalPending)return false;
     const part=truePopulationDefaultSplit(animal);if(!part)return false;
+    // Recheck immediately before mutation: reserved individuals must stay on
+    // their source card even when the split controls were opened earlier.
+    const available=trueTransferAvailableCounts(animal);
+    const population=normaliseTrueAnimalPopulation(animal);
+    if(['males','females','unknown'].some(k=>!Number.isInteger(part[k])||part[k]<0||part[k]>available[k]))return false;
+    if(['males','females','unknown'].reduce((sum,k)=>sum+part[k],0)<=0)return false;
+    if(['males','females','unknown'].reduce((sum,k)=>sum+population[k]-part[k],0)<=0)return false;
     trueSubtractPopulation(animal,part);
     const canvasRect=zooCanvas.getBoundingClientRect(),cardRect=card.getBoundingClientRect(),z=Math.max(.01,state.zoom||1);
     const x=(cardRect.left-canvasRect.left)/z+50,y=(cardRect.top-canvasRect.top)/z+50;
@@ -33310,7 +33803,11 @@ function trueNearestSameSpeciesPopulation(animal){
 function trueMoveSexBetweenPopulationCards(from,to,sex){
     if(!from||!to||!['males','females'].includes(sex))return false;
     const available=trueTransferAvailableCounts(from);if((Number(available[sex])||0)<=0)return false;
-    normaliseTrueAnimalPopulation(from);normaliseTrueAnimalPopulation(to);from.population[sex]-=1;to.population[sex]+=1;
+    // The destination may be a reserved group, but its reserved population
+    // stays intact: only an unreserved individual leaves the source.
+    normaliseTrueAnimalPopulation(from);normaliseTrueAnimalPopulation(to);
+    if((Number(from.population[sex])||0)<1)return false;
+    from.population[sex]-=1;to.population[sex]+=1;
     if(trueAnimalPopulationTotal(from)<=0)state.animals=state.animals.filter(a=>a!==from);
     state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;renderAll();return true;
 }
@@ -36744,6 +37241,11 @@ function removeSandboxAnimalById(animalId) {
     if (!state.sandboxMode) return false;
     const id = Number(animalId);
     if (!Number.isFinite(id) || !state.animals.some(animal => animal.id === id)) return false;
+    // Sandbox deletion must not silently discard individuals promised to another zoo.
+    if(state.gameMode==='true'){
+        const animal=state.animals.find(a=>a.id===id);
+        if(trueTransferReservations(animal).some(r=>['males','females','unknown'].some(k=>(Number(r?.[k])||0)>0)))return false;
+    }
 
     state.animals = state.animals.filter(animal => animal.id !== id);
     state.sandboxLooseAnimals = (state.sandboxLooseAnimals || []).filter(animal => animal.id !== id);
@@ -36764,9 +37266,11 @@ function removeSandboxEnclosureById(enclosureId) {
     const enclosure = enclosureByIdFast(id);
     if (!enclosure) return false;
 
-    const animalIds = new Set(
-        state.animals.filter(animal => animal.enclosureId === id).map(animal => animal.id)
-    );
+    const residents=state.animals.filter(animal=>animal.enclosureId===id);
+    // Never remove a whole enclosure with transfer-reserved animals in True Mode.
+    if(state.gameMode==='true'&&residents.some(animal=>trueTransferReservations(animal)
+        .some(r=>['males','females','unknown'].some(k=>(Number(r?.[k])||0)>0))))return false;
+    const animalIds = new Set(residents.map(animal => animal.id));
     state.animals = state.animals.filter(animal => !animalIds.has(animal.id));
     state.sandboxLooseAnimals = (state.sandboxLooseAnimals || []).filter(animal => !animalIds.has(animal.id));
     state.enclosures = state.enclosures.filter(item => item.id !== id);
@@ -37236,7 +37740,7 @@ function zooSetupPrefixGroups(country, location = '') {
     const root = state.zooNamesData?.prefixes?.[country];
     if (!root || typeof root !== 'object') return [];
 
-    const types = new Set(['general','aquarium','tropical','safari','forest','farm','bird','raptor','reptile','alpine']);
+    const types = new Set(['general','aquarium','tropical','safari','forest','farm','bird','raptor','reptile','alpine','butterfly','insectarium']);
     const groups = [];
 
     function visit(node) {
@@ -45163,6 +45667,16 @@ function resolveTrueTransferProposalResponse(payload={}){
         setTrueCalendarSpeed(0);renderTrade();return;
     }
     const evaluation=trueProposalEvaluation(offer,proposal.outgoingOffers||proposal.outgoingOffer);
+    if(!evaluation||!Number.isFinite(Number(evaluation.total))){
+        // Older saves can retain a proposal after its underlying offer has disappeared.
+        // Do not resolve it by rolling against a missing evaluation.
+        proposal.status='declined';
+        proposal.responseDate=normaliseTrueCalendarState().date;
+        if(offer?.marketplaceListingId)setTrueMarketplaceListingStatus(offer.marketplaceListingId,'available');
+        addTrueActivity({type:'information',title:'Transfer proposal unavailable',
+            message:'The original transfer terms are no longer available. This proposal has been closed without moving any animals.'});
+        setTrueCalendarSpeed(0);renderTrade();return;
+    }
     const roll=seededRoll(`proposal-response|${proposal.id}|${proposal.submittedDate}|${(proposal.outgoingOffers?.length?proposal.outgoingOffers.map(animalCardKey).join('+'):(proposal.outgoingOffer?animalCardKey(proposal.outgoingOffer):'no-return'))}`).roll*100;
     const accepted=roll<Math.max(8,Math.min(94,evaluation.total));
     proposal.status=accepted?'accepted':'declined';
@@ -45189,7 +45703,8 @@ function resolveTrueTransferProposalResponse(payload={}){
             }
         }
         const transfer=trueTransferCreateFromAcceptedProposal(proposal);
-        const arrivals=trueTransferCompleteImmediately(transfer);
+        // A transfer may already exist after restoring a save; complete only if valid.
+        const arrivals=transfer?trueTransferCompleteImmediately(transfer):[];
         const firstLeg=transfer?.incomings?.[0]||null;
         const sent=(proposal.outgoingOffers?.length?proposal.outgoingOffers:(proposal.outgoingOffer?[proposal.outgoingOffer]:[]));
         if(partnerRecord){
@@ -45214,7 +45729,9 @@ function resolveTrueTransferProposalResponse(payload={}){
         addTrueActivity({type:'action',title:'Transfer proposal accepted',
             message:transfer?.backstageArrivalBlocked
                 ? `${baseMessage} The transfer is accepted, but backstage space is needed before the animal can be admitted.`
-                : `${baseMessage} The animal has arrived.`,
+                : arrivals?.length
+                    ? `${baseMessage} The animal has arrived.`
+                    : `${baseMessage} The transfer is being processed; no animal has arrived yet.`,
             transferId:transfer?.id??null,transferLegId:firstLeg?.legId||null,animal:arrivals?.[0]||null,glowAnimal:Boolean(arrivals?.[0])});
     }else{
         if(offer.eventOpportunity){

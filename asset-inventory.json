@@ -30870,23 +30870,39 @@
         },
         "butterfly": {
           "category": {
-            "Invertebrates": 5.0
+            "Invertebrates": 1.1,
+            "Perching Birds": 3,
+            "Landbirds": 2.5,
+            "Reptiles": 2.5,
+            "Primates": 2,
+            "Other Mammals": 2,
+            "Freshwater": 2
           },
           "tags": {
-            "tropical": 3.0,
-            "rainforest": 2.2
+            "tropical": 3,
+            "rainforest": 3,
+            "mangrove": 1.5
           },
-          "description": "Butterfly garden: guarantees four distinct level-one butterflies at startup; strongly favours invertebrates and tropical/rainforest animals."
+          "description": "Four distinct Level 1 butterflies at startup; remaining starting species come from other categories with a strong tropical/rainforest bias."
         },
         "insectarium": {
           "category": {
-            "Invertebrates": 5.0
+            "Invertebrates": 5,
+            "Freshwater": 4,
+            "Perching Birds": 4,
+            "Landbirds": 4,
+            "Waterfowl": 3.5,
+            "Birds of Prey": 3,
+            "Other Mammals": 2,
+            "Carnivores": 0.6,
+            "Ungulates": 0.6,
+            "Primates": 0.6
           },
           "tags": {
             "tropical": 1.3,
             "rainforest": 1.2
           },
-          "description": "Invertebrate specialist with a broad insect collection."
+          "description": "Invertebrate-focused zoo, with two or three non-invertebrate starting species prioritising freshwater and birds."
         }
       }
     },

@@ -3390,8 +3390,8 @@ function normaliseZooTypes(value) {
 
 const SPECIALIST_STARTING_CATEGORIES = Object.freeze({
     aquarium: ['Marine Life', 'Freshwater'],
-    butterfly: ['Invertebrates'],
-    insectarium: ['Invertebrates'],
+    butterfly: ['Invertebrates', 'Perching Birds', 'Landbirds', 'Reptiles', 'Primates', 'Other Mammals', 'Freshwater'],
+    insectarium: ['Invertebrates', 'Freshwater', 'Perching Birds', 'Landbirds', 'Waterfowl', 'Birds of Prey', 'Other Mammals'],
     bird: ['Landbirds', 'Perching Birds', 'Waterfowl'],
     raptor: ['Birds of Prey'],
     reptile: ['Reptiles'],
@@ -3437,8 +3437,8 @@ function animalZooTypeWeight(animal, zooTypes, mode = 'generation') {
     let multiplier = settings.baseline;
     for (const type of normaliseZooTypes(zooTypes)) {
         const rules = settings.types?.[type] || (type === 'butterfly'
-            ? {category: {'Invertebrates': 5}, tags: {tropical: 3, rainforest: 2.2}}
-            : type === 'insectarium' ? {category: {'Invertebrates': 5}} : null);
+            ? {category: {'Invertebrates': 1.1, 'Perching Birds': 3, 'Landbirds': 2.5, 'Reptiles': 2.5, 'Primates': 2, 'Other Mammals': 2, 'Freshwater': 2}, tags: {tropical: 3, rainforest: 3}}
+            : type === 'insectarium' ? {category: {'Invertebrates': 5, 'Freshwater': 4, 'Perching Birds': 4, 'Landbirds': 4, 'Waterfowl': 3.5, 'Birds of Prey': 3, 'Other Mammals': 2, 'Carnivores': 0.6, 'Ungulates': 0.6, 'Primates': 0.6}} : null);
         if (!rules || typeof rules !== 'object') continue;
         const categories = rules.category || rules.categories || {};
         const categoryKey = Object.keys(categories).find(key => key.toLowerCase() === String(animal.category).toLowerCase());
@@ -6323,10 +6323,11 @@ const BUTTERFLY_GARDEN_LEVEL_ONE_SPECIES = Object.freeze([
 
 function butterflyGardenStartingCards() {
     const wanted = new Set(BUTTERFLY_GARDEN_LEVEL_ONE_SPECIES.map(name => name.toLowerCase()));
-    return availableStartingCardsAtLevel(1, false).filter(card =>
-        card.category === 'Invertebrates' &&
-        wanted.has(String(card.filename || '').replace(/\.png$/i, '').trim().toLowerCase())
-    );
+    // Read the canonical inventory directly: starting-card availability can be
+    // filtered by a previous zoo's enabled categories.
+    return levelFiles('Invertebrates', 1)
+        .filter(filename => wanted.has(String(filename).replace(/\.png$/i, '').trim().toLowerCase()))
+        .map(filename => ({ category: 'Invertebrates', level: 1, filename }));
 }
 
 function createStartingZoo(options = {}) {
@@ -6453,12 +6454,39 @@ function createStartingZoo(options = {}) {
     const specialistQuota = specialistStartingQuota(startupRules.species);
     const isButterflyGarden = normaliseZooTypes(state.zooType).includes('butterfly');
     const isInsectarium = normaliseZooTypes(state.zooType).includes('insectarium');
+    if (isButterflyGarden || isInsectarium) state.activeCategories.add('Invertebrates');
     const butterflyPool = isButterflyGarden ? shuffle(butterflyGardenStartingCards()) : [];
     const butterflyMinimum = isButterflyGarden ? Math.min(4, startupRules.species) : 0;
     if (isButterflyGarden && butterflyPool.length < butterflyMinimum) {
-        throw new Error(`Butterfly garden requires ${butterflyMinimum} distinct Level 1 butterflies; found ${butterflyPool.length}. Check the Invertebrates inventory and enabled categories.`);
+        throw new Error(`Butterfly garden requires ${butterflyMinimum} distinct Level 1 butterflies; found ${butterflyPool.length}. Check that assets/data/asset-inventory.json contains the five butterfly PNG entries under animals.Invertebrates.1, and that the corresponding animal files exist.`);
     }
     const guaranteedButterflies = butterflyPool.slice(0, butterflyMinimum);
+    // Reserve the non-invertebrate part of specialist starting collections explicitly.
+    // Weighted selection alone is not sufficient because the Invertebrates pool is large.
+    const insectariumOutsideCount = isInsectarium ? Math.min(3, Math.max(0, startupRules.species - 4)) : 0;
+    const butterflyOutsideStart = butterflyMinimum;
+    const nonInvertebrateStartingCard = () => {
+        const candidates = availableStartingCardsAtLevel(1, false)
+            .filter(card => card.category !== 'Invertebrates');
+        if (!candidates.length) return null;
+        const categoryWeights = isInsectarium ? {
+            'Freshwater': 6, 'Perching Birds': 6, 'Landbirds': 6,
+            'Waterfowl': 5, 'Birds of Prey': 4, 'Other Mammals': 3,
+            'Carnivores': 0.5, 'Ungulates': 0.5, 'Primates': 0.5
+        } : {
+            'Perching Birds': 5, 'Landbirds': 4, 'Reptiles': 4,
+            'Primates': 3, 'Other Mammals': 3, 'Freshwater': 3,
+            'Waterfowl': 2, 'Birds of Prey': 2, 'Carnivores': 1, 'Ungulates': 1
+        };
+        // Choose categories before species, so a category with hundreds of
+        // species doesn't drown out another with only a few.
+        const categories = [...new Set(candidates.map(card => card.category))];
+        const category = weightedRandomItem(categories, name => categoryWeights[name] ?? 1);
+        return weightedRandomItem(candidates.filter(card => card.category === category), card => {
+            const tags = animalInventoryTags(card.category, card.level, card.filename);
+            return isButterflyGarden ? (tags.includes('rainforest') ? 5 : tags.includes('tropical') ? 4 : tags.includes('mangrove') ? 2 : 0.4) : 1;
+        });
+    };
     let specialistCount = 0;
 
     let classicExchangeAnchorCards = [];
@@ -6506,7 +6534,8 @@ function createStartingZoo(options = {}) {
                 return truePopulationGroupSizeStatus(pairProbe).valid;
             });
             const specialistDuplicatePool=eligibleDuplicatePool.filter(animal=>
-                !specialistCategories.length||specialistCategories.includes(animal.category)
+                isButterflyGarden ? animal.category !== 'Invertebrates' :
+                (!specialistCategories.length||specialistCategories.includes(animal.category))
             );
             const duplicatePool=specialistDuplicatePool.length?specialistDuplicatePool:eligibleDuplicatePool;
             const source=(duplicatePool.length?duplicatePool:state.animals)[Math.floor(Math.random()*(duplicatePool.length?duplicatePool:state.animals).length)];
@@ -6514,11 +6543,14 @@ function createStartingZoo(options = {}) {
             tutorialDuplicateSourceId=source.id;
         }else if(guaranteedButterflies[i]){
             startingCard = guaranteedButterflies[i];
+        }else if ((isButterflyGarden && i >= butterflyOutsideStart) ||
+                  (isInsectarium && i >= startupRules.species - insectariumOutsideCount)) {
+            startingCard = nonInvertebrateStartingCard();
+            if (!startingCard) startingCard = randomAvailableStartingAnimal(startupRules.levelChances, null, {allowDuplicateSpecies:false});
         }else if(classicExchangeAnchorCards[i]){
             startingCard=classicExchangeAnchorCards[i];
-        }else if ((isButterflyGarden || isInsectarium) &&
-                  availableStartingCardsAtLevel(1, false).some(card => card.category === 'Invertebrates') &&
-                  Math.random() < 0.9) {
+        }else if (isInsectarium &&
+                  availableStartingCardsAtLevel(1, false).some(card => card.category === 'Invertebrates')) {
             const invertebrates = availableStartingCardsAtLevel(1, false)
                 .filter(card => card.category === 'Invertebrates');
             startingCard = weightedRandomItem(invertebrates, candidate => animalZooTypeWeight(candidate, state.zooType, 'generation'));
@@ -18627,13 +18659,40 @@ function ensureTrueZooGroundsVisual(){
         const available=new Set(candidateCells),plots=[];
         const anchors=[...available].filter(k=>touches(k,anchor));
         if(anchors.length<count)return null;
-        anchors.sort((a,b)=>{const[ac,ar]=parseKey(a),[bc,br]=parseKey(b);return Math.atan2(ar,ac)-Math.atan2(br,bc);});
-        for(let i=0;i<count;i++){
-            let seed=anchors[Math.min(anchors.length-1,Math.floor((i+.5)*anchors.length/count))];
-            if(!available.has(seed))seed=anchors.find(k=>available.has(k));
-            if(!seed)return null;
-            plots.push(new Set([seed]));available.delete(seed);
+        // Distribute seeds by frontage, not by angle from the world origin.
+        // The old atan2(row,col) clustered parcels on the same side of the zoo.
+        const anchorPts=[...anchor].map(parseKey);
+        const minC=Math.min(...anchorPts.map(p=>p[0])),maxC=Math.max(...anchorPts.map(p=>p[0]));
+        const minR=Math.min(...anchorPts.map(p=>p[1])),maxR=Math.max(...anchorPts.map(p=>p[1]));
+        const bySide={top:[],right:[],bottom:[],left:[]};
+        for(const key of anchors){
+            const[c,r]=parseKey(key);
+            if(r<minR)bySide.top.push(key);
+            else if(c>maxC)bySide.right.push(key);
+            else if(r>maxR)bySide.bottom.push(key);
+            else if(c<minC)bySide.left.push(key);
+            else { // Irregular boundaries: use the nearest exterior-facing edge.
+                const distances={top:Math.abs(r-minR),right:Math.abs(c-maxC),bottom:Math.abs(r-maxR),left:Math.abs(c-minC)};
+                const side=Object.keys(distances).sort((a,b)=>distances[a]-distances[b])[0];
+                bySide[side].push(key);
+            }
         }
+        for(const side of ['top','right','bottom','left']){
+            bySide[side].sort((a,b)=>{const[ac,ar]=parseKey(a),[bc,br]=parseKey(b);return side==='top'||side==='bottom'?ac-bc:ar-br;});
+        }
+        const sides=['top','right','bottom','left'].filter(side=>bySide[side].length);
+        const seeds=[];
+        // Give every available side one parcel before allocating extras.
+        for(const side of sides){if(seeds.length>=count)break;seeds.push(bySide[side][Math.floor(bySide[side].length/2)]);}
+        const initialSeedCount=seeds.length;
+        for(let i=initialSeedCount;i<count;i++){
+            const side=sides[(i-initialSeedCount)%sides.length];
+            const candidates=bySide[side].filter(key=>!seeds.includes(key));
+            if(!candidates.length)break;
+            seeds.push(candidates[Math.floor(randAt(layerIndex*71+i*19)*candidates.length)]);
+        }
+        if(seeds.length!==count)return null;
+        for(const seed of seeds){plots.push(new Set([seed]));available.delete(seed);}
         const minSize=5,maxSize=12;
         const low=layerIndex===1?5:layerIndex===2?7:8;
         const high=layerIndex===1?8:layerIndex===2?10:12;
@@ -18684,7 +18743,15 @@ function ensureTrueZooGroundsVisual(){
         const starts=[];
         for(let c=minC;c<=maxC-2;c+=3){starts.push([c,minR-2,3,2],[c,maxR+1,3,2]);}
         for(let r=minR;r<=maxR-2;r+=3){starts.push([minC-2,r,2,3],[maxC+1,r,2,3]);}
-        for(const spec of starts){if(plots.length>=count)break;tryFrontierRect(...spec);}
+        // Interleave the four sides rather than filling the first two sides first.
+        const top=starts.filter(spec=>spec[1]===minR-2);
+        const bottom=starts.filter(spec=>spec[1]===maxR+1);
+        const left=starts.filter(spec=>spec[0]===minC-2);
+        const right=starts.filter(spec=>spec[0]===maxC+1);
+        const groups=[top,right,bottom,left];
+        for(let i=0;i<Math.max(...groups.map(g=>g.length))&&plots.length<count;i++){
+            for(const group of groups){if(plots.length>=count)break;if(group[i])tryFrontierRect(...group[i]);}
+        }
         if(!plots.length){
             const available=new Set(frontier),seed=[...outside].find(k=>{
                 const[c,r]=parseKey(k);return c>=0&&r>=0&&touches(k,anchor);
@@ -37784,7 +37851,18 @@ function generateZooSetupIdentity(country, keepCountry = true) {
     };
 }
 
+function explicitSpecialistZooTypeFromName(zooName) {
+    // Recognise distinctive specialist names even when an older cached
+    // zoo-names.json still classifies them under the tropical group.
+    const name = String(zooName || '').trim().toLocaleLowerCase();
+    if (/\b(?:vlindertuin|vlinderpark|vlinderhuis|butterfly garden|butterfly house|butterfly park|jardin des papillons|maison des papillons|schmetterlingshaus|schmetterlingsgarten|mariposario)\b/u.test(name)) return 'butterfly';
+    if (/\b(?:insectarium|insectenhuis|insectenpark|insektenhaus|insektenpark|insect house|insect centre|insect center)\b/u.test(name)) return 'insectarium';
+    return null;
+}
+
 function inferZooTypeFromGeneratedName(country, zooName) {
+    const specialist = explicitSpecialistZooTypeFromName(zooName);
+    if (specialist) return specialist;
     const name = String(zooName || '').trim().toLowerCase();
     if (!name) return 'general';
 
@@ -37797,6 +37875,8 @@ function inferZooTypeFromGeneratedName(country, zooName) {
 }
 
 function inferZooTypeFromAnyGeneratedName(zooName) {
+    const specialist = explicitSpecialistZooTypeFromName(zooName);
+    if (specialist) return specialist;
     const name = String(zooName || '').trim().toLowerCase();
     if (!name) return 'general';
     const matches = zooSetupCountries().flatMap(country => zooSetupPrefixGroups(country))
@@ -47163,7 +47243,9 @@ function readableZooType(type) {
         bird: 'Bird Park',
         raptor: 'Bird of Prey Park',
         reptile: 'Reptile Park',
-        alpine: 'Alpine Zoo'
+        alpine: 'Alpine Zoo',
+        butterfly: 'Butterfly Garden',
+        insectarium: 'Insectarium'
     };
     const key = normaliseZooTypes(type)[0] || 'general';
     return labels[key] || key.replace(/(^|[-_\\s])([a-z])/g, (_, gap, letter) => `${gap}${letter.toUpperCase()}`);

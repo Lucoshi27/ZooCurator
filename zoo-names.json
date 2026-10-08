@@ -16,8 +16,7 @@
       ],
       "tropical": [
         "Tropische Tuinen",
-        "Tropisch Dierenpark",
-        "Vlindertuin"
+        "Tropisch Dierenpark"
       ],
       "safari": [
         "Safaripark",
@@ -44,6 +43,16 @@
       ],
       "raptor": [
         "Roofvogelpark"
+      ],
+      "butterfly": [
+        "Vlindertuin",
+        "Vlinderpark",
+        "Vlinderhuis"
+      ],
+      "insectarium": [
+        "Insectarium",
+        "Insectenhuis",
+        "Insectenpark"
       ]
     },
     "Belgium": {
@@ -65,8 +74,6 @@
           "Aquarium"
         ],
         "tropical": [
-          "Vlinderpark",
-          "Vlindertuin",
           "Tropische Tuinen"
         ],
         "safari": [
@@ -84,6 +91,16 @@
         "reptile": [
           "Reptielenpark",
           "Reptielenhuis"
+        ],
+        "butterfly": [
+          "Vlinderpark",
+          "Vlindertuin",
+          "Vlinderhuis"
+        ],
+        "insectarium": [
+          "Insectarium",
+          "Insectenhuis",
+          "Insectenpark"
         ]
       },
       "Wallonia": {
@@ -118,6 +135,15 @@
         ],
         "reptile": [
           "Reptile Park"
+        ],
+        "butterfly": [
+          "Jardin des Papillons",
+          "Serre aux Papillons",
+          "Maison des Papillons"
+        ],
+        "insectarium": [
+          "Insectarium",
+          "Maison des Insectes"
         ]
       },
       "Brussels-Capital": {
@@ -152,6 +178,16 @@
         ],
         "reptile": [
           "Reptile Park"
+        ],
+        "butterfly": [
+          "Vlindertuin",
+          "Jardin des Papillons",
+          "Vlinderhuis"
+        ],
+        "insectarium": [
+          "Insectarium",
+          "Insectenhuis",
+          "Maison des Insectes"
         ]
       }
     },
@@ -206,6 +242,16 @@
       ],
       "raptor": [
         "Greifvogelpark"
+      ],
+      "butterfly": [
+        "Schmetterlingshaus",
+        "Schmetterlingsgarten",
+        "Schmetterlingspark"
+      ],
+      "insectarium": [
+        "Insektarium",
+        "Insektenhaus",
+        "Insektenpark"
       ]
     },
     "France": {
@@ -257,6 +303,15 @@
         "Zoo Alpin",
         "Alpine Zoo",
         "Alpine Wildlife Park"
+      ],
+      "butterfly": [
+        "Jardin des Papillons",
+        "Serre aux Papillons",
+        "Maison des Papillons"
+      ],
+      "insectarium": [
+        "Insectarium",
+        "Maison des Insectes"
       ]
     },
     "Luxembourg": {
@@ -299,6 +354,15 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Päiperleksgaart",
+        "Schmetterlingshaus",
+        "Jardin des Papillons"
+      ],
+      "insectarium": [
+        "Insektarium",
+        "Insectarium"
       ]
     },
     "United Kingdom": {
@@ -351,6 +415,16 @@
       ],
       "raptor": [
         "Bird of Prey Centre"
+      ],
+      "butterfly": [
+        "Butterfly House",
+        "Butterfly Garden",
+        "Butterfly Farm"
+      ],
+      "insectarium": [
+        "Insectarium",
+        "Insect House",
+        "Insect Centre"
       ]
     },
     "Denmark": {
@@ -390,6 +464,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Sommerfuglehus",
+        "Sommerfuglepark"
+      ],
+      "insectarium": [
+        "Insektarium",
+        "Insekthus"
       ]
     },
     "Austria": {
@@ -433,6 +515,14 @@
         "Alpenzoo",
         "Alpine Zoo",
         "Alpine Wildlife Park"
+      ],
+      "butterfly": [
+        "Schmetterlingshaus",
+        "Schmetterlingsgarten"
+      ],
+      "insectarium": [
+        "Insektarium",
+        "Insektenhaus"
       ]
     },
     "Czechia": {
@@ -472,6 +562,14 @@
       ],
       "alpine": [
         "Mountain Wildlife Park"
+      ],
+      "butterfly": [
+        "Motýlí dům",
+        "Motýlí zahrada"
+      ],
+      "insectarium": [
+        "Insektárium",
+        "Dům hmyzu"
       ]
     },
     "Poland": {
@@ -515,6 +613,14 @@
       ],
       "alpine": [
         "Górski Park Zwierząt"
+      ],
+      "butterfly": [
+        "Motylarnia",
+        "Ogród Motyli"
+      ],
+      "insectarium": [
+        "Insektarium",
+        "Dom Owadów"
       ]
     },
     "Switzerland": {
@@ -550,6 +656,14 @@
         ],
         "alpine": [
           "Alpine Wildlife Park"
+        ],
+        "butterfly": [
+          "Schmetterlingshaus",
+          "Schmetterlingsgarten"
+        ],
+        "insectarium": [
+          "Insektarium",
+          "Insektenhaus"
         ]
       },
       "French-speaking": {
@@ -582,6 +696,14 @@
         ],
         "alpine": [
           "Alpine Wildlife Park"
+        ],
+        "butterfly": [
+          "Jardin des Papillons",
+          "Serre aux Papillons"
+        ],
+        "insectarium": [
+          "Insectarium",
+          "Maison des Insectes"
         ]
       },
       "Italian-speaking": {
@@ -614,6 +736,14 @@
         ],
         "raptor": [
           "Falconeria"
+        ],
+        "butterfly": [
+          "Casa delle Farfalle",
+          "Giardino delle Farfalle"
+        ],
+        "insectarium": [
+          "Insettario",
+          "Casa degli Insetti"
         ]
       }
     },
@@ -658,6 +788,14 @@
       ],
       "alpine": [
         "Mountain Wildlife Park"
+      ],
+      "butterfly": [
+        "Fjärilshus",
+        "Fjärilspark"
+      ],
+      "insectarium": [
+        "Insektarium",
+        "Insektshus"
       ]
     },
     "Norway": {
@@ -700,6 +838,14 @@
       ],
       "alpine": [
         "Mountain Wildlife Park"
+      ],
+      "butterfly": [
+        "Sommerfuglhus",
+        "Sommerfuglpark"
+      ],
+      "insectarium": [
+        "Insektarium",
+        "Insekthus"
       ]
     },
     "Finland": {
@@ -737,6 +883,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Perhostalo",
+        "Perhospuutarha"
+      ],
+      "insectarium": [
+        "Hyönteistalo",
+        "Insektarium"
       ]
     },
     "Ireland": {
@@ -774,6 +928,14 @@
       "raptor": [
         "Bird of Prey Centre",
         "Falconry Centre"
+      ],
+      "butterfly": [
+        "Butterfly House",
+        "Butterfly Garden"
+      ],
+      "insectarium": [
+        "Insectarium",
+        "Insect House"
       ]
     },
     "Italy": {
@@ -828,6 +990,14 @@
       ],
       "raptor": [
         "Falconeria"
+      ],
+      "butterfly": [
+        "Casa delle Farfalle",
+        "Giardino delle Farfalle"
+      ],
+      "insectarium": [
+        "Insettario",
+        "Casa degli Insetti"
       ]
     },
     "Spain": {
@@ -880,6 +1050,14 @@
       ],
       "alpine": [
         "Parque Faunístico de Montaña"
+      ],
+      "butterfly": [
+        "Mariposario",
+        "Jardín de Mariposas"
+      ],
+      "insectarium": [
+        "Insectario",
+        "Casa de los Insectos"
       ]
     },
     "Portugal": {
@@ -923,6 +1101,14 @@
       ],
       "alpine": [
         "Parque de Fauna de Montanha"
+      ],
+      "butterfly": [
+        "Borboletário",
+        "Jardim das Borboletas"
+      ],
+      "insectarium": [
+        "Insetário",
+        "Casa dos Insetos"
       ]
     },
     "Iceland": {
@@ -959,6 +1145,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Fiðrildahús",
+        "Fiðrildagarður"
+      ],
+      "insectarium": [
+        "Skordýrahús",
+        "Skordýrasafn"
       ]
     },
     "Hungary": {
@@ -997,6 +1191,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Lepkeház",
+        "Lepkekert"
+      ],
+      "insectarium": [
+        "Rovarház",
+        "Rovarmúzeum"
       ]
     },
     "Slovakia": {
@@ -1038,6 +1240,14 @@
       ],
       "alpine": [
         "Mountain Wildlife Park"
+      ],
+      "butterfly": [
+        "Motýlí dom",
+        "Motýlia záhrada"
+      ],
+      "insectarium": [
+        "Insektárium",
+        "Dom hmyzu"
       ]
     },
     "Slovenia": {
@@ -1079,6 +1289,14 @@
       "alpine": [
         "Alpine Zoo",
         "Alpine Wildlife Park"
+      ],
+      "butterfly": [
+        "Hiša metuljev",
+        "Vrt metuljev"
+      ],
+      "insectarium": [
+        "Insektarij",
+        "Hiša žuželk"
       ]
     },
     "Croatia": {
@@ -1117,6 +1335,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Kuća leptira",
+        "Vrt leptira"
+      ],
+      "insectarium": [
+        "Insektarij",
+        "Kuća kukaca"
       ]
     },
     "Romania": {
@@ -1158,6 +1384,14 @@
       ],
       "alpine": [
         "Mountain Wildlife Park"
+      ],
+      "butterfly": [
+        "Casa Fluturilor",
+        "Grădina Fluturilor"
+      ],
+      "insectarium": [
+        "Insectariu",
+        "Casa Insectelor"
       ]
     },
     "Bulgaria": {
@@ -1198,6 +1432,14 @@
       ],
       "alpine": [
         "Mountain Wildlife Park"
+      ],
+      "butterfly": [
+        "Къща на пеперудите",
+        "Градина на пеперудите"
+      ],
+      "insectarium": [
+        "Инсектариум",
+        "Къща на насекомите"
       ]
     },
     "Greece": {
@@ -1236,6 +1478,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Σπίτι των Πεταλούδων",
+        "Κήπος Πεταλούδων"
+      ],
+      "insectarium": [
+        "Εντομολογικό Μουσείο",
+        "Σπίτι των Εντόμων"
       ]
     },
     "Estonia": {
@@ -1273,6 +1523,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Liblikamaja",
+        "Liblikaaed"
+      ],
+      "insectarium": [
+        "Putukamaja",
+        "Putukamuuseum"
       ]
     },
     "Latvia": {
@@ -1311,6 +1569,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Tauriņu māja",
+        "Tauriņu dārzs"
+      ],
+      "insectarium": [
+        "Kukaiņu māja",
+        "Insektārijs"
       ]
     },
     "Lithuania": {
@@ -1349,6 +1615,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Drugelių namai",
+        "Drugelių sodas"
+      ],
+      "insectarium": [
+        "Vabzdžių namai",
+        "Insektariumas"
       ]
     },
     "Isle of Man": {
@@ -1383,6 +1657,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Butterfly House",
+        "Butterfly Garden"
+      ],
+      "insectarium": [
+        "Insectarium",
+        "Insect House"
       ]
     },
     "Channel Islands": {
@@ -1417,6 +1699,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Butterfly House",
+        "Butterfly Garden"
+      ],
+      "insectarium": [
+        "Insectarium",
+        "Insect House"
       ]
     },
     "Faroe Islands": {
@@ -1453,6 +1743,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Fiðrildahús",
+        "Butterfly House"
+      ],
+      "insectarium": [
+        "Skordýrahús",
+        "Insectarium"
       ]
     },
     "Malta": {
@@ -1489,6 +1787,14 @@
       ],
       "raptor": [
         "Falconry Centre"
+      ],
+      "butterfly": [
+        "Dar tal-Friefet",
+        "Butterfly House"
+      ],
+      "insectarium": [
+        "Insectarium",
+        "Dar tal-Insetti"
       ]
     },
     "Albania": {
@@ -1527,6 +1833,14 @@
       ],
       "alpine": [
         "Mountain Wildlife Park"
+      ],
+      "butterfly": [
+        "Shtëpia e Fluturave",
+        "Kopshti i Fluturave"
+      ],
+      "insectarium": [
+        "Insektarium",
+        "Shtëpia e Insekteve"
       ]
     },
     "Bosnia and Herzegovina": {
@@ -1565,6 +1879,14 @@
       ],
       "alpine": [
         "Mountain Wildlife Park"
+      ],
+      "butterfly": [
+        "Kuća leptira",
+        "Vrt leptira"
+      ],
+      "insectarium": [
+        "Insektarij",
+        "Kuća insekata"
       ]
     },
     "Serbia": {
@@ -1600,6 +1922,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Кућа лептира",
+        "Врт лептира"
+      ],
+      "insectarium": [
+        "Инсектаријум",
+        "Кућа инсеката"
       ]
     },
     "Montenegro": {
@@ -1638,6 +1968,14 @@
       ],
       "alpine": [
         "Mountain Wildlife Park"
+      ],
+      "butterfly": [
+        "Kuća leptira",
+        "Vrt leptira"
+      ],
+      "insectarium": [
+        "Insektarijum",
+        "Kuća insekata"
       ]
     },
     "North Macedonia": {
@@ -1676,6 +2014,14 @@
       ],
       "alpine": [
         "Mountain Wildlife Park"
+      ],
+      "butterfly": [
+        "Куќа на пеперутки",
+        "Градина на пеперутки"
+      ],
+      "insectarium": [
+        "Инсектариум",
+        "Куќа на инсекти"
       ]
     },
     "Moldova": {
@@ -1711,6 +2057,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Casa Fluturilor",
+        "Grădina Fluturilor"
+      ],
+      "insectarium": [
+        "Insectariu",
+        "Casa Insectelor"
       ]
     },
     "Ukraine": {
@@ -1747,6 +2101,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Будинок метеликів",
+        "Сад метеликів"
+      ],
+      "insectarium": [
+        "Інсектарій",
+        "Будинок комах"
       ]
     },
     "Kosovo": {
@@ -1782,6 +2144,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Shtëpia e Fluturave",
+        "Kopshti i Fluturave"
+      ],
+      "insectarium": [
+        "Insektarium",
+        "Shtëpia e Insekteve"
       ]
     },
     "Cyprus": {
@@ -1818,6 +2188,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Σπίτι των Πεταλούδων",
+        "Butterfly House"
+      ],
+      "insectarium": [
+        "Εντομολογικό Μουσείο",
+        "Insectarium"
       ]
     },
     "Andorra": {
@@ -1856,6 +2234,14 @@
       ],
       "alpine": [
         "Mountain Wildlife Park"
+      ],
+      "butterfly": [
+        "Casa de les Papallones",
+        "Jardí de Papallones"
+      ],
+      "insectarium": [
+        "Insectari",
+        "Casa dels Insectes"
       ]
     },
     "Liechtenstein": {
@@ -1896,6 +2282,14 @@
       "alpine": [
         "Alpine Zoo",
         "Alpine Wildlife Park"
+      ],
+      "butterfly": [
+        "Schmetterlingshaus",
+        "Schmetterlingsgarten"
+      ],
+      "insectarium": [
+        "Insektarium",
+        "Insektenhaus"
       ]
     },
     "Monaco": {
@@ -1931,6 +2325,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Jardin des Papillons",
+        "Serre aux Papillons"
+      ],
+      "insectarium": [
+        "Insectarium",
+        "Maison des Insectes"
       ]
     },
     "San Marino": {
@@ -1966,6 +2368,14 @@
       "reptile": [
         "Reptile Park",
         "Reptile Centre"
+      ],
+      "butterfly": [
+        "Casa delle Farfalle",
+        "Giardino delle Farfalle"
+      ],
+      "insectarium": [
+        "Insettario",
+        "Casa degli Insetti"
       ]
     }
   },
@@ -2190,7 +2600,7 @@
         "Grave",
         "Halsteren",
         "Heeze",
-		"Helvoirt",
+        "Helvoirt",
         "Hilvarenbeek",
         "Hoeven",
         "Kaatsheuvel",
@@ -2217,7 +2627,7 @@
         "Sprang-Capelle",
         "Steenbergen",
         "Terheijden",
-		"Udenhout",
+        "Udenhout",
         "Uden",
         "Valkenswaard",
         "Veghel",
@@ -6130,9 +6540,11 @@
       "farm",
       "bird",
       "reptile",
-      "alpine"
+      "alpine",
+      "butterfly",
+      "insectarium"
     ],
-    "note": "Prefix groups determine zoo type. General is fallback. Group size can be used as natural rarity. Alpine is intentionally sparse outside mountain countries. Tropical remains available regardless of climate because it can represent indoor tropical collections.",
+    "note": "Prefix groups determine zoo type. General is fallback. Group size can be used as natural rarity. Alpine is intentionally sparse outside mountain countries. Tropical remains available regardless of climate because it can represent indoor tropical collections. Butterfly and insectarium are separate specialist zoo types; historical butterfly prefixes are no longer tropical.",
     "customNameFallback": "general"
   }
 }

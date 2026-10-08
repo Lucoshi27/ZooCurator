@@ -47983,7 +47983,7 @@ setTimeout(refreshResponsiveTradeLayout, 0);
 
 function loadNonEssentialGameData() {
     loadTrueEventCatalogue();
-    loadOptionalJsonInBackground('eligible-combinations.json')
+    loadOptionalJsonInBackground(`eligible-combinations.json?v=${encodeURIComponent(ZOO_CURATOR_VERSION)}`)
         .then(data => {
             state.compatibilityData = data || {
                 compatible_pairs: [],

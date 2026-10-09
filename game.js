@@ -2663,8 +2663,14 @@ let areaSignatureTaskCacheScheduled=false;
 let areaSignatureTaskShape='';
 function areaRenderStateSignature(){
     const revision=Number(state.areaPlacementRevision)||0;
+    // Classic enclosure cards can move without changing the placement revision.
+    // Include their geometry in the cache key so detached cards cannot keep a
+    // stale automatically generated Area outline or its eligibility/prestige.
+    const classicGeometry=state.gameMode==='true'?'':(state.enclosures||[])
+        .map(e=>`${e.id}:${Math.round(Number(e.x)||0)},${Math.round(Number(e.y)||0)}`)
+        .join('|');
     const taskShape=`${state.gameMode||''}:${revision}:${state.enclosures?.length||0}:${state.animals?.length||0}:`+
-        `${(state.animals||[]).reduce((n,a)=>n+(a?.enclosureId!=null?1:0),0)}`;
+        `${(state.animals||[]).reduce((n,a)=>n+(a?.enclosureId!=null?1:0),0)}:${classicGeometry}`;
     if(areaSignatureTaskCache!==null&&areaSignatureTaskShape===taskShape)return areaSignatureTaskCache;
     const enclosures=(state.enclosures||[]).map(e=>
         `${e.id}:${Math.round(Number(e.x)||0)},${Math.round(Number(e.y)||0)}:${e.image||e.type||''}`
@@ -15085,10 +15091,17 @@ function generatedGeographicAreaGroups(){
             const hierarchy=geographicIdentityHierarchy(childIdentity);
             const requiredParent=String(hierarchy?.[parentLevel]||'').toLowerCase();
             const allowed=parentCellsByKey.get(requiredParent);
-            if(!requiredParent||!allowed)continue;
-            const owned=(group.qualifyingEnclosures||[]).filter(unit=>
-                allowed.has(geographicLogicalCellKey(unit))
-            );
+            // Madagascar is already a standalone One Earth bioregion (AT6).
+            // Permit its specific Area even when the broader East African coast
+            // subrealm does not form a qualifying four-enclosure parent Area.
+            // All normal eligibility, adjacency, purity and anchor checks remain.
+            const isMadagascarIsland=parentLevel==='subregion' &&
+                childIdentity.level==='bioregion' &&
+                normalizeOneEarthCode(childIdentity.key)==='AT6';
+            if(!requiredParent||(!allowed&&!isMadagascarIsland))continue;
+            const owned=allowed
+                ?(group.qualifyingEnclosures||[]).filter(unit=>allowed.has(geographicLogicalCellKey(unit)))
+                :(group.qualifyingEnclosures||[]);
             if(owned.length<(group._minimum||4))continue;
             for(const component of geographicConnectedComponents(owned)){
                 if(component.length<(group._minimum||4))continue;
@@ -25398,55 +25411,36 @@ function invalidateClassicDropDomCache(){
     classicDropDomCacheSlots=[];classicDropDomCacheEnclosures=[];classicDropDomCacheAnimalCards=[];
 }
 function levelOneDrawDropDestinationAtPoint(clientX, clientY) {
-    const slotElements=classicDropDomElements().slots;
+    // Resolve against the current board DOM: enclosures/slots can be rebuilt during
+    // drag-related rendering, and a stale cached rectangle can reject a real drop.
+    if (!zooBoard) return null;
+    const spec = state.nextDrawSpec;
+    const slots = zooBoard.querySelectorAll('.slot');
+    const valid = (enclosure, slotIndex) =>
+        enclosure && Number.isInteger(slotIndex) &&
+        isDrawSafeDestinationForAnimal(spec, enclosure, slotIndex);
 
-    for (const slot of slotElements) {
+    for (const slot of slots) {
         const rect = slot.getBoundingClientRect();
-        if (
-            clientX < rect.left || clientX > rect.right ||
-            clientY < rect.top || clientY > rect.bottom
-        ) continue;
-
+        if (clientX < rect.left || clientX > rect.right ||
+            clientY < rect.top || clientY > rect.bottom) continue;
         const enclosure = enclosureByIdFast(slot.dataset.enclosureId);
         const slotIndex = Number(slot.dataset.slotIndex);
-        if (!enclosure || animalAtSlot(enclosure.id, slotIndex)) continue;
-        if (enclosure.number === 10 && !state.enclosure10Unlocked && !level4IsInZoo()) continue;
-
-        const group = enclosureGroupForSlot(enclosure, slotIndex);
-        if (!group) return { enclosure, slotIndex };
-
-        const occupants = animalsInEnclosureGroup(enclosure, group);
-
-        if (group.length === 1) return { enclosure, slotIndex };
-
-        if (occupants.length === 0) return { enclosure, slotIndex };
+        if (valid(enclosure, slotIndex)) return { enclosure, slotIndex };
     }
 
-    const enclosureElements=classicDropDomElements().enclosures;
-    for (const element of enclosureElements) {
+    // A user can release over the enclosure background instead of the exact
+    // slot rectangle. Select a genuinely legal slot for the queued animal.
+    for (const element of zooBoard.querySelectorAll('.enclosure')) {
         const rect = element.getBoundingClientRect();
-        if (
-            clientX < rect.left || clientX > rect.right ||
-            clientY < rect.top || clientY > rect.bottom
-        ) continue;
-
+        if (clientX < rect.left || clientX > rect.right ||
+            clientY < rect.top || clientY > rect.bottom) continue;
         const enclosure = enclosureByIdFast(element.dataset.enclosureId);
         if (!enclosure) continue;
-        if (enclosure.number === 10 && !state.enclosure10Unlocked && !level4IsInZoo()) continue;
-
-        for (const group of getGroups(enclosure)) {
-            const occupants = animalsInEnclosureGroup(enclosure, group);
-            if (group.length > 1 && occupants.length > 0) continue;
-
-            const freeSlot = group.find(
-                slotIndex => !animalAtSlot(enclosure.id, slotIndex)
-            );
-            if (freeSlot !== undefined) {
-                return { enclosure, slotIndex: freeSlot };
-            }
+        for (const slotIndex of getAllSlots(enclosure)) {
+            if (valid(enclosure, slotIndex)) return { enclosure, slotIndex };
         }
     }
-
     return null;
 }
 
@@ -37272,14 +37266,6 @@ drawCard?.addEventListener('pointerdown', event => {
     if (event.button !== 0) return;
     if (visitingAnotherZooForActionUI()) { event.preventDefault(); event.stopPropagation(); refreshDrawAvailabilityState(); return; }
 
-    drawCard.classList.add('draw-no-space');
-    drawCard.setAttribute('aria-disabled', 'true');
-    const immediateDrawImage = drawCard.querySelector('img');
-    if (immediateDrawImage) {
-        immediateDrawImage.style.opacity = '0.38';
-        immediateDrawImage.style.filter = 'grayscale(1) brightness(.72) contrast(.82)';
-    }
-
     if (state.drawCommitInProgress || hasPendingPlayerAction()) {
         event.preventDefault();
         event.stopPropagation();
@@ -37894,23 +37880,38 @@ function zooIdentitySpecialistTypes() {
         .filter(type => type !== 'alpine');
 }
 
+function isButterflyIdentityAnimal(animal) {
+    if (animal?.category !== 'Invertebrates') return false;
+    const name = cleanFilename(animal.filename || '').toLowerCase();
+    return /(?:butterfly|morpho|malachite|monarch|postman|longwing|paper kite|glasswing)/.test(name);
+}
+
 function livingCollectionZooTypeShares() {
-    const categoryCounts=new Map();
-    let total=0;
-    for(const animal of state.animals||[]){
-        if(!animal)continue;
+    const categoryCounts = new Map();
+    let total = 0, butterflyCount = 0;
+    for (const animal of state.animals || []) {
+        if (!animal) continue;
         total++;
-        categoryCounts.set(animal.category,(categoryCounts.get(animal.category)||0)+1);
+        categoryCounts.set(animal.category, (categoryCounts.get(animal.category) || 0) + 1);
+        if (isButterflyIdentityAnimal(animal)) butterflyCount++;
     }
     const shares = new Map();
-    if (!total) return { total, shares };
+    if (!total) return { total, shares, butterflyCount };
     for (const type of zooIdentitySpecialistTypes()) {
-        let matching=0;
-        for(const category of SPECIALIST_STARTING_CATEGORIES[type]||[])
-            matching+=categoryCounts.get(category)||0;
-        shares.set(type, matching / total);
+        // Startup weights deliberately include supporting tropical species; they
+        // must not count as evidence of a butterfly or insect specialist zoo.
+        if (type === 'butterfly') {
+            shares.set(type, butterflyCount / total);
+        } else if (type === 'insectarium') {
+            shares.set(type, (categoryCounts.get('Invertebrates') || 0) / total);
+        } else {
+            let matching = 0;
+            for (const category of SPECIALIST_STARTING_CATEGORIES[type] || [])
+                matching += categoryCounts.get(category) || 0;
+            shares.set(type, matching / total);
+        }
     }
-    return { total, shares };
+    return { total, shares, butterflyCount };
 }
 
 function chooseZooPrefixForType(type) {
@@ -37937,26 +37938,34 @@ function applyAutomaticZooTypeName(type) {
 
 function updateZooIdentityFromLivingCollection() {
     if (!state.loaded || state.sandboxMode || state.realZooPlayerRecordName) return false;
-    const { total, shares } = livingCollectionZooTypeShares();
+    const { total, shares, butterflyCount } = livingCollectionZooTypeShares();
     if (total < ZOO_TYPE_RENAME_MIN_ANIMALS) return false;
 
     const current = normaliseZooTypes(state.zooType)[0] || 'general';
-    let leaderType='general',leaderShare=0;
-    for(const [type,share] of shares)
-        if(share>leaderShare||(share===leaderShare&&type.localeCompare(leaderType)<0)){
-            leaderType=type;leaderShare=share;
+    let leaderType = 'general', leaderShare = 0;
+    for (const [type, share] of shares) {
+        if (type === 'butterfly') continue; // Butterfly gardens have a species-based rule.
+        if (share > leaderShare || (share === leaderShare && type.localeCompare(leaderType) < 0)) {
+            leaderType = type; leaderShare = share;
         }
+    }
+    // A butterfly garden needs a substantial butterfly collection, but can
+    // still contain the tropical animals deliberately used in its startup.
+    const butterflyShare = shares.get('butterfly') || 0;
+    const butterflyQualifies = butterflyCount >= 4 && butterflyShare >= 0.25;
+    const butterflyRetains = butterflyCount >= 3 && butterflyShare >= 0.18;
     const currentShare = shares.get(current) || 0;
-
     let nextType = current;
-    if (leaderType !== current && leaderShare >= ZOO_TYPE_ADOPT_THRESHOLD) {
+    if (butterflyQualifies) {
+        nextType = 'butterfly';
+    } else if (current === 'butterfly' && butterflyRetains) {
+        nextType = current;
+    } else if (leaderType !== current && leaderShare >= ZOO_TYPE_ADOPT_THRESHOLD) {
         nextType = leaderType;
-    } else if (current !== 'general' && currentShare < ZOO_TYPE_RELEASE_THRESHOLD) {
+    } else if (current !== 'general' && (current === 'butterfly' || currentShare < ZOO_TYPE_RELEASE_THRESHOLD)) {
         nextType = 'general';
     }
-
     if (nextType === current) return false;
-
     state.manualZooNameOverrideType = null;
     return applyAutomaticZooTypeName(nextType);
 }
@@ -39921,7 +39930,16 @@ function ensureGameOptionsUI() {
         if (event.target === overlay) close();
     });
 
+    // Only one settings transaction may wait for a milestone confirmation.
+    // Without this guard, a second Apply click can open another dialog before
+    // the first click commits the settings, repeatedly asking the same question.
+    let applyingGameOptions = false;
     overlay.querySelector('#applyGameOptions').addEventListener('click', async () => {
+        if (applyingGameOptions) return;
+        applyingGameOptions = true;
+        const applyButton = overlay.querySelector('#applyGameOptions');
+        applyButton.disabled = true;
+        try {
         const selected = [...list.querySelectorAll('input[type="checkbox"]:checked')]
             .map(cb => cb.value);
 
@@ -40032,6 +40050,10 @@ function ensureGameOptionsUI() {
         renderAll();
 
         close();
+        } finally {
+            applyingGameOptions = false;
+            applyButton.disabled = false;
+        }
     });
 }
 
@@ -41363,9 +41385,18 @@ function createRealAutonomousOpponentOffer() {
     const highestPlayerLevel=Math.max(1,...state.playerLevelsSeen);
     let selectedPossible=null;
 
-    const selectedItem=firstPrestigeLocationCandidate(
-        records.map(record=>({record})),
-        item=>{
+    // Early-game AI offers: choose domestic/foreign BEFORE geographic ranking.
+    // A failed preferred pool falls back to the other pool, so trades never softlock.
+    const playerCountry=normaliseGeographyPart(state.zooCountry);
+    const domestic=records.filter(record=>normaliseGeographyPart(record.country)===playerCountry);
+    const foreign=records.filter(record=>normaliseGeographyPart(record.country)!==playerCountry);
+    const accessPrestige=currentZooPrestige();
+    const domesticChance=accessPrestige<150 ? 1.00 :
+        accessPrestige<250 ? 0.90 :
+        Math.max(0.50,0.90-0.40*Math.min(1,(accessPrestige-250)/450));
+    const domesticFirst=seededRoll(`autonomous-domestic-choice|${state.turn}`).roll<domesticChance;
+    const pools=domesticFirst?[domestic,foreign]:[foreign,domestic];
+    const acceptCandidate=item=>{
             const record=item.record;
             const profile=realZooProfile(record,0);
             const incomingPool=realZooTradeAnimals(record,true,playerKeys).filter(incoming=>
@@ -41401,9 +41432,16 @@ function createRealAutonomousOpponentOffer() {
             if(!possible.length)return false;
             selectedPossible={record,possible};
             return true;
-        },
-        `real-autonomous-record-order|${state.turn}`
-    );
+    };
+    let selectedItem=null;
+    for(let poolIndex=0;poolIndex<pools.length&&!selectedItem;poolIndex++){
+        if(!pools[poolIndex].length)continue;
+        selectedItem=firstPrestigeLocationCandidate(
+            pools[poolIndex].map(record=>({record})),
+            acceptCandidate,
+            `real-autonomous-record-order|${state.turn}|pool${poolIndex}`
+        );
+    }
 
     if(!selectedItem||!selectedPossible)return false;
     const {record,possible}=selectedPossible;
@@ -47983,7 +48021,7 @@ setTimeout(refreshResponsiveTradeLayout, 0);
 
 function loadNonEssentialGameData() {
     loadTrueEventCatalogue();
-    loadOptionalJsonInBackground(`eligible-combinations.json?v=${encodeURIComponent(ZOO_CURATOR_VERSION)}`)
+    loadOptionalJsonInBackground('eligible-combinations.json')
         .then(data => {
             state.compatibilityData = data || {
                 compatible_pairs: [],

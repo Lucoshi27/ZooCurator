@@ -9315,14 +9315,13 @@
             "dry-forest",
             "nocturnal"
           ],
-          "wild_regions": [
-            "AT6"
-          ],
+          "wild_regions": [],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group",
             "large_group"
-          ]
+          ],
+          "geography_note": "Endemic to Rodrigues Island (Mauritius), not Madagascar itself; AT6 removed. "
         },
         "Southern Tamandua.png": {
           "scientific_name": "Tamandua tetradactyla",
@@ -14762,14 +14761,13 @@
             "grassland",
             "coastal"
           ],
-          "wild_regions": [
-            "AT6"
-          ],
+          "wild_regions": [],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "breeding_group"
-          ]
+          ],
+          "geography_note": "Native extant wild range is Aldabra Atoll (Seychelles), not Madagascar itself. A modern rewilding population exists on Madagascar, but it is a managed introduction; AT6 removed. "
         },
         "Alligator Snapping Turtle.png": {
           "scientific_name": "Macrochelys temminckii",
@@ -27531,8 +27529,6 @@
             "MEOW-E096",
             "MEOW-E097",
             "MEOW-E098",
-            "MEOW-E099",
-            "MEOW-E100",
             "MEOW-E101",
             "MEOW-E102",
             "MEOW-E103",
@@ -27630,7 +27626,8 @@
           "space_requirement": 2,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Madagascar coastal occurrence is historically plausible but current presence of Pristis zijsron is unconfirmed (2026 review); MEOW-E099/E100 excluded pending verified extant records."
         },
         "Harbour Porpoise.png": {
           "scientific_name": "Phocoena phocoena",

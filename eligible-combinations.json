@@ -33737,6 +33737,4177 @@
           "note": "AZA Ungulate TAGs Mixed-Species Manual, successful ungulate–non-ungulate mixes table; historical or current institutional reports, not necessarily ongoing."
         }
       ]
+    },
+    {
+      "animals": [
+        "Alpine Ibex",
+        "Griffon Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Tierpark Nordhorn",
+          "country": "Germany",
+          "date": "2005-11-13",
+          "source": "https://zoolex.org/gallery/show/778/",
+          "note": "ZooLex documented mixed-species vulture-ibex aviary, with Capra ibex and Gyps fulvus."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Swinhoe's Pheasant",
+        "Scarlet Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Darling Downs Zoo",
+          "country": "Australia",
+          "date": "2022-04-12",
+          "source": "https://www.zoochat.com/community/threads/another-review-of-darling-downs-zoo.483937/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Lady Amherst's Pheasant",
+        "Blue-and-Yellow Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Darling Downs Zoo",
+          "country": "Australia",
+          "date": "2022-04-12",
+          "source": "https://www.zoochat.com/community/threads/another-review-of-darling-downs-zoo.483937/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Golden Pheasant",
+        "Blue-and-Yellow Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Darling Downs Zoo",
+          "country": "Australia",
+          "date": "2018-12-30",
+          "source": "https://www.zoochat.com/community/threads/a-review-of-darling-downs-zoo.471538/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Crested Turaco",
+        "Edwards's Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Jersey Zoo",
+          "country": "Jersey",
+          "date": "2004",
+          "source": "https://turacos.org/redcrestedextra.htm",
+          "note": "Red-crested turacos shared aviary with Edwards pheasant and other species; author reports successful breeding in shared aviaries."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Andean Flamingo",
+        "James's Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Berlin",
+          "country": "Germany",
+          "date": "2013-2014",
+          "source": "https://wildfowl.wwt.org.uk/index.php/wildfowl/article/download/2691/pdf_160",
+          "note": "Research observations describe Andean and James’s flamingos housed in combined covered aviaries."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Sunbittern",
+        "Black-Faced Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaZOO",
+          "country": "Netherlands",
+          "date": "2020-03-10",
+          "source": "https://zoolex.org/gallery/show/1950/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Scarlet Ibis",
+        "Black-Faced Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaZOO",
+          "country": "Netherlands",
+          "date": "2020-03-10",
+          "source": "https://zoolex.org/gallery/show/1950/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Roseate Spoonbill",
+        "Black-Faced Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaZOO",
+          "country": "Netherlands",
+          "date": "2020-03-10",
+          "source": "https://zoolex.org/gallery/show/1950/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abyssinian Ground Hornbill",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Attica Zoological Park",
+          "country": "Greece",
+          "date": "2018",
+          "source": "https://zooinstitutes.com/exhibits/3455.html"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Indian Peafowl",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Blackpool Zoo",
+          "country": "United Kingdom",
+          "date": "2026-05-26",
+          "source": "https://www.zoochat.com/community/threads/which-mixed-species-aviary-is-your-favourite-most-immersive.496943/",
+          "note": "Visitor report of World of Wings walk-through aviary; lower confidence than institutional exhibit documentation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Indian Peafowl",
+        "Fischer's Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Blackpool Zoo",
+          "country": "United Kingdom",
+          "date": "2026-05-26",
+          "source": "https://www.zoochat.com/community/threads/which-mixed-species-aviary-is-your-favourite-most-immersive.496943/",
+          "note": "Visitor report of World of Wings walk-through aviary; lower confidence than institutional exhibit documentation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Scarlet Ibis",
+        "Fischer's Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Blackpool Zoo",
+          "country": "United Kingdom",
+          "date": "2026-05-26",
+          "source": "https://www.zoochat.com/community/threads/which-mixed-species-aviary-is-your-favourite-most-immersive.496943/",
+          "note": "Visitor report of World of Wings walk-through aviary; lower confidence than institutional exhibit documentation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Nicobar Pigeon",
+        "Sunbittern"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Karlsruhe",
+          "country": "Germany",
+          "date": "2020-01-10",
+          "source": "https://zoolex.org/gallery/show/1829/",
+          "note": "Exotic House free-flight hall; note some species in source are housed in separate aviaries."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Nicobar Pigeon",
+        "Crested Partridge"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Karlsruhe",
+          "country": "Germany",
+          "date": "2020-01-10",
+          "source": "https://zoolex.org/gallery/show/1829/",
+          "note": "Exotic House free-flight hall; note some species in source are housed in separate aviaries."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Sunbittern",
+        "Crested Partridge"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Karlsruhe",
+          "country": "Germany",
+          "date": "2020-01-10",
+          "source": "https://zoolex.org/gallery/show/1829/",
+          "note": "Exotic House free-flight hall; note some species in source are housed in separate aviaries."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Southern Three-Banded Armadillo",
+        "Nicobar Pigeon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Karlsruhe",
+          "country": "Germany",
+          "date": "2020-01-10",
+          "source": "https://zoolex.org/gallery/show/1829/",
+          "note": "Species listed in the Exotic House free-flight hall. Shared hall is documented, but this does not prove close-contact cohabitation at every moment; management supervision required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Southern Three-Banded Armadillo",
+        "Sunbittern"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Karlsruhe",
+          "country": "Germany",
+          "date": "2020-01-10",
+          "source": "https://zoolex.org/gallery/show/1829/",
+          "note": "Species listed in the Exotic House free-flight hall. Shared hall is documented, but this does not prove close-contact cohabitation at every moment; management supervision required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Southern Three-Banded Armadillo",
+        "Crested Partridge"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Karlsruhe",
+          "country": "Germany",
+          "date": "2020-01-10",
+          "source": "https://zoolex.org/gallery/show/1829/",
+          "note": "Species listed in the Exotic House free-flight hall. Shared hall is documented, but this does not prove close-contact cohabitation at every moment; management supervision required."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Galah",
+        "Long-Billed Corella"
+      ],
+      "evidence": [
+        {
+          "zoo": "Healesville Sanctuary",
+          "country": "Australia",
+          "date": "2007-03-11",
+          "source": "https://zoolex.org/gallery/show/529/",
+          "note": "Both species listed in the same free-roaming Wetlands Aviary; ZooLex reports all birds roam freely within the aviary. Historical documented combination, not proof of present-day holdings."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Nyala"
+      ],
+      "evidence": [
+        {
+          "zoo": "Faruk Yalçın Zoo",
+          "country": "Turkey",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4677.html"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Plains Zebra"
+      ],
+      "evidence": [
+        {
+          "zoo": "Faruk Yalçın Zoo",
+          "country": "Turkey",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4677.html"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Rothschild's Giraffe"
+      ],
+      "evidence": [
+        {
+          "zoo": "Faruk Yalçın Zoo",
+          "country": "Turkey",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4677.html"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Common Ostrich"
+      ],
+      "evidence": [
+        {
+          "zoo": "Faruk Yalçın Zoo",
+          "country": "Turkey",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4677.html"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "African Elephant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Borås Djurpark",
+          "country": "Sweden",
+          "date": "undated",
+          "source": "https://app.zooinstitutes.com/exhibits/5010.html"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Cape Buffalo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Borås Djurpark",
+          "country": "Sweden",
+          "date": "undated",
+          "source": "https://app.zooinstitutes.com/exhibits/5010.html"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Blesbok"
+      ],
+      "evidence": [
+        {
+          "zoo": "Borås Djurpark",
+          "country": "Sweden",
+          "date": "undated",
+          "source": "https://app.zooinstitutes.com/exhibits/5010.html"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Common Eland"
+      ],
+      "evidence": [
+        {
+          "zoo": "Borås Djurpark",
+          "country": "Sweden",
+          "date": "undated",
+          "source": "https://app.zooinstitutes.com/exhibits/5010.html"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Nile Lechwe"
+      ],
+      "evidence": [
+        {
+          "zoo": "Leipzig Zoo",
+          "country": "Germany",
+          "date": "2018",
+          "source": "https://zooinstitutes.com/exhibits/3131.html"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Scimitar Oryx"
+      ],
+      "evidence": [
+        {
+          "zoo": "Leipzig Zoo",
+          "country": "Germany",
+          "date": "2018",
+          "source": "https://zooinstitutes.com/exhibits/3131.html"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Grévy's Zebra"
+      ],
+      "evidence": [
+        {
+          "zoo": "Leipzig Zoo",
+          "country": "Germany",
+          "date": "2018",
+          "source": "https://zooinstitutes.com/exhibits/3131.html"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Common Warthog"
+      ],
+      "evidence": [
+        {
+          "zoo": "Caldwell Zoo",
+          "country": "United States",
+          "date": "undated",
+          "source": "https://zoorope.hu/en-mixed-exhibit-suidae/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Greater Kudu"
+      ],
+      "evidence": [
+        {
+          "zoo": "Caldwell Zoo",
+          "country": "United States",
+          "date": "undated",
+          "source": "https://zoorope.hu/en-mixed-exhibit-suidae/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Impala"
+      ],
+      "evidence": [
+        {
+          "zoo": "Caldwell Zoo",
+          "country": "United States",
+          "date": "undated",
+          "source": "https://zoorope.hu/en-mixed-exhibit-suidae/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Blue Wildebeest"
+      ],
+      "evidence": [
+        {
+          "zoo": "Caldwell Zoo",
+          "country": "United States",
+          "date": "undated",
+          "source": "https://zoorope.hu/en-mixed-exhibit-suidae/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Caldwell Zoo",
+          "country": "United States",
+          "date": "undated",
+          "source": "https://zoorope.hu/en-mixed-exhibit-suidae/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Caldwell Zoo",
+          "country": "United States",
+          "date": "undated",
+          "source": "https://zoorope.hu/en-mixed-exhibit-suidae/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Pygmy Hippopotamus"
+      ],
+      "evidence": [
+        {
+          "zoo": "Szeged Zoo",
+          "country": "Hungary",
+          "date": "undated",
+          "source": "https://zoorope.hu/en-mixed-exhibit-hippopotamidae/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Red River Hog"
+      ],
+      "evidence": [
+        {
+          "zoo": "Szeged Zoo",
+          "country": "Hungary",
+          "date": "undated",
+          "source": "https://zoorope.hu/en-mixed-exhibit-hippopotamidae/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Addax"
+      ],
+      "evidence": [
+        {
+          "zoo": "Szeged Zoo",
+          "country": "Hungary",
+          "date": "undated",
+          "source": "https://zoorope.hu/en-mixed-exhibit-hippopotamidae/"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Common Waterbuck"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Berlin",
+          "country": "Germany",
+          "date": "2026-04",
+          "source": "https://www.zoochat.com/community/threads/mixed-exhibits-with-ostriches.496017/page-2"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Springbok"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Berlin",
+          "country": "Germany",
+          "date": "2026-04",
+          "source": "https://www.zoochat.com/community/threads/mixed-exhibits-with-ostriches.496017/page-2"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Temminck's Tragopan",
+        "White-Handed Gibbon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Pueblo Zoo",
+          "country": "United States",
+          "date": "2014-08-13",
+          "source": "https://www.zoochat.com/community/media/white-handed-gibbon-reeves-muntjac-temmincks-tragopan-exhibit.270493/",
+          "note": "Visitor photographed the shared exhibit and explicitly confirmed all three species together; historical cohabitation, not a husbandry safety guarantee."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Temminck's Tragopan",
+        "Reeve's Muntjac"
+      ],
+      "evidence": [
+        {
+          "zoo": "Pueblo Zoo",
+          "country": "United States",
+          "date": "2014-08-13",
+          "source": "https://www.zoochat.com/community/media/white-handed-gibbon-reeves-muntjac-temmincks-tragopan-exhibit.270493/",
+          "note": "Visitor photographed the shared exhibit and explicitly confirmed all three species together; historical cohabitation, not a husbandry safety guarantee."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Golden Pheasant",
+        "Abdim's Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4552.html",
+          "note": "Listed together in 2022 mixed walk-through aviary; compatibility requires space and monitoring, especially during breeding."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Golden Pheasant",
+        "Demoiselle Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4552.html",
+          "note": "Listed together in 2022 mixed walk-through aviary; compatibility requires space and monitoring, especially during breeding."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Golden Pheasant",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4552.html",
+          "note": "Listed together in 2022 mixed walk-through aviary; compatibility requires space and monitoring, especially during breeding."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Lady Amherst's Pheasant",
+        "Abdim's Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4552.html",
+          "note": "Listed together in 2022 mixed walk-through aviary; compatibility requires space and monitoring, especially during breeding."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Lady Amherst's Pheasant",
+        "Demoiselle Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4552.html",
+          "note": "Listed together in 2022 mixed walk-through aviary; compatibility requires space and monitoring, especially during breeding."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Lady Amherst's Pheasant",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4552.html",
+          "note": "Listed together in 2022 mixed walk-through aviary; compatibility requires space and monitoring, especially during breeding."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Silver Pheasant",
+        "Abdim's Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4552.html",
+          "note": "Listed together in 2022 mixed walk-through aviary; compatibility requires space and monitoring, especially during breeding."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Silver Pheasant",
+        "Demoiselle Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4552.html",
+          "note": "Listed together in 2022 mixed walk-through aviary; compatibility requires space and monitoring, especially during breeding."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Silver Pheasant",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4552.html",
+          "note": "Listed together in 2022 mixed walk-through aviary; compatibility requires space and monitoring, especially during breeding."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abdim's Stork",
+        "Demoiselle Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Badoca Safari Park",
+          "country": "Portugal",
+          "date": "2022",
+          "source": "https://zooinstitutes.com/exhibits/4552.html",
+          "note": "Both listed in same mixed walk-through aviary."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Reeves's Pheasant",
+        "Galah"
+      ],
+      "evidence": [
+        {
+          "zoo": "Staglands Wildlife Reserve",
+          "country": "New Zealand",
+          "date": "2023-02-28",
+          "source": "https://www.zoochat.com/community/threads/staglands-zoo-visits-and-news.393772/",
+          "note": "Firsthand visitor report identifies both species in the Pond Aviary, with all five signed taxa observed together; historical mixed housing, not long-term welfare validation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Edwards's Pheasant",
+        "Straw-Necked Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Kansas City Zoo & Aquarium",
+          "country": "United States",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5344.html",
+          "note": "Both species listed in the same walk-through Mixed Australian aviary; shared exhibit does not guarantee individual-level or breeding-season compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Edwards's Pheasant",
+        "Tawny Frogmouth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Kansas City Zoo & Aquarium",
+          "country": "United States",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5344.html",
+          "note": "Both species listed in the same walk-through Mixed Australian aviary; shared exhibit does not guarantee individual-level or breeding-season compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Straw-Necked Ibis",
+        "Tawny Frogmouth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Kansas City Zoo & Aquarium",
+          "country": "United States",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5344.html",
+          "note": "Both species listed in the same walk-through Mixed Australian aviary; shared exhibit does not guarantee individual-level or breeding-season compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Edwards's Pheasant",
+        "Nicobar Pigeon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Paradise Park",
+          "country": "United Kingdom",
+          "date": "undated",
+          "source": "https://feathersynergy.com/info/paradise-park-and-junglebarn/",
+          "note": "Documented in named mixed aviary; historical/undated exhibit listing, not guarantee of breeding-season compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Nicobar Pigeon",
+        "Red-Crested Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Paradise Park",
+          "country": "United Kingdom",
+          "date": "undated",
+          "source": "https://feathersynergy.com/info/paradise-park-and-junglebarn/",
+          "note": "Documented in named mixed aviary; historical/undated exhibit listing, not guarantee of breeding-season compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Nicobar Pigeon",
+        "Green Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Taipei Zoo",
+          "country": "Taiwan",
+          "date": "2025-05",
+          "source": "https://www.zoochat.com/community/threads/taipei-zoo-species-list-and-walk-through-may-2025.494165/",
+          "note": "Documented in named mixed aviary; historical/undated exhibit listing, not guarantee of breeding-season compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Nicobar Pigeon",
+        "Violet Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Tracy Aviary",
+          "country": "United States",
+          "date": "undated",
+          "source": "https://tracyaviary.org/liberty-park/exhibits/treasures-of-the-rainforest/",
+          "note": "Documented in named mixed aviary; historical/undated exhibit listing, not guarantee of breeding-season compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glossy Ibis",
+        "African Grey Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Attica Zoological Park",
+          "country": "Greece",
+          "date": "2019-04-02",
+          "source": "https://aviarydatabase.com/2019/04/02/attika-zoological-park-africa-america-asia/",
+          "note": "Listed together in the Africa aviary; historical shared housing, not a guarantee of breeding-season compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Crested Turaco",
+        "African Grey Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Attica Zoological Park",
+          "country": "Greece",
+          "date": "2019-04-02",
+          "source": "https://aviarydatabase.com/2019/04/02/attika-zoological-park-africa-america-asia/",
+          "note": "Listed together in the Africa aviary; historical shared housing, not a guarantee of breeding-season compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abdim's Stork",
+        "Saddle-Billed Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08-02",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Listed together in African aviary, Uhu-burg; visitor-compiled enclosure inventory, not proof of long-term safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Saddle-Billed Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08-02",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Listed together in African aviary, Uhu-burg; visitor-compiled enclosure inventory, not proof of long-term safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Saddle-Billed Stork",
+        "African Openbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08-02",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Listed together in African aviary, Uhu-burg; visitor-compiled enclosure inventory, not proof of long-term safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Saddle-Billed Stork",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08-02",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Listed together in African aviary, Uhu-burg; visitor-compiled enclosure inventory, not proof of long-term safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Saddle-Billed Stork",
+        "Hadada Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08-02",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Listed together in African aviary, Uhu-burg; visitor-compiled enclosure inventory, not proof of long-term safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Oriental Stork",
+        "Eurasian Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08-02",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Listed together in Crane meadows, Aviary 1; visitor-compiled enclosure inventory, not proof of long-term safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Oriental Stork",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08-02",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Listed together in Crane meadows, Aviary 1; visitor-compiled enclosure inventory, not proof of long-term safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Eurasian Spoonbill",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08-02",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Listed together in Crane meadows, Aviary 1; visitor-compiled enclosure inventory, not proof of long-term safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Chilean Flamingo",
+        "Lesser Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08-02",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Listed together in Flamingo Yard 3; visitor-compiled enclosure inventory, not proof of long-term safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Ostrich",
+        "Abyssinian Ground Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08-02",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Listed together in African steppe, Yard 1; visitor-compiled enclosure inventory, not proof of long-term safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abyssinian Ground Hornbill",
+        "Marabou Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08-02",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Listed together in African steppe, Yard 1; visitor-compiled enclosure inventory, not proof of long-term safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Straw-Necked Ibis",
+        "African Openbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-08-02",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Listed together in Australasian aviary, Uhu-burg; visitor-compiled enclosure inventory, not proof of long-term safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abdim's Stork",
+        "Madagascar Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-07/08",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Both species reported in African aviary (Uhu-Burg, Aviary 9) in the July/August 2026 enclosure inventory. Shared exhibit only; not proof of long-term safety or unrestricted contact."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Madagascar Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-07/08",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Both species reported in African aviary (Uhu-Burg, Aviary 9) in the July/August 2026 enclosure inventory. Shared exhibit only; not proof of long-term safety or unrestricted contact."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Saddle-Billed Stork",
+        "Madagascar Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-07/08",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Both species reported in African aviary (Uhu-Burg, Aviary 9) in the July/August 2026 enclosure inventory. Shared exhibit only; not proof of long-term safety or unrestricted contact."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Openbill",
+        "Madagascar Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-07/08",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Both species reported in African aviary (Uhu-Burg, Aviary 9) in the July/August 2026 enclosure inventory. Shared exhibit only; not proof of long-term safety or unrestricted contact."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hamerkop",
+        "Madagascar Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-07/08",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Both species reported in African aviary (Uhu-Burg, Aviary 9) in the July/August 2026 enclosure inventory. Shared exhibit only; not proof of long-term safety or unrestricted contact."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Madagascar Sacred Ibis",
+        "Hadada Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-07/08",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Both species reported in African aviary (Uhu-Burg, Aviary 9) in the July/August 2026 enclosure inventory. Shared exhibit only; not proof of long-term safety or unrestricted contact."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Asian Woolly-Necked Stork",
+        "Australian Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-07/08",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Both species reported in Australasian aviary (Uhu-Burg, Aviary 10) in the July/August 2026 enclosure inventory. Shared exhibit only; not proof of long-term safety or unrestricted contact."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Asian Woolly-Necked Stork",
+        "Straw-Necked Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-07/08",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Both species reported in Australasian aviary (Uhu-Burg, Aviary 10) in the July/August 2026 enclosure inventory. Shared exhibit only; not proof of long-term safety or unrestricted contact."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Asian Woolly-Necked Stork",
+        "African Openbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-07/08",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Both species reported in Australasian aviary (Uhu-Burg, Aviary 10) in the July/August 2026 enclosure inventory. Shared exhibit only; not proof of long-term safety or unrestricted contact."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Australian Ibis",
+        "African Openbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2026-07/08",
+          "source": "https://www.danielswildlife.net/wvp-walsrode-resources/species-list-2026",
+          "note": "Both species reported in Australasian aviary (Uhu-Burg, Aviary 10) in the July/August 2026 enclosure inventory. Shared exhibit only; not proof of long-term safety or unrestricted contact."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Von Der Decken's Hornbill",
+        "Marabou Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Edinburgh Zoo",
+          "country": "United Kingdom",
+          "date": "2008",
+          "source": "https://www.zoochat.com/community/threads/hornbills-in-mixed-aviaries.13197/",
+          "note": "Historical report of shared mixed aviary; secondary visitor account, not verified husbandry outcome"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hamerkop",
+        "Kirk's Dik-Dik"
+      ],
+      "evidence": [
+        {
+          "zoo": "Edinburgh Zoo",
+          "country": "United Kingdom",
+          "date": "2008",
+          "source": "https://www.zoochat.com/community/threads/hornbills-in-mixed-aviaries.13197/",
+          "note": "Historical report of mixed aviary; secondary visitor account, not verified husbandry outcome"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Marabou Stork",
+        "Kirk's Dik-Dik"
+      ],
+      "evidence": [
+        {
+          "zoo": "Edinburgh Zoo",
+          "country": "United Kingdom",
+          "date": "2008",
+          "source": "https://www.zoochat.com/community/threads/hornbills-in-mixed-aviaries.13197/",
+          "note": "Historical report of mixed aviary; secondary visitor account, not verified husbandry outcome"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Trumpeter Hornbill",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "CERZA",
+          "country": "France",
+          "date": "2008",
+          "source": "https://www.zoochat.com/community/threads/hornbills-in-mixed-aviaries.13197/",
+          "note": "Visitor report of a mixed bird enclosure; secondary visitor account, not verified husbandry outcome"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Trumpeter Hornbill",
+        "Himalayan Monal"
+      ],
+      "evidence": [
+        {
+          "zoo": "CERZA",
+          "country": "France",
+          "date": "2008",
+          "source": "https://www.zoochat.com/community/threads/hornbills-in-mixed-aviaries.13197/",
+          "note": "Visitor report of a mixed bird enclosure; monitor breeding-season aggression; secondary visitor account, not verified husbandry outcome"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Von Der Decken's Hornbill",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "CERZA",
+          "country": "France",
+          "date": "2008",
+          "source": "https://www.zoochat.com/community/threads/hornbills-in-mixed-aviaries.13197/",
+          "note": "Visitor report of a mixed bird enclosure; secondary visitor account, not verified husbandry outcome"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Von Der Decken's Hornbill",
+        "Himalayan Monal"
+      ],
+      "evidence": [
+        {
+          "zoo": "CERZA",
+          "country": "France",
+          "date": "2008",
+          "source": "https://www.zoochat.com/community/threads/hornbills-in-mixed-aviaries.13197/",
+          "note": "Visitor report of a mixed bird enclosure; monitor breeding-season aggression; secondary visitor account, not verified husbandry outcome"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Sacred Ibis",
+        "Himalayan Monal"
+      ],
+      "evidence": [
+        {
+          "zoo": "CERZA",
+          "country": "France",
+          "date": "2008",
+          "source": "https://www.zoochat.com/community/threads/hornbills-in-mixed-aviaries.13197/",
+          "note": "Visitor report of a mixed bird enclosure; secondary visitor account, not verified husbandry outcome"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Spoonbill",
+        "Himalayan Monal"
+      ],
+      "evidence": [
+        {
+          "zoo": "CERZA",
+          "country": "France",
+          "date": "2008",
+          "source": "https://www.zoochat.com/community/threads/hornbills-in-mixed-aviaries.13197/",
+          "note": "Visitor report of a mixed bird enclosure; secondary visitor account, not verified husbandry outcome"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Billed Hornbill",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Lotherton Hall Bird Garden",
+          "country": "United Kingdom",
+          "date": "2008",
+          "source": "https://www.zoochat.com/community/threads/hornbills-in-mixed-aviaries.13197/",
+          "note": "Visitor report of mixed aviary; secondary visitor account, not verified husbandry outcome"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Billed Hornbill",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Lotherton Hall Bird Garden",
+          "country": "United Kingdom",
+          "date": "2008",
+          "source": "https://www.zoochat.com/community/threads/hornbills-in-mixed-aviaries.13197/",
+          "note": "Visitor report of mixed aviary; secondary visitor account, not verified husbandry outcome"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Writhed Hornbill",
+        "Edwards's Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Jersey Zoo",
+          "country": "Jersey",
+          "date": "2008",
+          "source": "https://www.zoochat.com/community/threads/hornbills-in-mixed-aviaries.13197/",
+          "note": "Historical report of mixed aviary; hornbill predation risk; secondary visitor account, not verified husbandry outcome"
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Griffon Vulture",
+        "Dalmatian Pelican"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Griffon Vulture",
+        "Yellow-Billed Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Griffon Vulture",
+        "Marabou Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Griffon Vulture",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Griffon Vulture",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Dalmatian Pelican",
+        "Yellow-Billed Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Dalmatian Pelican",
+        "Marabou Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Dalmatian Pelican",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Dalmatian Pelican",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Marabou Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "DierenPark Amersfoort",
+          "country": "Netherlands",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Egyptian Vulture",
+        "Black Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Egyptian Vulture",
+        "Marabou Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Egyptian Vulture",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Egyptian Vulture",
+        "Abyssinian Ground Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "Black Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "Abyssinian Ground Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black Crowned Crane",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black Crowned Crane",
+        "Abyssinian Ground Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Sacred Ibis",
+        "Abyssinian Ground Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abdim's Stork",
+        "Eurasian Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Berlin Zoo",
+          "country": "Germany",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hamerkop",
+        "Eurasian Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Berlin Zoo",
+          "country": "Germany",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Eurasian Spoonbill",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Berlin Zoo",
+          "country": "Germany",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "White Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Hamerton Zoo Park",
+          "country": "United Kingdom",
+          "date": "2024-07-19",
+          "source": "https://www.zoochat.com/community/threads/storks-in-mixed-exhibits.491368/",
+          "note": "ZooChat eyewitness report identifying a shared aviary/enclosure; secondary evidence, not a welfare or breeding-safety endorsement."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abdim's Stork",
+        "Black-Casqued Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Black-Casqued Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Violet Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Von Der Decken's Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Cape Buffalo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Casqued Hornbill",
+        "Rüppell's Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Casqued Hornbill",
+        "Hooded Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Casqued Hornbill",
+        "Hadada Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Casqued Hornbill",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Casqued Hornbill",
+        "Southern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Casqued Hornbill",
+        "Violet Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Casqued Hornbill",
+        "Von Der Decken's Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Casqued Hornbill",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Casqued Hornbill",
+        "African Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black-Casqued Hornbill",
+        "Cape Buffalo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Southern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "Southern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Southern Bald Ibis",
+        "Violet Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Southern Bald Ibis",
+        "Von Der Decken's Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Southern Bald Ibis",
+        "Cape Buffalo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Violet Turaco",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen — Savanna/Buffalo Aviary",
+          "country": "Belgium",
+          "date": "2023-07-22",
+          "source": "https://www.zoochat.com/community/media/savanna-aviary-with-cape-buffaloes-and-african-birds-a2023-07-22.778553/",
+          "note": "Enclosure-specific species inventory associated with 22 July 2023 photograph, published 14 January 2025. Reported shared housing only; breeding-season safety and access to separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Palm-Nut Vulture",
+        "Southern Ground Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode — Uhu-burg aviary 1",
+          "country": "Germany",
+          "date": "2025-10",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-october-2025.495527/",
+          "note": "October 2025 visitor inventory explicitly lists both species in the same named aviary/yard. Shared housing reported; no independent confirmation of year-round safety or breeding compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Southern Ground Hornbill",
+        "Hooded Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode — Uhu-burg aviary 1",
+          "country": "Germany",
+          "date": "2025-10",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-october-2025.495527/",
+          "note": "October 2025 visitor inventory explicitly lists both species in the same named aviary/yard. Shared housing reported; no independent confirmation of year-round safety or breeding compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Griffon Vulture",
+        "Steppe Eagle"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode — Uhu-burg aviary 2",
+          "country": "Germany",
+          "date": "2025-10",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-october-2025.495527/",
+          "note": "October 2025 visitor inventory explicitly lists both species in the same named aviary/yard. Shared housing reported; no independent confirmation of year-round safety or breeding compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Laughing Kookaburra",
+        "Tawny Frogmouth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode — Kiwihaus aviary 3",
+          "country": "Germany",
+          "date": "2025-10",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-october-2025.495527/",
+          "note": "October 2025 visitor inventory explicitly lists both species in the same named aviary/yard. Shared housing reported; no independent confirmation of year-round safety or breeding compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Northern Bald Ibis",
+        "Lesser Kestrel"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode — First aviary 2",
+          "country": "Germany",
+          "date": "2025-10",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-october-2025.495527/",
+          "note": "October 2025 visitor inventory explicitly lists both species in the same named aviary/yard. Shared housing reported; no independent confirmation of year-round safety or breeding compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Dalmatian Pelican",
+        "Great White Pelican"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode — Pelican pond 1",
+          "country": "Germany",
+          "date": "2025-10",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-october-2025.495527/",
+          "note": "October 2025 visitor inventory explicitly lists both species in the same named aviary/yard. Shared housing reported; no independent confirmation of year-round safety or breeding compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "American White Ibis",
+        "Black-Faced Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode — Wellenanlage",
+          "country": "Germany",
+          "date": "2025-10",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-october-2025.495527/",
+          "note": "October 2025 visitor inventory explicitly lists both species in the same named aviary/yard. Shared housing reported; no independent confirmation of year-round safety or breeding compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Andean Condor",
+        "Red-Tailed Hawk"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode — Birds of prey aviary 3",
+          "country": "Germany",
+          "date": "2025-10",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-october-2025.495527/",
+          "note": "October 2025 visitor inventory explicitly lists both species in the same named aviary/yard. Shared housing reported; no independent confirmation of year-round safety or breeding compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Oriental Stork",
+        "Common Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode — Crane meadows aviary 1",
+          "country": "Germany",
+          "date": "2025-10",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-october-2025.495527/",
+          "note": "October 2025 visitor inventory explicitly lists both species in the same named aviary/yard. Shared housing reported; no independent confirmation of year-round safety or breeding compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Eurasian Spoonbill",
+        "Common Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode — Crane meadows aviary 1",
+          "country": "Germany",
+          "date": "2025-10",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-october-2025.495527/",
+          "note": "October 2025 visitor inventory explicitly lists both species in the same named aviary/yard. Shared housing reported; no independent confirmation of year-round safety or breeding compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glossy Ibis",
+        "Common Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode — Crane meadows aviary 1",
+          "country": "Germany",
+          "date": "2025-10",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-october-2025.495527/",
+          "note": "October 2025 visitor inventory explicitly lists both species in the same named aviary/yard. Shared housing reported; no independent confirmation of year-round safety or breeding compatibility."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abdim's Stork",
+        "Lesser Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Demoiselle Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Lesser Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Spoonbill",
+        "Demoiselle Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Spoonbill",
+        "Lesser Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glossy Ibis",
+        "Southern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glossy Ibis",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glossy Ibis",
+        "Demoiselle Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glossy Ibis",
+        "Lesser Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hadada Ibis",
+        "Lesser Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Southern Bald Ibis",
+        "Demoiselle Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Southern Bald Ibis",
+        "Lesser Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hamerkop",
+        "Lesser Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Grey Crowned Crane",
+        "Lesser Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Demoiselle Crane",
+        "Lesser Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abdim's Stork",
+        "African Grey Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abdim's Stork",
+        "African Pied Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abdim's Stork",
+        "Red-Billed Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "African Grey Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "African Pied Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Spoonbill",
+        "African Grey Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Spoonbill",
+        "African Pied Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glossy Ibis",
+        "African Pied Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glossy Ibis",
+        "Red-Billed Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Southern Bald Ibis",
+        "African Grey Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "ZooInstitutes 2024 mixed walk-through aviary species inventory lists both taxa in the same exhibit. Shared exhibit reported; separate subareas and breeding-season safety not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Great Blue Turaco",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Great Blue Turaco",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Great Blue Turaco",
+        "Southern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Great Blue Turaco",
+        "African Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Great Blue Turaco",
+        "Yellow-Billed Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Great Blue Turaco",
+        "Abdim's Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Great Blue Turaco",
+        "Lesser Flamingo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Grey Hornbill",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Pied Hornbill",
+        "Grey Crowned Crane"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Pied Hornbill",
+        "Southern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Demoiselle Crane",
+        "Red-Billed Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Southern Bald Ibis",
+        "Red-Billed Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow-Billed Stork",
+        "Red-Billed Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sharjah Safari — African Aviary",
+          "country": "United Arab Emirates",
+          "date": "2024",
+          "source": "https://zooinstitutes.com/exhibits/5787.html",
+          "note": "Both taxa listed in the same 2024 mixed walk-through aviary. This establishes exhibit-level co-presence only; direct interaction, unrestricted access, breeding-season safety and long-term welfare outcomes are not confirmed. Review before treating as universally safe."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Demoiselle Crane",
+        "Eurasian Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bioparc de Doué-la-Fontaine",
+          "country": "France",
+          "date": "2026",
+          "source": "https://www.bioparc-zoo.fr/en/espace/la-voliere-europeenne/",
+          "note": "Official zoo webpage lists both in the same 1200 m² European free-flight aviary; individual interaction and breeding-season safety not documented."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Demoiselle Crane",
+        "Northern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bioparc de Doué-la-Fontaine",
+          "country": "France",
+          "date": "2026",
+          "source": "https://www.bioparc-zoo.fr/en/espace/la-voliere-europeenne/",
+          "note": "Official zoo webpage lists both in the same 1200 m² European free-flight aviary; individual interaction and breeding-season safety not documented."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Glossy Ibis",
+        "Northern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bioparc de Doué-la-Fontaine",
+          "country": "France",
+          "date": "2026",
+          "source": "https://www.bioparc-zoo.fr/en/espace/la-voliere-europeenne/",
+          "note": "Official zoo webpage lists both in the same 1200 m² European free-flight aviary; individual interaction and breeding-season safety not documented."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Eurasian Spoonbill",
+        "Northern Bald Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Bioparc de Doué-la-Fontaine",
+          "country": "France",
+          "date": "2026",
+          "source": "https://www.bioparc-zoo.fr/en/espace/la-voliere-europeenne/",
+          "note": "Official zoo webpage lists both in the same 1200 m² European free-flight aviary; individual interaction and breeding-season safety not documented."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "White-Headed Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "ZooLex exhibit account lists both species in the mixed marabou/vulture aviary; indoor compartments and seasonal separation are available, so simultaneous unrestricted access is not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Black Kite"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "ZooLex exhibit account lists both species in the mixed marabou/vulture aviary; indoor compartments and seasonal separation are available, so simultaneous unrestricted access is not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "White-Headed Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "ZooLex exhibit account lists both species in the mixed marabou/vulture aviary; indoor compartments and seasonal separation are available, so simultaneous unrestricted access is not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "Black Kite"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "ZooLex exhibit account lists both species in the mixed marabou/vulture aviary; indoor compartments and seasonal separation are available, so simultaneous unrestricted access is not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Headed Vulture",
+        "Black Kite"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "ZooLex exhibit account lists both species in the mixed marabou/vulture aviary; indoor compartments and seasonal separation are available, so simultaneous unrestricted access is not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Headed Vulture",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "ZooLex exhibit account lists both species in the mixed marabou/vulture aviary; indoor compartments and seasonal separation are available, so simultaneous unrestricted access is not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black Kite",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "ZooLex exhibit account lists both species in the mixed marabou/vulture aviary; indoor compartments and seasonal separation are available, so simultaneous unrestricted access is not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Black Kite",
+        "Secretary Bird"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "ZooLex exhibit account lists both species in the mixed marabou/vulture aviary; indoor compartments and seasonal separation are available, so simultaneous unrestricted access is not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Secretary Bird",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "ZooLex exhibit account lists both species in the mixed marabou/vulture aviary; indoor compartments and seasonal separation are available, so simultaneous unrestricted access is not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abdim's Stork",
+        "Marabou Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2024-06-17",
+          "source": "https://lunivers-derika.over-blog.com/2024/05/reserve-africaine-de-sigean.html",
+          "note": "Visitor report identifies both species observed in the same large African wetland aviary; not proof of safe year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Abdim's Stork",
+        "Palm-Nut Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2024-06-17",
+          "source": "https://lunivers-derika.over-blog.com/2024/05/reserve-africaine-de-sigean.html",
+          "note": "Visitor report identifies both species observed in the same large African wetland aviary; not proof of safe year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hadada Ibis",
+        "Marabou Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2024-06-17",
+          "source": "https://lunivers-derika.over-blog.com/2024/05/reserve-africaine-de-sigean.html",
+          "note": "Visitor report identifies both species observed in the same large African wetland aviary; not proof of safe year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hadada Ibis",
+        "Palm-Nut Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2024-06-17",
+          "source": "https://lunivers-derika.over-blog.com/2024/05/reserve-africaine-de-sigean.html",
+          "note": "Visitor report identifies both species observed in the same large African wetland aviary; not proof of safe year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Grey Crowned Crane",
+        "Palm-Nut Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2024-06-17",
+          "source": "https://lunivers-derika.over-blog.com/2024/05/reserve-africaine-de-sigean.html",
+          "note": "Visitor report identifies both species observed in the same large African wetland aviary; not proof of safe year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hamerkop",
+        "Palm-Nut Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2024-06-17",
+          "source": "https://lunivers-derika.over-blog.com/2024/05/reserve-africaine-de-sigean.html",
+          "note": "Visitor report identifies both species observed in the same large African wetland aviary; not proof of safe year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Marabou Stork",
+        "African Openbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2024-06-17",
+          "source": "https://lunivers-derika.over-blog.com/2024/05/reserve-africaine-de-sigean.html",
+          "note": "Visitor report identifies both species observed in the same large African wetland aviary; not proof of safe year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "African Openbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2024-06-17",
+          "source": "https://lunivers-derika.over-blog.com/2024/05/reserve-africaine-de-sigean.html",
+          "note": "Visitor report identifies both species observed in the same large African wetland aviary; not proof of safe year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Palm-Nut Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2024-06-17",
+          "source": "https://lunivers-derika.over-blog.com/2024/05/reserve-africaine-de-sigean.html",
+          "note": "Visitor report identifies both species observed in the same large African wetland aviary; not proof of safe year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Openbill",
+        "Palm-Nut Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Réserve Africaine de Sigean",
+          "country": "France",
+          "date": "2024-06-17",
+          "source": "https://lunivers-derika.over-blog.com/2024/05/reserve-africaine-de-sigean.html",
+          "note": "Visitor report identifies both species observed in the same large African wetland aviary; not proof of safe year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Golden Pheasant",
+        "Vinaceous-Breasted Amazon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Stadtvolière Lindengut, Winterthur",
+          "country": "Switzerland",
+          "date": "2024-01-05",
+          "source": "https://www.zoochat.com/community/threads/philippine-eagle-spotted-above-the-alpes.489299/page-4",
+          "note": "Visitor describes both in the same largest aviary; reported shared housing, not breeding-season safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Purple-Crested Turaco",
+        "Crested Partridge"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2019-07-19",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-19-07-2019.473604/",
+          "note": "Both listed free-ranging in the Paradieshalle walk-through aviary; historical observation, not a safety assessment."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Common Pheasant",
+        "Laughing Kookaburra"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2025-10",
+          "source": "https://www.zoochat.com/community/threads/weltvogelpark-walsrode-species-list-october-2025.495527/",
+          "note": "Bianchi’s pheasant (Phasianus colchicus bianchii, subspecies of Common Pheasant) and Laughing Kookaburra in same aviary; subspecies extrapolation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Crested Partridge",
+        "Bearded Barbet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zurich-area bird aviary (visitor report)",
+          "country": "Switzerland",
+          "date": "2023",
+          "source": "https://www.zoochat.com/community/threads/philippine-eagle-spotted-above-the-alpes.489299/page-4",
+          "note": "Visitor reports both in same large aviary; check precise facility and year before treating as high-confidence."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Western Long-Tailed Hornbill",
+        "Violet Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2024-05-22",
+          "source": "https://www.zoochat.com/community/media/paradies-halle-aviary-hall-2024-05-22.729025/",
+          "note": "Reported together in the African tropical hall walk-through section; enclosure-level co-presence, not proof of unrestricted contact or breeding-season safety. Hornbills may present risks to smaller birds."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Western Long-Tailed Hornbill",
+        "Bearded Barbet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2024-05-22",
+          "source": "https://www.zoochat.com/community/media/paradies-halle-aviary-hall-2024-05-22.729025/",
+          "note": "Reported together in the African tropical hall walk-through section; enclosure-level co-presence, not proof of unrestricted contact or breeding-season safety. Hornbills may present risks to smaller birds."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Pied Hornbill",
+        "Violet Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2024-05-22",
+          "source": "https://www.zoochat.com/community/media/paradies-halle-aviary-hall-2024-05-22.729025/",
+          "note": "Reported together in the African tropical hall walk-through section; enclosure-level co-presence, not proof of unrestricted contact or breeding-season safety. Hornbills may present risks to smaller birds."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Pied Hornbill",
+        "Bearded Barbet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2024-05-22",
+          "source": "https://www.zoochat.com/community/media/paradies-halle-aviary-hall-2024-05-22.729025/",
+          "note": "Reported together in the African tropical hall walk-through section; enclosure-level co-presence, not proof of unrestricted contact or breeding-season safety. Hornbills may present risks to smaller birds."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Violet Turaco",
+        "Bearded Barbet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Weltvogelpark Walsrode",
+          "country": "Germany",
+          "date": "2024-05-22",
+          "source": "https://www.zoochat.com/community/media/paradies-halle-aviary-hall-2024-05-22.729025/",
+          "note": "Reported together in the African tropical hall walk-through section; enclosure-level co-presence, not proof of unrestricted contact or breeding-season safety. Hornbills may present risks to smaller birds."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Headed Marmoset",
+        "Southern Three-Banded Armadillo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Heidelberg Zoo",
+          "country": "Germany",
+          "date": "2014-01-16",
+          "source": "https://zoolex.org/gallery/show/1431/",
+          "note": "Zoo Heidelberg-authored ZooLex description of South America Aviary, open since 2006. Species listed in shared 300 m² walk-through aviary; separate indoor holding facilities available. Exhibit co-housing evidence, not confirmation of unrestricted contact or breeding-season safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Headed Marmoset",
+        "Sunbittern"
+      ],
+      "evidence": [
+        {
+          "zoo": "Heidelberg Zoo",
+          "country": "Germany",
+          "date": "2014-01-16",
+          "source": "https://zoolex.org/gallery/show/1431/",
+          "note": "Zoo Heidelberg-authored ZooLex description of South America Aviary, open since 2006. Species listed in shared 300 m² walk-through aviary; separate indoor holding facilities available. Exhibit co-housing evidence, not confirmation of unrestricted contact or breeding-season safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Headed Marmoset",
+        "Red-Crowned Amazon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Heidelberg Zoo",
+          "country": "Germany",
+          "date": "2014-01-16",
+          "source": "https://zoolex.org/gallery/show/1431/",
+          "note": "Zoo Heidelberg-authored ZooLex description of South America Aviary, open since 2006. Species listed in shared 300 m² walk-through aviary; separate indoor holding facilities available. Exhibit co-housing evidence, not confirmation of unrestricted contact or breeding-season safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Southern Three-Banded Armadillo",
+        "Red-Crowned Amazon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Heidelberg Zoo",
+          "country": "Germany",
+          "date": "2014-01-16",
+          "source": "https://zoolex.org/gallery/show/1431/",
+          "note": "Zoo Heidelberg-authored ZooLex description of South America Aviary, open since 2006. Species listed in shared 300 m² walk-through aviary; separate indoor holding facilities available. Exhibit co-housing evidence, not confirmation of unrestricted contact or breeding-season safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Sunbittern",
+        "Red-Crowned Amazon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Heidelberg Zoo",
+          "country": "Germany",
+          "date": "2014-01-16",
+          "source": "https://zoolex.org/gallery/show/1431/",
+          "note": "Zoo Heidelberg-authored ZooLex description of South America Aviary, open since 2006. Species listed in shared 300 m² walk-through aviary; separate indoor holding facilities available. Exhibit co-housing evidence, not confirmation of unrestricted contact or breeding-season safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Sunbittern",
+        "Linneaus's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Heidelberg Zoo",
+          "country": "Germany",
+          "date": "2014-01-16",
+          "source": "https://zoolex.org/gallery/show/1431/",
+          "note": "Zoo Heidelberg-authored ZooLex description of South America Aviary, open since 2006. Species listed in shared 300 m² walk-through aviary; separate indoor holding facilities available. Exhibit co-housing evidence, not confirmation of unrestricted contact or breeding-season safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Red-Crowned Amazon",
+        "Linneaus's Two-Toed Sloth"
+      ],
+      "evidence": [
+        {
+          "zoo": "Heidelberg Zoo",
+          "country": "Germany",
+          "date": "2014-01-16",
+          "source": "https://zoolex.org/gallery/show/1431/",
+          "note": "Zoo Heidelberg-authored ZooLex description of South America Aviary, open since 2006. Species listed in shared 300 m² walk-through aviary; separate indoor holding facilities available. Exhibit co-housing evidence, not confirmation of unrestricted contact or breeding-season safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pygmy Hippopotamus",
+        "African Grey Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Zürich",
+          "country": "Switzerland",
+          "date": "2022",
+          "source": "https://claudetteverhulst.com.zoolex.org/media/uploads/2022/08/06/2022_mixed-species-exhibits-with-hippopotamuses-by-krisztian-svabik_GDToKph.pdf",
+          "note": "Mixed-species hippopotamus exhibit documented in the ZooLex mixed-species compilation; exhibit-level report, not a safety guarantee."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hamerkop",
+        "Bearded Barbet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Zürich",
+          "country": "Switzerland",
+          "date": "2022",
+          "source": "https://claudetteverhulst.com.zoolex.org/media/uploads/2022/08/06/2022_mixed-species-exhibits-with-hippopotamuses-by-krisztian-svabik_GDToKph.pdf",
+          "note": "Mixed-species hippopotamus exhibit documented in the ZooLex mixed-species compilation; exhibit-level report, not a safety guarantee."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Violet Turaco",
+        "African Grey Hornbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Zürich",
+          "country": "Switzerland",
+          "date": "2022",
+          "source": "https://claudetteverhulst.com.zoolex.org/media/uploads/2022/08/06/2022_mixed-species-exhibits-with-hippopotamuses-by-krisztian-svabik_GDToKph.pdf",
+          "note": "Mixed-species hippopotamus exhibit documented in the ZooLex mixed-species compilation; exhibit-level report, not a safety guarantee."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Grey Hornbill",
+        "Bearded Barbet"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Zürich",
+          "country": "Switzerland",
+          "date": "2022",
+          "source": "https://claudetteverhulst.com.zoolex.org/media/uploads/2022/08/06/2022_mixed-species-exhibits-with-hippopotamuses-by-krisztian-svabik_GDToKph.pdf",
+          "note": "Mixed-species hippopotamus exhibit documented in the ZooLex mixed-species compilation; exhibit-level report, not a safety guarantee."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pygmy Hippopotamus",
+        "White Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo du Bassin d’Arcachon",
+          "country": "France",
+          "date": "2022",
+          "source": "https://claudetteverhulst.com.zoolex.org/media/uploads/2022/08/06/2022_mixed-species-exhibits-with-hippopotamuses-by-krisztian-svabik_GDToKph.pdf",
+          "note": "Mixed-species pygmy hippopotamus exhibit documented in the ZooLex compilation; seasonal separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pygmy Hippopotamus",
+        "Yellow-Billed Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo du Bassin d’Arcachon",
+          "country": "France",
+          "date": "2022",
+          "source": "https://claudetteverhulst.com.zoolex.org/media/uploads/2022/08/06/2022_mixed-species-exhibits-with-hippopotamuses-by-krisztian-svabik_GDToKph.pdf",
+          "note": "Mixed-species pygmy hippopotamus exhibit documented in the ZooLex compilation; seasonal separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White Stork",
+        "Yellow-Billed Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo du Bassin d’Arcachon",
+          "country": "France",
+          "date": "2022",
+          "source": "https://claudetteverhulst.com.zoolex.org/media/uploads/2022/08/06/2022_mixed-species-exhibits-with-hippopotamuses-by-krisztian-svabik_GDToKph.pdf",
+          "note": "Mixed-species pygmy hippopotamus exhibit documented in the ZooLex compilation; seasonal separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White Stork",
+        "African Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo du Bassin d’Arcachon",
+          "country": "France",
+          "date": "2022",
+          "source": "https://claudetteverhulst.com.zoolex.org/media/uploads/2022/08/06/2022_mixed-species-exhibits-with-hippopotamuses-by-krisztian-svabik_GDToKph.pdf",
+          "note": "Mixed-species pygmy hippopotamus exhibit documented in the ZooLex compilation; seasonal separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Marabou Stork",
+        "African Spoonbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo du Bassin d’Arcachon",
+          "country": "France",
+          "date": "2022",
+          "source": "https://claudetteverhulst.com.zoolex.org/media/uploads/2022/08/06/2022_mixed-species-exhibits-with-hippopotamuses-by-krisztian-svabik_GDToKph.pdf",
+          "note": "Mixed-species pygmy hippopotamus exhibit documented in the ZooLex compilation; seasonal separation not established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Backed Vulture",
+        "Rüppell's Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp (Rotterdam Zoo) — Marabou and Vulture Aviary",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "Zoo-reviewed ZooLex exhibit report lists both species in the 1,880 m² mixed walk-through aviary. Indoor compartments, seasonal separation and separate breeding facilities are available; shared exhibit does not imply unrestricted year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Backed Vulture",
+        "Black Kite"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp (Rotterdam Zoo) — Marabou and Vulture Aviary",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "Zoo-reviewed ZooLex exhibit report lists both species in the 1,880 m² mixed walk-through aviary. Indoor compartments, seasonal separation and separate breeding facilities are available; shared exhibit does not imply unrestricted year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Backed Vulture",
+        "Hooded Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp (Rotterdam Zoo) — Marabou and Vulture Aviary",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "Zoo-reviewed ZooLex exhibit report lists both species in the 1,880 m² mixed walk-through aviary. Indoor compartments, seasonal separation and separate breeding facilities are available; shared exhibit does not imply unrestricted year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Backed Vulture",
+        "White-Headed Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp (Rotterdam Zoo) — Marabou and Vulture Aviary",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "Zoo-reviewed ZooLex exhibit report lists both species in the 1,880 m² mixed walk-through aviary. Indoor compartments, seasonal separation and separate breeding facilities are available; shared exhibit does not imply unrestricted year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Backed Vulture",
+        "Secretary Bird"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp (Rotterdam Zoo) — Marabou and Vulture Aviary",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "Zoo-reviewed ZooLex exhibit report lists both species in the 1,880 m² mixed walk-through aviary. Indoor compartments, seasonal separation and separate breeding facilities are available; shared exhibit does not imply unrestricted year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Backed Vulture",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp (Rotterdam Zoo) — Marabou and Vulture Aviary",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "Zoo-reviewed ZooLex exhibit report lists both species in the 1,880 m² mixed walk-through aviary. Indoor compartments, seasonal separation and separate breeding facilities are available; shared exhibit does not imply unrestricted year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Rüppell's Vulture",
+        "Secretary Bird"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp (Rotterdam Zoo) — Marabou and Vulture Aviary",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "Zoo-reviewed ZooLex exhibit report lists both species in the 1,880 m² mixed walk-through aviary. Indoor compartments, seasonal separation and separate breeding facilities are available; shared exhibit does not imply unrestricted year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hooded Vulture",
+        "Secretary Bird"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp (Rotterdam Zoo) — Marabou and Vulture Aviary",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "Zoo-reviewed ZooLex exhibit report lists both species in the 1,880 m² mixed walk-through aviary. Indoor compartments, seasonal separation and separate breeding facilities are available; shared exhibit does not imply unrestricted year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "White-Headed Vulture",
+        "Secretary Bird"
+      ],
+      "evidence": [
+        {
+          "zoo": "Diergaarde Blijdorp (Rotterdam Zoo) — Marabou and Vulture Aviary",
+          "country": "Netherlands",
+          "date": "2021-01-12",
+          "source": "https://zoolex.org/gallery/show/1952/",
+          "note": "Zoo-reviewed ZooLex exhibit report lists both species in the 1,880 m² mixed walk-through aviary. Indoor compartments, seasonal separation and separate breeding facilities are available; shared exhibit does not imply unrestricted year-round cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Sitatunga",
+        "Nile Lechwe"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "date": "2016-04-02",
+          "source": "https://www.zoochat.com/community/media/sitatunga-nile-lechwe-and-hippo-enclosure.323457/",
+          "note": "Photographed shared hippo, sitatunga and Nile lechwe enclosure; 2022 mixed-species review independently records the group."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Nile Lechwe",
+        "Marabou Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Safaripark Beekse Bergen",
+          "country": "Netherlands",
+          "date": "2019-09-15",
+          "source": "https://www.zoochat.com/community/media/hippopotamus-nile-lechwe-and-marabou-exhibit-2019-09-15.471941/",
+          "note": "Photographed and explicitly identified hippo, Nile lechwe and marabou shared exhibit; animal refuges are present."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Eurasian Spoonbill",
+        "Yellow-Billed Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooParc de Beauval — Réserve des Hippopotames",
+          "country": "France",
+          "date": "2018",
+          "source": "https://s3.eu-central-1.amazonaws.com/zooparc/uploads/dossier-presse-zooparc-de-beauval-2018.pdf",
+          "note": "Official 2018 zoo press dossier identifies white spoonbills (spatules blanches) and yellow-billed storks (tantales) among birds in the same large netted hippopotamus reserve; exact direct contact not documented."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Eurasian Spoonbill",
+        "African Sacred Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZooParc de Beauval — Réserve des Hippopotames",
+          "country": "France",
+          "date": "2018",
+          "source": "https://s3.eu-central-1.amazonaws.com/zooparc/uploads/dossier-presse-zooparc-de-beauval-2018.pdf",
+          "note": "Official 2018 zoo press dossier identifies white spoonbills (spatules blanches) and sacred ibises (ibis sacrés) in the same large netted reserve; exact direct contact not documented."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hippopotamus",
+        "Saddle-Billed Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZOOM Erlebniswelt Gelsenkirchen",
+          "country": "Germany",
+          "date": "2022",
+          "source": "https://zoorope.hu/en-mixed-exhibit-hippopotamidae/",
+          "note": "Documented historical mixed-species exhibit in Svábik (2022). Exhibit management and retreats may limit unrestricted contact; not a guarantee of safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Sitatunga",
+        "Saddle-Billed Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "ZOOM Erlebniswelt Gelsenkirchen",
+          "country": "Germany",
+          "date": "2022",
+          "source": "https://zoorope.hu/en-mixed-exhibit-hippopotamidae/",
+          "note": "Documented historical mixed-species exhibit in Svábik (2022). Exhibit management and retreats may limit unrestricted contact; not a guarantee of safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hippopotamus",
+        "Greater Kudu"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo du Bassin d’Arcachon",
+          "country": "France",
+          "date": "2022",
+          "source": "https://zoorope.hu/en-mixed-exhibit-hippopotamidae/",
+          "note": "Documented historical mixed-species exhibit in Svábik (2022). Exhibit management and retreats may limit unrestricted contact; not a guarantee of safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Hippopotamus",
+        "Dalmatian Pelican"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Antwerpen",
+          "country": "Belgium",
+          "date": "2022",
+          "source": "https://zoorope.hu/en-mixed-exhibit-hippopotamidae/",
+          "note": "Documented historical mixed-species exhibit in Svábik (2022). Exhibit management and retreats may limit unrestricted contact; not a guarantee of safety."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Elephant",
+        "Abdim's Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2020",
+          "source": "https://zoolex.org/gallery/show/1965/",
+          "note": "Birds free-flying in the elephant indoor exhibits; zoo-reviewed report 2020."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Elephant",
+        "African Openbill"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2020",
+          "source": "https://zoolex.org/gallery/show/1965/",
+          "note": "Birds free-flying in the elephant indoor exhibits; zoo-reviewed report 2020."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Elephant",
+        "Hadada Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2020",
+          "source": "https://zoolex.org/gallery/show/1965/",
+          "note": "Birds free-flying in the elephant indoor exhibits; zoo-reviewed report 2020."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Elephant",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2020",
+          "source": "https://zoolex.org/gallery/show/1965/",
+          "note": "Birds free-flying in the elephant indoor exhibits; zoo-reviewed report 2020."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "African Elephant",
+        "Lechwe"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2020",
+          "source": "https://zoolex.org/gallery/show/1965/",
+          "note": "Shared elephant outdoor exhibit with species-specific retreats; zoo-reviewed report 2020."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Banded Mongoose",
+        "Abdim's Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2020",
+          "source": "https://zoolex.org/gallery/show/1965/",
+          "note": "Historically introduced in elephant house alongside free-flying birds; mongoose subsequently removed for escape concerns, not documented bird aggression."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Banded Mongoose",
+        "Hadada Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2020",
+          "source": "https://zoolex.org/gallery/show/1965/",
+          "note": "Historically introduced in elephant house alongside free-flying birds; mongoose subsequently removed for escape concerns, not documented bird aggression."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Banded Mongoose",
+        "Hamerkop"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2020",
+          "source": "https://zoolex.org/gallery/show/1965/",
+          "note": "Historically introduced in elephant house alongside free-flying birds; mongoose subsequently removed for escape concerns, not documented bird aggression."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Bearded Vulture",
+        "Palm-Nut Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2023",
+          "source": "https://zoolex.org/gallery/show/1961/",
+          "note": "Vultures reported in mixed walk-through aviary, with separation facilities; zoo-reviewed 2023."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Bearded Vulture",
+        "Rüppell's Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2023",
+          "source": "https://zoolex.org/gallery/show/1961/",
+          "note": "Vultures reported in mixed walk-through aviary, with separation facilities; zoo-reviewed 2023."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Bearded Vulture",
+        "Hooded Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2023",
+          "source": "https://zoolex.org/gallery/show/1961/",
+          "note": "Vultures reported in mixed walk-through aviary, with separation facilities; zoo-reviewed 2023."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow Mongoose",
+        "Bearded Vulture"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2023",
+          "source": "https://zoolex.org/gallery/show/1961/",
+          "note": "Mixed vulture aviary; report explicitly says keeping vultures, marabous and yellow mongooses works without problems. Secretary birds were removed following injury to mongoose."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow Mongoose",
+        "Marabou Stork"
+      ],
+      "evidence": [
+        {
+          "zoo": "Zoo Magdeburg",
+          "country": "Germany",
+          "date": "2023",
+          "source": "https://zoolex.org/gallery/show/1961/",
+          "note": "Mixed vulture aviary; report explicitly says keeping vultures, marabous and yellow mongooses works without problems. Secretary birds were removed following injury to mongoose."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Yellow Mongoose",
+        "African Crested Porcupine"
+      ],
+      "evidence": [
+        {
+          "zoo": "Woburn Safari Park",
+          "country": "United Kingdom",
+          "date": "2020",
+          "source": "https://zoolex.org/media/uploads/2021/05/02/2020_svabik_mixed_mongoose_madagascar_carnivores.pdf",
+          "note": "Historical mixed-species exhibit listing Yellow Mongoose (Cynictis penicillata), Meerkat, and Crested Porcupine (Hystrix cristata) at Woburn. Historical shared housing; husbandry outcomes and unrestricted access not independently established."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Emperor Tamarin",
+        "Azara's Agouti"
+      ],
+      "evidence": [
+        {
+          "zoo": "Parc d’Isle",
+          "country": "France",
+          "date": "2022",
+          "source": "https://strapi.eaza.net/uploads/EZNC_2023_Programme_booklet_9c6e3cfd47.pdf",
+          "note": "EAZA European Zoo Nutrition Conference abstract documents three emperor tamarins and two Azara agoutis living together in an aviary, observed May–July 2022; feeding interactions studied."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Woolly Monkey",
+        "White-Headed Marmoset"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaPark Kerkrade Zoo",
+          "country": "Netherlands",
+          "date": "2009",
+          "source": "https://zoolex.org/gallery/show/891/",
+          "note": "Zoo-reviewed ZooLex exhibit report explicitly states woolly monkeys and Callithrix geoffroyi (white-headed marmosets) shared an island and indoor accommodation; small mesh retreat for marmosets."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Capybara",
+        "White-Headed Marmoset"
+      ],
+      "evidence": [
+        {
+          "zoo": "GaiaPark Kerkrade Zoo",
+          "country": "Netherlands",
+          "date": "2009",
+          "source": "https://zoolex.org/gallery/show/891/",
+          "note": "ZooLex reports capybaras had access to the woolly monkey/marmoset island, sharing accessible outdoor habitat; elevated areas and marmoset-only retreat were inaccessible to capybaras."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Golden Lion Tamarin",
+        "Pygmy Marmoset"
+      ],
+      "evidence": [
+        {
+          "zoo": "Chester Zoo",
+          "country": "United Kingdom",
+          "date": "2025",
+          "source": "https://www.chesterzoo.org/news/golden-lion-tamarins-leaf-and-george-make-their-debut",
+          "note": "Chester Zoo keeper report explicitly states golden lion tamarins share a habitat with pygmy marmosets, emperor tamarins and Goeldi monkey; source reports positive interactions."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Golden Lion Tamarin",
+        "Emperor Tamarin"
+      ],
+      "evidence": [
+        {
+          "zoo": "Chester Zoo",
+          "country": "United Kingdom",
+          "date": "2025",
+          "source": "https://www.chesterzoo.org/news/golden-lion-tamarins-leaf-and-george-make-their-debut",
+          "note": "Chester Zoo keeper report explicitly states golden lion tamarins share a habitat with pygmy marmosets, emperor tamarins and Goeldi monkey; source reports positive interactions."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pygmy Marmoset",
+        "Emperor Tamarin"
+      ],
+      "evidence": [
+        {
+          "zoo": "Chester Zoo",
+          "country": "United Kingdom",
+          "date": "2025",
+          "source": "https://www.chesterzoo.org/news/golden-lion-tamarins-leaf-and-george-make-their-debut",
+          "note": "Chester Zoo keeper report explicitly states golden lion tamarins share a habitat with pygmy marmosets, emperor tamarins and Goeldi monkey; source reports positive interactions."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Pied Tamarin",
+        "Pygmy Marmoset"
+      ],
+      "evidence": [
+        {
+          "zoo": "Chester Zoo",
+          "country": "United Kingdom",
+          "date": "2004–2008",
+          "source": "https://wiki.arcsnet.dev/content/wikipedia_en_all_maxi_2026-02/Chester_Zoo",
+          "note": "Historical Miniature Monkeys shared enclosure described in secondary overview; note ZooLex 2008 describes a different configuration and separation, so historical cohabitation is not necessarily current."
+        }
+      ]
     }
   ],
   "proxy_compatibility": {

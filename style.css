@@ -5385,3 +5385,20 @@ body.visiting-real-zoo [class*="glow"] {
    Final visual tune against the 1080p reference: slightly larger trade cells
    and a small optical lift while preserving the unified positioning model.
    ============================================================ */
+
+/* True Mode header timeline: visible scrollbar and accessible resize grip. */
+.true-header-timeline-pane { contain: layout paint; }
+.true-header-timeline-pane > [role="separator"]:hover,
+.true-header-timeline-pane > [role="separator"]:focus-visible {
+  background:#d4be94 !important; outline:2px solid #927846; outline-offset:-2px;
+}
+.true-header-timeline-pane > div::-webkit-scrollbar { height:10px; }
+.true-header-timeline-pane > div::-webkit-scrollbar-track { background:#e0d2b5; border-radius:6px; }
+.true-header-timeline-pane > div::-webkit-scrollbar-thumb { background:#947d55; border-radius:6px; border:2px solid #e0d2b5; }
+
+/* The central strip is see-through only in True Mode. */
+body.zoo-true-mode #topBar,
+body.zoo-true-mode #topbar,
+body.zoo-true-mode #gameHeader,
+body.zoo-true-mode header,
+body.zoo-true-mode .header { background: transparent !important; box-shadow: none !important; }

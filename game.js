@@ -11819,6 +11819,9 @@ function trueGuestTickFrame(now){
         for(const peers of guestGroups.values())for(const member of peers)member._frameGroupPeers=peers;
     }
     const frameGrounds=trueZooGroundsBounds();
+    // Multiple guests may encounter a blocked segment in the same animation
+    // frame. Rebuild the shared graph once, not once per affected visitor.
+    let rebuiltWalkGraphThisFrame=false;
     // Keep pathfinding, simulation and clock updates at their normal cadence,
     // but avoid rewriting every guest DOM transform on every animation frame.
     // 30fps is visually smooth for the small guest dots; max speed retains its
@@ -11879,7 +11882,7 @@ function trueGuestTickFrame(now){
         const walkNow=trueGuestRuntime.walk;
         let safeMove=!!walkNow;
         if(safeMove){
-            const travel=Math.hypot(nx-g.x,ny-g.y);
+            const travel=Math.sqrt((nx-g.x)*(nx-g.x)+(ny-g.y)*(ny-g.y));
             const samples=Math.max(1,Math.ceil(travel/Math.max(6,Math.min(TRUE_ENC_CELL_W,TRUE_ENC_CELL_H)*.12)));
             for(let sample=0;sample<=samples;sample++){
                 const t=sample/samples;
@@ -11889,10 +11892,14 @@ function trueGuestTickFrame(now){
             }
         }
         if(!safeMove){
-            // Rebuild immediately, then recalculate the destination route.
-            trueGuestRuntime.layoutSig=trueGuestLayoutSignature();
-            trueGuestRuntime.walk=trueGuestBuildWalkGraph();
-            trueGuestGridPathCache={signature:'',routes:new Map()};
+            // Refresh once per frame; each affected guest still receives its
+            // own route reset and nearest-walkable-cell correction.
+            if(!rebuiltWalkGraphThisFrame){
+                trueGuestRuntime.layoutSig=trueGuestLayoutSignature();
+                trueGuestRuntime.walk=trueGuestBuildWalkGraph();
+                trueGuestGridPathCache={signature:'',routes:new Map()};
+                rebuiltWalkGraphThisFrame=true;
+            }
             const nearest=trueGuestCellForPoint(g,trueGuestRuntime.walk);
             if(nearest&&!trueGuestPointIsWalkable(g,trueGuestRuntime.walk)){
                 g.x=(nearest.c+.5)*TRUE_ENC_CELL_W;
@@ -19537,8 +19544,15 @@ function ensureTrueZooGroundsVisual(){
     const groundCols=Math.max(1,Math.round(bounds.w/TRUE_ENC_CELL_W)),groundRows=Math.max(1,Math.round(bounds.h/TRUE_ENC_CELL_H));
     const parcelDepth=trueLandExpansionParcelCells();
 
-    const addFutureParcelCells=(cells,side,layerIndex,parcelIndex)=>{
+    // Keep parcel identities disjoint within a preview layer. Overlapping SVG
+    // hit rectangles otherwise allow the topmost parcel to capture another's click.
+    const claimedParcelCellsByLayer=new Map();
+    const addFutureParcelCells=(rawCells,side,layerIndex,parcelIndex)=>{
+        const claimed=claimedParcelCellsByLayer.get(layerIndex)||new Set();
+        const cells=rawCells.filter(c=>!claimed.has(`${c.col},${c.row}`));
         if(!cells.length)return;
+        for(const c of cells)claimed.add(`${c.col},${c.row}`);
+        claimedParcelCellsByLayer.set(layerIndex,claimed);
         const set=new Set(cells.map(c=>`${c.col},${c.row}`));
         const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
         svg.classList.add('true-zoo-future-grounds-parcel');
@@ -19547,7 +19561,7 @@ function ensureTrueZooGroundsVisual(){
         const expansionCredits=Math.max(0,Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0);
         const purchasable=layerIndex===1&&expansionCredits>0;
         svg.dataset.expansionCells=cells.map(c=>`${c.col},${c.row}`).join(';');
-        Object.assign(svg.style,{position:'absolute',left:'0',top:'0',width:`${worldW}px`,height:`${worldH}px`,overflow:'visible',pointerEvents:purchasable?'auto':'none',zIndex:purchasable?'6':'1',opacity:String(layerIndex===1?.92:layerIndex===2?.68:.50)});
+        Object.assign(svg.style,{position:'absolute',left:'0',top:'0',width:`${worldW}px`,height:`${worldH}px`,overflow:'visible',pointerEvents:'none',zIndex:purchasable?'6':'1',opacity:String(layerIndex===1?.92:layerIndex===2?.68:.50)});
 
         const currentGround=new Set();
         if(irregularGround?.size){for(const key of irregularGround)currentGround.add(key);}
@@ -19608,21 +19622,45 @@ function ensureTrueZooGroundsVisual(){
             svg.setAttribute('aria-label',`Acquire ${planningLabel}`);
             const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=`Acquire ${planningLabel}`;svg.appendChild(title);
             let confirmationOpen=false;
+            let parcelSelected=false;
+            const setParcelSelected=on=>{
+                parcelSelected=on;
+                path.setAttribute('fill',on?'#b7d99a':'none');
+                path.setAttribute('fill-opacity',on?'0.55':'0');
+                path.setAttribute('stroke',on?'#e7f4bd':futureCueColour);
+                path.setAttribute('stroke-dasharray',on?'none':'10 6');
+                path.setAttribute('stroke-width',on?'6':'3');
+                svg.style.opacity=on?'1':'.92';
+            };
+            const selectedCells=cells.map(c=>({col:c.col,row:c.row}));
             const acquire=async()=>{
                 if(confirmationOpen)return false;
                 confirmationOpen=true;
+                setParcelSelected(true);
                 try{
+                    // An asynchronous confirmation may outlive a rerender or
+                    // another grounds expansion. Never apply a stale preview.
+                    const groundsAtClick=trueZooGroundCellSet();
                     const approved=await showGameConfirm(
-                        `This parcel adds ${cells.length} construction cell${cells.length===1?'':'s'} to the zoo and has a ${frontageLabel}.\n\nUse one grounds-expansion approval to acquire this land?`,
+                        `This parcel adds ${selectedCells.length} construction cell${selectedCells.length===1?'':'s'} to the zoo and has a ${frontageLabel}.\n\nUse one grounds-expansion approval to acquire this land?`,
                         {title:'Expand zoo grounds',confirmLabel:'Expand zoo',cancelLabel:'Cancel'}
                     );
                     if(!approved)return false;
-                    return trueApplyLandExpansionParcel(cells);
+                    const groundsNow=trueZooGroundCellSet();
+                    const sameGrounds=(!groundsAtClick&&!groundsNow)||
+                        (groundsAtClick&&groundsNow&&groundsAtClick.size===groundsNow.size&&
+                         [...groundsAtClick].every(key=>groundsNow.has(key)));
+                    if(!sameGrounds){
+                        ensureTrueZooGroundsVisual();
+                        return false;
+                    }
+                    return trueApplyLandExpansionParcel(selectedCells);
                 } finally {
                     confirmationOpen=false;
+                    setParcelSelected(false);
                 }
             };
-            const highlight=on=>{path.setAttribute('stroke-width',on?'6':'3');svg.style.opacity=on?'1':'.92';};
+            const highlight=on=>{if(parcelSelected)return;path.setAttribute('stroke-width',on?'6':'3');svg.style.opacity=on?'1':'.92';};
             for(const c of cells){
                 const hit=document.createElementNS('http://www.w3.org/2000/svg','rect');
                 hit.setAttribute('x',String(c.col*TRUE_ENC_CELL_W));hit.setAttribute('y',String(c.row*TRUE_ENC_CELL_H));
@@ -19634,10 +19672,6 @@ function ensureTrueZooGroundsVisual(){
                 svg.appendChild(hit);
             }
             svg.addEventListener('focus',()=>highlight(true));svg.addEventListener('blur',()=>highlight(false));
-            svg.addEventListener('click',e=>{
-                if(e.defaultPrevented)return;
-                e.preventDefault();e.stopPropagation();acquire();
-            });
             svg.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();acquire();}});
 
             const cx=cells.reduce((sum,c)=>sum+(c.col+.5)*TRUE_ENC_CELL_W,0)/cells.length;

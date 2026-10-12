@@ -37908,12 +37908,529 @@
           "note": "Historical Miniature Monkeys shared enclosure described in secondary overview; note ZooLex 2008 describes a different configuration and separation, so historical cohabitation is not necessarily current."
         }
       ]
+    },
+    {
+      "animals": [
+        "King Quail",
+        "Crested Partridge"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2022-08-16",
+          "source": "https://www.zoochat.com/community/threads/zoo-antwerpen-bird-house-species-list.470725/",
+          "note": "Visitor bird-house inventory documents both species in indoor aviary 10; shared exhibit, not an official husbandry report."
+        },
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2021-11-13",
+          "source": "https://www.zoochat.com/community/media/asian-indoor-aviary.555457/",
+          "note": "Visitor record explicitly lists King Quail and Crested Partridge in the same Asian indoor aviary."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "King Quail",
+        "Hermann's Tortoise"
+      ],
+      "evidence": [
+        {
+          "zoo": "Sewerby Zoo",
+          "country": "United Kingdom",
+          "date": "2023-06",
+          "source": "https://www.zoochat.com/community/media/mixed-aviary-tortoise-enclosure-at-sewerby-zoo-june-2023.660201/",
+          "note": "Visitor photograph description explicitly lists Chinese painted quail and Hermann’s tortoise in the same mixed aviary, alongside Java sparrow, Napoleon weaver and diamond dove."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Eurasian Quail",
+        "Scarlet Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Beale Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2023-06-11",
+          "source": "https://www.zoochat.com/community/threads/beale-wildlife-park-2023.486335/page-6",
+          "note": "ZooChat contributor describing the park’s mixed aviaries explicitly lists common quail and this species together in mixed aviary 2; species-level cohabitation reported, not official husbandry guidance."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Eurasian Quail",
+        "Yellow-Shouldered Amazon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Beale Wildlife Park",
+          "country": "United Kingdom",
+          "date": "2023-06-11",
+          "source": "https://www.zoochat.com/community/threads/beale-wildlife-park-2023.486335/page-6",
+          "note": "ZooChat contributor describing the park’s mixed aviaries explicitly lists common quail and this species together in mixed aviary 2; species-level cohabitation reported, not official husbandry guidance."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "California Quail",
+        "Golden Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Staglands Wildlife Reserve",
+          "country": "New Zealand",
+          "date": "undated",
+          "source": "https://www.zoochat.com/community/threads/staglands-zoo-visits-and-news.393772/",
+          "note": "Walk-through aviary signage; golden pheasants described as hybrids; presence not directly observed."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "California Quail",
+        "Silver Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Staglands Wildlife Reserve",
+          "country": "New Zealand",
+          "date": "undated",
+          "source": "https://www.zoochat.com/community/threads/staglands-zoo-visits-and-news.393772/",
+          "note": "Walk-through aviary signage; silver pheasant directly observed, California quail signed but not observed."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "California Quail",
+        "Lady Amherst's Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Staglands Wildlife Reserve",
+          "country": "New Zealand",
+          "date": "undated",
+          "source": "https://www.zoochat.com/community/threads/staglands-zoo-visits-and-news.393772/",
+          "note": "Walk-through aviary signage; Lady Amherst pheasants described as hybrids; California quail signed but not observed."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "California Quail",
+        "Reeves's Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Staglands Wildlife Reserve",
+          "country": "New Zealand",
+          "date": "undated",
+          "source": "https://www.zoochat.com/community/threads/staglands-zoo-visits-and-news.393772/",
+          "note": "Walk-through aviary signage; simultaneous physical observation unconfirmed."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "California Quail",
+        "Swinhoe's Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Staglands Wildlife Reserve",
+          "country": "New Zealand",
+          "date": "undated",
+          "source": "https://www.zoochat.com/community/threads/staglands-zoo-visits-and-news.393772/",
+          "note": "Walk-through aviary signage; simultaneous physical observation unconfirmed."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "California Quail",
+        "Galah"
+      ],
+      "evidence": [
+        {
+          "zoo": "Willowbank Wildlife Reserve",
+          "country": "New Zealand",
+          "date": "2026-03",
+          "source": "https://www.zoochat.com/community/threads/willowbank-wildlife-reserve-species-list-march-2026.496405/",
+          "note": "Visitor aviary 2 species list identifies both; California quail reported there in 2022 also."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "California Quail",
+        "Red-Tailed Black Cockatoo"
+      ],
+      "evidence": [
+        {
+          "zoo": "Willowbank Wildlife Reserve",
+          "country": "New Zealand",
+          "date": "2026-03",
+          "source": "https://www.zoochat.com/community/threads/willowbank-wildlife-reserve-species-list-march-2026.496405/",
+          "note": "Visitor aviary 2 species list identifies both; California quail reported there in 2022 also."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "California Quail",
+        "Sunbittern"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2021-07-17",
+          "source": "https://www.zoochat.com/community/threads/zoo-antwerpen-bird-house-species-list.470725/",
+          "note": "Aviary 7, documented alongside California Quail in July 2021; also listed in the American indoor aviary in 2018."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "California Quail",
+        "Green Aracari"
+      ],
+      "evidence": [
+        {
+          "zoo": "Antwerp Zoo",
+          "country": "Belgium",
+          "date": "2018-08-24",
+          "source": "https://www.zoochat.com/community/threads/zoo-antwerpen-bird-house-species-list.470725/",
+          "note": "American indoor aviary; species listed together in the same aviary in August 2018."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "King Quail",
+        "Golden Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Taronga Zoo",
+          "country": "Australia",
+          "date": "2022-07-07",
+          "source": "https://www.zoochat.com/community/media/white-rumped-shama-male.641725/",
+          "note": "Palm Aviary; exhibit-level species list associated with photographed White-rumped Shama, ZooChat published 2023-03-20."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "King Quail",
+        "Nicobar Pigeon"
+      ],
+      "evidence": [
+        {
+          "zoo": "Taronga Zoo",
+          "country": "Australia",
+          "date": "2022-07-07",
+          "source": "https://www.zoochat.com/community/media/white-rumped-shama-male.641725/",
+          "note": "Palm Aviary; same exhibit-level species list, ZooChat published 2023-03-20."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "California Quail",
+        "Common Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Staglands Wildlife Reserve",
+          "country": "New Zealand",
+          "date": "undated visitor inventory (retrieved 2026-10-12)",
+          "source": "https://www.zoochat.com/community/threads/staglands-zoo-visits-and-news.393772/",
+          "note": "Visitor lists California Quail (1.0) and Common/Ring-necked Pheasant (1.0) in the Toe Toe Picnic Area; shared area, not necessarily close-contact aviary cohabitation."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "California Quail"
+      ],
+      "evidence": [
+        {
+          "zoo": "Helsingborg Djurpark",
+          "country": "Sweden",
+          "date": "2024-11-08",
+          "source": "https://www.zoochat.com/community/media/helsingborg-djurpark-free-flight-aviary.761901/",
+          "note": "Visitor-documented free-flight aviary; all listed species reported in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Blue-and-Yellow Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Helsingborg Djurpark",
+          "country": "Sweden",
+          "date": "2024-11-08",
+          "source": "https://www.zoochat.com/community/media/helsingborg-djurpark-free-flight-aviary.761901/",
+          "note": "Visitor-documented free-flight aviary; all listed species reported in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Galah"
+      ],
+      "evidence": [
+        {
+          "zoo": "Helsingborg Djurpark",
+          "country": "Sweden",
+          "date": "2024-11-08",
+          "source": "https://www.zoochat.com/community/media/helsingborg-djurpark-free-flight-aviary.761901/",
+          "note": "Visitor-documented free-flight aviary; all listed species reported in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Senegal Parrot"
+      ],
+      "evidence": [
+        {
+          "zoo": "Helsingborg Djurpark",
+          "country": "Sweden",
+          "date": "2024-11-08",
+          "source": "https://www.zoochat.com/community/media/helsingborg-djurpark-free-flight-aviary.761901/",
+          "note": "Visitor-documented free-flight aviary; all listed species reported in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "California Quail",
+        "Blue-and-Yellow Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Helsingborg Djurpark",
+          "country": "Sweden",
+          "date": "2024-11-08",
+          "source": "https://www.zoochat.com/community/media/helsingborg-djurpark-free-flight-aviary.761901/",
+          "note": "Visitor-documented free-flight aviary; all listed species reported in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "California Quail",
+        "Senegal Parrot"
+      ],
+      "evidence": [
+        {
+          "zoo": "Helsingborg Djurpark",
+          "country": "Sweden",
+          "date": "2024-11-08",
+          "source": "https://www.zoochat.com/community/media/helsingborg-djurpark-free-flight-aviary.761901/",
+          "note": "Visitor-documented free-flight aviary; all listed species reported in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Blue-and-Yellow Macaw",
+        "Galah"
+      ],
+      "evidence": [
+        {
+          "zoo": "Helsingborg Djurpark",
+          "country": "Sweden",
+          "date": "2024-11-08",
+          "source": "https://www.zoochat.com/community/media/helsingborg-djurpark-free-flight-aviary.761901/",
+          "note": "Visitor-documented free-flight aviary; all listed species reported in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Blue-and-Yellow Macaw",
+        "Senegal Parrot"
+      ],
+      "evidence": [
+        {
+          "zoo": "Helsingborg Djurpark",
+          "country": "Sweden",
+          "date": "2024-11-08",
+          "source": "https://www.zoochat.com/community/media/helsingborg-djurpark-free-flight-aviary.761901/",
+          "note": "Visitor-documented free-flight aviary; all listed species reported in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Galah",
+        "Senegal Parrot"
+      ],
+      "evidence": [
+        {
+          "zoo": "Helsingborg Djurpark",
+          "country": "Sweden",
+          "date": "2024-11-08",
+          "source": "https://www.zoochat.com/community/media/helsingborg-djurpark-free-flight-aviary.761901/",
+          "note": "Visitor-documented free-flight aviary; all listed species reported in the same exhibit."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Grey Peacock-Pheasant",
+        "Reeves's Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Riga Zoo",
+          "country": "Latvia",
+          "date": "2025-06-09",
+          "source": "https://www.zoochat.com/community/media/categories/rigas-zoologiskais-darzs.1032/?order=view_count&page=20",
+          "note": "Visitor photograph title identifies a shared aviary; comment reports directly observing Grey Peacock-Pheasant and Reeves’s Pheasant; Great Blue Turaco from exhibit identification."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Grey Peacock-Pheasant",
+        "Great Blue Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Riga Zoo",
+          "country": "Latvia",
+          "date": "2025-06-09",
+          "source": "https://www.zoochat.com/community/media/categories/rigas-zoologiskais-darzs.1032/?order=view_count&page=20",
+          "note": "Visitor photograph title identifies a shared aviary; comment reports directly observing Grey Peacock-Pheasant and Reeves’s Pheasant; Great Blue Turaco from exhibit identification."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Reeves's Pheasant",
+        "Great Blue Turaco"
+      ],
+      "evidence": [
+        {
+          "zoo": "Riga Zoo",
+          "country": "Latvia",
+          "date": "2025-06-09",
+          "source": "https://www.zoochat.com/community/media/categories/rigas-zoologiskais-darzs.1032/?order=view_count&page=20",
+          "note": "Visitor photograph title identifies a shared aviary; comment reports directly observing Grey Peacock-Pheasant and Reeves’s Pheasant; Great Blue Turaco from exhibit identification."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Grey Peacock-Pheasant",
+        "Glossy Ibis"
+      ],
+      "evidence": [
+        {
+          "zoo": "Skærup Zoo",
+          "country": "Denmark",
+          "date": "2019-07-10",
+          "source": "https://www.zoochat.com/community/media/skaerup-zoo-wader-aviary.456703/",
+          "note": "Photographed wader aviary with explicit species list."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Indian Peafowl",
+        "Golden Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Perth Zoo",
+          "country": "Australia",
+          "date": "2025-12-13",
+          "source": "https://www.zoochat.com/community/media/walkthrough-aviary.852583/",
+          "note": "Visitor photograph and description of same walk-through aviary."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Indian Peafowl",
+        "Blue-and-Yellow Macaw"
+      ],
+      "evidence": [
+        {
+          "zoo": "Perth Zoo",
+          "country": "Australia",
+          "date": "2025-12-13",
+          "source": "https://www.zoochat.com/community/media/walkthrough-aviary.852583/",
+          "note": "Visitor photograph and description of same walk-through aviary."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Grey Peacock-Pheasant",
+        "Helmeted Guineafowl"
+      ],
+      "evidence": [
+        {
+          "zoo": "Naypyitaw Zoo",
+          "country": "Myanmar",
+          "date": "2014-01-14",
+          "source": "https://www.zoochat.com/community/threads/the-zoos-of-burma-5-naypyitaw-zoo-14-january-2014.362193/",
+          "note": "Visitor personally observed species within the same large walk-through aviary."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Grey Peacock-Pheasant",
+        "Common Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Naypyitaw Zoo",
+          "country": "Myanmar",
+          "date": "2014-01-14",
+          "source": "https://www.zoochat.com/community/threads/the-zoos-of-burma-5-naypyitaw-zoo-14-january-2014.362193/",
+          "note": "Visitor personally observed species within the same large walk-through aviary."
+        }
+      ]
+    },
+    {
+      "animals": [
+        "Helmeted Guineafowl",
+        "Common Pheasant"
+      ],
+      "evidence": [
+        {
+          "zoo": "Naypyitaw Zoo",
+          "country": "Myanmar",
+          "date": "2014-01-14",
+          "source": "https://www.zoochat.com/community/threads/the-zoos-of-burma-5-naypyitaw-zoo-14-january-2014.362193/",
+          "note": "Visitor personally observed species within the same large walk-through aviary."
+        }
+      ]
     }
   ],
   "proxy_compatibility": {
     "enabled": true,
     "mode": "named_group_rules",
-    "description": "Direct compatible_pairs remain evidence-backed source-of-truth pairs. Named gameplay groups may use complete within-group compatibility or explicit group links, avoiding hundreds of enumerated proxy pairs.",
+    "description": "Direct compatible_pairs remain evidence-backed source-of-truth pairs. Named gameplay groups may use complete within-group compatibility or explicit group links, avoiding hundreds of enumerated proxy pairs. Tropical butterfly proxy models free-flight multi-species tropical butterfly houses; it does not imply compatibility with other animal classes or identical larval host plants.",
     "groups": {
       "tamarins": [
         "Golden-Handed Tamarin",
@@ -38812,7 +39329,8 @@
         "Spotted Pond Turtle",
         "West African Mud Turtle",
         "Four-Eyed Turtle",
-        "Spotted Turtle"
+        "Spotted Turtle",
+        "Pond Slider"
       ],
       "south_american_water_turtle_profile": [
         "Pond Slider",
@@ -38993,6 +39511,45 @@
       ],
       "butterfly_house_linnaeus_sloth": [
         "Linneaus's Two-Toed Sloth"
+      ],
+      "butterfly_house_red_necked_wallaby": [
+        "Red-Necked Wallaby"
+      ],
+      "butterfly_house_indian_muntjac": [
+        "Indian Muntjac"
+      ],
+      "butterfly_house_empuriabrava_african_spurred_tortoise": [
+        "African Spurred Tortoise"
+      ],
+      "butterfly_house_empuriabrava_blue_throated_macaw": [
+        "Blue-Throated Macaw"
+      ],
+      "butterfly_house_empuriabrava_orange_winged_amazon": [
+        "Orange-Winged Amazon"
+      ],
+      "butterfly_house_empuriabrava_african_grey_parrot": [
+        "African Grey Parrot"
+      ],
+      "butterfly_house_empuriabrava_scarlet_ibis": [
+        "Scarlet Ibis"
+      ],
+      "butterfly_house_white_throated_toucan": [
+        "White-Throated Toucan"
+      ],
+      "butterfly_house_water_turtles": [
+        "Pond Slider",
+        "European Pond Turtle",
+        "Common Musk Turtle",
+        "False Map Turtle",
+        "Painted Turtle",
+        "Florida Redbelly Turtle",
+        "Chinese Stripe-Necked Turtle",
+        "Chinese Pond Turtle",
+        "African Helmeted Turtle",
+        "Spotted Pond Turtle",
+        "West African Mud Turtle",
+        "Four-Eyed Turtle",
+        "Spotted Turtle"
       ]
     },
     "complete_groups": [
@@ -39518,6 +40075,106 @@
         "sources": [
           "https://www.discoveranimals.co.uk/news/sheffield-welcome-new-sloth-tropical-butterfly-house/",
           "https://www.butterflyhouse.co.uk/our-park/our-animals/beautiful-butterflies/"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_red_necked_wallaby",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Butterfly Park Empuriabrava officially documents tropical butterflies and Red-necked Wallabies within its 2,000 m² tropical greenhouse, with free-roaming animals. This supports managed shared tropical-house use, not proof of unrestricted access to every microhabitat or that each inventory butterfly species was simultaneously present. Adult butterfly flight-space only; larvae and pupae require protection.",
+        "sources": [
+          "https://www.butterflypark.es/en/the-park/",
+          "https://www.butterflypark.es/en/guided-visits/"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_indian_muntjac",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Butterfly Park Empuriabrava operates a shared tropical greenhouse with free-flying butterflies and free-roaming mammals. Regional tourism description identifies Indian Muntjac among inhabitants, and visitor guide describes muntjacs moving freely through the tropical vegetation. Evidence is for managed shared greenhouse, not guaranteed contact in every sub-zone or safety of butterfly larvae/pupae.",
+        "sources": [
+          "https://www.butterflypark.es/en/the-park/",
+          "https://www.festescatalunya.com/butterfly-park/",
+          "https://buildyourownfamilytrip.com/guides/butterfly-park-empuriabrava-with-kids"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_empuriabrava_african_spurred_tortoise",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Butterfly Park Empuriabrava: a 2024 visitor photo inventory identifies African Spurred Tortoise at the park, whose official website describes butterflies and other animals in a 2,000 m² tropical greenhouse. Park-level greenhouse evidence, NOT proof of unrestricted shared space or butterfly safety. Adult flight area only; protect larvae and pupae.",
+        "sources": [
+          "https://www.flickr.com/photos/45260725@N08/sets/72177720321025285",
+          "https://www.butterflypark.es/en/the-park/"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_empuriabrava_blue_throated_macaw",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Butterfly Park Empuriabrava: a 2024 visitor photo inventory identifies Blue-Throated Macaw at the park, whose official website describes butterflies and other animals in a 2,000 m² tropical greenhouse. Park-level greenhouse evidence, NOT proof of unrestricted shared space or butterfly safety. Adult flight area only; protect larvae and pupae.",
+        "sources": [
+          "https://www.flickr.com/photos/45260725@N08/sets/72177720321025285",
+          "https://www.butterflypark.es/en/the-park/"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_empuriabrava_orange_winged_amazon",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Butterfly Park Empuriabrava: a 2024 visitor photo inventory identifies Orange-Winged Amazon at the park, whose official website describes butterflies and other animals in a 2,000 m² tropical greenhouse. Park-level greenhouse evidence, NOT proof of unrestricted shared space or butterfly safety. Adult flight area only; protect larvae and pupae.",
+        "sources": [
+          "https://www.flickr.com/photos/45260725@N08/sets/72177720321025285",
+          "https://www.butterflypark.es/en/the-park/"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_empuriabrava_african_grey_parrot",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Butterfly Park Empuriabrava: a 2024 visitor photo inventory identifies African Grey Parrot at the park, whose official website describes butterflies and other animals in a 2,000 m² tropical greenhouse. Park-level greenhouse evidence, NOT proof of unrestricted shared space or butterfly safety. Adult flight area only; protect larvae and pupae.",
+        "sources": [
+          "https://www.flickr.com/photos/45260725@N08/sets/72177720321025285",
+          "https://www.butterflypark.es/en/the-park/"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_empuriabrava_scarlet_ibis",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Butterfly Park Empuriabrava: a 2024 visitor photo inventory identifies Scarlet Ibis at the park, whose official website describes butterflies and other animals in a 2,000 m² tropical greenhouse. Park-level greenhouse evidence, NOT proof of unrestricted shared space or butterfly safety. Adult flight area only; protect larvae and pupae.",
+        "sources": [
+          "https://www.flickr.com/photos/45260725@N08/sets/72177720321025285",
+          "https://www.butterflypark.es/en/the-park/"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_white_throated_toucan",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Butterfly Park Empuriabrava officially describes butterflies and toucans in its tropical greenhouse, and regional tourism specifically identifies the white-breasted toucan (Ramphastos tucanus), also known as White-Throated Toucan. A local account describes butterflies and birds living freely in the greenhouse. This supports managed shared adult flight space, not universal safety for eggs, larvae or every butterfly species; toucans can prey on smaller animals.",
+        "sources": [
+          "https://www.butterflypark.es/en/",
+          "https://www.festescatalunya.com/butterfly-park/"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "red_footed_tortoises",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Tom Allen Memorial Butterfly House (Cape Coral, Florida): June 2024 visitor specifically describes the resident Red-footed Tortoise as a roommate of the butterflies. This is first-hand visitor evidence of a mixed butterfly-house setting, not an official species inventory or proof of safe cohabitation for all butterfly life stages. Protect eggs, caterpillars and pupae; adult free-flight house only.",
+        "sources": [
+          "https://www.tripadvisor.com/Attraction_Review-g34118-d7702063-Reviews-Tom_Allen_Memorial_Butterfly_House-Cape_Coral_Florida.html"
+        ]
+      },
+      {
+        "from": "butterflies",
+        "to": "butterfly_house_water_turtles",
+        "mode": "managed_tropical_butterfly_house_proxy",
+        "note": "Gameplay generalization for adult free-flying butterflies with small/medium freshwater turtles housed in accessible aquatic ponds within managed butterfly conservatories. Sheffield Tropical Butterfly House maps terrapins and an open pond inside its Butterfly House; Butterfly House & Aquarium Sioux Falls explicitly lists red-eared/yellow-bellied sliders and painted turtles in its Conservatory pond. Evidence does not verify all 13 turtle species individually with butterflies; protect eggs, larvae and pupae, and provide separate aquatic habitat and basking sites. Excludes large, predatory, marine, softshell and land tortoises.",
+        "sources": [
+          "https://www.butterflyhouse.co.uk/uploads/files/TBH%20A4%202pp%20MAP%20LEAFLET%20MARCH2026%20update%205.pdf",
+          "https://www.greatzoo.org/butterfly-house-aquarium/"
         ]
       }
     ]
@@ -45601,6 +46258,99 @@
       "added_proxy_pairs": 29,
       "evidence_level": "official shared greenhouse species listing",
       "caveat": "Managed adult butterfly habitat only; not species-by-species observation."
+    },
+    "butterfly_pantropica_review_2026_10_12": {
+      "status": "reviewed_no_new_links",
+      "reason": "Pantropica officially places butterflies in Vlinderica and tamarins, marmosets and violet turacos in Amazonia; park-wide holdings do not demonstrate same enclosure.",
+      "sources": [
+        "https://pantropica.nl/ontdek-het-park/onze-continenten/vlindertuin/",
+        "https://pantropica.nl/ontdek-het-park/onze-continenten/amazonia/",
+        "https://pantropica.nl/en/discover-the-park/our-animals/"
+      ]
+    },
+    "butterfly_tropical_house_pass5": {
+      "new_group_links": 1,
+      "added_species": [
+        "White-Throated Toucan"
+      ],
+      "excluded": [
+        "Victoria Crowned Pigeon (absent from inventory)",
+        "Red-Footed Tortoise (not confirmed in same free-flight exhibit)",
+        "turacos (species and shared exhibit not confirmed)",
+        "tamarins and agoutis (shared flight space not confirmed)"
+      ]
+    },
+    "butterfly_research_pass7": {
+      "location": "Tropical Butterfly House, Sheffield, UK",
+      "source_urls": [
+        "https://www.butterflyhouse.co.uk/our-park/our-animals/exotic-creatures/",
+        "https://www.butterflyhouse.co.uk/uploads/files/tropical-butterfly-house-leaflet-with-map.pdf"
+      ],
+      "findings": [
+        {
+          "species": "Spectacled Caiman",
+          "inventory_match": true,
+          "decision": "hold",
+          "reason": "Official animal list confirms species; map places caimans in Butterfly House, but aquatic habitat is likely contained and does not establish unrestricted cohabitation."
+        },
+        {
+          "species": "Guppy",
+          "inventory_match": false,
+          "decision": "exclude"
+        },
+        {
+          "species": "Goldfish",
+          "inventory_match": false,
+          "decision": "exclude"
+        },
+        {
+          "species": "Koi Carp",
+          "inventory_match": false,
+          "decision": "exclude"
+        }
+      ],
+      "new_proxy_links": 0
+    },
+    "butterfly_research_pass8": {
+      "date": "2026-10-12",
+      "new_proxy_links": 0,
+      "findings": [
+        {
+          "site": "Stratford-upon-Avon Butterfly Farm",
+          "finding": "Official visitor information explicitly confirms free-roaming Green Iguanas and unspecified seed-eating birds in the butterfly Rainforest Flight Area, plus Epipedobates tricolor frogs. Existing Green Iguana proxy link is supported; bird species unidentified and frog absent from inventory. Spectacled Caiman is in a separate Rainforest Realm display, not evidence for direct butterfly cohabitation.",
+          "source": "https://www.butterflyfarm.co.uk/attraction/plan-your-visit/information"
+        },
+        {
+          "site": "ARTIS Forest House",
+          "finding": "Official Forest House description confirms free-roaming emperor tamarins, pygmy marmosets, sloths and birds but does not mention butterflies; do not add tamarin links.",
+          "source": "https://www.artis.nl/en/artis-zoo/what-to-explore-in-artis-zoo/forest-house"
+        },
+        {
+          "site": "Tropical Butterfly House Sheffield",
+          "finding": "Official exhibit map locates agoutis outside Butterfly House, and caimans/terrapins in aquatic displays within Butterfly House; no unrestricted cohabitation established.",
+          "source": "https://www.butterflyhouse.co.uk/uploads/files/tropical-butterfly-house-leaflet-with-map.pdf"
+        }
+      ]
+    },
+    "butterfly_water_turtles_pass9": {
+      "new_group": "butterfly_house_water_turtles",
+      "members": [
+        "Pond Slider",
+        "European Pond Turtle",
+        "Common Musk Turtle",
+        "False Map Turtle",
+        "Painted Turtle",
+        "Florida Redbelly Turtle",
+        "Chinese Stripe-Necked Turtle",
+        "Chinese Pond Turtle",
+        "African Helmeted Turtle",
+        "Spotted Pond Turtle",
+        "West African Mud Turtle",
+        "Four-Eyed Turtle",
+        "Spotted Turtle"
+      ],
+      "evidence_level": "group-level managed-house inference; not species-by-species confirmed",
+      "new_group_links": 1
     }
   }
 }

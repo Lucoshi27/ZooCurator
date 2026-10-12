@@ -2265,28 +2265,36 @@ function truePopulationGroupSizeStatus(animal){
 function trueKnownSexLegalPopulation(animal,seed=''){
     const profile=truePopulationProfile(animal),template=TRUE_POPULATION_PROFILE_TEMPLATES[profile.template]||TRUE_POPULATION_PROFILE_TEMPLATES.pair;
     const structures=Array.isArray(profile.structures)&&profile.structures.length?profile.structures:template.structures;
-    const ordered=[...structures].sort((a,b)=>
-        seededRoll(`starter-structure|${seed}|${JSON.stringify(a)}`).roll-
-        seededRoll(`starter-structure|${seed}|${JSON.stringify(b)}`).roll);
-    for(const structure of ordered){
+    // Opening groups should be modest, even when a profile permits very large herds.
+    // Keep the profile's legal minimum: never manufacture an undersized group merely
+    // to satisfy the preferred opening size.
+    const candidates=[];
+    for(const structure of structures){
         const totalRange=truePopulationStructureTotalRange(structure,profile);
         const male=truePopulationStructureBounds(structure,profile,'males');
         const female=truePopulationStructureBounds(structure,profile,'females');
-        const lo=Math.max(1,totalRange[0]),hi=Math.min(totalRange[1],Math.max(lo,12));
-        const totals=[...Array(Math.max(1,hi-lo+1)).keys()].map(i=>lo+i).sort((a,b)=>
-            seededRoll(`starter-total|${seed}|${a}`).roll-seededRoll(`starter-total|${seed}|${b}`).roll);
-        for(const total of totals){
+        const lo=Math.max(1,totalRange[0]),hi=Math.min(totalRange[1],24);
+        for(let total=lo;total<=hi;total++){
             const mLo=Math.max(0,male[0],total-(Number.isFinite(female[1])?female[1]:total));
             const mHi=Math.min(total,Number.isFinite(male[1])?male[1]:total,total-female[0]);
             if(mLo>mHi)continue;
-            const span=mHi-mLo+1;
-            const m=mLo+Math.floor(seededRoll(`starter-sex|${seed}|${total}`).roll*span);
-            const population={males:m,females:total-m,unknown:0};
-            const probe={...animal,population};
-            if(truePopulationGroupSizeStatus(probe).valid)return population;
+            for(let m=mLo;m<=mHi;m++){
+                const population={males:m,females:total-m,unknown:0};
+                if(truePopulationGroupSizeStatus({...animal,population}).valid){
+                    const preferred=total<=4?0:total<=6?3:20+(total-7)*4;
+                    const balance=Math.abs(m-(total-m))*.12;
+                    const tie=seededRoll(`opening-pop|${seed}|${animalCardKey(animal)}|${total}|${m}`).roll;
+                    candidates.push({population,score:preferred+balance+tie*2});
+                }
+            }
         }
     }
-    for(let total=1;total<=20;total++)for(let m=0;m<=total;m++){
+    if(candidates.length){
+        candidates.sort((a,b)=>a.score-b.score);
+        return candidates[0].population;
+    }
+    // Retain the original safety fallback for incomplete or unusual profiles.
+    for(let total=1;total<=24;total++)for(let m=0;m<=total;m++){
         const population={males:m,females:total-m,unknown:0};
         if(truePopulationGroupSizeStatus({...animal,population}).valid)return population;
     }
@@ -7096,8 +7104,14 @@ function normaliseTrueCalendarState() {
     if (!Array.isArray(state.trueEvents.items)) state.trueEvents.items = [];
     if (!Number.isFinite(Number(state.trueEvents.nextId))) state.trueEvents.nextId = 1;
     if (!state.trueEvents.lastGeneratedDate) state.trueEvents.lastGeneratedDate = state.trueCalendar.date;
-    normaliseTrueMarketplaceState();
-    normaliseTrueRealZooWorld();
+    // Calendar reads occur throughout accelerated simulation. Marketplace
+    // normalization walks every listing, offer and want; it is not calendar
+    // work and must not run on each clock/event-state lookup. Dedicated
+    // Marketplace entry points continue to normalize their own data.
+    if(!state.trueMarketplace || typeof state.trueMarketplace!=='object' || Array.isArray(state.trueMarketplace))
+        normaliseTrueMarketplaceState();
+    if(!state.trueRealZooWorld || typeof state.trueRealZooWorld!=='object' || Array.isArray(state.trueRealZooWorld))
+        normaliseTrueRealZooWorld();
     return state.trueCalendar;
 }
 
@@ -7117,8 +7131,13 @@ function resetTrueCalendarSimulation() {
     state.trueDaytimeActivity = { generatedKeys: [], round: null };
     state.trueMarketplace = { listings: [], wants: [], playerListings: [], nextPlayerListingId: 1, nextListingId: 1, lastRefreshMonth: '', lastRollingRefreshDate: '', rollingLifecycleVersion: 1, initialized: false };
     state.trueRelationships = {};
+    // A new zoo must never inherit transfer records from a previous playthrough.
+    // Previously only proposals were cleared, leaving orphaned transfers with
+    // arrival dates and source commitments that could produce unexpected animals.
     state.trueTransferProposals = [];
     state.trueTransferProposalNextId = 1;
+    state.trueTransfers = [];
+    state.trueTransferNextId = 1;
     state.trueRealZooWorld = { zoos:{}, nextSweepIndex:0 };
     realZooVisitLayouts?.clear?.();
     if (state.gameMode === 'true') {
@@ -7406,8 +7425,16 @@ function scheduleTrueEvent({ date, type='info', title='Activity', message='', ac
     normaliseTrueCalendarState();
     if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date || ''))) return null;
     const event = { id: `te-${Date.now()}-${Math.random().toString(36).slice(2,8)}`, date, type, title, message, actionLabel, action, pause: !!pause, payload: payload && typeof payload === 'object' ? cloneForSave(payload) : null };
-    state.trueCalendar.scheduledEvents.push(event);
-    state.trueCalendar.scheduledEvents.sort((a,b) => String(a.date).localeCompare(String(b.date)));
+    // Insert chronologically without sorting the entire schedule. Equal-date
+    // events remain in insertion order, as with the previous stable sort.
+    const scheduled=state.trueCalendar.scheduledEvents;
+    let low=0,high=scheduled.length;
+    while(low<high){
+        const mid=(low+high)>>>1;
+        if(String(scheduled[mid].date).localeCompare(String(date))<=0)low=mid+1;
+        else high=mid;
+    }
+    scheduled.splice(low,0,event);
     return event;
 }
 
@@ -7442,10 +7469,25 @@ function normaliseTrueEventState(){
     if(!Array.isArray(events.items))events.items=[];
     events.nextId=Math.max(1,Number(events.nextId)||1);
     if(!Array.isArray(events.recentFamilies))events.recentFamilies=[];
-    events.recentFamilies=events.recentFamilies.filter(Boolean).slice(-6);
+    // Compact these small, frequently normalized collections in place rather
+    // than allocating replacement arrays on every event-state read.
+    let familyWrite=0;
+    for(let i=0;i<events.recentFamilies.length;i++){
+        const family=events.recentFamilies[i];
+        if(family)events.recentFamilies[familyWrite++]=family;
+    }
+    if(familyWrite>6){
+        events.recentFamilies.copyWithin(0,familyWrite-6,familyWrite);
+        familyWrite=6;
+    }
+    events.recentFamilies.length=familyWrite;
     if(!Array.isArray(events.modifiers))events.modifiers=[];
-
-    events.modifiers=events.modifiers.filter(mod=>mod&&(!mod.untilDate||mod.untilDate>=today));
+    let modifierWrite=0;
+    for(let i=0;i<events.modifiers.length;i++){
+        const mod=events.modifiers[i];
+        if(mod&&(!mod.untilDate||mod.untilDate>=today))events.modifiers[modifierWrite++]=mod;
+    }
+    events.modifiers.length=modifierWrite;
     return events;
 }
 // Single insertion point for True Mode event records. Keep generators responsible
@@ -7524,6 +7566,10 @@ const TRUE_EVENT_TERMINAL_STATUSES=new Set(['resolved','declined','acknowledged'
 function trueEventLifecycleCleanup(today=normaliseTrueCalendarState().date){
     const events=normaliseTrueEventState();
     const removedIds=new Set();
+    // ISO date strings sort chronologically. Compute the two retention cutoffs
+    // once instead of parsing two Dates for every historical terminal event.
+    const routineCutoff=addTrueDays(today,-TRUE_ROUTINE_EVENT_RETENTION_DAYS);
+    const terminalCutoff=addTrueDays(today,-TRUE_EVENT_TERMINAL_RETENTION_DAYS);
     events.items=events.items.filter(event=>{
         if(!event||typeof event!=='object')return false;
         if(!TRUE_EVENT_TERMINAL_STATUSES.has(String(event.status||'')))return true;
@@ -7533,7 +7579,9 @@ function trueEventLifecycleCleanup(today=normaliseTrueCalendarState().date){
         // but do not retain them forever: they never represent live decisions.
         const retention=event.status==='superseded'||(event.kind==='daily-zoo-update'&&!event.choiceType)
             ?TRUE_ROUTINE_EVENT_RETENTION_DAYS:TRUE_EVENT_TERMINAL_RETENTION_DAYS;
-        if(trueDaysBetween(terminalDate,today)<=retention)return true;
+        // Future-dated records remain retained, matching trueDaysBetween's
+        // previous clamp to zero. Strict comparison retains the cutoff day.
+        if(terminalDate>=(retention===TRUE_ROUTINE_EVENT_RETENTION_DAYS?routineCutoff:terminalCutoff))return true;
         removedIds.add(String(event.id||''));
         return false;
     });
@@ -7752,38 +7800,82 @@ function trueEventZooTypeAffinityWeight(profile){
     if(partnerSpecific.some(type=>playerFamilies.has(family(type))))return 1.55;
     return .82;
 }
-function trueEventGeographyWeight(record,rel=null){
-    if(!record)return 1;
-    const band=Math.max(0,Math.min(4,realZooGeographyBand(record)));
-    const prestige=Math.max(0,visibleZooPrestige());
+// Per-selection context: expensive zoo-wide prestige, relationship maturity and
+// partner recency scans are invariant while one candidate pool is weighted.
+// One event-history pass for all partner recency penalties in a selection.
+// Preserve the existing .12 floor and event ordering exactly.
+function trueEventPartnerRecencyIndex(today){
+    const recency=new Map();
+    for(const event of normaliseTrueEventState().items||[]){
+        if(!event?.sourceKey||!event.createdDate)continue;
+        const age=trueDaysBetween(event.createdDate,today);
+        if(age<0||age>30)continue;
+        const factor=age<=2?.24:age<=7?.52:age<=14?.76:.9;
+        const previous=recency.has(event.sourceKey)?recency.get(event.sourceKey):1;
+        recency.set(event.sourceKey,Math.max(.12,previous*factor));
+    }
+    return recency;
+}
+function trueEventWeightContext(today=normaliseTrueCalendarState().date){
+    const actual=(state.gameMode==='true'&&!state.sandboxMode&&!state.visitingZoo)?visibleZooPrestige():currentZooPrestige();
     const relationships=Object.values(normaliseTrueRelationships()).filter(r=>
         (Number(r?.trust)||0)>0||(Number(r?.familiarity)||0)>0||(Number(r?.meaningfulTransfers)||0)>0
     ).length;
-    const maturity=Math.max(0,Math.min(1,prestige/180+relationships/24));
+    // Build partner recency once per selection, instead of rescanning the full
+    // event history separately for each candidate zoo.
+    const recency=trueEventPartnerRecencyIndex(today);
+    return {
+        window:realZooPrestigeWindow(actual,playerTradeAccessPrestige(actual)),
+        maturity:Math.max(0,Math.min(1,Math.max(0,visibleZooPrestige())/180+relationships/24)),
+        progression:truePlayerOfferProgression(),
+        recency,today,
+        // A partner appears once per species in the candidate pool. Zoo type
+        // affinity depends on the partner, not the individual animal.
+        zooTypeWeights:new Map()
+    };
+}
+function trueEventGeographyWeight(record,rel=null,context=null){
+    if(!record)return 1;
+    const band=Math.max(0,Math.min(4,realZooGeographyBand(record)));
+    const maturity=context?context.maturity:(()=>{
+        const prestige=Math.max(0,visibleZooPrestige());
+        const relationships=Object.values(normaliseTrueRelationships()).filter(r=>
+            (Number(r?.trust)||0)>0||(Number(r?.familiarity)||0)>0||(Number(r?.meaningfulTransfers)||0)>0
+        ).length;
+        return Math.max(0,Math.min(1,prestige/180+relationships/24));
+    })();
     const early=[5.6,3.5,2.05,.58,.16];
     const mature=[3.15,2.35,1.65,.92,.48];
     let weight=early[band]+(mature[band]-early[band])*maturity;
     if(rel&&(Number(rel.trust)||0)>=20)weight*=1+Math.min(.3,(Number(rel.trust)||0)/220);
     return weight;
 }
-function trueEventCandidateWeight(listing){
+function trueEventCandidateWeight(listing,context=null){
     const rel=trueRelationshipForProfile(listing.profile,listing.sourceKey);
     const trust=Number(rel.trust)||0, familiarity=Number(rel.familiarity)||0;
     const category=String(listing.animal?.category||'');
     const categoryHistory=Number(rel.categoryCooperation?.[category])||0;
     const record=listing.record||null;
-    const actual=(state.gameMode==='true'&&!state.sandboxMode&&!state.visitingZoo)?visibleZooPrestige():currentZooPrestige();
-    const window=realZooPrestigeWindow(actual,playerTradeAccessPrestige(actual));
+    const actual=context?null:((state.gameMode==='true'&&!state.sandboxMode&&!state.visitingZoo)?visibleZooPrestige():currentZooPrestige());
+    const window=context?context.window:realZooPrestigeWindow(actual,playerTradeAccessPrestige(actual));
     const prestigeWeight=record?realZooPrestigeSimilarityWeight(record,window):1;
-    const proximityWeight=trueEventGeographyWeight(record,rel);
-    const zooTypeWeight=trueEventZooTypeAffinityWeight(listing.profile);
+    const proximityWeight=trueEventGeographyWeight(record,rel,context);
+    let zooTypeWeight;
+    if(context?.zooTypeWeights){
+        if(!context.zooTypeWeights.has(listing.sourceKey))
+            context.zooTypeWeights.set(listing.sourceKey,trueEventZooTypeAffinityWeight(listing.profile));
+        zooTypeWeight=context.zooTypeWeights.get(listing.sourceKey);
+    }else zooTypeWeight=trueEventZooTypeAffinityWeight(listing.profile);
     const favourites=Array.isArray(listing.profile?.favourites)?listing.profile.favourites:[];
     const specialistWeight=favourites.some(c=>String(c).toLowerCase()===category.toLowerCase())?1.22:1;
     const successfulTransfers=Math.max(0,Number(rel.meaningfulTransfers)||0);
     const cooperationWeight=1+Math.min(.28,successfulTransfers*.05);
-    const recencyWeight=trueEventPartnerRecencyWeight(listing.sourceKey);
+    let recencyWeight;
+    if(context){
+        recencyWeight=context.recency.get(listing.sourceKey)??1;
+    }else recencyWeight=trueEventPartnerRecencyWeight(listing.sourceKey);
     const relationshipWeight=1+trust/34+Math.min(1.35,familiarity/14)+Math.min(1.1,categoryHistory*.22);
-    return relationshipWeight*prestigeWeight*proximityWeight*zooTypeWeight*specialistWeight*cooperationWeight*recencyWeight*truePlayerOfferLevelWeight(listing.animal);
+    return relationshipWeight*prestigeWeight*proximityWeight*zooTypeWeight*specialistWeight*cooperationWeight*recencyWeight*truePlayerOfferLevelWeight(listing.animal,context?.progression);
 }
 
 function trueEventProfileIsAquarium(profile,record=null){
@@ -7870,9 +7962,14 @@ function trueEventRequestCandidates(){
     for(let index=0;index<records.length;index++){
         const record=records[index],profile=realZooProfile(record,index),sourceKey=realZooHoldingKey(record);
         const stock=realZooTradeAnimals(record,false),holdingKeys=new Set(stock.map(animalCardKey));
+        // These properties are invariant for every player animal considered
+        // against this partner. Resolve them once per zoo, not per species.
+        const specialistCategories=new Set((profile.favourites||[]).map(c=>String(c).toLowerCase()));
+        const rel=trueRelationshipForProfile(profile,sourceKey);
+        const relationshipScore=1+(Number(rel.trust)||0)/25+Math.min(2,(Number(rel.familiarity)||0)/10);
         for(const animal of animals){
             const key=animalCardKey(animal),category=String(animal.category||'');
-            const specialist=(profile.favourites||[]).some(c=>String(c).toLowerCase()===category.toLowerCase());
+            const specialist=specialistCategories.has(category.toLowerCase());
             const lazy=trueWorldPopulation(record,animal,{create:false});
             let want=null,needScore=0;
             if(lazy){
@@ -7891,8 +7988,6 @@ function trueEventRequestCandidates(){
             }
             if(!want)continue;
             want.zooKey=sourceKey;want.status='active';want.generatedByEvent=true;
-            const rel=trueRelationshipForProfile(profile,sourceKey);
-            const relationshipScore=1+(Number(rel.trust)||0)/25+Math.min(2,(Number(rel.familiarity)||0)/10);
             const jitter=.75+seededRoll(`event-request-candidate|${sourceKey}|${key}|${today}`).roll*.5;
             result.push({want,animal,profile,sourceKey,record,eventWeight:needScore*relationshipScore*jitter});
         }
@@ -7990,6 +8085,33 @@ function trueCreateIncomingRequestEvent(candidate,today){
     trueQueueEventPresentation(event);
     return event;
 }
+// Reward meaningful population donations without rewarding oversized or unsuitable groups.
+// Total trust for fulfilling a direct animal request, on the 0–100 relationship scale.
+// Reward valid social structure rather than raw headcount; repeat donations diminish.
+function trueRequestPopulationTrustReward(animal,population,relationship){
+    const sent=normaliseTruePopulationCounts(population);
+    const total=sent.males+sent.females+sent.unknown;
+    if(total<=0)return 0;
+    const profile=truePopulationProfile(animal);
+    let reward=1;
+    if(!profile.fallback && sent.unknown===0){
+        const matches=(row)=>{
+            const within=(n,range)=>Array.isArray(range)?n>=Number(range[0])&&n<=Number(range[1]):(range==null||n===Number(range));
+            return within(sent.males,row.males)&&within(sent.females,row.females)&&within(total,row.total);
+        };
+        const valid=(profile.structures||[]).filter(matches);
+        if(valid.length){
+            if(total===2){
+                reward=valid.some(row=>(row.profileName==='pair'||row.management==='pair')&&sent.males===1&&sent.females===1)?2:1.5;
+            }else if(total>=5)reward=3;
+            else if(total>=3)reward=2.5;
+        }
+    }
+    // Only repeat successful transfers of the same species to the same zoo count.
+    const species=animalDisplayName(animal);
+    const previous=(relationship?.history||[]).filter(row=>row?.type==='animal-request-fulfilled' && row?.species===species).length;
+    return Math.max(.5,reward-Math.min(1.5,previous*.5));
+}
 function trueAnimalRequestSendPopulation(event,population){
     if(!event||event.kind!=='animal-request'||event.status!=='active')return false;
     const animal=trueEventRequestedPlayerAnimal(event);
@@ -8010,9 +8132,12 @@ function trueAnimalRequestSendPopulation(event,population){
     });
     event.status='resolved';event.resolvedDate=normaliseTrueCalendarState().date;
     event.sentPopulation=cloneForSave(send);
+    const relation=trueRelationshipForProfile(event.profile,event.sourceKey);
+    const reward=trueRequestPopulationTrustReward(event.animal,send,relation);
     trueRelationshipRecord(event.profile,event.sourceKey,'animal-request-fulfilled',
         `Sent ${truePopulationNotation(send)} ${animalDisplayName(event.animal)} after their request.`,
-        {trust:2,familiarity:1});
+        {trust:reward,familiarity:1});
+    relation.history[0].species=animalDisplayName(event.animal);
     addTrueActivity({type:'action',title:'Animal request fulfilled',
         message:`${truePopulationNotation(send)} ${animalDisplayName(event.animal)} sent to ${event.profile?.name||'the requesting zoo'}.`});
     closeTrueEventDialog(true);renderAll();renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
@@ -8061,8 +8186,8 @@ function truePlayerOfferProgression(){
     if(maxLevel>=4&&counts[4]>=3)maxLevel=5;
     return {counts,maxLevel};
 }
-function truePlayerOfferLevelWeight(animal){
-    const level=Math.max(1,Math.min(5,Number(animal?.level)||1)),max=truePlayerOfferProgression().maxLevel;
+function truePlayerOfferLevelWeight(animal,progression=null){
+    const level=Math.max(1,Math.min(5,Number(animal?.level)||1)),max=(progression||truePlayerOfferProgression()).maxLevel;
     if(level>max)return 0;
     const weights={2:{1:1,2:.18},3:{1:.48,2:1,3:.34},4:{1:.24,2:.82,3:1,4:.30},5:{1:.14,2:.62,3:1,4:.72,5:.24}};
     return Number(weights[max]?.[level]||0);
@@ -8070,10 +8195,11 @@ function truePlayerOfferLevelWeight(animal){
 // Zoo-initiated Level 2 offers unlock once the player owns a Level 2
 // animal, OR has Contact (5 trust) with the particular offering zoo.
 // Higher tiers retain the existing progression rules.
-function trueZooEventOfferTierAllowed(animal,profile,sourceKey){
-    if(!truePlayerOfferAnimalAllowed(animal))return false;
+function trueZooEventOfferTierAllowed(animal,profile,sourceKey,progression=null){
+    const current=progression||truePlayerOfferProgression();
+    if(truePlayerOfferLevelWeight(animal,current)<=0)return false;
     if(Number(animal?.level)!==2)return true;
-    if(truePlayerOfferProgression().counts[2]>0)return true;
+    if(current.counts[2]>0)return true;
     const relationship=trueRelationshipForProfile(profile,sourceKey);
     return (Number(relationship?.trust)||0)>=5;
 }
@@ -8134,29 +8260,44 @@ function trueActiveIndependentOfferKeys(){
     return trueActiveAdvertisedOfferKeys({marketplace:false});
 }
 function trueEventWorldCandidates(){
+    const progression=truePlayerOfferProgression(); // One population scan per candidate batch, not per animal.
     const records=trueEventEligibleSourceRecords('world');
     const advertisedKeys=trueActiveAdvertisedOfferKeys();
+    const today=normaliseTrueCalendarState().date;
     // Other active event types can also reserve attention for a zoo/species.
     const activeKeys=new Set(trueEventActiveItems().map(e=>trueOfferSourceSpeciesKey(e.sourceKey,e.animal)).filter(Boolean));
     const candidates=[];
+    const ownedKeys=!trueModeAllowsDuplicateSpecies()?playerOwnedTradeKeys():null;
     for(let index=0;index<records.length;index++){
         const record=records[index],sourceKey=realZooHoldingKey(record),profile=realZooProfile(record,index);
-        const stock=realZooTradeAnimals(record,true).filter(animal=>trueZooEventOfferTierAllowed(animal,profile,sourceKey));
+        // Filter immutable catalogue specs first. Only materialise animal objects
+        // for the six sampled candidates, not every holding of every zoo.
+        const stock=[];
+        for(const spec of realZooTradeSpecs(record)){
+            if(ownedKeys?.has(animalCardKey(spec)))continue;
+            if(!trueZooEventOfferTierAllowed(spec,profile,sourceKey,progression))continue;
+            stock.push(spec);
+        }
         if(!stock.length)continue;
-        const offset=Math.floor(seededRoll(`event-world-stock|${sourceKey}|${normaliseTrueCalendarState().date}`).roll*stock.length);
+        const offset=Math.floor(seededRoll(`event-world-stock|${sourceKey}|${today}`).roll*stock.length);
         for(let j=0;j<Math.min(6,stock.length);j++){
-            const animal=stock[(offset+j)%stock.length],key=`${sourceKey}|${animalCardKey(animal)}`;
+            const spec=stock[(offset+j)%stock.length],key=`${sourceKey}|${animalCardKey(spec)}`;
             if(advertisedKeys.has(key)||activeKeys.has(key))continue;
+            const animal={id:null,category:spec.category,level:spec.level,filename:spec.filename,enclosureId:null,slotIndex:null};
             candidates.push({sourceKey,profile,animal,population:normaliseTrueAnimalPopulation(animal),record});
         }
     }
     return candidates;
 }
-function trueEventRecentlyRepeated(events,candidate){
-    const recent=(events.items||[]).filter(e=>e.sourceKey===candidate.sourceKey&&animalCardKey(e.animal)===animalCardKey(candidate.animal));
-    if(!recent.length)return false;
-    const today=normaliseTrueCalendarState().date;
-    return recent.some(e=>trueDaysBetween(e.createdDate,today)<45);
+function trueEventRecentSpeciesIndex(events,today){
+    const keys=new Set();
+    for(const event of events.items||[]){
+        if(!event?.sourceKey||!event.animal||!event.createdDate)continue;
+        if(trueDaysBetween(event.createdDate,today)<45){
+            keys.add(`${event.sourceKey}|${animalCardKey(event.animal)}`);
+        }
+    }
+    return keys;
 }
 function trueEventBreedingPlausible(candidate){
     const existing=trueWorldPopulation(candidate.record,candidate.animal,{create:false});
@@ -8269,8 +8410,8 @@ function trueCreateWorldNewsEvent(candidate,today,kind){
         `${zoo} shared a ${kind.replaceAll('-',' ')} concerning ${species}.`,
         {trust:0,familiarity:.5});
     event.impactText=`Contact with ${zoo} has improved slightly.`;
-    trueRegisterEventWithActivity(events,event,{type:'information',title,message,actionLabel:'View event',action:'event'});trueEventRememberFamily(events,kind);
-    trueEventEnsurePartnerTab(event);
+    event.status='acknowledged';event.acknowledgedDate=today;event.resolvedDate=today;event.expiresDate='';
+    trueRegisterEventWithActivity(events,event,{type:'information',title,message});trueEventRememberFamily(events,kind);
     return event;
 }
 function trueScheduleEventFollowUp(event,days,type='event-follow-up'){
@@ -8650,39 +8791,41 @@ function trueCombinationOfferExhibitCandidates(){
 }
 // Suppress repeated exhibit suggestions using the persisted event history.
 // Include the target enclosure so different exhibits can still receive proposals.
-function trueCombinationOfferRecentlyUsed(sourceKey,offered,enclosureId,today){
-    const speciesKey=animalCardKey(offered);
-    return normaliseTrueEventState().items.some(event=>{
-        if(event?.kind!=='combination-offer')return false;
-        const age=trueDaysBetween(event.createdDate||today,today);
-        if(!Number.isFinite(age)||age<0)return false;
-        const sameSource=String(event.sourceKey)===String(sourceKey);
-        const sameSpecies=animalCardKey(event.animal||{})===speciesKey;
-        const sameExhibit=String(event.targetEnclosureId)===String(enclosureId);
-        // An unresolved offer must never be duplicated; declined offers get
-        // a longer cooling-off period than other resolved proposals.
-        if(event.status==='active'&&sameSource&&sameSpecies)return true;
-        if(sameSource&&sameSpecies&&sameExhibit&&age<(event.playerReply==='Declined'?60:30))return true;
-        // Give the same zoo time to come back with a genuinely new proposal.
-        if(sameSource&&age<7)return true;
-        return false;
-    });
-}
 function trueCombinationOfferCandidate(today){
     const exhibits=trueCombinationOfferExhibitCandidates();if(!exhibits.length)return null;
     const sourceRows=trueEventEligibleSourceRecords(`combination-offer|${today}`);
     if(!sourceRows.length)return null;
     const owned=playerOwnedTradeKeys();
+    const progression=truePlayerOfferProgression();
+    // Index relevant history once instead of rescanning it for each zoo/species/exhibit.
+    const recentBySource=new Map();
+    for(const event of normaliseTrueEventState().items){
+        if(event?.kind!=='combination-offer'||!event.sourceKey)continue;
+        const age=trueDaysBetween(event.createdDate||today,today);
+        if(!Number.isFinite(age)||age<0)continue;
+        const key=String(event.sourceKey);
+        if(!recentBySource.has(key))recentBySource.set(key,[]);
+        recentBySource.get(key).push({event,age,species:animalCardKey(event.animal||{})});
+    }
+    const recentlyUsed=(sourceKey,offered,enclosureId)=>{
+        const species=animalCardKey(offered);
+        return (recentBySource.get(String(sourceKey))||[]).some(({event,age,species:previous})=>{
+            if(event.status==='active'&&previous===species)return true;
+            if(previous===species&&String(event.targetEnclosureId)===String(enclosureId)&&age<(event.playerReply==='Declined'?60:30))return true;
+            return age<7;
+        });
+    };
     const candidates=[];
     for(const record of sourceRows){
         const sourceKey=realZooHoldingKey(record),profile=realZooProfile(record,0);
         const geographyBand=realZooGeographyBand(record);
-        for(const offered of realZooTradeAnimals(record,true).filter(animal=>trueZooEventOfferTierAllowed(animal,profile,sourceKey))){
+        for(const offered of realZooTradeAnimals(record,true)){
+            if(!trueZooEventOfferTierAllowed(offered,profile,sourceKey,progression))continue;
             if(!offered||owned.has(animalCardKey(offered)))continue;
             const pop=trueMarketplacePopulation(offered,profile.name,`combination|${sourceKey}|${today}|${animalCardKey(offered)}`);
             const preview={...offered,population:pop};
             for(const exhibit of exhibits){
-                if(trueCombinationOfferRecentlyUsed(sourceKey,offered,exhibit.enclosure.id,today))continue;
+                if(recentlyUsed(sourceKey,offered,exhibit.enclosure.id))continue;
                 if(!exhibit.residents.every(resident=>animalsAreCompatible(resident,preview)))continue;
                 if(!animalsFormCompatibilityChain([...exhibit.residents,preview]))continue;
                 if(!enclosureAnimalSizeSpaceStatus(exhibit.capacity,[...exhibit.residents,preview]).valid)continue;
@@ -8737,7 +8880,7 @@ function trueAcceptCombinationOffer(event){
     }
     const sourcePop=trueWorldPopulation(record,event.animal,{create:true,reason:'combination exhibit offer'});
     const available=normaliseTrueAnimalPopulation(sourcePop?.population);
-    const requested=normaliseTrueAnimalPopulation(event.population);
+    const requested=normaliseTruePopulationCounts(event.population);
     if(requested.males>available.males||requested.females>available.females||requested.unknown>available.unknown){
         alert(`${event.profile?.name||'The other zoo'} no longer has the offered population available.`);
         event.status='unavailable';event.resolvedDate=normaliseTrueCalendarState().date;
@@ -9180,10 +9323,23 @@ function trueQueueEventPresentation(event,scheduledMinute=null){
         !trueEventCanPresent(event)||
         document.getElementById('trueEventDialogOverlay')?.dataset?.eventId===String(event.id)||
         events.presentationQueue.some(row=>String(row.id)===String(event.id)))return false;
-    events.presentationQueue.push({id:event.id,scheduledAbs:trueEventAbsoluteMinute(event.createdDate,scheduledMinute)});
-    // Process the earliest due event first, even if an older save contains
-    // queued events in a different insertion order.
-    events.presentationQueue.sort((a,b)=>(Number(a.scheduledAbs)||0)-(Number(b.scheduledAbs)||0));
+    // Maintain chronological order on insertion instead of sorting the full
+    // queue every time an event is scheduled. Equal times retain FIFO order.
+    const scheduledAbs=trueEventAbsoluteMinute(event.createdDate,scheduledMinute);
+    const queue=events.presentationQueue;
+    for(let i=1;i<queue.length;i++){
+        if((Number(queue[i-1]?.scheduledAbs)||0)>(Number(queue[i]?.scheduledAbs)||0)){
+            queue.sort((a,b)=>(Number(a?.scheduledAbs)||0)-(Number(b?.scheduledAbs)||0));
+            break;
+        }
+    }
+    let low=0,high=queue.length;
+    while(low<high){
+        const mid=(low+high)>>>1;
+        if((Number(queue[mid]?.scheduledAbs)||0)<=scheduledAbs)low=mid+1;
+        else high=mid;
+    }
+    queue.splice(low,0,{id:event.id,scheduledAbs});
     setTimeout(()=>trueProcessEventPresentationQueue(),0);
     return true;
 }
@@ -9192,22 +9348,44 @@ function trueQueueEventPresentation(event,scheduledMinute=null){
 let trueEventPresentationOpening=false;
 function trueProcessEventPresentationQueue(){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return false;
+    // This runs on every real-time calendar driver callback, including callbacks
+    // that do not advance a game minute. Avoid normalizing calendar/event state
+    // when there is no popup work. Normalization does not create queue entries.
+    const pending=state.trueEvents?.presentationQueue;
+    if(!Array.isArray(pending)||pending.length===0)return false;
     const events=normaliseTrueEventState();
-    if(!Array.isArray(events.presentationQueue)||!events.presentationQueue.length)return false;
-    // Old saves can contain unsorted rows; a future-dated first row must not
-    // prevent a due event further down the queue from being shown.
-    events.presentationQueue.sort((a,b)=>(Number(a?.scheduledAbs)||0)-(Number(b?.scheduledAbs)||0));
+    // Resolve queued event IDs in one history pass instead of repeatedly
+    // scanning the full event log during cleanup, priority and cooldown checks.
+    const queuedIds=new Set((events.presentationQueue||[]).map(row=>String(row?.id||'')));
+    const queuedEvents=new Map();
+    for(const item of events.items||[]){
+        const id=String(item?.id||'');
+        if(queuedIds.has(id)&&!queuedEvents.has(id))queuedEvents.set(id,item);
+    }
+    const queuedEventById=id=>queuedEvents.get(String(id))||null;
+    // Older saves may contain unsorted rows. Check ordering cheaply and only
+    // sort when needed; newly scheduled events are already inserted in order.
+    const presentationQueue=events.presentationQueue;
+    for(let i=1;i<presentationQueue.length;i++){
+        if((Number(presentationQueue[i-1]?.scheduledAbs)||0)>(Number(presentationQueue[i]?.scheduledAbs)||0)){
+            presentationQueue.sort((a,b)=>(Number(a?.scheduledAbs)||0)-(Number(b?.scheduledAbs)||0));
+            break;
+        }
+    }
     // Saved queues may contain duplicate IDs or resolved/expired notices.
     // Remove these before checking due times so a stale future row cannot
     // block a valid event, and never present the same event twice.
     const seenQueuedIds=new Set();
-    events.presentationQueue=events.presentationQueue.filter(row=>{
-        if(!row?.id||seenQueuedIds.has(String(row.id)))return false;
-        const event=trueEventById(row.id);
-        if(!trueEventCanPresent(event))return false;
-        seenQueuedIds.add(String(row.id));
-        return true;
-    });
+    let write=0;
+    for(let read=0;read<presentationQueue.length;read++){
+        const row=presentationQueue[read];
+        if(!row?.id)continue;
+        const id=String(row.id);
+        if(seenQueuedIds.has(id)||!trueEventCanPresent(queuedEventById(id)))continue;
+        seenQueuedIds.add(id);
+        presentationQueue[write++]=row;
+    }
+    presentationQueue.length=write;
     if(!events.presentationQueue.length)return false;
     if(document.getElementById('trueEventDialogOverlay')||trueEventPresentationOpening)return false;
     if(!events.presentedEventIds||typeof events.presentedEventIds!=='object'||Array.isArray(events.presentedEventIds))events.presentedEventIds={};
@@ -9221,7 +9399,7 @@ function trueProcessEventPresentationQueue(){
     const decisionIndex=events.presentationQueue.findIndex(row=>{
         const due=Number(row?.scheduledAbs);
         if(Number.isFinite(due)&&now<due)return false;
-        const candidate=trueEventById(row?.id);
+        const candidate=queuedEventById(row?.id);
         return candidate&&!events.presentedEventIds[row.id]&&trueEventRequiresDecision(candidate);
     });
     if(decisionIndex>0){
@@ -9230,7 +9408,7 @@ function trueProcessEventPresentationQueue(){
     }
     if(decisionIndex<0){
         const approvalIndex=events.presentationQueue.findIndex(row=>{
-            const candidate=trueEventById(row.id);
+            const candidate=queuedEventById(row.id);
             return candidate?.kind==='grounds-expansion-approval'&&Number(row.scheduledAbs)<=now;
         });
         if(approvalIndex>0){
@@ -9238,14 +9416,14 @@ function trueProcessEventPresentationQueue(){
             events.presentationQueue.unshift(approval);
         }
     }
-    if(cooldownActive&&decisionIndex<0&&!events.presentationQueue.some(row=>{const e=trueEventById(row.id);return e?.kind==='grounds-expansion-approval'&&Number(row.scheduledAbs)<=now;}))return false;
+    if(cooldownActive&&decisionIndex<0&&!events.presentationQueue.some(row=>{const e=queuedEventById(row.id);return e?.kind==='grounds-expansion-approval'&&Number(row.scheduledAbs)<=now;}))return false;
     while(events.presentationQueue.length){
         const row=events.presentationQueue[0];
         if(!row){events.presentationQueue.shift();continue;}
         if(Number.isFinite(Number(row.scheduledAbs))&&now<Number(row.scheduledAbs))return false;
         events.presentationQueue.shift();
         if(events.presentedEventIds[row.id])continue;
-        const event=trueEventById(row.id);
+        const event=queuedEventById(row.id);
         if(!trueEventCanPresent(event))continue;
         if(cooldownActive&&!trueEventRequiresDecision(event)&&event.kind!=='grounds-expansion-approval'){
             events.presentationQueue.unshift(row);
@@ -9268,10 +9446,11 @@ function trueProcessEventPresentationQueue(){
                 liveEvents.presentedEventIds[event.id]=trueEventAbsoluteMinute();
                 liveEvents.lastEventPopupAbsMinute=trueEventAbsoluteMinute();
             }else{
-                const liveEvent=trueEventById(event.id);
+                const liveEvent=queuedEventById(event.id);
+                const liveState=normaliseTrueEventState();
                 if(trueEventCanPresent(liveEvent)&&
-                   !normaliseTrueEventState().presentationQueue.some(q=>String(q.id)===String(event.id))){
-                    normaliseTrueEventState().presentationQueue.unshift(row);
+                   !liveState.presentationQueue.some(q=>String(q.id)===String(event.id))){
+                    liveState.presentationQueue.unshift(row);
                 }
             }
         });
@@ -9395,7 +9574,7 @@ function trueGenerateDailyEventSlot(slotIndex=0){
             const replacement=trueEnsureDailyEvent(today,true,`duplicate-slot-${slotIndex}`,true);
             if(replacement){
                 replacement.dailyScheduledSlot=slotIndex;
-                if(replacement.kind!=='daily-zoo-update'){
+                if(replacement.kind!=='daily-zoo-update'&&!replacement.informational){
                     const replacementSchedule=trueEventRollScheduleForDate(today);
                     trueQueueEventPresentation(replacement,replacementSchedule[slotIndex]);
                 }
@@ -9407,7 +9586,7 @@ function trueGenerateDailyEventSlot(slotIndex=0){
         // Routine keeper observations are Activity-only: they occupy their
         // scheduled opportunity without opening a decision-style popup.
         // Actionable events still use the existing popup queue unchanged.
-        if(event.kind!=='daily-zoo-update')trueQueueEventPresentation(event,schedule[slotIndex]);
+        if(event.kind!=='daily-zoo-update'&&!event.informational)trueQueueEventPresentation(event,schedule[slotIndex]);
     }
     return event;
 }
@@ -9465,44 +9644,48 @@ function trueGenerateRelationshipEventForDay(rollIndex=0){
 
     // The request-candidate scan traverses partner inventories and is expensive.
     // Only build it when this roll can actually choose a request.
+    const recentSpecies=trueEventRecentSpeciesIndex(events,today);
+    const notRecentlyRepeated=c=>!recentSpecies.has(`${c.sourceKey}|${animalCardKey(c.animal)}`);
     const requestRoll=seededRoll(`true-event-direction|${state.zooName}|${today}|${rollIndex}`).roll;
     const requestChance=.45*trueEventFamilyPenalty(events,'animal-request');
     if(requestRoll<requestChance){
-        const requestCandidates=trueEventRequestCandidates().filter(c=>!trueEventRecentlyRepeated(events,c));
+        const requestCandidates=trueEventRequestCandidates().filter(notRecentlyRepeated);
         if(requestCandidates.length){
         let totalRequest=0;
-        const weightedRequests=requestCandidates.map(c=>{const rel=trueRelationshipForProfile(c.profile,c.sourceKey);const relationshipWeight=1+(Number(rel.trust)||0)/48+Math.min(1.25,(Number(rel.familiarity)||0)/18);const recencyWeight=trueEventPartnerRecencyWeight(c.sourceKey);const w=Math.max(.1,Number(c.eventWeight)||1)*relationshipWeight*recencyWeight;totalRequest+=w;return {c,w};});
-        let requestPick=seededRoll(`true-event-request-zoo|${state.zooName}|${today}|${rollIndex}`).roll*totalRequest,chosen=weightedRequests[0].c;
-        for(const row of weightedRequests){requestPick-=row.w;if(requestPick<=0){chosen=row.c;break;}}
+        // Multiple species from one partner share the same recency penalty.
+        // Index the event history once rather than scanning it for every offer.
+        const requestRecency=trueEventPartnerRecencyIndex(today);
+        // Keep the weighted selection order and seed unchanged, but avoid
+        // allocating one wrapper object for every candidate in this hot path.
+        const requestWeights=new Float64Array(requestCandidates.length);
+        for(let i=0;i<requestCandidates.length;i++){
+            const c=requestCandidates[i],rel=trueRelationshipForProfile(c.profile,c.sourceKey);
+            const relationshipWeight=1+(Number(rel.trust)||0)/48+Math.min(1.25,(Number(rel.familiarity)||0)/18);
+            const w=Math.max(.1,Number(c.eventWeight)||1)*relationshipWeight*(requestRecency.get(c.sourceKey)??1);
+            requestWeights[i]=w;totalRequest+=w;
+        }
+        let requestPick=seededRoll(`true-event-request-zoo|${state.zooName}|${today}|${rollIndex}`).roll*totalRequest,chosen=requestCandidates[0];
+        for(let i=0;i<requestCandidates.length;i++){requestPick-=requestWeights[i];if(requestPick<=0){chosen=requestCandidates[i];break;}}
         return trueCreateIncomingRequestEvent(chosen,today);
         }
     }
 
-    const candidates=trueEventWorldCandidates().filter(c=>!trueEventRecentlyRepeated(events,c));
+    const candidates=trueEventWorldCandidates().filter(notRecentlyRepeated);
     if(!candidates.length)return null;
+    const weightContext=trueEventWeightContext(today);
     let total=0;
-    const weighted=candidates.map(candidate=>{
-        const w=Math.max(.05,trueEventCandidateWeight(candidate));
-        total+=w;return {candidate,w};
-    });
-    let pick=seededRoll(`true-event-world-zoo|${state.zooName}|${today}|${rollIndex}`).roll*total,candidate=weighted[0].candidate;
-    for(const row of weighted){pick-=row.w;if(pick<=0){candidate=row.candidate;break;}}
+    const weights=new Float64Array(candidates.length);
+    for(let i=0;i<candidates.length;i++){
+        const w=Math.max(.05,trueEventCandidateWeight(candidates[i],weightContext));
+        weights[i]=w;total+=w;
+    }
+    let pick=seededRoll(`true-event-world-zoo|${state.zooName}|${today}|${rollIndex}`).roll*total,candidate=candidates[0];
+    for(let i=0;i<candidates.length;i++){pick-=weights[i];if(pick<=0){candidate=candidates[i];break;}}
 
     const rel=trueRelationshipForProfile(candidate.profile,candidate.sourceKey);
     const roll=seededRoll(`true-event-world-kind|${candidate.sourceKey}|${animalCardKey(candidate.animal)}|${today}`).roll;
-    const hasAmbientEventToday=(events.items||[]).some(event=>event?.createdDate===today&&event.informational);
-    // While every partner is still Unknown, prefer relationship-building
-    // network information over another unsolicited animal transfer. Keep
-    // the existing one-informational-event-per-day guard.
-    if(roll<(hasEstablishedContact?.20:.42)&&!hasAmbientEventToday){
-        const infoKind=truePickInformationKind(candidate,events,`true-event-info-kind|${candidate.sourceKey}|${today}`);
-        if(!infoKind)return null;
-        const infoEvent=trueCreateWorldNewsEvent(candidate,today,infoKind);
-        if(infoEvent&&!infoEvent.family&&['collection-planning','population-advice'].includes(infoKind)&&
-            seededRoll(`true-event-follow-chance|${infoEvent.id}`).roll<.28)
-            trueScheduleEventFollowUp(infoEvent,1+Math.floor(seededRoll(`true-event-follow-delay|${infoEvent.id}`).roll*3));
-        return infoEvent;
-    }
+    // Routine Zoo Network updates are Activity-only and cannot displace a
+    // scheduled animal-transfer decision. Preserve the weighted transfer path.
     const level=Math.max(1,Number(candidate.animal?.level)||1);
     let kind='transfer-opportunity';
     if(rel.trust>=45&&roll<.49)kind='priority-contact';
@@ -9558,15 +9741,23 @@ function trueAcceptIndependentTransferEvent(event){
         !['accepted','declined','rejected','expired','fulfilled','completed','cancelled'].includes(
             String(currentOffer.proposalStatus||'').toLowerCase());
     if(otherLiveProposal){
-        addTrueActivity({type:'information',title:'Transfer proposal still open',message:'Finish or cancel your current Marketplace or zoo-network transfer proposal before discussing another offer.'});
+        // Surface the blocking proposal instead of silently doing nothing.
+        closeTrueEventDialog(true);
+        renderTrade();
+        const existingPanel=document.getElementById('trueTransferProposalPanel');
+        if(existingPanel){existingPanel.dataset.dismissedOffer='';existingPanel.style.display='';}
+        window.alert('Another transfer proposal is already open. Finish or cancel that proposal before reviewing this offer.');
         return false;
     }
     const record=(state.realZooData?.zoos||[]).find(item=>realZooHoldingKey(item)===event.sourceKey);
-    if(!record)return false;
+    if(!record){
+        window.alert('This transfer offer cannot be opened because the sending zoo is no longer available.');
+        return false;
+    }
     state.opponentProfiles=[realZooProfile(record,0)];
     state.opponentTradeStocks=[realZooTradeAnimals(record,true)];
     state.selectedTradeOpponent=0;
-    const incoming={...cloneForSave(event.animal),population:{...normaliseTrueAnimalPopulation(event.population||event.animal)},enclosureId:null,slotIndex:null};
+    const incoming={...cloneForSave(event.animal),population:{...normaliseTruePopulationCounts(event.population||event.animal)},enclosureId:null,slotIndex:null};
     state.tradeOffers=[];
     state.autonomousTradeOffer={
         opponentIndex:0,animal:incoming,eventOpportunity:true,eventId:event.id,eventSourceKey:event.sourceKey,
@@ -9575,8 +9766,12 @@ function trueAcceptIndependentTransferEvent(event){
     };
     event.status='engaged';event.respondedDate=normaliseTrueCalendarState().date;event.engagedDate=normaliseTrueCalendarState().date;
     trueRelationshipRecord(event.profile,event.sourceKey,'event-engaged',`Responded to ${event.title}.`,{familiarity:1});
-    closeTrueEventDialog();
+    // The event has been engaged and its proposal is now active. Close the
+    // original dialog explicitly so it cannot cover or intercept the proposal.
+    closeTrueEventDialog(true);
     renderTrade();
+    const openedPanel=document.getElementById('trueTransferProposalPanel');
+    if(openedPanel){openedPanel.dataset.dismissedOffer='';openedPanel.style.display='';}
     requestAnimationFrame(()=>{
         const panel=document.getElementById('trueTransferProposalPanel');
         if(panel){
@@ -9678,10 +9873,7 @@ const TRUE_EVENT_POPUP_COOLDOWN_MINUTES = 120;
 function trueEventReplyChoices(event){
   if(!event) return [];
   const type=String(event.type||event.kind||event.eventType||"");
-  if(event.family==='zoo-network-update')return [
-    {label:'Thank them for the update',effect:'The contact stays open.',relationship:0},
-    {label:'Keep in touch',effect:'Our teams strengthen their working relationship.',relationship:1}
-  ];
+  if(event.family==='zoo-network-update')return [];
   const choices={
     "programme-update":[
       {label:"Ask them to keep us posted",effect:"They'll keep us in the loop. Contact with the zoo improves a little.",relationship:1},
@@ -10033,7 +10225,7 @@ function openTrueEventDialog(id){
                     const sourceRecord=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===event.sourceKey);
                     const destination=trueEventAlternativeDestination(sourceRecord,event);
                     if(sourceRecord&&destination){
-                        const pop=normaliseTrueAnimalPopulation(event.population||event.animal);
+                        const pop=normaliseTruePopulationCounts(event.population||event.animal);
                         trueWorldPopulationRemove(sourceRecord,event.animal,pop,{type:'transfer-out',text:`Population transferred to ${destination.name||'another zoo'}.`,otherZooKey:realZooHoldingKey(destination)});
                         trueWorldPopulationAdd(destination,event.animal,pop,{type:'transfer-in',text:`Population received from ${event.profile?.name||'another zoo'}.`,otherZooKey:event.sourceKey});
                         event.alternativeDestinationKey=realZooHoldingKey(destination);
@@ -10044,7 +10236,15 @@ function openTrueEventDialog(id){
                 closeTrueEventDialog(true);renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
             }),
             button(isRequest?'Discuss sending animal':'Review transfer offer',()=>{
-                trueOpenEventTransferDecision(event,listing);
+                try {
+                    const opened=trueOpenEventTransferDecision(event,listing);
+                    if(!opened&&document.getElementById('trueEventDialogOverlay')){
+                        window.alert('The transfer could not be opened. Please check whether another proposal is already active.');
+                    }
+                } catch(error){
+                    console.error('Zoo Curator: failed to review transfer offer',error);
+                    window.alert('The transfer proposal could not be opened: '+(error?.message||String(error)));
+                }
             },true)
         );
     }else if(event.status==='engaged'&&state.autonomousTradeOffer?.eventOpportunity&&
@@ -10164,17 +10364,31 @@ function trueMaybeCreateBottleneckGrowthEvent(today,snapshot=trueEventOpportunit
     }
     if(!snapshot.spaceComfortable)return null;
     const owned=trueCurrentPlayerSpeciesKeys();
-    const candidates=trueEventWorldCandidates().filter(c=>!trueEventRecentlyRepeated(events,c));
-    const expansion=candidates.filter(c=>!owned.has(animalCardKey(c.animal))&&tradeIncomingHasDestinationAfterOutgoing(c.animal,null));
-    const programme=candidates.filter(c=>owned.has(animalCardKey(c.animal)));
+    const recentSpecies=trueEventRecentSpeciesIndex(events,today);
+    const candidates=trueEventWorldCandidates().filter(c=>!recentSpecies.has(`${c.sourceKey}|${animalCardKey(c.animal)}`));
+    // Classify each candidate once. Preserve the original order and prefer
+    // new species whenever at least one has a valid destination.
+    const expansion=[],programme=[];
+    for(const candidate of candidates){
+        const key=animalCardKey(candidate.animal);
+        if(owned.has(key))programme.push(candidate);
+        else if(tradeIncomingHasDestinationAfterOutgoing(candidate.animal,null))expansion.push(candidate);
+    }
     const pool=expansion.length?expansion:programme;
     if(!pool.length)return null;
     const chance=expansion.length?.16:.11;
     if(seededRoll(`true-growth-contact|${state.zooName}|${today}`).roll>=chance)return null;
     let total=0;
-    const weighted=pool.map(candidate=>{const w=Math.max(.05,trueEventCandidateWeight(candidate));total+=w;return {candidate,w};});
-    let pick=seededRoll(`true-growth-contact-pick|${state.zooName}|${today}`).roll*total,chosen=weighted[0].candidate;
-    for(const row of weighted){pick-=row.w;if(pick<=0){chosen=row.candidate;break;}}
+    const weightContext=trueEventWeightContext(today);
+    // Keep only numeric weights instead of allocating a wrapper object per
+    // candidate. Selection order and seeded rolls remain identical.
+    const weights=new Float64Array(pool.length);
+    for(let i=0;i<pool.length;i++){
+        const w=Math.max(.05,trueEventCandidateWeight(pool[i],weightContext));
+        weights[i]=w;total+=w;
+    }
+    let pick=seededRoll(`true-growth-contact-pick|${state.zooName}|${today}`).roll*total,chosen=pool[0];
+    for(let i=0;i<pool.length;i++){pick-=weights[i];if(pick<=0){chosen=pool[i];break;}}
     const kind=owned.has(animalCardKey(chosen.animal))
         ?(snapshot.breederCount>0?'husbandry-exchange':'population-advice')
         :'collection-planning';
@@ -10298,20 +10512,35 @@ function trueProcessEventDay(){
 function processTrueScheduledEvents() {
     const calendar = normaliseTrueCalendarState();
     const nowMinute=(Number(calendar.hour)||9)*60+(Number(calendar.minute)||0);
-    const isDue=event=>{
-        if(event.date<calendar.date)return true;
-        if(event.date>calendar.date)return false;
-        if(event.type==='transfer-proposal-response'&&Number.isFinite(Number(event.payload?.dueMinute)))
-            return nowMinute>=Number(event.payload.dueMinute);
-        return true;
-    };
-    const due = calendar.scheduledEvents.filter(isDue);
-    if (!due.length) return;
-    calendar.scheduledEvents = calendar.scheduledEvents.filter(event => !isDue(event));
-    let shouldPause = false;
-    for (const event of due) {
-        if (event.type === 'transfer-proposal-response') {
-            resolveTrueTransferProposalResponse(event.payload || {});
+    const scheduled=calendar.scheduledEvents;
+    if(!Array.isArray(scheduled)||!scheduled.length)return;
+    // Partition due events in one pass. Preserve the original due-event order
+    // and publish the pending queue before running handlers, which may append
+    // newly scheduled events themselves.
+    // Most simulation ticks have no due event. Avoid allocating two arrays
+    // and copying the schedule in that common case. Build the pending list
+    // only after the first due event is encountered.
+    let due=null,pending=null;
+    for(let i=0;i<scheduled.length;i++){
+        const event=scheduled[i];
+        let ready=false;
+        if(event.date<calendar.date)ready=true;
+        else if(event.date===calendar.date){
+            ready=event.type!=='transfer-proposal-response'||
+                !Number.isFinite(Number(event.payload?.dueMinute))||
+                nowMinute>=Number(event.payload.dueMinute);
+        }
+        if(ready){
+            if(!due){due=[];pending=scheduled.slice(0,i);}
+            due.push(event);
+        }else if(pending)pending.push(event);
+    }
+    if(!due)return;
+    calendar.scheduledEvents=pending;
+    let shouldPause=false;
+    for(const event of due){
+        if(event.type==='transfer-proposal-response'){
+            resolveTrueTransferProposalResponse(event.payload||{});
             continue;
         }
         if(event.type==='event-follow-up'){
@@ -10323,9 +10552,9 @@ function processTrueScheduledEvents() {
             continue;
         }
         addTrueActivity(event);
-        if (event.pause) shouldPause = true;
+        if(event.pause)shouldPause=true;
     }
-    if (shouldPause && Number(normaliseTrueCalendarState().speed)>1) setTrueCalendarSpeed(1);
+    if(shouldPause&&Number(normaliseTrueCalendarState().speed)>1)setTrueCalendarSpeed(1);
 }
 
 function processTrueMonthChange(previousMonth, currentMonth) {
@@ -10668,22 +10897,36 @@ function trueProcessRemainingEventRollsBeforeClose(){
     }
     const originalHour=cal.hour,originalMinute=cal.minute;
     for(let i=0;i<schedule.length;i++){
-        if(done.has(i)&&trueEventScheduledSlotsForDate(events,date).has(i))continue;
+        if(done.has(i)&&occupied.has(i))continue;
         const minute=Number(schedule[i]);
         cal.hour=Math.floor(minute/60);cal.minute=minute%60;
         // Match the ordinary timed scheduler: do not consume an opportunity
         // unless an event actually occupies its scheduled slot.
-        if(!trueEventScheduledSlotsForDate(events,date).has(i))trueGenerateDailyEventSlot(i);
-        if(!trueEventScheduledSlotsForDate(events,date).has(i))continue;
+        if(!occupied.has(i)){
+            trueGenerateDailyEventSlot(i);
+            // Generators can create or supersede records; refresh after mutation.
+            const refreshed=trueEventScheduledSlotsForDate(events,date);
+            occupied.clear();
+            for(const slot of refreshed)occupied.add(slot);
+        }
+        if(!occupied.has(i))continue;
         done.add(i);
         // During compressed time progression, routine notices remain in Activity
         // instead of generating a burst of old popups the next morning.
         // Do not discard actionable decisions (or queued events from other days).
         const generatedQueue=events.presentationQueue||[];
         const retained=[];
+        // Index only queued IDs in one history pass, avoiding a full history
+        // search for each routine popup during compressed calendar advancement.
+        const queuedIds=new Set(generatedQueue.filter(q=>q?.id).map(q=>String(q.id)));
+        const queuedById=new Map();
+        for(const item of events.items||[]){
+            const id=String(item?.id||'');
+            if(queuedIds.has(id)&&!queuedById.has(id))queuedById.set(id,item);
+        }
         for(const queued of generatedQueue){
             if(!queued?.id)continue;
-            const event=trueEventById(queued.id);
+            const event=queuedById.get(String(queued.id));
             if(!event||!['active','engaged'].includes(event.status))continue;
             const belongsToDay=String(event.createdDate||'')===String(date);
             if(!belongsToDay||event.choiceType){
@@ -11072,13 +11315,20 @@ function trueGuestDailyTarget(){
     return trueGuestPrestigeDailyTarget();
 }
 function trueGuestLayer(){
-    let layer=document.getElementById('trueGuestLayer');
-    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo){layer?.remove();return null;}
+    // This runs on every animation frame: avoid a document-wide ID lookup when
+    // the existing layer is still attached to the correct canvas.
+    let layer=trueGuestRuntime.cachedLayer;
+    if(!layer||!layer.isConnected||layer.parentNode!==zooCanvas){
+        layer=document.getElementById('trueGuestLayer');
+        trueGuestRuntime.cachedLayer=layer||null;
+    }
+    if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo){layer?.remove();trueGuestRuntime.cachedLayer=null;return null;}
     if(!layer){
         layer=document.createElement('div');layer.id='trueGuestLayer';
         Object.assign(layer.style,{position:'absolute',left:'0',top:'0',width:'100%',height:'100%',
             pointerEvents:'none',zIndex:'7',overflow:'visible'});
         zooCanvas.appendChild(layer);
+        trueGuestRuntime.cachedLayer=layer;
         for(const guest of trueGuestRuntime.guests||[]){
             if(guest?.el&&guest.el.parentNode!==layer)layer.appendChild(guest.el);
         }
@@ -11179,30 +11429,52 @@ function trueGuestBaseGridPath(startPoint,endPoint){
     }
     const routeKey=`${start.key}>${goal.key}`,reverseKey=`${goal.key}>${start.key}`;
     const cached=trueGuestGridPathCache.routes.get(routeKey);
-    if(cached)return cached.map(p=>({x:p.x,y:p.y})).concat([{x:endPoint.x,y:endPoint.y}]);
+    if(cached){
+        // Refresh only this entry's LRU position. Clearing the whole cache when
+        // full caused a burst of expensive breadth-first searches in big zoos.
+        trueGuestGridPathCache.routes.delete(routeKey);
+        trueGuestGridPathCache.routes.set(routeKey,cached);
+        return cached.map(p=>({x:p.x,y:p.y})).concat([{x:endPoint.x,y:endPoint.y}]);
+    }
     const reverseCached=trueGuestGridPathCache.routes.get(reverseKey);
     if(reverseCached){
+        trueGuestGridPathCache.routes.delete(reverseKey);
+        trueGuestGridPathCache.routes.set(reverseKey,reverseCached);
         const route=reverseCached.slice(0,-1).reverse().map(p=>({x:p.x,y:p.y}));
         return route.concat([{x:endPoint.x,y:endPoint.y}]);
     }
 
-    const queue=[start],prev=new Map([[start.key,null]]),cells=new Map([[start.key,start]]);
+    // Store predecessor keys only: cell coordinates can be reconstructed for the
+    // winning route. Avoid allocating a second map and a cell object per BFS node.
+    const queue=[start],prev=new Map([[start.key,null]]);
     let found=false;
     for(let qi=0;qi<queue.length&&!found;qi++){
         const cur=queue[qi];
         for(const [dc,dr] of TRUE_GUEST_GRID_DIRECTIONS){
             const c=cur.c+dc,r=cur.r+dr,k=trueBuilderCellKey(c,r);
             if(!walk.free.has(k)||prev.has(k))continue;
-            const next={c,r,key:k};prev.set(k,cur.key);cells.set(k,next);queue.push(next);
+            prev.set(k,cur.key);
             if(k===goal.key){found=true;break;}
+            queue.push({c,r,key:k});
         }
     }
     if(!prev.has(goal.key))return [];
     const rev=[];let k=goal.key;
-    while(k&&k!==start.key){const q=cells.get(k);rev.push({x:(q.c+.5)*TRUE_ENC_CELL_W,y:(q.r+.5)*TRUE_ENC_CELL_H});k=prev.get(k);}
+    while(k&&k!==start.key){
+        const comma=k.indexOf(',');
+        const c=Number(k.slice(0,comma)),r=Number(k.slice(comma+1));
+        rev.push({x:(c+.5)*TRUE_ENC_CELL_W,y:(r+.5)*TRUE_ENC_CELL_H});
+        k=prev.get(k);
+    }
     rev.reverse();
 
-    if(trueGuestGridPathCache.routes.size>=512)trueGuestGridPathCache.routes.clear();
+    // Bound memory without discarding hundreds of useful paths at once.
+    // Map insertion order tracks least-recently-used routes.
+    while(trueGuestGridPathCache.routes.size>=512){
+        const oldest=trueGuestGridPathCache.routes.keys().next().value;
+        if(oldest===undefined)break;
+        trueGuestGridPathCache.routes.delete(oldest);
+    }
     trueGuestGridPathCache.routes.set(routeKey,rev.map(p=>({x:p.x,y:p.y})));
     rev.push({x:endPoint.x,y:endPoint.y});
     return rev;
@@ -11313,7 +11585,7 @@ function trueGuestViewingPoints(){
     const walk=trueGuestRuntime.walk;if(!walk)return [];
     const now=performance.now();
     const signature=String(trueGuestRuntime.layoutSig||'');
-    if(trueGuestViewingPointCache.signature===signature&&now-trueGuestViewingPointCache.at<200){
+    if(trueGuestViewingPointCache.signature===signature&&now-trueGuestViewingPointCache.at<750){
         return trueGuestViewingPointCache.points;
     }
     const points=[];
@@ -11497,17 +11769,38 @@ function trueGuestArrivalProgress(minutesNow){
     }
     return 1;
 }
-let trueGuestCrowdSnapshot={at:0,points:[]};
+let trueGuestCrowdSnapshot={at:0,points:[],buckets:new Map()};
+// Spatial buckets avoid testing every guest for every possible viewing point.
+// The largest guest is 35px across, so all relevant crowd checks are within 60px.
+const TRUE_GUEST_CROWD_BUCKET_SIZE=96;
+function trueGuestCrowdNearby(p,snapshot){
+    const size=TRUE_GUEST_CROWD_BUCKET_SIZE;
+    const cx=Math.floor(p.x/size),cy=Math.floor(p.y/size);
+    const nearby=[];
+    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+        const bucket=snapshot.buckets.get(`${cx+dx},${cy+dy}`);
+        if(bucket)nearby.push(...bucket);
+    }
+    return nearby;
+}
 function trueGuestCrowdPoints(){
     const now=performance.now();
     if(now-trueGuestCrowdSnapshot.at<250)return trueGuestCrowdSnapshot.points;
-    const points=[];
+    const points=[],buckets=new Map();
     for(const other of trueGuestRuntime?.guests||[]){
-        points.push({x:other.x,y:other.y,radius:other.radius||15,
+        const point={x:other.x,y:other.y,radius:other.radius||15,
             dx:other.path?.length?other.path[other.path.length-1]?.x:null,
-            dy:other.path?.length?other.path[other.path.length-1]?.y:null});
+            dy:other.path?.length?other.path[other.path.length-1]?.y:null};
+        points.push(point);
+        // Index both current position and destination: either can contribute to crowding.
+        const keys=new Set([`${Math.floor(point.x/TRUE_GUEST_CROWD_BUCKET_SIZE)},${Math.floor(point.y/TRUE_GUEST_CROWD_BUCKET_SIZE)}`]);
+        if(Number.isFinite(point.dx)&&Number.isFinite(point.dy))keys.add(`${Math.floor(point.dx/TRUE_GUEST_CROWD_BUCKET_SIZE)},${Math.floor(point.dy/TRUE_GUEST_CROWD_BUCKET_SIZE)}`);
+        for(const key of keys){
+            if(!buckets.has(key))buckets.set(key,[]);
+            buckets.get(key).push(point);
+        }
     }
-    trueGuestCrowdSnapshot={at:now,points};
+    trueGuestCrowdSnapshot={at:now,points,buckets};
     return points;
 }
 function trueGuestChooseDestination(g){
@@ -11581,10 +11874,10 @@ function trueGuestChooseDestination(g){
     });
     if(outsideGate.length)candidates=outsideGate;
 
-    const crowdPoints=lightweight?[]:trueGuestCrowdPoints();
+    if(!lightweight)trueGuestCrowdPoints();
     const viewpointCrowding=p=>{
         let score=0;
-        for(const other of crowdPoints){
+        for(const other of trueGuestCrowdNearby(p,trueGuestCrowdSnapshot)){
             const dx=other.x-p.x,dy=other.y-p.y;
             const nearRadius=34+other.radius;
             if(dx*dx+dy*dy<nearRadius*nearRadius)score+=3;
@@ -11612,8 +11905,19 @@ function trueGuestChooseDestination(g){
         }
         pool=nearest;
     }else{
-        candidates.sort((a,b)=>((a.crowding*85)+a.guestDistance)-((b.crowding*85)+b.guestDistance));
-        pool=candidates.slice(0,Math.min(candidates.length,Math.random()<.22?8:5));
+        // Keep only the nearest 5–8 candidates instead of sorting every viewing
+        // point in a large zoo for every guest destination decision.
+        const limit=Math.min(candidates.length,Math.random()<.22?8:5);
+        const nearest=[];
+        for(const candidate of candidates){
+            const score=candidate.crowding*85+candidate.guestDistance;
+            let i=nearest.length;
+            while(i>0&&(nearest[i-1].crowding*85+nearest[i-1].guestDistance)>score)i--;
+            if(i>=limit)continue;
+            nearest.splice(i,0,candidate);
+            if(nearest.length>limit)nearest.pop();
+        }
+        pool=nearest;
     }
 
     if(lightweight){
@@ -11737,7 +12041,7 @@ function trueGuestRemove(g,now=performance.now(),knownIndex=-1){
 }
 function trueGuestTickFrame(now){
     const layer=trueGuestLayer();
-    if(!layer){for(const g of trueGuestRuntime.guests)g.el?.remove();trueGuestRuntime.guests=[];trueGuestRuntime.spawnQueue=0;trueGuestRuntime.spawnGroupId=null;trueGuestRuntime.nextSpawnAt=0;trueGuestRuntime.nextGroupAt=0;trueGuestRuntime.nextLayoutCheckAt=0;trueGuestRuntime.last=0;return;}
+    if(!layer){for(const g of trueGuestRuntime.guests)g.el?.remove();trueGuestRuntime.guests=[];trueGuestRuntime.spawnQueue=0;trueGuestRuntime.spawnGroupId=null;trueGuestRuntime.nextSpawnAt=0;trueGuestRuntime.nextGroupAt=0;trueGuestRuntime.nextLayoutCheckAt=0;trueGuestRuntime.frameGeometryKey=null;trueGuestRuntime.last=0;return;}
     let sig=trueGuestRuntime.layoutSig;
     const layoutRevision=Number(state.areaPlacementRevision)||0;
     if(!sig||layoutRevision!==trueGuestRuntime.layoutRevision||now>=(Number(trueGuestRuntime.nextLayoutCheckAt)||0)){
@@ -11745,7 +12049,17 @@ function trueGuestTickFrame(now){
         trueGuestRuntime.layoutRevision=layoutRevision;
         trueGuestRuntime.nextLayoutCheckAt=now+1000;
     }
-    const frameEntrance=trueGuestEntrancePoint();
+    // Grounds-bound calculations can traverse every built enclosure and cell.
+    // Reuse geometry across guest frames, invalidating immediately on layout edits
+    // and periodically for changes that do not increment the layout revision.
+    const geometryKey=`${layoutRevision}|${sig}`;
+    if(trueGuestRuntime.frameGeometryKey!==geometryKey||now>=(trueGuestRuntime.nextGeometryCheckAt||0)){
+        trueGuestRuntime.frameGeometryKey=geometryKey;
+        trueGuestRuntime.nextGeometryCheckAt=now+500;
+        trueGuestRuntime.frameGrounds=trueZooGroundsBounds();
+        trueGuestRuntime.frameEntrance=trueGuestEntrancePoint();
+    }
+    const frameEntrance=trueGuestRuntime.frameEntrance;
     if(sig!==trueGuestRuntime.layoutSig){
         trueGuestRuntime.layoutSig=sig;trueGuestRuntime.walk=trueGuestBuildWalkGraph();
         const walk=trueGuestRuntime.walk;
@@ -11790,7 +12104,14 @@ function trueGuestTickFrame(now){
     const calendarSpeed=Number(calendar.speed)||0;
     const simSpeed=trueCalendarRolloverPending?0:trueGuestSimulationSpeedMultiplier();
     const dt=rawDt*simSpeed;
-    const target=trueGuestDailyTarget();
+    // Attendance targets are day-scoped. Reuse the result across animation
+    // frames, but invalidate immediately for a new day or changed manual slider.
+    const targetKey=`${calendar.date}|${state.trueGuestDailyTargetManual===true?'manual':'auto'}|${state.trueGuestDailyTarget??''}|${state.trueGuestTargetCount??''}`;
+    if(trueGuestRuntime.targetCacheKey!==targetKey){
+        trueGuestRuntime.targetCacheKey=targetKey;
+        trueGuestRuntime.targetCacheValue=trueGuestDailyTarget();
+    }
+    const target=trueGuestRuntime.targetCacheValue;
     if(trueCalendarRolloverPending){trueGuestRuntime.last=now;return;}
     // The calendar is authoritative at every speed. Guests must read it
     // behaviour run ahead and could reintroduce apparent time snap-backs.
@@ -11892,7 +12213,7 @@ function trueGuestTickFrame(now){
         }
         for(const peers of guestGroups.values())for(const member of peers)member._frameGroupPeers=peers;
     }
-    const frameGrounds=trueZooGroundsBounds();
+    const frameGrounds=trueGuestRuntime.frameGrounds;
     // Multiple guests may encounter a blocked segment in the same animation
     // frame. Rebuild the shared graph once, not once per affected visitor.
     let rebuiltWalkGraphThisFrame=false;
@@ -11956,12 +12277,20 @@ function trueGuestTickFrame(now){
         const walkNow=trueGuestRuntime.walk;
         let safeMove=!!walkNow;
         if(safeMove){
-            const travel=Math.sqrt((nx-g.x)*(nx-g.x)+(ny-g.y)*(ny-g.y));
-            const samples=Math.max(1,Math.ceil(travel/Math.max(6,Math.min(TRUE_ENC_CELL_W,TRUE_ENC_CELL_H)*.12)));
-            for(let sample=0;sample<=samples;sample++){
-                const t=sample/samples;
-                if(!trueGuestPointIsWalkable({x:g.x+(nx-g.x)*t,y:g.y+(ny-g.y)*t},walkNow)){
-                    safeMove=false;break;
+            // Within one walkable grid cell the straight segment cannot cross an
+            // enclosure. Only sample intermediate points on cell transitions.
+            const startCol=Math.floor(g.x/TRUE_ENC_CELL_W),startRow=Math.floor(g.y/TRUE_ENC_CELL_H);
+            const endCol=Math.floor(nx/TRUE_ENC_CELL_W),endRow=Math.floor(ny/TRUE_ENC_CELL_H);
+            if(startCol===endCol&&startRow===endRow){
+                safeMove=walkNow.free.has(trueBuilderCellKey(startCol,startRow));
+            }else{
+                const travel=Math.hypot(nx-g.x,ny-g.y);
+                const samples=Math.max(1,Math.ceil(travel/Math.max(6,Math.min(TRUE_ENC_CELL_W,TRUE_ENC_CELL_H)*.12)));
+                for(let sample=0;sample<=samples;sample++){
+                    const t=sample/samples;
+                    const col=Math.floor((g.x+(nx-g.x)*t)/TRUE_ENC_CELL_W);
+                    const row=Math.floor((g.y+(ny-g.y)*t)/TRUE_ENC_CELL_H);
+                    if(!walkNow.free.has(trueBuilderCellKey(col,row))){safeMove=false;break;}
                 }
             }
         }
@@ -19824,6 +20153,17 @@ function ensureTrueZooGroundsVisual(){
         const w=Math.max(...cs)-Math.min(...cs)+1,h=Math.max(...rs)-Math.min(...rs)+1;
         return w*h-set.size; // zero is a solid rectangle; lower is bulkier.
     };
+    // Expansion plots must be usable building sites, not one-cell ribbons.
+    // Check the bounding dimensions as well as the amount of land: an L-shaped
+    // parcel is fine, but a 1x20 strip (or a very elongated 2x20 strip) is not.
+    const usableParcelShape=plot=>{
+        if(!plot||plot.size<14)return false;
+        const coords=[...plot].map(parseKey);
+        const cols=coords.map(p=>p[0]),rows=coords.map(p=>p[1]);
+        const width=Math.max(...cols)-Math.min(...cols)+1;
+        const height=Math.max(...rows)-Math.min(...rows)+1;
+        return Math.min(width,height)>=2&&Math.max(width,height)/Math.min(width,height)<=3.5;
+    };
     const adjacentCandidates=(plot,available)=>{
         const out=new Set();
         for(const key of plot){const[c,r]=parseKey(key);for(const[dc,dr]of dirs){const nk=keyOf(c+dc,r+dr);if(available.has(nk))out.add(nk);}}
@@ -19904,7 +20244,7 @@ function ensureTrueZooGroundsVisual(){
             }
             if(!progressed||plots.every((p,i)=>p.size>=targets[i]))break;
         }
-        if(plots.some(p=>p.size<14||!connected(p)))return null;
+        if(plots.some(p=>!usableParcelShape(p)||!connected(p)))return null;
         return plots;
     };
     const compactPick=(plot,available,anchor)=>{
@@ -19975,13 +20315,13 @@ function ensureTrueZooGroundsVisual(){
             const growFromSeed=(seed,serial)=>{
                 if(!seed||!available.has(seed))return false;
                 const plot=new Set([seed]);available.delete(seed);
-                const target=10+Math.floor(randAt(900+serial*37)*7);
+                const target=18+Math.floor(randAt(900+serial*37)*9);
                 while(plot.size<target){
                     const next=compactPick(plot,available,anchor);
                     if(!next)break;
                     plot.add(next);available.delete(next);
                 }
-                if(plot.size>=8&&connected(plot)){
+                if(usableParcelShape(plot)&&connected(plot)){
                     for(const k of plot)used.add(k);
                     plots.push(plot);return true;
                 }
@@ -20019,10 +20359,10 @@ function ensureTrueZooGroundsVisual(){
                     if(!next)break;
                     p.add(next);available.delete(next);
                 }
-                if(p.size>=8&&connected(p))plots.push(p);
+                if(usableParcelShape(p)&&connected(p))plots.push(p);
             }
         }
-        return plots;
+        return plots.filter(p=>usableParcelShape(p)&&connected(p));
     };
 
     let acquired=new Set(baseGround),parcelSerial=0;
@@ -20066,7 +20406,7 @@ function ensureTrueZooGroundsVisual(){
 
     if(typeof window!=='undefined'){
         window.zooExpansionDiagnostic=()=>({
-            zoo:String(state.zooName||'Zoo'),targetOptionsPerLayer:optionTarget,previewLayers:3,minimumParcelCells:14,maximumParcelCells:42,compactPlotGeneration:false,everyCellMinimumOrthogonalNeighbours:1,previewPlan,
+            zoo:String(state.zooName||'Zoo'),targetOptionsPerLayer:optionTarget,previewLayers:3,minimumParcelCells:14,maximumParcelCells:42,minimumParcelDepth:2,maximumParcelAspectRatio:3.5,compactPlotGeneration:true,everyCellMinimumOrthogonalNeighbours:1,previewPlan,
             credits:Math.max(0,Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0),
             renderedParcels:document.querySelectorAll('.true-zoo-future-grounds-parcel').length,
             purchasableParcels:document.querySelectorAll('.true-zoo-future-grounds-parcel[data-expansion-layer="1"][role="button"]').length,
@@ -33927,7 +34267,7 @@ function startAnimalDrag(
         border:'0',
         outline:'0',
         pointerEvents:'none',
-        zIndex:'10020'
+        zIndex:'10060'
     });
 
     document.body.appendChild(
@@ -34453,6 +34793,24 @@ function trueTransferCreateFromAcceptedProposal(proposal){
         }
         return old;
     }
+    // Recheck eligibility when a proposal becomes a transfer. Older event
+    // offers can survive after the player's progression changes; neither an
+    // accepted event nor a restored proposal may bypass the level gate.
+    const incomingTierAnimal=proposal.offer?.animal||proposal.requestedOffers?.[0]||proposal.requestedAnimal||proposal.requested||proposal.incomingAnimal;
+    if(incomingTierAnimal && !truePlayerOfferAnimalAllowed(incomingTierAnimal)){
+        proposal.transferUnavailable=true;
+        proposal.transferIntegrityReason='incoming-level-locked';
+        return null;
+    }
+    delete proposal.transferIntegrityReason;
+    // A partner's 'accepted' status must not itself constitute proof that the
+    // player submitted this request. Legacy proposals without a submission date
+    // are quarantined rather than silently creating new animal cards.
+    if(!proposal.submittedDate){
+        proposal.transferUnavailable=true;
+        proposal.transferIntegrityReason='missing-player-submission';
+        return null;
+    }
     const requestedLegacy=proposal.requestedAnimal||proposal.requested||proposal.incomingAnimal||proposal.offer?.animal||null;
     const requested=(proposal.requestedOffers?.length?proposal.requestedOffers:(requestedLegacy?[requestedLegacy]:[])).filter(Boolean).slice(0,3);
     const offeredLegacy=proposal.offeredAnimal||proposal.offered||proposal.outgoingAnimal||proposal.outgoingOffer||null;
@@ -34516,7 +34874,20 @@ function trueTransferCreateFromAcceptedProposal(proposal){
     const transfer={id,proposalId:proposal.id,zooId:proposal.zooId||proposal.partnerZooId||proposal.sourceZooId||null,
         zooName:proposal.zooName||proposal.partnerZooName||proposal.sourceZooName||trueOfferProfile(proposal.offer)?.name||'Partner zoo',
         createdDate:trueDateKey(trueCurrentDate()),departureDate:trueDateKey(trueCurrentDate()),arrivalDate:trueDateKey(trueCurrentDate()),status:'scheduled',
-        transferKind:proposal.transferKind||(outgoings.length?'exchange':'transfer'),terms:proposal.terms||'permanent',incomings,outgoings};
+        transferKind:proposal.transferKind||(outgoings.length?'exchange':'transfer'),terms:proposal.terms||'permanent',incomings,outgoings,
+        // Durable provenance: transfer history must remain auditable even if an
+        // older save or future migration loses the separate proposal record.
+        originProposalSnapshot:{id:proposal.id,submittedDate:proposal.submittedDate||null,
+            // Store the explicit player submission separately from the partner's
+            // later acceptance. These are different authorisation steps.
+            playerSubmitted:!!proposal.submittedDate,
+            partnerAccepted:proposal.status==='accepted',
+            sourceKind:proposal.offer?.eventOpportunity?'event':proposal.offer?.marketplaceRequest?'marketplace':'other',
+            sourceEventId:proposal.offer?.eventId||null,
+            sourceListingId:proposal.marketplaceListingId||null,
+            partnerZooName:proposal.zooName||proposal.partnerZooName||proposal.sourceZooName||trueOfferProfile(proposal.offer)?.name||null,
+            incomingSpecies:requested.map(a=>({category:a.category,level:a.level,filename:a.filename,population:trueTransferPop(a)})),
+            outgoingSpecies:offered.map(a=>({category:a.category,level:a.level,filename:a.filename,population:trueTransferPop(a)}))}};
     transfer.incoming=incomings[0]||null;transfer.outgoing=outgoings[0]||null;
     const timing=trueProposalTransferTiming(proposal.offer,`${proposal.submittedDate}|${proposal.id}`);
     // Travel uses half the former duration, including half-day arrivals.
@@ -35039,6 +35410,24 @@ function trueTransferProcessDay(){
     for(const raw of normaliseTrueTransfers()){
         const t=trueTransferNormaliseLegs(raw);
         const linkedProposal=(state.trueTransferProposals||[]).find(p=>String(p?.id)===String(t.proposalId)&&(p.transferId==null||String(p.transferId)===String(t.id)));
+        // A transfer without its originating proposal cannot be verified as authorised.
+        // Preserve already delivered animals and the historical transfer, but never
+        // manufacture a missing arrival from an orphaned record on a later day.
+        if(!linkedProposal){
+            const hasUndeliveredLeg=(t.incomings||[]).some(leg=>!leg.completed&&
+                !(state.animals||[]).some(a=>String(a.trueIncomingTransferId)===String(t.id)&&
+                    String(a.trueIncomingTransferLegId)===String(leg.legId)));
+            if(hasUndeliveredLeg&&!['completed','cancelled'].includes(t.status)){
+                t.tradeIntegrityIssue='originating-proposal-missing';
+                t.lastIntegrityCheckpoint='orphaned-transfer-quarantined';
+                continue;
+            }
+        }
+        if(linkedProposal&&!['accepted','transfer-scheduled','completed'].includes(linkedProposal.status)){
+            t.tradeIntegrityIssue='originating-proposal-not-accepted';
+            t.lastIntegrityCheckpoint='unapproved-transfer-quarantined';
+            continue;
+        }
         if(linkedProposal&&!trueTransferMatchesProposalSpecies(t,linkedProposal)){
             t.tradeIntegrityIssue='proposal-transfer-species-mismatch';
             t.lastIntegrityCheckpoint='species-mismatch-settlement-blocked';
@@ -45525,22 +45914,29 @@ function trueMarketplaceRequestTraitMatches(tag,animal){
     return TRUE_MARKETPLACE_REQUEST_TAGS.has(trait)&&animalInventoryTags(animal.category,animal.level,animal.filename).includes(trait);
 }
 function trueMarketplaceTraitLabel(tag){
-    return String(tag||'').replace(/[_-]/g,' ').replace(/\\b\\w/g,c=>c.toUpperCase());
+    return String(tag||'').replace(/[_-]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 }
 function trueMarketplaceWantKey(profile) {
     return String(profile?.name||'').trim().toLowerCase();
 }
 function trueMarketplaceActiveWant(profile) {
     const key=trueMarketplaceWantKey(profile);
-    return trueMarketplaceUsableWant(normaliseTrueMarketplaceState().wants.find(w=>w&&w.status==='active'&&w.zooKey===key)||null);
+    // Reading an existing request does not require revalidating every listing
+    // and historical player offer. Initialisation still normalises old saves.
+    const wants=Array.isArray(state.trueMarketplace?.wants)
+        ?state.trueMarketplace.wants:normaliseTrueMarketplaceState().wants;
+    return trueMarketplaceUsableWant(wants.find(w=>w&&w.status==='active'&&w.zooKey===key)||null);
 }
 // Only request a particular species when the player can actually source it.
 // Existing active requests are checked too, so older saves cannot keep impossible wishes.
 function trueMarketplaceObtainableSpeciesKeys(){
     const keys=new Set();
     for(const animal of state.animals||[])if(animal)keys.add(animalCardKey(animal));
-    const market=normaliseTrueMarketplaceState();
-    for(const listing of market.listings||[]){
+    // Species availability is read-only here. Avoid full Marketplace
+    // normalisation for each individual zoo request being evaluated.
+    const listings=Array.isArray(state.trueMarketplace?.listings)
+        ?state.trueMarketplace.listings:normaliseTrueMarketplaceState().listings;
+    for(const listing of listings){
         if(listing?.animal&&(listing.status==='available'||listing.status==='negotiating'))
             keys.add(animalCardKey(listing.animal));
     }
@@ -45552,21 +45948,46 @@ function trueMarketplaceUsableWant(want){
 }
 // A zoo must never request the species it is simultaneously offering.
 // Also sanitizes older saved listings without changing their animal populations.
-function trueMarketplaceWantForListing(listing){
-    const want=trueMarketplaceActiveWant(listing?.profile);
-    if(!want||!listing?.animal)return want;
-    const offeredKey=animalCardKey(listing.animal);
+// Shared presentation-only exclusion rule for both listing tooltips and the
+// Marketplace modal. Never mutate the saved request or its exclusion list.
+function trueMarketplaceWantExcludingOfferedAnimal(want,animal){
+    if(!want||!animal)return want;
+    const offeredKey=animalCardKey(animal);
     if(want.kind==='species'&&animalCardKey(want.animal)===offeredKey)return null;
-    if((want.kind==='category'&&trueMarketplaceWantCategoryMatches(want.category,listing.animal.category))||(want.kind==='trait'&&trueMarketplaceRequestTraitMatches(want.tag,listing.animal))){
+    if((want.kind==='category'&&trueMarketplaceWantCategoryMatches(want.category,animal.category))||
+       (want.kind==='trait'&&trueMarketplaceRequestTraitMatches(want.tag,animal))){
         const exclusions=new Set(want.excludedSpeciesKeys||[]);
         exclusions.add(offeredKey);
         return {...want,excludedSpeciesKeys:[...exclusions]};
     }
     return want;
 }
+function trueMarketplaceWantForListing(listing){
+    return trueMarketplaceWantExcludingOfferedAnimal(trueMarketplaceActiveWant(listing?.profile),listing?.animal);
+}
+
+// Presentation only: a genuine placement motive makes a no-return proposal
+// more plausible, but does not guarantee acceptance or waive eligibility.
+function trueMarketplaceFreePlacementCandidate(entry){
+    const reason=String(entry?.reason||'').toLowerCase();
+    const population=entry?.population||{};
+    const males=Math.max(0,Number(population.males)||0);
+    const females=Math.max(0,Number(population.females)||0);
+    // Ordinary collection changes and requests for new holders do not imply
+    // that the zoo is prepared to release animals without an exchange.
+    return /emergency|urgent|phase.?out/.test(reason)
+        || (reason==='bachelor surplus' && males>=2 && females===0)
+        || (reason==='surplus females' && females>=2 && males===0)
+        || (reason==='breeding surplus' && males+females>=2);
+}
+function trueMarketplaceListingIntentLabel(entry){
+    if(trueMarketplaceFreePlacementCandidate(entry))return 'Rehoming';
+    const want=trueMarketplaceWantForListing(entry);
+    return want?trueMarketplaceCompactWantLabel(want):'Accepting proposals';
+}
 function trueMarketplaceCompactWantLabel(want){
     want=trueMarketplaceUsableWant(want);
-    if(!want)return 'Open to offers';
+    if(!want)return 'Accepting proposals';
     if(want.kind==='category'){
         const category=trueMarketplaceCurrentWantCategory(want.category)||'Animals';
         return category==='Birds'?'Birds':category;
@@ -45576,7 +45997,7 @@ function trueMarketplaceCompactWantLabel(want){
         return `${label} Species`;
     }
     if(want.kind==='species')return animalDisplayName(want.animal);
-    return 'Open to offers';
+    return 'Accepting proposals';
 }
 function trueMarketplaceWantLabel(want) {
     if(!want) return 'Open to suitable additions';
@@ -45852,23 +46273,33 @@ function trueMarketplaceSourceCandidates(monthKey) {
         for (const item of selected) {
             const record = item.record;
             const profile = item.profile || realZooProfile(record, 0);
-            const allStock = realZooTradeAnimals(record, true);
-            const listingRoll=seededRoll(`true-market-count|${realZooHoldingKey(record)}|${monthKey}`).roll;
+            const sourceKey = realZooHoldingKey(record);
+            const listingRoll=seededRoll(`true-market-count|${sourceKey}|${monthKey}`).roll;
             const listingCount=playerPrestige<80
                 ? (listingRoll<.16?0:listingRoll<.58?1:listingRoll<.88?2:3)
                 : (listingRoll<.10?0:listingRoll<.45?1:listingRoll<.76?2:listingRoll<.93?3:4);
+            // Avoid building an entire real-zoo trade inventory for a zero-listing roll.
+            if (!listingCount) continue;
+            const allStock = realZooTradeAnimals(record, true);
+            if (!allStock.length) continue;
             const stock = (typeof seededShuffle==='function'
-                ? seededShuffle(allStock,`true-market-stock|${realZooHoldingKey(record)}|${monthKey}`)
+                ? seededShuffle(allStock,`true-market-stock|${sourceKey}|${monthKey}`)
                 : allStock).slice(0,Math.min(listingCount,allStock.length));
+            // These were previously rebuilt for every animal from the same zoo.
+            // Keep each listing's arrays independent, as downstream code may edit them.
+            const wishPool=allStock.slice(0,8).map(a=>cloneForSave(a));
+            const holdingKeys=allStock.map(a=>animalCardKey(a));
+            const favourites=Array.isArray(profile.favourites)?profile.favourites.slice():[];
+            const zooTypes=Array.isArray(profile.zooTypes)?profile.zooTypes.slice():[];
             for (const animal of stock) candidates.push({
                 real: true,
-                sourceKey: realZooHoldingKey(record),
+                sourceKey,
                 profile: {
                     name:profile.name, country:profile.country, province:profile.province, prestige:profile.prestige,
-                    favourites:Array.isArray(profile.favourites)?profile.favourites.slice():[],
-                    zooTypes:Array.isArray(profile.zooTypes)?profile.zooTypes.slice():[],
-                    speciesWishPool:allStock.slice(0,8).map(a=>cloneForSave(a)),
-                    holdingSpeciesKeys:allStock.map(a=>animalCardKey(a))
+                    favourites:favourites.slice(),
+                    zooTypes:zooTypes.slice(),
+                    speciesWishPool:wishPool.map(a=>cloneForSave(a)),
+                    holdingSpeciesKeys:holdingKeys.slice()
                 },
                 animal: cloneForSave(animal)
             });
@@ -45892,12 +46323,10 @@ function trueMarketplaceSourceCandidates(monthKey) {
     return candidates;
 }
 
-function createTrueMarketplaceListing(candidate, monthKey, ordinal=0) {
-    const market = normaliseTrueMarketplaceState();
+function createTrueMarketplaceListing(candidate, monthKey, ordinal=0, market=normaliseTrueMarketplaceState(), createdDate=normaliseTrueCalendarState().date) {
     const id = `tml-${market.nextListingId++}`;
     const seedKey = `${candidate.sourceKey}|${candidate.animal?.category}|${candidate.animal?.level}|${candidate.animal?.filename}|${monthKey}|${ordinal}`;
     const population = trueMarketplacePopulation(candidate.animal, candidate.profile?.name || '', seedKey);
-    const createdDate = normaliseTrueCalendarState().date;
     const reason=trueMarketplaceReason(candidate.animal,population,seedKey,candidate.profile);
     return {
         id,
@@ -45915,8 +46344,9 @@ function createTrueMarketplaceListing(candidate, monthKey, ordinal=0) {
     };
 }
 
-function expireTrueMarketplaceListings(today=null) {
-    const market = normaliseTrueMarketplaceState();
+function expireTrueMarketplaceListings(today=null, market=null) {
+    // Callers already holding normalized state can avoid a second full-market pass.
+    market = market || normaliseTrueMarketplaceState();
     const rawDate=String(today||state.trueCalendar?.date||'');
     today=/^\d{4}-\d{2}-\d{2}$/.test(rawDate)?rawDate:'2026-04-18';
     for (const listing of market.listings) {
@@ -45991,7 +46421,8 @@ function refreshTrueMarketplaceForMonth(monthKey = null, { announce=false, force
         additions.push(...trueMarketplaceDiverseSelection(fallback,missing-additions.length));
     }
     const addCount=additions.length;
-    for(let i=0;i<addCount;i++) market.listings.push(createTrueMarketplaceListing(additions[i],monthKey,i));
+    const listingDate=state.trueCalendar?.date||normaliseTrueCalendarState().date;
+    for(let i=0;i<addCount;i++) market.listings.push(createTrueMarketplaceListing(additions[i],monthKey,i,market,listingDate));
 
     market.initialized = true;
     market.lastRefreshMonth = monthKey;
@@ -46017,7 +46448,7 @@ function refreshTrueMarketplaceRolling(today=null,{announce=false,force=false}={
     today=/^\d{4}-\d{2}-\d{2}$/.test(rawDate)?rawDate:'2026-04-18';
     if(state.gameMode!=='true')return 0;
     const market=normaliseTrueMarketplaceState();
-    expireTrueMarketplaceListings(today);
+    expireTrueMarketplaceListings(today,market);
     if(!market.initialized){
         const added=refreshTrueMarketplaceForMonth(today.slice(0,7),{force:true,announce:false});
         market.lastRollingRefreshDate=today;
@@ -46047,7 +46478,8 @@ function refreshTrueMarketplaceRolling(today=null,{announce=false,force=false}={
         const used=new Set(additions);
         additions.push(...trueMarketplaceDiverseSelection(fresh.filter(candidate=>!used.has(candidate)),wanted-additions.length));
     }
-    for(let i=0;i<additions.length;i++)market.listings.push(createTrueMarketplaceListing(additions[i],seedKey,i));
+    const listingDate=state.trueCalendar?.date||normaliseTrueCalendarState().date;
+    for(let i=0;i<additions.length;i++)market.listings.push(createTrueMarketplaceListing(additions[i],seedKey,i,market,listingDate));
     market.lastRollingRefreshDate=today;
 
     if(announce&&additions.length)addTrueActivity({
@@ -46063,14 +46495,28 @@ function trueMarketplaceEntries() {
     const market = normaliseTrueMarketplaceState();
     const rawDate=String(state.trueCalendar?.date||'');
     const today=/^\d{4}-\d{2}-\d{2}$/.test(rawDate)?rawDate:'2026-04-18';
+    // Rolling refresh also expires listings, including on its early-return path.
     refreshTrueMarketplaceRolling(today);
-    expireTrueMarketplaceListings(today);
     // Reconcile accepted proposals after loading older saves, before showing
     // offers. Do not consume a listing for a proposal lacking a transfer.
+    // Build the active-transfer lookup once instead of scanning every transfer
+    // separately for each accepted Marketplace proposal.
+    const activeTransferProposalIds=new Set();
+    for(const transfer of state.trueTransfers||[]){
+        if(transfer?.proposalId!=null&&transfer.status!=='cancelled')
+            activeTransferProposalIds.add(String(transfer.proposalId));
+    }
+    const completedListingIds=new Set();
     for(const proposal of state.trueTransferProposals||[]){
         if(!proposal?.marketplaceListingId||!['accepted','completed'].includes(proposal.status))continue;
-        const linked=(state.trueTransfers||[]).some(t=>String(t?.proposalId)===String(proposal.id)&&t.status!=='cancelled');
-        if(linked)setTrueMarketplaceListingStatus(proposal.marketplaceListingId,'completed');
+        if(activeTransferProposalIds.has(String(proposal.id)))
+            completedListingIds.add(String(proposal.marketplaceListingId));
+    }
+    if(completedListingIds.size){
+        for(const listing of market.listings){
+            if(listing&&listing.status!=='completed'&&completedListingIds.has(String(listing.id)))
+                listing.status='completed';
+        }
     }
     return market.listings
         .filter(item => item.status === 'available' || item.status === 'negotiating')
@@ -46228,21 +46674,26 @@ function trueMarketplacePlayerListingAnimal(row){
 }
 function trueMarketplacePlayerActiveListings(){
     const market=normaliseTrueMarketplaceState(),today=String(state.trueCalendar?.date||'2026-04-18');
+    const active=[];
     for(const row of market.playerListings){
-        if(row?.status==='listed'){
-            const animal=trueMarketplacePlayerListingAnimal(row);
-            if(animal&&row.reservationId==null){
-                const n=Number(String(row.id||'').match(/(\d+)$/)?.[1])||market.nextPlayerListingId++;
-                row.reservationId=-(1000000+n);trueTransferReserve(animal,normaliseTruePopulationCounts(row.population),row.reservationId);
-            }
+        if(row?.status!=='listed')continue;
+        // Resolve the animal once per listing, including for expiration and reservation recovery.
+        const animal=trueMarketplacePlayerListingAnimal(row);
+        if(row.expiresDate&&row.expiresDate<today){
+            row.status='expired';
+            trueMarketplaceReleasePlayerListingReservation(row,animal);
+            if(animal)delete animal.trueMarketplaceListed;
+            continue;
         }
-        if(row?.status==='listed'&&row.expiresDate&&row.expiresDate<today){
-            row.status='expired';const animal=trueMarketplacePlayerListingAnimal(row);
-            trueMarketplaceReleasePlayerListingReservation(row);if(animal)delete animal.trueMarketplaceListed;
+        if(!animal){row.status='withdrawn';continue;}
+        if(row.reservationId==null){
+            const n=Number(String(row.id||'').match(/(\d+)$/)?.[1])||market.nextPlayerListingId++;
+            row.reservationId=-(1000000+n);
+            trueTransferReserve(animal,normaliseTruePopulationCounts(row.population),row.reservationId);
         }
-        if(row?.status==='listed'&&!trueMarketplacePlayerListingAnimal(row))row.status='withdrawn';
+        active.push(row);
     }
-    return market.playerListings.filter(r=>r?.status==='listed');
+    return active;
 }
 function trueMarketplaceListPlayerAnimal(animal,population=null){
     if(!animal||animal.trueArrivalPending||animal.reservedForTrade||animal.reservedEnclosureId!=null)return false;
@@ -46259,8 +46710,8 @@ function trueMarketplaceListPlayerAnimal(animal,population=null){
         message:`${animalDisplayName(animal)} ${truePopulationNotation(selected)} has been offered to the zoo network. Interested institutions may contact us over the next few days.`});
     writeAutoResumeSnapshot?.(true);return true;
 }
-function trueMarketplaceReleasePlayerListingReservation(row){
-    const animal=trueMarketplacePlayerListingAnimal(row);if(!animal)return;
+function trueMarketplaceReleasePlayerListingReservation(row,knownAnimal){
+    const animal=knownAnimal===undefined?trueMarketplacePlayerListingAnimal(row):knownAnimal;if(!animal)return;
     if(row?.reservationId!=null){
         animal.trueTransferReservations=trueTransferReservations(animal).filter(r=>Number(r.transferId)!==Number(row.reservationId));
         if(!animal.trueTransferReservations.length)delete animal.trueTransferReservations;
@@ -46272,37 +46723,49 @@ function trueMarketplaceWithdrawPlayerListing(row){
     if(animal)delete animal.trueMarketplaceListed;
     writeAutoResumeSnapshot?.(true);return true;
 }
-function trueMarketplacePlayerOfferCandidates(row,today){
+function trueMarketplacePlayerOfferCandidates(row,today,stockCache=null){
     const animal=trueMarketplacePlayerListingAnimal(row);if(!animal)return [];
     const records=trueStarterNetworkCandidates(realZooRecordsAvailable(),24,{
         seedText:`player-market-offer|${state.zooName}|${row.id}|${today}`,respectSpecialism:false,includeEstablished:true
     });
+    const wantedKey=animalCardKey(animal);
     return records.filter(x=>{
-        const stock=realZooTradeAnimals(x.record,true);
-        return !stock.some(a=>animalCardKey(a)===animalCardKey(animal)) ||
+        // Multiple player listings may evaluate the same zoo on the same day.
+        // Reuse its inventory within this generation batch only.
+        let stock=stockCache?.get(x.record);
+        if(stock===undefined){
+            stock=realZooTradeAnimals(x.record,true);
+            stockCache?.set(x.record,stock);
+        }
+        return !stock.some(a=>animalCardKey(a)===wantedKey) ||
             (Number(trueRelationshipForProfile(x.profile,realZooHoldingKey(x.record))?.trust)||0)>20;
     });
 }
 function trueMarketplaceGeneratePlayerListingOffers(){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return 0;
     const today=normaliseTrueCalendarState().date;let made=0;
+    // Reuse each candidate zoo inventory when the selected zoo is evaluated again.
+    // The cache lives only for this offer-generation pass, so transfers cannot stale it.
+    const stockCache=new WeakMap();
+    let ownedKeys=null;
     for(const row of trueMarketplacePlayerActiveListings()){
         if(row.lastOfferDate===today)continue;
         const age=trueDaysBetween(row.createdDate,today);if(age<1)continue;
         const chance=Math.min(.78,.20+age*.08);
         if(seededRoll(`player-listing-interest|${row.id}|${today}`).roll>chance)continue;
-        const candidates=trueMarketplacePlayerOfferCandidates(row,today);if(!candidates.length)continue;
+        const candidates=trueMarketplacePlayerOfferCandidates(row,today,stockCache);if(!candidates.length)continue;
         // A zoo may make only one proposal per listing, even after that offer is declined.
         // Also remove legacy duplicates when loading an older save.
         const alreadyOffered=new Set((row.offers||[]).map(o=>String(o.sourceKey||'')));
         const freshCandidates=candidates.filter(x=>!alreadyOffered.has(String(realZooHoldingKey(x.record))));
         if(!freshCandidates.length)continue;
         const pick=freshCandidates[Math.floor(seededRoll(`player-listing-zoo|${row.id}|${today}`).roll*freshCandidates.length)]||freshCandidates[0];
-        const record=pick.record,profile=pick.profile,sourceKey=realZooHoldingKey(record),stock=realZooTradeAnimals(record,true);
+        const record=pick.record,profile=pick.profile,sourceKey=realZooHoldingKey(record),stock=stockCache.get(record)||realZooTradeAnimals(record,true);
         const exchangeRoll=seededRoll(`player-listing-exchange|${row.id}|${sourceKey}|${today}`).roll;
         let offeredAnimal=null;
         if(exchangeRoll<.52&&stock.length){
-            const suitable=stock.filter(a=>!playerOwnedTradeKeys().has(animalCardKey(a)));
+            if(!ownedKeys)ownedKeys=playerOwnedTradeKeys();
+            const suitable=stock.filter(a=>!ownedKeys.has(animalCardKey(a)));
             if(suitable.length)offeredAnimal=cloneForSave(suitable[Math.floor(seededRoll(`player-listing-animal|${row.id}|${today}`).roll*suitable.length)]);
         }
         const offer={id:`tmplo-${row.id}-${today}-${sourceKey.replace(/[^a-z0-9]+/gi,'-').slice(0,24)}`,
@@ -46485,6 +46948,24 @@ function openTrueMarketplace() {
     if (state.gameMode !== 'true' || state.visitingZoo) return;
     closeTrueMarketplace();
     const allEntries=trueMarketplaceEntries();
+    // Snapshot request eligibility for this modal session. Previously each row,
+    // filter, tooltip and sort rebuilt the complete obtainable-species set.
+    const marketForWants=normaliseTrueMarketplaceState();
+    const obtainableSpecies=trueMarketplaceObtainableSpeciesKeys();
+    const wantsByZoo=new Map();
+    for(const want of marketForWants.wants){
+        if(want?.status==='active'&&!wantsByZoo.has(want.zooKey))
+            wantsByZoo.set(want.zooKey,want);
+    }
+    const listingWantCache=new Map();
+    const listingWant=entry=>{
+        if(listingWantCache.has(entry))return listingWantCache.get(entry);
+        let want=wantsByZoo.get(trueMarketplaceWantKey(entry?.profile))||null;
+        if(want?.kind==='species'&&(!want.animal||!obtainableSpecies.has(animalCardKey(want.animal))))want=null;
+        want=trueMarketplaceWantExcludingOfferedAnimal(want,entry?.animal);
+        listingWantCache.set(entry,want);
+        return want;
+    };
     const overlay=document.createElement('div');
     overlay.id='trueMarketplaceOverlay';
     Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:'100000',background:'rgba(20,18,14,.20)',display:'flex',alignItems:'center',justifyContent:'center',padding:'18px',boxSizing:'border-box'});
@@ -46518,7 +46999,7 @@ function openTrueMarketplace() {
         return trueNetworkRelationshipProgress(rel?.trust||0);
     };
     const wantedColour=e=>{
-        const want=trueMarketplaceWantForListing(e);
+        const want=listingWant(e);
         if(want?.kind==='category')return categoryColour(trueMarketplaceCurrentWantCategory(want.category));
         if(want?.kind==='species')return categoryColour(want.animal?.category);
         return null;
@@ -46529,7 +47010,7 @@ function openTrueMarketplace() {
     };
     const filteredEntries=()=>{
         let arr=allEntries.filter(e=>{
-            const hay=[animalDisplayName(e.animal),e.profile?.name,e.profile?.country,e.reason,trueMarketplaceWantLabel(trueMarketplaceWantForListing(e))].join(' ').toLowerCase();
+            const hay=[animalDisplayName(e.animal),e.profile?.name,e.profile?.country,e.reason,trueMarketplaceWantLabel(listingWant(e))].join(' ').toLowerCase();
             if(filters.search&&!hay.includes(filters.search.toLowerCase()))return false;
             if(filters.category!=='all'&&categoryOf(e)!==filters.category)return false;
             if(filters.level!=='all'&&String(Number(e.animal?.level)||1)!==filters.level)return false;
@@ -46588,7 +47069,7 @@ function openTrueMarketplace() {
         const reason=document.createElement('div');reason.textContent=entry.reason||'Available for transfer';Object.assign(reason.style,{fontSize:'20px',fontWeight:'850',margin:'3px 0 16px'});
         const wantLabel=document.createElement('div');wantLabel.textContent='LOOKING FOR';Object.assign(wantLabel.style,{fontSize:'10px',fontWeight:'900',letterSpacing:'.11em',opacity:'.58',borderTop:'1px solid rgba(70,58,39,.17)',paddingTop:'14px'});
         const want=document.createElement('div');Object.assign(want.style,{fontSize:'17px',fontWeight:'800',margin:'3px 0 16px'});
-        const currentWant=trueMarketplaceWantForListing(entry);
+        const currentWant=listingWant(entry);
         if(currentWant?.kind==='category'){
             const fullLabel=trueMarketplaceWantLabel(currentWant);
             const categoryName=trueMarketplaceCurrentWantCategory(currentWant.category)||'Animals';
@@ -46655,20 +47136,22 @@ function openTrueMarketplace() {
         });
         filterbar.append(...controls);db.appendChild(filterbar);
         let entries=filteredEntries();
+        const sortValues=new Map(entries.map(e=>[e,sortKey==='category'?categoryOf(e):sortKey==='relationship'?relationshipOf(e).score:
+            sortKey==='want'?trueMarketplaceListingIntentLabel(e):trueMarketplaceDatabaseValue(e,sortKey)]));
         entries=entries.slice().sort((a,b)=>{
-            const av=sortKey==='category'?categoryOf(a):sortKey==='relationship'?relationshipOf(a).score:trueMarketplaceDatabaseValue(a,sortKey),bv=sortKey==='category'?categoryOf(b):sortKey==='relationship'?relationshipOf(b).score:trueMarketplaceDatabaseValue(b,sortKey);
+            const av=sortValues.get(a),bv=sortValues.get(b);
             return (typeof av==='number'?av-bv:String(av).localeCompare(String(bv),undefined,{numeric:true,sensitivity:'base'}))*sortDir;
         });
         const tableWrap=document.createElement('div');Object.assign(tableWrap.style,{flex:'1',minHeight:'0',overflow:'auto',border:'1px solid rgba(70,58,39,.18)',borderRadius:'8px',background:'rgba(255,255,255,.35)'});
         const table=document.createElement('table');Object.assign(table.style,{width:'100%',borderCollapse:'collapse',fontSize:'11px',tableLayout:'fixed'});
-        const cols=[['species','Species','18%'],['category','Category','13%'],['population','Pop.','6%'],['want','Looking for','17%'],['zoo','Zoo','14%'],['relationship','Relationship','12%'],['prestige','Prestige','7%'],['country','Country','8%'],['level','Lvl','4%']];
+        const cols=[['species','Species','18%'],['category','Category','13%'],['population','Pop.','6%'],['want','Transfer interest','17%'],['zoo','Zoo','14%'],['relationship','Relationship','12%'],['prestige','Prestige','7%'],['country','Country','8%'],['level','Lvl','4%']];
         const thead=document.createElement('thead'),trh=document.createElement('tr');
         for(const [key,label,width] of cols){const th=document.createElement('th');th.textContent=label+(sortKey===key?(sortDir>0?' ▲':' ▼'):'');Object.assign(th.style,{position:'sticky',top:'0',zIndex:'2',textAlign:'left',padding:'7px 7px',width,background:'#e6dcc6',borderBottom:'1px solid #aa9a80',cursor:'pointer',whiteSpace:'nowrap'});th.addEventListener('click',()=>{if(sortKey===key)sortDir*=-1;else{sortKey=key;sortDir=1;}renderDatabase();});trh.appendChild(th);}
         const acth=document.createElement('th');acth.textContent='';Object.assign(acth.style,{position:'sticky',top:'0',background:'#e6dcc6',width:'80px'});trh.appendChild(acth);thead.appendChild(trh);table.appendChild(thead);
         const tbody=document.createElement('tbody');
         for(const e of entries){
             const tr=document.createElement('tr');Object.assign(tr.style,{height:'30px',cursor:'pointer',borderBottom:'1px solid rgba(80,65,45,.09)'});
-            const speciesName=animalDisplayName(e.animal),populationLabel=truePopulationNotation(e.population),wantLabel=trueMarketplaceCompactWantLabel(trueMarketplaceWantForListing(e));
+            const speciesName=animalDisplayName(e.animal),populationLabel=truePopulationNotation(e.population),wantLabel=trueMarketplaceListingIntentLabel(e);
             const prestige=Number(e.profile?.currentPrestige ?? e.profile?.prestige ?? 0)||0;
             const relation=relationshipOf(e);
             const vals=[speciesName,categoryOf(e),populationLabel,wantLabel,e.profile?.name||'',relation.name,String(Math.round(prestige)),e.profile?.country||'',String(Number(e.animal?.level)||1)];
@@ -46676,7 +47159,7 @@ function openTrueMarketplace() {
                 if(i===0)td.style.fontWeight='900';
                 if(i===1){const tag=document.createElement('span');tag.textContent=v;tag.title=v;styleCategoryRequestBadge(tag,categoryColour(categoryOf(e)));td.textContent='';td.appendChild(tag);}
                 if(i===5){td.style.color=relation.color;td.style.fontWeight='850';}
-                if(i===3){const currentWant=trueMarketplaceWantForListing(e);const colour=wantedColour(e);if(colour&&currentWant?.kind==='category'){const tag=document.createElement('span');tag.textContent=v;styleCategoryRequestBadge(tag,colour);trueMarketplaceAttachWantTooltip(tag,currentWant);td.textContent='';td.appendChild(tag);}else if(currentWant){trueMarketplaceAttachWantTooltip(td,currentWant);}}
+                if(i===3){const currentWant=listingWant(e);const colour=wantedColour(e);if(trueMarketplaceFreePlacementCandidate(e)){td.style.color='#39704a';td.style.fontWeight='800';td.title='This zoo has surplus animals to rehome and may consider a transfer without receiving animals in return. Acceptance is not guaranteed.';}if(!trueMarketplaceFreePlacementCandidate(e)&&colour&&currentWant?.kind==='category'){const tag=document.createElement('span');tag.textContent=v;styleCategoryRequestBadge(tag,colour);trueMarketplaceAttachWantTooltip(tag,currentWant);td.textContent='';td.appendChild(tag);}else if(currentWant&&!trueMarketplaceFreePlacementCandidate(e)){trueMarketplaceAttachWantTooltip(td,currentWant);}}
                 if(i!==3)td.title=v;tr.appendChild(td);});
             const td=document.createElement('td'),ps=proposalState(e),offer=mkButton(ps.queued?.status==='accepted'?'Review':ps.disabled?'Pending':'Offer',ev=>{ev.stopPropagation();actionFor(e)});offer.disabled=ps.disabled;Object.assign(offer.style,{height:'24px',padding:'0 7px',fontSize:'10px'});td.appendChild(offer);tr.appendChild(td);
             tr.addEventListener('click',ev=>{
@@ -46736,6 +47219,8 @@ function openTruePopulationSelector(animal, options = {}) {
         display:'flex', alignItems:'center', justifyContent:'center', padding:'18px', boxSizing:'border-box'
     });
     const panel = document.createElement('div');
+    panel.addEventListener('pointerdown',e=>e.stopPropagation());
+    panel.addEventListener('click',e=>e.stopPropagation());
     Object.assign(panel.style, {
         width:'min(360px, 100%)', background:'#f7f3e8', color:'#222', border:'2px solid #2f2a22',
         borderRadius:'12px', boxShadow:'0 14px 38px rgba(0,0,0,.32)', padding:'16px', boxSizing:'border-box',
@@ -46779,7 +47264,7 @@ function openTruePopulationSelector(animal, options = {}) {
     panel.appendChild(summary);
     const actions=document.createElement('div');
     Object.assign(actions.style,{display:'flex',gap:'8px',justifyContent:'flex-end',marginTop:'14px'});
-    const cancel=document.createElement('button'); cancel.type='button'; cancel.textContent=offer.editingPendingProposalId?'Cancel proposal':'Cancel';
+    const cancel=document.createElement('button'); cancel.type='button'; cancel.textContent='Cancel';
     const confirm=document.createElement('button'); confirm.type='button'; confirm.textContent=options.confirmLabel || 'Confirm';
     for (const b of [cancel,confirm]) Object.assign(b.style,{minHeight:'40px',padding:'0 14px',borderRadius:'8px',border:'1px solid #50493f',fontWeight:'800',cursor:'pointer'});
     confirm.style.background='#2f2a22'; confirm.style.color='#fff';
@@ -46943,7 +47428,7 @@ function tryDropOnOutgoingOffer(event, animal) {
     }
     const trueProposalDrop = state.gameMode === 'true' ? document.getElementById('trueProposalOfferDrop') : null;
     const isClassicOutgoingTarget = target === outgoingOfferBox || outgoingOfferBox.contains(target);
-    const isTrueProposalTarget = Boolean(trueProposalDrop && (target === trueProposalDrop || trueProposalDrop.contains(target)));
+    const isTrueProposalTarget = Boolean(trueProposalDrop && (target === trueProposalDrop || trueProposalDrop.contains(target) || (event.clientX >= trueProposalDrop.getBoundingClientRect().left && event.clientX <= trueProposalDrop.getBoundingClientRect().right && event.clientY >= trueProposalDrop.getBoundingClientRect().top && event.clientY <= trueProposalDrop.getBoundingClientRect().bottom)));
     if (!(isClassicOutgoingTarget || isTrueProposalTarget)) return false;
     if (state.gameMode!=='true' && state.outgoingOffer && state.outgoingOffer.id !== animal.id) {
         if(!serverAuthoritativeMultiplayerActive())return false;
@@ -46954,7 +47439,7 @@ function tryDropOnOutgoingOffer(event, animal) {
         return true;
     }
 
-    if(state.gameMode==='true'&&state.autonomousTradeOffer?.marketplaceRequest&&
+    if(state.gameMode==='true'&&(state.autonomousTradeOffer?.marketplaceRequest||state.autonomousTradeOffer?.eventOpportunity)&&
        state.drag?.type==='animal'&&state.drag.animal?.id===animal.id&&state.drag.location==='enclosure'){
         if(trueProposalOutgoingOffers().length>=3)return false;
         restoreDraggedAnimal();
@@ -47585,11 +48070,11 @@ function trueProposalAcceptancePolicy(offer,outgoings,evaluation=null){
     const exactMatch=!!(want&&want.kind==='species'&&list.some(a=>trueMarketplaceWantMatchesAnimal(want,a)));
     const categoryMatch=!!(want&&want.kind!=='species'&&list.some(a=>trueMarketplaceWantMatchesAnimal(want,a)));
     const matchBonus=exactMatch?30:categoryMatch?18:0;
-    const ceiling=trust>=75?90:trust>=45?65:trust>=20?35:trust>=5?15:5;
+    const ceiling=trust>=75?94:trust>=45?82:trust>=20?68:trust>=5?55:42;
     const effectiveCeiling=Math.min(94,ceiling+(exactMatch?(trust<5?25:trust<20?20:trust<45?20:15):categoryMatch?8:0));
     const noReturn=!list.length;
     const unmetWant=!!(want&&!exactMatch&&!categoryMatch);
-    const score=(Number(result.total)||0)-25+matchBonus-(noReturn?25:unmetWant?20:0);
+    const score=(Number(result.total)||0)-25+matchBonus-(noReturn?12:unmetWant?20:0);
     let reason='';
     if(level===3&&trust<10&&!exactMatch)reason='Level 3 requires trust 10+ or an exact requested-species match';
     if(level===4&&!(trust>=30||(trust>=15&&exactMatch)))reason='Level 4 requires trust 30+, or trust 15+ with an exact match';
@@ -47598,7 +48083,17 @@ function trueProposalAcceptancePolicy(offer,outgoings,evaluation=null){
     // A donation request from an unfamiliar institution should remain rare,
     // even when the sender has surplus animals and housing bonuses are large.
     // Collection-matching exceptions require an actual outgoing animal.
-    const donationCeiling=noReturn?(trust<5?1:trust<20?5:trust<45?12:trust<75?35:65):94;
+    // Genuine surplus placements can succeed with a new partner; rare animals
+    // and unsolicited donations still require stronger relationships.
+    const listing=trueMarketplaceListingById(offer?.marketplaceListingId);
+    const event=offer?.eventOpportunity?trueEventById(offer.eventId):null;
+    const placementReason=String(listing?.reason|| (event?trueTransferOfferReason(event.kind):'')).toLowerCase();
+    const motivatedPlacement=/surplus|excess|new holder|placement|phase.?out|collection plan|redevelop|offspring|bachelor|group management/.test(placementReason);
+    const donationCeiling=noReturn
+        ?(motivatedPlacement
+            ?(trust<5?48:trust<20?62:trust<45?76:trust<75?86:92)
+            :(trust<5?18:trust<20?30:trust<45?45:trust<75?65:85))
+        :94;
     const finalCeiling=Math.min(effectiveCeiling,donationCeiling);
     const chance=reason?0:Math.max(0,Math.min(finalCeiling,score));
     return {chance,ceiling:finalCeiling,baseCeiling:ceiling,score,trust,exactMatch,categoryMatch,reason,noReturn,unmetWant,donationCeiling};
@@ -47786,6 +48281,13 @@ function resolveTrueTransferProposalResponse(payload={}){
     const acceptancePolicy=trueProposalAcceptancePolicy(offer,promised,evaluation);
     // A zoo-initiated event is a firm offer, not an unsolicited player request.
     // Once the player accepts its terms, never apply relationship/prestige odds.
+    if(offer?.animal&&!truePlayerOfferAnimalAllowed(offer.animal)){
+        proposal.transferUnavailable=true;
+        proposal.transferIntegrityReason='incoming-level-locked';
+        addTrueActivity({type:'information',title:'Transfer cannot proceed',
+            message:'The offered animal exceeds your current collection progression. The proposal has been held; no animal has been added.'});
+        renderTruePendingProposalTabs();renderTrade();return;
+    }
     const accepted=offer?.eventOpportunity===true||roll<acceptancePolicy.chance;
     proposal.status=accepted?'accepted':'declined';
     proposal.responseDate=normaliseTrueCalendarState().date;
@@ -47893,18 +48395,34 @@ function resolveTrueTransferProposalResponse(payload={}){
 
 function trueProposalStatusText(offer) {
     if (!offer?.marketplaceRequest&&!offer?.eventOpportunity) return '';
-    const evaluation=trueProposalEvaluation(offer,trueProposalOutgoingOffers());
+    const outgoing=trueProposalOutgoingOffers();
+    const evaluation=trueProposalEvaluation(offer,outgoing);
+    const policy=trueProposalAcceptancePolicy(offer,outgoing,evaluation);
     if (offer.editingPendingProposalId) return `Edit this pending proposal. Unchanged terms keep the original response time; revised terms start a new response period. Current response expected ${trueProposalResponseLabel(offer.responseDueDate,offer.responseDueMinute)}.`;
     if (offer.proposalStatus==='pending') return `Proposal sent · A response is expected ${trueProposalResponseLabel(offer.responseDueDate,offer.responseDueMinute)}.`;
     if (offer.proposalStatus==='accepted'||offer.proposalStatus==='transfer-scheduled') return 'Proposal accepted. Transfer processing or animal placement may still be pending.';
     if (offer.proposalStatus==='declined') return 'Proposal declined. Change your offered population to revise it.';
-    return `${trueProposalOutgoingOffers().length?'Exchange proposal':'Permanent transfer · nothing requested in return'} · Likely response: ${evaluation?.label||'Uncertain'}. Submit when you are ready.`;
+    const chance=policy.chance;
+    const hasExchange=outgoing.length>0;
+    if(chance>=75)return hasExchange?'They are very likely to accept this exchange.':'They are very likely to agree to this transfer.';
+    if(chance>=55)return hasExchange?'They seem willing to make this exchange.':'They seem willing to let the animals go without an exchange.';
+    if(chance>=30)return hasExchange?'They may be open to this exchange.':'They may be open to transferring the animals without an exchange.';
+    if(chance>=15)return 'They might need some convincing.';
+    return 'I doubt they will agree to these terms.';
 }
 
 function submitTrueTransferProposal() {
     const offer=state.autonomousTradeOffer;
     if(state.gameMode!=='true'||(!offer?.marketplaceRequest&&!offer?.eventOpportunity)) return false;
     normaliseTrueTransferProposals();
+    // Reject stale or unexpectedly high-tier offers before scheduling a reply.
+    // The event generator normally filters tiers, but restored offers and
+    // external marketplace state must not bypass that check.
+    if(offer.animal&&!truePlayerOfferAnimalAllowed(offer.animal)){
+        addTrueActivity({type:'information',title:'Transfer not available',
+            message:'This animal is not yet available at your zoo’s current collection level. No transfer has been scheduled.'});
+        return false;
+    }
     const outgoingNow=trueProposalOutgoingOffers();
     const editingId=offer.editingPendingProposalId;
     const existing=editingId?trueTransferProposalById(editingId):null;
@@ -47963,23 +48481,41 @@ function submitTrueTransferProposal() {
     return true;
 }
 
-function trueNetworkProfileForRelationshipKey(sourceKey){
-    const key=String(sourceKey||'');
-    const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===key)||
-        (state.realZooData?.zoos||[]).find(r=>String(r?.name||'')===key);
-    if(record)return realZooProfile(record,(state.realZooData?.zoos||[]).indexOf(record));
-    const event=normaliseTrueEventState().items.find(e=>String(e?.sourceKey||'')===key&&e?.profile);
-    if(event?.profile)return event.profile;
-    const listing=normaliseTrueMarketplaceState().listings.find(l=>String(l?.sourceKey||'')===key&&l?.profile);
-    return listing?.profile||null;
-}
 function trueNetworkRows(){
     const rows=[];
-    for(const [sourceKey,rel] of Object.entries(normaliseTrueRelationships())){
+    const relationships=normaliseTrueRelationships();
+    const zoos=state.realZooData?.zoos||[];
+    const byKey=new Map(),byName=new Map(),byNormalisedName=new Map();
+    // Resolve the first matching record, just as the previous find() calls did.
+    for(let i=0;i<zoos.length;i++){
+        const record=zoos[i],key=realZooHoldingKey(record),name=String(record?.name||'');
+        if(!byKey.has(key))byKey.set(key,i);
+        if(!byName.has(name))byName.set(name,i);
+        const normalisedName=normaliseGeographyPart(name);
+        if(!byNormalisedName.has(normalisedName))byNormalisedName.set(normalisedName,record);
+    }
+    // Historical events and listings are fallbacks only. Keep their original
+    // first-match ordering and avoid normalizing either collection per zoo.
+    const eventProfiles=new Map(),listingProfiles=new Map();
+    const eventItems=normaliseTrueEventState().items;
+    for(const event of eventItems){
+        if(!event?.profile)continue;
+        const key=String(event.sourceKey||'');
+        if(!eventProfiles.has(key))eventProfiles.set(key,event.profile);
+    }
+    const listings=normaliseTrueMarketplaceState().listings;
+    for(const listing of listings){
+        if(!listing?.profile)continue;
+        const key=String(listing.sourceKey||'');
+        if(!listingProfiles.has(key))listingProfiles.set(key,listing.profile);
+    }
+    for(const [sourceKey,rel] of Object.entries(relationships)){
         if(!rel||(!rel.lastInteractionDate&&!(rel.history||[]).length&&!(Number(rel.familiarity)>0)))continue;
-        const profile=trueNetworkProfileForRelationshipKey(sourceKey);
+        const key=String(sourceKey||'');
+        const index=byKey.get(key)??byName.get(key);
+        const profile=index===undefined?(eventProfiles.get(key)||listingProfiles.get(key)||null):realZooProfile(zoos[index],index);
         if(!profile?.name)continue;
-        const record=realZooRecordByName(profile.name);
+        const record=byNormalisedName.get(normaliseGeographyPart(profile.name))||null;
         rows.push({sourceKey,profile,rel,country:String(profile.country||record?.country||'Unknown country').trim()||'Unknown country',
             prestige:Number(profile.prestige)||Number(record?realZooPrestige(record):0)||0});
     }
@@ -48039,7 +48575,8 @@ function openTrueZooNetwork(){
 function closeTrueTradeHistory(){document.getElementById('trueTradeHistoryOverlay')?.remove();}
 function trueTradeHistoryPhase(proposal, transfers){
     const status=String(proposal?.status||'');
-    const transfer=transfers.find(t=>String(t?.proposalId)===String(proposal?.id)&&trueTransferMatchesProposalSpecies(t,proposal)&&(proposal.transferId==null||String(t.id)===String(proposal.transferId)));
+    const candidates=transfers instanceof Map?transfers.get(String(proposal?.id))||[]:transfers;
+    const transfer=candidates.find(t=>String(t?.proposalId)===String(proposal?.id)&&trueTransferMatchesProposalSpecies(t,proposal)&&(proposal.transferId==null||String(t.id)===String(proposal.transferId)));
     if(status==='declined'||status==='cancelled'||transfer?.status==='cancelled')return {group:'declined',label:status==='declined'?'Declined':'Cancelled'};
     if(status==='completed'||transfer?.status==='completed'){
         // Older builds could record completion without any actual population
@@ -48157,19 +48694,51 @@ function openTrueTradeHistory(){
     head.innerHTML='<div style="flex:1"><div style="font-size:10px;font-weight:900;letter-spacing:.12em;opacity:.62">ZOO NETWORK · TRANSFERS</div><div style="font-size:25px;font-weight:900;margin-top:3px">Trade History</div></div>';
     const close=document.createElement('button');close.type='button';close.textContent='Close';close.className='save-load-button';close.onclick=closeTrueTradeHistory;head.appendChild(close);panel.appendChild(head);
     const proposals=[...normaliseTrueTransferProposals()].filter(p=>p&&p.status!=='draft').reverse();
-    const transfers=Array.isArray(state.trueTransfers)?state.trueTransfers:[];
+    // Index once for the history dialog: phase classification otherwise scans
+    // the complete transfer log for every proposal and every category tab.
+    const transfers=new Map();
+    for(const transfer of (Array.isArray(state.trueTransfers)?state.trueTransfers:[])){
+        if(transfer?.proposalId==null)continue;
+        const key=String(transfer.proposalId);
+        if(!transfers.has(key))transfers.set(key,[]);
+        transfers.get(key).push(transfer);
+    }
+    const phases=new Map(proposals.map(p=>[p,trueTradeHistoryPhase(p,transfers)]));
+    const counts=new Map([['all',proposals.length],['pending',0],['transit',0],['completed',0],['declined',0]]);
+    for(const phase of phases.values())if(counts.has(phase.group))counts.set(phase.group,counts.get(phase.group)+1);
+    const knownProposalIds=new Set(normaliseTrueTransferProposals().map(p=>String(p?.id)));
+    const orphaned=(state.trueTransfers||[]).filter(t=>t?.proposalId!=null&&!knownProposalIds.has(String(t.proposalId)));
+    if(orphaned.length){
+        const warning=document.createElement('div');
+        warning.style.cssText='padding:9px 11px;margin-bottom:10px;border:1px solid #b6a17b;border-radius:6px;font-size:12px;line-height:1.4;';
+        warning.textContent=`${orphaned.length} historical transfers have no matching proposal record. Existing animals are preserved; any undelivered transfers are held for review.`;
+        panel.appendChild(warning);
+        const details=document.createElement('details');details.style.cssText='margin-bottom:12px;font-size:12px;';
+        const summary=document.createElement('summary');summary.textContent='Review transfers with missing proposals';details.appendChild(summary);
+        for(const t of orphaned){
+            const row=document.createElement('div');row.style.cssText='padding:6px 0;border-bottom:1px solid rgba(84,72,52,.15);';
+            const species=(t.incomings||[]).map(l=>l?.animal?.filename||l?.animal?.name||'Unknown animal').join(', ')||'No incoming animals';
+            const snap=t.originProposalSnapshot;
+            const provenance=snap?'proposal terms preserved':'original proposal terms unavailable';
+            const arrived=(t.incomings||[]).filter(leg=>(state.animals||[]).some(a=>
+                String(a.trueIncomingTransferId)===String(t.id)&&String(a.trueIncomingTransferLegId)===String(leg.legId))).length;
+            row.textContent=`#${t.id} · ${t.zooName||'Unknown zoo'} · ${species} · ${t.status||'unknown status'} · proposal ${t.proposalId} · ${provenance} · ${arrived}/${(t.incomings||[]).length} arrivals present`;
+            details.appendChild(row);
+        }
+        panel.appendChild(details);
+    }
     const tabs=document.createElement('div');tabs.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;';
     const list=document.createElement('div');list.setAttribute('aria-live','polite');
     const choices=[['all','All'],['pending','Awaiting response'],['transit','In progress'],['completed','Completed'],['declined','Declined / cancelled']];
     let active='all';
     function draw(){
         list.replaceChildren();
-        const filtered=proposals.filter(p=>active==='all'||trueTradeHistoryPhase(p,transfers).group===active);
+        const filtered=proposals.filter(p=>active==='all'||phases.get(p).group===active);
         if(!filtered.length){const empty=document.createElement('div');empty.textContent=active==='all'?'No transfer proposals yet.':'No transfers in this category.';empty.style.cssText='padding:16px 4px;opacity:.72;';list.appendChild(empty);}
         for(const p of filtered){
             const offer=p.offer||{};
             const profile=(p.marketplaceListingId?trueMarketplaceListingById(p.marketplaceListingId)?.profile:null)||p.partnerProfile||trueOfferProfile(offer)||{};
-            const phase=trueTradeHistoryPhase(p,transfers);
+            const phase=phases.get(p);
             const row=document.createElement('div');row.style.cssText='display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:12px 3px;border-top:1px solid rgba(84,72,52,.18);line-height:1.4;';
             const left=document.createElement('div');left.style.minWidth='0';
             const zoo=document.createElement('strong');zoo.textContent=profile.name||'Zoo';
@@ -48215,7 +48784,7 @@ function openTrueTradeHistory(){
         }
     }
     for(const [id,label] of choices){
-        const count=proposals.filter(p=>id==='all'||trueTradeHistoryPhase(p,transfers).group===id).length;
+        const count=counts.get(id)||0;
         const button=document.createElement('button');button.type='button';button.className='save-load-button';button.dataset.phase=id;
         button.textContent=`${label} (${count})`;button.addEventListener('click',()=>{active=id;draw();});tabs.appendChild(button);
     }
@@ -48234,6 +48803,9 @@ function trueOpenProposalAnimalPicker(){
     const backdrop=document.createElement('div');backdrop.id='trueProposalAnimalPicker';
     Object.assign(backdrop.style,{position:'fixed',inset:'0',zIndex:'12045',background:'rgba(0,0,0,.36)',display:'flex',justifyContent:'center',alignItems:'center',padding:'16px',boxSizing:'border-box'});
     const dialog=document.createElement('div');
+    // Picker controls must not start board drags or trigger the global zoo pointer handlers.
+    dialog.addEventListener('pointerdown',e=>e.stopPropagation());
+    dialog.addEventListener('click',e=>e.stopPropagation());
     Object.assign(dialog.style,{width:'min(490px,100%)',maxHeight:'min(680px,85vh)',display:'flex',flexDirection:'column',background:'#f7f3e8',color:'#29261f',border:'1px solid #786950',borderRadius:'10px',boxShadow:'0 12px 35px rgba(0,0,0,.32)',padding:'14px',boxSizing:'border-box'});
     const header=document.createElement('div');Object.assign(header.style,{display:'flex',justifyContent:'space-between',alignItems:'center',gap:'8px'});
     const title=document.createElement('strong');title.textContent='Choose animals to send';title.style.fontSize='16px';
@@ -48360,10 +48932,10 @@ function renderTrueTransferProposal() {
     panel.style.left='50%';panel.style.top='50%';panel.style.transform='translate(-50%,-50%)';panel.style.width='min(500px,calc(100vw - 24px))';
     panel.style.maxHeight='min(85vh,760px)';panel.style.zIndex='10120';
     const dialogTitle=document.createElement('div');
-    dialogTitle.textContent='TRANSFER PROPOSAL';
+    dialogTitle.textContent='ANIMAL TRANSFER';
     dialogTitle.style.cssText='font-size:13px;font-weight:900;margin:0 0 9px;';
     panel.appendChild(dialogTitle);
-    const dismiss=document.createElement('button');dismiss.type='button';dismiss.textContent='Close';
+    const dismiss=document.createElement('button');dismiss.type='button';dismiss.textContent='×';dismiss.title='Close';
     dismiss.style.cssText='float:right;padding:5px 10px;cursor:pointer;margin-bottom:8px;';
     dismiss.addEventListener('click',()=>{panel.dataset.dismissedOffer=String(offer.id||offer.marketplaceListingId||offer.animal?.id||'draft')+':'+String(offer.proposalStatus||'draft');panel.style.display='none';});
     panel.appendChild(dismiss);
@@ -48374,7 +48946,7 @@ function renderTrueTransferProposal() {
     const phaseLabels={draft:'DRAFT · Editable',declined:'DECLINED · Revise offer',pending:'AWAITING RESPONSE · Locked',accepted:'ACCEPTED · Processing transfer','transfer-scheduled':'TRANSFER SCHEDULED',completed:'TRANSFER COMPLETED'};
     proposalPhase.textContent=phaseLabels[phase]||'DRAFT · Editable';
     proposalPhase.style.cssText='display:inline-block;margin:0 0 8px;padding:4px 7px;background:rgba(103,89,63,.10);border:1px solid rgba(103,89,63,.20);border-radius:5px;font-size:10px;font-weight:900;letter-spacing:.04em';
-    panel.appendChild(proposalPhase);
+    if(phase!=='draft')panel.appendChild(proposalPhase);
     // Keep the actual transfer terms prominent; partner context is available on demand.
     const partnerDetails=document.createElement('details');
     partnerDetails.style.cssText='margin:2px 0 9px;border:1px solid rgba(70,60,45,.18);border-radius:6px;padding:5px 8px;font-size:11px;';
@@ -48392,7 +48964,8 @@ function renderTrueTransferProposal() {
     interestLine.textContent=`Looking for: ${trueMarketplaceWantLabel(trueMarketplaceActiveWant(partnerProfile))}`;
     partnerInfo.append(partnerPlace,relationLine,interestLine);
     partnerDetails.append(partnerSummary,partnerInfo);
-    panel.appendChild(partnerDetails);
+    // Partner background is available from the marketplace; keep this proposal focused.
+    // panel.appendChild(partnerDetails);
 
     const columns = document.createElement('div');
     Object.assign(columns.style,{display:'grid',gridTemplateColumns:'minmax(0,1fr) minmax(0,1fr)',gap:'10px',alignItems:'stretch',justifyItems:'stretch',padding:'4px 0 2px'});
@@ -48415,7 +48988,7 @@ function renderTrueTransferProposal() {
     Object.assign(offered.style,{border:'1px solid rgba(70,60,45,.20)',background:'rgba(120,105,75,.07)',borderRadius:'7px',padding:'10px 6px',width:'100%',minWidth:'0',minHeight:'226px',boxSizing:'border-box',textAlign:'center'});
     const ot=document.createElement('div');ot.textContent='YOU SEND';Object.assign(ot.style,{fontSize:'10px',fontWeight:'900',opacity:'.65',marginBottom:'5px'});offered.appendChild(ot);
     if(!offeredList.length){
-        const none=document.createElement('div');none.innerHTML='<div style="font-size:22px;opacity:.55;margin-top:35px">↗</div><div style="font-size:12px;font-weight:900;margin-top:8px">Nothing</div><div style="font-size:10px;opacity:.68;margin-top:6px">No animals requested in return.<div style="margin-top:7px">Drag animals here to propose an exchange.</div></div>';offered.appendChild(none);
+        const none=document.createElement('div');none.innerHTML='<div style="font-size:15px;font-weight:800;margin-top:65px">No animals</div>';offered.appendChild(none);
     }else{
         for(const item of offeredList){
             const row=document.createElement('div');Object.assign(row.style,{display:'grid',gridTemplateColumns:'52px 1fr 22px',gap:'4px',alignItems:'center',marginBottom:'6px',padding:'4px',border:'1px solid rgba(70,60,45,.25)',borderRadius:'5px'});
@@ -48450,7 +49023,7 @@ function renderTrueTransferProposal() {
         const reasonBox=document.createElement(issues.length?'div':'details');
         Object.assign(reasonBox.style,{marginTop:'6px',fontSize:'10px',lineHeight:'1.45',padding:'6px 8px',borderRadius:'5px',background:issues.length?'rgba(145,83,45,.10)':'rgba(120,105,75,.05)'});
         if(!issues.length){
-            const summary=document.createElement('summary');summary.textContent='✓ Transfer checks satisfied · Details';
+            const summary=document.createElement('summary');summary.textContent='Transfer details';
             summary.style.cursor='pointer';summary.style.fontWeight='800';reasonBox.appendChild(summary);
         }
         for(const reason of (issues.length?issues:evaluation.reasons).slice(0,6)){
@@ -48458,7 +49031,7 @@ function renderTrueTransferProposal() {
             row.textContent=`${reason.good?'✓':'⚠'} ${reason.text}`;
             reasonBox.appendChild(row);
         }
-        panel.appendChild(reasonBox);
+        if(issues.length)panel.appendChild(reasonBox);
     }
 
     const actions=document.createElement('div');
@@ -49429,11 +50002,12 @@ function acceptSelectedTrade(destination=null, autoPlace=false, offerOverride=nu
         const profile=trueOfferProfile(state.autonomousTradeOffer);
         const relKey=String(state.autonomousTradeOffer.eventSourceKey||event?.sourceKey||profile?.name||'unknown-zoo');
         const relation=trueRelationshipForProfile(profile,relKey);
-        const significance=Math.max(1,Number(outgoingForHistory?.level)||1);
-        const gain=Math.max(4,Math.round(8+significance*2-Math.min(4,relation.meaningfulTransfers||0)));
+        const gain=trueRequestPopulationTrustReward(outgoingForHistory,normaliseTrueAnimalPopulation(outgoingForHistory),relation);
         relation.trust=Math.min(100,(Number(relation.trust)||0)+gain);
         trueRelationshipRecordTransfer(profile,relKey,outgoingForHistory,
             `Fulfilled ${profile?.name||'partner zoo'}'s request for ${animalDisplayName(outgoingForHistory)}.`);
+        relation.history.unshift({date:normaliseTrueCalendarState().date,type:'animal-request-fulfilled',species:animalDisplayName(outgoingForHistory),trust:gain,familiarity:0});
+        if(relation.history.length>40)relation.history.length=40;
         const destinationRecord=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===relKey);
         if(destinationRecord)trueWorldPopulationAdd(destinationRecord,outgoingForHistory,normaliseTrueAnimalPopulation(outgoingForHistory),
             {type:'transfer-in',text:`Population received from ${state.zooName||'the player zoo'}.`,otherZooKey:'player'});
@@ -50762,4 +51336,139 @@ renderAll = function(...args){
     document.addEventListener('pointerout',e=>{if(active&&!active.contains(e.relatedTarget)){active=null;tooltip.classList.remove('visible');}},true);
     document.addEventListener('pointerdown',()=>{active=null;tooltip.classList.remove('visible');},true);
     window.addEventListener('blur',()=>{active=null;tooltip.classList.remove('visible');});
+})();
+
+
+// Optional developer performance diagnostic. No timing wrappers run until explicitly started.
+// Console: zooPerf.start(); zooPerf.stop(); zooPerf.download(); zooPerf.report()
+(function installZooPerformanceDiagnostic(){
+    if(typeof window==='undefined'||window.zooPerf)return;
+    const targets={
+        calendar:['advanceTrueCalendarTime','normaliseTrueCalendarState','refreshTrueCalendarTimerUi'],
+        events:['trueProcessTimedEventRolls','trueProcessEventDay','processTrueScheduledEvents','trueProcessEventPresentationQueue','trueProcessDaytimeActivity'],
+        marketplace:['normaliseTrueMarketplaceState','refreshTrueMarketplaceRolling'],
+        transfers:['trueTransferProcessDay'],
+        guests:['trueGuestTickFrame','trueGuestTick'],
+        rendering:['renderZoo','renderAll','renderTrueSimulationPanel']
+    };
+    function getTarget(name){switch(name){
+                case 'advanceTrueCalendarTime': return advanceTrueCalendarTime;
+                case 'normaliseTrueCalendarState': return normaliseTrueCalendarState;
+                case 'refreshTrueCalendarTimerUi': return refreshTrueCalendarTimerUi;
+                case 'trueProcessTimedEventRolls': return trueProcessTimedEventRolls;
+                case 'trueProcessEventDay': return trueProcessEventDay;
+                case 'processTrueScheduledEvents': return processTrueScheduledEvents;
+                case 'trueProcessEventPresentationQueue': return trueProcessEventPresentationQueue;
+                case 'trueProcessDaytimeActivity': return trueProcessDaytimeActivity;
+                case 'normaliseTrueMarketplaceState': return normaliseTrueMarketplaceState;
+                case 'refreshTrueMarketplaceRolling': return refreshTrueMarketplaceRolling;
+                case 'trueTransferProcessDay': return trueTransferProcessDay;
+                case 'trueGuestTickFrame': return trueGuestTickFrame;
+                case 'trueGuestTick': return trueGuestTick;
+                case 'renderZoo': return renderZoo;
+                case 'renderAll': return renderAll;
+                case 'renderTrueSimulationPanel': return renderTrueSimulationPanel;
+        default:return null;}}
+    function setTarget(name,fn){switch(name){
+                case 'advanceTrueCalendarTime': advanceTrueCalendarTime=fn; return;
+                case 'normaliseTrueCalendarState': normaliseTrueCalendarState=fn; return;
+                case 'refreshTrueCalendarTimerUi': refreshTrueCalendarTimerUi=fn; return;
+                case 'trueProcessTimedEventRolls': trueProcessTimedEventRolls=fn; return;
+                case 'trueProcessEventDay': trueProcessEventDay=fn; return;
+                case 'processTrueScheduledEvents': processTrueScheduledEvents=fn; return;
+                case 'trueProcessEventPresentationQueue': trueProcessEventPresentationQueue=fn; return;
+                case 'trueProcessDaytimeActivity': trueProcessDaytimeActivity=fn; return;
+                case 'normaliseTrueMarketplaceState': normaliseTrueMarketplaceState=fn; return;
+                case 'refreshTrueMarketplaceRolling': refreshTrueMarketplaceRolling=fn; return;
+                case 'trueTransferProcessDay': trueTransferProcessDay=fn; return;
+                case 'trueGuestTickFrame': trueGuestTickFrame=fn; return;
+                case 'trueGuestTick': trueGuestTick=fn; return;
+                case 'renderZoo': renderZoo=fn; return;
+                case 'renderAll': renderAll=fn; return;
+                case 'renderTrueSimulationPanel': renderTrueSimulationPanel=fn; return;
+        default:return;}}
+    const original=new Map(),stats=new Map(),stack=[];
+    let active=false,started=0,ended=0,frames=0,frameGaps=0,maxFrameGap=0,lastFrame=0,rafId=0;
+    let longTasks=[],observer=null,slowCalls=[],sessionName='';
+    const now=()=>performance.now();
+    function record(name,group,duration,self){
+        let item=stats.get(name);
+        if(!item){item={name,group,calls:0,totalMs:0,selfMs:0,maxMs:0,over16ms:0,over50ms:0};stats.set(name,item);}
+        item.calls++;item.totalMs+=duration;item.selfMs+=self;item.maxMs=Math.max(item.maxMs,duration);
+        if(duration>=16)item.over16ms++;
+        if(duration>=50)item.over50ms++;
+        if(duration>=25){slowCalls.push({name,ms:+duration.toFixed(2),atMs:+(now()-started).toFixed(0)});if(slowCalls.length>200)slowCalls.shift();}
+    }
+    function frame(t){
+        if(!active)return;
+        if(lastFrame&&!document.hidden){const delta=t-lastFrame;frames++;if(delta>50){frameGaps++;maxFrameGap=Math.max(maxFrameGap,delta);}}
+        lastFrame=t;rafId=requestAnimationFrame(frame);
+    }
+    function stop(){
+        if(!active)return api.report();
+        ended=now();active=false;
+        for(const [name,fn] of original){try{setTarget(name,fn);}catch(e){console.warn('[Zoo Perf] Could not restore '+name,e);}}
+        original.clear();stack.length=0;
+        if(rafId)cancelAnimationFrame(rafId);rafId=0;
+        if(observer){observer.disconnect();observer=null;}
+        console.info('[Zoo Perf] Recording stopped. Run zooPerf.report() or zooPerf.download().');
+        return api.report();
+    }
+    function start(label='gameplay'){
+        if(active)return console.warn('[Zoo Perf] Already recording.');
+        stats.clear();slowCalls=[];longTasks=[];frames=0;frameGaps=0;maxFrameGap=0;lastFrame=0;
+        started=now();ended=0;sessionName=String(label).slice(0,100);
+        // Named global function declarations are re-bound only during the recording session.
+        for(const [group,names] of Object.entries(targets))for(const name of names){
+            try{
+                const fn=getTarget(name);
+                if(typeof fn!=='function')continue;
+                original.set(name,fn);
+                const wrapped=function(...args){
+                    const begin=now(),parent=stack[stack.length-1],entry={children:0};stack.push(entry);
+                    try{return fn.apply(this,args);}finally{
+                        const elapsed=now()-begin;stack.pop();
+                        if(parent)parent.children+=elapsed;
+                        record(name,group,elapsed,Math.max(0,elapsed-entry.children));
+                    }
+                };
+                setTarget(name,wrapped);
+            }catch(e){console.warn('[Zoo Perf] Could not instrument '+name,e);}
+        }
+        active=true;
+        if(typeof PerformanceObserver==='function')try{
+            observer=new PerformanceObserver(list=>{for(const item of list.getEntries()){
+                longTasks.push({atMs:+(item.startTime-started).toFixed(0),durationMs:+item.duration.toFixed(1)});
+                if(longTasks.length>200)longTasks.shift();
+            }});
+            observer.observe({entryTypes:['longtask']});
+        }catch(e){observer=null;}
+        rafId=requestAnimationFrame(frame);
+        console.info('[Zoo Perf] Recording started ('+original.size+' functions). Play for 2–5 minutes, then run zooPerf.stop() and zooPerf.download().');
+    }
+    function snapshot(){
+        const rows=[...stats.values()].map(s=>({...s,totalMs:+s.totalMs.toFixed(2),selfMs:+s.selfMs.toFixed(2),maxMs:+s.maxMs.toFixed(2),avgMs:+(s.totalMs/s.calls).toFixed(3)})).sort((a,b)=>b.selfMs-a.selfMs);
+        return {format:'zoo-curator-performance-v1',version:typeof ZOO_CURATOR_VERSION!=='undefined'?ZOO_CURATOR_VERSION:null,
+            label:sessionName,recording:active,durationSeconds:+((Math.max(ended,active?now():0)-started)/1000).toFixed(1),
+            capturedAt:new Date().toISOString(),browser:navigator.userAgent,
+            mode:typeof state!=='undefined'?state.gameMode:null,
+            speed:typeof state!=='undefined'?state.trueCalendar?.speed:null,
+            functionTimings:rows,frameSampling:{frames,frameGapsOver50ms:frameGaps,maxFrameGapMs:+maxFrameGap.toFixed(1)},
+            browserLongTasks:longTasks,slowFunctionCalls:slowCalls};
+    }
+    const api={start,stop,get active(){return active;},report(){
+        if(!started){console.info('[Zoo Perf] Start with zooPerf.start()');return null;}
+        const data=snapshot();console.table(data.functionTimings);
+        console.info('[Zoo Perf] Seconds:',data.durationSeconds,'Long tasks:',data.browserLongTasks.length,'Frame gaps >50ms:',data.frameSampling.frameGapsOver50ms);
+        return data;
+    },download(){
+        if(!started){console.warn('[Zoo Perf] Nothing recorded yet.');return;}
+        if(active)stop();
+        const data=snapshot(),blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);
+        const a=document.createElement('a');a.href=url;a.download='Zoo_Curator_Performance_'+new Date().toISOString().replace(/[:.]/g,'-')+'.json';
+        document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+        console.info('[Zoo Perf] Diagnostic JSON downloaded. Send this file for analysis.');
+    }};
+    window.zooPerf=api;
+    console.info('[Zoo Perf] Available: zooPerf.start(), zooPerf.stop(), zooPerf.download()');
 })();

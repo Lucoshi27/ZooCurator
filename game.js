@@ -2343,9 +2343,15 @@ function truePopulationHusbandrySummary(animal){
     let combinedWant='';
     if(condition.enclosureSpace?.mixed){
         const residents=condition.enclosureSpace.residents||[];
-        let combinationCells=Math.max(1,residents.length);
-        while(combinationCells<64&&!enclosureAnimalSizeSpaceStatus(combinationCells,residents).valid)combinationCells++;
-        const combinedRequired=Math.max(Number(condition.enclosureSpace.required)||1,combinationCells);
+        // Size requirements are monotonic: find the first valid cell count without
+        // repeatedly rescanning every resident for each intermediate size.
+        let low=Math.max(1,residents.length),high=64;
+        while(low<high){
+            const mid=(low+high)>>1;
+            if(enclosureAnimalSizeSpaceStatus(mid,residents).valid)high=mid;
+            else low=mid+1;
+        }
+        const combinedRequired=Math.max(Number(condition.enclosureSpace.required)||1,low);
         combinedWant=` · ${combinedRequired} combined recommended`;
     }
     const space=condition.cells==null?'No built enclosure':`${condition.cells} cells · ${displayRequired} recommended${displayRequired>baseline?` (${baseline} species baseline)`:''}${combinedWant}${shared}${drivenBy}`;
@@ -5786,8 +5792,19 @@ function placeAnimal(
     const movingFromSlotIndex =
         animal?.slotIndex ?? animal?.reservedSlotIndex ?? null;
     ensureClassicOccupancyCache();
-    const displacedReservationOwner=(classicReservedOccupancyBySlot.get(`${enclosure?.id}:${slotIndex}`)||[])
+    // True mode never swaps or relocates a different animal as a side effect
+    // of placing an arrival. Reservations belong to the Classic exchange flow.
+    const displacedReservationOwner=state.gameMode==='true'?null:
+        (classicReservedOccupancyBySlot.get(`${enclosure?.id}:${slotIndex}`)||[])
         .find(other=>other?.id!==animal?.id)||null;
+    if(state.gameMode==='true'){
+        // Check the live model, not only the cached slot map. A transfer may
+        // have mutated an animal's coordinates since the last cache refresh.
+        const conflicting=(state.animals||[]).find(other=>other!==animal&&
+            other.enclosureId!=null&&String(other.enclosureId)===String(enclosure?.id)&&
+            Number(other.slotIndex)===Number(slotIndex));
+        if(conflicting)return false;
+    }
 
     if (
         !canPlace(
@@ -7796,7 +7813,16 @@ function trueEventEligibleSourceRecords(seedSuffix='general'){
     if(!records.length)return [];
     const actualPrestige=visibleZooPrestige();
     if(actualPrestige<80){
-        return trueStarterNetworkCandidates(records,16,{
+        // First contacts should establish a domestic network. The starter
+        // sampler previously mixed in foreign zoos despite its local weighting,
+        // so the first two relationship events could both come from abroad.
+        // Only fall back to neighbouring countries when no domestic source
+        // exists (important for countries with very few zoo records).
+        const playerCountry=normaliseGeographyPart(truePlayerCountryName?.()||state.zooCountry);
+        const domestic=records.filter(record=>normaliseGeographyPart(record?.country)===playerCountry);
+        const starterPool=domestic.length?domestic:records.filter(record=>realZooGeographyBand(record)<=2);
+        const pool=starterPool.length?starterPool:records;
+        return trueStarterNetworkCandidates(pool,16,{
             seedText:`true-events|${state.zooName}|${normaliseTrueCalendarState().date}|${seedSuffix}`,
             respectSpecialism:true,
             includeEstablished:true
@@ -8041,6 +8067,16 @@ function truePlayerOfferLevelWeight(animal){
     const weights={2:{1:1,2:.18},3:{1:.48,2:1,3:.34},4:{1:.24,2:.82,3:1,4:.30},5:{1:.14,2:.62,3:1,4:.72,5:.24}};
     return Number(weights[max]?.[level]||0);
 }
+// Zoo-initiated Level 2 offers unlock once the player owns a Level 2
+// animal, OR has Contact (5 trust) with the particular offering zoo.
+// Higher tiers retain the existing progression rules.
+function trueZooEventOfferTierAllowed(animal,profile,sourceKey){
+    if(!truePlayerOfferAnimalAllowed(animal))return false;
+    if(Number(animal?.level)!==2)return true;
+    if(truePlayerOfferProgression().counts[2]>0)return true;
+    const relationship=trueRelationshipForProfile(profile,sourceKey);
+    return (Number(relationship?.trust)||0)>=5;
+}
 function truePlayerOfferAnimalAllowed(animal){return truePlayerOfferLevelWeight(animal)>0;}
 
 // Marketplace and independent Zoo Network offers must not advertise the
@@ -8078,6 +8114,14 @@ function trueActiveAdvertisedOfferKeys({marketplace=true,independent=true}={}){
 // advertisements; the transfer system remains responsible for animal counts.
 function trueUnadvertisedMarketplaceCandidates(candidates){
     const advertisedKeys=trueActiveAdvertisedOfferKeys();
+    // A completed Marketplace population must not be advertised again on the
+    // next rolling/monthly refresh. The listing is an individual opportunity,
+    // not an infinitely renewable copy of the zoo's species holdings.
+    for(const listing of state.trueMarketplace?.listings||[]){
+        if(listing?.status!=='completed')continue;
+        const key=trueOfferSourceSpeciesKey(listing.sourceKey,listing.animal);
+        if(key)advertisedKeys.add(key);
+    }
     const seen=new Set();
     return (candidates||[]).filter(item=>{
         const key=trueOfferSourceSpeciesKey(item?.sourceKey,item?.animal);
@@ -8097,7 +8141,7 @@ function trueEventWorldCandidates(){
     const candidates=[];
     for(let index=0;index<records.length;index++){
         const record=records[index],sourceKey=realZooHoldingKey(record),profile=realZooProfile(record,index);
-        const stock=realZooTradeAnimals(record,true).filter(truePlayerOfferAnimalAllowed);
+        const stock=realZooTradeAnimals(record,true).filter(animal=>trueZooEventOfferTierAllowed(animal,profile,sourceKey));
         if(!stock.length)continue;
         const offset=Math.floor(seededRoll(`event-world-stock|${sourceKey}|${normaliseTrueCalendarState().date}`).roll*stock.length);
         for(let j=0;j<Math.min(6,stock.length);j++){
@@ -8633,7 +8677,7 @@ function trueCombinationOfferCandidate(today){
     for(const record of sourceRows){
         const sourceKey=realZooHoldingKey(record),profile=realZooProfile(record,0);
         const geographyBand=realZooGeographyBand(record);
-        for(const offered of realZooTradeAnimals(record,true).filter(truePlayerOfferAnimalAllowed)){
+        for(const offered of realZooTradeAnimals(record,true).filter(animal=>trueZooEventOfferTierAllowed(animal,profile,sourceKey))){
             if(!offered||owned.has(animalCardKey(offered)))continue;
             const pop=trueMarketplacePopulation(offered,profile.name,`combination|${sourceKey}|${today}|${animalCardKey(offered)}`);
             const preview={...offered,population:pop};
@@ -9184,7 +9228,17 @@ function trueProcessEventPresentationQueue(){
         const [decision]=events.presentationQueue.splice(decisionIndex,1);
         events.presentationQueue.unshift(decision);
     }
-    if(cooldownActive&&decisionIndex<0)return false;
+    if(decisionIndex<0){
+        const approvalIndex=events.presentationQueue.findIndex(row=>{
+            const candidate=trueEventById(row.id);
+            return candidate?.kind==='grounds-expansion-approval'&&Number(row.scheduledAbs)<=now;
+        });
+        if(approvalIndex>0){
+            const [approval]=events.presentationQueue.splice(approvalIndex,1);
+            events.presentationQueue.unshift(approval);
+        }
+    }
+    if(cooldownActive&&decisionIndex<0&&!events.presentationQueue.some(row=>{const e=trueEventById(row.id);return e?.kind==='grounds-expansion-approval'&&Number(row.scheduledAbs)<=now;}))return false;
     while(events.presentationQueue.length){
         const row=events.presentationQueue[0];
         if(!row){events.presentationQueue.shift();continue;}
@@ -9193,7 +9247,7 @@ function trueProcessEventPresentationQueue(){
         if(events.presentedEventIds[row.id])continue;
         const event=trueEventById(row.id);
         if(!trueEventCanPresent(event))continue;
-        if(cooldownActive&&!trueEventRequiresDecision(event)){
+        if(cooldownActive&&!trueEventRequiresDecision(event)&&event.kind!=='grounds-expansion-approval'){
             events.presentationQueue.unshift(row);
             return false;
         }
@@ -9401,7 +9455,12 @@ function trueGenerateRelationshipEventForDay(rollIndex=0){
     if(trueEventBlockingItems().length>=3)return null;
 
     const days=Math.max(0,trueDaysBetween(events.lastGeneratedDate||today,today));
-    const chance=Math.min(.82,.48+days*.06);
+    // A new zoo needs opportunities to establish its first real contacts.
+    // Count actual trust, not mere familiarity from informational updates.
+    const hasEstablishedContact=Object.values(normaliseTrueRelationships())
+        .some(rel=>Number(rel?.trust)>=5);
+    const chance=hasEstablishedContact?Math.min(.82,.48+days*.06)
+        :Math.min(.94,.72+days*.06);
     if(seededRoll(`true-event-day|${state.zooName}|${today}|${rollIndex}`).roll>=chance)return null;
 
     // The request-candidate scan traverses partner inventories and is expensive.
@@ -9432,7 +9491,10 @@ function trueGenerateRelationshipEventForDay(rollIndex=0){
     const rel=trueRelationshipForProfile(candidate.profile,candidate.sourceKey);
     const roll=seededRoll(`true-event-world-kind|${candidate.sourceKey}|${animalCardKey(candidate.animal)}|${today}`).roll;
     const hasAmbientEventToday=(events.items||[]).some(event=>event?.createdDate===today&&event.informational);
-    if(roll<.20&&!hasAmbientEventToday){
+    // While every partner is still Unknown, prefer relationship-building
+    // network information over another unsolicited animal transfer. Keep
+    // the existing one-informational-event-per-day guard.
+    if(roll<(hasEstablishedContact?.20:.42)&&!hasAmbientEventToday){
         const infoKind=truePickInformationKind(candidate,events,`true-event-info-kind|${candidate.sourceKey}|${today}`);
         if(!infoKind)return null;
         const infoEvent=trueCreateWorldNewsEvent(candidate,today,infoKind);
@@ -10699,15 +10761,27 @@ function advanceTrueCalendarTime(now=performance.now()) {
     // Acceleration traverses every crossed game minute in sequence. Scheduled systems
     // therefore experience 10:01, 10:02, 10:03... rather than a jump to the target.
     const processUntil=Math.min(total,close-1);
+    // Advance the authoritative clock through every minute, but only invoke
+    // expensive generators at their actual due minutes. Previously both
+    // generators and the transfer list were scanned on EVERY crossed minute,
+    // causing long main-thread stalls at accelerated speeds.
+    const eventDueMinutes=new Set(trueEventRollScheduleForDate(calendar.date));
+    const transferDueMinutes=new Set();
+    if(Array.isArray(state.trueTransfers))for(const transfer of state.trueTransfers){
+        if(transfer&&transfer.status==='scheduled'&&transfer.arrivalDate===calendar.date){
+            const due=Number(transfer.arrivalDueMinute);
+            if(Number.isFinite(due))transferDueMinutes.add(due);
+        }
+    }
     for(let minute=startTotal+1;minute<=processUntil;minute++){
         calendar.hour=Math.floor(minute/60);calendar.minute=minute%60;
-        // A failed event roll must not freeze the simulation at the same minute.
-        // Keep each subsystem isolated so the other can still run.
-        try{trueProcessTimedEventRolls(minute);}catch(error){trueCalendarReportTickFailure('events',minute,error);}
-        try{trueProcessDaytimeActivity(minute);}catch(error){trueCalendarReportTickFailure('activity',minute,error);}
-        // Check fractional-day transfer arrivals only at the scheduled minute;
-        // avoid expensive transfer scans on every simulation tick.
-        if(Array.isArray(state.trueTransfers)&&state.trueTransfers.some(t=>t&&t.status==='scheduled'&&t.arrivalDate===calendar.date&&Number(t.arrivalDueMinute)===minute)){
+        if(eventDueMinutes.has(minute)){
+            try{trueProcessTimedEventRolls(minute);}catch(error){trueCalendarReportTickFailure('events',minute,error);}
+        }
+        if(minute>=600&&minute<=960&&(minute-600)%120===0){
+            try{trueProcessDaytimeActivity(minute);}catch(error){trueCalendarReportTickFailure('activity',minute,error);}
+        }
+        if(transferDueMinutes.has(minute)){
             try{trueTransferProcessDay();}catch(error){trueCalendarReportTickFailure('transfer-arrival',minute,error);}
         }
     }
@@ -12105,10 +12179,10 @@ function renderTruePendingProposalTabs(){
     const now=(Number(calendar.hour)||9)*60+(Number(calendar.minute)||0);
     for(const proposal of pending){
         const button=document.createElement('button');button.type='button';
-        const accepted=proposal.status!=='pending';button.textContent=accepted?'⌛✓':'⌛';
+        const declined=proposal.status==='declined';const accepted=!declined&&proposal.status!=='pending';button.textContent=declined?'⌛✕':accepted?'⌛✓':'⌛';
         button.setAttribute('aria-label','Transfer proposal awaiting response');
         const transfer=accepted?(proposal.transferId!=null?trueTransferById(proposal.transferId):normaliseTrueTransfers().find(t=>String(t.proposalId)===String(proposal.id))):null;
-        const due=accepted?transfer?.arrivalDate:proposal.responseDueDate;
+        const due=declined?proposal.responseDate:accepted?transfer?.arrivalDate:proposal.responseDueDate;
         // Transfer arrivals have an exact in-game minute. Proposal replies only
         // display calendar-day estimates, so no misleading hourly countdown.
         const dueMinute=accepted
@@ -12116,7 +12190,7 @@ function renderTruePendingProposalTabs(){
             :(Number.isFinite(Number(proposal.responseDueMinute))?Number(proposal.responseDueMinute):540);
         const dayDelta=due?trueDaysBetween(calendar.date,due):null;
         const minutes=dayDelta===null?null:dayDelta*1440+dueMinute-now;
-        const remaining=accepted
+        const remaining=declined?'Declined · remains visible for one game day':accepted
             ?(minutes===null?'Arrival time unavailable':minutes<=0?'Arrival due now':`${Math.ceil(minutes/60)} game ${Math.ceil(minutes/60)===1?'hour':'hours'} until arrival`)
             :(dayDelta===null?'Response date unavailable':dayDelta<=0?'Response expected today':dayDelta===1?'Response expected tomorrow':`Response expected in ${dayDelta} days`);
         const zoo=trueOfferProfile(proposal.offer)?.name||'the other zoo';
@@ -12133,9 +12207,9 @@ function renderTruePendingProposalTabs(){
             const notation=truePopulationNotation(pop);
             return `${name}${notation?' · '+notation:''}`;
         }).join(', '):'Nothing';
-        button.title=`${accepted?'Accepted — awaiting arrival':'Awaiting a response'} from ${zoo}\nReceive: ${describe(incoming)}\nSend: ${describe(outgoing)}\n${remaining}${due?`\nExpected ${formatTrueDate(due,false)}`:''}`;
+        button.title=`${declined?'Declined':accepted?'Accepted — awaiting arrival':'Awaiting a response'} from ${zoo}\nReceive: ${describe(incoming)}\nSend: ${describe(outgoing)}\n${remaining}${due?`\nExpected ${formatTrueDate(due,false)}`:''}`;
         button.style.cssText='background:#f1e6cb;border:1px solid #a88e65;border-radius:0 0 7px 7px;padding:4px 10px;font-size:17px;cursor:pointer;box-shadow:0 2px 4px #0002;';
-        button.addEventListener('click',()=>{const inbox=document.querySelector('[data-true-management-view="inbox"]');if(inbox)inbox.click();else document.getElementById('trueTransferProposalPanel')?.scrollIntoView?.({block:'nearest'});});
+        button.addEventListener('click',()=>{if(proposal.status==='pending'){loadTrueTransferProposal(proposal);const panel=document.getElementById('trueTransferProposalPanel');if(panel){panel.dataset.dismissedOffer='';panel.style.display='';}return;}const inbox=document.querySelector('[data-true-management-view="inbox"]');if(inbox)inbox.click();else document.getElementById('trueTransferProposalPanel')?.scrollIntoView?.({block:'nearest'});});
         host.appendChild(button);
     }
 }
@@ -12266,11 +12340,17 @@ function renderTrueSimulationPanel() {
     date.style.gridColumn='1';date.style.gridRow='3';
     speedCluster.style.gridColumn='2';speedCluster.style.gridRow='3';
     speedCluster.style.justifyContent='flex-end';
-    const headerPrestige=preservedHeaderPrestige||document.getElementById('prestigeCounter');
-    if(headerPrestige){
-        headerPrestige.style.cssText='grid-column:2;grid-row:2;justify-self:end;white-space:nowrap;font-size:14px;font-weight:700;margin:0;';
-        top.appendChild(headerPrestige);
+    // The Classic header can be reconstructed when switching modes or loading a
+    // zoo. Ensure True mode owns a live prestige label even if that rebuild
+    // removed the old node before this panel was rendered.
+    let headerPrestige=preservedHeaderPrestige||document.getElementById('prestigeCounter');
+    if(!headerPrestige){
+        headerPrestige=document.createElement('span');
+        headerPrestige.id='prestigeCounter';
     }
+    headerPrestige.style.cssText='display:block;grid-column:2;grid-row:2;justify-self:end;white-space:nowrap;font-size:14px;font-weight:700;margin:0;';
+    top.appendChild(headerPrestige);
+    updatePrestigeDisplay();
     if(trueHudScale>1){
         top.style.transform=`scale(${trueHudScale})`;
         top.style.transformOrigin='top right';
@@ -12374,24 +12454,10 @@ function renderTrueSimulationPanel() {
         if(renderedDayKeys.has(key))continue;
         renderedDayKeys.add(key);
         const dayItems=activitiesByDay.get(key)||[];
-        const priority=item=>{
-            const classification=inboxClassification(item);
-            if(classification?.rank===0)return 100;
-            const title=String(item.title||'').toLowerCase(),kind=String(item.type||'').toLowerCase();
-            if(/birth|death|transfer|proposal|offer|request|welfare|medical|quarantine|expansion|sponsor|donation|breeding|milestone|arrival/.test(title+' '+kind))return 70;
-            if(item.action==='event')return 55;
-            if(/staff|facility|research|network/.test(title+' '+kind))return 40;
-            if(/observation|visitor activity|guest activity/.test(title+' '+kind))return 5;
-            return 20;
-        };
-        // Routine observations are still kept in the activity log, but they
-        // should not crowd out the two headline slots in the header.
-        // Keep one headline per underlying event, even if its activity was logged
-        // more than once (for example when an Inbox entry changes status).
+        // Display the complete day's history in time order. Keep duplicate
+        // log entries for one underlying event from appearing twice.
         const seenHeadlines=new Set();
-        const highlights=dayItems.map((item,index)=>({item,index,score:priority(item)}))
-            .filter(entry=>entry.score>5)
-            .sort((a,b)=>b.score-a.score||a.index-b.index)
+        const highlights=dayItems.map((item,index)=>({item,index}))
             .filter(({item})=>{
                 const identity=item.eventId
                     ?`event:${item.eventId}`
@@ -12399,27 +12465,43 @@ function renderTrueSimulationPanel() {
                 if(seenHeadlines.has(identity))return false;
                 seenHeadlines.add(identity);
                 return true;
-            }).slice(0,2);
+            })
+            .sort((a,b)=>{
+                const timeOf=entry=>{
+                    const match=String(entry.item.time||'').match(/^(\d{1,2}):(\d{2})/);
+                    return match?Number(match[1])*60+Number(match[2]):1440;
+                };
+                return timeOf(a)-timeOf(b)||a.index-b.index;
+            });
         const card=document.createElement('div');
         card.className='true-header-day-card';card.dataset.date=key;
-        card.style.cssText=`flex:0 0 180px;width:180px;min-width:180px;max-width:180px;box-sizing:border-box;border:1px solid ${key===cal.date?'#9d865d':'#b9aa8c'};border-radius:6px;background:${key===cal.date?'#e9dec7':'#f8f1e3'};padding:9px 11px;display:flex;flex-direction:column;justify-content:flex-start;gap:9px;color:#30291f;overflow:hidden;box-shadow:0 1px 3px rgba(37,29,17,.10);`;
+        card.style.cssText=`flex:0 0 180px;width:180px;min-width:180px;max-width:180px;box-sizing:border-box;border:1px solid ${key===cal.date?'#9d865d':'#b9aa8c'};border-radius:6px;background:${key===cal.date?'#e9dec7':'#f8f1e3'};padding:9px 11px;display:flex;flex-direction:column;justify-content:flex-start;gap:5px;color:#30291f;overflow:hidden;box-shadow:0 1px 3px rgba(37,29,17,.10);`;
         // Right-align the timeline when there are only a few days; once it fills,
         // keep normal left-to-right scrolling with the newest day on the right.
         
         const dateLabel=document.createElement('strong');
-        dateLabel.style.cssText='font-size:14px;line-height:21px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-bottom:5px;border-bottom:1px solid rgba(92,73,42,.20);';
+        dateLabel.style.cssText='flex:0 0 auto;font-size:13px;line-height:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-bottom:3px;border-bottom:1px solid rgba(92,73,42,.20);';
         dateLabel.textContent=`${new Intl.DateTimeFormat(undefined,{weekday:'short',timeZone:'UTC'}).format(d)} ${d.getUTCDate()}${key===cal.date?' · Today':''}${summary.decisions?' · !':''}`;
         card.title=`${summary.total} activities · ${summary.decisions} decisions · ${summary.unread} unread`;
         card.appendChild(dateLabel);
+        const eventScroller=document.createElement('div');
+        eventScroller.className='true-header-day-events';
+        eventScroller.style.cssText='flex:1 1 0;min-height:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:5px;scrollbar-width:thin;scrollbar-color:#9e8864 #e8ddc6;overscroll-behavior:contain;padding-right:3px;';
+        const savedDayScroll=Number((panel._trueHeaderDayEventScrolls||{})[key])||0;
+        eventScroller.addEventListener('scroll',()=>{
+            if(!panel._trueHeaderDayEventScrolls)panel._trueHeaderDayEventScrolls={};
+            panel._trueHeaderDayEventScrolls[key]=eventScroller.scrollTop;
+        },{passive:true});
+        if(savedDayScroll)requestAnimationFrame(()=>{if(eventScroller.isConnected)eventScroller.scrollTop=savedDayScroll;});
         if(!highlights.length){
             const empty=document.createElement('span');empty.textContent=summary.total?'No major events':'No events yet';
-            empty.style.cssText='font-size:12px;opacity:.65;white-space:nowrap;';card.appendChild(empty);
+            empty.style.cssText='font-size:12px;opacity:.65;white-space:nowrap;';eventScroller.appendChild(empty);
         }
         for(const {item} of highlights){
             const eventButton=document.createElement('button');eventButton.type='button';
             eventButton.textContent=`${item.time?item.time+' · ':''}${item.title||'Activity'}`;
             eventButton.title=`${item.title||'Activity'}${item.message?' — '+item.message:''}`;
-            eventButton.style.cssText=`border:0;border-radius:3px;background:rgba(255,252,244,.65);text-align:left;padding:8px 7px;margin:0;color:#30291f;font-family:inherit;font-stretch:normal;letter-spacing:normal;transform:none;font-size:13px;line-height:18px;white-space:normal;overflow:hidden;overflow-wrap:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;max-height:51px;min-height:44px;box-sizing:border-box;cursor:${item.action==='event'?'pointer':'default'};font-weight:${inboxClassification(item)?.rank===0?'900':'500'};`;
+            eventButton.style.cssText=`border:0;border-radius:3px;background:rgba(255,252,244,.65);text-align:left;padding:8px 7px;margin:0;color:#30291f;font-family:inherit;font-stretch:normal;letter-spacing:normal;transform:none;font-size:13px;line-height:18px;white-space:normal;overflow:hidden;overflow-wrap:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;max-height:none;min-height:38px;flex:0 0 auto;box-sizing:border-box;cursor:${item.action==='event'?'pointer':'default'};font-weight:${inboxClassification(item)?.rank===0?'900':'500'};`;
             if(item.action==='event'&&item.eventId)eventButton.addEventListener('click',()=>{
                 panel.dataset.managementView='inbox';
                 panel.dataset.inboxFocusEventId=String(item.eventId);
@@ -12427,8 +12509,9 @@ function renderTrueSimulationPanel() {
                 renderTrueSimulationPanel();
             });
             else eventButton.disabled=true;
-            card.appendChild(eventButton);
+            eventScroller.appendChild(eventButton);
         }
+        card.appendChild(eventScroller);
         calendarStrip.appendChild(card);
     }
     // Right-justify the whole group when it fits, not just the first day.
@@ -12977,6 +13060,15 @@ body[data-animal-card-view="enclosure"] #zooCanvas .enclosure .animal-card,
 body[data-animal-card-view="enclosure"] #zooCanvas .enclosure .true-tree-card-crossfade-underlay{opacity:0!important;transition:opacity 300ms ease!important}
 body[data-animal-card-view="enclosure"] #zooCanvas .enclosure:hover .animal-card,
 body[data-animal-card-view="enclosure"] #zooCanvas .enclosure:hover .true-tree-card-crossfade-underlay{opacity:1!important}
+/* Enclosure hover: reveal cards, never leave name labels covering the cards.
+   The labels switch immediately; only the animal cards may crossfade. */
+/* Name tags are binary, never animated. Hide by display rather than opacity,
+   so inherited enclosure fades and card crossfades cannot leave ghost labels. */
+#zooCanvas .enclosure .true-animal-name-tag{transition:none!important;animation:none!important;opacity:1!important;visibility:visible!important}
+body[data-animal-card-view="enclosure"] #zooCanvas .enclosure:hover .true-animal-name-tag{display:none!important}
+body[data-animal-card-view="tag"] #zooCanvas .enclosure .true-animal-name-tag{display:block!important}
+body[data-animal-card-view="enclosure"] #zooCanvas .enclosure:not(:hover) .true-animal-name-tag{display:block!important}
+
 body.true-top-trees-hidden #truePlacedDecorationTreeLayer{opacity:0!important;visibility:hidden!important}
 @media(max-width:700px){#trueViewTogglePanel{left:6px;top:calc(var(--desktop-header-height,220px) + 6px);gap:3px}#trueViewTogglePanel button{font-size:9px;padding:4px 6px}}
 `;document.head.appendChild(style);
@@ -17970,6 +18062,19 @@ function normalizeZooWorkspace() {
                 if(pos&&Number.isFinite(Number(pos.x)))pos.x+=dx;
                 if(pos&&Number.isFinite(Number(pos.y)))pos.y+=dy;
             }
+            // Workspace rebasing must translate decorations together with the
+            // enclosures. Decoration coordinates are canvas-world coordinates,
+            // not positions relative to the current grounds rectangle.
+            for(const decoration of state.truePlacedDecorations||[]){
+                if(Number.isFinite(Number(decoration?.x)))decoration.x=Number(decoration.x)+dx;
+                if(Number.isFinite(Number(decoration?.y)))decoration.y=Number(decoration.y)+dy;
+            }
+            for(const stroke of state.trueEnclosureDecorations||[]){
+                if(Array.isArray(stroke?.points))for(const point of stroke.points){
+                    if(Number.isFinite(Number(point?.x)))point.x=Number(point.x)+dx;
+                    if(Number.isFinite(Number(point?.y)))point.y=Number(point.y)+dy;
+                }
+            }
             state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
         }
         for (const animal of state.sandboxLooseAnimals || []) {
@@ -20184,10 +20289,18 @@ function trueMaybeUnlockFirstNewSpeciesExpansion(arrivals=[]){
     });
     return true;
 }
-const TRUE_LAND_EXPANSION_PRESTIGE_MILESTONES=[25,50,85,130,190,275,400,600,850,1150,1500,1900,2350,2850,3400];
+const TRUE_LAND_EXPANSION_PRESTIGE_MILESTONES=[20,45,75,115,170,245,360,540,765,1035,1350,1710,2115,2565,3060];
 function trueLandExpansionEligibleLevel(prestige=visibleZooPrestige()){
     const p=Math.max(0,Number(prestige)||0);
     return TRUE_LAND_EXPANSION_PRESTIGE_MILESTONES.filter(x=>p>=x).length;
+}
+// Grounds approvals are real-time notices: queue their modal as soon as the
+// approval is granted and reduce accelerated play to normal speed, never pause.
+function trueNotifyGroundsExpansionApproval(event){
+    if(!event)return;
+    if(Number(normaliseTrueCalendarState().speed)>1)setTrueCalendarSpeed(1);
+    trueQueueEventPresentation(event);
+    trueProcessEventPresentationQueue();
 }
 function trueCreateGroundsExpansionApprovalEvent(gained,prestige,context=null){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo)return null;
@@ -20206,6 +20319,10 @@ function trueCreateGroundsExpansionApprovalEvent(gained,prestige,context=null){
         existing.impactText=`The approval is already available as a real grounds-expansion credit. You currently have ${Math.max(0,Number(normaliseTrueEnclosureBuilderState().landExpansionCredits)||0)} to spend.`;
         existing.lastUpdatedDate=today;
         addTrueActivity({type:'opportunity',title:'Additional grounds expansion approved',message:existing.message,actionLabel:'View event',action:'event',eventId:existing.id});
+        // A previously presented approval can gain another credit. Show the
+        // updated notice again rather than silently accumulating approvals.
+        delete events.presentedEventIds?.[existing.id];
+        trueNotifyGroundsExpansionApproval(existing);
         return existing;
     }
     const event={
@@ -20228,7 +20345,7 @@ function trueCreateGroundsExpansionApprovalEvent(gained,prestige,context=null){
         impactText:`${gained===1?'One grounds-expansion credit has':'New grounds-expansion credits have'} already been added to the enclosure builder and can be spent on adjacent land.`
     };
     trueRegisterEventWithActivity(events,event,{type:'opportunity',title:event.title,message:event.message,actionLabel:'View event',action:'event'});
-    
+    trueNotifyGroundsExpansionApproval(event);
     return event;
 }
 function trueEvaluateLandExpansionUnlocks(){
@@ -20364,28 +20481,36 @@ function refreshTrueEnclosureCapacityBadge(){
 }
 
 function normaliseTrueBuiltEnclosureOccupancy(){
-    if(state.gameMode!=='true'||state.sandboxMode) return false;
+    if(state.gameMode!=='true'||state.sandboxMode)return false;
     let changed=false;
+    // Read the authoritative animals directly. The cached enclosure list may
+    // have been built before an arrival/merge changed an animal's assignment.
     for(const enclosure of state.enclosures||[]){
-        if(!enclosure?.trueBuilt) continue;
+        if(!enclosure?.trueBuilt)continue;
         const capacity=Math.max(1,enclosure.cells?.length||1);
-        const occupants=classicAnimalsByEnclosure(enclosure.id);
-        const used=new Set();
+        const occupants=(state.animals||[]).filter(animal=>animal&&
+            animal.enclosureId!=null&&String(animal.enclosureId)===String(enclosure.id));
+        const used=new Set(),invalid=[];
+        // Reserve every valid existing position BEFORE relocating any invalid
+        // resident. Otherwise a newcomer can take a resident's original slot.
         for(const animal of occupants){
-            let slot=Number(animal.slotIndex);
+            const slot=animal.slotIndex;
             if(Number.isInteger(slot)&&slot>=0&&slot<capacity&&!used.has(slot)){
-                animal.slotIndex=slot; used.add(slot); continue;
-            }
+                used.add(slot);
+            }else invalid.push(animal);
+        }
+        for(const animal of invalid){
             let free=-1;
             for(let i=0;i<capacity;i++)if(!used.has(i)){free=i;break;}
             if(free<0){
-                animal.enclosureId=null; animal.slotIndex=null;
-            }else{
-                animal.slotIndex=free; used.add(free);
+                // Never silently eject an established animal during rendering.
+                // An over-capacity enclosure requires explicit player action.
+                continue;
             }
-            changed=true;
+            animal.slotIndex=free;used.add(free);changed=true;
         }
     }
+    if(changed)invalidateClassicOccupancyCache();
     return changed;
 }
 
@@ -24260,16 +24385,29 @@ function renderCustomAreas(){
                     `height:${CLASSIC_AREA_BORDER_WIDTH}px;background:${area.color};`;
                 box.appendChild(join);
             }
-        }else for(const q of cells){
+        }else {
+        // House interiors are one compound fill, not translucent tiles painted
+        // separately. Repeated tile overlays darkened their joins into a grid.
+        if(area.type==='house'&&cells.length){
+            const svgNS='http://www.w3.org/2000/svg';
+            const houseSvg=document.createElementNS(svgNS,'svg');
+            houseSvg.setAttribute('width','100%');houseSvg.setAttribute('height','100%');
+            houseSvg.style.cssText='position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:7;';
+            const housePath=document.createElementNS(svgNS,'path');
+            housePath.setAttribute('d',cells.map(q=>{
+                const r=areaCellRenderRect(q);
+                return `M${r.x-1} ${r.y-1}h${r.w+2}v${r.h+2}h${-r.w-2}Z`;
+            }).join(' '));
+            housePath.setAttribute('fill','rgba(47,42,36,.23)');
+            houseSvg.appendChild(housePath);box.appendChild(houseSvg);
+        }
+        for(const q of cells){
             const rr=areaCellRenderRect(q);
-            const tile=document.createElement('div');
-            tile.className='player-custom-area-fill';tile.style.cssText=`position:absolute;left:${rr.x-(area.type==='house'?2:0)}px;top:${rr.y-(area.type==='house'?2:0)}px;width:${rr.w+(area.type==='house'?4:0)}px;height:${rr.h+(area.type==='house'?4:0)}px;box-sizing:border-box;z-index:${area.type==='house'?6:0};background:${area.type==='house'?'rgba(70,60,48,.10)':`color-mix(in srgb, ${area.color} 18%, transparent)`};`;
-            box.appendChild(tile);
-            if(area.type==='house'){
-                const indoorVeil=document.createElement('div');
-                indoorVeil.className='true-house-indoor-veil';
-                indoorVeil.style.cssText=`position:absolute;left:${rr.x-1}px;top:${rr.y-1}px;width:${rr.w+2}px;height:${rr.h+2}px;background:rgba(47,42,36,.14);pointer-events:none;z-index:7;`;
-                box.appendChild(indoorVeil);
+            if(area.type!=='house'){
+                const tile=document.createElement('div');
+                tile.className='player-custom-area-fill';
+                tile.style.cssText=`position:absolute;left:${rr.x}px;top:${rr.y}px;width:${rr.w}px;height:${rr.h}px;box-sizing:border-box;z-index:0;background:color-mix(in srgb, ${area.color} 18%, transparent);`;
+                box.appendChild(tile);
             }
             for(const [side,dc,dr]of[['Top',0,-1],['Right',1,0],['Bottom',0,1],['Left',-1,0]]){
                 if(keys.has(trueAreaCellKey(q.col+dc,q.row+dr)))continue;
@@ -24288,7 +24426,7 @@ function renderCustomAreas(){
                 else edge.style.cssText=common+`left:${rr.x+rr.w-inset+houseOut}px;top:${rr.y-houseOut-join}px;width:0;height:${rr.h+houseOut*2+join*2}px;border-left:${edgeWidth}px ${dotted?'dotted':'solid'} ${edgeColour};`;
                 box.appendChild(edge);
             }
-        }
+        }}
         areaRenderTarget.appendChild(box);
         if(!area._generatedGeography&&areaToolActive&&String(trueAreaBuilderSelectedId)===String(area.id)&&trueAreaBuilderSelectedCell){const q=trueAreaBuilderSelectedCell,qr=areaCellRenderRect(q),del=document.createElement('button');del.type='button';del.className='true-area-cell-delete';del.textContent='×';del.title='Remove this Area cell';del.style.cssText=`position:absolute;left:${qr.x+qr.w-36}px;top:${qr.y+8}px;width:28px;height:28px;border:2px solid white;border-radius:50%;background:#d33;color:white;font-size:22px;font-weight:900;z-index:10020;cursor:pointer;`;del.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();});del.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();trueDeletePaintedAreaCell(area.id,q.col,q.row);});areaRenderTarget.appendChild(del);}
         const label=document.createElement('div');label.className='player-custom-area-name';label.dataset.areaId=area.id;label.textContent=area.name||'';label.style.cssText=`left:${area.labelX}px;top:${area.labelY}px;--area-tag-color:${area.color};z-index:${1004+Math.max(0,Number(area.zOrder)||0)};`;areaRenderTarget.appendChild(label);
@@ -25155,14 +25293,31 @@ function renderEnclosure(
         path.setAttribute('vector-effect','non-scaling-stroke');
         svg.style.zIndex='9';svg.style.pointerEvents='none';svg.appendChild(path);element.appendChild(svg);
         if(houseCells.length){
-            const baseCol=Math.round((Number(enclosure.x)||0)/TRUE_ENC_CELL_W),baseRow=Math.round((Number(enclosure.y)||0)/TRUE_ENC_CELL_H);
+            // Indoor tint is a single SVG fill with no per-cell inset strokes.
+            // The old indoor divs had a 1px box shadow and external-gap inset,
+            // exposing a distracting tile grid across multi-cell enclosures.
+            const baseCol=Math.round((Number(enclosure.x)||0)/TRUE_ENC_CELL_W);
+            const baseRow=Math.round((Number(enclosure.y)||0)/TRUE_ENC_CELL_H);
+            const indoorSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+            indoorSvg.classList.add('true-indoor-enclosure-fill');
+            Object.assign(indoorSvg.style,{position:'absolute',inset:'0',width:'100%',height:'100%',overflow:'visible',pointerEvents:'none',zIndex:'10'});
+            const indoorPath=document.createElementNS(indoorSvg.namespaceURI,'path');
             const seen=new Set();
+            const outlines=[];
             for(const hc of houseCells){
-                const key=trueAreaCellKey(hc.col,hc.row);if(seen.has(key))continue;seen.add(key);
-                const indoor=document.createElement('div');indoor.className='true-indoor-enclosure-cell';
-                Object.assign(indoor.style,{position:'absolute',left:`${(hc.col-baseCol)*TRUE_ENC_CELL_W+TRUE_ENC_EXTERNAL_GAP/2}px`,top:`${(hc.row-baseRow)*TRUE_ENC_CELL_H+TRUE_ENC_EXTERNAL_GAP/2}px`,width:`${TRUE_ENC_CELL_W-TRUE_ENC_EXTERNAL_GAP}px`,height:`${TRUE_ENC_CELL_H-TRUE_ENC_EXTERNAL_GAP}px`,background:'rgba(48,42,34,.24)',boxShadow:'inset 0 0 0 1px rgba(35,31,27,.16)',pointerEvents:'none',zIndex:'10'});
-                element.appendChild(indoor);
+                const key=trueAreaCellKey(hc.col,hc.row);
+                if(seen.has(key))continue;
+                seen.add(key);
+                const x=(hc.col-baseCol)*TRUE_ENC_CELL_W;
+                const y=(hc.row-baseRow)*TRUE_ENC_CELL_H;
+                // Adjacent cells meet exactly: no inset gaps, shadows or strokes.
+                outlines.push(`M${x} ${y}h${TRUE_ENC_CELL_W}v${TRUE_ENC_CELL_H}h${-TRUE_ENC_CELL_W}Z`);
             }
+            indoorPath.setAttribute('d',outlines.join(' '));
+            indoorPath.setAttribute('fill','rgba(48,42,34,.24)');
+            indoorPath.setAttribute('stroke','none');
+            indoorSvg.appendChild(indoorPath);
+            element.appendChild(indoorSvg);
         }
 
     }
@@ -34263,10 +34418,41 @@ function trueBackstagePlanIncoming(animals,exceptTransferId=null){return (animal
 function trueBackstageCapacityMessage(){return 'Arriving animals wait for placement in the transfer overlay.';}
 function trueBackstageNotifyNoSpace(){return trueTransferProcessDay();}
 
+// Proposal species are immutable settlement terms. Never trust a transfer ID alone.
+function trueTransferSpeciesSignature(animal){
+    if(!animal)return '';
+    return [animal.filename||animal.name||'',animal.category||'',animal.level??''].map(x=>String(x).trim().toLowerCase()).join('|');
+}
+function trueTransferExpectedLegAnimals(proposal){
+    const incoming=proposal?.requestedOffers?.length?proposal.requestedOffers:
+        [proposal?.requestedAnimal||proposal?.requested||proposal?.incomingAnimal||proposal?.offer?.animal].filter(Boolean);
+    const outgoing=proposal?.outgoingOffers?.length?proposal.outgoingOffers:
+        [proposal?.offeredAnimal||proposal?.offered||proposal?.outgoingAnimal||proposal?.outgoingOffer].filter(Boolean);
+    return {incoming:incoming.slice(0,3),outgoing:outgoing.slice(0,3)};
+}
+function trueTransferMatchesProposalSpecies(transfer,proposal){
+    if(!transfer||!proposal)return false;
+    const expected=trueTransferExpectedLegAnimals(proposal);
+    const same=(legs,animals)=>{
+        if(legs.length!==animals.length)return false;
+        const signatures=animals.map(trueTransferSpeciesSignature).sort();
+        return legs.map(l=>trueTransferSpeciesSignature(l?.animal)).sort().every((sig,i)=>!!sig&&sig===signatures[i]);
+    };
+    return same(transfer.incomings||[],expected.incoming)&&same(transfer.outgoings||[],expected.outgoing);
+}
 function trueTransferCreateFromAcceptedProposal(proposal){
     if(state.gameMode!=='true'||!proposal||proposal.status!=='accepted')return null;
     normaliseTrueTransfers();
-    const old=state.trueTransfers.find(t=>String(t.proposalId)===String(proposal.id));if(old)return old;
+    const old=state.trueTransfers.find(t=>String(t.proposalId)===String(proposal.id)&&trueTransferMatchesProposalSpecies(t,proposal)&&(proposal.transferId==null||String(t.id)===String(proposal.transferId)));
+    if(old){
+        trueTransferNormaliseLegs(old);
+        if(!trueTransferMatchesProposalSpecies(old,proposal)){
+            old.tradeIntegrityIssue='proposal-transfer-species-mismatch';
+            proposal.transferUnavailable=true;
+            return null; // Never rebind, replace or debit an already linked transfer.
+        }
+        return old;
+    }
     const requestedLegacy=proposal.requestedAnimal||proposal.requested||proposal.incomingAnimal||proposal.offer?.animal||null;
     const requested=(proposal.requestedOffers?.length?proposal.requestedOffers:(requestedLegacy?[requestedLegacy]:[])).filter(Boolean).slice(0,3);
     const offeredLegacy=proposal.offeredAnimal||proposal.offered||proposal.outgoingAnimal||proposal.outgoingOffer||null;
@@ -34292,7 +34478,8 @@ function trueTransferCreateFromAcceptedProposal(proposal){
         const available=live?trueTransferAvailableCounts(live):null;
         const sourceKey=String(sourceId);
         const allocated=allocatedBySource.get(sourceKey)||{males:0,females:0,unknown:0};
-        if(!live||!['males','females','unknown'].some(k=>needed[k]>0)||
+        if(!live||trueTransferSpeciesSignature(live)!==trueTransferSpeciesSignature(animal)||
+            !['males','females','unknown'].some(k=>needed[k]>0)||
             ['males','females','unknown'].some(k=>needed[k]+allocated[k]>(Number(available?.[k])||0))){
             proposal.transferUnavailable=true;
             return null;
@@ -34302,6 +34489,13 @@ function trueTransferCreateFromAcceptedProposal(proposal){
         outgoingSources.push(live);
     }
     delete proposal.transferUnavailable;
+    // The original offer is the authoritative incoming species, not a mutable
+    // marketplace listing or an unrelated card cached on a reused transfer.
+    if(proposal.offer?.animal&&requested.some(a=>
+        trueTransferSpeciesSignature(a)!==trueTransferSpeciesSignature(proposal.offer.animal))){
+        proposal.transferUnavailable=true;
+        return null;
+    }
     const backstagePlan=trueBackstagePlanIncoming(requested);
     // Incoming animals can wait in the draggable arrival overlay without backstage capacity.
     delete proposal.backstageBlocked;
@@ -34318,6 +34512,7 @@ function trueTransferCreateFromAcceptedProposal(proposal){
         trueTransferReserve(live,combined,id);
         outgoings.push(leg);
     }
+    proposal.transferId=id;
     const transfer={id,proposalId:proposal.id,zooId:proposal.zooId||proposal.partnerZooId||proposal.sourceZooId||null,
         zooName:proposal.zooName||proposal.partnerZooName||proposal.sourceZooName||trueOfferProfile(proposal.offer)?.name||'Partner zoo',
         createdDate:trueDateKey(trueCurrentDate()),departureDate:trueDateKey(trueCurrentDate()),arrivalDate:trueDateKey(trueCurrentDate()),status:'scheduled',
@@ -34337,6 +34532,17 @@ function trueTransferNormaliseLegs(t){
     if(!Array.isArray(t.incomings))t.incomings=t.incoming?[t.incoming]:[];
     if(!Array.isArray(t.outgoings))t.outgoings=t.outgoing?[t.outgoing]:[];
     t.incoming=t.incomings[0]||null;t.outgoing=t.outgoings[0]||null;
+    // Legacy saves may already be terminal without placement proof. Preserve
+    // their history and population state; explicitly mark them for review.
+    if(t.status==='completed'){
+        const incomingMissing=t.incomings.some(leg=>!leg.completed||!leg.placementVerified||leg.placedAnimalId==null);
+        const outgoingMissing=t.outgoings.some(leg=>!leg.completed||!leg.departureVerified);
+        const premature=!!(t.completedDate&&t.arrivalDate&&t.completedDate<t.arrivalDate);
+        if(incomingMissing||outgoingMissing||premature){
+            t.tradeIntegrityIssue=t.tradeIntegrityIssue||(premature?'completed-before-arrival':
+                outgoingMissing?'outgoing-departure-missing':'incoming-placement-missing');
+        }
+    }
     for(let i=0;i<t.incomings.length;i++)if(!t.incomings[i].legId)t.incomings[i].legId=`in-${i+1}`;
     for(let i=0;i<t.outgoings.length;i++)if(!t.outgoings[i].legId)t.outgoings[i].legId=`out-${i+1}`;
     return t;
@@ -34366,12 +34572,24 @@ function trueTransferSyncAcceptedProposals(){
     // its proposal status is written. Never recreate a terminal transfer.
     const transfersByProposal=new Map();
     for(const transfer of state.trueTransfers||[]){
-        if(transfer?.proposalId!=null)transfersByProposal.set(String(transfer.proposalId),transfer);
+        if(transfer?.proposalId!=null){
+            const owner=(state.trueTransferProposals||[]).find(p=>String(p?.id)===String(transfer.proposalId));
+            if(owner&&trueTransferMatchesProposalSpecies(transfer,owner)&&(owner.transferId==null||String(owner.transferId)===String(transfer.id)))
+                transfersByProposal.set(String(transfer.proposalId),transfer);
+        }
     }
     for(const p of state.trueTransferProposals||[]){
         if(!p)continue;
         const linked=transfersByProposal.get(String(p.id));
         if(linked){
+            trueTransferNormaliseLegs(linked);
+            if(!trueTransferMatchesProposalSpecies(linked,p)){
+                linked.tradeIntegrityIssue='proposal-transfer-species-mismatch';
+                p.transferUnavailable=true;
+                // Do not promote a mismatched proposal to completed or process
+                // its source debit as though the wrong species were agreed.
+                continue;
+            }
             p.transferId=linked.id;
             if(linked.status==='completed'||linked.status==='cancelled'){
                 p.status=linked.status;
@@ -34592,6 +34810,17 @@ function trueTransferReleaseTerminalReservations(){
 }
 function trueTransferMaybeFinish(t){
     trueTransferNormaliseLegs(t);
+    // Settlement cannot precede the scheduled arrival. The completion date is
+    // also checked for previously persisted impossible terminal records.
+    const today=trueDateKey(trueCurrentDate());
+    if(t.arrivalDate&&(today<t.arrivalDate||
+        (today===t.arrivalDate&&((Number(normaliseTrueCalendarState().hour)||9)*60+
+        (Number(normaliseTrueCalendarState().minute)||0))<(Number(t.arrivalDueMinute)||0)))){
+        t.tradeIntegrityIssue='arrival-not-yet-due';return false;
+    }
+    if(t.completedDate&&t.arrivalDate&&t.completedDate<t.arrivalDate){
+        t.tradeIntegrityIssue='completed-before-arrival';return false;
+    }
     // A terminal record requires real, nonempty legs and confirmed population
     // movement; an empty or zero-population leg is never evidence of settlement.
     const legs=[...t.incomings,...t.outgoings];
@@ -34601,15 +34830,25 @@ function trueTransferMaybeFinish(t){
     if(t.transferKind==='exchange'&&(!t.incomings.length||!t.outgoings.length)){
         t.tradeIntegrityIssue='exchange-missing-leg';return false;
     }
+    // Completed records from older saves can lack a durable destination.
+    // Keep their history, but explicitly flag them for review rather than
+    // silently treating a missing resident as a successful placement.
+    if(t.status==='completed'&&t.incomings.some(leg=>leg.completed&&
+        (!leg.placementVerified||leg.placedAnimalId==null))){
+        t.tradeIntegrityIssue='incoming-placement-missing';return false;
+    }
     // A recorded placement must still refer to a living card in a real
     // enclosure. A deleted card or stale enclosure ID cannot settle a trade.
-    for(const leg of t.status==='completed'?[]:t.incomings){
+    for(const leg of t.incomings){
         if(!leg.completed)continue;
         const placed=(state.animals||[]).find(a=>String(a.id)===String(leg.placedAnimalId));
         const enclosure=placed?.enclosureId==null?null:(state.enclosures||[]).find(e=>String(e.id)===String(placed.enclosureId));
-        if(!placed||!enclosure||trueEnclosureIsCurrentBackstage(enclosure)){
+        if(!leg.placementVerified||!placed||!enclosure||trueEnclosureIsCurrentBackstage(enclosure)){
             t.tradeIntegrityIssue='incoming-placement-missing';return false;
         }
+    }
+    if(t.outgoings.some(leg=>leg.completed&&!leg.departureVerified)){
+        t.tradeIntegrityIssue='outgoing-departure-missing';return false;
     }
     delete t.tradeIntegrityIssue;
     if(t.incomings.every(x=>x.completed&&x.placementVerified)&&t.outgoings.every(x=>x.completed&&x.departureVerified)){
@@ -34637,11 +34876,20 @@ function trueTransferFinish(t,animal){
     if(!leg||leg.completed)return false;
     const enclosure=(state.enclosures||[]).find(e=>String(e.id)===String(animal.enclosureId));
     if(!enclosure||trueEnclosureIsCurrentBackstage(enclosure))return false;
+    // Retain the arrival's transfer identity until settlement is verified. If
+    // a save or another callback interrupts settlement, daily reconciliation
+    // can still locate the card and reconstruct the placement evidence.
     leg.placementVerified=true;
     leg.placedAnimalId=animal.id;
+    leg.placementKind='placed';
+    leg.placementPopulationAfter={...normaliseTrueAnimalPopulation(animal)};
     leg.completed=true;
-    delete animal.trueArrivalPending;delete animal.trueIncomingTransferId;delete animal.trueIncomingTransferLegId;delete animal.trueBackstageArrival;delete animal.trueLoosePopulation;delete animal.trueLooseCollapseDeadline;
-    trueTransferMaybeFinish(t);return true;
+    animal.trueArrivalPending=false;
+    delete animal.trueBackstageArrival;
+    delete animal.trueLoosePopulation;
+    delete animal.trueLooseCollapseDeadline;
+    trueTransferMaybeFinish(t);
+    return true;
 }
 function trueTransferAnnounceArrivals(t,arrivals){
     if(!t||!arrivals?.length)return;
@@ -34664,6 +34912,10 @@ function trueTransferAnnounceArrivals(t,arrivals){
 }
 function trueTransferCompleteImmediately(t){
     if(!t)return [];
+    // Manual/reentrant calls must not dispatch or settle an undelivered transfer.
+    const now=trueDateKey(trueCurrentDate());
+    const minute=(Number(normaliseTrueCalendarState().hour)||9)*60+(Number(normaliseTrueCalendarState().minute)||0);
+    if(t.arrivalDate&&(now<t.arrivalDate||(now===t.arrivalDate&&minute<(Number(t.arrivalDueMinute)||0))))return [];
     delete t.backstageArrivalBlocked;
     document.getElementById('trueBackstageBlockedOverlay')?.remove();
     trueTransferNormaliseLegs(t);
@@ -34786,6 +35038,14 @@ function trueTransferProcessDay(){
     if(state.gameMode!=='true')return;trueTransferSyncAcceptedProposals();trueTransferReleaseTerminalReservations();trueTransferReconcileTerminalArrivalFlags();const today=trueDateKey(trueCurrentDate());
     for(const raw of normaliseTrueTransfers()){
         const t=trueTransferNormaliseLegs(raw);
+        const linkedProposal=(state.trueTransferProposals||[]).find(p=>String(p?.id)===String(t.proposalId)&&(p.transferId==null||String(p.transferId)===String(t.id)));
+        if(linkedProposal&&!trueTransferMatchesProposalSpecies(t,linkedProposal)){
+            t.tradeIntegrityIssue='proposal-transfer-species-mismatch';
+            t.lastIntegrityCheckpoint='species-mismatch-settlement-blocked';
+            // Do not dispatch, credit or complete mismatched legs. Preserve
+            // the original record for diagnosis rather than changing its species.
+            continue;
+        }
         if(t.status!=='cancelled'){
             // The partner's source population must not be removed simply because
             // the offer was accepted. Wait for the scheduled settlement date.
@@ -34796,11 +35056,21 @@ function trueTransferProcessDay(){
         // Repair saved transfers whose incoming animal was already moved out of
         // backstage but the placement callback never marked its leg complete.
         for(const leg of t.incomings){
-            if(leg.completed)continue;
+            // A save may interrupt after setting completed but before a valid
+            // destination was persisted. Recover only from a real linked card.
+            if(leg.completed&&leg.placementVerified&&leg.placedAnimalId!=null)continue;
             const arrived=(state.animals||[]).find(a=>String(a.trueIncomingTransferId)===String(t.id)&&String(a.trueIncomingTransferLegId)===String(leg.legId));
             if(arrived&&arrived.enclosureId!=null){
                 const enc=enclosureByIdFast(arrived.enclosureId);
-                if(enc&&!trueEnclosureIsCurrentBackstage(enc))trueTransferFinish(t,arrived);
+                if(enc&&!trueEnclosureIsCurrentBackstage(enc)){
+                    if(leg.completed){
+                        leg.placedAnimalId=arrived.id;
+                        leg.placementVerified=true;
+                        leg.placementKind=leg.placementKind||'placed';
+                        leg.placementPopulationAfter={...normaliseTrueAnimalPopulation(arrived)};
+                        trueTransferMaybeFinish(t);
+                    }else trueTransferFinish(t,arrived);
+                }
             }
         }
         trueTransferCommitPartnerReceipt(t);
@@ -34878,26 +35148,34 @@ function trueTransferMergeArrivalIntoTarget(animal,target){
     if(animalCardKey(target)!==animalCardKey(animal))return false;
     const population=normaliseTrueAnimalPopulation(animal);
     if(!trueAnimalPopulationTotal(animal))return false;
-    // Finish the leg before removing its arrival card, and only mutate after
-    // all eligibility checks. The receiving population must not inherit the
-    // temporary arrival/transfer metadata.
-    // A direct merge has no intermediate enclosure placement. Temporarily associate
-    // the arrival with the resident's enclosure so the transfer verifier can confirm
-    // a real destination; restore it if verification fails.
-    if(target.enclosureId==null)return false;
-    const previousEnclosure=animal.enclosureId,previousSlot=animal.slotIndex;
-    animal.enclosureId=target.enclosureId;
-    animal.slotIndex=target.slotIndex;
-    if(!trueTransferFinish(t,animal)){
-        animal.enclosureId=previousEnclosure;
-        animal.slotIndex=previousSlot;
+    // Commit the population to the surviving resident BEFORE completing the
+    // incoming leg. Never verify against a temporary card about to be deleted.
+    const enclosure=enclosureByIdFast(target.enclosureId);
+    if(!enclosure||trueEnclosureIsCurrentBackstage(enclosure))return false;
+    const before={...normaliseTrueAnimalPopulation(target)};
+    const expected={...before};
+    for(const k of ['males','females','unknown'])expected[k]+=(Number(population[k])||0);
+    trueTransferAdd(target,population);
+    const actual=normaliseTrueAnimalPopulation(target);
+    if(['males','females','unknown'].some(k=>Number(actual[k])!==expected[k])){
+        target.population=before;
+        invalidateClassicOccupancyCache();
+        t.tradeIntegrityIssue='incoming-merge-population-unverified';
         return false;
     }
-    // The resident card survives the merge: completion must reference that card.
+    // The resident is the durable destination. Record its identity before
+    // removing the temporary arrival card, and keep the transfer markers
+    // until verification has succeeded.
     leg.placedAnimalId=target.id;
-    trueTransferAdd(target,population);
+    leg.placementVerified=true;
+    leg.completed=true;
+    leg.placementKind='merged';
+    leg.placementPopulationBefore=before;
+    leg.placementPopulationAfter={...actual};
     state.animals=state.animals.filter(x=>x!==animal);
+    invalidateClassicOccupancyCache();
     state.areaPlacementRevision=(Number(state.areaPlacementRevision)||0)+1;
+    trueTransferMaybeFinish(t);
     renderTrueSimulationPanel();
     renderTrueIncomingTransferOverlay();
     return true;
@@ -35094,31 +35372,12 @@ function attachTruePopulationCardUI(card,animal){
         if(treeForegroundReturnTimer)clearTimeout(treeForegroundReturnTimer);
         if(treeForegroundFadeTimer)clearTimeout(treeForegroundFadeTimer);
         clearTreeForegroundClone();
-        treeForegroundReturnTimer=setTimeout(()=>{
-            treeForegroundReturnTimer=0;
-            if(!host.isConnected)return;
-            const parent=host.parentElement;
-            if(parent){
-                treeForegroundClone=host.cloneNode(true);
-                treeForegroundClone.classList.add('true-tree-card-crossfade-underlay');
-                treeForegroundClone.querySelectorAll('.true-pop-controls,.true-pop-notation').forEach(el=>el.remove());
-                treeForegroundClone.removeAttribute('id');
-                treeForegroundClone.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
-                Object.assign(treeForegroundClone.style,{
-                    zIndex:'240',pointerEvents:'none',transition:'none',opacity:'1'
-                });
-                parent.insertBefore(treeForegroundClone,host);
-            }
-            host.style.transition='opacity 650ms ease';
-            host.style.opacity='0';
-            treeForegroundFadeTimer=setTimeout(()=>{
-                treeForegroundFadeTimer=0;
-                host.style.transition='none';
-                host.style.zIndex='240';
-                host.style.opacity='1';
-                clearTreeForegroundClone();
-            },650);
-        },2000);
+        // Do not clone and cross-fade entire animal cards on pointer leave.
+        // In densely populated mixed exhibits this generated several image DOM
+        // copies, layouts and overlapping fade timers per mouse sweep.
+        host.style.transition='none';
+        host.style.opacity='1';
+        host.style.zIndex='240';
         const oldSexHide=trueSexIndicatorHideTimers.get(id);if(oldSexHide)clearTimeout(oldSexHide);
         const leaveGeneration=Number(trueSexIndicatorGeneration.get(id))||0;
         trueSexIndicatorHideTimers.set(id,setTimeout(()=>{
@@ -37951,6 +38210,16 @@ async function finishDrawDrag(event) {
         return;
     }
 
+    // The queued Level 1 spec is loaded asynchronously. A drag can begin while
+    // that preload is pending, so resolving against nextDrawSpec immediately
+    // would reject every otherwise-empty enclosure. Resolve the actual card
+    // before testing the destination, just as click-to-draw does.
+    if (!state.nextDrawSpec) await prepareNextDrawAsset();
+    if (!state.nextDrawSpec || !levelOneSpecStillDrawable(state.nextDrawSpec)) {
+        refreshDrawAvailabilityState();
+        return;
+    }
+
     // Resolve the drop after the drag image has been removed. Prefer the
     // underlying slot/enclosure element; the board may have been rebuilt
     // while the card was being dragged.
@@ -38888,7 +39157,8 @@ function restoreNormalActionBoxesIfNeeded() {
 
     const collectionButton=document.getElementById('collectionButton');
     if(collectionButton) collectionButton.style.display='';
-    if(turnOrder) turnOrder.style.display='';
+    // The Classic turn counter must not reappear when restoring action boxes in True mode.
+    if(turnOrder) turnOrder.style.display=state.gameMode==='true'?'none':'';
     const prestige=document.getElementById('prestigeCounter');
     if(prestige) prestige.style.display='';
 }
@@ -45214,12 +45484,22 @@ function trueMarketplaceTypeAffinity(record, playerTypes=truePlayerZooTypes()) {
 // Marketplace collection interests can outlive an animal-category overhaul in saved games
 // and in older real-zoo inventories. Keep the old broad bird preference as a
 // request spanning the three current bird groups, not an impossible category.
-const TRUE_MARKETPLACE_BIRD_CATEGORIES=new Set(['Landbirds','Perching Birds','Waterfowl']);
+const TRUE_MARKETPLACE_BIRD_CATEGORIES=new Set(['Landbirds','Perching Birds','Waterfowl','Birds of Prey']);
+const TRUE_MARKETPLACE_MAMMAL_CATEGORIES=new Set(['Carnivores','Ungulates','Primates','Other Mammals']);
+const TRUE_MARKETPLACE_REQUEST_TAGS=new Set([
+    'rainforest','cloud-forest','temperate-forest','dry-forest','conifer-forest','boreal-forest',
+    'savanna','grassland','desert','shrubland','wetland','riverine','mangrove','coastal',
+    'mountain','tundra','nocturnal','semi-aquatic','coral-reef','pelagic','domestic'
+]);
+const TRUE_MARKETPLACE_REGION_REQUESTS={
+    african:['AT'],asian:['PA','IM'],european:['PA'],north_american:['NA'],
+    south_american:['NT'],australasian:['AU']
+};
 function trueMarketplaceCurrentWantCategory(category){
-    const value=String(category||'').trim();
-    const lower=value.toLowerCase();
-    if(lower==='other birds'||lower==='birds')return 'Birds';
-    if(lower==='tropical birds')return 'Perching Birds';
+    const value=String(category||'').trim(), lower=value.toLowerCase();
+    if(lower==='other birds'||lower==='tropical birds')return lower==='other birds'?'Birds':'Perching Birds';
+    if(lower==='birds')return 'Birds';
+    if(lower==='mammals'||lower==='mammal')return 'Mammals';
     if(lower==='marine mania')return 'Marine Life';
     const current=Object.keys(CATEGORY_COLOURS).find(name=>name.toLowerCase()===lower);
     return current||null;
@@ -45227,7 +45507,25 @@ function trueMarketplaceCurrentWantCategory(category){
 function trueMarketplaceWantCategoryMatches(category,animalCategory){
     const wanted=trueMarketplaceCurrentWantCategory(category);
     const actual=trueMarketplaceCurrentWantCategory(animalCategory);
-    return !!(wanted&&actual&&(wanted==='Birds'?TRUE_MARKETPLACE_BIRD_CATEGORIES.has(actual):wanted===actual));
+    return !!(wanted&&actual&&(wanted==='Birds'?TRUE_MARKETPLACE_BIRD_CATEGORIES.has(actual):
+        wanted==='Mammals'?TRUE_MARKETPLACE_MAMMAL_CATEGORIES.has(actual):wanted===actual));
+}
+function trueMarketplaceRequestTraitMatches(tag,animal){
+    if(!animal)return false;
+    const trait=String(tag||'').toLowerCase();
+    if(trait in TRUE_MARKETPLACE_REGION_REQUESTS){
+        const entry=levelInventoryEntry(animal.category,animal.level);
+        const key=Object.keys(entry||{}).find(k=>cleanFilename(k).toLowerCase()===cleanFilename(animal.filename).toLowerCase());
+        const regions=key&&entry[key]?.wild_regions||[];
+        const prefixes=TRUE_MARKETPLACE_REGION_REQUESTS[trait];
+        // Continental requests must not accidentally match all of Eurasia.
+        if(trait==='european')return false; // Region codes do not distinguish Europe from Asia.
+        return regions.some(r=>prefixes.some(prefix=>String(r).startsWith(prefix)));
+    }
+    return TRUE_MARKETPLACE_REQUEST_TAGS.has(trait)&&animalInventoryTags(animal.category,animal.level,animal.filename).includes(trait);
+}
+function trueMarketplaceTraitLabel(tag){
+    return String(tag||'').replace(/[_-]/g,' ').replace(/\\b\\w/g,c=>c.toUpperCase());
 }
 function trueMarketplaceWantKey(profile) {
     return String(profile?.name||'').trim().toLowerCase();
@@ -45259,7 +45557,7 @@ function trueMarketplaceWantForListing(listing){
     if(!want||!listing?.animal)return want;
     const offeredKey=animalCardKey(listing.animal);
     if(want.kind==='species'&&animalCardKey(want.animal)===offeredKey)return null;
-    if(want.kind==='category'&&trueMarketplaceWantCategoryMatches(want.category,listing.animal.category)){
+    if((want.kind==='category'&&trueMarketplaceWantCategoryMatches(want.category,listing.animal.category))||(want.kind==='trait'&&trueMarketplaceRequestTraitMatches(want.tag,listing.animal))){
         const exclusions=new Set(want.excludedSpeciesKeys||[]);
         exclusions.add(offeredKey);
         return {...want,excludedSpeciesKeys:[...exclusions]};
@@ -45272,6 +45570,10 @@ function trueMarketplaceCompactWantLabel(want){
     if(want.kind==='category'){
         const category=trueMarketplaceCurrentWantCategory(want.category)||'Animals';
         return category==='Birds'?'Birds':category;
+    }
+    if(want.kind==='trait'){
+        const label=trueMarketplaceTraitLabel(want.tag);
+        return `${label} Species`;
     }
     if(want.kind==='species')return animalDisplayName(want.animal);
     return 'Open to offers';
@@ -45292,6 +45594,59 @@ function trueMarketplaceWantLabel(want) {
     }
     return String(want.label||'Open to suitable additions');
 }
+function trueMarketplaceWantExplanation(want){
+    if(!want)return 'The zoo is open to suitable additions.';
+    if(want.kind==='species')return 'The zoo is seeking this particular species and population.';
+    if(want.kind==='category'){
+        const c=trueMarketplaceCurrentWantCategory(want.category)||want.category;
+        if(c==='Birds')return 'Any bird category: landbirds, perching birds, waterfowl or birds of prey.';
+        if(c==='Mammals')return 'Any mammal category: carnivores, ungulates, primates or other mammals.';
+        return `Species belonging to the ${c} category.`;
+    }
+    if(want.kind==='trait'){
+        if(want.tag==='african')return 'Species whose recorded natural range includes an African region.';
+        return `Species marked with the ${trueMarketplaceTraitLabel(want.tag).toLowerCase()} habitat or characteristic tag.`;
+    }
+    return 'Animals that satisfy this zoo’s current collection request.';
+}
+function trueMarketplaceWantTooltip(want){
+    const matches=[];
+    const seen=new Set();
+    for(const animal of (state.animals||[])){
+        if(!animal||!trueMarketplaceWantMatchesAnimal(want,animal))continue;
+        const key=animalCardKey(animal);
+        if(seen.has(key))continue;
+        seen.add(key);
+        matches.push(animalDisplayName(animal));
+    }
+    matches.sort((a,b)=>a.localeCompare(b));
+    return {description:trueMarketplaceWantExplanation(want),matches};
+}
+function trueMarketplaceAttachWantTooltip(element,want){
+    if(!element||!want)return;
+    element.classList.add('true-market-want-hover');
+    element.addEventListener('pointerenter',event=>{
+        let tip=document.getElementById('trueMarketplaceWantTooltip');
+        if(!tip){
+            tip=document.createElement('div');tip.id='trueMarketplaceWantTooltip';
+            Object.assign(tip.style,{position:'fixed',zIndex:'2147483001',pointerEvents:'none',width:'max-content',maxWidth:'310px',maxHeight:'min(65vh,440px)',overflow:'auto',padding:'11px 13px',border:'1px solid #a38c66',borderRadius:'8px',background:'#f1e5c7',color:'#443827',boxShadow:'0 6px 20px #241a1250',fontSize:'12px',lineHeight:'1.4',fontFamily:'inherit'});
+            document.body.appendChild(tip);
+        }
+        const details=trueMarketplaceWantTooltip(want);
+        tip.replaceChildren();
+        const heading=document.createElement('div');heading.textContent=trueMarketplaceCompactWantLabel(want);Object.assign(heading.style,{fontWeight:'900',fontSize:'14px',marginBottom:'4px'});
+        const description=document.createElement('div');description.textContent=details.description;description.style.marginBottom='9px';
+        const label=document.createElement('div');label.textContent=`Your matching animals (${details.matches.length})`;Object.assign(label.style,{fontWeight:'850',borderTop:'1px solid #bbaa89',paddingTop:'7px',marginBottom:'3px'});
+        tip.append(heading,description,label);
+        const content=document.createElement('div');content.textContent=details.matches.length?details.matches.join('\n'):'None currently in your zoo.';content.style.whiteSpace='pre-line';tip.appendChild(content);
+        const x=Math.max(8,Math.min(window.innerWidth-tip.offsetWidth-8,event.clientX+15));
+        const y=Math.max(8,Math.min(window.innerHeight-tip.offsetHeight-8,event.clientY+18));
+        tip.style.left=x+'px';tip.style.top=y+'px';tip.style.display='block';
+        element._marketWantTip=tip;
+    });
+    element.addEventListener('pointerleave',()=>{if(element._marketWantTip)element._marketWantTip.style.display='none';});
+    element.addEventListener('pointerdown',()=>{if(element._marketWantTip)element._marketWantTip.style.display='none';});
+}
 function trueMarketplaceOfferedCounts(animal) {
     const p=animal?.reservedPopulation||animal?.population||{};
     return {males:Number(p.males)||0,females:Number(p.females)||0,unknown:Number(p.unknown)||0};
@@ -45302,6 +45657,9 @@ function trueMarketplaceWantMatchesAnimal(want,animal) {
         if(!trueMarketplaceWantCategoryMatches(want.category,animal.category)) return false;
         const existing=new Set(Array.isArray(want.excludedSpeciesKeys)?want.excludedSpeciesKeys:[]);
         return !existing.has(animalCardKey(animal));
+    }
+    if(want.kind==='trait'){
+        return trueMarketplaceRequestTraitMatches(want.tag,animal)&&!(want.excludedSpeciesKeys||[]).includes(animalCardKey(animal));
     }
     if(want.kind!=='species'||animalCardKey(animal)!==animalCardKey(want.animal)) return false;
     const c=trueMarketplaceOfferedCounts(animal);
@@ -45347,7 +45705,32 @@ function refreshTrueMarketplaceWants(monthKey,candidates=[]) {
             data={kind:'species',animal,structure,males};
         }else if(favourites.length){
             const pick=Math.min(favourites.length-1,Math.floor(seededRoll(`true-want-category|${zooKey}|${monthKey}`).roll*favourites.length));
-            data={kind:'category',category:favourites[pick],excludedSpeciesKeys:Array.isArray(profile.holdingSpeciesKeys)?profile.holdingSpeciesKeys.slice():[]};
+            const selected=favourites[pick];
+            const broadRoll=seededRoll(`true-want-broad|${zooKey}|${monthKey}`).roll;
+            const category=(broadRoll<.22&&TRUE_MARKETPLACE_BIRD_CATEGORIES.has(selected))?'Birds':
+                (broadRoll<.22&&TRUE_MARKETPLACE_MAMMAL_CATEGORIES.has(selected))?'Mammals':selected;
+            data={kind:'category',category,excludedSpeciesKeys:Array.isArray(profile.holdingSpeciesKeys)?profile.holdingSpeciesKeys.slice():[]};
+            // Trait requests are drawn from animals that actually exist in the current
+            // marketplace/player pool, rather than inventing impossible requests.
+            const traitRoll=seededRoll(`true-want-trait-choice|${zooKey}|${monthKey}`).roll;
+            if(traitRoll<.34){
+                const pool=[...(state.animals||[]),...(market.listings||[]).filter(l=>l?.animal&&['available','negotiating'].includes(l.status)).map(l=>l.animal)];
+                const tags=new Set();
+                for(const animal of pool){
+                    if(!animal||advertised.has(animalCardKey(animal)))continue;
+                    if(!favourites.some(f=>trueMarketplaceWantCategoryMatches(f,animal.category)))continue;
+                    for(const tag of animalInventoryTags(animal.category,animal.level,animal.filename))
+                        if(TRUE_MARKETPLACE_REQUEST_TAGS.has(tag))tags.add(tag);
+                    const entry=levelInventoryEntry(animal.category,animal.level);
+                    const key=Object.keys(entry||{}).find(k=>cleanFilename(k).toLowerCase()===cleanFilename(animal.filename).toLowerCase());
+                    if((key&&entry[key]?.wild_regions||[]).some(r=>String(r).startsWith('AT')))tags.add('african');
+                }
+                const options=[...tags].filter(tag=>pool.some(a=>a&&trueMarketplaceRequestTraitMatches(tag,a)&&!advertised.has(animalCardKey(a))));
+                if(options.length){
+                    const index=Math.floor(seededRoll(`true-want-trait|${zooKey}|${monthKey}`).roll*options.length);
+                    data={kind:'trait',tag:options[index],excludedSpeciesKeys:Array.isArray(profile.holdingSpeciesKeys)?profile.holdingSpeciesKeys.slice():[]};
+                }
+            }
         }else if(speciesPool.length){
             const pick=Math.min(speciesPool.length-1,Math.floor(seededRoll(`true-want-fallback-species|${zooKey}|${monthKey}`).roll*speciesPool.length));
             data={kind:'species',animal:cloneForSave(speciesPool[pick])};
@@ -45682,6 +46065,13 @@ function trueMarketplaceEntries() {
     const today=/^\d{4}-\d{2}-\d{2}$/.test(rawDate)?rawDate:'2026-04-18';
     refreshTrueMarketplaceRolling(today);
     expireTrueMarketplaceListings(today);
+    // Reconcile accepted proposals after loading older saves, before showing
+    // offers. Do not consume a listing for a proposal lacking a transfer.
+    for(const proposal of state.trueTransferProposals||[]){
+        if(!proposal?.marketplaceListingId||!['accepted','completed'].includes(proposal.status))continue;
+        const linked=(state.trueTransfers||[]).some(t=>String(t?.proposalId)===String(proposal.id)&&t.status!=='cancelled');
+        if(linked)setTrueMarketplaceListingStatus(proposal.marketplaceListingId,'completed');
+    }
     return market.listings
         .filter(item => item.status === 'available' || item.status === 'negotiating')
         .sort((a,b) => trueMarketplaceListingGeographyBand(a)-trueMarketplaceListingGeographyBand(b) || String(a.expiresDate).localeCompare(String(b.expiresDate)) || String(a.id).localeCompare(String(b.id)));
@@ -45698,8 +46088,50 @@ function trueMarketplaceListingById(id) {
 function setTrueMarketplaceListingStatus(id, status) {
     const listing = trueMarketplaceListingById(id);
     if (!listing) return false;
+    // Consumed offers are terminal: a stale draft, response or UI refresh must
+    // never put the same population back on sale.
+    if(listing.status==='completed'&&status!=='completed')return false;
     listing.status = status;
     return true;
+}
+
+// Retain the Marketplace position across closing and reopening, including
+// switching between its carousel, database and player-listings views.
+let trueMarketplaceWindowOffset={x:0,y:0};
+function trueMarketplaceEnableHeaderDrag(panel,header){
+    if(!panel||!header)return;
+    header.style.cursor='grab';
+    header.style.touchAction='none';
+    panel.style.transform=`translate(${trueMarketplaceWindowOffset.x}px,${trueMarketplaceWindowOffset.y}px)`;
+    let active=null;
+    const isControl=target=>!!target?.closest?.('button,a,input,select,textarea,[role="button"],[contenteditable="true"]');
+    header.addEventListener('pointerdown',event=>{
+        if(event.button!==0||isControl(event.target))return;
+        event.preventDefault();
+        active={id:event.pointerId,x:event.clientX,y:event.clientY,offsetX:trueMarketplaceWindowOffset.x,offsetY:trueMarketplaceWindowOffset.y};
+        header.style.cursor='grabbing';
+        header.setPointerCapture?.(event.pointerId);
+    });
+    header.addEventListener('pointermove',event=>{
+        if(!active||event.pointerId!==active.id)return;
+        const dx=event.clientX-active.x,dy=event.clientY-active.y;
+        const bounds=panel.getBoundingClientRect();
+        // Clamp relative to the *current* location, preserving a visible header.
+        const minDx=24-bounds.right,maxDx=window.innerWidth-24-bounds.left;
+        const minDy=0-bounds.top,maxDy=window.innerHeight-48-bounds.top;
+        trueMarketplaceWindowOffset={
+            x:active.offsetX+Math.max(minDx,Math.min(maxDx,dx)),
+            y:active.offsetY+Math.max(minDy,Math.min(maxDy,dy))
+        };
+        panel.style.transform=`translate(${trueMarketplaceWindowOffset.x}px,${trueMarketplaceWindowOffset.y}px)`;
+    });
+    const stop=event=>{
+        if(!active||event.pointerId!==active.id)return;
+        active=null;header.style.cursor='grab';
+        if(header.hasPointerCapture?.(event.pointerId))header.releasePointerCapture(event.pointerId);
+    };
+    header.addEventListener('pointerup',stop);
+    header.addEventListener('pointercancel',stop);
 }
 
 function closeTrueMarketplace() {
@@ -45981,7 +46413,7 @@ function openTrueMarketplacePlayerListings({listingId=null,offerId=null}={}){
     if(state.gameMode!=='true'||state.visitingZoo)return;
     closeTrueMarketplace();
     const overlay=document.createElement('div');overlay.id='trueMarketplaceOverlay';
-    Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:'100000',background:'rgba(20,18,14,.66)',display:'flex',alignItems:'center',justifyContent:'center',padding:'18px'});
+    Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:'100000',background:'rgba(20,18,14,.20)',display:'flex',alignItems:'center',justifyContent:'center',padding:'18px'});
     const panel=document.createElement('div');Object.assign(panel.style,{width:'min(900px,95vw)',maxHeight:'88vh',overflow:'auto',background:'#f5f0e5',color:'#2b251d',border:'1px solid #8b7b63',borderRadius:'14px',padding:'18px',boxSizing:'border-box'});
     const head=document.createElement('div');Object.assign(head.style,{display:'flex',justifyContent:'space-between',alignItems:'center'});
     const title=document.createElement('div');
@@ -45989,6 +46421,7 @@ function openTrueMarketplacePlayerListings({listingId=null,offerId=null}={}){
     title.innerHTML=`<div style="font-size:22px;font-weight:900">Offer animals${pendingCount?` · ${pendingCount} pending offer${pendingCount===1?'':'s'}`:''}</div><div style="font-size:12px;opacity:.65">List a population and wait for zoos in your network to make an offer</div>`;
     const styleOfferButton=b=>Object.assign(b.style,{height:'32px',padding:'0 11px',border:'1px solid #8b7b63',borderRadius:'7px',background:'#766344',color:'#fff',fontWeight:'800',cursor:'pointer'});
     const close=document.createElement('button');close.textContent='Close';styleOfferButton(close);close.onclick=closeTrueMarketplace;head.append(title,close);panel.appendChild(head);
+    trueMarketplaceEnableHeaderDrag(panel,head);
     const active=trueMarketplacePlayerActiveListings();
     for(const row of active){
         const card=document.createElement('div');card.dataset.playerListingId=String(row.id);Object.assign(card.style,{marginTop:'14px',padding:'12px',border:'1px solid #b5a78d',borderRadius:'9px'});
@@ -46054,7 +46487,7 @@ function openTrueMarketplace() {
     const allEntries=trueMarketplaceEntries();
     const overlay=document.createElement('div');
     overlay.id='trueMarketplaceOverlay';
-    Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:'100000',background:'rgba(20,18,14,.66)',display:'flex',alignItems:'center',justifyContent:'center',padding:'18px',boxSizing:'border-box'});
+    Object.assign(overlay.style,{position:'fixed',inset:'0',zIndex:'100000',background:'rgba(20,18,14,.20)',display:'flex',alignItems:'center',justifyContent:'center',padding:'18px',boxSizing:'border-box'});
     const panel=document.createElement('div');
     Object.assign(panel.style,{width:'min(1060px,96vw)',height:'min(760px,92vh)',minWidth:'0',overflow:'hidden',background:'#f5f0e5',color:'#2b251d',border:'1px solid rgba(70,58,39,.38)',borderRadius:'16px',boxShadow:'0 20px 70px rgba(0,0,0,.38)',display:'flex',flexDirection:'column',fontFamily:'inherit'});
     const head=document.createElement('div');
@@ -46071,6 +46504,7 @@ function openTrueMarketplace() {
     if(pendingPlayerOffers)Object.assign(offerMine.style,{background:'#766344',color:'#fff'});
     offerMine.addEventListener('click',openTrueMarketplacePlayerListings);
     close.addEventListener('click',closeTrueMarketplace);topActions.append(browse,offerMine,close);head.append(heading,topActions);panel.appendChild(head);
+    trueMarketplaceEnableHeaderDrag(panel,head);
 
     const body=document.createElement('div');Object.assign(body.style,{flex:'1',minHeight:'0',position:'relative',overflow:'hidden'});panel.appendChild(body);
     let mode='carousel',carouselTab='recommended',carouselIndex=0,sortKey='species',sortDir=1;
@@ -46163,10 +46597,22 @@ function openTrueMarketplace() {
                 want.appendChild(document.createTextNode(fullLabel.slice(0,categoryIndex)));
                 const categoryTag=document.createElement('span');categoryTag.textContent=fullLabel.slice(categoryIndex,categoryIndex+categoryName.length);
                 styleCategoryRequestBadge(categoryTag,categoryColour(categoryName));
+                trueMarketplaceAttachWantTooltip(categoryTag,currentWant);
                 want.appendChild(categoryTag);
                 want.appendChild(document.createTextNode(fullLabel.slice(categoryIndex+categoryName.length)));
             }else want.textContent=fullLabel;
-        }else want.textContent=trueMarketplaceWantLabel(currentWant);
+        }else if(currentWant?.kind==='trait'){
+            const fullLabel=trueMarketplaceWantLabel(currentWant);
+            const tagLabel=trueMarketplaceTraitLabel(currentWant.tag);
+            const index=fullLabel.toLowerCase().indexOf(tagLabel.toLowerCase());
+            if(index>=0){
+                want.appendChild(document.createTextNode(fullLabel.slice(0,index)));
+                const tag=document.createElement('span');tag.textContent=fullLabel.slice(index,index+tagLabel.length);
+                Object.assign(tag.style,{display:'inline-block',padding:'2px 6px',borderRadius:'4px',background:'#d9c7a3',color:'#453723',cursor:'help'});
+                trueMarketplaceAttachWantTooltip(tag,currentWant);want.appendChild(tag);
+                want.appendChild(document.createTextNode(fullLabel.slice(index+tagLabel.length)));
+            }else{want.textContent=fullLabel;trueMarketplaceAttachWantTooltip(want,currentWant);}
+        }else{want.textContent=trueMarketplaceWantLabel(currentWant);if(currentWant)trueMarketplaceAttachWantTooltip(want,currentWant);}
         const zoo=document.createElement('div');
         const zooPrestige=Number(entry.profile?.currentPrestige ?? entry.profile?.prestige ?? 0)||0;
         zoo.textContent=`${entry.profile?.name||'Zoo'}${entry.profile?.country?' · '+entry.profile.country:''} · Prestige ${Math.round(zooPrestige)}`;
@@ -46230,8 +46676,8 @@ function openTrueMarketplace() {
                 if(i===0)td.style.fontWeight='900';
                 if(i===1){const tag=document.createElement('span');tag.textContent=v;tag.title=v;styleCategoryRequestBadge(tag,categoryColour(categoryOf(e)));td.textContent='';td.appendChild(tag);}
                 if(i===5){td.style.color=relation.color;td.style.fontWeight='850';}
-                if(i===3){const colour=wantedColour(e);if(colour&&trueMarketplaceWantForListing(e)?.kind==='category'){const tag=document.createElement('span');tag.textContent=v;tag.title=v;styleCategoryRequestBadge(tag,colour);td.textContent='';td.appendChild(tag);}}
-                td.title=v;tr.appendChild(td);});
+                if(i===3){const currentWant=trueMarketplaceWantForListing(e);const colour=wantedColour(e);if(colour&&currentWant?.kind==='category'){const tag=document.createElement('span');tag.textContent=v;styleCategoryRequestBadge(tag,colour);trueMarketplaceAttachWantTooltip(tag,currentWant);td.textContent='';td.appendChild(tag);}else if(currentWant){trueMarketplaceAttachWantTooltip(td,currentWant);}}
+                if(i!==3)td.title=v;tr.appendChild(td);});
             const td=document.createElement('td'),ps=proposalState(e),offer=mkButton(ps.queued?.status==='accepted'?'Review':ps.disabled?'Pending':'Offer',ev=>{ev.stopPropagation();actionFor(e)});offer.disabled=ps.disabled;Object.assign(offer.style,{height:'24px',padding:'0 7px',fontSize:'10px'});td.appendChild(offer);tr.appendChild(td);
             tr.addEventListener('click',ev=>{
                 if(ev.target.closest('button'))return;
@@ -46333,7 +46779,7 @@ function openTruePopulationSelector(animal, options = {}) {
     panel.appendChild(summary);
     const actions=document.createElement('div');
     Object.assign(actions.style,{display:'flex',gap:'8px',justifyContent:'flex-end',marginTop:'14px'});
-    const cancel=document.createElement('button'); cancel.type='button'; cancel.textContent='Cancel';
+    const cancel=document.createElement('button'); cancel.type='button'; cancel.textContent=offer.editingPendingProposalId?'Cancel proposal':'Cancel';
     const confirm=document.createElement('button'); confirm.type='button'; confirm.textContent=options.confirmLabel || 'Confirm';
     for (const b of [cancel,confirm]) Object.assign(b.style,{minHeight:'40px',padding:'0 14px',borderRadius:'8px',border:'1px solid #50493f',fontWeight:'800',cursor:'pointer'});
     confirm.style.background='#2f2a22'; confirm.style.color='#fff';
@@ -46918,12 +47364,15 @@ function renderTrueAcceptedTransferStack() {
 function loadTrueTransferProposal(proposal) {
     if(!proposal) return false;
     state.autonomousTradeOffer=cloneForSave(proposal.offer);
-    state.autonomousTradeOffer.proposalStatus=proposal.status;
+    state.autonomousTradeOffer.editingPendingProposalId=proposal.status==='pending'?proposal.id:null;
+    state.autonomousTradeOffer.proposalStatus=proposal.status==='pending'?'draft':proposal.status;
     state.autonomousTradeOffer.proposalSubmitted=proposal.status==='accepted';
     state.autonomousTradeOffer.responseDueDate=proposal.responseDueDate||null;
+    state.autonomousTradeOffer.responseDueMinute=proposal.responseDueMinute??null;
     trueSetProposalOutgoingOffers((proposal.outgoingOffers?.length?proposal.outgoingOffers:(proposal.outgoingOffer?[proposal.outgoingOffer]:[])).map(cloneForSave));
     state.selectedTradeOpponent=state.autonomousTradeOffer.opponentIndex;
     renderTrade();
+    const panel=document.getElementById('trueTransferProposalPanel');if(panel){panel.dataset.dismissedOffer='';panel.style.display='';}
     return true;
 }
 
@@ -47059,18 +47508,6 @@ function trueDonationMotivation(listing){
     if(/breeding/.test(reason))return {score:7,text:'The transfer supports population management'};
     return {score:0,text:null};
 }
-// High-tier transfers require either comparable institutional standing or an
-// established working relationship. A favourable random roll cannot bypass this.
-function trueHighTierTransferEligible(offer){
-    const level=Math.max(1,Number(offer?.animal?.level)||1);
-    if(level<4)return true;
-    const profile=trueOfferProfile(offer);
-    const player=Math.max(0,visibleZooPrestige());
-    const partner=Math.max(1,Number(profile?.prestige)||1);
-    const trust=Number(trueRelationshipForOffer(offer)?.trust)||0;
-    return level===4?(player>=partner*.5||trust>=30)
-                    :(player>=partner*.75&&trust>=20)||trust>=45;
-}
 function trueOfferEvaluation(offer=state.autonomousTradeOffer,outgoing=state.outgoingOffer) {
     if (!offer?.marketplaceRequest&&!offer?.eventOpportunity) return null;
     const event=offer.eventOpportunity?trueEventById(offer.eventId):null;
@@ -47079,7 +47516,6 @@ function trueOfferEvaluation(offer=state.autonomousTradeOffer,outgoing=state.out
     const reqLevel=Math.max(1,Number(requested?.level)||1), outLevel=Math.max(1,Number(outgoing?.level)||1);
     const playerPrestige=Math.max(0,visibleZooPrestige()), opponentPrestige=Math.max(1,Number(profile?.prestige)||playerPrestige||1);
     const ratio=playerPrestige/opponentPrestige, reasons=[];
-    if(!trueHighTierTransferEligible(offer))reasons.push({good:false,text:'This high-level transfer requires a more established zoo or stronger relationship'});
     let send=52, want=outgoing?46:0;
     const wantedEffect=trueMarketplaceWantOfferEffect(offer,outgoing);
     want+=wantedEffect.bonus;
@@ -47134,6 +47570,98 @@ function trueOfferEvaluation(offer=state.autonomousTradeOffer,outgoing=state.out
     const total=Math.round(send*.52+want*.48);
     const label=total>=85?'Very promising':total>=70?'Promising':total>=50?'Possible':total>=35?'Uncertain':'Unlikely';
     return {sendScore:send,wantScore:want,total,label,relationshipStage:stage,reasons};
+}
+// The displayed odds and the response roll must use one authoritative policy.
+function trueProposalAcceptancePolicy(offer,outgoings,evaluation=null){
+    const list=(Array.isArray(outgoings)?outgoings:outgoings?[outgoings]:[]).filter(Boolean);
+    const result=evaluation||trueProposalEvaluation(offer,list);
+    if(!result)return {chance:0,ceiling:0,reason:'Proposal unavailable',exactMatch:false};
+    const trust=Math.max(0,Number(trueRelationshipForOffer(offer)?.trust)||0);
+    const level=Math.max(1,Number(offer?.animal?.level)||1);
+    const profile=trueOfferProfile(offer);
+    const prestige=Math.max(0,visibleZooPrestige());
+    const partner=Math.max(1,Number(profile?.prestige)||1);
+    const want=trueMarketplaceActiveWant(profile);
+    const exactMatch=!!(want&&want.kind==='species'&&list.some(a=>trueMarketplaceWantMatchesAnimal(want,a)));
+    const categoryMatch=!!(want&&want.kind!=='species'&&list.some(a=>trueMarketplaceWantMatchesAnimal(want,a)));
+    const matchBonus=exactMatch?30:categoryMatch?18:0;
+    const ceiling=trust>=75?90:trust>=45?65:trust>=20?35:trust>=5?15:5;
+    const effectiveCeiling=Math.min(94,ceiling+(exactMatch?(trust<5?25:trust<20?20:trust<45?20:15):categoryMatch?8:0));
+    const noReturn=!list.length;
+    const unmetWant=!!(want&&!exactMatch&&!categoryMatch);
+    const score=(Number(result.total)||0)-25+matchBonus-(noReturn?25:unmetWant?20:0);
+    let reason='';
+    if(level===3&&trust<10&&!exactMatch)reason='Level 3 requires trust 10+ or an exact requested-species match';
+    if(level===4&&!(trust>=30||(trust>=15&&exactMatch)))reason='Level 4 requires trust 30+, or trust 15+ with an exact match';
+    if(level===5&&!(trust>=60||(trust>=40&&exactMatch)))reason='Level 5 requires trust 60+, or trust 40+ with an exact match';
+    if(level>=3&&prestige<partner*(level===3?.25:level===4?.5:.75))reason='Insufficient institutional prestige for this level';
+    // A donation request from an unfamiliar institution should remain rare,
+    // even when the sender has surplus animals and housing bonuses are large.
+    // Collection-matching exceptions require an actual outgoing animal.
+    const donationCeiling=noReturn?(trust<5?1:trust<20?5:trust<45?12:trust<75?35:65):94;
+    const finalCeiling=Math.min(effectiveCeiling,donationCeiling);
+    const chance=reason?0:Math.max(0,Math.min(finalCeiling,score));
+    return {chance,ceiling:finalCeiling,baseCeiling:ceiling,score,trust,exactMatch,categoryMatch,reason,noReturn,unmetWant,donationCeiling};
+}
+function trueTransferOddsBreakdown(offer,outgoings){
+    const evaluation=trueProposalEvaluation(offer,outgoings);
+    if(!evaluation)return null;
+    const policy=trueProposalAcceptancePolicy(offer,outgoings,evaluation);
+    const total=Number(evaluation.total)||0;
+    const chance=policy.chance;
+    const profile=trueOfferProfile(offer);
+    const relation=trueRelationshipForOffer(offer);
+    const prestige=Math.max(0,visibleZooPrestige());
+    const partner=Math.max(1,Number(profile?.prestige)||prestige||1);
+    const level=Math.max(1,Number(offer?.animal?.level)||1);
+    const list=(Array.isArray(outgoings)?outgoings:outgoings?[outgoings]:[]).filter(Boolean);
+    const lines=[
+        `Requested animal: Level ${level}`,
+        `Your visible prestige: ${prestige} · Partner prestige: ${partner}`,
+        `Relationship trust: ${Number(relation?.trust)||0}`,
+        `Sending zoo score: ${Math.round(Number(evaluation.sendScore)||0)}`
+    ];
+    if(list.length){
+        lines.push(`Offered populations: ${list.length} · Exchange score: ${Math.round(Number(evaluation.wantScore)||0)}`);
+        lines.push('Weighted score: 52% sending zoo + 48% exchange');
+    }else lines.push('Permanent transfer: no animals sent in return');
+    lines.push(`Raw acceptance score: ${Math.round(total)}%`);
+    lines.push(`Relationship ceiling: ${policy.baseCeiling}% · Final applicable ceiling: ${policy.ceiling}%`);
+    if(policy.noReturn)lines.push(`No-return request ceiling: ${policy.donationCeiling}%`);
+    lines.push(`Exact species requested: ${policy.exactMatch?'Yes':'No'} · Category request matched: ${policy.categoryMatch?'Yes':'No'}`);
+    lines.push(`Adjusted score before ceiling: ${Math.round(policy.score)}%`);
+    if(policy.reason)lines.push(`BLOCKED: ${policy.reason}`);
+    else lines.push('Final chance is limited by the relationship ceiling (no minimum floor)');
+    for(const reason of evaluation.reasons||[])lines.push(`${reason.good?'✓':'⚠'} ${reason.text}`);
+    return {chance,lines};
+}
+function trueAttachTransferOddsTooltip(button,offer){
+    let popup=null;
+    let hovering=false;
+    const remove=()=>{if(popup){popup.remove();popup=null;}};
+    const refresh=(event)=>{
+        if(!hovering||!event?.ctrlKey||button.disabled||!button.isConnected){remove();return;}
+        const details=trueTransferOddsBreakdown(offer,trueProposalOutgoingOffers());
+        if(!details){remove();return;}
+        if(!popup){
+            popup=document.createElement('div');
+            popup.className='true-transfer-odds-breakdown';
+            Object.assign(popup.style,{position:'fixed',zIndex:'2147483640',width:'min(360px, calc(100vw - 24px))',maxHeight:'min(440px, 75vh)',overflowY:'auto',padding:'12px 14px',borderRadius:'7px',border:'1px solid #a38c64',background:'#f2e6c8',boxShadow:'0 6px 22px rgba(0,0,0,.28)',color:'#4b3e2e',fontSize:'12px',lineHeight:'1.5',pointerEvents:'none',whiteSpace:'pre-line'});
+            document.body.appendChild(popup);
+        }
+        popup.textContent=`Acceptance chance: ${details.chance.toFixed(0)}%\n\n${details.lines.join('\n')}`;
+        const rect=button.getBoundingClientRect();
+        const w=popup.getBoundingClientRect().width,h=popup.getBoundingClientRect().height;
+        popup.style.left=`${Math.max(8,Math.min(window.innerWidth-w-8,rect.right-w))}px`;
+        popup.style.top=`${Math.max(8,rect.top-h-10>=8?rect.top-h-10:Math.min(window.innerHeight-h-8,rect.bottom+10))}px`;
+    };
+    button.addEventListener('mouseenter',e=>{hovering=true;refresh(e);});
+    button.addEventListener('mousemove',refresh);
+    button.addEventListener('mouseleave',()=>{hovering=false;remove();});
+    // Key presses can occur while the pointer is stationary.
+    const keyUpdate=e=>{if(!button.isConnected){remove();document.removeEventListener('keydown',keyUpdate);document.removeEventListener('keyup',keyUpdate);return;}refresh(e);};
+    document.addEventListener('keydown',keyUpdate);
+    document.addEventListener('keyup',keyUpdate);
 }
 function trueProposalTransferTiming(offer,seed){
     const profile=trueOfferProfile(offer)||{};
@@ -47234,19 +47762,20 @@ function resolveTrueTransferProposalResponse(payload={}){
     if(promised.some(a=>!trueProposalOutgoingStillAvailable(a,proposal.id))){
         proposal.status='declined';
         proposal.responseDate=normaliseTrueCalendarState().date;
+        proposal.responseMinute=(Number(normaliseTrueCalendarState().hour)||9)*60+(Number(normaliseTrueCalendarState().minute)||0);
         trueCloseUnavailableProposalEvent(offer,'The agreed outgoing population is no longer available.');
         if(offer.marketplaceListingId)setTrueMarketplaceListingStatus(offer.marketplaceListingId,'available');
         addTrueActivity({type:'information',title:'Transfer proposal could not proceed',
             message:'The population you offered is no longer available in the agreed numbers, so the proposal has been closed.'});
         trueEventKeepCalendarRunning();renderTrade();return;
     }
-    const highTierEligible=trueHighTierTransferEligible(offer);
     const evaluation=trueProposalEvaluation(offer,proposal.outgoingOffers||proposal.outgoingOffer);
     if(!evaluation||!Number.isFinite(Number(evaluation.total))){
         // Older saves can retain a proposal after its underlying offer has disappeared.
         // Do not resolve it by rolling against a missing evaluation.
         proposal.status='declined';
         proposal.responseDate=normaliseTrueCalendarState().date;
+        proposal.responseMinute=(Number(normaliseTrueCalendarState().hour)||9)*60+(Number(normaliseTrueCalendarState().minute)||0);
         trueCloseUnavailableProposalEvent(offer,'The original transfer terms are no longer available.');
         if(offer?.marketplaceListingId)setTrueMarketplaceListingStatus(offer.marketplaceListingId,'available');
         addTrueActivity({type:'information',title:'Transfer proposal unavailable',
@@ -47254,9 +47783,13 @@ function resolveTrueTransferProposalResponse(payload={}){
         trueEventKeepCalendarRunning();renderTrade();return;
     }
     const roll=seededRoll(`proposal-response|${proposal.id}|${proposal.submittedDate}|${(proposal.outgoingOffers?.length?proposal.outgoingOffers.map(animalCardKey).join('+'):(proposal.outgoingOffer?animalCardKey(proposal.outgoingOffer):'no-return'))}`).roll*100;
-    const accepted=highTierEligible&&roll<Math.max(8,Math.min(94,evaluation.total));
+    const acceptancePolicy=trueProposalAcceptancePolicy(offer,promised,evaluation);
+    // A zoo-initiated event is a firm offer, not an unsolicited player request.
+    // Once the player accepts its terms, never apply relationship/prestige odds.
+    const accepted=offer?.eventOpportunity===true||roll<acceptancePolicy.chance;
     proposal.status=accepted?'accepted':'declined';
     proposal.responseDate=normaliseTrueCalendarState().date;
+    proposal.responseMinute=(Number(normaliseTrueCalendarState().hour)||9)*60+(Number(normaliseTrueCalendarState().minute)||0);
     renderTruePendingProposalTabs();
     const profile=trueOfferProfile(offer);
     if(accepted){
@@ -47271,6 +47804,12 @@ function resolveTrueTransferProposalResponse(payload={}){
             trueTransferSyncAcceptedProposals();
             trueEventKeepCalendarRunning();renderTrade();return;
         }
+        // The offer is committed as soon as the accepted transfer has a
+        // persistent record. It must disappear from the active Marketplace even
+        // if transport/placement takes additional game days. A failed creation
+        // above leaves it retryable rather than consuming the listing.
+        if(offer.marketplaceListingId)
+            setTrueMarketplaceListingStatus(offer.marketplaceListingId,'completed');
         const partnerProfile=trueOfferProfile(offer);
         const partnerKey=trueRelationshipKeyForOffer(offer);
         const partnerRecord=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===partnerKey);
@@ -47355,6 +47894,7 @@ function resolveTrueTransferProposalResponse(payload={}){
 function trueProposalStatusText(offer) {
     if (!offer?.marketplaceRequest&&!offer?.eventOpportunity) return '';
     const evaluation=trueProposalEvaluation(offer,trueProposalOutgoingOffers());
+    if (offer.editingPendingProposalId) return `Edit this pending proposal. Unchanged terms keep the original response time; revised terms start a new response period. Current response expected ${trueProposalResponseLabel(offer.responseDueDate,offer.responseDueMinute)}.`;
     if (offer.proposalStatus==='pending') return `Proposal sent · A response is expected ${trueProposalResponseLabel(offer.responseDueDate,offer.responseDueMinute)}.`;
     if (offer.proposalStatus==='accepted'||offer.proposalStatus==='transfer-scheduled') return 'Proposal accepted. Transfer processing or animal placement may still be pending.';
     if (offer.proposalStatus==='declined') return 'Proposal declined. Change your offered population to revise it.';
@@ -47366,12 +47906,31 @@ function submitTrueTransferProposal() {
     if(state.gameMode!=='true'||(!offer?.marketplaceRequest&&!offer?.eventOpportunity)) return false;
     normaliseTrueTransferProposals();
     const outgoingNow=trueProposalOutgoingOffers();
-    if(outgoingNow.some(a=>!trueProposalOutgoingStillAvailable(a))){
+    const editingId=offer.editingPendingProposalId;
+    const existing=editingId?trueTransferProposalById(editingId):null;
+    if(editingId&&(!existing||existing.status!=='pending'))return false;
+    const originalOffers=existing?(existing.outgoingOffers?.length?existing.outgoingOffers:(existing.outgoingOffer?[existing.outgoingOffer]:[])):[];
+    const termsSignature=items=>JSON.stringify(items.map(a=>({id:String(a.truePopulationTradeSourceId??a.id),name:animalDisplayName(a),population:trueTransferPop(a)})).sort((a,b)=>a.id.localeCompare(b.id)));
+    const unchanged=existing&&termsSignature(originalOffers)===termsSignature(outgoingNow);
+    if(unchanged){
+        state.autonomousTradeOffer=null;trueSetProposalOutgoingOffers([]);state.selectedTradeOpponent=null;
+        renderTrade();renderTruePendingProposalTabs();return true;
+    }
+    if(outgoingNow.some(a=>!trueProposalOutgoingStillAvailable(a,editingId||null))){
         addTrueActivity({type:'information',title:'Transfer proposal not sent',
             message:'One of the populations in this proposal is already committed to another pending transfer or is no longer available.'});
         return false;
     }
-    const proposalId=`ttp-${state.trueTransferProposalNextId++}`;
+    if(existing){
+        // Remove the previous scheduled reply only when terms actually changed.
+        const cal=normaliseTrueCalendarState();
+        cal.scheduledEvents=cal.scheduledEvents.filter(e=>!(e.type==='transfer-proposal-response'&&String(e.payload?.proposalId)===String(existing.id)));
+        existing.status='cancelled';existing.cancelledDate=cal.date;existing.replacedByRevision=true;
+    }
+    // A restored game's counters may lag behind existing proposals and transfers.
+    const usedProposalIds=new Set([...(state.trueTransferProposals||[]).map(p=>String(p?.id)),...(state.trueTransfers||[]).map(t=>String(t?.proposalId))]);
+    let proposalId;
+    do{proposalId=`ttp-${state.trueTransferProposalNextId++}`;}while(usedProposalIds.has(proposalId));
     const submittedDate=normaliseTrueCalendarState().date;
     const responseSchedule=scheduleTrueTransferProposalResponse(offer,proposalId);
     const responseDueDate=responseSchedule.dueDate;
@@ -47480,7 +48039,7 @@ function openTrueZooNetwork(){
 function closeTrueTradeHistory(){document.getElementById('trueTradeHistoryOverlay')?.remove();}
 function trueTradeHistoryPhase(proposal, transfers){
     const status=String(proposal?.status||'');
-    const transfer=transfers.find(t=>String(t?.proposalId)===String(proposal?.id));
+    const transfer=transfers.find(t=>String(t?.proposalId)===String(proposal?.id)&&trueTransferMatchesProposalSpecies(t,proposal)&&(proposal.transferId==null||String(t.id)===String(proposal.transferId)));
     if(status==='declined'||status==='cancelled'||transfer?.status==='cancelled')return {group:'declined',label:status==='declined'?'Declined':'Cancelled'};
     if(status==='completed'||transfer?.status==='completed'){
         // Older builds could record completion without any actual population
@@ -47488,8 +48047,17 @@ function trueTradeHistoryPhase(proposal, transfers){
         if(transfer){
             trueTransferNormaliseLegs(transfer);
             const legs=[...transfer.incomings,...transfer.outgoings];
+            const signature=a=>a?`${String(a.filename||'').toLowerCase()}|${String(a.category||'').toLowerCase()}|${String(a.level??'')}`:'';
+            const expectedIn=proposal?.offer?.animal;
+            const expectedOut=(Array.isArray(proposal?.outgoingOffers)?proposal.outgoingOffers:(proposal?.outgoingOffer?[proposal.outgoingOffer]:[])).filter(Boolean);
+            if((expectedIn&&transfer.incomings.length&&!transfer.incomings.some(l=>signature(l.animal)===signature(expectedIn)))||
+                (expectedOut.length&&transfer.outgoings.length&&expectedOut.some(a=>!transfer.outgoings.some(l=>signature(l.animal)===signature(a)))))
+                return {group:'transit',label:'Needs review'};
             if(!legs.length||legs.some(leg=>!leg.completed||!['males','females','unknown'].some(k=>(Number(leg.population?.[k])||0)>0))||
-                transfer.incomings.some(leg=>!leg.placementVerified)||transfer.outgoings.some(leg=>!leg.departureVerified))
+                transfer.incomings.some(leg=>!leg.placementVerified||leg.placedAnimalId==null||
+                    !(state.animals||[]).some(a=>String(a.id)===String(leg.placedAnimalId)&&
+                        a.enclosureId!=null&&!!enclosureByIdFast(a.enclosureId)))||
+                transfer.outgoings.some(leg=>!leg.departureVerified))
                 return {group:'transit',label:'Needs review'};
         }
         if(!transfer)return {group:'transit',label:'Needs review'};
@@ -47521,6 +48089,63 @@ function trueTradeHistoryHoverExplanation(proposal, phase){
         return reason.length<=145?reason:'The zoo declined this exchange. No specific reason was recorded.';
     }
     return '';
+}
+// Read-only trade diagnostics. Never mutate settlement state while inspecting it.
+function trueTradeDiagnosticReport(proposal){
+    const transfers=(state.trueTransfers||[]).filter(t=>String(t?.proposalId)===String(proposal?.id)&&trueTransferMatchesProposalSpecies(t,proposal)&&(proposal.transferId==null||String(t.id)===String(proposal.transferId)));
+    const foreignLinks=(state.trueTransfers||[]).filter(t=>String(t?.proposalId)===String(proposal?.id)&&!transfers.includes(t));
+    const problems=foreignLinks.map(t=>`unrelated-transfer-id-collision:${t.id}`);
+    if(!transfers.length&&['accepted','transfer-scheduled','completed'].includes(String(proposal?.status)))
+        problems.push('proposal-without-transfer');
+    const expectedIncoming=proposal?.offer?.animal||null;
+    const expectedOutgoing=(Array.isArray(proposal?.outgoingOffers)?proposal.outgoingOffers:(proposal?.outgoingOffer?[proposal.outgoingOffer]:[])).filter(Boolean);
+    const animalSignature=a=>a?`${String(a.filename||'').trim().toLowerCase()}|${String(a.category||'').trim().toLowerCase()}|${String(a.level??'')}`:'';
+    const animalSummary=a=>a?{name:animalDisplayName(a),category:a.category,level:a.level,filename:a.filename}:null;
+    const checked=transfers.map(t=>{
+        const incoming=Array.isArray(t.incomings)?t.incomings:[];
+        const outgoing=Array.isArray(t.outgoings)?t.outgoings:[];
+        if(expectedIncoming&&incoming.length&&!incoming.some(l=>animalSignature(l.animal)===animalSignature(expectedIncoming)))problems.push(`transfer:${t.id}:incoming-species-mismatch`);
+        if(expectedOutgoing.length&&outgoing.length&&expectedOutgoing.some(a=>!outgoing.some(l=>animalSignature(l.animal)===animalSignature(a))))problems.push(`transfer:${t.id}:outgoing-species-mismatch`);
+        if(t.transferKind==='exchange'&&(!incoming.length||!outgoing.length))problems.push('exchange-missing-leg');
+        if(t.status==='completed'&&(!incoming.length&&!outgoing.length))problems.push('completed-without-legs');
+        const inspect=(leg,direction)=>{
+            const population=leg?.population||{};
+            const total=['males','females','unknown'].reduce((n,k)=>n+(Number(population[k])||0),0);
+            const resident=direction==='incoming'?(state.animals||[]).find(a=>String(a.id)===String(leg.placedAnimalId)):null;
+            const enclosure=resident?.enclosureId==null?null:(state.enclosures||[]).find(e=>String(e.id)===String(resident.enclosureId));
+            const arrivalCandidates=direction==='incoming'?(state.animals||[]).filter(a=>
+                String(a.trueIncomingTransferId)===String(t.id)&&
+                String(a.trueIncomingTransferLegId)===String(leg.legId)).map(a=>({
+                    id:a.id,name:animalDisplayName(a),enclosureId:a.enclosureId??null,
+                    arrivalPending:!!a.trueArrivalPending,population:a.population||null})):[];
+            const issues=[];
+            if(total<=0)issues.push('zero-population');
+            if(leg.completed&&direction==='incoming'&&!leg.placementVerified)issues.push('placement-unverified');
+            if(leg.completed&&direction==='outgoing'&&!leg.departureVerified)issues.push('departure-unverified');
+            if(direction==='incoming'&&leg.completed&&(!resident||!enclosure))issues.push('placed-card-or-enclosure-missing');
+            if(t.status==='completed'&&!leg.completed)issues.push('completed-transfer-with-unfinished-leg');
+            problems.push(...issues.map(issue=>`${direction}:${leg.legId}:${issue}`));
+            return {legId:leg.legId,animalName:leg.animalName||leg.species||null,population,
+                completed:!!leg.completed,placementVerified:!!leg.placementVerified,
+                departureVerified:!!leg.departureVerified,placedAnimalId:leg.placedAnimalId??null,
+                placementKind:leg.placementKind||null,
+                placementPopulationBefore:leg.placementPopulationBefore||null,
+                placementPopulationAfter:leg.placementPopulationAfter||null,
+                sourceAnimal:leg.animal?{name:animalDisplayName(leg.animal),category:leg.animal.category,
+                    level:leg.animal.level,filename:leg.animal.filename}:null,
+                arrivalCandidates,residentPresent:!!resident,enclosurePresent:!!enclosure,issues};
+        };
+        return {id:t.id,status:t.status,transferKind:t.transferKind,integrityIssue:t.tradeIntegrityIssue||null,
+            partnerReceiptPending:t.partnerReceiptPending,partnerReceiptCommitted:t.partnerReceiptCommitted,
+            sourceDebitPending:t.sourceDebitPending,sourceDebitCommitted:t.sourceDebitCommitted,
+            arrivalDate:t.arrivalDate,completedDate:t.completedDate,
+            incomings:incoming.map(l=>inspect(l,'incoming')),outgoings:outgoing.map(l=>inspect(l,'outgoing'))};
+    });
+    return {diagnosticVersion:2,zooName:state.zooName,gameMode:state.gameMode,
+        capturedAt:new Date().toISOString(),proposal:{id:proposal.id,status:proposal.status,
+            submittedDate:proposal.submittedDate,marketplaceListingId:proposal.marketplaceListingId,
+            expectedIncoming:animalSummary(expectedIncoming),expectedOutgoing:expectedOutgoing.map(animalSummary),
+            transferUnavailable:proposal.transferUnavailable},problems:[...new Set(problems)],transfers:checked};
 }
 function openTrueTradeHistory(){
     closeTrueTradeHistory();
@@ -47570,7 +48195,18 @@ function openTrueTradeHistory(){
                 status.addEventListener('pointerenter',show);status.addEventListener('pointermove',place);status.addEventListener('pointerleave',hide);
                 status.addEventListener('focus',show);status.addEventListener('blur',hide);
             }
-            row.append(left,status);list.appendChild(row);
+            const actions=document.createElement('div');actions.style.cssText='display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0;';
+            actions.appendChild(status);
+            const diagnostic=document.createElement('button');diagnostic.type='button';diagnostic.className='save-load-button';
+            diagnostic.textContent='Copy diagnostic';diagnostic.style.cssText='font-size:10px;padding:3px 6px;';
+            diagnostic.title='Copy a read-only transfer verification report for bug reports';
+            diagnostic.onclick=async()=>{
+                const report=trueTradeDiagnosticReport(p),data=JSON.stringify(report,null,2);
+                try{await navigator.clipboard.writeText(data);diagnostic.textContent='Copied';}
+                catch(_){const popup=window.prompt('Copy this trade diagnostic:',data);diagnostic.textContent=popup===null?'Copy diagnostic':'Copy diagnostic';}
+            };
+            actions.appendChild(diagnostic);
+            row.append(left,actions);list.appendChild(row);
         }
         for(const button of tabs.querySelectorAll('button')){
             const selected=button.dataset.phase===active;
@@ -47828,13 +48464,25 @@ function renderTrueTransferProposal() {
     const actions=document.createElement('div');
     Object.assign(actions.style,{display:'flex',justifyContent:'flex-end',gap:'6px',marginTop:'7px'});
     const cancel=document.createElement('button');
-    cancel.type='button'; cancel.textContent='Cancel';
+    cancel.type='button'; cancel.textContent=offer.editingPendingProposalId?'Cancel proposal':'Cancel';
     const submit=document.createElement('button');
-    submit.type='button'; submit.textContent=offer.proposalStatus==='pending'?'Awaiting response':offer.proposalStatus==='accepted'?'Accepted':offeredList.length?'Send exchange proposal':'Request transfer';
+    submit.type='button'; submit.textContent=offer.editingPendingProposalId?'Update proposal':offer.proposalStatus==='pending'?'Awaiting response':offer.proposalStatus==='accepted'?'Accepted':offeredList.length?'Send exchange proposal':'Request transfer';
     for (const b of [cancel,submit]) Object.assign(b.style,{minHeight:'30px',padding:'0 9px',borderRadius:'6px',border:'1px solid #6d6558',fontWeight:'800',cursor:'pointer'});
-    cancel.addEventListener('click',()=>clearAutonomousOpponentOffer(false));
+    cancel.addEventListener('click',()=>{
+        const editing=offer.editingPendingProposalId?trueTransferProposalById(offer.editingPendingProposalId):null;
+        if(editing&&editing.status==='pending'){
+            const cal=normaliseTrueCalendarState();
+            editing.status='cancelled';editing.cancelledDate=cal.date;
+            cal.scheduledEvents=cal.scheduledEvents.filter(e=>!(e.type==='transfer-proposal-response'&&String(e.payload?.proposalId)===String(editing.id)));
+            if(editing.marketplaceListingId)setTrueMarketplaceListingStatus(editing.marketplaceListingId,'available');
+            state.autonomousTradeOffer=null;trueSetProposalOutgoingOffers([]);state.selectedTradeOpponent=null;
+            renderTrade();renderTruePendingProposalTabs();return;
+        }
+        clearAutonomousOpponentOffer(false);
+    });
     submit.disabled=['pending','accepted','transfer-scheduled','completed'].includes(offer.proposalStatus);
     submit.style.opacity=submit.disabled?'.45':'1';
+    trueAttachTransferOddsTooltip(submit,offer);
     submit.addEventListener('click',submitTrueTransferProposal);
     submit.style.background=submit.disabled?'#b9ad97':'#59452f';
     submit.style.color=submit.disabled?'#4a4032':'#fff';

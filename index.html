@@ -275,13 +275,29 @@
             translations.async = false;
             translations.onload = function () {
                 window.__zooTranslationBuildVersion = 'independent';
-                loadGame();
+                loadCardAssets();
             };
             translations.onerror = function () {
                 console.warn('Dutch translations unavailable; continuing in English.');
                 window.__zooTranslationBuildVersion = 'unavailable';
-                loadGame();
+                loadCardAssets();
             };
+            function loadCardAssets() {
+                var manifest=document.createElement('script');
+                manifest.src='./assets/cards/card-manifest.js?v='+encodeURIComponent(window.__zooAssetRequestVersion);
+                manifest.async=false;
+                var loadRenderer=function(){
+                    var renderer=document.createElement('script');
+                    renderer.src='./card-text-renderer.js?v='+encodeURIComponent(window.__zooAssetRequestVersion);
+                    renderer.async=false;
+                    renderer.onload=loadGame;
+                    renderer.onerror=loadGame;
+                    document.body.appendChild(renderer);
+                };
+                manifest.onload=loadRenderer;
+                manifest.onerror=loadRenderer;
+                document.body.appendChild(manifest);
+            }
             Promise.resolve(window.__zooStylesheetReady).then(function () {
                 document.body.appendChild(translations);
             });

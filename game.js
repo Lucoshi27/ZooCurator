@@ -1,4 +1,4 @@
-const ZOO_CURATOR_VERSION = "V2.44.188";
+const ZOO_CURATOR_VERSION = "V2.44.209";
 const ZOO_REQUIRED_HTML_INTERFACE = 1;
 const ZOO_REQUIRED_CSS_INTERFACE = 2;
 
@@ -7850,6 +7850,47 @@ function trueEventGeographyWeight(record,rel=null,context=null){
     if(rel&&(Number(rel.trust)||0)>=20)weight*=1+Math.min(.3,(Number(rel.trust)||0)/220);
     return weight;
 }
+// Recent cooperation is a small, time-limited reason to contact a partner again.
+// Read existing relationship history; no extra save state or daily background scan.
+// One shared interpretation of completed cooperation for both event selection
+// and dialogue. Informational contacts and uncompleted offers do not count.
+function trueRecentCooperationSummary(rel,today=normaliseTrueCalendarState().date){
+    const summary={weight:1,latestAge:null,count:0};
+    if(!Array.isArray(rel?.history))return summary;
+    let score=0;
+    for(const item of rel.history.slice(0,40)){
+        const type=String(item?.type||'').toLowerCase();
+        if(!(/transfer|fulfilled|husbandry-exact-repair|husbandry-relief/.test(type)))continue;
+        if(!item?.date)continue;
+        const age=trueDaysBetween(item.date,today);
+        // trueDaysBetween clamps negative values, so explicitly exclude future dates.
+        if(String(item.date)>String(today)||!Number.isFinite(age)||age>28)continue;
+        summary.count++;
+        summary.latestAge=summary.latestAge===null?age:Math.min(summary.latestAge,age);
+        score+=age<=7?1:age<=14?.55:.2;
+        if(score>=3)break;
+    }
+    summary.weight=1+Math.min(.18,score*.06);
+    return summary;
+}
+// A modest, expiring reciprocity benefit for completed cooperation. This
+// affects negotiation terms only, never population eligibility or transfers.
+function trueRecentCooperationNegotiationBonus(rel,today=normaliseTrueCalendarState().date){
+    const summary=trueRecentCooperationSummary(rel,today);
+    if(summary.latestAge===null)return 0;
+    const recency=summary.latestAge<=7?1:summary.latestAge<=14?.65:.3;
+    return Math.min(8,Math.round((summary.count>1?6:4)*recency));
+}
+function trueRecentCooperationWeight(rel,today=normaliseTrueCalendarState().date){
+    return trueRecentCooperationSummary(rel,today).weight;
+}
+function trueRecentPartnerTransferAcknowledgement(rel,today=normaliseTrueCalendarState().date){
+    const summary=trueRecentCooperationSummary(rel,today);
+    if(summary.latestAge===null)return '';
+    return summary.latestAge<=7
+        ? 'Our teams worked together on a recent animal transfer, and they have kept in touch.'
+        : 'They remember our previous animal transfer and are keen to keep the connection going.';
+}
 function trueEventCandidateWeight(listing,context=null){
     const rel=trueRelationshipForProfile(listing.profile,listing.sourceKey);
     const trust=Number(rel.trust)||0, familiarity=Number(rel.familiarity)||0;
@@ -7869,7 +7910,7 @@ function trueEventCandidateWeight(listing,context=null){
     const favourites=Array.isArray(listing.profile?.favourites)?listing.profile.favourites:[];
     const specialistWeight=favourites.some(c=>String(c).toLowerCase()===category.toLowerCase())?1.22:1;
     const successfulTransfers=Math.max(0,Number(rel.meaningfulTransfers)||0);
-    const cooperationWeight=1+Math.min(.28,successfulTransfers*.05);
+    const cooperationWeight=(1+Math.min(.28,successfulTransfers*.05))*trueRecentCooperationWeight(rel);
     let recencyWeight;
     if(context){
         recencyWeight=context.recency.get(listing.sourceKey)??1;
@@ -7955,6 +7996,33 @@ function trueEventPopulationPressureCandidates(){
         return !current?.valid||total>=8;
     });
 }
+// A partner should not immediately ask us to return a species it just sent.
+// Use the persistent world-population transaction history, not a transient event
+// flag: this covers Marketplace, direct exchanges, and accepted event transfers.
+function trueRecentPartnerOutboundTransfer(record,animal,today=normaliseTrueCalendarState().date,days=30){
+    const entry=trueWorldPopulation(record,animal,{create:false});
+    if(!entry)return false;
+    const population=normaliseTruePopulationCounts(entry.population);
+    const empty=population.males+population.females+population.unknown===0;
+    return (entry.history||[]).some(row=>{
+        if(row?.type!=='transfer-out'||row.otherZooKey!=='player')return false;
+        const elapsed=(trueDateObject(today)-trueDateObject(row.date))/86400000;
+        return elapsed>=0&&(elapsed<days||empty);
+    });
+}
+// A recent player-to-partner receipt must not be immediately advertised back
+// as partner surplus. A genuinely depleted population cannot supply offers.
+function truePartnerCanOfferSpecies(record,animal,today=normaliseTrueCalendarState().date,days=30){
+    const entry=trueWorldPopulation(record,animal,{create:false});
+    if(!entry)return true; // no simulated population yet; normal inventory rules apply
+    const pop=normaliseTruePopulationCounts(entry.population);
+    if(pop.males+pop.females+pop.unknown<=0)return false;
+    return !(entry.history||[]).some(row=>{
+        if(row?.type!=='transfer-in'||row.otherZooKey!=='player')return false;
+        const elapsed=(trueDateObject(today)-trueDateObject(row.date))/86400000;
+        return elapsed>=0&&elapsed<days;
+    });
+}
 function trueEventRequestCandidates(){
     const animals=trueEventPlayerPopulationCandidates(),records=trueEventEligibleSourceRecords('requests'),result=[];
     if(!animals.length)return result;
@@ -7968,6 +8036,7 @@ function trueEventRequestCandidates(){
         const rel=trueRelationshipForProfile(profile,sourceKey);
         const relationshipScore=1+(Number(rel.trust)||0)/25+Math.min(2,(Number(rel.familiarity)||0)/10);
         for(const animal of animals){
+            if(trueRecentPartnerOutboundTransfer(record,animal,today))continue;
             const key=animalCardKey(animal),category=String(animal.category||'');
             const specialist=specialistCategories.has(category.toLowerCase());
             const lazy=trueWorldPopulation(record,animal,{create:false});
@@ -8076,7 +8145,7 @@ function trueCreateIncomingRequestEvent(candidate,today){
         message:`${candidate.profile?.name||'Another zoo'} is looking for ${trueMarketplaceWantLabel(candidate.want)} and has contacted your zoo.`,
         requestReason:requestContext.reason,
         currentPopulation:requestContext.currentPopulation||null,
-        detail:`${candidate.profile?.name||'The zoo'} is looking for ${trueMarketplaceWantLabel(candidate.want)}. ${requestContext.reason}${rel.trust>=20?` Your ${stage.toLowerCase()} relationship is one reason they approached you directly.`:''}`,
+        detail:`${candidate.profile?.name||'The zoo'} is looking for ${trueMarketplaceWantLabel(candidate.want)}. ${requestContext.reason}${rel.trust>=20?` Your ${stage.toLowerCase()} relationship is one reason they approached you directly.`:''}${(() => {const note=trueRecentPartnerTransferAcknowledgement(rel,today);return note?` ${note}`:'';})()}`,
         impactText:`${candidate.profile?.name||'The requesting zoo'} is actively seeking animals from your collection. Your response will affect both population management and future cooperation with this institution.`
     };
     event.scale=trueEventScaleFor('animal-request',candidate.animal,rel);
@@ -8273,8 +8342,11 @@ function trueEventWorldCandidates(){
         // Filter immutable catalogue specs first. Only materialise animal objects
         // for the six sampled candidates, not every holding of every zoo.
         const stock=[];
-        for(const spec of realZooTradeSpecs(record)){
+        for(const spec of realZooTradeAnimals(record,false)){
+            // Live world populations override static catalogue holdings, including
+            // species fully rehomed and species acquired since game start.
             if(ownedKeys?.has(animalCardKey(spec)))continue;
+            if(!truePartnerCanOfferSpecies(record,spec,today))continue;
             if(!trueZooEventOfferTierAllowed(spec,profile,sourceKey,progression))continue;
             stock.push(spec);
         }
@@ -8416,7 +8488,14 @@ function trueCreateWorldNewsEvent(candidate,today,kind){
 }
 function trueScheduleEventFollowUp(event,days,type='event-follow-up'){
     const cal=normaliseTrueCalendarState(),date=addTrueDays(cal.date,days);
-    cal.scheduledEvents.push({date,type,payload:{eventId:event.id},pause:false});
+    const payload={eventId:event.id};
+    // Capture the situation that justified population advice. A marketplace
+    // transfer, birth or death before the follow-up makes that advice stale.
+    if(type==='event-follow-up'&&event.kind==='population-advice'&&event.animal){
+        const current=classicAnimalsByCardKey(event.animal).find(a=>!a.trueArrivalPending);
+        if(current)payload.populationAtScheduling=normaliseTruePopulationCounts(current);
+    }
+    cal.scheduledEvents.push({date,type,payload,pause:false});
 }
 function trueResolvePopulationPressureFollowUp(eventId){
     const original=trueEventById(eventId);if(!original||original.populationPressureFollowUpResolved)return;
@@ -8432,7 +8511,7 @@ function trueResolvePopulationPressureFollowUp(eventId){
     event.parentEventId=original.id;event.followUpEvent=true;
     trueRelationshipRecord(event.profile,event.sourceKey,'population-advice-follow-up',`Responded with a practical placement option for surplus ${animalDisplayName(animal)}.`,{trust:1,familiarity:1});
 }
-function trueResolveEventFollowUp(eventId){
+function trueResolveEventFollowUp(eventId,scheduledPayload=null){
     const original=trueEventById(eventId);if(!original||original.followUpResolved)return;
     original.followUpResolved=true;
     const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===original.sourceKey);
@@ -8443,6 +8522,14 @@ function trueResolveEventFollowUp(eventId){
     if(original.kind==='population-advice'){
         const animal=classicAnimalsByCardKey(original.animal).find(a=>!a.trueArrivalPending);
         if(!animal)return;
+        // The old advice was based on a different population. Do not apply a
+        // breeding modifier to a population changed by a subsequent transfer,
+        // birth or death. Older saves without a snapshot retain old behavior.
+        const baseline=scheduledPayload?.populationAtScheduling;
+        if(baseline){
+            const now=normaliseTruePopulationCounts(animal);
+            if(['males','females','unknown'].some(k=>(Number(now[k])||0)!==(Number(baseline[k])||0)))return;
+        }
         const surplus=truePlayerPopulationSurplus(animal);
         const easing=Boolean(surplus);
         trueEventAddModifier({
@@ -8461,13 +8548,20 @@ function trueResolveEventFollowUp(eventId){
     }
 
     if(original.kind!=='collection-planning')return;
+    // Re-evaluate the original proposal against the partner's live inventory.
+    // An intervening marketplace/event transfer can invalidate a scheduled
+    // follow-up even when the original collection-planning event was valid.
     if(!original.animal||!tradeIncomingHasDestinationAfterOutgoing(original.animal,null))return;
+    if(!truePartnerCanOfferSpecies(record,original.animal,today))return;
     const roll=seededRoll(`event-follow-up|${original.id}|${today}`).roll;
     if(roll>=Math.min(.72,.48+Math.max(0,Number(rel.trust)||0)*.003))return;
     const sourceEntry=trueWorldPopulation(record,original.animal,{create:true,reason:'collection planning follow-up'});
     const sourcePop=normaliseTrueAnimalPopulation(sourceEntry.population);
     const offeredPop=sourcePop.unknown>0?{males:0,females:0,unknown:1}:sourcePop.males>1?{males:1,females:0,unknown:0}:sourcePop.females>1?{males:0,females:1,unknown:0}:null;
     if(!offeredPop)return;
+    // Check again after resolving the available population: the follow-up
+    // must not advertise an animal the partner has recently received from us.
+    if(!truePartnerCanOfferSpecies(record,original.animal,today))return;
     const narrative=trueEventNarrative({profile:original.profile,animal:original.animal,population:offeredPop,reason:'population management'},'transfer-opportunity',rel);
     const expiry=trueDateObject(today);expiry.setUTCDate(expiry.getUTCDate()+14);
     const event={id:`ze-${events.nextId++}`,kind:'transfer-opportunity',status:'active',createdDate:today,expiresDate:trueDateString(expiry),
@@ -8610,7 +8704,9 @@ function trueAcceptExactHusbandryRepair(event){
         if(pop.males>available.males||pop.females>available.females||pop.unknown>available.unknown)return false;
         const projected={males:available.males-pop.males,females:available.females-pop.females,unknown:available.unknown-pop.unknown};
         if(!truePopulationGroupSizeStatus({...animal,population:projected}).valid)return false;
-        trueTransferSubtract(animal,pop);trueWorldPopulationAdd(record,event.animal,pop,{type:'transfer-in',text:`Population received from ${state.zooName||'the player zoo'} to resolve a group-size concern.`,otherZooKey:'player'});
+        const credited=trueWorldPopulationAdd(record,event.animal,pop,{type:'transfer-in',text:`Population received from ${state.zooName||'the player zoo'} to resolve a group-size concern.`,otherZooKey:'player',transactionId:`husbandry-exact-in|${event.id}`});
+        if(!credited)return false;
+        trueTransferSubtract(animal,pop);
     }else{
         const entry=trueWorldPopulation(record,event.animal,{create:true,reason:'accepted welfare group repair'});
         const source=normaliseTrueAnimalPopulation(entry.population);
@@ -8618,7 +8714,8 @@ function trueAcceptExactHusbandryRepair(event){
         const projected=normaliseTrueAnimalPopulation(animal);
         projected.males+=pop.males;projected.females+=pop.females;projected.unknown+=pop.unknown;
         if(!truePopulationGroupSizeStatus({...animal,population:projected}).valid)return false;
-        trueWorldPopulationRemove(record,event.animal,pop,{type:'transfer-out',text:`Population sent to ${state.zooName||'the player zoo'} to resolve a group-size concern.`,otherZooKey:'player'});
+        const debited=trueWorldPopulationRemove(record,event.animal,pop,{type:'transfer-out',text:`Population sent to ${state.zooName||'the player zoo'} to resolve a group-size concern.`,otherZooKey:'player',transactionId:`husbandry-exact-out|${event.id}`});
+        if(!debited)return false;
         animal.population=projected;
     }
     event.status='resolved';event.resolvedDate=normaliseTrueCalendarState().date;
@@ -8636,14 +8733,17 @@ function trueAcceptHusbandryReliefOffer(event){
     const wanted=normaliseTrueAnimalPopulation(event.husbandryReliefPopulation);
     const available=trueTransferAvailableCounts(animal);
     for(const k of ['males','females','unknown'])if(wanted[k]>available[k])return false;
-    trueTransferSubtract(animal,wanted);
-    if(trueAnimalPopulationTotal(animal)<=0)state.animals=state.animals.filter(a=>a!==animal);
     const destination=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===event.sourceKey);
-    if(destination)trueWorldPopulationAdd(destination,event.animal,wanted,{
+    // Never remove animals from the player if the receiving zoo has vanished.
+    if(!destination)return false;
+    const credited=trueWorldPopulationAdd(destination,event.animal,wanted,{
         type:'transfer-in',
         text:`Population received from ${state.zooName||'the player zoo'} following a husbandry concern.`,
-        otherZooKey:'player'
+        otherZooKey:'player',transactionId:`husbandry-relief-in|${event.id}`
     });
+    if(!credited)return false;
+    trueTransferSubtract(animal,wanted);
+    if(trueAnimalPopulationTotal(animal)<=0)state.animals=state.animals.filter(a=>a!==animal);
     event.status='resolved';
     event.resolvedDate=normaliseTrueCalendarState().date;
     event.resolution=`${truePopulationNotation(wanted)} transferred to ${event.profile?.name||'the other zoo'}`;
@@ -8886,7 +8986,8 @@ function trueAcceptCombinationOffer(event){
         event.status='unavailable';event.resolvedDate=normaliseTrueCalendarState().date;
         writeAutoResumeSnapshot?.(true);return false;
     }
-    trueWorldPopulationRemove(record,event.animal,requested,{type:'transfer-out',text:`Population sent to ${state.zooName||'the player zoo'} for a mixed-species exhibit.`,otherZooKey:'player'});
+    const debited=trueWorldPopulationRemove(record,event.animal,requested,{type:'transfer-out',text:`Population sent to ${state.zooName||'the player zoo'} for a mixed-species exhibit.`,otherZooKey:'player',transactionId:`combination-offer-out|${event.id}`});
+    if(!debited){alert('The sending zoo can no longer supply this group. No animals have been placed.');return false;}
     state.animals.push(incoming);
     event.status='resolved';event.resolvedDate=normaliseTrueCalendarState().date;event.playerReply='Accepted';
     event.resolution=`Accepted. The ${animalDisplayName(incoming)} were placed directly with the ${animalDisplayName(event.targetResident)}.`;
@@ -9092,16 +9193,53 @@ function truePlayerPopulationNeed(animal){
     if(best.maleNeed>0)return {...best,sex:'males'};
     return {...best,sex:'unknown'};
 }
-function trueSourceCanSparePopulation(record,animal,sex){
+// Find a small, husbandry-valid transfer; never debit a source into an invalid group.
+function trueSourceCanSparePopulation(record,animal,need){
     const entry=trueWorldPopulation(record,animal,{create:true,reason:'relationship population cooperation'});if(!entry)return null;
-    const p={...entry.population};
-    let chosen=sex;
-    if(chosen==='unknown')chosen=p.females>p.males?'females':'males';
-    if((Number(p[chosen])||0)<1)return null;
-    const after={...p,[chosen]:p[chosen]-1};
-    const probe={...animal,population:after,truePopulationManagement:entry.management||null};
-    if(!truePopulationGroupSizeStatus(probe).valid)return null;
-    return {entry,sex:chosen,population:{males:chosen==='males'?1:0,females:chosen==='females'?1:0,unknown:0}};
+    // Offers must use uncommitted stock, not animals already promised to another zoo.
+    // Do not mutate the persistent population while merely evaluating candidates.
+    const reserved=trueWorldReservedOutgoing(record,animal);
+    const source=normaliseTrueAnimalPopulation(entry.population),player=normaliseTrueAnimalPopulation(animal);
+    for(const sex of ['males','females','unknown'])source[sex]=Math.max(0,source[sex]-(Number(reserved[sex])||0));
+    const current=truePopulationGroupSizeStatus(animal);
+    const possibilities=[];
+    for(let males=0;males<=3;males++)for(let females=0;females<=3-males;females++){
+        const count=males+females;if(!count||males>source.males||females>source.females)continue;
+        const population={males,females,unknown:0};
+        const afterSource={...source,males:source.males-males,females:source.females-females};
+        const emptied=afterSource.males+afterSource.females+afterSource.unknown===0;
+        // Occasionally allow an intentional whole-collection rehoming. A zero
+        // population is not a malformed husbandry group: the species has left.
+        // Deterministic per zoo/species/day, avoiding rerolls within a tick.
+        if(emptied){
+            const trust=Number(trueRelationshipForProfile(realZooProfile(record,0),realZooHoldingKey(record))?.trust)||0;
+            const roll=seededRoll(`whole-collection-assistance|${realZooHoldingKey(record)}|${animalCardKey(animal)}|${normaliseTrueCalendarState().date}`).roll;
+            if(roll>=Math.min(.25,.08+Math.max(0,trust)*.0015))continue;
+        }else if(!truePopulationGroupSizeStatus({...animal,population:afterSource,truePopulationManagement:entry.management||null}).valid)continue;
+        const afterPlayer=truePopulationGroupSizeStatus({...animal,population:{males:player.males+males,females:player.females+females,unknown:player.unknown}});
+        if(!afterPlayer.valid)continue;
+        if(!current.valid && count<Math.max(1,need.additional||1))continue;
+        // For valid pairs, only offer an upgrade to an explicitly configured breeding group.
+        if(current.valid){
+            if(!need.preferred||count<need.additional||afterPlayer.total<need.targetTotal)continue;
+        }
+        // Prefer the smallest husbandry-correcting transfer. Whole-collection
+        // rehoming remains possible, but is not preferred over a surplus transfer.
+        possibilities.push({population,count,score:count*10+Math.abs(males-females)+(emptied?20:0)});
+    }
+    possibilities.sort((a,b)=>a.score-b.score);
+    if(!possibilities.length)return null;
+    return {entry,population:possibilities[0].population};
+}
+function truePlayerPreferredPopulationNeed(animal){
+    const status=truePopulationGroupSizeStatus(animal);
+    if(!status.valid)return truePlayerPopulationNeed(animal);
+    const breeding=status.structures.filter(row=>row.structure?.management==='breeding_group'||row.structure?.type==='breeding_group'||row.structure?.name==='breeding_group');
+    if(!breeding.length)return null;
+    const targets=breeding.map(row=>Math.max(3,row.totalRange[0],row.male[0]+row.female[0]));
+    const targetTotal=Math.min(...targets);
+    if(status.total>=targetTotal||targetTotal-status.total>3)return null;
+    return {preferred:true,additional:targetTotal-status.total,targetTotal};
 }
 function truePlayerPopulationSurplus(animal){
     if(!animal||animal.trueArrivalPending)return null;
@@ -9217,7 +9355,7 @@ function trueMaybeGenerateSurplusRelief(today){
 }
 
 function trueRelationshipPopulationHelpCandidates(){
-    const out=[],eligibleRecords=trueEventEligibleSourceRecords('population-help');
+    const out=[],eligibleRecords=realZooRecordsAvailable().filter((record,index)=>trueEventAquariumSourceAllowed(record,index));
     const events=normaliseTrueEventState(),today=normaliseTrueCalendarState().date;
     // The cooldown is specific to the source zoo and species, including legacy events.
     const recentBySource=new Map();
@@ -9232,39 +9370,112 @@ function trueRelationshipPopulationHelpCandidates(){
     const sources=eligibleRecords.map(record=>{
         const sourceKey=realZooHoldingKey(record),profile=realZooProfile(record,0),rel=trueRelationshipForProfile(profile,sourceKey);
         return {record,sourceKey,profile,rel,tradeKeys:new Set(realZooTradeAnimals(record,false).map(animalCardKey))};
-    }).filter(source=>(Number(source.rel.trust)||0)>=55);
+    }).filter(source=>(Number(source.rel.trust)||0)>=15);
+    const checkedSpecies=new Set();
     for(const animal of state.animals||[]){
-        const need=truePlayerPopulationNeed(animal);if(!need)continue;
+        if(animal.trueArrivalPending)continue;
+        const speciesKey=animalCardKey(animal);
+        if(checkedSpecies.has(speciesKey))continue;
+        checkedSpecies.add(speciesKey);
+        // A second offer should not race a previously accepted incoming group.
+        // Pending cards are not counted in the current enclosure population.
+        if((state.animals||[]).some(other=>other.trueArrivalPending&&animalCardKey(other)===speciesKey))continue;
+        const need=truePlayerPreferredPopulationNeed(animal)||truePlayerPopulationNeed(animal);if(!need)continue;
         const animalKey=animalCardKey(animal);
         for(const source of sources){
             const {record,sourceKey,profile,rel,tradeKeys}=source;
             if(!tradeKeys.has(animalKey))continue;
             if(recentBySource.get(String(sourceKey||''))?.has(animalKey))continue;
-            const spare=trueSourceCanSparePopulation(record,animal,need.sex);if(!spare)continue;
-            out.push({record,sourceKey,profile,rel,animal,need,...spare,weight:1+Math.pow((Number(rel.trust)||55)-50,1.25)/18});
+            const spare=trueSourceCanSparePopulation(record,animal,need);if(!spare)continue;
+            out.push({record,sourceKey,profile,rel,animal,need,...spare,weight:1+Math.pow(Math.max(0,(Number(rel.trust)||15)-10),1.25)/18});
         }
     }
     return out;
+}
+// Suggest an actual, independently useful player animal for a cooperative exchange.
+// This is advice for the existing negotiation UI, not a reservation or forced debit.
+function truePopulationHelpExchangeSuggestion(candidate){
+    const want=trueMarketplaceWantExcludingOfferedAnimal(
+        trueMarketplaceActiveWant(candidate.profile),candidate.animal);
+    if(!want)return null;
+    const offeredKey=animalCardKey(candidate.animal);
+    const seen=new Set();
+    for(const animal of state.animals||[]){
+        if(!animal||animal.trueArrivalPending||animalCardKey(animal)===offeredKey)continue;
+        const key=animalCardKey(animal);
+        if(seen.has(key))continue;
+        seen.add(key);
+        // Do not suggest a species while another transfer is changing its group.
+        if((state.animals||[]).some(other=>other?.trueArrivalPending&&animalCardKey(other)===key))continue;
+        const surplus=truePlayerPopulationSurplus(animal);
+        // Only propose animals already identified as surplus by husbandry rules.
+        // Never promise the whole population or a card that has a pending arrival.
+        if(!surplus||!surplus.count)continue;
+        const before=normaliseTrueAnimalPopulation(animal);
+        if(['males','females','unknown'].some(sex=>!Number.isInteger(Number(surplus.population?.[sex]||0))||Number(surplus.population?.[sex]||0)<0||Number(surplus.population?.[sex]||0)>Number(before[sex]||0)))continue;
+        const sample={...animal,reservedPopulation:surplus.population};
+        if(!trueMarketplaceWantMatchesAnimal(want,sample))continue;
+        const after=normaliseTrueAnimalPopulation(animal);
+        for(const sex of ['males','females','unknown'])after[sex]-=surplus.population[sex]||0;
+        if(!truePopulationGroupSizeStatus({...animal,population:after}).valid)continue;
+        return {animal,population:surplus.population,want};
+    }
+    return null;
 }
 function trueCreateRelationshipPopulationHelpEvent(candidate,today){
     if(trueHasSameDaySpeciesEvent('population-cooperation',candidate?.animal,today)||
        trueHasSameDaySpeciesEvent('transfer-opportunity',candidate?.animal,today))return null;
 
     const events=normaliseTrueEventState(),species=animalDisplayName(candidate.animal),zoo=candidate.profile?.name||'A partner zoo';
-    const sex=candidate.sex==='females'?'female':'male',expiry=addTrueDays(today,21);
+    const offered=truePopulationNotation(candidate.population),expiry=addTrueDays(today,21);
+    // Use the partner's existing collection request instead of inventing a
+    // requested species. Negotiation remains optional: donations are allowed.
+    const want=trueMarketplaceWantExcludingOfferedAnimal(trueMarketplaceActiveWant(candidate.profile),candidate.animal);
+    const match=truePopulationHelpExchangeSuggestion(candidate);
+    const requestText=match
+        ?` They are looking for ${trueMarketplaceWantLabel(want)}. Your surplus ${truePopulationNotation(match.population)} ${animalDisplayName(match.animal)} could be a suitable exchange, if you choose to offer them.`
+        :want?` They are looking for ${trueMarketplaceWantLabel(want)}, but no verified surplus animals in your zoo currently match their request. A donation can still be discussed.`:'';
+    const trust=Math.max(0,Number(candidate.rel?.trust)||0);
+    const generosityText=trust>=55
+        ?'As an established partner, they are particularly open to helping without an exchange.'
+        :trust>=30?'They may consider a donation, although a suitable exchange could help.'
+        :'They would welcome a suitable exchange, but a donation can still be discussed.';
     const event={id:`ze-${events.nextId++}`,kind:'transfer-opportunity',status:'active',createdDate:today,expiresDate:expiry,independentEvent:true,
         relationshipPopulationHelp:true,sourceKey:candidate.sourceKey,profile:cloneForSave(candidate.profile),animal:cloneForSave(candidate.animal),population:cloneForSave(candidate.population),scale:'Notable',
-        title:`${zoo} offers population support`,message:`${zoo} has offered you a ${sex} ${species} that could improve the structure of your current group.`,
-        detail:`Your relationship with ${zoo} made them more likely to approach you directly. Their own ${species} population can spare this animal without leaving their group outside its normal management structure.`,
-        impactText:`Accepting this offer can repair the sex structure of your ${species} population, while your response will also feed back into your relationship with ${zoo}.`};
+        suggestedExchange:match?{animal:cloneForSave(match.animal),population:cloneForSave(match.population)}:null,
+        title:`${zoo} offers population support`,message:`${zoo} has ${offered} ${species} available to help improve the structure of your current group. They would like to discuss a transfer.`,
+        detail:`Your relationship with ${zoo} made them more likely to approach you directly. They can transfer ${offered} from their current ${species} population, potentially including the last individuals if they are closing that collection. ${generosityText}${requestText}`,
+        impactText:`Completing this transfer can improve the group structure of your ${species} population, while your response will also feed back into your relationship with ${zoo}.`};
     return truePublishPopulationAssistanceEvent(events,event);
 }
+// Console diagnostic: zooTruePopulationHelpAudit() reports why an offer can/cannot appear.
+// Read-only with respect to player populations; opponent stock may be lazily initialised.
+function zooTruePopulationHelpAudit(){
+    const today=normaliseTrueCalendarState().date;
+    const records=realZooRecordsAvailable().filter((r,i)=>trueEventAquariumSourceAllowed(r,i));
+    const owned=(state.animals||[]).filter(a=>!a.trueArrivalPending);
+    const needs=owned.map(a=>({animal:animalDisplayName(a),need:truePlayerPreferredPopulationNeed(a)||truePlayerPopulationNeed(a)})).filter(x=>x.need);
+    const sources=records.map(record=>({record,key:realZooHoldingKey(record),profile:realZooProfile(record,0)}));
+    const qualified=sources.filter(x=>(Number(trueRelationshipForProfile(x.profile,x.key).trust)||0)>=15);
+    const candidates=trueRelationshipPopulationHelpCandidates();
+    const report={date:today,owned:owned.length,needingHelp:needs,availableSourceZoos:records.length,
+        trustQualifiedZoos:qualified.length,validOffers:candidates.length,
+        sampleOffers:candidates.slice(0,12).map(c=>({zoo:c.profile?.name,animal:animalDisplayName(c.animal),
+            population:truePopulationNotation(c.population),trust:Number(c.rel.trust)||0,
+            reservedAtSource:truePopulationNotation(trueWorldReservedOutgoing(c.record,c.animal))})),
+        blockingEvents:trueEventBlockingItems().length,
+        recentAssistance:(normaliseTrueEventState().items||[]).filter(e=>e.relationshipPopulationHelp).slice(-8).map(e=>({date:e.createdDate,status:e.status,zoo:e.profile?.name,animal:animalDisplayName(e.animal)}))};
+    console.table(report.sampleOffers);console.info('[Zoo Curator population assistance audit]',report);
+    return report;
+}
+if(typeof window!=='undefined')window.zooTruePopulationHelpAudit=zooTruePopulationHelpAudit;
+
 function trueMaybeGenerateRelationshipPopulationHelp(today){
     if(state.gameMode!=='true'||state.sandboxMode||state.visitingZoo||trueEventBlockingItems().length>=3)return null;
     const candidates=trueRelationshipPopulationHelpCandidates();if(!candidates.length)return null;
     const bestTrust=Math.max(...candidates.map(c=>Number(c.rel.trust)||0));
     const worstSeverity=Math.max(...candidates.map(c=>truePopulationInterventionSeverity(c.animal)));
-    const chance=Math.min(.07,(.012+Math.max(0,bestTrust-55)*.00125)*(.75+worstSeverity*.55));
+    const chance=Math.min(.72,(.20+Math.max(0,bestTrust-15)*.006)*(.85+worstSeverity*.35));
     if(seededRoll(`population-help-day|${state.zooName}|${today}`).roll>=chance)return null;
     const chosen=truePickWeightedPopulationCandidate(candidates,`population-help-pick|${state.zooName}|${today}`,
         c=>c.weight*(.8+truePopulationInterventionSeverity(c.animal)*.4));
@@ -9514,18 +9725,44 @@ function trueHasSameDaySpeciesEvent(kind,animal,today){
         event.kind===kind&&event.animal&&animalCardKey(event.animal)===key);
 }
 function trueSelectScheduledEvent(today,slotIndex){
-    const generators=[
-        ()=>trueMaybeGeneratePriorityGroupRepair(today,slotIndex),
-        ()=>trueMaybeGenerateSurplusRelief(today),
-        ()=>trueMaybeGenerateRelationshipPopulationHelp(today),
-        ()=>trueGenerateRelationshipEventForDay(slotIndex),
-        ()=>trueEnsureDailyEvent(today,true,`slot-${slotIndex}`)
+    // Rotate the *attempt order*, not pre-generate candidates: event generators
+    // may register transactions, activity or cooldowns as side effects.
+    // Keep urgent group repair first on the morning roll, but give other
+    // families an opportunity to appear on the second roll.
+    const families=[
+        {name:'surplus',generate:()=>trueMaybeGenerateSurplusRelief(today)},
+        {name:'cooperation',generate:()=>trueMaybeGenerateRelationshipPopulationHelp(today)},
+        {name:'relationship',generate:()=>trueGenerateRelationshipEventForDay(slotIndex)}
     ];
+    // Prioritise families the player has not encountered recently. This only
+    // orders attempts; generators still run lazily, avoiding speculative event
+    // registration, side effects, and extra population generation.
+    const recent=normaliseTrueEventState().recentFamilies||[];
+    const familyKind={surplus:'surplus-relief',cooperation:'population-cooperation',relationship:'zoo-network-update'};
+    const ordered=families.map(row=>{
+        const target=trueEventVarietyFamily(familyKind[row.name]);
+        const related=row.name==='relationship'?new Set(['programme-update','collection-planning','network-contact','husbandry-exchange','publicity-feature','population-advice','animal-request','transfer-opportunity']):null;
+        let penalty=1;
+        for(let i=recent.length-1,d=0;i>=0&&d<5;i--,d++){
+            const recentKind=String(recent[i]||'');
+            const recentFamily=trueEventVarietyFamily(recentKind);
+            if(recentFamily===target)penalty*=d===0?.22:d===1?.45:.72;
+            // Relationship events have several subtypes. A recent network
+            // conversation should mildly reduce another network conversation,
+            // without crowding out urgent husbandry or all other event families.
+            else if(related&&related.has(recentKind))penalty*=d===0?.72:d===1?.84:.94;
+        }
+        const jitter=.65+.35*seededRoll(`true-event-family-order|${state.zooName}|${today}|${slotIndex}|${row.name}`).roll;
+        return {row,score:penalty*jitter};
+    }).sort((a,b)=>b.score-a.score).map(item=>item.row);
+    const generators=slotIndex===0
+        ? [()=>trueMaybeGeneratePriorityGroupRepair(today,slotIndex),...ordered.map(row=>row.generate)]
+        : [...ordered.map(row=>row.generate),()=>trueMaybeGeneratePriorityGroupRepair(today,slotIndex)];
     for(const generate of generators){
         const event=generate();
         if(event)return event;
     }
-    return null;
+    return trueEnsureDailyEvent(today,true,`slot-${slotIndex}`);
 }
 // A rejected scheduled candidate must not leave a clickable Activity notice or
 // a pending popup pointing at its superseded event. Gameplay transactions are
@@ -9721,7 +9958,7 @@ function trueGenerateRelationshipEventForDay(rollIndex=0){
         id:`ze-${events.nextId++}`,kind,status:'active',createdDate:today,expiresDate:trueDateString(expiry),
         listingId:null,independentEvent:true,sourceKey:candidate.sourceKey,profile:cloneForSave(candidate.profile),
         animal:cloneForSave(candidate.animal),population:cloneForSave(candidate.population),
-        scale,title:narrative.title,message:narrative.message,detail:narrative.detail,
+        scale,title:narrative.title,message:narrative.message,detail:[narrative.detail,trueRecentPartnerTransferAcknowledgement(rel,today)].filter(Boolean).join(' '),
         impactText:`A real transfer opportunity is now open with ${candidate.profile?.name||'this zoo'}. Your response will affect both the population outcome and your working relationship.`
     };
     trueRegisterEventWithActivity(events,event,{type:'opportunity',title:event.title,message:event.message,actionLabel:'View event',action:'event'});trueEventRememberFamily(events,'transfer-opportunity');
@@ -9759,8 +9996,17 @@ function trueAcceptIndependentTransferEvent(event){
     state.selectedTradeOpponent=0;
     const incoming={...cloneForSave(event.animal),population:{...normaliseTruePopulationCounts(event.population||event.animal)},enclosureId:null,slotIndex:null};
     state.tradeOffers=[];
+    // Suggestions are advisory. Revalidate against the CURRENT player stock when
+    // opening negotiations: the event may have been sitting in the inbox for days.
+    const suggested=event.relationshipPopulationHelp
+        ?truePopulationHelpExchangeSuggestion({animal:event.animal,profile:event.profile})
+        :null;
+    event.suggestedExchange=suggested
+        ?{animal:cloneForSave(suggested.animal),population:cloneForSave(suggested.population)}
+        :null;
     state.autonomousTradeOffer={
         opponentIndex:0,animal:incoming,eventOpportunity:true,eventId:event.id,eventSourceKey:event.sourceKey,
+        suggestedExchange:event.suggestedExchange?cloneForSave(event.suggestedExchange):null,
         offeredDate:normaliseTrueCalendarState().date,proposalSubmitted:false,proposalSubmittedDate:null,
         proposalStatus:'draft',responseDueDate:null
     };
@@ -9910,7 +10156,8 @@ function trueEventReplyChoices(event){
 }
 
 function trueEventChoiceApply(event,choice){
-    if(!event||!choice)return;
+    // Ignore stale UI clicks and repeated replies after a decision is recorded.
+    if(!event||!choice||event.status!=='active'||event.playerReply)return;
     const zoo=event.profile?.name||event.zoo||event.zooName||event.sourceZoo||'the zoo';
     const relGain=Math.max(0,Number(choice.relationship)||0);
     if(relGain>0&&event.profile&&event.sourceKey){
@@ -9924,6 +10171,18 @@ function trueEventChoiceApply(event,choice){
             untilDate:addTrueDays(normaliseTrueCalendarState().date,2),
             sourceEventId:event.id,text:`The response to ${zoo} brought the zoo a little extra attention.`
         });
+    }
+    // Follow-up likelihood reflects the actual response rather than a roll
+    // made before the player has seen the event. Each event can schedule at
+    // most one follow-up, including after a save/load or repeated click.
+    if(!event.followUpScheduled&&['collection-planning','population-advice'].includes(String(event.kind||''))){
+        const interested=relGain>=2;
+        const neutral=relGain===1;
+        const probability=interested?.52:neutral?.24:.06;
+        if(seededRoll(`true-reply-followup|${event.id}`).roll<probability){
+            trueScheduleEventFollowUp(event,1+Math.floor(seededRoll(`true-reply-followup-delay|${event.id}`).roll*3));
+            event.followUpScheduled=true;
+        }
     }
     event.playerReply=choice.label;
     event.playerReplyEffect=choice.effect||'Noted.';
@@ -10226,11 +10485,22 @@ function openTrueEventDialog(id){
                     const destination=trueEventAlternativeDestination(sourceRecord,event);
                     if(sourceRecord&&destination){
                         const pop=normaliseTruePopulationCounts(event.population||event.animal);
-                        trueWorldPopulationRemove(sourceRecord,event.animal,pop,{type:'transfer-out',text:`Population transferred to ${destination.name||'another zoo'}.`,otherZooKey:realZooHoldingKey(destination)});
-                        trueWorldPopulationAdd(destination,event.animal,pop,{type:'transfer-in',text:`Population received from ${event.profile?.name||'another zoo'}.`,otherZooKey:event.sourceKey});
+                        // Do not create animals at the destination when the source
+                        // has already exhausted its stock or committed it elsewhere.
+                        // Never instantiate stock just to satisfy a declined offer.
+                        const available=trueWorldPopulation(sourceRecord,event.animal,{create:false});
+                        const sourceCounts=available?normaliseTruePopulationCounts(available.population):null;
+                        const canMove=sourceCounts&&['males','females','unknown'].every(k=>sourceCounts[k]>=pop[k]);
+                        const moved=canMove&&trueWorldPopulationRemove(sourceRecord,event.animal,pop,{
+                            type:'transfer-out',text:`Population transferred to ${destination.name||'another zoo'}.`,
+                            otherZooKey:realZooHoldingKey(destination),transactionId:`event-alternative-out|${event.id}`
+                        });
+                        if(moved){
+                        trueWorldPopulationAdd(destination,event.animal,pop,{type:'transfer-in',text:`Population received from ${event.profile?.name||'another zoo'}.`,otherZooKey:event.sourceKey,transactionId:`event-alternative-in|${event.id}`});
                         event.alternativeDestinationKey=realZooHoldingKey(destination);
                         event.alternativeDestinationName=destination.name||'another zoo';
                         addTrueActivity({type:'information',title:'Population placed elsewhere',message:`${event.profile?.name||'The zoo'} later let you know that the ${animalDisplayName(event.animal)} population has gone to ${event.alternativeDestinationName}.`});
+                        }
                     }
                 }
                 closeTrueEventDialog(true);renderTrueSimulationPanel();renderVisitedZooQuickTabs();writeAutoResumeSnapshot?.(true);
@@ -10393,8 +10663,9 @@ function trueMaybeCreateBottleneckGrowthEvent(today,snapshot=trueEventOpportunit
         ?(snapshot.breederCount>0?'husbandry-exchange':'population-advice')
         :'collection-planning';
     const event=trueCreateWorldNewsEvent(chosen,today,kind);
-    if(event&&!event.family&&['collection-planning','population-advice'].includes(kind)&&seededRoll(`true-growth-followup|${event.id}`).roll<.28)
-        trueScheduleEventFollowUp(event,1+Math.floor(seededRoll(`true-growth-followup-delay|${event.id}`).roll*3));
+    // Follow-ups for informational contacts are scheduled when the player
+    // actually replies, so a passive/no-commitment reply does not silently
+    // trigger the same commitment as an interested one.
     return event;
 }
 function trueEnsureDailyEvent(today=normaliseTrueCalendarState().date,allowAdditional=false,seedSuffix='daily',keeperOnly=false){
@@ -10544,7 +10815,7 @@ function processTrueScheduledEvents() {
             continue;
         }
         if(event.type==='event-follow-up'){
-            trueResolveEventFollowUp(event.payload?.eventId);
+            trueResolveEventFollowUp(event.payload?.eventId,event.payload);
             continue;
         }
         if(event.type==='population-pressure-follow-up'){
@@ -14261,8 +14532,9 @@ function setupAnimalCard(
         image.addEventListener('pointerdown',event=>{
             if(event.button!==0||areaToolActive||state.visitingZoo)return;
             event.preventDefault();event.stopPropagation();
-            if(event.pointerType==='touch'&&zooTouchPointers.size>=2)return;
+            if(event.pointerType==='touch'&&(zooTouchGestureBlocked||zooTouchPointers.size>=2))return;
             startAnimalDrag(event,animal,location);
+            if(state.drag?.type==='animal')state.drag.touchPointerId=event.pointerType==='touch'?event.pointerId:null;
         });
     }
 
@@ -14293,8 +14565,9 @@ function ensureClassicAnimalCardDelegation(){
         const card=cardFromEvent(event);if(!card||event.button!==0||areaToolActive||state.visitingZoo)return;
         const animal=classicAnimalById(card.dataset.animalId);if(!animal)return;
         event.preventDefault();event.stopPropagation();
-        if(event.pointerType==='touch'&&zooTouchPointers.size>=2)return;
+        if(event.pointerType==='touch'&&(zooTouchGestureBlocked||zooTouchPointers.size>=2))return;
         startAnimalDrag(event,animal,'enclosure',card);
+        if(state.drag?.type==='animal')state.drag.touchPointerId=event.pointerType==='touch'?event.pointerId:null;
     });
 }
 const COMPATIBILITY_INTENT_DELAY = 180;
@@ -18497,9 +18770,19 @@ function trueWorldPopulationChange(recordOrName,animal,delta,{type='transfer',te
     // interrupted save retained the mutation but lost the transfer's commit flag,
     // recovery must not apply the same population change a second time.
     if(transactionId&&Object.prototype.hasOwnProperty.call(entry.transactionLedger,transactionId))return entry;
-    for(const k of ['males','females','unknown'])entry.population[k]=Math.max(0,(Number(entry.population[k])||0)+(Number(delta?.[k])||0));
+    // Never silently clamp an outgoing transfer: that would credit animals to the
+    // receiver without debiting the same number from this zoo. Keep the transfer
+    // pending instead so it can be retried or reviewed safely.
+    for(const k of ['males','females','unknown']){
+        const next=(Number(entry.population[k])||0)+(Number(delta?.[k])||0);
+        if(!Number.isFinite(next)||next<0)return null;
+    }
+    for(const k of ['males','females','unknown'])entry.population[k]=(Number(entry.population[k])||0)+(Number(delta?.[k])||0);
     if(transactionId)entry.transactionLedger[transactionId]=true;
     entry.lastChangedDate=normaliseTrueCalendarState().date;
+    // A depleted population remains explicitly recorded as zero. Never delete
+    // the entry: doing so would allow lazy generation to resurrect the species.
+    entry.collectionDeparted=['males','females','unknown'].every(k=>(Number(entry.population[k])||0)===0);
     entry.history.unshift({date:entry.lastChangedDate,type,text:String(text||''),otherZooKey:String(otherZooKey||''),transactionId:String(transactionId||''),delta:{males:Number(delta?.males)||0,females:Number(delta?.females)||0,unknown:Number(delta?.unknown)||0}});
     if(entry.history.length>20)entry.history.length=20;
     return entry;
@@ -34062,6 +34345,8 @@ function startAnimalDrag(
     location,
     sourceElement = null
 ) {
+    // A second finger must never take ownership of an existing card drag.
+    if(event.pointerType==='touch' && (zooTouchGestureBlocked || zooTouchPointers.size>1))return;
     const resolvedDragSource =
         (sourceElement instanceof Element ? sourceElement : null) ||
         (event.target instanceof Element ? event.target.closest('.animal-card') : null) ||
@@ -34076,6 +34361,17 @@ function startAnimalDrag(
     removeOrphanedAnimalDragImages();
     if (trueEnclosureBuilderActive || areaToolActive) return;
     if(!(resolvedDragSource instanceof Element))return;
+
+    // Touch-only: do not change occupancy, exchange, trade, or DOM state on
+    // pointerdown. A tap/pinch must not temporarily remove an animal.
+    if(event.pointerType==='touch' && !event.zooDeferredTouchActivation &&
+       ['enclosure','exchange','outgoing','true-loose'].includes(location) &&
+       !state.drag && !state.pan){
+        zooPendingAnimalTouch={pointerId:event.pointerId,animal,location,
+            source:resolvedDragSource,startX:event.clientX,startY:event.clientY,
+            maxDistance:0};
+        return;
+    }
 
     if(localClassicMatch?.viewingPlayerId &&
        localClassicMatch.viewingPlayerId!==localClassicMatch.activePlayerId &&
@@ -34275,6 +34571,12 @@ function startAnimalDrag(
     );
     dragImage.style.left=(event.clientX-relativeX*dragWidth)+'px';
     dragImage.style.top=(event.clientY-relativeY*dragHeight)+'px';
+    // Touch-only visual lift: the drop/hit-test coordinates remain at the fingertip.
+    // This avoids altering placement logic, including multiplayer and True Mode.
+    if(event.pointerType==='touch'){
+        dragImage.style.transform='translate3d(0,-44px,0)';
+        dragImage.style.willChange='left, top';
+    }
 
     const draggedExchangeEligible =
         location === 'enclosure' &&
@@ -34325,6 +34627,7 @@ function startAnimalDrag(
 
     state.drag = {
 
+        touchPointerId: event.pointerType==='touch' ? event.pointerId : null,
         type:
             'animal',
 
@@ -34389,7 +34692,10 @@ function startAnimalDrag(
             dragImage,
 
         startClientX: event.clientX,
-        startClientY: event.clientY
+        startClientY: event.clientY,
+        // Touch jitter must not activate edge scrolling or count as a card move.
+        touchMaxDistance: 0,
+        touchDragActivated: event.pointerType !== 'touch'
 
     };
 
@@ -34441,12 +34747,96 @@ function startAnimalDrag(
     if(!usedTargetedClassicDragRefresh){
         profiledZooRenderStage('drag-start.zoo', () => renderZoo());
     }
-    profiledZooRenderStage('drag-start.exchange-ui', () => renderExchange());
-    if(location==='outgoing'){
-        profiledZooRenderStage('drag-start.trade-ui', () => renderTrade());
+    // On touch, the first contact may be a tap or the beginning of a pinch.
+    // Defer these secondary UI redraws until the 10px drag threshold is crossed.
+    // Mouse/trackpad behaviour stays exactly as before.
+    if(event.pointerType==='touch'){
+        state.drag.touchDeferredUiRefresh=true;
+        dragImage.style.visibility='hidden';
+    }else{
+        profiledZooRenderStage('drag-start.exchange-ui', () => renderExchange());
+        if(location==='outgoing'){
+            profiledZooRenderStage('drag-start.trade-ui', () => renderTrade());
+        }
     }
 
 }
+
+// Touch-only edge scrolling during animal dragging. No listeners or animation
+// loop are active on desktop, or while the finger is away from the board.
+let zooTouchEdgePanFrame = 0;
+let zooTouchEdgePanPointer = null;
+let zooTouchEdgePanLastTime = 0;
+function stopZooTouchEdgePan() {
+    if (zooTouchEdgePanFrame) cancelAnimationFrame(zooTouchEdgePanFrame);
+    zooTouchEdgePanFrame = 0;
+    zooTouchEdgePanPointer = null;
+    zooTouchEdgePanLastTime = 0;
+}
+// The floating dragged card is pointer-transparent, but panels and dialogs
+// above the board must never cause the camera to move underneath them.
+function zooTouchEdgePanIsOverBoard(x, y) {
+    if (!zooBoard?.isConnected) return false;
+    const rect = zooBoard.getBoundingClientRect();
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) return false;
+    const hit = document.elementFromPoint(x, y);
+    // A dialog, menu or floating toolbar covering the board owns this touch.
+    // Allow descendants of the board only; the drag image itself is ignored.
+    return Boolean(hit && (hit === zooBoard || zooBoard.contains(hit)));
+}
+function stepZooTouchEdgePan(now) {
+    zooTouchEdgePanFrame = 0;
+    const drag = state.drag;
+    const finger = zooTouchEdgePanPointer;
+    if (!finger || !drag || drag.type !== 'animal' ||
+        drag.touchPointerId !== finger.id || !drag.touchDragActivated || zooPinch || zooTouchGestureBlocked ||
+        document.hidden || !zooBoard?.isConnected) {
+        stopZooTouchEdgePan();
+        return;
+    }
+    const rect = zooBoard.getBoundingClientRect();
+    const margin = 66;
+    // Stop immediately if a floating UI surface covers the finger.
+    if (!zooTouchEdgePanIsOverBoard(finger.x, finger.y)) {
+        stopZooTouchEdgePan();
+        return;
+    }
+    const speed = (distance) => Math.min(15, Math.max(0, (margin - distance) / margin) * 15);
+    const vx = speed(rect.right - finger.x) - speed(finger.x - rect.left);
+    const vy = speed(rect.bottom - finger.y) - speed(finger.y - rect.top);
+    if (!vx && !vy) { stopZooTouchEdgePan(); return; }
+    // Avoid auto-scrolling if a second finger has entered the gesture, even
+    // before the pinch recognizer has finished its first update.
+    if (zooTouchPointers.size > 1) { stopZooTouchEdgePan(); return; }
+    const oldX = zooBoard.scrollLeft, oldY = zooBoard.scrollTop;
+    // Normalize to a 60 Hz baseline; cap elapsed time after backgrounding.
+    const frameScale = zooTouchEdgePanLastTime ? Math.min(2, Math.max(0.25, (now - zooTouchEdgePanLastTime) / (1000 / 60))) : 1;
+    zooTouchEdgePanLastTime = now;
+    zooBoard.scrollLeft += vx * frameScale;
+    zooBoard.scrollTop += vy * frameScale;
+    if (zooBoard.scrollLeft !== oldX || zooBoard.scrollTop !== oldY) {
+        drag.edgePanMoved = true;
+        // The pointer is stationary while the world moves underneath it.
+        // Keep the current pointer position as the authoritative drop point;
+        // do not synthesize pointermove (which could trigger other drag logic).
+        drag.edgePanDropX = finger.x;
+        drag.edgePanDropY = finger.y;
+    }
+    // At the world boundary there is no need to keep scheduling frames.
+    if (zooBoard.scrollLeft !== oldX || zooBoard.scrollTop !== oldY)
+        zooTouchEdgePanFrame = requestAnimationFrame(stepZooTouchEdgePan);
+    else stopZooTouchEdgePan();
+}
+window.addEventListener('pointerup', e => {
+    if (e.pointerType === 'touch' && e.pointerId === zooTouchEdgePanPointer?.id)
+        stopZooTouchEdgePan();
+}, true);
+window.addEventListener('pointercancel', e => {
+    if (e.pointerType === 'touch' && e.pointerId === zooTouchEdgePanPointer?.id)
+        stopZooTouchEdgePan();
+}, true);
+window.addEventListener('blur', stopZooTouchEdgePan);
+window.addEventListener('pagehide', stopZooTouchEdgePan);
 
 function moveAnimalDragImage(
     event
@@ -34460,6 +34850,36 @@ function moveAnimalDragImage(
         return;
     }
 
+    if(state.drag.touchPointerId != null && (event.pointerType !== 'touch' || event.pointerId !== state.drag.touchPointerId)) return;
+    if (event.pointerType === 'touch' && state.drag.touchPointerId === event.pointerId) {
+        const distance = Math.hypot(event.clientX - state.drag.startClientX, event.clientY - state.drag.startClientY);
+        state.drag.touchMaxDistance = Math.max(state.drag.touchMaxDistance || 0, distance);
+        if (!state.drag.touchDragActivated && state.drag.touchMaxDistance >= 10) {
+            state.drag.touchDragActivated = true;
+            state.drag.image.style.visibility='visible';
+            if(state.drag.touchDeferredUiRefresh){
+                state.drag.touchDeferredUiRefresh=false;
+                profiledZooRenderStage('drag-start.exchange-ui', () => renderExchange());
+                if(state.drag.location==='outgoing')
+                    profiledZooRenderStage('drag-start.trade-ui', () => renderTrade());
+            }
+        }
+        if (!state.drag.touchDragActivated) {
+            stopZooTouchEdgePan();
+            return;
+        }
+    }
+    if (event.pointerType === 'touch' && state.drag.touchPointerId === event.pointerId &&
+        state.drag.touchDragActivated && !zooPinch && !zooTouchGestureBlocked) {
+        const rect = zooBoard.getBoundingClientRect();
+        const x = event.clientX, y = event.clientY;
+        const atEdge = zooTouchEdgePanIsOverBoard(x, y) &&
+            (x - rect.left < 66 || rect.right - x < 66 || y - rect.top < 66 || rect.bottom - y < 66);
+        if (atEdge) {
+            zooTouchEdgePanPointer = { id: event.pointerId, x, y };
+            if (!zooTouchEdgePanFrame) zooTouchEdgePanFrame = requestAnimationFrame(stepZooTouchEdgePan);
+        } else stopZooTouchEdgePan();
+    } else if (zooTouchEdgePanPointer) stopZooTouchEdgePan();
     state.drag.image.style.left =
         (
             event.clientX -
@@ -34494,6 +34914,14 @@ function restoreDraggedAnimal() {
 
     const animal =
         drag.animal;
+
+    // A remote multiplayer snapshot may replace the animal object while a
+    // touch drag is active. Never resurrect the superseded object into an
+    // exchange, trade listing or enclosure during cancellation.
+    if (drag.touchPointerId != null &&
+        !state.animals.includes(animal) &&
+        !state.exchange.includes(animal) &&
+        state.outgoingOffer !== animal) return;
 
     if (drag.originalWasOutgoing) {
         state.outgoingOffer = animal;
@@ -34854,6 +35282,32 @@ function trueTransferCreateFromAcceptedProposal(proposal){
         proposal.transferUnavailable=true;
         return null;
     }
+    // Reserve the sending zoo's population at acceptance, before recording a
+    // scheduled transfer. Lazy-create only this species; other holdings stay lazy.
+    // Existing accepted transfers have priority, preventing double promises.
+    const sourceOffer=proposal.offer||null;
+    const sourceEvent=sourceOffer?.eventOpportunity?trueEventById(sourceOffer.eventId):null;
+    if(sourceOffer&&(sourceOffer.marketplaceListingId||sourceEvent)){
+        const sourceKey=sourceOffer.eventOpportunity?
+            (sourceOffer.eventSourceKey||trueRelationshipKeyForOffer(sourceOffer)):
+            trueRelationshipKeyForOffer(sourceOffer);
+        const sourceAnimal=sourceEvent?.animal||sourceOffer.animal;
+        const sourcePopulation=normaliseTruePopulationCounts(sourceEvent?.population||sourceOffer.population||sourceAnimal);
+        const sourceRecord=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===sourceKey);
+        if(!sourceRecord||!sourceAnimal||!['males','females','unknown'].some(k=>sourcePopulation[k]>0)){
+            proposal.transferUnavailable=true;
+            proposal.transferIntegrityReason='source-population-missing';
+            return null;
+        }
+        const sourceEntry=trueWorldPopulation(sourceRecord,sourceAnimal,{create:true,reason:'accepted transfer reservation'});
+        const reserved=trueWorldReservedOutgoing(sourceRecord,sourceAnimal);
+        if(!sourceEntry||['males','females','unknown'].some(k=>
+            (Number(sourceEntry.population?.[k])||0)<sourcePopulation[k]+reserved[k])){
+            proposal.transferUnavailable=true;
+            proposal.transferIntegrityReason='source-population-already-reserved';
+            return null;
+        }
+    }
     const backstagePlan=trueBackstagePlanIncoming(requested);
     // Incoming animals can wait in the draggable arrival overlay without backstage capacity.
     delete proposal.backstageBlocked;
@@ -35002,6 +35456,16 @@ function trueTransferSyncAcceptedProposals(){
 }
 function trueTransferCreateArrivalCards(t){
     trueTransferNormaliseLegs(t);
+    // Never materialise incoming animals before the source population is debited.
+    // This also protects restored saves and direct arrival paths.
+    if(t.sourceDebitPending&&!t.sourceDebitCommitted){
+        trueTransferCommitSourceDebit(t);
+        if(!t.sourceDebitCommitted){
+            t.tradeIntegrityIssue=t.tradeIntegrityIssue||'source-zoo-debit-unconfirmed';
+            t.lastIntegrityCheckpoint='arrival-blocked-source-debit';
+            return [];
+        }
+    }
     const made=[],transferId=String(t.id);
     for(const leg of t.incomings){
         if(leg.completed)continue;
@@ -35032,16 +35496,73 @@ function trueTransferCreateArrivalCards(t){
 // The marker is persisted with the transfer, making day retries idempotent.
 // Debit the sending zoo at most once per incoming transfer. Persist the debit
 // instruction on the transfer so missing zoo records can be retried after load.
+// World-zoo reservations are derived from active transfers rather than stored
+// separately. This avoids stale locks after save/load and cancellation.
+function trueWorldReservedOutgoing(recordOrName,animal,excludeTransferId=''){
+    const zooKey=realZooHoldingKey(recordOrName),speciesKey=animalCardKey(animal);
+    const total={males:0,females:0,unknown:0};
+    for(const transfer of state.trueTransfers||[]){
+        if(!transfer||['completed','cancelled'].includes(transfer.status)||transfer.sourceDebitCommitted||!transfer.sourceDebitPending)continue;
+        if(String(transfer.id)===String(excludeTransferId))continue;
+        // Earlier accepted transfers have priority. Counting later reservations
+        // against an earlier transfer makes two overlapping transfers block each
+        // other indefinitely, even when the first could be fulfilled.
+        if(excludeTransferId!=='' && excludeTransferId!=null){
+            const current=(state.trueTransfers||[]).find(t=>String(t?.id)===String(excludeTransferId));
+            if(current){
+                const currentIndex=(state.trueTransfers||[]).indexOf(current);
+                const otherIndex=(state.trueTransfers||[]).indexOf(transfer);
+                if(otherIndex>=currentIndex)continue;
+            }
+        }
+        if(transfer.sourceDebitZooKey!==zooKey||animalCardKey(transfer.sourceDebitAnimal)!==speciesKey)continue;
+        const p=normaliseTruePopulationCounts(transfer.sourceDebitPopulation||transfer.sourceDebitAnimal);
+        for(const k of ['males','females','unknown'])total[k]+=p[k];
+    }
+    return total;
+}
+function trueWorldCanDebitTransfer(t){
+    const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===t.sourceDebitZooKey);
+    if(!record||!t.sourceDebitAnimal)return false;
+    const entry=trueWorldPopulation(record,t.sourceDebitAnimal,{create:true,reason:'accepted transfer availability'});
+    if(!entry)return false;
+    const reserved=trueWorldReservedOutgoing(record,t.sourceDebitAnimal,t.id);
+    const wanted=normaliseTruePopulationCounts(t.sourceDebitPopulation||t.sourceDebitAnimal);
+    return ['males','females','unknown'].every(k=>(Number(entry.population[k])||0)>=wanted[k]+reserved[k]);
+}
 function trueTransferCommitSourceDebit(t){
     if(!t?.sourceDebitPending||t.sourceDebitCommitted)return;
     const record=(state.realZooData?.zoos||[]).find(r=>realZooHoldingKey(r)===t.sourceDebitZooKey);
     if(!record)return;
     const animal=t.sourceDebitAnimal;
     if(!animal)return;
+    // Recovery: a saved debit may outlive the transfer's committed flag.
+    // Check the persistent population ledger BEFORE checking current stock:
+    // the donor may legitimately have no individuals left after rehoming.
+    const debitId=`true-transfer-source-debit:${t.id}`;
+    const existing=trueWorldPopulation(record,animal,{create:false});
+    if(existing?.transactionLedger?.[debitId] ||
+       existing?.history?.some(h=>h?.transactionId===debitId)){
+        t.sourceDebitCommitted=true;
+        delete t.sourceDebitPending;
+        if(t.tradeIntegrityIssue==='source-population-reserved-or-insufficient'||
+           t.tradeIntegrityIssue==='source-population-insufficient')delete t.tradeIntegrityIssue;
+        return;
+    }
+    if(!trueWorldCanDebitTransfer(t)){
+        t.tradeIntegrityIssue='source-population-reserved-or-insufficient';
+        t.lastIntegrityCheckpoint='source-reservation-conflict';
+        return;
+    }
     const debited=trueWorldPopulationRemove(record,animal,t.sourceDebitPopulation||animal,
         {type:'transfer-out',text:`Population committed to ${state.zooName||'the player zoo'}.`,otherZooKey:'player',
             transactionId:`true-transfer-source-debit:${t.id}`});
-    if(!debited)return;
+    if(!debited){
+        t.tradeIntegrityIssue='source-population-insufficient';
+        t.lastIntegrityCheckpoint='source-debit-awaiting-review';
+        return;
+    }
+    if(t.tradeIntegrityIssue==='source-population-insufficient')delete t.tradeIntegrityIssue;
     t.sourceDebitCommitted=true;
     delete t.sourceDebitPending;
 }
@@ -35093,6 +35614,10 @@ function trueTransferCompleteOutgoing(t){
             t.lastIntegrityCheckpoint='source-preflight-failed';
             return false;
         }
+    }
+    if(t.sourceDebitPending&&!t.sourceDebitCommitted){
+        trueTransferCommitSourceDebit(t);
+        if(!t.sourceDebitCommitted)return false;
     }
     // Preflight the entire departure before modifying any population. Older saves
     // can contain missing source cards or populations changed after reservation.
@@ -35304,6 +35829,16 @@ function trueTransferCompleteImmediately(t){
         }
     }
     if(t.status==='completed'||t.status==='cancelled')return [];
+    // A successful player-side departure alone is not enough to authorise an
+    // incoming arrival. Debit the partner first, and retry safely on later ticks.
+    if(t.sourceDebitPending&&!t.sourceDebitCommitted){
+        trueTransferCommitSourceDebit(t);
+        if(!t.sourceDebitCommitted){
+            t.tradeIntegrityIssue=t.tradeIntegrityIssue||'source-zoo-debit-unconfirmed';
+            t.lastIntegrityCheckpoint='arrival-blocked-source-debit';
+            return [];
+        }
+    }
     if(!trueTransferCompleteOutgoing(t))return [];
     if(t.status==='completed'&&!t.incomings.length)return [];
     if(t.status!=='awaiting-placement')t.status='in-transit';
@@ -35324,7 +35859,9 @@ function trueTransferCompleteImmediately(t){
 // Once a leg has been completed or an arrival exists, retain the record for manual recovery.
 function trueTransferCancelUnfulfilled(t,reason){
     trueTransferNormaliseLegs(t);
-    if(t.outgoings.some(l=>l.completed)||t.incomings.some(l=>l.completed)||
+    // A source debit or partner receipt is already a real-world population mutation.
+    // Never cancel and release its reservation without a compensating transaction.
+    if(t.sourceDebitCommitted||t.partnerReceiptCommitted||t.outgoings.some(l=>l.completed)||t.incomings.some(l=>l.completed)||
         (state.animals||[]).some(a=>String(a.trueIncomingTransferId)===String(t.id)))return false;
     t.status='cancelled';t.cancelledDate=trueDateKey(trueCurrentDate());t.cancelReason=reason;
     // The shared cleanup also repairs stale reservations on merged cards.
@@ -35470,6 +36007,19 @@ function trueTransferProcessDay(){
         // after partial arrivals or a save/load; retry those without duplicating
         // cards that have already arrived.
         if(['scheduled','in-transit','awaiting-placement'].includes(t.status)&&(today>t.arrivalDate||(today===t.arrivalDate&&((Number(normaliseTrueCalendarState().hour)||9)*60+(Number(normaliseTrueCalendarState().minute)||0))>=(Number(t.arrivalDueMinute)||0)))){
+            // Preflight the partner's lazy-generated population BEFORE moving any
+            // player animals. Otherwise a missing/competing source population can
+            // strand an exchange with the player's outgoing leg already completed.
+            if(t.sourceDebitPending&&!t.sourceDebitCommitted&&!trueWorldCanDebitTransfer(t)){
+                t.tradeIntegrityIssue='source-population-reserved-or-insufficient';
+                t.lastIntegrityCheckpoint='source-preflight-before-player-departure';
+                if(t.lastSourceUnavailableNoticeDate!==today){
+                    t.lastSourceUnavailableNoticeDate=today;
+                    addTrueActivity?.({type:'information',title:'Partner transfer delayed',
+                        message:`${t.zooName||'The partner zoo'} cannot currently supply the agreed animals. Your animals have not been dispatched.`});
+                }
+                continue;
+            }
             if(!trueTransferCompleteOutgoing(t)){
                 t.tradeIntegrityIssue=t.partnerRecordUnavailable?'receiving-zoo-unavailable':
                     (['source-zoo-record-unavailable','departure-rolled-back'].includes(t.tradeIntegrityIssue)?t.tradeIntegrityIssue:'outgoing-population-unavailable');
@@ -37129,23 +37679,32 @@ function renderAfterTransientAnimalDrag(drag) {
 }
 
 function finishAnimalDrag(event) {
+    // Freeze the camera before hit-testing the final destination. Otherwise a
+    // queued edge-scroll frame may shift the enclosure during drop handling.
+    stopZooTouchEdgePan();
     const drag = state.drag;
     if (!drag || drag.type !== 'animal') return;
-    sendMultiplayerLiveAnimalDrag?.(event,true);
+    if(drag.touchPointerId==null || drag.touchDragActivated)
+        sendMultiplayerLiveAnimalDrag?.(event,true);
     const animal = drag.animal;
     if(drag.location==='enclosure'&&state.gameMode==='true'){
         const source=document.querySelector(`.animal-card[data-animal-id="${animal.id}"]`);
         if(source)source.style.opacity='';
     }
     const clickDistance = Math.hypot(event.clientX-drag.startClientX, event.clientY-drag.startClientY);
+    // Only touch uses the larger activation threshold; desktop retains 6px.
+    // Track maximum travel so a returning finger cannot turn a real drag into a tap.
+    const wasTap = drag.touchPointerId != null
+        ? Math.max(drag.touchMaxDistance || 0, clickDistance) < 10
+        : clickDistance < 6;
 
-    if (clickDistance < 6 && drag.originalWasTrueArrivalOverlay) {
+    if (wasTap && !drag.edgePanMoved && drag.originalWasTrueArrivalOverlay) {
         drag.image?.remove();
         state.drag=null;
         return;
     }
 
-    if (clickDistance < 6 && (drag.originalEnclosureId !== null || drag.originalWasTrueLoose)) {
+    if (wasTap && !drag.edgePanMoved && (drag.originalEnclosureId !== null || drag.originalWasTrueLoose)) {
         restoreDraggedAnimal();
 
         const mobileLayout = window.matchMedia('(max-width: 700px)').matches;
@@ -37159,6 +37718,14 @@ function finishAnimalDrag(event) {
         }
 
         prepareExchangeGlowAfterAnimalDrag(drag);
+        drag.image?.remove();
+        state.drag = null;
+        renderAfterTransientAnimalDrag(drag);
+        return;
+    }
+
+    if (drag.touchPointerId != null && wasTap) {
+        restoreDraggedAnimal();
         drag.image?.remove();
         state.drag = null;
         renderAfterTransientAnimalDrag(drag);
@@ -37723,6 +38290,33 @@ zooBoard.addEventListener(
     }
 );
 
+// Pending touches have no gameplay side effects until they become real drags.
+// Check object identity, not just id: a remote sync may replace an animal
+// while an old card is still connected to the DOM.
+function zooPendingAnimalSourceIsCurrent(pending){
+    if(!pending?.source?.isConnected || !pending.animal)return false;
+    const animal=pending.animal;
+    if(pending.location==='exchange')return state.exchange.some(a=>a===animal);
+    if(pending.location==='outgoing')return state.outgoingOffer===animal ||
+        (serverAuthoritativeMultiplayerActive() &&
+         String(ownServerTradeListing()?.animalId||'')===String(animal.id) &&
+         state.animals.includes(animal));
+    if(pending.location==='enclosure' || pending.location==='true-loose')
+        return state.animals.includes(animal);
+    return false;
+}
+let zooPendingAnimalTouch=null;
+function clearZooPendingAnimalTouch(){zooPendingAnimalTouch=null;}
+document.addEventListener('pointerdown',event=>{
+    if(event.pointerType==='touch' && zooPendingAnimalTouch &&
+       event.pointerId!==zooPendingAnimalTouch.pointerId)clearZooPendingAnimalTouch();
+},true);
+window.addEventListener('blur',clearZooPendingAnimalTouch);
+window.addEventListener('pagehide',clearZooPendingAnimalTouch);
+document.addEventListener('pointercancel',event=>{
+    if(zooPendingAnimalTouch?.pointerId===event.pointerId)clearZooPendingAnimalTouch();
+},true);
+
 let zooPrimaryPointerDown=false;
 document.addEventListener('pointerdown',event=>{
     if(event.button===0)zooPrimaryPointerDown=true;
@@ -37737,6 +38331,7 @@ window.addEventListener('blur',()=>{
     zooPrimaryPointerDown=false;
     const drag=state.drag;
     if(drag?.type==='animal'){
+        stopZooTouchEdgePan();
         restoreDraggedAnimal();
         drag.image?.remove();
         state.drag=null;
@@ -37752,6 +38347,34 @@ window.addEventListener('blur',()=>{
 document.addEventListener(
     'pointermove',
     event => {
+        const pending=zooPendingAnimalTouch;
+        if(pending && event.pointerType==='touch' && event.pointerId===pending.pointerId){
+            if(zooPinch || zooTouchGestureBlocked || zooTouchPointers.size>1){
+                clearZooPendingAnimalTouch();return;
+            }
+            pending.maxDistance=Math.max(pending.maxDistance,
+                Math.hypot(event.clientX-pending.startX,event.clientY-pending.startY));
+            if(pending.maxDistance<10)return;
+            clearZooPendingAnimalTouch();
+            // A rerender or remote trade update can invalidate the card while
+            // the finger is down. Never initiate a drag from a detached source.
+            if(!zooPendingAnimalSourceIsCurrent(pending))return;
+            // Reuse the established drag path only after a deliberate gesture.
+            // Keep the real pointer id and avoid synthetic DOM pointer events.
+            startAnimalDrag({zooDeferredTouchActivation:true,clientX:event.clientX,clientY:event.clientY,
+                pointerType:'touch',pointerId:event.pointerId,button:0,
+                target:event.target,currentTarget:event.currentTarget,
+                preventDefault:()=>event.preventDefault(),stopPropagation:()=>event.stopPropagation()},pending.animal,pending.location,pending.source);
+            if(state.drag?.type==='animal'){
+                state.drag.startClientX=pending.startX;
+                state.drag.startClientY=pending.startY;
+                state.drag.touchMaxDistance=pending.maxDistance;
+                moveAnimalDragImage(event);
+            }
+            return;
+        }
+        if(state.drag?.type==='animal' && state.drag.touchPointerId!=null && (event.pointerType!=='touch' || event.pointerId!==state.drag.touchPointerId))return;
+        if(event.pointerType==='touch' && (zooPinch || (zooTouchGestureBlocked && !state.pan?.touchContinuation)))return;
 
         if (state.drag?.type === 'draw-result') { moveDrawDragImage(event); return; }
         if (state.drag?.type === 'direct-human-trade-sender-claim') { moveDirectHumanTradeSenderClaimDrag(event); return; }
@@ -37805,6 +38428,41 @@ document.addEventListener(
 document.addEventListener(
     'pointerup',
     async event => {
+        if(zooPendingAnimalTouch?.pointerId===event.pointerId){
+            const pending=zooPendingAnimalTouch;
+            clearZooPendingAnimalTouch();
+            // A stationary touch must retain the old card-tap behavior, including
+            // on full-width iPads (which do not match the mobile CSS breakpoint).
+            // Never interpret a cancelled multi-touch gesture as a tap.
+            if(zooPendingAnimalSourceIsCurrent(pending) &&
+               pending.maxDistance<10 && !zooTouchGestureBlocked && !zooConsumedTouchPointers.has(event.pointerId) &&
+               (pending.location==='enclosure' || pending.location==='true-loose')){
+                if(window.matchMedia('(max-width: 700px)').matches){
+                    showHoverPreview(pending.animal);
+                    ensureWikipediaBack();
+                    setHoverPreviewSuperZoom(true);
+                }else if(isExchangeEligible(pending.animal)){
+                    state.exchangeGlowFocusKey=exchangeGroupKey(pending.animal);
+                    refreshContextualExchangeEligibilityGlows();
+                }
+            }
+            return;
+        }
+        if(state.drag?.type==='animal' && state.drag.touchPointerId!=null && (event.pointerType!=='touch' || event.pointerId!==state.drag.touchPointerId))return;
+        if(event.pointerType==='touch' && (zooConsumedTouchPointers.has(event.pointerId) || zooTouchGestureBlocked)){
+            // The pinch recognizer owns this release. If an animal drag was
+            // interrupted, discard it rather than leaving its source detached.
+            const interrupted=state.drag;
+            if(interrupted?.type==='animal' && interrupted.touchPointerId===event.pointerId){
+                stopZooTouchEdgePan();
+                restoreDraggedAnimal();
+                interrupted.image?.remove();
+                state.drag=null;
+                renderAfterTransientAnimalDrag(interrupted);
+                refreshDrawAvailabilityState();
+            }
+            return;
+        }
 
         if (state.drag?.type === 'draw-result') { finishDrawDrag(event); return; }
         if (state.drag?.type === 'direct-human-trade-sender-claim') { finishDirectHumanTradeSenderClaimDrag(event); return; }
@@ -37857,6 +38515,15 @@ document.addEventListener(
 document.addEventListener(
     'pointercancel',
     event => {
+        // A cancelled, not-yet-activated touch must never become a drag or tap.
+        // This is especially important when Safari cancels a pointer during a
+        // pinch, app switch, or multiplayer rerender.
+        if (event.pointerType === 'touch' && zooPendingAnimalTouch?.pointerId === event.pointerId) {
+            clearZooPendingAnimalTouch();
+        }
+        // Do not let a different finger's cancellation roll back the active
+        // animal drag. The owner pointer alone may finish or cancel it.
+        if (state.drag?.type === 'animal' && state.drag.touchPointerId != null && (event.pointerType !== 'touch' || event.pointerId !== state.drag.touchPointerId)) return;
 
         if (state.drag?.type === 'result') {
             state.drag.image?.remove();
@@ -37869,6 +38536,7 @@ document.addEventListener(
             refreshDrawAvailabilityState();
         }
         else if(state.drag?.type==='animal'){
+            stopZooTouchEdgePan();
             const cancelledAnimalDrag=state.drag;
             restoreDraggedAnimal();
             cancelledAnimalDrag.image?.remove();
@@ -37993,8 +38661,23 @@ function setZoom(
 
 const zooTouchPointers = new Map();
 let zooPinch = null;
+let zooTouchGestureBlocked = false;
+let zooTouchSuppressClickUntil = 0;
+let zooPinchFrame = 0;
+let zooPinchPending = null;
+// Remember pinch participants through pointerup propagation, so their release
+// can never commit an unrelated drag after the final finger leaves.
+const zooConsumedTouchPointers = new Set();
 
 if (zooBoard) zooBoard.style.touchAction = 'none';
+// iPad Safari: prevent image dragging/selection competing with custom pointer gestures.
+(function installZooTouchGestureStyle(){
+    if(document.getElementById('zooTouchGestureStyle'))return;
+    const style=document.createElement('style');
+    style.id='zooTouchGestureStyle';
+    style.textContent='#zooBoard, #zooCanvas, #zooCanvas .animal-card, #zooCanvas .animal-card img, #zooCanvas .enclosure img {touch-action:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none;}';
+    document.head.appendChild(style);
+})();
 
 function zooPinchDistance(a, b) {
     return Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
@@ -38022,6 +38705,12 @@ function beginZooPinchIfReady() {
     const midpoint = zooPinchMidpoint(a, b);
     if (!distance) return;
 
+    if (state.drag && state.drag.type !== 'animal') return;
+    zooTouchGestureBlocked = true;
+    zooTouchSuppressClickUntil = performance.now() + 450;
+    zooConsumedTouchPointers.add(pointerA);
+    zooConsumedTouchPointers.add(pointerB);
+    stopZooTouchEdgePan();
     cancelAnimalDragForPinch();
     if (state.drag) return;
     finishPan();
@@ -38041,36 +38730,74 @@ zooBoard.addEventListener('pointerdown', event => {
     if (trueCuratorCameraLocked()) { event.preventDefault(); return; }
     if (event.pointerType !== 'touch') return;
     zooTouchPointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY });
+    if (zooTouchGestureBlocked) zooConsumedTouchPointers.add(event.pointerId);
     if (zooTouchPointers.size >= 2) beginZooPinchIfReady();
 }, { capture: true });
 
+// Coalesce rapid iPad touch events into one camera update per display frame.
+// The camera follows the latest finger positions, not stale queued events.
+function flushZooPinchFrame() {
+    zooPinchFrame = 0;
+    const pending = zooPinchPending;
+    zooPinchPending = null;
+    if (!pending || !zooPinch) return;
+    const nextZoom = clamp(
+        pending.startZoom * (pending.distance / pending.startDistance),
+        currentZoomMin(), ZOOM_MAX
+    );
+    const roundedZoom = Math.round(nextZoom * 1000) / 1000;
+    // Avoid restyling the entire board when only the midpoint has moved.
+    if (roundedZoom !== state.zoom) {
+        state.zoom = roundedZoom;
+        document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
+    }
+    const rect = zooBoard.getBoundingClientRect();
+    zooBoard.scrollLeft = pending.anchorWorldX * state.zoom - (pending.midpoint.x - rect.left);
+    zooBoard.scrollTop = pending.anchorWorldY * state.zoom - (pending.midpoint.y - rect.top);
+}
+function cancelZooPinchFrame() {
+    if (zooPinchFrame) cancelAnimationFrame(zooPinchFrame);
+    zooPinchFrame = 0;
+    zooPinchPending = null;
+}
 zooBoard.addEventListener('pointermove', event => {
     if (event.pointerType !== 'touch' || !zooTouchPointers.has(event.pointerId)) return;
     zooTouchPointers.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY });
     if (!zooPinch) return;
-    const a=zooTouchPointers.get(zooPinch.pointerA);
-    const b=zooTouchPointers.get(zooPinch.pointerB);
+    const a = zooTouchPointers.get(zooPinch.pointerA);
+    const b = zooTouchPointers.get(zooPinch.pointerB);
     if (!a || !b) return;
-
     event.preventDefault();
     event.stopPropagation();
-
     const distance = zooPinchDistance(a, b);
-    const midpoint = zooPinchMidpoint(a, b);
     if (!distance || !zooPinch.startDistance) return;
-
-    const nextZoom = clamp(
-        zooPinch.startZoom * (distance / zooPinch.startDistance),
-        currentZoomMin(),
-        ZOOM_MAX
-    );
-    state.zoom = Math.round(nextZoom * 1000) / 1000;
-    document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
-
-    const boardRect = zooBoard.getBoundingClientRect();
-    zooBoard.scrollLeft = zooPinch.anchorWorldX * state.zoom - (midpoint.x - boardRect.left);
-    zooBoard.scrollTop = zooPinch.anchorWorldY * state.zoom - (midpoint.y - boardRect.top);
+    zooPinchPending = {
+        ...zooPinch,
+        distance,
+        midpoint: zooPinchMidpoint(a, b)
+    };
+    if (!zooPinchFrame) zooPinchFrame = requestAnimationFrame(flushZooPinchFrame);
 }, { capture: true, passive: false });
+
+// iPad Safari may also dispatch native gesture events alongside pointer events.
+// Suppress browser magnification only when the gesture originates on the zoo.
+for (const name of ['gesturestart', 'gesturechange', 'gestureend']) {
+    zooBoard.addEventListener(name, event => {
+        event.preventDefault();
+    }, { passive: false });
+}
+
+// Safari can synthesize a click after a pinch; do not let it select a card
+// or activate an enclosure when the fingers leave the screen.
+zooBoard.addEventListener('click', event => {
+    if (performance.now() >= zooTouchSuppressClickUntil) return;
+    // Do not swallow a real mouse/trackpad click immediately after an iPad
+    // touch gesture (notably on hybrid devices with external pointers).
+    if (event.sourceCapabilities?.firesTouchEvents === false) return;
+    if (event.pointerType && event.pointerType !== 'touch') return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+}, true);
 
 function endZooTouchPointer(event) {
     if (event.pointerType !== 'touch') return;
@@ -38081,8 +38808,19 @@ function endZooTouchPointer(event) {
     );
     const wasPinching = Boolean(zooPinch);
     zooTouchPointers.delete(event.pointerId);
+    // Defer removal until after document-level drag completion handlers.
+    queueMicrotask(() => zooConsumedTouchPointers.delete(event.pointerId));
+    if(zooTouchPointers.size===0)zooTouchGestureBlocked=false;
 
     if (endedPinchFinger) {
+        // Apply the final finger positions before ending the gesture.
+        if (zooPinchPending) {
+            if (zooPinchFrame) cancelAnimationFrame(zooPinchFrame);
+            zooPinchFrame = 0;
+            flushZooPinchFrame();
+        }
+        cancelZooPinchFrame();
+        zooTouchSuppressClickUntil = performance.now() + 450;
         zooPinch = null;
     }
     if (!zooPinch && zooTouchPointers.size >= 2) {
@@ -38109,14 +38847,18 @@ function endZooTouchPointer(event) {
     }
 }
 
-zooBoard.addEventListener('pointerup', endZooTouchPointer, { capture: true });
-zooBoard.addEventListener('pointercancel', endZooTouchPointer, { capture: true });
-
+// Track releases at window level: Safari may deliver the end outside the board.
+window.addEventListener('pointerup', endZooTouchPointer, { capture: true });
+window.addEventListener('pointercancel', endZooTouchPointer, { capture: true });
 window.addEventListener('blur', () => {
+    cancelZooPinchFrame();
     zooTouchPointers.clear();
+    zooConsumedTouchPointers.clear();
     zooPinch = null;
-    if (state.pan?.touchContinuation) finishPan();
+    zooTouchGestureBlocked = false;
+    if (state.pan?.pointerType === 'touch') finishPan();
 });
+
 
 zooBoard.addEventListener(
     'wheel',
@@ -42874,31 +43616,43 @@ function realZooTradeAnimals(record, excludePlayerOwned = false, playerKeysOverr
         ? (playerKeysOverride || playerOwnedTradeKeys())
         : null;
     const result = [];
-
-    for (const spec of realZooTradeSpecs(record)) {
-                if (playerKeys?.has(animalCardKey(spec))) continue;
-        result.push({
-            id: null,
-            category: spec.category,
-            level: spec.level,
-            filename: spec.filename,
-            enclosureId: null,
-            slotIndex: null
-        });
+    const seen = new Set();
+    const consider = (spec) => {
+        if (!spec) return;
+        const key = animalCardKey(spec);
+        if (!key || seen.has(key)) return;
+        seen.add(key);
+        const existing = trueWorldPopulation(record, spec, {create:false});
+        if (existing && !Object.values(normaliseTrueAnimalPopulation(existing.population)).some(v=>v>0)) return;
+        if (playerKeys?.has(key)) return;
+        result.push({id:null,category:spec.category,level:spec.level,filename:spec.filename,enclosureId:null,slotIndex:null});
+    };
+    for (const spec of realZooTradeSpecs(record)) consider(spec);
+    // A species acquired after game start is not part of the static template.
+    // Include only explicitly persisted positive populations; never instantiate
+    // stock merely to display a trade list.
+    const zoo = trueWorldZooState(record, {create:false});
+    for (const entry of Object.values(zoo?.populations || {})) {
+        if (entry?.animal && Object.values(normaliseTrueAnimalPopulation(entry.population)).some(v=>v>0)) consider(entry.animal);
     }
-
     return result;
 }
 
 const REAL_ZOO_TRADE_KEY_CACHE=new WeakMap();
 function realZooTradeKeys(record){
     if(!record||typeof record!=='object')return new Set();
+    // Cache immutable template species only. Live ownership is checked against
+    // the persistent world population in realZooHasAnimal().
     let keys=REAL_ZOO_TRADE_KEY_CACHE.get(record);
     if(!keys){keys=new Set(realZooTradeSpecs(record).map(animalCardKey));REAL_ZOO_TRADE_KEY_CACHE.set(record,keys);}
     return keys;
 }
 function realZooHasAnimal(record, animal) {
     if (!record || !animal) return false;
+    const entry = trueWorldPopulation(record, animal, {create:false});
+    // Explicit world state overrides historical template holdings in both
+    // directions: zero means rehomed, positive means currently held.
+    if (entry) return Object.values(normaliseTrueAnimalPopulation(entry.population)).some(v=>v>0);
     return realZooTradeKeys(record).has(animalCardKey(animal));
 }
 
@@ -46280,7 +47034,8 @@ function trueMarketplaceSourceCandidates(monthKey) {
                 : (listingRoll<.10?0:listingRoll<.45?1:listingRoll<.76?2:listingRoll<.93?3:4);
             // Avoid building an entire real-zoo trade inventory for a zero-listing roll.
             if (!listingCount) continue;
-            const allStock = realZooTradeAnimals(record, true);
+            const today=normaliseTrueCalendarState().date;
+            const allStock = realZooTradeAnimals(record, true).filter(animal=>truePartnerCanOfferSpecies(record,animal,today));
             if (!allStock.length) continue;
             const stock = (typeof seededShuffle==='function'
                 ? seededShuffle(allStock,`true-market-stock|${sourceKey}|${monthKey}`)
@@ -46730,6 +47485,7 @@ function trueMarketplacePlayerOfferCandidates(row,today,stockCache=null){
     });
     const wantedKey=animalCardKey(animal);
     return records.filter(x=>{
+        if(trueRecentPartnerOutboundTransfer(x.record,animal,today))return false;
         // Multiple player listings may evaluate the same zoo on the same day.
         // Reuse its inventory within this generation batch only.
         let stock=stockCache?.get(x.record);
@@ -48018,6 +48774,24 @@ function trueOfferEvaluation(offer=state.autonomousTradeOffer,outgoing=state.out
     else if(relation.trust>=20){send+=9;reasons.push({good:true,text:`Existing relationship: ${stage}`});}
     else if(relation.trust>=5){send+=4;reasons.push({good:true,text:`Existing relationship: ${stage}`});}
 
+    // A genuine husbandry-assistance offer is more generous when the two zoos
+    // have built trust. Keep ordinary marketplace trades completely unchanged.
+    const cooperativeHelp=!!(event?.relationshipPopulationHelp &&
+        String(event.sourceKey||'')===String(offer.eventSourceKey||event.sourceKey||''));
+    const cooperationBonus=cooperativeHelp?Math.min(22,Math.max(0,Math.floor((Number(relation.trust)||0)/4))):0;
+    if(cooperationBonus){
+        send+=cooperationBonus;
+        reasons.push({good:true,text:'Our established partnership encourages population assistance'});
+    }
+    // Previous completed cooperation can soften terms for husbandry help,
+    // without changing ordinary marketplace negotiations or overriding caps.
+    if(cooperativeHelp){
+        const reciprocity=trueRecentCooperationNegotiationBonus(relation);
+        if(reciprocity){
+            send+=reciprocity;
+            reasons.push({good:true,text:'Recent successful cooperation makes this partner more accommodating'});
+        }
+    }
     const availability=String(listing?.reason||'');
     if(/surplus|new holder/i.test(availability)){send+=10;reasons.push({good:true,text:`The population is available because of ${availability.toLowerCase()}`});}
     else if(/group management|breeding/i.test(availability)){send+=6;reasons.push({good:true,text:`The transfer supports ${availability.toLowerCase()}`});}
@@ -48025,6 +48799,12 @@ function trueOfferEvaluation(offer=state.autonomousTradeOffer,outgoing=state.out
     if(!outgoing){
         const housing=trueDonationHousingSuitability(requested),motivation=trueDonationMotivation(listing);
         send+=housing.score+motivation.score;
+        // A donation should become easier with trust, but must still pass
+        // the existing housing, level, prestige and acceptance safeguards.
+        if(cooperativeHelp && (Number(relation.trust)||0)>=35){
+            send+=Math.min(14,Math.floor(((Number(relation.trust)||0)-30)/4));
+            reasons.push({good:true,text:'The partner is willing to help without an animal in return'});
+        }
         if(housing.hasSpace)reasons.push({good:true,text:'Your zoo currently has suitable enclosure space'});
         else reasons.push({good:false,text:'Your zoo does not currently have suitable free enclosure space'});
         if(motivation.text)reasons.push({good:true,text:motivation.text});
@@ -49007,6 +49787,48 @@ function renderTrueTransferProposal() {
         const pick=document.createElement('button');pick.type='button';pick.textContent='+ Choose animals';
         Object.assign(pick.style,{display:'block',width:'100%',marginTop:'10px',padding:'8px 4px',fontSize:'11px',fontWeight:'800',border:'1px solid #87775d',borderRadius:'6px',background:'#f9f4e8',color:'#443824',cursor:'pointer'});
         pick.addEventListener('click',trueOpenProposalAnimalPicker);offered.appendChild(pick);
+    }
+    // A husbandry suggestion is an optional shortcut, never an automatic commitment.
+    // Recheck live ownership, reservations and the remaining social group on click.
+    if(offer.eventOpportunity&&offer.suggestedExchange&&
+       !['pending','accepted','transfer-scheduled','completed'].includes(offer.proposalStatus)){
+        const suggested=offer.suggestedExchange;
+        const suggestionBox=document.createElement('div');
+        suggestionBox.style.cssText='margin:8px 0;padding:8px;border:1px solid #a99b7e;border-radius:6px;font-size:11px;';
+        const suggestionText=document.createElement('div');
+        suggestionText.textContent=`Partner suggestion: ${truePopulationNotation(suggested.population)} ${animalDisplayName(suggested.animal)}`;
+        suggestionBox.appendChild(suggestionText);
+        const useSuggestion=document.createElement('button');useSuggestion.type='button';
+        useSuggestion.textContent='Add suggested exchange';
+        useSuggestion.style.cssText='margin-top:6px;padding:6px 9px;cursor:pointer;border:1px solid #87775d;border-radius:5px;background:#f9f4e8;color:#443824;font-weight:800;';
+        useSuggestion.addEventListener('click',()=>{
+            const fresh=truePopulationHelpExchangeSuggestion({animal:offer.animal,profile:trueOfferProfile(offer)});
+            const sourceId=Number(suggested.animal?.truePopulationTradeSourceId??suggested.animal?.id);
+            const live=classicAnimalById(sourceId);
+            const pop=normaliseTruePopulationCounts(suggested.population);
+            const valid=!!(fresh&&live&&Number(fresh.animal?.id)===sourceId&&
+                ['males','females','unknown'].every(k=>Number(fresh.population?.[k]||0)>=Number(pop[k]||0))&&
+                trueProposalOutgoingStillAvailable({...live,population:pop,truePopulationTradeSourceId:sourceId})&&
+                truePopulationGroupSizeStatus({...live,population:(()=>{
+                    const remaining=normaliseTrueAnimalPopulation(live);
+                    for(const k of ['males','females','unknown'])remaining[k]-=pop[k]||0;
+                    return remaining;
+                })()}).valid);
+            if(!valid){
+                offer.suggestedExchange=null;
+                renderTrade();
+                window.alert('This exchange is no longer available. Choose another animal or request a donation.');
+                return;
+            }
+            const outgoing={...live,population:{...pop},truePopulationTradeSourceId:sourceId,enclosureId:null,slotIndex:null};
+            if(!trueAddProposalOutgoingOffer(outgoing)){
+                window.alert('The proposal already contains this animal or has reached its limit.');
+                return;
+            }
+            renderTrade();
+        });
+        suggestionBox.appendChild(useSuggestion);
+        offered.appendChild(suggestionBox);
     }
     columns.append(requested,offered);
     panel.appendChild(columns);

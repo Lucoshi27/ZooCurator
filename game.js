@@ -27912,40 +27912,8 @@ function currentVisualSnapshot() {
 let classicHistoryControlsLastTurn=null;
 let classicHistoryControlsLastViewTurn=null;
 let classicHistoryControlsLastLength=-1;
-function captureTurnSnapshot() {
-    if (
-        !state.loaded ||
-        state.suppressHistoryCapture ||
-        state.historyViewTurn !== null
-    ) return;
-
-    const snapshot = currentVisualSnapshot();
-    const history=state.turnHistory;
-    const last=history[history.length-1];
-    if(last&&Number(last.turn)===Number(snapshot.turn)){
-        history[history.length-1]=snapshot;
-    }else if(!last||Number(last.turn)<Number(snapshot.turn)){
-        history.push(snapshot);
-    }else{
-        // Non-monotonic capture only occurs during unusual restore/history flows.
-        const existingIndex=history.findIndex(item=>Number(item.turn)===Number(snapshot.turn));
-        if(existingIndex>=0)history[existingIndex]=snapshot;
-        else{
-            const insertAt=history.findIndex(item=>Number(item.turn)>Number(snapshot.turn));
-            if(insertAt<0)history.push(snapshot); else history.splice(insertAt,0,snapshot);
-        }
-    }
-
-    const visibleTurn=Number(state.turn)||0,viewTurn=state.historyViewTurn;
-    if(classicHistoryControlsLastTurn!==visibleTurn||
-       classicHistoryControlsLastViewTurn!==viewTurn||
-       classicHistoryControlsLastLength!==history.length){
-        classicHistoryControlsLastTurn=visibleTurn;
-        classicHistoryControlsLastViewTurn=viewTurn;
-        classicHistoryControlsLastLength=history.length;
-        updateHistoryControls();
-    }
-}
+// Turn History retired: no per-turn cloning, retained snapshots or UI updates.
+function captureTurnSnapshot() {}
 
 function resetTurnHistory() {
     state.turnHistory = [];
@@ -27954,126 +27922,14 @@ function resetTurnHistory() {
     document.body.classList.remove('history-viewing');
 }
 
-function compactPortableTurnHistory(history, currentTurn) {
-    const source=Array.isArray(history)?history:[];
-    if(!source.length)return [];
-    const turnNow=Number(currentTurn)||0;
-    const recentCutoff=Math.max(0,turnNow-100);
-    const mediumCutoff=Math.max(0,turnNow-300);
-    const compacted=source.filter(entry=>{
-        const turn=Number(entry?.turn);
-        if(!Number.isFinite(turn))return true;
-        if(turn>=recentCutoff)return true;
-        if(turn>=mediumCutoff)return turn%10===0;
-        return turn%20===0;
-    });
-    if(source.length&&compacted[0]!==source[0])compacted.unshift(source[0]);
-    const newest=source[source.length-1];
-    if(newest&&!compacted.includes(newest))compacted.push(newest);
-    return compacted;
-}
-
-const PORTABLE_HISTORY_FORMAT = 'delta-v2';
-const PORTABLE_HISTORY_CHECKPOINT_INTERVAL = 25;
-
-function historyRecordsById(records) {
-    const map=new Map();
-    for(const record of Array.isArray(records)?records:[]){
-        const id=record?.id;
-        if(id!==undefined&&id!==null)map.set(String(id),record);
-    }
-    return map;
-}
-
-function historyRecordChanged(a,b) {
-    return JSON.stringify(a)!==JSON.stringify(b);
-}
-
-function historyArrayDelta(previous,current) {
-    const before=historyRecordsById(previous);
-    const after=historyRecordsById(current);
-    const upsert=[];
-    const remove=[];
-    for(const [id,record] of after){
-        if(!before.has(id)||historyRecordChanged(before.get(id),record))upsert.push(record);
-    }
-    for(const id of before.keys())if(!after.has(id))remove.push(id);
-    return {upsert,remove};
-}
-
-function encodePortableTurnHistory(history,currentTurn) {
-    const sparse=compactPortableTurnHistory(history,currentTurn);
-    if(!sparse.length)return {format:PORTABLE_HISTORY_FORMAT,entries:[]};
-    const entries=[];
-    let previous=null;
-    for(let index=0;index<sparse.length;index++){
-        const snapshot=sparse[index];
-        const checkpoint=!previous||index%PORTABLE_HISTORY_CHECKPOINT_INTERVAL===0;
-        if(checkpoint){
-            entries.push({
-                kind:'checkpoint',turn:Number(snapshot.turn),zooName:snapshot.zooName,
-                enclosures:snapshot.enclosures,animals:snapshot.animals,zoom:snapshot.zoom
-            });
-        }else{
-            const enclosureDelta=historyArrayDelta(previous.enclosures,snapshot.enclosures);
-            const animalDelta=historyArrayDelta(previous.animals,snapshot.animals);
-            const entry={kind:'delta',turn:Number(snapshot.turn)};
-            if(snapshot.zooName!==previous.zooName)entry.zooName=snapshot.zooName;
-            if(snapshot.zoom!==previous.zoom)entry.zoom=snapshot.zoom;
-            if(enclosureDelta.upsert.length)entry.enclosuresUpsert=enclosureDelta.upsert;
-            if(enclosureDelta.remove.length)entry.enclosuresRemove=enclosureDelta.remove;
-            if(animalDelta.upsert.length)entry.animalsUpsert=animalDelta.upsert;
-            if(animalDelta.remove.length)entry.animalsRemove=animalDelta.remove;
-            entries.push(entry);
-        }
-        previous=snapshot;
-    }
-    return {format:PORTABLE_HISTORY_FORMAT,entries};
-}
-
-function applyHistoryArrayDelta(previous,upsert,remove) {
-    const map=historyRecordsById(previous);
-    for(const id of Array.isArray(remove)?remove:[])map.delete(String(id));
-    for(const record of Array.isArray(upsert)?upsert:[]){
-        if(record?.id===undefined||record?.id===null)continue;
-        map.set(String(record.id),record);
-    }
-    return [...map.values()];
-}
-
-function decodePortableTurnHistory(savedHistory) {
-    if(Array.isArray(savedHistory))return cloneForSave(savedHistory);
-    if(savedHistory?.format!==PORTABLE_HISTORY_FORMAT||!Array.isArray(savedHistory.entries))return [];
-    const restored=[];
-    let previous=null;
-    for(const entry of savedHistory.entries){
-        const turn=Number(entry?.turn);
-        if(!Number.isFinite(turn))continue;
-        if(entry.kind==='checkpoint'){
-            if(!Array.isArray(entry.enclosures)||!Array.isArray(entry.animals))continue;
-            previous={turn,zooName:entry.zooName,enclosures:cloneForSave(entry.enclosures),animals:cloneForSave(entry.animals),zoom:entry.zoom};
-        }else if(entry.kind==='delta'&&previous){
-            previous={
-                turn,
-                zooName:entry.zooName!==undefined?entry.zooName:previous.zooName,
-                enclosures:applyHistoryArrayDelta(previous.enclosures,entry.enclosuresUpsert,entry.enclosuresRemove),
-                animals:applyHistoryArrayDelta(previous.animals,entry.animalsUpsert,entry.animalsRemove),
-                zoom:entry.zoom!==undefined?entry.zoom:previous.zoom
-            };
-        }else continue;
-        restored.push(cloneForSave(previous));
-    }
-    return restored;
-}
+// Legacy turn-history encoding is intentionally retired. Old saves are accepted
+// without decoding their history, avoiding large allocations during load.
+function encodePortableTurnHistory() { return []; }
+function decodePortableTurnHistory() { return []; }
 
 function compactPortableGameSnapshot(game) {
     if(!game?.state)return game;
-    const copy=cloneForSave(game);
-    copy.turnHistory=cloneForSave(encodePortableTurnHistory(
-        copy.turnHistory,
-        copy.state?.turn
-    ));
-    return copy;
+    return {...game, turnHistory:[], state:{...game.state, turnHistory:[]}};
 }
 
 const PORTABLE_REAL_ZOO_HOLDINGS_FORMAT = 'baseline-delta-v1';
@@ -28260,21 +28116,34 @@ function exportCurrentGameState({ compactHistory = false } = {}) {
                     : cloneForSave(state[key]);
     }
 
-    const history=Array.isArray(state.turnHistory)?state.turnHistory:[];
-    const exportedHistory=compactHistory
-        ? encodePortableTurnHistory(history,state.turn)
-        : history;
-
     return {
         version: SAVE_FORMAT_VERSION,
         state: data,
-        turnHistory: cloneForSave(exportedHistory),
+        turnHistory: [],
         view: {
             scrollLeft: zooBoard.scrollLeft,
             scrollTop: zooBoard.scrollTop
         }
     };
 }
+
+// On-demand save-size audit; no continuous sampling or serialization overhead.
+// Run zooSaveSizeReport() in the browser developer console.
+window.zooSaveSizeReport = function zooSaveSizeReport() {
+    const game=exportCurrentGameState();
+    const bytes=value=>new Blob([JSON.stringify(serialiseSpecial(value))]).size;
+    const rows=Object.entries(game.state).map(([field,value])=>({
+        field, bytes:bytes(value), mib:0
+    }));
+    for(const row of rows)row.mib=+(row.bytes/1048576).toFixed(3);
+    rows.sort((a,b)=>b.bytes-a.bytes);
+    const total=bytes(game);
+    console.group('Zoo Curator save-size audit');
+    console.log('Game snapshot:',(total/1048576).toFixed(2),'MiB; turn:',game.state.turn);
+    console.table(rows.slice(0,35));
+    console.groupEnd();
+    return {totalBytes:total, totalMiB:+(total/1048576).toFixed(3),fields:rows};
+};
 
 const LOCAL_MATCH_FORMAT_VERSION = 1;
 let localClassicMatch = null;
@@ -32565,22 +32434,8 @@ function importGameState(saveData, { deferRender = false } = {}) {
         requestAnimationFrame(()=>refreshTrueDecorationVisuals());
     }
     if (!Array.isArray(state.sandboxLooseAnimals)) state.sandboxLooseAnimals = [];
-    state.turnHistory = decodePortableTurnHistory(saveData.turnHistory || []);
-    if(Array.isArray(state.turnHistory)){
-        const byTurn=new Map();
-        for(const snapshot of state.turnHistory){
-            const turn=Number(snapshot?.turn);
-            if(!Number.isFinite(turn))continue;
-            if(!Array.isArray(snapshot?.enclosures)||!Array.isArray(snapshot?.animals))continue;
-            snapshot.turn=turn;
-            byTurn.set(turn,snapshot);
-        }
-        state.turnHistory=[...byTurn.entries()]
-            .sort((a,b)=>a[0]-b[0])
-            .map(([,snapshot])=>snapshot);
-    }else{
-        state.turnHistory=[];
-    }
+    // Discard legacy history on load, including old 500+ turn saves.
+    state.turnHistory = [];
     state.historyViewTurn = null;
     state.historyLiveView = null;
     state.drag = null;
@@ -32723,11 +32578,41 @@ function importGameState(saveData, { deferRender = false } = {}) {
     });
 }
 
+// Remove retired history directly from parsed JSON, before expensive revival/cloning.
+// Mutates only the parsed save payload; never touches gameplay or trade records.
+function stripLegacyTurnHistory(payload) {
+    let changed = false;
+    const cleanGame = game => {
+        if (!game || typeof game !== 'object') return;
+        if (Object.prototype.hasOwnProperty.call(game, 'turnHistory')) {
+            delete game.turnHistory; changed = true;
+        }
+        if (game.state && typeof game.state === 'object' &&
+            Object.prototype.hasOwnProperty.call(game.state, 'turnHistory')) {
+            delete game.state.turnHistory; changed = true;
+        }
+    };
+    if (Array.isArray(payload)) {
+        for (const slot of payload) cleanGame(slot?.game);
+    } else if (payload && typeof payload === 'object') {
+        cleanGame(payload);
+        cleanGame(payload.game);
+        cleanGame(payload.save?.game);
+    }
+    return changed;
+}
+
 function loadSaveSlots() {
     try {
-        const parsed = deserialiseSpecial(
-            JSON.parse(localStorage.getItem(SAVE_STORAGE_KEY) || '[]')
-        );
+        const raw = JSON.parse(localStorage.getItem(SAVE_STORAGE_KEY) || '[]');
+        const migrated = stripLegacyTurnHistory(raw);
+        const parsed = deserialiseSpecial(raw);
+        if (migrated && Array.isArray(parsed)) {
+            // Replace browser-stored legacy slots automatically. If storage is full,
+            // the already-migrated in-memory slots still load normally.
+            try { writeSaveSlots(parsed); }
+            catch (error) { console.warn('Legacy save migrated in memory; could not rewrite stored slots:', error); }
+        }
         return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
         console.warn('Could not read saved games:', error);
@@ -32736,6 +32621,7 @@ function loadSaveSlots() {
 }
 
 function writeSaveSlots(slots) {
+    stripLegacyTurnHistory(slots);
     localStorage.setItem(SAVE_STORAGE_KEY, JSON.stringify(serialiseSpecial(slots)));
 }
 
@@ -33333,6 +33219,7 @@ function saveFileSlug(value) {
 }
 
 function normaliseImportedSavePayload(raw) {
+    stripLegacyTurnHistory(raw);
     const decoded = deserialiseSpecial(raw);
 
     if (decoded?.format === 'ZooCuratorSave' && decoded.save?.game) {
@@ -33817,192 +33704,17 @@ mobileSettingsMediaQuery.addEventListener?.('change', event => {
     if (event.matches) ensureMobileSettingsHub();
 });
 
-function ensureTurnHistoryUI() {
-    if (document.getElementById('turnHistoryPanel')) return;
+// Historical turn viewer retired; retain compatibility for older callers.
+function ensureTurnHistoryUI() {}
 
-    turnOrder.classList.add('turn-history-trigger');
-    turnOrder.title = 'View previous turns';
+function updateHistoryControls() {}
 
-    const panel = document.createElement('div');
-    panel.id = 'turnHistoryPanel';
-    panel.className = 'turn-history-panel';
-    panel.innerHTML = `
-        <div class="turn-history-title">Turn History</div>
-        <div id="turnHistoryLabel" class="turn-history-label">Current turn</div>
-        <input id="turnHistorySlider" type="range" min="1" max="1" value="1" step="1">
-        <div class="turn-history-actions">
-            <button type="button" id="returnCurrentTurn">Return to Current Turn</button>
-            <button type="button" id="closeTurnHistory">Close</button>
-        </div>
-        <div class="turn-history-note">
-            Previous turns are view-only. You can still pan and zoom around the zoo.
-        </div>
-    `;
-    document.body.appendChild(panel);
-
-    turnOrder.addEventListener('click', event => {
-        event.preventDefault();
-        event.stopPropagation();
-        const opening = !panel.classList.contains('visible');
-        panel.classList.toggle('visible');
-        if (opening) pauseAllHintGlowsForMenu();
-        else resumeHintGlowsAfterMenu();
-        updateHistoryControls();
-    });
-
-    panel.querySelector('#turnHistorySlider').addEventListener('input', event => {
-        viewHistoricalTurn(Number(event.target.value));
-    });
-
-    panel.querySelector('#returnCurrentTurn').addEventListener('click', () => {
-        exitHistoryView(true);
-    });
-
-    panel.querySelector('#closeTurnHistory').addEventListener('click', () => {
-        panel.classList.remove('visible');
-        resumeHintGlowsAfterMenu();
-    });
-}
-
-function updateHistoryControls() {
-    const slider = document.getElementById('turnHistorySlider');
-    const label = document.getElementById('turnHistoryLabel');
-    const returnButton = document.getElementById('returnCurrentTurn');
-    if (!slider || !label) return;
-
-    const history=state.turnHistory||[];
-    let minimum=Number(history[0]?.turn),maximum=Number(history[history.length-1]?.turn);
-    if(!Number.isFinite(minimum)||!Number.isFinite(maximum)){
-        minimum=maximum=Number(state.turn)||1;
-        for(const item of history){
-            const turn=Number(item?.turn);
-            if(!Number.isFinite(turn))continue;
-            if(turn<minimum)minimum=turn;
-            if(turn>maximum)maximum=turn;
-        }
-    }
-    maximum=Math.max(maximum,Number(state.turn)||1);
-
-    slider.min = String(minimum);
-    slider.max = String(maximum);
-    slider.value = String(
-        state.historyViewTurn === null ? state.turn : state.historyViewTurn
-    );
-
-    if (state.historyViewTurn === null) {
-        label.textContent = `Current Turn ${state.turn}`;
-        if (returnButton) returnButton.disabled = true;
-    } else {
-        label.textContent =
-            `Viewing Turn ${state.historyViewTurn} — READ ONLY`;
-        if (returnButton) returnButton.disabled = false;
-    }
-    queueDocumentLocalisation();
-}
-
-function viewHistoricalTurn(turn) {
-    const requestedTurn=Number(turn);
-    if (!Number.isFinite(requestedTurn) || requestedTurn >= Number(state.turn)) {
-        exitHistoryView(true);
-        return;
-    }
-
-    let snapshot = state.turnHistory.find(item => Number(item?.turn) === requestedTurn);
-    if(!snapshot){
-        const checkpoints=state.turnHistory
-            .filter(item=>Number.isFinite(Number(item?.turn))&&Number(item.turn)<Number(state.turn))
-            .slice()
-            .sort((a,b)=>Number(a.turn)-Number(b.turn));
-        if(!checkpoints.length){exitHistoryView(true);return;}
-        snapshot=checkpoints.reduce((best,item)=>
-            Math.abs(Number(item.turn)-requestedTurn)<Math.abs(Number(best.turn)-requestedTurn)
-                ? item : best
-        ,checkpoints[0]);
-    }
-    turn=Number(snapshot.turn);
-
-    if (state.historyViewTurn === null) {
-        state.historyLiveView = currentVisualSnapshot();
-    }
-
-    state.historyViewTurn = turn;
-    state.suppressHistoryCapture = true;
-
-    clearTradeEligibleGlow();
-
-    state.enclosures = cloneForSave(snapshot.enclosures);
-    state.animals = cloneForSave(snapshot.animals);
-    if(snapshot.generatedAreaMembership!==undefined){
-        state.generatedAreaMembership = normalizeGeneratedAreaMembership(
-            cloneForSave(snapshot.generatedAreaMembership)
-        );
-    }
-    state.zoom = snapshot.zoom || state.zoom;
-    document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
-
-    document.body.classList.add('history-viewing');
-    renderZoo();
-    turnOrder.textContent = `Turn ${turn} · VIEWING`;
-    updateHistoryControls();
-
-    state.suppressHistoryCapture = false;
-}
-
-function exitHistoryView(render = true) {
-    if (state.historyViewTurn === null) return;
-
-    const live = state.historyLiveView;
-    state.suppressHistoryCapture = true;
-
-    if (live) {
-        state.enclosures = cloneForSave(live.enclosures);
-        state.animals = cloneForSave(live.animals);
-        if(live.generatedAreaMembership!==undefined){
-            state.generatedAreaMembership = normalizeGeneratedAreaMembership(
-                cloneForSave(live.generatedAreaMembership)
-            );
-        }
-        state.zoom = live.zoom || state.zoom;
-        document.documentElement.style.setProperty('--zoo-zoom', state.zoom);
-    }
-
+function viewHistoricalTurn() { return; }
+function exitHistoryView() {
     state.historyViewTurn = null;
     state.historyLiveView = null;
     document.body.classList.remove('history-viewing');
-
-    if (render) renderAll();
-    else updateTurnDisplay();
-
-    state.suppressHistoryCapture = false;
-    updateHistoryControls();
 }
-
-document.addEventListener('pointerdown', event => {
-    if (state.historyViewTurn === null) return;
-
-    if (event.target.closest('#zooCanvas .animal-card')) {
-        event.stopPropagation();
-        return;
-    }
-
-    if (event.target.closest('#zooCanvas .enclosure')) {
-        event.preventDefault();
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-    }
-}, true);
-
-document.addEventListener('click', event => {
-    if (state.historyViewTurn === null) return;
-
-    const allowed = event.target.closest(
-        '#turnHistoryPanel, #turnOrder, #zooBoard, #hoverPreview, #animalInfoPanel'
-    );
-    if (allowed) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-}, true);
 
 let idleGuideSetupWasComplete = false;
 

@@ -957,7 +957,6 @@
             "PA6",
             "PA7",
             "PA8",
-            "PA9",
             "PA10",
             "PA11",
             "PA12",
@@ -968,36 +967,25 @@
             "PA17",
             "PA18",
             "PA19",
-            "PA20",
-            "PA21",
-            "PA22",
-            "PA23",
-            "PA24",
-            "PA25",
-            "PA26",
             "PA27",
             "PA28",
             "PA29",
             "PA30",
             "PA31",
-            "PA32",
-            "PA33",
             "PA34",
             "PA35",
             "PA36",
             "PA37",
             "PA38",
-            "PA39",
             "PA40",
             "PA41",
-            "PA42",
-            "PA43",
             "PA44",
             "PA45",
-            "PA49",
-            "PA50",
             "PA51",
-            "PA52"
+            "PA2",
+            "PA3",
+            "PA46",
+            "PA48"
           ],
           "space_requirement": 2,
           "population_profiles": [
@@ -1094,35 +1082,26 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
-            "PA45",
+            "PA46",
+            "PA48",
             "PA49",
             "PA50",
             "PA51",
             "PA52",
-            "IM1",
-            "IM2",
-            "IM3",
-            "IM4",
             "IM5",
             "IM6",
-            "IM7",
-            "IM8",
             "IM9",
             "IM10",
             "IM11",
             "IM12",
             "IM13",
-            "IM15",
-            "IM16"
+            "IM18"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Mainland leopard cat Prionailurus bengalensis: South and Southeast Asian forest/woodland mosaics, south/east China and Korean/Manchurian edge; excludes high Gobi and Indian Ocean islands. Sunda leopard cat P. javanensis (Sumatra, Borneo, Java) is a separate species under split taxonomy. East Asian northern extent and Indian subcontinent coverage are coarse at bioregion scale."
         },
         "Ocelot.png": {
           "scientific_name": "Leopardus pardalis",
@@ -1498,6 +1477,12 @@
             "mountain"
           ],
           "wild_regions": [
+            "NA4",
+            "NA5",
+            "NA6",
+            "NA7",
+            "NA8",
+            "NA9",
             "NA10",
             "NA11",
             "NA12",
@@ -1517,18 +1502,13 @@
             "NA27",
             "NA28",
             "NA29",
-            "NA31",
-            "NA4",
-            "NA5",
-            "NA6",
-            "NA7",
-            "NA8",
-            "NA9"
+            "NA31"
           ],
           "space_requirement": 4,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "American black bear: forested Alaska, Canada, most forested US regions and limited northern Mexico; broad bioregions include fragmented populations and should not imply uniform occupation of Great Plains or southern lowlands."
         },
         "Bat-Eared Fox.png": {
           "scientific_name": "Otocyon megalotis",
@@ -1613,7 +1593,8 @@
             "riverine",
             "coastal",
             "mountain",
-            "rocky"
+            "rocky",
+            "tundra"
           ],
           "wild_regions": [
             "NA3",
@@ -1628,16 +1609,12 @@
             "NA16",
             "NA17",
             "NA18",
-            "NA19",
-            "PA1",
-            "PA2",
             "PA3",
             "PA4",
             "PA5",
             "PA6",
             "PA7",
             "PA8",
-            "PA9",
             "PA10",
             "PA11",
             "PA12",
@@ -1649,12 +1626,6 @@
             "PA18",
             "PA19",
             "PA20",
-            "PA21",
-            "PA22",
-            "PA23",
-            "PA24",
-            "PA25",
-            "PA26",
             "PA27",
             "PA28",
             "PA29",
@@ -1666,22 +1637,20 @@
             "PA36",
             "PA37",
             "PA38",
-            "PA39",
             "PA40",
             "PA41",
-            "PA42",
             "PA43",
             "PA44",
             "PA45",
-            "PA49",
-            "PA50",
             "PA51",
-            "PA52"
+            "PA46",
+            "PA47"
           ],
           "space_requirement": 5,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "IUCN range audit: current native distribution spans Alaska, western/northern Canada and the northwestern USA; northern/eastern Europe with isolated Pyrenean, Alpine, Apennine and Balkan populations; northern Asia and scattered mountain populations through the Caucasus, Central Asia, western China and Himalayas, plus Hokkaido. North African and Mexican records are historical, not current resident populations. Small Gobi populations do exist, so blanket exclusion of all Gobi-edge regions is not justified. OneEarth codes are broad polygons: inclusion indicates some possible resident overlap, not continuous occupation. Existing code exclusions from Pass 2 are retained pending polygon-boundary validation. Removed Britain/Ireland (extirpated), North African Atlas (extinct), Taklimakan lowlands, Ordos, Loess/Huang He plains and Chang Jiang lowland forests. Other broad mountain/desert polygons retained pending locality-level overlap check. Verified polygon-level exception: PA43 (Greater Gobi Desert) is retained for the extremely localised Gobi bear in southwestern Mongolia; this does not imply broad occupation of the desert. 2026 bioregion audit: PA46 captures occupied Russian Far East/Manchurian forest, PA47 includes the resident Hokkaido brown bears (not all Japanese islands); removed PA52 Guizhou-Yunnan subtropical plateaus as an over-broad southward extension. These large bioregions imply partial occupancy only."
         },
         "Bush Dog.png": {
           "scientific_name": "Speothos venaticus",
@@ -1864,7 +1833,6 @@
             "grassland"
           ],
           "wild_regions": [
-            "IM1",
             "IM2",
             "IM3",
             "IM4",
@@ -1873,15 +1841,14 @@
             "IM7",
             "IM8",
             "IM9",
-            "IM10",
             "IM11",
-            "IM12",
-            "IM13"
+            "IM12"
           ],
           "space_requirement": 3,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Patchy wetland populations from Pakistan and Nepal through India, Bangladesh and Sri Lanka to Myanmar, Thailand and Cambodia. Java presence uncertain; Sumatra unconfirmed. A bioregion tag indicates localized habitat, not blanket occupancy."
         },
         "Fossa.png": {
           "scientific_name": "Cryptoprocta ferox",
@@ -1952,14 +1919,14 @@
           "scientific_name": "Canis lupus",
           "tags": [
             "boreal",
+            "tundra",
             "temperate-forest",
             "conifer-forest",
             "grassland",
             "shrubland",
             "desert",
-            "wetland",
-            "riverine",
-            "mountain"
+            "mountain",
+            "rocky"
           ],
           "wild_regions": [
             "NA1",
@@ -1983,22 +1950,14 @@
             "NA19",
             "NA20",
             "NA21",
-            "NA22",
-            "NA23",
-            "NA24",
-            "NA25",
-            "NA28",
             "NA29",
             "NA31",
-            "PA1",
-            "PA2",
             "PA3",
             "PA4",
             "PA5",
             "PA6",
             "PA7",
             "PA8",
-            "PA9",
             "PA10",
             "PA11",
             "PA12",
@@ -2010,11 +1969,6 @@
             "PA18",
             "PA19",
             "PA20",
-            "PA21",
-            "PA22",
-            "PA23",
-            "PA24",
-            "PA25",
             "PA26",
             "PA27",
             "PA28",
@@ -2028,25 +1982,21 @@
             "PA36",
             "PA37",
             "PA38",
-            "PA39",
             "PA40",
             "PA41",
             "PA42",
-            "PA43",
             "PA44",
             "PA45",
-            "PA49",
-            "PA50",
             "PA51",
             "PA52",
-            "IM1",
-            "IM2",
-            "IM3"
+            "PA46",
+            "PA48"
           ],
           "space_requirement": 4,
           "population_profiles": [
             "breeding_group"
-          ]
+          ],
+          "geography_note": "IUCN 2026 range audit: extant wolves occur across northern North America, much of northern Eurasia, recolonised parts of continental Europe, and scattered populations in the Middle East, Arabia, Central Asia, the Himalayas and Indian subcontinent. Desert and steppe habitats are genuine wolf habitats, especially for Arabian and Indian wolves; absence from a dense forest does not imply absence from its wider bioregion. Greenland has native Arctic wolves; the British Isles and Japan lack extant wild resident populations. North American historical occupancy must not be mapped as uniformly current. OneEarth region codes are broad potential-overlap polygons and require polygon-level validation before further additions/removals. Removed Britain/Ireland (extirpated), North African Mediterranean, Taklimakan lowlands and eastern Chinese lowland regions. Kept Arabia, Greenland, Indian drylands and high-altitude Asian regions where populations occur. Excluded NA25 (Southeast Savannas & Riparian Forests): historical southeastern US grey wolf populations are extirpated; modern red wolves are a separate taxon. 2026 bioregion audit: added Manchuria-Ussuri (PA46) and Korean Peninsula (PA48) for extant Asian wolves; removed Ozarks, interior southern Great Lakes, Appalachia and southern mixed forests (NA22/23/24/28) where historical grey-wolf distribution should not imply current resident range. Occasional dispersers are not mapped as residents."
         },
         "Jungle Cat.png": {
           "scientific_name": "Felis chaus",
@@ -2130,24 +2080,19 @@
           "scientific_name": "Ailurus fulgens",
           "tags": [
             "temperate-forest",
-            "boreal",
+            "cloud-forest",
             "mountain"
           ],
           "wild_regions": [
-            "PA38",
-            "PA39",
-            "PA40",
-            "PA41",
-            "PA42",
-            "IM1",
-            "IM2",
-            "IM3"
+            "IM5",
+            "PA41"
           ],
           "space_requirement": 2,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Western/Himalayan red panda Ailurus fulgens occupies temperate bamboo-rich forests in the Himalayas (Nepal, Bhutan, northeastern India and adjoining Tibet). IM5 Himalayan Mixed Forests & Grasslands is the principal bioregion; PA41 Himalayan-Pamir Alpine Shrub & Meadows is included only for forested Himalayan margins, not high alpine/Pamir habitats. Removed PA38 Junggar desert, PA39 Taklimakan desert, PA40 Tibetan alpine plateau, PA42 Ordos plateau, IM1 Indian Ocean islands, IM2 Indian coastal forests, IM3 Indian dry deciduous forests."
         },
         "Spotted Hyena.png": {
           "scientific_name": "Crocuta crocuta",
@@ -2318,13 +2263,7 @@
             "mountain"
           ],
           "wild_regions": [
-            "PA1",
-            "PA2",
-            "PA3",
-            "PA4",
-            "PA5",
-            "PA49",
-            "PA50"
+            "PA46"
           ],
           "space_requirement": 4,
           "population_profiles": [
@@ -2345,30 +2284,23 @@
           ],
           "wild_regions": [
             "PA29",
-            "PA31",
-            "PA32",
-            "PA33",
-            "PA34",
-            "PA35",
             "PA41",
-            "PA42",
-            "PA43",
-            "PA44",
             "PA45",
             "PA49",
             "PA50",
-            "IM1",
             "IM2",
-            "IM3",
-            "IM4",
             "IM5",
             "IM6",
-            "IM7",
-            "IM8",
             "IM9",
             "IM10",
             "IM11",
-            "IM12"
+            "IM12",
+            "PA46",
+            "PA47",
+            "PA48",
+            "PA51",
+            "PA52",
+            "IM13"
           ],
           "space_requirement": 4,
           "population_profiles": [
@@ -2431,20 +2363,21 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "IM1",
-            "IM2",
-            "IM3",
-            "IM4",
             "IM5",
             "IM6",
-            "IM7",
-            "IM8"
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM13",
+            "IM18"
           ],
           "space_requirement": 3,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Mainland clouded leopard (Neofelis nebulosa): Himalayan foothills/northeastern India, Myanmar, Indochina, south China and Malay Peninsula; excludes Sumatra and Borneo (Sunda clouded leopard N. diardi), Indian Ocean islands, and dry peninsular India. Broad bioregions indicate presence in forest patches only."
         },
         "Common Kusimanse.png": {
           "scientific_name": "Crossarchus obscurus",
@@ -2880,22 +2813,18 @@
             "NA3",
             "NA4",
             "NA5",
-            "NA6",
+            "NA7",
             "NA9",
             "PA1",
-            "PA2",
-            "PA3",
             "PA4",
             "PA5",
-            "PA6",
-            "PA7",
-            "PA8",
-            "PA9"
+            "PA6"
           ],
           "space_requirement": 6,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Polar bear: circumpolar Arctic sea ice and adjacent coastal land in Greenland, Canada, Alaska, Svalbard and Arctic Russia. Iceland is occasional vagrancy, not a resident range. Land bioregion coverage is approximate: sea ice extends beyond terrestrial One Earth polygons."
         },
         "Ring-Tailed Vontsira.png": {
           "scientific_name": "Galidia elegans",
@@ -2948,17 +2877,24 @@
             "dry-forest",
             "grassland",
             "shrubland",
-            "nocturnal"
+            "nocturnal",
+            "rocky",
+            "woodland"
           ],
           "wild_regions": [
-            "IM1",
             "IM2",
-            "IM3"
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "India, Sri Lanka and the Nepal Terai; occurs in varied dry/moist forest, scrub, rocky habitats. Regional presence can be highly localized."
         },
         "Rüppell's Sand Fox.png": {
           "scientific_name": "Vulpes rueppellii",
@@ -3096,9 +3032,12 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "IM1",
             "IM2",
-            "IM3"
+            "IM3",
+            "IM4",
+            "IM6",
+            "IM7",
+            "IM8"
           ],
           "space_requirement": 4,
           "population_profiles": [
@@ -3114,19 +3053,16 @@
             "shrubland"
           ],
           "wild_regions": [
-            "PA34",
-            "PA35",
             "PA38",
-            "PA39",
             "PA40",
             "PA41",
-            "PA42",
             "PA43",
             "PA44",
-            "PA45",
-            "PA46",
-            "PA47",
-            "PA48"
+            "PA31",
+            "PA36",
+            "PA37",
+            "PA53",
+            "IM5"
           ],
           "space_requirement": 4,
           "population_profiles": [
@@ -3160,7 +3096,7 @@
             "mountain"
           ],
           "wild_regions": [
-            "IM3"
+            "IM8"
           ],
           "space_requirement": 4,
           "population_profiles": [
@@ -3170,27 +3106,24 @@
         "Striped Hyena.png": {
           "scientific_name": "Hyaena hyaena",
           "tags": [
-            "savanna",
             "desert",
-            "dry-forest",
-            "shrubland",
+            "savanna",
             "grassland",
+            "shrubland",
+            "dry-forest",
+            "rocky",
+            "mountain",
             "nocturnal"
           ],
           "wild_regions": [
             "AT7",
             "AT11",
-            "AT13",
             "AT16",
             "AT19",
             "AT20",
             "AT21",
             "AT22",
             "AT23",
-            "PA18",
-            "PA19",
-            "PA20",
-            "PA21",
             "PA23",
             "PA24",
             "PA25",
@@ -3200,20 +3133,17 @@
             "PA30",
             "PA32",
             "PA33",
-            "IM1",
-            "IM2",
             "IM3",
             "IM4",
-            "IM5",
             "IM6",
-            "IM7",
-            "IM8"
+            "IM7"
           ],
           "space_requirement": 4,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "EAZA and IUCN/TRAFFIC range audit: extant range is patchy across North and East Africa (south to Tanzania), Arabia, the Levant, Turkey and extreme southeastern Caucasus, Iran and parts of Central Asia, Afghanistan, Pakistan, Nepal and India. Occupancy is sparse in Sahara/Sahel and parts of western Asia, but arid and rocky desert margins are genuine habitat; do not exclude an entire OneEarth polygon simply because it includes desert. Species is not a native European Mediterranean resident. Existing Pass 2 codes are provisional broad overlap indicators pending validation against actual polygon boundaries. Removed South Congolian forests, Azores and Aegean/eastern Mediterranean: no established native extant populations in those mapped areas. 2026 bioregion audit: removed IM5 Himalayan mixed forests/grasslands because the species chiefly occupies lowland dry, rocky, and scrub habitats rather than Himalayan forest belts. The range remains fragmented and bioregion-scale shading is not continuous occupancy."
         },
         "Sumatran Tiger.png": {
           "scientific_name": "Panthera sumatrae",
@@ -3237,23 +3167,20 @@
             "nocturnal"
           ],
           "wild_regions": [
-            "IM4",
-            "IM5",
             "IM6",
-            "IM7",
-            "IM8",
             "IM9",
             "IM10",
             "IM11",
             "IM12",
             "IM13",
             "IM16",
-            "IM17"
+            "IM18"
           ],
           "space_requirement": 4,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Sun bear: fragmented forests of northeast India/southeast Bangladesh, mainland Southeast Asia, Malay Peninsula, Sumatra and Borneo; not Java, Indian drylands, or Himalayan highlands. IM13 is marginal and refers only to possible border-area presence in Yunnan, not all southern China."
         },
         "Swift Fox.png": {
           "scientific_name": "Vulpes velox",
@@ -3523,13 +3450,14 @@
             "mountain"
           ],
           "wild_regions": [
-            "PA42",
-            "PA43"
+            "PA51",
+            "PA53"
           ],
           "space_requirement": 5,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Extant giant pandas occupy isolated bamboo-rich mountain forests of Sichuan, Shaanxi and Gansu, chiefly Qinling, Minshan, Qionglai, Daxiangling, Xiaoxiangling and Liangshan. PA51 (Sichuan Basin & Central Mountain Forests) and PA53 (Hengduan Mountain Conifer Forests) approximate the forested core but do not depict precise occupied patches; Qinling may need finer-scale representation. Removed PA42 Ordos Plateau and PA43 Gobi Desert."
         },
         "Grandidier's Vontsira.png": {
           "scientific_name": "Galidictis grandidieri",
@@ -3555,16 +3483,17 @@
           "tags": [
             "shrubland",
             "dry-forest",
-            "grassland"
+            "grassland",
+            "woodland"
           ],
           "wild_regions": [
-            "PA25",
-            "PA26"
+            "PA20"
           ],
           "space_requirement": 3,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Native and reintroduced populations in disjunct parts of Spain and Portugal, especially Andalusia, Extremadura, Castilla-La Mancha and Portuguese localities. PA20 (Balearic Sea & West Mediterranean Mixed Forests) is the closest available broad Iberian region; only mainland Iberian sections are relevant, not Balearic islands or all of the polygon. Removed PA25 Sahara and PA26 Arabian/Red Sea regions."
         },
         "Kodkod.png": {
           "scientific_name": "Leopardus guigna",
@@ -3589,29 +3518,25 @@
           "tags": [
             "rainforest",
             "mountain",
-            "nocturnal"
+            "nocturnal",
+            "temperate-forest"
           ],
           "wild_regions": [
-            "IM1",
-            "IM2",
-            "IM3",
-            "IM4",
             "IM5",
             "IM6",
-            "IM7",
-            "IM8",
             "IM9",
             "IM10",
             "IM11",
             "IM12",
             "IM13",
             "IM16",
-            "IM17"
+            "IM18"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
-          ]
+          ],
+          "geography_note": "Eastern Himalayan foothills and northeast India through mainland Southeast Asia and southern China, plus Borneo and Sumatra; not Java. Forest-dependent and patchily distributed."
         },
         "Marsh Mongoose.png": {
           "scientific_name": "Atilax paludinosus",
@@ -5669,16 +5594,18 @@
           "tags": [
             "rainforest",
             "dry-forest",
+            "shrubland",
             "nocturnal"
           ],
           "wild_regions": [
-            "IM13"
+            "IM17"
           ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "pair"
-          ]
+          ],
+          "geography_note": "Java endemic; IM17 is Javan-Bali Tropical Rainforests. Only the Java portion of this broad bioregion is relevant, not Bali. Former IM13 mapped South China and was incorrect."
         },
         "Kordofan Giraffe.png": {
           "scientific_name": "Giraffa antiquorum",
@@ -9315,13 +9242,15 @@
             "dry-forest",
             "nocturnal"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT4"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group",
             "large_group"
           ],
-          "geography_note": "Endemic to Rodrigues Island (Mauritius), not Madagascar itself; AT6 removed. "
+          "geography_note": "Endemic to Rodrigues, Mauritius; represented by the Mascarene Islands bioregion, not Madagascar or mainland Africa."
         },
         "Southern Tamandua.png": {
           "scientific_name": "Tamandua tetradactyla",
@@ -14761,13 +14690,15 @@
             "grassland",
             "coastal"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT5"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary",
             "breeding_group"
           ],
-          "geography_note": "Native extant wild range is Aldabra Atoll (Seychelles), not Madagascar itself. A modern rewilding population exists on Madagascar, but it is a managed introduction; AT6 removed. "
+          "geography_note": "Native to Aldabra Atoll in the Seychelles; other introduced island populations excluded."
         },
         "Alligator Snapping Turtle.png": {
           "scientific_name": "Macrochelys temminckii",
@@ -18435,12 +18366,21 @@
             "rocky",
             "rainforest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT7",
+            "AT12",
+            "AT13",
+            "AT15",
+            "AT16",
+            "AT17",
+            "AT19",
+            "AT21"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Species identification remains unresolved (Phaeophilacris sp. is provisional). The English card name alone cannot justify country or OneEarth assignments. Keep wild_regions empty until identified.",
+          "geography_note": "Genus-level representative range only: Phaeophilacris spp. occur in humid sub-Saharan African forest and cave habitats, from West/Central Africa to East Africa. Species identity unresolved; codes are not a verified single-species range. Source: https://pubmed.ncbi.nlm.nih.gov/39646766/",
           "taxonomy_note": "Card common name does not resolve securely to species; genus-level provisional identification requires verification.",
           "taxonomy_audit_note": "Species identification unresolved from common name; Phaeophilacris sp. remains provisional. No defensible species-level geographic polygon.",
           "taxonomic_note": "Phaeophilacris sp. remains provisional. The English card name does not uniquely establish species, so do not assign precise OneEarth regions until the card identification is resolved."
@@ -18497,11 +18437,47 @@
           "population_profiles": [
             "pair"
           ],
-          "geography_note": "Tropical Indo-Pacific and Atlantic reefs; marine province coverage should reflect warm-water reefs rather than all oceanic waters.",
+          "geography_note": "Circumtropical shallow reef shrimp: western Atlantic/Caribbean and widespread tropical Indo-Pacific; representative MEOW ecoregions, not an exhaustive occupancy map.",
           "habitat_audit_note": "Reef crevices and rocky shelter; benthic rather than open-water.",
           "population_note": "Usually territorial as adults; established male-female pairs are appropriate, but arbitrary multiple adults should not be treated as a colony.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E043",
+            "MEOW-E064",
+            "MEOW-E065",
+            "MEOW-E066",
+            "MEOW-E067",
+            "MEOW-E068",
+            "MEOW-E069",
+            "MEOW-E070",
+            "MEOW-E087",
+            "MEOW-E088",
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E100",
+            "MEOW-E104",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E111",
+            "MEOW-E113",
+            "MEOW-E117",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E132",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E145",
+            "MEOW-E147",
+            "MEOW-E149",
+            "MEOW-E152",
+            "MEOW-E158",
+            "MEOW-E161",
+            "MEOW-E166",
+            "MEOW-E170"
+          ]
         },
         "Blue Death Feigning Beetle.png": {
           "scientific_name": "Asbolus verrucosus",
@@ -18642,10 +18618,36 @@
           "population_profiles": [
             "pair"
           ],
-          "geography_note": "Indo-Pacific reef species, typically sheltered in reef crevices; avoid worldwide tropical coverage.",
+          "geography_note": "Tropical Indo-Pacific reef species, mainly Red Sea and western/central Pacific; approximate coastal range.",
           "habitat_audit_note": "Indo-Pacific reef-associated cleaner shrimp, sheltering in crevices.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E087",
+            "MEOW-E088",
+            "MEOW-E089",
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E104",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E113",
+            "MEOW-E114",
+            "MEOW-E117",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E132",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E145",
+            "MEOW-E147",
+            "MEOW-E149",
+            "MEOW-E150"
+          ]
         },
         "Giant Cave Cockroach.png": {
           "scientific_name": "Blaberus giganteus",
@@ -18803,10 +18805,28 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Shallow tropical Indo-West Pacific, including seagrass beds and sandy reef margins.",
+          "geography_note": "Indo-West-Central Pacific shallow coastal species, including Sri Lanka, Southeast Asia, Japan, Australia and Pacific islands.",
           "habitat_audit_note": "Protoreaster nodosus uses shallow Indo-Pacific reef flats, seagrass and sandy substrates.",
           "habitat_note": "Shallow tropical seagrass beds, sandy bottoms and reef-associated lagoons; coastal alone is too generic. Specific habitat descriptors (not currently in canonical game tag vocabulary): sandy-seafloor, seagrass, coral-reef.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E104",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E113",
+            "MEOW-E117",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E132",
+            "MEOW-E139",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E147",
+            "MEOW-E149",
+            "MEOW-E150"
+          ]
         },
         "Indian Domino Roach.png": {
           "scientific_name": "Therea petiveriana",
@@ -18835,10 +18855,17 @@
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Northwestern Pacific coastal waters around Japan and neighboring East Asia. Do not extend to all Pacific provinces.",
+          "geography_note": "Northwest Pacific temperate coastal waters around Japan, Korea and China; taxonomic identifications outside this area uncertain.",
           "habitat_audit_note": "Marine pelagic coastal waters; coastal tag is a coarse approximation, not terrestrial habitat.",
           "population_note": "Pelagic jellyfish: multiple individuals can be displayed in a specialized kreisel system, but breeding_group is a husbandry display abstraction, not a stable social group.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E047",
+            "MEOW-E048",
+            "MEOW-E049",
+            "MEOW-E050",
+            "MEOW-E051",
+            "MEOW-E052"
+          ]
         },
         "Julia Heliconian.png": {
           "scientific_name": "Dryas iulia",
@@ -18986,11 +19013,18 @@
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Western Atlantic Lysmata wurdemanni species complex: aquarium trade labels frequently conflate multiple Lysmata species. Treat this identification and province coverage cautiously.",
+          "geography_note": "Western Atlantic coastal waters, including the southeastern US and Gulf of Mexico; species identification within the Lysmata wurdemanni complex requires caution.",
           "habitat_audit_note": "Reef and rocky-associated cleaner shrimp; Lysmata wurdemanni complex requires identification review.",
           "taxonomy_audit_note": "Lysmata wurdemanni is a species-complex/trade-name risk; exact species must be confirmed before detailed range mapping.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E041",
+            "MEOW-E042",
+            "MEOW-E043",
+            "MEOW-E065",
+            "MEOW-E069",
+            "MEOW-E070"
+          ]
         },
         "Philippine Leaf Insect.png": {
           "scientific_name": "Phyllium philippinicum",
@@ -19125,10 +19159,18 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Western Indian Ocean tropical reef and sandy substrates; Protoreaster linckii is not a general Atlantic sea star.",
+          "geography_note": "Western Indian Ocean tropical shallow-water sea star, including East African and island reefs.",
           "habitat_audit_note": "Protoreaster linckii on shallow tropical western Indian Ocean reef-associated bottoms.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef, sandy-seafloor.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E089",
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E098",
+            "MEOW-E100",
+            "MEOW-E101",
+            "MEOW-E102"
+          ]
         },
         "Annam Walking Stick.png": {
           "scientific_name": "Medauroidea extradentata",
@@ -19157,10 +19199,17 @@
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Western Atlantic and Gulf of Mexico shores; adults occupy shallow shelf and estuarine bottoms and spawn on sandy beaches. Exclude Indo-Pacific horseshoe crab ranges.",
+          "geography_note": "Western Atlantic coast of North America and Gulf of Mexico; coastal shelf and estuarine populations, not the whole area of each ecoregion.",
           "taxonomy_note": "Marine coastal species; wetland alone misleading for benthic adults and sandy spawning beaches.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): intertidal, sandy-seafloor, estuary.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E040",
+            "MEOW-E041",
+            "MEOW-E042",
+            "MEOW-E043",
+            "MEOW-E069",
+            "MEOW-E070"
+          ]
         },
         "Atlas Moth.png": {
           "scientific_name": "Attacus atlas",
@@ -19224,12 +19273,14 @@
             "shrubland",
             "rocky"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT22"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Socotra Island endemic (Yemen), in dry rocky scrub/woodland. No mainland Yemen, Arabian Peninsula, or Horn of Africa OneEarth code is a defensible proxy. Keep wild_regions empty until Socotra-specific polygon coverage is confirmed; this is intentionally unmapped, not a worldwide distribution. Socotra is an island endemic locality; avoid replacing its unmapped status with adjacent Arabian or African mainland codes.",
+          "geography_note": "Endemic to Socotra (Yemen), represented within the Gulf of Aden coastal drylands bioregion.",
           "habitat_note": "Socotra endemic; do not apply mainland African or Arabian ranges by inference."
         },
         "Delicate Anemone.png": {
@@ -19244,10 +19295,27 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Indo-Pacific sandy and rubble-bottom anemone habitats; Heteractis malu is not a generic Atlantic anemone.",
+          "geography_note": "Tropical Indo-Pacific sand-associated anemone; scattered confirmed localities, including East Africa.",
           "habitat_audit_note": "Heteractis malu inhabits sandy reef-adjacent substrate.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): sandy-seafloor, coral-reef.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E100",
+            "MEOW-E104",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E113",
+            "MEOW-E117",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E132",
+            "MEOW-E142",
+            "MEOW-E143"
+          ]
         },
         "Flat Rock Scorpion.png": {
           "scientific_name": "Hadogenes troglodytes",
@@ -19272,12 +19340,19 @@
             "rainforest",
             "dry-forest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT7",
+            "AT11",
+            "AT12",
+            "AT20",
+            "AT21",
+            "AT23"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "South and Southeast Asia; OneEarth region codes require polygon-level verification before assignment."
+          "geography_note": "Hierodula membranacea is African, despite the common name Giant Asian Mantis; native tropical African distribution, approximate."
         },
         "Giant Owl Butterfly.png": {
           "scientific_name": "Caligo memnon",
@@ -19314,10 +19389,21 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "North Pacific continental shelf from East Asia to North America; rocky dens and benthic habitat. Do not extend into tropical Pacific regions.",
+          "geography_note": "North Pacific coastal and continental shelf waters from Japan and the Russian Far East to the northeastern Pacific; coarse distribution.",
           "habitat_audit_note": "Rocky denning habitat and nearby benthic substrates in the North Pacific.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): sandy-seafloor.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E045",
+            "MEOW-E046",
+            "MEOW-E047",
+            "MEOW-E049",
+            "MEOW-E053",
+            "MEOW-E054",
+            "MEOW-E055",
+            "MEOW-E056",
+            "MEOW-E057",
+            "MEOW-E058"
+          ]
         },
         "Gooty Sapphire Tarantula.png": {
           "scientific_name": "Poecilotheria metallica",
@@ -19415,10 +19501,45 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Cold northern Atlantic and North Pacific waters; temperate and boreal rocky substrates and kelp beds. Not a tropical reef species.",
+          "geography_note": "Arctic and cold-temperate North Atlantic and North Pacific; includes Greenland, Iceland, Scandinavia, North American Atlantic and Pacific coasts.",
           "habitat_audit_note": "Cold-water rocky coastal and kelp habitats.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): kelp-forest.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E002",
+            "MEOW-E003",
+            "MEOW-E004",
+            "MEOW-E005",
+            "MEOW-E006",
+            "MEOW-E007",
+            "MEOW-E008",
+            "MEOW-E009",
+            "MEOW-E010",
+            "MEOW-E011",
+            "MEOW-E012",
+            "MEOW-E013",
+            "MEOW-E014",
+            "MEOW-E017",
+            "MEOW-E018",
+            "MEOW-E019",
+            "MEOW-E020",
+            "MEOW-E021",
+            "MEOW-E022",
+            "MEOW-E023",
+            "MEOW-E025",
+            "MEOW-E037",
+            "MEOW-E038",
+            "MEOW-E039",
+            "MEOW-E040",
+            "MEOW-E045",
+            "MEOW-E046",
+            "MEOW-E047",
+            "MEOW-E049",
+            "MEOW-E053",
+            "MEOW-E054",
+            "MEOW-E055",
+            "MEOW-E056",
+            "MEOW-E057"
+          ]
         },
         "Harlequin Shrimp.png": {
           "scientific_name": "Hymenocera picta",
@@ -19432,10 +19553,41 @@
           "population_profiles": [
             "pair"
           ],
-          "geography_note": "Reef-associated Indo-Pacific Hymenocera; species limits versus eastern Pacific H. elegans require care. Specialized sea-star predator.",
+          "geography_note": "Tropical Indo-Pacific reefs, including central/eastern Pacific; taxonomy sometimes separates Indo-West Pacific H. elegans.",
           "taxonomy_note": "Associated with shallow tropical reefs; obligate echinoderm predator.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E087",
+            "MEOW-E088",
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E098",
+            "MEOW-E100",
+            "MEOW-E104",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E113",
+            "MEOW-E117",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E132",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E145",
+            "MEOW-E147",
+            "MEOW-E149",
+            "MEOW-E150",
+            "MEOW-E152",
+            "MEOW-E158",
+            "MEOW-E161",
+            "MEOW-E166",
+            "MEOW-E170"
+          ]
         },
         "Indian Ornamental Tree Spider.png": {
           "scientific_name": "Poecilotheria regalis",
@@ -19464,10 +19616,16 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Waters around Japan in the northwestern Pacific, including deeper shelf and slope habitats; not an all-Pacific spider crab.",
+          "geography_note": "Japanese Pacific and adjacent marginal seas; broad shelf-level approximation, including Pacific Honshu and Japanese marginal waters.",
           "habitat_audit_note": "Continental shelf and slope benthic habitats; coastal tag alone is insufficient.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): sandy-seafloor.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E047",
+            "MEOW-E048",
+            "MEOW-E049",
+            "MEOW-E051",
+            "MEOW-E052"
+          ]
         },
         "Migratory Locust.png": {
           "scientific_name": "Locusta migratoria",
@@ -19476,12 +19634,83 @@
             "savanna",
             "wetland"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "PA10",
+            "PA11",
+            "PA12",
+            "PA16",
+            "PA17",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA23",
+            "PA24",
+            "PA25",
+            "PA26",
+            "PA27",
+            "PA29",
+            "PA30",
+            "PA31",
+            "PA32",
+            "PA33",
+            "PA34",
+            "PA35",
+            "PA36",
+            "PA37",
+            "PA38",
+            "PA39",
+            "PA40",
+            "PA41",
+            "PA42",
+            "PA43",
+            "PA44",
+            "PA49",
+            "PA50",
+            "PA51",
+            "PA52",
+            "PA53",
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT11",
+            "AT12",
+            "AT13",
+            "AT16",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23",
+            "IM2",
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8",
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM13",
+            "IM14",
+            "IM15",
+            "IM16",
+            "IM17",
+            "IM18",
+            "AU3",
+            "AU4",
+            "AU5",
+            "AU6",
+            "AU7",
+            "AU8",
+            "AU9"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Broad Old World distribution with patchy suitable grassland and wetland habitats. Outbreak movements do not justify painting every intervening OneEarth region."
+          "geography_note": "Locusta migratoria is exceptionally widespread across Eurasia, Africa, Asia and Australia; provisional broad bioregion mapping, not full polygon occupancy."
         },
         "Plain Tiger Butterfly.png": {
           "scientific_name": "Danaus chrysippus",
@@ -19517,10 +19746,36 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Temperate and cold northern coastal waters, attached to hard substrate; do not map as tropical reef species.",
+          "geography_note": "North Atlantic and North Pacific temperate rocky coasts; range includes introduced populations in some southern waters, which are excluded here.",
           "habitat_audit_note": "Attached to hard substrates from lower intertidal to deeper subtidal waters.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): intertidal.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E002",
+            "MEOW-E003",
+            "MEOW-E004",
+            "MEOW-E005",
+            "MEOW-E020",
+            "MEOW-E021",
+            "MEOW-E022",
+            "MEOW-E023",
+            "MEOW-E025",
+            "MEOW-E026",
+            "MEOW-E037",
+            "MEOW-E038",
+            "MEOW-E039",
+            "MEOW-E040",
+            "MEOW-E041",
+            "MEOW-E045",
+            "MEOW-E046",
+            "MEOW-E047",
+            "MEOW-E049",
+            "MEOW-E053",
+            "MEOW-E054",
+            "MEOW-E055",
+            "MEOW-E056",
+            "MEOW-E057",
+            "MEOW-E058"
+          ]
         },
         "Rainbow Stag Beetle.png": {
           "scientific_name": "Phalacrognathus muelleri",
@@ -19581,10 +19836,51 @@
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Anemone-associated tropical marine shrimp; Thor amboinensis identification may encompass geographically structured cryptic lineages.",
+          "geography_note": "Pantropical anemone-associated shrimp; western Atlantic, Red Sea, Indo-Pacific and tropical eastern Pacific.",
           "taxonomy_note": "Lives in association with anemones and other reef cnidarians.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E029",
+            "MEOW-E043",
+            "MEOW-E062",
+            "MEOW-E064",
+            "MEOW-E065",
+            "MEOW-E066",
+            "MEOW-E067",
+            "MEOW-E068",
+            "MEOW-E069",
+            "MEOW-E070",
+            "MEOW-E087",
+            "MEOW-E088",
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E098",
+            "MEOW-E100",
+            "MEOW-E104",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E113",
+            "MEOW-E117",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E132",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E145",
+            "MEOW-E147",
+            "MEOW-E149",
+            "MEOW-E150",
+            "MEOW-E152",
+            "MEOW-E158",
+            "MEOW-E161",
+            "MEOW-E166",
+            "MEOW-E170"
+          ]
         },
         "Soldier Crab.png": {
           "scientific_name": "Mictyris longicarpus",
@@ -19599,10 +19895,30 @@
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Mictyris longicarpus is associated with eastern Australian intertidal mud and sand flats; coastal habitat alone must not imply all Australian coasts.",
+          "geography_note": "Indo-West Pacific sandy estuaries and intertidal flats, with strong Australian records. Coastal bioregion approximation; species limits and regional records should be rechecked.",
           "habitat_audit_note": "Mictyris longicarpus inhabits intertidal sand/mud flats, not exclusively mangrove habitat.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): intertidal, mudflat.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E108",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E117",
+            "MEOW-E118",
+            "MEOW-E128",
+            "MEOW-E131",
+            "MEOW-E139",
+            "MEOW-E140",
+            "MEOW-E141",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E144",
+            "MEOW-E149",
+            "MEOW-E202",
+            "MEOW-E203",
+            "MEOW-E204",
+            "MEOW-E205",
+            "MEOW-E209"
+          ]
         },
         "Tailless Whip Scorpion.png": {
           "scientific_name": "Damon diadema",
@@ -19612,12 +19928,18 @@
             "rocky",
             "nocturnal"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT7",
+            "AT12",
+            "AT21",
+            "AT22",
+            "PA26"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Damon diadema identification remains provisional; exact native geography must not be assigned from an unidentified tailless whip scorpion photograph."
+          "geography_note": "Native records in Ethiopia, Kenya, Somalia, Tanzania and Yemen; coastal forests, rocky shelters and caves. Broad One Earth regions include areas beyond confirmed localities. Source: Western Australian Museum whip-spider catalogue."
         },
         "Tanzanian Red-Legged Millipede.png": {
           "scientific_name": "Epibolus pulchripes",
@@ -19665,27 +19987,35 @@
             "dry-forest",
             "nocturnal"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "NT24",
+            "NT25",
+            "NT26",
+            "NT27",
+            "NT28"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Central America, Caribbean and northern South America; exact native limits uncertain; OneEarth region codes require polygon-level verification before assignment."
+          "geography_note": "Native Mexico, Central America and West Indies; excludes introduced Florida populations. Broad Mexican/Central American regions are approximate. Sources: Saint Louis Zoo; University of California Riverside entomology."
         }
       },
       "4": {
         "Amphibious Litter Cockroach.png": {
-          "scientific_name": "Perisphaerus sp.",
+          "scientific_name": "Opisthoplatia orientalis",
           "tags": [
             "rainforest",
             "wetland"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "IM13"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Tropical amphibious litter cockroach; species identification requires confirmation.",
+          "geography_note": "Opisthoplatia orientalis (amphibious litter cockroach) occurs in southern China including Macau and Taiwan; IM13 is a coarse South China forest bioregion approximation. Species identity corrected from unrelated Perisphaerus sp.; verify card photograph against O. orientalis. Source: https://www.macaubiodiversity.org/opisthoplatia-orientalis/",
           "taxonomy_note": "Perisphaerus sp. identification is provisional; do not infer amphibious ecology for the whole genus without species verification."
         },
         "Atlas Beetle.png": {
@@ -19693,24 +20023,35 @@
           "tags": [
             "rainforest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "IM11",
+            "IM12",
+            "IM16",
+            "IM17",
+            "IM18"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Southeast Asian tropical forests."
+          "geography_note": "Native to tropical Southeast Asia including Indochina and parts of Sundaland; bioregion assignment approximate due to variable taxonomic treatment."
         },
         "Autumn Leaf.png": {
           "scientific_name": "Deroplatys desiccata",
           "tags": [
             "rainforest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "IM11",
+            "IM12",
+            "IM16",
+            "IM18"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Southeast Asia; dead-leaf mantis."
+          "geography_note": "Deroplatys desiccata occurs in Southeast Asian tropical forests, especially Sundaland; regional assignment is approximate."
         },
         "Blue Clipper.png": {
           "scientific_name": "Parthenos sylvia",
@@ -19718,12 +20059,24 @@
             "rainforest",
             "dry-forest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "IM2",
+            "IM5",
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM15",
+            "IM16",
+            "IM17",
+            "IM18",
+            "AU13"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "South and Southeast Asia, with island populations."
+          "geography_note": "Native tropical South and Southeast Asia through Sundaland and New Guinea; bioregions are coarse."
         },
         "Cat-Eye Mantis.png": {
           "scientific_name": "Heterochaeta orientalis",
@@ -19731,12 +20084,24 @@
             "savanna",
             "shrubland"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT2",
+            "AT7",
+            "AT8",
+            "AT9",
+            "AT10",
+            "AT11",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "African mantis; identification provisional from common name."
+          "geography_note": "African dry woodland and savanna; published/observed country records span Senegal, Nigeria, Ethiopia, Tanzania, Mozambique, Zambia, Namibia and South Africa. Broad bioregion approximation, not complete occupancy. Sources: Heterochaeta orientalis distribution overview and Mantis World."
         },
         "Chambered Nautilus.png": {
           "scientific_name": "Nautilus pompilius",
@@ -19749,9 +20114,25 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Indo-West Pacific reef slopes; taxonomic and locality restrictions apply.",
+          "geography_note": "Indo-West Pacific continental shelf slopes and reef drop-offs; Philippines, Indonesia, Papua New Guinea, Palau, Fiji and northern Australia. MEOW represents coastal position, not the full depth niche.",
           "taxonomy_note": "Slope/reef-associated marine animal; shallow coastal tag alone misses its deeper habitat.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E120",
+            "MEOW-E125",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E131",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E137",
+            "MEOW-E139",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E147"
+          ]
         },
         "Chequered Swallowtail.png": {
           "scientific_name": "Papilio demoleus",
@@ -19760,12 +20141,33 @@
             "shrubland",
             "dry-forest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "IM2",
+            "IM3",
+            "IM4",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8",
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM13",
+            "IM15",
+            "IM16",
+            "IM17",
+            "IM18",
+            "AU3",
+            "AU4",
+            "AU8",
+            "AU9"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Southern Asia and Australasia; introduced populations excluded."
+          "geography_note": "Papilio demoleus is native across southern Asia and Australia; introduced populations elsewhere excluded; approximate."
         },
         "Coconut Crab.png": {
           "scientific_name": "Birgus latro",
@@ -19773,12 +20175,34 @@
             "coastal",
             "dry-forest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT5",
+            "AT4",
+            "IM1",
+            "IM15",
+            "IM16",
+            "IM17",
+            "AU10",
+            "AU11",
+            "AU12",
+            "AU13",
+            "AU14",
+            "AU15",
+            "OC2",
+            "OC3",
+            "OC4",
+            "OC5",
+            "OC6",
+            "OC7",
+            "OC8",
+            "OC9",
+            "OC10"
+          ],
           "space_requirement": 3,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Indo-Pacific tropical islands; coastal forest and terrestrial habitats.",
+          "geography_note": "Terrestrial adult coconut crabs inhabit tropical Indian and Pacific Ocean islands; regional assignment is coarse and does not imply every island in each bioregion is occupied. Larvae are marine.",
           "habitat_note": "Terrestrial adult with marine larval phase; do not label adult habitat as coral reef or pelagic.",
           "marine_regions": []
         },
@@ -19812,12 +20236,22 @@
             "rainforest",
             "cloud-forest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "NT11",
+            "NT14",
+            "NT18",
+            "NT20",
+            "NT21",
+            "NT22",
+            "NT23",
+            "NT24",
+            "NT25"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Central America and northwestern South America."
+          "geography_note": "Neotropical forests in Central America and northwestern South America; approximate bioregion coverage."
         },
         "Dirce Beauty.png": {
           "scientific_name": "Colobura dirce",
@@ -19825,24 +20259,44 @@
             "rainforest",
             "dry-forest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "NT14",
+            "NT15",
+            "NT17",
+            "NT18",
+            "NT19",
+            "NT20",
+            "NT21",
+            "NT22",
+            "NT24",
+            "NT25"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Central and South American tropical forests."
+          "geography_note": "Neotropical forests from Central America through northern and central South America; approximate."
         },
         "Emerald Peacock Swallowtail.png": {
           "scientific_name": "Papilio palinurus",
           "tags": [
             "rainforest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM15",
+            "IM16",
+            "IM17",
+            "IM18"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Southeast Asian forests."
+          "geography_note": "Native Southeast Asian tropical forests including Sundaland and the Philippines; local subspecies vary."
         },
         "Fish-Eating Anemone.png": {
           "scientific_name": "Urticina piscivora",
@@ -19855,9 +20309,28 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Northeastern Pacific cold-water coastal habitats.",
+          "geography_note": "Northeast Pacific, primarily Alaska to California; cold-water rocky reef species. Broad coastal approximation.",
           "habitat_audit_note": "Urticina piscivora attaches to hard substrata in cool northeast Pacific waters.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E009",
+            "MEOW-E010",
+            "MEOW-E011",
+            "MEOW-E012",
+            "MEOW-E013",
+            "MEOW-E014",
+            "MEOW-E015",
+            "MEOW-E016",
+            "MEOW-E017",
+            "MEOW-E018",
+            "MEOW-E019",
+            "MEOW-E020",
+            "MEOW-E021",
+            "MEOW-E022",
+            "MEOW-E023",
+            "MEOW-E024",
+            "MEOW-E025",
+            "MEOW-E026"
+          ]
         },
         "Floating Bell.png": {
           "scientific_name": "Phyllorhiza punctata",
@@ -19869,8 +20342,38 @@
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Native Indo-Pacific jellyfish; introduced Atlantic occurrences excluded.",
-          "marine_regions": []
+          "geography_note": "Native Indo-West Pacific, especially coastal Southeast Asia and northern Australia; introduced elsewhere, excluded.",
+          "marine_regions": [
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E111",
+            "MEOW-E112",
+            "MEOW-E113",
+            "MEOW-E114",
+            "MEOW-E115",
+            "MEOW-E116",
+            "MEOW-E117",
+            "MEOW-E118",
+            "MEOW-E119",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E131",
+            "MEOW-E132",
+            "MEOW-E133",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E136",
+            "MEOW-E137",
+            "MEOW-E138",
+            "MEOW-E139",
+            "MEOW-E140",
+            "MEOW-E141",
+            "MEOW-E142",
+            "MEOW-E143"
+          ]
         },
         "Giant Anemone.png": {
           "scientific_name": "Stichodactyla gigantea",
@@ -19884,10 +20387,52 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Indo-Pacific tropical reefs; common name identification provisional.",
+          "geography_note": "Tropical Indo-Pacific shallow reefs; this is a broad approximate set and not continuous occupation.",
           "habitat_audit_note": "Stichodactyla gigantea occupies shallow tropical reef-associated sand/rubble.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef, sandy-seafloor.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E087",
+            "MEOW-E088",
+            "MEOW-E089",
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E103",
+            "MEOW-E104",
+            "MEOW-E105",
+            "MEOW-E106",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E111",
+            "MEOW-E112",
+            "MEOW-E113",
+            "MEOW-E114",
+            "MEOW-E115",
+            "MEOW-E116",
+            "MEOW-E117",
+            "MEOW-E118",
+            "MEOW-E119",
+            "MEOW-E121",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E131",
+            "MEOW-E132",
+            "MEOW-E133",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E136",
+            "MEOW-E137",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E144",
+            "MEOW-E145",
+            "MEOW-E146",
+            "MEOW-E147",
+            "MEOW-E148",
+            "MEOW-E149"
+          ]
         },
         "Giant Desert Centipede.png": {
           "scientific_name": "Scolopendra heros",
@@ -19924,12 +20469,16 @@
           "tags": [
             "rainforest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "NT18",
+            "NT20",
+            "NT21"
+          ],
           "space_requirement": 2,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Northern South American rainforest; species complex identification caution."
+          "geography_note": "Native to northern South American tropical forests including the Guianas and Amazon basin."
         },
         "Hercules Beetle.png": {
           "scientific_name": "Dynastes hercules",
@@ -19937,12 +20486,19 @@
             "rainforest",
             "cloud-forest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "NT18",
+            "NT20",
+            "NT21",
+            "NT22",
+            "NT24",
+            "NT25"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Central America and northern South America; subspecies vary geographically."
+          "geography_note": "Dynastes hercules occurs in tropical Central and northern South America; distribution varies among subspecies."
         },
         "Large Brittle Star.png": {
           "scientific_name": "Ophiomastix sp.",
@@ -19954,8 +20510,11 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Marine brittle star; species identification provisional.",
-          "marine_regions": []
+          "geography_note": "Ophiomastix sp. is identified only to genus. The genus is broadly Indo-West Pacific; these Red Sea regions are representative examples, not a complete genus distribution or species-level range. Source: https://philjournalsci.dost.gov.ph/images/pdf/pjs_pdf/vol150_S1_Phil_BiodiversityConservation/diversty_of_echinoderms_in_intertidal_areas_of_samal_island_.pdf",
+          "marine_regions": [
+            "MEOW-E087",
+            "MEOW-E088"
+          ]
         },
         "Mangrove Upsidedown Jelly.png": {
           "scientific_name": "Cassiopea sp.",
@@ -19970,10 +20529,16 @@
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Warm shallow mangrove lagoons; species-level identification unresolved.",
+          "geography_note": "Cassiopea sp. is genus-level; Caribbean coastal/mangrove examples are supported, but species identity and native versus introduced populations are unresolved. These are representative locations, not the entire native genus range. Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC12278942/",
           "habitat_audit_note": "Cassiopea lives inverted on shallow sheltered lagoon bottoms, often among mangroves or seagrass; genus identification retained.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): sandy-seafloor, seagrass.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E064",
+            "MEOW-E065",
+            "MEOW-E066",
+            "MEOW-E067",
+            "MEOW-E068"
+          ]
         },
         "Maxima Clam.png": {
           "scientific_name": "Tridacna maxima",
@@ -19986,10 +20551,67 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Tropical Indo-Pacific coral reefs.",
+          "geography_note": "Widespread tropical Indo-Pacific, from Red Sea/East Africa to South Pacific. Reef habitat is patchy; broad MEOW approximation.",
           "taxonomy_note": "Reef-associated photosymbiotic giant clam.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E087",
+            "MEOW-E088",
+            "MEOW-E089",
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E098",
+            "MEOW-E103",
+            "MEOW-E104",
+            "MEOW-E105",
+            "MEOW-E106",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E111",
+            "MEOW-E113",
+            "MEOW-E114",
+            "MEOW-E115",
+            "MEOW-E116",
+            "MEOW-E117",
+            "MEOW-E118",
+            "MEOW-E119",
+            "MEOW-E120",
+            "MEOW-E121",
+            "MEOW-E122",
+            "MEOW-E123",
+            "MEOW-E124",
+            "MEOW-E125",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E131",
+            "MEOW-E132",
+            "MEOW-E133",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E136",
+            "MEOW-E137",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E144",
+            "MEOW-E145",
+            "MEOW-E146",
+            "MEOW-E147",
+            "MEOW-E148",
+            "MEOW-E149",
+            "MEOW-E150",
+            "MEOW-E151",
+            "MEOW-E153",
+            "MEOW-E154",
+            "MEOW-E155",
+            "MEOW-E156",
+            "MEOW-E157",
+            "MEOW-E158",
+            "MEOW-E159",
+            "MEOW-E160"
+          ]
         },
         "One-Spotted Prepona.png": {
           "scientific_name": "Archaeoprepona demophon",
@@ -19997,12 +20619,25 @@
             "rainforest",
             "dry-forest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "NT11",
+            "NT14",
+            "NT15",
+            "NT17",
+            "NT18",
+            "NT19",
+            "NT20",
+            "NT21",
+            "NT22",
+            "NT23",
+            "NT24",
+            "NT25"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Neotropical forest; card identification provisional."
+          "geography_note": "Neotropical forest species from Central America into South America; approximate."
         },
         "Peacock Mantis Shrimp.png": {
           "scientific_name": "Odontodactylus scyllarus",
@@ -20016,10 +20651,53 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Indo-West Pacific coral rubble and reef habitats.",
+          "geography_note": "Indo-Pacific reef-associated seafloor, East Africa to Guam and northern Australia; regional approximation.",
           "taxonomy_note": "Reef-associated burrower, often sandy/rubble substrates.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef, sandy-seafloor.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E089",
+            "MEOW-E093",
+            "MEOW-E094",
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E100",
+            "MEOW-E101",
+            "MEOW-E102",
+            "MEOW-E103",
+            "MEOW-E104",
+            "MEOW-E105",
+            "MEOW-E106",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E111",
+            "MEOW-E112",
+            "MEOW-E113",
+            "MEOW-E114",
+            "MEOW-E115",
+            "MEOW-E116",
+            "MEOW-E117",
+            "MEOW-E118",
+            "MEOW-E119",
+            "MEOW-E121",
+            "MEOW-E123",
+            "MEOW-E125",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E131",
+            "MEOW-E132",
+            "MEOW-E133",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E136",
+            "MEOW-E137",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E144",
+            "MEOW-E145"
+          ]
         },
         "Red Cracker.png": {
           "scientific_name": "Hamadryas amphinome",
@@ -20027,12 +20705,32 @@
             "rainforest",
             "dry-forest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "NT3",
+            "NT4",
+            "NT11",
+            "NT12",
+            "NT13",
+            "NT14",
+            "NT15",
+            "NT17",
+            "NT18",
+            "NT19",
+            "NT20",
+            "NT21",
+            "NT22",
+            "NT23",
+            "NT24",
+            "NT25",
+            "NT26",
+            "NT27",
+            "NT28"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Central and South American forests."
+          "geography_note": "Tropical America from Mexico and Cuba to northern Argentina; bioregions represent portions of broad range."
         },
         "Spotted Lagoon Jellyfish.png": {
           "scientific_name": "Mastigias papua",
@@ -20045,10 +20743,37 @@
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Indo-Pacific lagoons; lake-associated forms require separate identification.",
+          "geography_note": "Mastigias papua sensu lato occurs in Indo-Pacific lagoons, including Palau. Species-complex/subspecies uncertainty; coastal ecoregion approximation, not an assertion of presence throughout each ecoregion.",
           "habitat_audit_note": "Mastigias papua occupies sheltered tropical lagoon environments; population-specific lake forms should not be generalized.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): lagoon.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E087",
+            "MEOW-E088",
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E103",
+            "MEOW-E104",
+            "MEOW-E105",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E112",
+            "MEOW-E113",
+            "MEOW-E115",
+            "MEOW-E117",
+            "MEOW-E121",
+            "MEOW-E124",
+            "MEOW-E125",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E131",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E136",
+            "MEOW-E147"
+          ]
         },
         "Tailed Jay.png": {
           "scientific_name": "Graphium agamemnon",
@@ -20088,9 +20813,11 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Japanese vernacular Amadako is ambiguous; verify pictured species before assigning species-level distribution.",
+          "geography_note": "Provisional Sea of Japan occurrence for Japanese madako (East Asian common octopus). The inventory scientific name Octopus cf. vulgaris is taxonomically ambiguous: Japanese madako is generally Octopus sinensis, not Atlantic O. vulgaris. Species identification should be confirmed before expanding the range. Source: https://www.tohoku.ac.jp/en/press/japans_common_octopus.html",
           "taxonomy_note": "Amadako is an ambiguous Japanese vernacular label; Octopus cf. vulgaris is not a verified species determination.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E049"
+          ]
         },
         "Bigfin Reef Squid.png": {
           "scientific_name": "Sepioteuthis lessoniana",
@@ -20104,10 +20831,63 @@
           "population_profiles": [
             "school"
           ],
-          "geography_note": "Indo-Pacific coastal reef squid; species complex.",
+          "geography_note": "Broad tropical Indo-West Pacific nearshore distribution; Sepioteuthis lessoniana is a species complex and assignments are provisional.",
           "habitat_audit_note": "Sepioteuthis lessoniana uses reef-adjacent seagrass and coastal shallows.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef, seagrass.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E087",
+            "MEOW-E088",
+            "MEOW-E089",
+            "MEOW-E092",
+            "MEOW-E093",
+            "MEOW-E094",
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E098",
+            "MEOW-E103",
+            "MEOW-E104",
+            "MEOW-E105",
+            "MEOW-E106",
+            "MEOW-E107",
+            "MEOW-E108",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E111",
+            "MEOW-E112",
+            "MEOW-E113",
+            "MEOW-E114",
+            "MEOW-E115",
+            "MEOW-E116",
+            "MEOW-E117",
+            "MEOW-E118",
+            "MEOW-E119",
+            "MEOW-E121",
+            "MEOW-E123",
+            "MEOW-E125",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E131",
+            "MEOW-E132",
+            "MEOW-E133",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E136",
+            "MEOW-E137",
+            "MEOW-E139",
+            "MEOW-E140",
+            "MEOW-E141",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E144",
+            "MEOW-E145",
+            "MEOW-E146",
+            "MEOW-E147",
+            "MEOW-E148",
+            "MEOW-E149"
+          ]
         },
         "Cape Burrower.png": {
           "scientific_name": "Ammoxenus amphalodes",
@@ -20115,12 +20895,14 @@
             "grassland",
             "savanna"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT2"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Southern African sand-burrowing spider; provisional identification."
+          "geography_note": "Ammoxenus amphalodes native to the South African Cape region."
         },
         "Crown-Of-Thorns.png": {
           "scientific_name": "Acanthaster planci",
@@ -20132,10 +20914,21 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Crown-of-thorns species complex; A. planci sensu stricto primarily Indian Ocean.",
+          "geography_note": "Acanthaster planci sensu stricto is the northern Indian Ocean lineage of a species complex; many Pacific crown-of-thorns are A. solaris and should not automatically be mapped as A. planci. Approximate coastal distribution.",
           "taxonomy_note": "Acanthaster planci sensu lato is a species complex; regional crown-of-thorns species may differ. Card image alone insufficient for species-level certainty.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E091",
+            "MEOW-E092",
+            "MEOW-E103",
+            "MEOW-E104",
+            "MEOW-E105",
+            "MEOW-E106",
+            "MEOW-E107",
+            "MEOW-E108",
+            "MEOW-E109",
+            "MEOW-E110"
+          ]
         },
         "Deep Sea Cucumber.png": {
           "scientific_name": "Enypniastes eximia",
@@ -20147,21 +20940,62 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Deep-water swimming holothurian, not a shallow-water reef species.",
-          "habitat_note": "Deep benthopelagic swimmer and seafloor-associated sea cucumber; not a surface-ocean pelagic animal. Deep benthopelagic waters; swimming sea cucumber, not a shallow-water coastal species.",
-          "marine_regions": []
+          "geography_note": "Enypniastes eximia is documented in deep waters worldwide, including Atlantic, Pacific, Indian and Southern oceans, generally hundreds to thousands of metres deep. Leave marine_regions empty rather than inaccurately assigning shelf/coastal MEOW regions. NOAA and JAMSTEC records support broad distribution.",
+          "habitat_note": "Deep-benthopelagic; swims above the abyssal seabed and feeds on seafloor sediment.",
+          "marine_regions": [],
+          "deep_sea_distribution": {
+            "depth_m_approx": [
+              500,
+              6000
+            ],
+            "region_codes_status": "unmapped: no deep-benthic region IDs defined",
+            "habitat_zone": "deep benthopelagic",
+            "distribution_summary": "Worldwide, including Atlantic, Pacific, Indian and Southern oceans",
+            "mapping_framework": "deep_benthic",
+            "mapping_status": "pending_framework",
+            "source_urls": [
+              "https://oceanexplorer.noaa.gov/multimedia/daily-image-media-20210501/",
+              "https://www.godac.jamstec.go.jp/bismal/e/view/9000271",
+              "https://link.springer.com/article/10.1007/s12526-022-01314-z"
+            ]
+          }
         },
         "Emerald Cockroach Wasp.png": {
           "scientific_name": "Ampulex compressa",
           "tags": [
             "rainforest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT7",
+            "AT11",
+            "AT12",
+            "AT16",
+            "AT19",
+            "AT20",
+            "AT21",
+            "AT22",
+            "AT23",
+            "IM2",
+            "IM3",
+            "IM5",
+            "IM6",
+            "IM7",
+            "IM8",
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM13",
+            "IM15",
+            "IM16",
+            "IM17",
+            "IM18"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Native Old World tropical range; introduced populations excluded.",
+          "geography_note": "Native tropical Africa and southern Asia; introduced populations elsewhere excluded. Approximate.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): woodland."
         },
         "Fen Raft Spider.png": {
@@ -20169,12 +21003,20 @@
           "tags": [
             "wetland"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "PA9",
+            "PA10",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Patchy European wetland distribution.",
+          "geography_note": "Fragmented native European wetland range including Britain and continental Europe; bioregions indicate possible occupied pockets, not continuous coverage.",
           "habitat_note": "Freshwater fen, marsh and wetland margins; not a marine raft spider."
         },
         "Flamboyant Cuttlefish.png": {
@@ -20188,21 +21030,48 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Tropical Indo-Pacific shallow soft-bottom habitat.",
+          "geography_note": "Shallow Indo-Pacific waters from Southeast Asia and Indonesia to Papua New Guinea and northern Australia; approximate coastal distribution.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): sandy-seafloor.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E110",
+            "MEOW-E111",
+            "MEOW-E115",
+            "MEOW-E116",
+            "MEOW-E117",
+            "MEOW-E118",
+            "MEOW-E119",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E131",
+            "MEOW-E132",
+            "MEOW-E133",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E136",
+            "MEOW-E137",
+            "MEOW-E139",
+            "MEOW-E140",
+            "MEOW-E141",
+            "MEOW-E142",
+            "MEOW-E143"
+          ]
         },
         "Fregate Island Palm Beetle.png": {
           "scientific_name": "Polposipus herculeanus",
           "tags": [
             "rainforest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT5"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Seychelles endemic, specifically Frégate Island. Do not substitute a general Madagascar or mainland African OneEarth code for Frégate Island; Seychelles island polygon coverage must be confirmed."
+          "geography_note": "Endemic to Frégate Island, Seychelles."
         },
         "Giant Isopod.png": {
           "scientific_name": "Bathynomus giganteus",
@@ -20215,33 +21084,61 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Western Atlantic deep-sea isopod; avoid assigning all giant isopods to this species.",
-          "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): sandy-seafloor. Deep continental-slope seafloor; coastal tag is only a broad marine fallback, not a shallow-water claim. Deep continental-slope seabed; sandy-seafloor alone omits the depth specialization.",
-          "marine_regions": []
+          "geography_note": "Bathynomus giganteus: western Atlantic continental slopes, particularly Gulf of Mexico and Caribbean; Indo-Pacific giant isopods are other Bathynomus species. Deep-benthic geographic codes unavailable in current registry.",
+          "habitat_note": "Deep-benthic scavenger on continental-slope seafloor.",
+          "marine_regions": [],
+          "deep_sea_distribution": {
+            "depth_m_approx": [
+              310,
+              2300
+            ],
+            "mapping_status": "pending_framework",
+            "habitat_zone": "deep benthic",
+            "distribution_summary": "Western Atlantic continental slopes, especially Gulf of Mexico and Caribbean Sea",
+            "region_codes_status": "unmapped: no deep-benthic region IDs defined",
+            "mapping_framework": "deep_benthic",
+            "source_urls": [
+              "https://pmc.ncbi.nlm.nih.gov/articles/PMC4304853/"
+            ]
+          }
         },
         "Grey Glassy Tiger.png": {
           "scientific_name": "Ideopsis juventa",
           "tags": [
             "rainforest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "IM9",
+            "IM10",
+            "IM11",
+            "IM12",
+            "IM13",
+            "IM14",
+            "IM15",
+            "IM16",
+            "IM17",
+            "IM18",
+            "AU13"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Southeast Asian butterfly; species-level range requires audit."
+          "geography_note": "Native Southeast Asia, Sundaland and adjoining western Pacific islands; approximate."
         },
         "Lord Howe Stick Insect.png": {
           "scientific_name": "Dryococelus australis",
           "tags": [
             "shrubland"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AU2"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Lord Howe Island endemic; remnant population on Ball’s Pyramid and reintroductions. Do not substitute mainland Australian region codes for Lord Howe Island or Ball’s Pyramid; island polygon coverage must be confirmed.",
+          "geography_note": "Endemic to the Lord Howe Island group; extant wild population centered on Ball’s Pyramid.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): woodland. Native to Lord Howe Island group; wild population persists on Ball’s Pyramid, not a generalized Australian mainland distribution."
         },
         "Mexican Silverspot.png": {
@@ -20250,24 +21147,37 @@
             "grassland",
             "shrubland"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "NT11",
+            "NT18",
+            "NT20",
+            "NT21",
+            "NT22",
+            "NT23",
+            "NT24",
+            "NT25",
+            "NT27",
+            "NT28"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "American passionflower butterfly; identification provisional."
+          "geography_note": "Dione moneta occurs from Mexico and Central America into northwestern South America; approximate."
         },
         "Montserrat Tarantula.png": {
           "scientific_name": "Cyrtopholis femoralis",
           "tags": [
             "rainforest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "NT26"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Montserrat endemic; confirm taxon against image. Do not infer mainland Neotropical coverage for a Montserrat endemic; taxon and island polygon need confirmation."
+          "geography_note": "Cyrtopholis femoralis native to Montserrat in the Lesser Antilles."
         },
         "Mosaic Locust Lobster.png": {
           "scientific_name": "Panulirus ornatus",
@@ -20280,22 +21190,95 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Mosaic/ornate spiny lobster naming ambiguous; provisional species.",
+          "geography_note": "Tropical Indo-West Pacific spiny lobster, from East Africa to western Pacific and northern Australia; approximate reef/coastal range.",
           "taxonomy_note": "Panulirus ornatus is usually called ornate spiny lobster; mosaic locust lobster may denote a different lobster. Check original card image before changing scientific identification.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E087",
+            "MEOW-E088",
+            "MEOW-E089",
+            "MEOW-E092",
+            "MEOW-E093",
+            "MEOW-E094",
+            "MEOW-E095",
+            "MEOW-E096",
+            "MEOW-E098",
+            "MEOW-E103",
+            "MEOW-E104",
+            "MEOW-E105",
+            "MEOW-E106",
+            "MEOW-E109",
+            "MEOW-E110",
+            "MEOW-E111",
+            "MEOW-E112",
+            "MEOW-E113",
+            "MEOW-E114",
+            "MEOW-E115",
+            "MEOW-E116",
+            "MEOW-E117",
+            "MEOW-E118",
+            "MEOW-E119",
+            "MEOW-E121",
+            "MEOW-E125",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E131",
+            "MEOW-E132",
+            "MEOW-E133",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E136",
+            "MEOW-E137",
+            "MEOW-E139",
+            "MEOW-E140",
+            "MEOW-E141",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E144",
+            "MEOW-E145",
+            "MEOW-E146",
+            "MEOW-E147",
+            "MEOW-E148",
+            "MEOW-E149"
+          ]
         },
         "Mother-Of-Pearl.png": {
           "scientific_name": "Pleuroptya ruralis",
           "tags": [
             "temperate-forest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "PA9",
+            "PA10",
+            "PA11",
+            "PA12",
+            "PA13",
+            "PA14",
+            "PA15",
+            "PA16",
+            "PA17",
+            "PA18",
+            "PA19",
+            "PA20",
+            "PA27",
+            "PA28",
+            "PA34",
+            "PA35",
+            "PA36",
+            "PA37",
+            "PA45",
+            "PA46",
+            "PA47",
+            "PA48"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "European moth identification based on common name; verify image.",
+          "geography_note": "Pleuroptya ruralis is distributed across temperate Eurasia; broad approximate mapping.",
           "taxonomy_note": "Mother-of-pearl is an ambiguous common name. Pleuroptya ruralis is a moth (mother-of-pearl moth), not a mollusc; confirm that this is the intended card.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): woodland."
         },
@@ -20318,12 +21301,21 @@
           "tags": [
             "rainforest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "OC2",
+            "OC3",
+            "OC4",
+            "OC5",
+            "OC6",
+            "OC7",
+            "OC8",
+            "OC9"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Genus-level zoo conservation card: multiple island-endemic species; cannot assign one species range. This genus-level card spans different Pacific island endemics; no single species-level OneEarth map is defensible without specifying the taxon.",
+          "geography_note": "Partula spp. is a genus-level card encompassing multiple Pacific island endemics. These codes indicate broad genus occurrence only, not the range of a single species; individual species are often restricted to one island and many are extinct in the wild.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): forest-floor. Partula is a genus, not a single species; exact native island and habitat depend on which species is represented."
         },
         "Predatory Tunicate.png": {
@@ -20337,9 +21329,23 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Deep-sea predatory ascidian.",
-          "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): sandy-seafloor. Deep-sea benthic tunicate; coastal tag is only a broad marine fallback, not a shallow-water claim.",
-          "marine_regions": []
+          "geography_note": "Megalodicopia hians: confirmed Monterey Canyon and Sea of Japan records, plus other deep-ocean records; avoid claiming Monterey-only endemicity. Deep-benthic region codes unavailable.",
+          "habitat_note": "Deep-benthic, attached suspension predator in submarine-canyon and slope habitats.",
+          "marine_regions": [],
+          "deep_sea_distribution": {
+            "depth_m_approx": [
+              200,
+              3800
+            ],
+            "mapping_status": "pending_framework",
+            "habitat_zone": "deep benthic",
+            "distribution_summary": "Documented from Monterey Canyon and Sea of Japan; full distribution unresolved",
+            "region_codes_status": "unmapped: no deep-benthic region IDs defined",
+            "mapping_framework": "deep_benthic",
+            "source_urls": [
+              "https://www.sciencedirect.com/science/article/abs/pii/S0967063705002761"
+            ]
+          }
         },
         "Red-Legged Fire Millipede.png": {
           "scientific_name": "Aphistogoniulus corallipes",
@@ -20361,29 +21367,33 @@
           "tags": [
             "cave"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT19"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Known from Guinea cave locality; extinct in the wild, maintained in captivity. Do not assign an entire West African region to a single documented Guinean cave locality; retain unmapped pending polygon verification."
+          "geography_note": "Known originally from a cave in Guinea, West Africa; extinct in the wild and maintained in captivity. Historical native bioregion recorded, not current wild occupancy."
         },
         "Six-Eyed Sand Spider.png": {
           "scientific_name": "Sicarius hahni",
           "tags": [
             "desert"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "AT9"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Southern African desert sand spider; sandy-seafloor tag should be removed.",
+          "geography_note": "Sicarius hahni is associated with southern African arid habitats, especially Namibia; bioregion approximate.",
           "taxonomy_note": "Sicarius hahni is a southern African six-eyed sand spider; common-name coverage may encompass other Sicarius/Hexophthalma species.",
           "habitat_note": "Terrestrial sand-burying desert spider; do not confuse with marine sandy-seafloor habitats."
         },
         "Snow Globe Jelly.png": {
-          "scientific_name": "Benthocodon hyalinus",
+          "scientific_name": "Modeeria rotunda",
           "tags": [
             "pelagic",
             "deep-sea"
@@ -20393,10 +21403,23 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Deep-water jelly; tentative identification.",
-          "habitat_audit_note": "Benthocodon hyalinus is a deep-sea hydrozoan; pelagic alone is underspecified.",
-          "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): deep-sea.",
-          "marine_regions": []
+          "geography_note": "Snow globe jelly is Modeeria rotunda (not Benthocodon hyalinus). Widespread in deep waters worldwide, approximately 30–3100 m according to Monterey Bay Aquarium. MEOW surface/coastal regions do not adequately encode its oceanic depth distribution; marine_regions intentionally left empty. Verify card photo. Sources: https://www.montereybayaquarium.org/animals-the-ocean/animals-a-to-z/snow-globe-jelly and https://www.gbif.org/taxon/73N5C",
+          "habitat_note": "Deep-water hydrozoan jelly; not accurately represented by coastal or surface-pelagic provinces.",
+          "marine_regions": [],
+          "deep_sea_distribution": {
+            "depth_m_approx": [
+              30,
+              3100
+            ],
+            "region_codes_status": "unmapped: no deep-benthic region IDs defined",
+            "habitat_zone": "deep water column",
+            "distribution_summary": "Broad deep-water marine distribution; exact basin-level range requires verification",
+            "mapping_framework": "deep_benthic",
+            "mapping_status": "pending_framework",
+            "source_urls": [
+              "https://www.montereybayaquarium.org/animals-the-ocean/animals-a-to-z/snow-globe-jelly"
+            ]
+          }
         },
         "Southern Giant Clam.png": {
           "scientific_name": "Tridacna derasa",
@@ -20410,22 +21433,49 @@
           "population_profiles": [
             "solitary"
           ],
-          "geography_note": "Indo-Pacific giant clam, reef-associated.",
+          "geography_note": "Native Coral Triangle and tropical southwest Pacific, extending west to Cocos (Keeling) and east to Tonga; excludes known introduced Cook Islands and Samoa populations.",
           "habitat_audit_note": "Tridacna derasa occurs on reef-associated sandy/rubble substrates.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): coral-reef, sandy-seafloor.",
-          "marine_regions": []
+          "marine_regions": [
+            "MEOW-E116",
+            "MEOW-E117",
+            "MEOW-E120",
+            "MEOW-E125",
+            "MEOW-E126",
+            "MEOW-E127",
+            "MEOW-E128",
+            "MEOW-E129",
+            "MEOW-E130",
+            "MEOW-E131",
+            "MEOW-E132",
+            "MEOW-E133",
+            "MEOW-E134",
+            "MEOW-E135",
+            "MEOW-E136",
+            "MEOW-E137",
+            "MEOW-E139",
+            "MEOW-E142",
+            "MEOW-E143",
+            "MEOW-E146",
+            "MEOW-E147",
+            "MEOW-E148",
+            "MEOW-E149"
+          ]
         },
         "Vietnamese Giant Snail.png": {
           "scientific_name": "Bertia cambojiensis",
           "tags": [
             "rainforest"
           ],
-          "wild_regions": [],
+          "wild_regions": [
+            "IM11",
+            "IM12"
+          ],
           "space_requirement": 1,
           "population_profiles": [
             "breeding_group"
           ],
-          "geography_note": "Vietnamese giant land snail; tentative species assignment.",
+          "geography_note": "Bertia cambojiensis native to mainland Indochina; exact local range needs confirmation.",
           "habitat_note": "Specific habitat descriptors (not currently in canonical game tag vocabulary): forest-floor."
         }
       }

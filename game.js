@@ -51923,7 +51923,8 @@ renderAll = function(...args){
         default:return;}}
     const original=new Map(),stats=new Map(),stack=[];
     let active=false,started=0,ended=0,frames=0,frameGaps=0,maxFrameGap=0,lastFrame=0,rafId=0;
-    let longTasks=[],observer=null,slowCalls=[],sessionName='';
+    let longTasks=[],observer=null,slowCalls=[],sessionName='',heapStart=null,heapEnd=null;
+    const heap=()=>{try{const m=performance.memory;return m?{usedBytes:m.usedJSHeapSize,totalBytes:m.totalJSHeapSize,limitBytes:m.jsHeapSizeLimit}:null;}catch(_){return null;}};
     const now=()=>performance.now();
     function record(name,group,duration,self){
         let item=stats.get(name);
@@ -51940,7 +51941,7 @@ renderAll = function(...args){
     }
     function stop(){
         if(!active)return api.report();
-        ended=now();active=false;
+        ended=now();heapEnd=heap();active=false;
         for(const [name,fn] of original){try{setTarget(name,fn);}catch(e){console.warn('[Zoo Perf] Could not restore '+name,e);}}
         original.clear();stack.length=0;
         if(rafId)cancelAnimationFrame(rafId);rafId=0;
@@ -51951,7 +51952,7 @@ renderAll = function(...args){
     function start(label='gameplay'){
         if(active)return console.warn('[Zoo Perf] Already recording.');
         stats.clear();slowCalls=[];longTasks=[];frames=0;frameGaps=0;maxFrameGap=0;lastFrame=0;
-        started=now();ended=0;sessionName=String(label).slice(0,100);
+        started=now();ended=0;heapStart=heap();heapEnd=null;sessionName=String(label).slice(0,100);
         // Named global function declarations are re-bound only during the recording session.
         for(const [group,names] of Object.entries(targets))for(const name of names){
             try{
@@ -51988,7 +51989,13 @@ renderAll = function(...args){
             mode:typeof state!=='undefined'?state.gameMode:null,
             speed:typeof state!=='undefined'?state.trueCalendar?.speed:null,
             functionTimings:rows,frameSampling:{frames,frameGapsOver50ms:frameGaps,maxFrameGapMs:+maxFrameGap.toFixed(1)},
-            browserLongTasks:longTasks,slowFunctionCalls:slowCalls};
+            browserLongTasks:longTasks,slowFunctionCalls:slowCalls,
+            heap:{start:heapStart,end:active?heap():heapEnd,note:"JS heap metrics are browser-dependent and may be unavailable (notably Firefox)."}};
+    }
+    function downloadJson(data,prefix){
+        const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);
+        const a=document.createElement('a');a.href=url;a.download=prefix+'_'+new Date().toISOString().replace(/[:.]/g,'-')+'.json';
+        document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
     }
     const api={start,stop,get active(){return active;},report(){
         if(!started){console.info('[Zoo Perf] Start with zooPerf.start()');return null;}
@@ -51998,11 +52005,19 @@ renderAll = function(...args){
     },download(){
         if(!started){console.warn('[Zoo Perf] Nothing recorded yet.');return;}
         if(active)stop();
-        const data=snapshot(),blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);
-        const a=document.createElement('a');a.href=url;a.download='Zoo_Curator_Performance_'+new Date().toISOString().replace(/[:.]/g,'-')+'.json';
-        document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+        downloadJson(snapshot(),'Zoo_Curator_Performance');
         console.info('[Zoo Perf] Diagnostic JSON downloaded. Send this file for analysis.');
+    },downloadWithSaveSizes(){
+        if(active)stop();
+        // Explicitly requested only: serializing a large zoo can freeze the browser briefly.
+        let saveSizes=null;
+        try{const game=exportCurrentGameState(),bytes=v=>new Blob([JSON.stringify(serialiseSpecial(v))]).size;
+            const fields=Object.entries(game.state||{}).map(([field,value])=>({field,bytes:bytes(value)})).sort((x,y)=>y.bytes-x.bytes);
+            saveSizes={totalBytes:bytes(game),fields:fields.slice(0,50)};
+        }catch(e){saveSizes={error:String(e)};}
+        downloadJson({...snapshot(),saveSizes},'Zoo_Curator_Performance_And_Save');
+        console.info('[Zoo Perf] Combined report downloaded. This operation does not change your save.');
     }};
     window.zooPerf=api;
-    console.info('[Zoo Perf] Available: zooPerf.start(), zooPerf.stop(), zooPerf.download()');
+    console.info('[Zoo Perf] Available: zooPerf.start(), zooPerf.stop(), zooPerf.download(), zooPerf.downloadWithSaveSizes()');
 })();
